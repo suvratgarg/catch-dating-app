@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -101,62 +103,58 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
             bottom: CatchSpacing.s4,
             child: SafeArea(
               top: false,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: t.surface,
-                  border: Border.all(color: t.line),
-                  borderRadius: BorderRadius.circular(CatchRadius.lg),
-                  boxShadow: CatchElevation.overlay,
-                ),
-                child: Padding(
-                  padding: CatchInsets.content,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        coordinates.isEmpty
-                            ? context.l10n.hostsRoutePathBuilderEmpty
-                            : context.l10n.hostsRoutePathBuilderCount(
-                                count: coordinates.length,
-                              ),
-                      ),
-                      gapH12,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: CatchButton(
-                              label: context.l10n.hostsRoutePathBuilderUndo,
-                              variant: CatchButtonVariant.secondary,
-                              onPressed: coordinates.isEmpty
-                                  ? null
-                                  : () => setState(_path.removeLast),
+              child: CatchSurface(
+                backgroundColor: t.surface,
+                borderColor: t.line,
+                elevation: CatchSurfaceElevation.overlay,
+                padding: CatchInsets.content,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      coordinates.isEmpty
+                          ? context.l10n.hostsRoutePathBuilderEmpty
+                          : context.l10n.hostsRoutePathBuilderCount(
+                              count: coordinates.length,
                             ),
+                        style: CatchTextStyles.supporting(context),
+                    ),
+                    gapH12,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CatchButton(
+                            label: context.l10n.hostsRoutePathBuilderUndo,
+                            variant: CatchButtonVariant.secondary,
+                            onPressed: coordinates.isEmpty
+                                ? null
+                                : () => setState(_path.removeLast),
                           ),
-                          gapW8,
-                          Expanded(
-                            child: CatchButton(
-                              label: context.l10n.hostsRoutePathBuilderClear,
-                              variant: CatchButtonVariant.ghost,
-                              onPressed: coordinates.isEmpty
-                                  ? null
-                                  : () => setState(_path.clear),
-                            ),
+                        ),
+                        gapW8,
+                        Expanded(
+                          child: CatchButton(
+                            label: context.l10n.hostsRoutePathBuilderClear,
+                            variant: CatchButtonVariant.ghost,
+                            onPressed: coordinates.isEmpty
+                                ? null
+                                : () => setState(_path.clear),
                           ),
-                        ],
-                      ),
-                      gapH8,
-                      CatchButton(
-                        label: context.l10n.hostsRoutePathBuilderSave,
-                        fullWidth: true,
-                        onPressed: coordinates.length < 2
-                            ? null
-                            : () => Navigator.of(
-                                context,
-                              ).pop(List<RoutePoint>.unmodifiable(_path)),
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                    gapH8,
+                    CatchButton(
+                      label: context.l10n.hostsRoutePathBuilderSave,
+                      fullWidth: true,
+                      onPressed: coordinates.length < 2
+                          ? null
+                          : () => Navigator.of(
+                              context,
+                            ).pop(List<RoutePoint>.unmodifiable(_path)),
+                    ),
+                  ],
                 ),
               ),
             ),

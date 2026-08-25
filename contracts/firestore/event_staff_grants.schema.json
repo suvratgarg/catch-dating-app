@@ -17,7 +17,7 @@
     "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
     "phoneLastFour": {"type": "string", "pattern": "^[0-9]{4}$"},
     "role": {"const": "checkInOperator"},
-    "permissions": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"type": "string", "enum": ["viewRoster", "setAttendance", "reviewRuntimeClaims"]}},
+    "permissions": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "enum": ["viewRoster", "setAttendance", "reviewRuntimeClaims", "publishLiveLocation"]}},
     "status": {"type": "string", "enum": ["active", "revoked"]},
     "createdBy": {"type": "string", "minLength": 1, "maxLength": 180},
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},

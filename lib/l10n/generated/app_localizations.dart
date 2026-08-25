@@ -25748,6 +25748,36 @@ abstract class AppLocalizations {
   /// **'Use the event meeting point'**
   String get hostsEventItineraryUseMeetingPoint;
 
+  /// Optional exact location field for an itinerary entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop location'**
+  String get hostsEventItineraryLocationTitle;
+
+  /// Empty optional itinerary location value.
+  ///
+  /// In en, this message translates to:
+  /// **'No exact location'**
+  String get hostsEventItineraryLocationEmpty;
+
+  /// Choose an itinerary location action.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose'**
+  String get hostsEventItineraryLocationChoose;
+
+  /// Change an itinerary location action.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get hostsEventItineraryLocationChange;
+
+  /// Remove an itinerary location action.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove stop location'**
+  String get hostsEventItineraryLocationRemove;
+
   /// Gather itinerary kind.
   ///
   /// In en, this message translates to:
@@ -25783,6 +25813,64 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Finish'**
   String get hostsEventItineraryKindFinish;
+
+  /// Host live position toggle title.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the moving group'**
+  String get hostEventLiveLocationTitle;
+
+  /// Host live position toggle guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this phone\'\'s location so late arrivals can find the route lead.'**
+  String get hostEventLiveLocationBody;
+
+  /// Host live position privacy guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Off by default. Sharing runs only while Catch is in the foreground.'**
+  String get hostEventLiveLocationPrivacy;
+
+  /// Host live position active status.
+  ///
+  /// In en, this message translates to:
+  /// **'Live now. Leaving the app or switching this off removes your position.'**
+  String get hostEventLiveLocationActive;
+
+  /// Host live position permission error.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is required to share the moving group.'**
+  String get hostEventLiveLocationPermissionDenied;
+
+  /// Host live position services error.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on device location services, then try again.'**
+  String get hostEventLiveLocationServicesDisabled;
+
+  /// Host live position generic error.
+  ///
+  /// In en, this message translates to:
+  /// **'Live location could not be updated. Switch it off and try again.'**
+  String get hostEventLiveLocationFailed;
+
+  /// Rehearsal movement snapshot title.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement simulation'**
+  String get hostEventRehearsalMovementTitle;
+
+  /// Rehearsal movement snapshot summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{itineraryCount} itinerary steps · {routePointCount} route points · {positionCount} synthetic live positions'**
+  String hostEventRehearsalMovementSummary({
+    required int itineraryCount,
+    required int routePointCount,
+    required int positionCount,
+  });
 }
 
 class _AppLocalizationsDelegate

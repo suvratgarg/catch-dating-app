@@ -46,6 +46,7 @@ class EventDetailsStep extends StatefulWidget {
     required this.itinerary,
     required this.onItineraryChanged,
     this.defaultItineraryLocation,
+    this.onPickItineraryLocation,
     required this.routeInitialCenter,
     this.loadMapTiles = true,
     this.externalBookingMode = false,
@@ -86,6 +87,7 @@ class EventDetailsStep extends StatefulWidget {
   final List<EventItineraryItem> itinerary;
   final ValueChanged<List<EventItineraryItem>> onItineraryChanged;
   final EventMeetingLocation? defaultItineraryLocation;
+  final EventItineraryLocationPicker? onPickItineraryLocation;
   final LocationCoordinate routeInitialCenter;
   final bool loadMapTiles;
   final bool externalBookingMode;
@@ -547,6 +549,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                 items: widget.itinerary,
                 onChanged: widget.onItineraryChanged,
                 defaultLocation: widget.defaultItineraryLocation,
+                onPickLocation: widget.onPickItineraryLocation,
               ),
             ],
           ),

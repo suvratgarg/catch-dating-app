@@ -13,10 +13,15 @@ export interface EventStaffGrantDocument {
   phoneLastFour: string;
   role: "checkInOperator";
   /**
-   * @minItems 3
-   * @maxItems 3
+   * @minItems 4
+   * @maxItems 4
    */
-  permissions: ("viewRoster" | "setAttendance" | "reviewRuntimeClaims")[];
+  permissions: (
+    | "viewRoster"
+    | "setAttendance"
+    | "reviewRuntimeClaims"
+    | "publishLiveLocation"
+  )[];
   status: "active" | "revoked";
   createdBy: string;
   /**

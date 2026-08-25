@@ -16276,6 +16276,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use the event meeting point';
 
   @override
+  String get hostsEventItineraryLocationTitle => 'Stop location';
+
+  @override
+  String get hostsEventItineraryLocationEmpty => 'No exact location';
+
+  @override
+  String get hostsEventItineraryLocationChoose => 'Choose';
+
+  @override
+  String get hostsEventItineraryLocationChange => 'Change';
+
+  @override
+  String get hostsEventItineraryLocationRemove => 'Remove stop location';
+
+  @override
   String get hostsEventItineraryKindGather => 'Gather';
 
   @override
@@ -16292,4 +16307,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEventItineraryKindFinish => 'Finish';
+
+  @override
+  String get hostEventLiveLocationTitle => 'Share the moving group';
+
+  @override
+  String get hostEventLiveLocationBody =>
+      'Use this phone\'s location so late arrivals can find the route lead.';
+
+  @override
+  String get hostEventLiveLocationPrivacy =>
+      'Off by default. Sharing runs only while Catch is in the foreground.';
+
+  @override
+  String get hostEventLiveLocationActive =>
+      'Live now. Leaving the app or switching this off removes your position.';
+
+  @override
+  String get hostEventLiveLocationPermissionDenied =>
+      'Location permission is required to share the moving group.';
+
+  @override
+  String get hostEventLiveLocationServicesDisabled =>
+      'Turn on device location services, then try again.';
+
+  @override
+  String get hostEventLiveLocationFailed =>
+      'Live location could not be updated. Switch it off and try again.';
+
+  @override
+  String get hostEventRehearsalMovementTitle => 'Movement simulation';
+
+  @override
+  String hostEventRehearsalMovementSummary({
+    required int itineraryCount,
+    required int routePointCount,
+    required int positionCount,
+  }) {
+    return '$itineraryCount itinerary steps · $routePointCount route points · $positionCount synthetic live positions';
+  }
 }

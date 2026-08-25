@@ -28,6 +28,7 @@ import {
   EventRuntimeProfileQuestions,
   EventRuntimeQuestionnaire,
   EventRuntimeRoomMap,
+  EventRuntimeRouteMap,
   EventRuntimeStageMarquee,
   FormStatus,
   SelectField,
@@ -240,6 +241,7 @@ export function EventRuntimePage() {
           title={eventRuntimeCopy.venueTitle}
           body={eventRuntimeCopy.venueBody}
         >
+          {event ? <EventArrivalGuidance event={event} /> : null}
           <FormStatus status={controller.status} />
         </EventRuntimePanel>
       ) : null}
@@ -449,6 +451,8 @@ function LiveEventRuntime({
         <h1>{event.title}</h1>
         <p>{event.locationName} · {formatEventTime(event.startTimeMillis)}</p>
       </EventRuntimeLiveHeader>
+
+      <EventArrivalGuidance event={event} />
 
       <EventRuntimeModule title={eventRuntimeCopy.shareTitle}>
         <p>{eventRuntimeCopy.shareBody}</p>
@@ -722,6 +726,94 @@ function LiveEventRuntime({
       <FormStatus status={controller.status} />
       <EventRuntimePrivacy>{eventRuntimeCopy.privacyNote}</EventRuntimePrivacy>
     </EventRuntimeLive>
+  );
+}
+
+function EventArrivalGuidance({
+  event,
+}: {
+  event: NonNullable<ReturnType<typeof useEventRuntimeController>["bootstrap"]>["event"];
+}) {
+  const itinerary = [...(event.itinerary ?? [])].sort((left, right) =>
+    left.offsetMinutes - right.offsetMinutes || left.id.localeCompare(right.id)
+  );
+  const routePlan = event.routePlan ?? null;
+  const livePosition = [...(event.livePositions ?? [])].sort((left, right) =>
+    right.recordedAtMillis - left.recordedAtMillis
+  )[0] ?? null;
+  const nextPublishedStop = itinerary.find((item) =>
+    event.startTimeMillis + item.offsetMinutes * 60_000 >=
+      event.serverTimeMillis &&
+    (item.kind === "stop" || item.kind === "finish" || Boolean(item.location))
+  ) ?? null;
+
+  return (
+    <>
+      {itinerary.length ? (
+        <EventRuntimeModule title={eventRuntimeCopy.runOfShowTitle}>
+          <EventRuntimeAssignments>
+            {itinerary.map((item) => (
+              <article key={item.id}>
+                <span>{formatEventTime(
+                  event.startTimeMillis + item.offsetMinutes * 60_000
+                )}</span>
+                <h3>{item.title}</h3>
+                {item.description ? <p>{item.description}</p> : null}
+                {item.location?.name ? <small>{item.location.name}</small> : null}
+              </article>
+            ))}
+          </EventRuntimeAssignments>
+        </EventRuntimeModule>
+      ) : null}
+
+      {routePlan ? (
+        <EventRuntimeModule title={eventRuntimeCopy.movementTitle} accent="coral">
+          {routePlan.path?.length ? (
+            <p>{eventRuntimeCopy.mappedRoute(routePlan.path.length)}</p>
+          ) : null}
+          {routePlan.paceGroups?.length ? (
+            <EventRuntimeAssignments>
+              {[...routePlan.paceGroups]
+                .sort((left, right) => left.sortOrder - right.sortOrder)
+                .map((group) => (
+                  <article key={group.id}>
+                    <h3>{group.label}</h3>
+                    {group.targetPaceSecondsPerKm ? (
+                      <p>{eventRuntimeCopy.paceTarget(
+                        group.targetPaceSecondsPerKm
+                      )}</p>
+                    ) : null}
+                  </article>
+                ))}
+            </EventRuntimeAssignments>
+          ) : null}
+        </EventRuntimeModule>
+      ) : null}
+
+      {livePosition || nextPublishedStop ? (
+        <EventRuntimeModule title={eventRuntimeCopy.movingGroupTitle}>
+          <p>{livePosition ?
+            eventRuntimeCopy.movingGroupBody :
+            eventRuntimeCopy.movingGroupScheduledBody}</p>
+          {livePosition ? (
+            <>
+              <small>{eventRuntimeCopy.movingGroupUpdated(
+                livePosition.recordedAtMillis
+              )}</small>
+              <EventRuntimeRouteMap
+                ariaLabel={eventRuntimeCopy.movingGroupMapLabel}
+                help={eventRuntimeCopy.movingGroupMapHelp}
+                marker={livePosition}
+                path={routePlan?.path ?? []}
+              />
+            </>
+          ) : null}
+          {nextPublishedStop ? (
+            <p>{eventRuntimeCopy.nextPublishedStop(nextPublishedStop.title)}</p>
+          ) : null}
+        </EventRuntimeModule>
+      ) : null}
+    </>
   );
 }
 

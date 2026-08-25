@@ -95,6 +95,7 @@ export {
   cancelEvent,
   deleteEvent,
 } from "./events/mutateEvent";
+export {publishEventLivePosition} from "./events/eventLivePositions";
 export {sendEventReminders} from "./events/sendEventReminders";
 export {sendEventBroadcast} from "./events/sendEventBroadcast";
 export {

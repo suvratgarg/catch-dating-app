@@ -10,7 +10,9 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
@@ -178,9 +180,28 @@ void main() {
       description: 'Old description',
     );
     final nextStart = DateTime(2026, 5, 23, 8, 30);
+    const itinerary = [
+      EventItineraryItem(
+        id: 'start',
+        kind: EventItineraryKind.activity,
+        offsetMinutes: 0,
+        title: 'Start together',
+      ),
+    ];
+    final routePlan = RouteEventPlan.socialRun.copyWith(
+      version: 2,
+      path: const [
+        RoutePoint(latitude: 19.08, longitude: 72.88),
+        RoutePoint(latitude: 19.09, longitude: 72.89),
+      ],
+    );
 
     final request = HostEventEditSaveRequest.fromForm(
       event: event,
+      name: ' Monsoon miles ',
+      itinerary: itinerary,
+      routePlanChanged: true,
+      routePlan: routePlan,
       scheduleLocked: false,
       policyLocked: false,
       selectedStartDateTime: nextStart,
@@ -211,6 +232,9 @@ void main() {
     expect(request.includePolicy, isTrue);
     expect(request.inviteCode, 'SOCIAL2026');
     expect(request.nextEvent.startTime, nextStart);
+    expect(request.nextEvent.name, 'Monsoon miles');
+    expect(request.nextEvent.itinerary, itinerary);
+    expect(request.nextEvent.eventFormat.routePlan, routePlan);
     expect(
       request.nextEvent.endTime,
       nextStart.add(const Duration(minutes: 75)),
@@ -499,6 +523,7 @@ void main() {
     );
     expect(find.text('Save changes'), findsOneWidget);
 
+    await _enterText(tester, CreateEventFormKeys.name, 'Monsoon miles');
     await _enterText(tester, CreateEventFormKeys.meetingPoint, 'New gate');
     await _scrollToFinder(
       tester,
@@ -554,6 +579,7 @@ void main() {
 
     expect(repository.updatedEvent, isNotNull);
     expect(repository.updatedEvent!.id, 'hosted-event');
+    expect(repository.updatedEvent!.name, 'Monsoon miles');
     expect(repository.updatedEvent!.meetingPoint, 'New gate');
     expect(repository.updatedEvent!.distanceKm, 7.5);
     expect(repository.updatedEvent!.pace, PaceLevel.fast);
@@ -763,7 +789,7 @@ void main() {
     await tester.tap(find.byKey(EditHostedEventKeys.saveButton));
     await pumpFeatureUi(tester);
 
-    expect(find.text('Required', skipOffstage: false), findsNWidgets(2));
+    expect(find.text('Required', skipOffstage: false), findsNWidgets(3));
     expect(repository.updatedEvent, isNull);
   });
 }

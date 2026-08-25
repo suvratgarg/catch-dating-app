@@ -149,6 +149,7 @@ export 'callables/places_autocomplete_callable_request.g.dart';
 export 'callables/prepare_event_success_rotation_draft_callable_request.g.dart';
 export 'callables/preview_organizer_application_import_callable_request.g.dart';
 export 'callables/preview_organizer_form_conversion_callable_request.g.dart';
+export 'callables/publish_event_live_position_callable_request.g.dart';
 export 'callables/publish_event_success_rotation_round_callable_request.g.dart';
 export 'callables/publish_organizer_application_form_callable_request.g.dart';
 export 'callables/publish_organizer_form_callable_request.g.dart';

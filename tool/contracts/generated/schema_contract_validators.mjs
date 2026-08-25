@@ -101,6 +101,7 @@ import {
   eventVenueSessionDocumentSchema,
   eventVenueSessionRedemptionDocumentSchema,
   eventSuccessPresenceDocumentSchema,
+  eventLivePositionDocumentSchema,
   eventSuccessLateArrivalDocumentSchema,
   eventRehearsalDocumentSchema,
   eventRehearsalActorDocumentSchema,
@@ -420,6 +421,8 @@ import {
   recordEventSuccessUnitOutcomesCallableResponseSchema,
   heartbeatEventSuccessPresenceCallablePayloadSchema,
   heartbeatEventSuccessPresenceCallableResponseSchema,
+  publishEventLivePositionCallablePayloadSchema,
+  publishEventLivePositionCallableResponseSchema,
   getEventSuccessPresenceSummaryCallableResponseSchema,
   resolveEventSuccessLateArrivalCallablePayloadSchema,
   resolveEventSuccessLateArrivalCallableResponseSchema,
@@ -619,6 +622,7 @@ export const validateEventRuntimeParticipantDocument = ajv.compile(eventRuntimeP
 export const validateEventVenueSessionDocument = ajv.compile(eventVenueSessionDocumentSchema);
 export const validateEventVenueSessionRedemptionDocument = ajv.compile(eventVenueSessionRedemptionDocumentSchema);
 export const validateEventSuccessPresenceDocument = ajv.compile(eventSuccessPresenceDocumentSchema);
+export const validateEventLivePositionDocument = ajv.compile(eventLivePositionDocumentSchema);
 export const validateEventSuccessLateArrivalDocument = ajv.compile(eventSuccessLateArrivalDocumentSchema);
 export const validateEventRehearsalDocument = ajv.compile(eventRehearsalDocumentSchema);
 export const validateEventRehearsalActorDocument = ajv.compile(eventRehearsalActorDocumentSchema);
@@ -938,6 +942,8 @@ export const validateRecordEventSuccessUnitOutcomesCallablePayload = ajv.compile
 export const validateRecordEventSuccessUnitOutcomesCallableResponse = ajv.compile(recordEventSuccessUnitOutcomesCallableResponseSchema);
 export const validateHeartbeatEventSuccessPresenceCallablePayload = ajv.compile(heartbeatEventSuccessPresenceCallablePayloadSchema);
 export const validateHeartbeatEventSuccessPresenceCallableResponse = ajv.compile(heartbeatEventSuccessPresenceCallableResponseSchema);
+export const validatePublishEventLivePositionCallablePayload = ajv.compile(publishEventLivePositionCallablePayloadSchema);
+export const validatePublishEventLivePositionCallableResponse = ajv.compile(publishEventLivePositionCallableResponseSchema);
 export const validateGetEventSuccessPresenceSummaryCallableResponse = ajv.compile(getEventSuccessPresenceSummaryCallableResponseSchema);
 export const validateResolveEventSuccessLateArrivalCallablePayload = ajv.compile(resolveEventSuccessLateArrivalCallablePayloadSchema);
 export const validateResolveEventSuccessLateArrivalCallableResponse = ajv.compile(resolveEventSuccessLateArrivalCallableResponseSchema);

@@ -1,3 +1,6 @@
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
+
 enum EventRehearsalScenario {
   smoothRun(12),
   lateAndNoShow(16),
@@ -104,6 +107,7 @@ class EventRehearsalSetup {
     required this.hostGoal,
     required this.attendeePrompt,
     required this.modules,
+    this.movementSimulation,
   });
 
   factory EventRehearsalSetup.fromMap(Map<Object?, Object?> map) =>
@@ -116,6 +120,11 @@ class EventRehearsalSetup {
         modules: _stringList(map['moduleIds'])
             .map((value) => EventRehearsalModule.values.byName(value))
             .toList(growable: false),
+        movementSimulation: map['movementSimulation'] == null
+            ? null
+            : EventRehearsalMovementSimulation.fromMap(
+                _requiredMap(map['movementSimulation'], 'movementSimulation'),
+              ),
       );
 
   final String title;
@@ -124,6 +133,7 @@ class EventRehearsalSetup {
   final String hostGoal;
   final String attendeePrompt;
   final List<EventRehearsalModule> modules;
+  final EventRehearsalMovementSimulation? movementSimulation;
 
   Map<String, Object?> toJson() => {
     'title': title,
@@ -132,6 +142,8 @@ class EventRehearsalSetup {
     'hostGoal': hostGoal,
     'attendeePrompt': attendeePrompt,
     'moduleIds': modules.map((module) => module.name).toList(growable: false),
+    if (movementSimulation != null)
+      'movementSimulation': movementSimulation!.toJson(),
   };
 
   EventRehearsalSetup copyWith({
@@ -141,6 +153,7 @@ class EventRehearsalSetup {
     String? hostGoal,
     String? attendeePrompt,
     List<EventRehearsalModule>? modules,
+    EventRehearsalMovementSimulation? movementSimulation,
   }) => EventRehearsalSetup(
     title: title ?? this.title,
     locationName: locationName ?? this.locationName,
@@ -148,7 +161,73 @@ class EventRehearsalSetup {
     hostGoal: hostGoal ?? this.hostGoal,
     attendeePrompt: attendeePrompt ?? this.attendeePrompt,
     modules: modules ?? this.modules,
+    movementSimulation: movementSimulation ?? this.movementSimulation,
   );
+}
+
+class EventRehearsalMovementSimulation {
+  const EventRehearsalMovementSimulation({
+    required this.itinerary,
+    required this.routePlan,
+    required this.livePositions,
+    required this.lateArrivalGuidance,
+  });
+
+  factory EventRehearsalMovementSimulation.fromMap(Map<Object?, Object?> map) =>
+      EventRehearsalMovementSimulation(
+        itinerary: _mapList(map['itinerary'], 'movement itinerary')
+            .map((item) => EventItineraryItem.fromJson(_stringMap(item)))
+            .toList(growable: false),
+        routePlan: RouteEventPlan.tryFromJson(map['routePlan']),
+        livePositions: _mapList(
+          map['livePositions'],
+          'movement live positions',
+        ).map(EventRehearsalLivePosition.fromMap).toList(growable: false),
+        lateArrivalGuidance: map['lateArrivalGuidance'] as String?,
+      );
+
+  final List<EventItineraryItem> itinerary;
+  final RouteEventPlan? routePlan;
+  final List<EventRehearsalLivePosition> livePositions;
+  final String? lateArrivalGuidance;
+
+  Map<String, Object?> toJson() => {
+    'itinerary': itinerary.map((item) => item.toJson()).toList(growable: false),
+    'routePlan': routePlan?.toJson(),
+    'livePositions': livePositions
+        .map((position) => position.toJson())
+        .toList(growable: false),
+    'lateArrivalGuidance': lateArrivalGuidance,
+  };
+}
+
+class EventRehearsalLivePosition {
+  const EventRehearsalLivePosition({
+    required this.role,
+    required this.latitude,
+    required this.longitude,
+    required this.recordedOffsetMinutes,
+  });
+
+  factory EventRehearsalLivePosition.fromMap(Map<Object?, Object?> map) =>
+      EventRehearsalLivePosition(
+        role: _requiredString(map, 'role'),
+        latitude: (map['latitude']! as num).toDouble(),
+        longitude: (map['longitude']! as num).toDouble(),
+        recordedOffsetMinutes: _requiredInt(map, 'recordedOffsetMinutes'),
+      );
+
+  final String role;
+  final double latitude;
+  final double longitude;
+  final int recordedOffsetMinutes;
+
+  Map<String, Object?> toJson() => {
+    'role': role,
+    'latitude': latitude,
+    'longitude': longitude,
+    'recordedOffsetMinutes': recordedOffsetMinutes,
+  };
 }
 
 class EventRehearsalSession {
@@ -377,6 +456,9 @@ List<Map<Object?, Object?>> _mapList(Object? value, String label) {
   if (value is! List<Object?>) throw FormatException('$label must be a list.');
   return value.map((item) => _requiredMap(item, label)).toList(growable: false);
 }
+
+Map<String, dynamic> _stringMap(Map<Object?, Object?> value) =>
+    value.map((key, item) => MapEntry(key.toString(), item));
 
 List<String> _stringList(Object? value) {
   if (value is! List<Object?>) throw const FormatException('Expected a list.');

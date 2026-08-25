@@ -63,7 +63,7 @@ const schemaEventOperatorAccessCallableResponseSchema = <String, Object?>{
     'permissions': <String, Object?>{
       'type': 'array',
       'minItems': 1,
-      'maxItems': 3,
+      'maxItems': 4,
       'uniqueItems': true,
       'items': <String, Object?>{
         'type': 'string',
@@ -71,6 +71,7 @@ const schemaEventOperatorAccessCallableResponseSchema = <String, Object?>{
           'viewRoster',
           'setAttendance',
           'reviewRuntimeClaims',
+          'publishLiveLocation',
         ],
       },
     },

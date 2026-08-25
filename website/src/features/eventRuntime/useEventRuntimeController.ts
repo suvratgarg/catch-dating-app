@@ -351,6 +351,22 @@ export function useEventRuntimeController(
   }, [bootstrap, eventEnded, stage]);
 
   useEffect(() => {
+    if (stage !== "runtime" && stage !== "venue") return undefined;
+    let disposed = false;
+    const timer = setInterval(() => {
+      void getEventRuntimeBootstrap({publicRuntimeId})
+        .then((next) => {
+          if (!disposed) setBootstrap(next);
+        })
+        .catch(() => undefined);
+    }, 15_000);
+    return () => {
+      disposed = true;
+      clearInterval(timer);
+    };
+  }, [publicRuntimeId, stage]);
+
+  useEffect(() => {
     const participant = bootstrap?.participant;
     if (stage !== "runtime" || !participant || attendeeInviteLink ||
         attendeeLinkEventIdRef.current === participant.eventId) return;

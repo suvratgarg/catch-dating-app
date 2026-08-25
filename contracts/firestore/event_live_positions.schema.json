@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_live_positions.schema.json",
+  "title": "EventLivePositionDocument",
+  "description": "Server-owned, short-lived Host or operator position for one moving event. Attendee positions are never collected.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventLivePositions",
+  "x-firestore-path": "eventLivePositions/{positionId}",
+  "x-document-id-field": "id",
+  "x-owner": "event live-position callable",
+  "required": [
+    "eventId",
+    "clubId",
+    "organizerId",
+    "uid",
+    "role",
+    "latitude",
+    "longitude",
+    "accuracyMeters",
+    "headingDegrees",
+    "recordedAt",
+    "expiresAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "uid": {"type": "string", "minLength": 1, "maxLength": 180, "x-catch-ownership": "callable-owned"},
+    "role": {"type": "string", "enum": ["host", "operator"], "x-catch-ownership": "callable-owned"},
+    "latitude": {"$ref": "../shared/profile_common.schema.json#/definitions/strictLatitude", "x-catch-ownership": "callable-owned"},
+    "longitude": {"$ref": "../shared/profile_common.schema.json#/definitions/strictLongitude", "x-catch-ownership": "callable-owned"},
+    "accuracyMeters": {"type": ["number", "null"], "minimum": 0, "maximum": 10000, "x-catch-ownership": "callable-owned"},
+    "headingDegrees": {"type": ["number", "null"], "minimum": 0, "exclusiveMaximum": 360, "x-catch-ownership": "callable-owned"},
+    "recordedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"}
+  }
+}

@@ -9,17 +9,22 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
+typedef EventItineraryLocationPicker =
+    Future<EventMeetingLocation?> Function(EventMeetingLocation? current);
+
 class EventItineraryEditor extends StatelessWidget {
   const EventItineraryEditor({
     super.key,
     required this.items,
     required this.onChanged,
     this.defaultLocation,
+    this.onPickLocation,
   });
 
   final List<EventItineraryItem> items;
   final ValueChanged<List<EventItineraryItem>> onChanged;
   final EventMeetingLocation? defaultLocation;
+  final EventItineraryLocationPicker? onPickLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +63,7 @@ class EventItineraryEditor extends StatelessWidget {
       context,
       existing: existing,
       defaultLocation: defaultLocation,
+      onPickLocation: onPickLocation,
       generatedId: 'step-${DateTime.now().microsecondsSinceEpoch}',
     );
     if (result == null) return;
@@ -88,6 +94,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
   BuildContext context, {
   required EventItineraryItem? existing,
   required EventMeetingLocation? defaultLocation,
+  required EventItineraryLocationPicker? onPickLocation,
   required String generatedId,
 }) async {
   final title = TextEditingController(text: existing?.title);
@@ -99,7 +106,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
   );
   final description = TextEditingController(text: existing?.description);
   var kind = existing?.kind ?? EventItineraryKind.activity;
-  var usesMeetingPoint = existing?.location != null;
+  var selectedLocation = existing?.location;
   final result = await showDialog<_ItineraryDialogResult>(
     context: context,
     builder: (dialogContext) => StatefulBuilder(
@@ -150,70 +157,108 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                     description: description.text.trim().isEmpty
                         ? null
                         : description.text.trim(),
-                    location: usesMeetingPoint ? defaultLocation : null,
+                    location: selectedLocation,
                   ),
                 ),
               );
             },
           ),
         ],
-        child: SingleChildScrollView(
-          child: CatchSection.containedFieldRows(
-            children: [
-              CatchField.input(
-                key: CreateEventFormKeys.itineraryTitle,
-                title: context.l10n.hostsEventItineraryFieldTitle,
-                controller: title,
-                inputHint: context.l10n.hostsEventItineraryFieldTitleHint,
-                icon: CatchIcons.editNoteOutlined,
-              ),
-              CatchField.input(
-                key: CreateEventFormKeys.itineraryOffset,
-                title: context.l10n.hostsEventItineraryFieldOffset,
-                controller: offset,
-                keyboardType: TextInputType.number,
-                icon: CatchIcons.scheduleOutlined,
-              ),
-              CatchField.input(
-                key: CreateEventFormKeys.itineraryDuration,
-                title: context.l10n.hostsEventItineraryFieldDuration,
-                controller: duration,
-                keyboardType: TextInputType.number,
-                isOptional: true,
-                icon: CatchIcons.timerOutlined,
-              ),
-              CatchField.input(
-                key: CreateEventFormKeys.itineraryDescription,
-                title: context.l10n.hostsEventItineraryFieldDescription,
-                controller: description,
-                maxLines: 3,
-                isOptional: true,
-                icon: CatchIcons.descriptionOutlined,
-              ),
-              CatchField.choices<EventItineraryKind>(
-                title: context.l10n.hostsEventItineraryFieldKind,
-                contract: CatchContractConstraints
-                    .createEventCallablePayloadItineraryItemsKind,
-                contractValue: (value) => value == EventItineraryKind.breakTime
-                    ? 'break'
-                    : value.name,
-                values: EventItineraryKind.values,
-                selected: {kind},
-                itemLabel: (value) => _kindLabel(context, value),
-                onSelectionChanged: (selection) =>
-                    setState(() => kind = selection.single),
-              ),
-              if (defaultLocation != null)
-                CatchField.toggle(
-                  title: context.l10n.hostsEventItineraryUseMeetingPoint,
-                  body: defaultLocation.name,
-                  value: usesMeetingPoint,
-                  onChanged: (value) =>
-                      setState(() => usesMeetingPoint = value),
-                  contractExemption:
-                      'Copies the canonical meeting location into an itinerary item.',
+        child: Flexible(
+          child: SingleChildScrollView(
+            child: CatchSection.containedFieldRows(
+              children: [
+                CatchField.input(
+                  key: CreateEventFormKeys.itineraryTitle,
+                  title: context.l10n.hostsEventItineraryFieldTitle,
+                  contract: CatchContractConstraints
+                      .createEventCallablePayloadItineraryItemsTitle,
+                  controller: title,
+                  inputHint: context.l10n.hostsEventItineraryFieldTitleHint,
+                  icon: CatchIcons.editNoteOutlined,
                 ),
-            ],
+                CatchField.input(
+                  key: CreateEventFormKeys.itineraryOffset,
+                  title: context.l10n.hostsEventItineraryFieldOffset,
+                  contract: CatchContractConstraints
+                      .createEventCallablePayloadItineraryItemsOffsetMinutes,
+                  controller: offset,
+                  keyboardType: TextInputType.number,
+                  icon: CatchIcons.scheduleOutlined,
+                ),
+                CatchField.input(
+                  key: CreateEventFormKeys.itineraryDuration,
+                  title: context.l10n.hostsEventItineraryFieldDuration,
+                  contract: CatchContractConstraints
+                      .createEventCallablePayloadItineraryItemsDurationMinutes,
+                  controller: duration,
+                  keyboardType: TextInputType.number,
+                  isOptional: true,
+                  icon: CatchIcons.timerOutlined,
+                ),
+                CatchField.input(
+                  key: CreateEventFormKeys.itineraryDescription,
+                  title: context.l10n.hostsEventItineraryFieldDescription,
+                  contract: CatchContractConstraints
+                      .createEventCallablePayloadItineraryItemsDescription,
+                  controller: description,
+                  maxLines: 3,
+                  isOptional: true,
+                  icon: CatchIcons.descriptionOutlined,
+                ),
+                CatchField.choices<EventItineraryKind>(
+                  title: context.l10n.hostsEventItineraryFieldKind,
+                  contract: CatchContractConstraints
+                      .createEventCallablePayloadItineraryItemsKind,
+                  contractValue: (value) =>
+                      value == EventItineraryKind.breakTime
+                      ? 'break'
+                      : value.name,
+                  values: EventItineraryKind.values,
+                  selected: {kind},
+                  itemLabel: (value) => _kindLabel(context, value),
+                  onSelectionChanged: (selection) =>
+                      setState(() => kind = selection.single),
+                ),
+                if (defaultLocation != null && onPickLocation == null)
+                  CatchField.toggle(
+                    title: context.l10n.hostsEventItineraryUseMeetingPoint,
+                    body: defaultLocation.name,
+                    value: selectedLocation != null,
+                    onChanged: (value) => setState(
+                      () => selectedLocation = value ? defaultLocation : null,
+                    ),
+                    contractExemption:
+                        'Copies the canonical meeting location into an itinerary item.',
+                  ),
+                if (onPickLocation != null) ...[
+                  CatchField.action(
+                    title: context.l10n.hostsEventItineraryLocationTitle,
+                    body:
+                        selectedLocation?.name ??
+                        context.l10n.hostsEventItineraryLocationEmpty,
+                    valueText: selectedLocation == null
+                        ? context.l10n.hostsEventItineraryLocationChoose
+                        : context.l10n.hostsEventItineraryLocationChange,
+                    icon: CatchIcons.locationOnOutlined,
+                    onTap: () async {
+                      final picked = await onPickLocation(selectedLocation);
+                      if (picked != null) {
+                        setState(() => selectedLocation = picked);
+                      }
+                    },
+                  ),
+                  if (selectedLocation != null)
+                    CatchField.action(
+                      title: context.l10n.hostsEventItineraryLocationRemove,
+                      body: selectedLocation!.name,
+                      valueText: context.l10n.hostsEventItineraryDelete,
+                      icon: CatchIcons.deleteOutline,
+                      onTap: () => setState(() => selectedLocation = null),
+                    ),
+                ],
+              ],
+            ),
           ),
         ),
       ),

@@ -408,6 +408,43 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     }
   }
 
+  Future<EventMeetingLocation?> _pickItineraryLocation(
+    EventMeetingLocation? current,
+  ) async {
+    final deviceLocation = ref.read(deviceLocationProvider).asData?.value;
+    final meetingLocation = _currentMeetingLocation;
+    final result = await Navigator.of(context).push<LocationPickerResult>(
+      MaterialPageRoute(
+        builder: (_) => LocationPickerScreen(
+          countryIsoCode: countryIsoCodeForCityName(widget.club.location),
+          initialLocation: current == null
+              ? null
+              : LocationCoordinate(current.latitude, current.longitude),
+          initialCenter:
+              (current == null
+                  ? _locationState.startingPoint
+                  : LocationCoordinate(current.latitude, current.longitude)) ??
+              deviceLocation,
+          initialLabel: current?.name,
+          loadMapTiles: widget.loadMapTiles,
+        ),
+        fullscreenDialog: true,
+      ),
+    );
+    if (result == null || !mounted) return null;
+    return EventMeetingLocation(
+      name:
+          result.displayName ??
+          current?.name ??
+          meetingLocation?.name ??
+          context.l10n.eventsMapPinTileTitlePinnedLocation,
+      address: result.address,
+      placeId: result.placeId,
+      latitude: result.coordinate.latitude,
+      longitude: result.coordinate.longitude,
+    ).normalized();
+  }
+
   Future<void> _pickEventPhotos() async {
     final picked = await ref
         .read(createEventControllerProvider.notifier)
@@ -1330,6 +1367,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               onItineraryChanged: (items) =>
                                   setState(() => _itinerary = items),
                               defaultItineraryLocation: _currentMeetingLocation,
+                              onPickItineraryLocation: _pickItineraryLocation,
                               routeInitialCenter:
                                   _locationState.startingPoint ??
                                   _locationState.initialCenter(

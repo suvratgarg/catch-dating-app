@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -20,6 +21,45 @@ void main() {
           'hostGoal': 'Learn',
           'attendeePrompt': 'Say hello',
           'moduleIds': ['arrival', 'firstHello'],
+          'movementSimulation': {
+            'itinerary': [
+              {
+                'id': 'stop-1',
+                'kind': 'stop',
+                'offsetMinutes': 30,
+                'durationMinutes': 20,
+                'title': 'Courtyard stop',
+              },
+            ],
+            'routePlan': {
+              'version': 2,
+              'movementMode': 'walk',
+              'routeShape': 'pointToPoint',
+              'groupStrategy': 'together',
+              'stopCadence': 'hostedStops',
+              'stopKinds': ['venue'],
+              'roleKinds': ['routeLead'],
+              'path': [
+                {'latitude': 12.9716, 'longitude': 77.5946},
+                {'latitude': 12.975, 'longitude': 77.6},
+              ],
+              'paceGroups': [],
+              'liveTrackingPolicy': {
+                'mode': 'hostOnly',
+                'staleAfterSeconds': 120,
+                'retentionMinutes': 60,
+              },
+            },
+            'livePositions': [
+              {
+                'role': 'host',
+                'latitude': 12.972,
+                'longitude': 77.595,
+                'recordedOffsetMinutes': 15,
+              },
+            ],
+            'lateArrivalGuidance': 'Meet the group at Courtyard stop.',
+          },
         },
         'setupRevision': 1,
         'runtimeRevision': 3,
@@ -60,6 +100,16 @@ void main() {
     expect(rehearsal.presentCount, 1);
     expect(rehearsal.unresolvedCount, 0);
     expect(rehearsal.canUseInternalFaults, isTrue);
+    final movement = rehearsal.session.setup.movementSimulation;
+    expect(movement, isNotNull);
+    expect(movement!.itinerary.single.kind, EventItineraryKind.stop);
+    expect(movement.routePlan?.version, 2);
+    expect(movement.routePlan?.path, hasLength(2));
+    expect(movement.livePositions.single.role, 'host');
+    expect(
+      rehearsal.session.setup.toJson()['movementSimulation'],
+      isA<Map<String, Object?>>(),
+    );
   });
 
   test('rejects malformed callable projections', () {

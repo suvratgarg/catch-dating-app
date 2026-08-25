@@ -10,6 +10,7 @@ import {
 import {
   EventAttendeeDocument,
   EventDocument,
+  EventLivePositionDocument,
   EventRuntimeClaimRequestDocument,
   EventRuntimeParticipantDocument,
   EventSuccessCompatibilityResponseDocument,
@@ -125,9 +126,11 @@ export async function getEventRuntimeBootstrapHandler(
   const participantRef = request.auth ? db
     .collection("eventRuntimeParticipants")
     .doc(eventRuntimeParticipantId(resolved.eventId, request.auth.uid)) : null;
-  const [participantSnap, planSnap] = await Promise.all([
+  const now = deps.timestamp();
+  const [participantSnap, planSnap, livePositions] = await Promise.all([
     participantRef ? participantRef.get() : Promise.resolve(null),
     db.collection("eventSuccessPlans").doc(resolved.eventId).get(),
+    publicLivePositions(db, resolved.event, resolved.eventId, now),
   ]);
   const plan = planSnap.exists ? requireDoc<EventSuccessPlanDocument>(
     planSnap,
@@ -144,7 +147,7 @@ export async function getEventRuntimeBootstrapHandler(
       participant,
       participantRef,
       requiredFieldIds: requiredRuntimeFieldIds(resolved.event, plan),
-      now: deps.timestamp(),
+      now,
     });
   }
   let attendeeStatus: EventAttendeeDocument["status"] | null = null;
@@ -171,7 +174,9 @@ export async function getEventRuntimeBootstrapHandler(
       resolved.eventId,
       payload.publicRuntimeId,
       plan,
-      layout
+      layout,
+      participant?.accessStatus === "ready" ? livePositions : [],
+      now.toMillis()
     ),
     participant: participant ? {
       accessStatus: participant.accessStatus,
@@ -866,26 +871,76 @@ function publicRuntimeEventProjection(
   eventId: string,
   publicRuntimeId: string,
   plan: EventSuccessPlanDocument | null,
-  layout: GetEventRuntimeBootstrapCallableResponse["event"]["layout"]
+  layout: GetEventRuntimeBootstrapCallableResponse["event"]["layout"],
+  livePositions:
+    GetEventRuntimeBootstrapCallableResponse["event"]["livePositions"],
+  serverTimeMillis: number
 ): GetEventRuntimeBootstrapCallableResponse["event"] {
   const customLabel = event.eventFormat.customActivityLabel?.trim();
   const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   return {
     eventId,
     publicRuntimeId,
-    title: customLabel || activityTitle(event.eventFormat.activityKind),
+    title: event.name?.trim() || customLabel ||
+      activityTitle(event.eventFormat.activityKind),
     startTimeMillis: event.startTime.toMillis(),
     endTimeMillis: event.endTime.toMillis(),
+    serverTimeMillis,
     locationName: event.meetingLocation.name || event.meetingPoint,
     checkedInCount: event.checkedInCount ?? 0,
     runtimeTermsVersion: event.runtimeAccess!.termsVersion,
     moduleIds: plan?.selectedModuleIds ?? [],
     interactionModel: primitives.interactionModel,
+    itinerary: event.itinerary ?? [],
+    routePlan: event.eventFormat.activityDetails?.routePlan ?? null,
+    livePositions,
     layout,
     requiredFieldIds: requiredRuntimeFieldIds(event, plan),
     optionalFieldIds: optionalRuntimeFieldIds(event, plan),
     questionnaireConfig: plan?.questionnaireConfig ?? null,
   };
+}
+
+async function publicLivePositions(
+  db: FirebaseFirestore.Firestore,
+  event: EventDocument,
+  eventId: string,
+  now: FirebaseFirestore.Timestamp
+): Promise<GetEventRuntimeBootstrapCallableResponse["event"]["livePositions"]> {
+  const routePlan = event.eventFormat.activityDetails?.routePlan;
+  const policy = routePlan?.version === 2 ? routePlan.liveTrackingPolicy : null;
+  if (!policy || policy.mode === "disabled") return [];
+  const snapshot = await db.collection("eventLivePositions")
+    .where("eventId", "==", eventId)
+    .limit(20)
+    .get();
+  const nowMillis = now.toMillis();
+  return snapshot.docs.flatMap((doc) => {
+    const position = doc.data() as EventLivePositionDocument;
+    const recordedAtMillis = position.recordedAt?.toMillis?.();
+    const expiresAtMillis = position.expiresAt?.toMillis?.();
+    const staleAtMillis = typeof recordedAtMillis === "number" ?
+      recordedAtMillis + policy.staleAfterSeconds * 1000 : null;
+    if (position.eventId !== eventId ||
+        typeof recordedAtMillis !== "number" ||
+        typeof expiresAtMillis !== "number" ||
+        staleAtMillis === null ||
+        staleAtMillis <= nowMillis || expiresAtMillis <= nowMillis) {
+      return [];
+    }
+    return [{
+      role: position.role,
+      latitude: position.latitude,
+      longitude: position.longitude,
+      accuracyMeters: position.accuracyMeters,
+      headingDegrees: position.headingDegrees,
+      recordedAtMillis,
+      staleAtMillis,
+    }];
+  }).sort((left, right) =>
+    left.role.localeCompare(right.role) ||
+    right.recordedAtMillis - left.recordedAtMillis
+  );
 }
 
 async function runtimeSpatialLayout(

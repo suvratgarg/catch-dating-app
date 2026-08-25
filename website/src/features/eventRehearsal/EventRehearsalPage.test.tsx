@@ -28,6 +28,39 @@ const bootstrap: EventRehearsalGuestBootstrap = {
     moduleIds: ["arrival", "firstHello"],
     runtimeRevision: 2,
     faultId: "none",
+    movementSimulation: {
+      itinerary: [{
+        id: "water",
+        kind: "stop",
+        offsetMinutes: 45,
+        title: "Water regroup",
+        location: {
+          name: "North gate",
+          latitude: 19.2,
+          longitude: 72.9,
+        },
+      }],
+      routePlan: {
+        version: 2,
+        movementMode: "run",
+        routeShape: "loop",
+        groupStrategy: "together",
+        stopCadence: "hostedStops",
+        stopKinds: ["water"],
+        roleKinds: ["routeLead"],
+        path: [
+          {latitude: 19.1, longitude: 72.8},
+          {latitude: 19.2, longitude: 72.9},
+        ],
+      },
+      livePositions: [{
+        role: "host",
+        latitude: 19.15,
+        longitude: 72.85,
+        recordedOffsetMinutes: 30,
+      }],
+      lateArrivalGuidance: "Join at the next published stop: Water regroup.",
+    },
   },
   actor: {
     actorId: "actor-01",
@@ -60,6 +93,14 @@ describe("EventRehearsalPreview", () => {
     }));
     expect(onAction).toHaveBeenCalledWith("checkIn");
     expect(screen.queryByText(/otp/iu)).toBeNull();
+    expect(screen.getByText("Water regroup")).toBeTruthy();
+    expect(screen.getByText("Synthetic Host")).toBeTruthy();
+    expect(screen.getByRole("img", {
+      name: eventRehearsalCopy.routeMapLabel,
+    })).toBeTruthy();
+    expect(screen.getByText(
+      "Join at the next published stop: Water regroup."
+    )).toBeTruthy();
   });
 
   it("shows fault guidance and removes actions when practice completes", () => {

@@ -14,6 +14,7 @@ import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
 import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:flutter/material.dart';
 
@@ -192,6 +193,21 @@ class EventDetailMapCard extends StatelessWidget {
             .map((point) => LocationCoordinate(point.latitude, point.longitude))
             .toList(growable: false) ??
         const <LocationCoordinate>[];
+    final itineraryMarkers = event.itinerary
+        .where((item) => item.location != null)
+        .map(
+          (item) => CatchMapMarker(
+            id: 'event-itinerary-${item.id}',
+            position: LocationCoordinate(
+              item.location!.latitude,
+              item.location!.longitude,
+            ),
+            hue: CatchMapMarkerHue.azure,
+            infoTitle: item.title,
+            infoSnippet: item.location!.name,
+          ),
+        )
+        .toList(growable: false);
     final trailingLabel =
         context.l10n.eventsEventDetailDesignPrimitivesActionViewMap;
 
@@ -218,6 +234,7 @@ class EventDetailMapCard extends StatelessWidget {
                     child: CatchMapPreview(
                       coordinate: coordinate,
                       path: routePath,
+                      markers: itineraryMarkers,
                       fallbackLabel:
                           context.l10n.eventsEventPinsMapLabelEventMapPreview,
                       enableNetworkTiles: enableNetworkTiles,

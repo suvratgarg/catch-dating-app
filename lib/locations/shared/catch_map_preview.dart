@@ -19,6 +19,7 @@ class CatchMapPreview extends StatelessWidget {
     required this.fallbackLabel,
     this.markerHue = CatchMapMarkerHue.orange,
     this.path = const [],
+    this.markers = const [],
     this.enableNetworkTiles = true,
     this.zoom = 15.5,
   });
@@ -27,6 +28,7 @@ class CatchMapPreview extends StatelessWidget {
   final String fallbackLabel;
   final CatchMapMarkerHue markerHue;
   final List<LocationCoordinate> path;
+  final List<CatchMapMarker> markers;
   final bool enableNetworkTiles;
   final double zoom;
 
@@ -68,14 +70,15 @@ class CatchMapPreview extends StatelessWidget {
       label: fallbackLabel,
       child: IgnorePointer(
         child: CatchGoogleMap(
-          initialCenter: _routeCenter(path) ?? coordinate,
-          initialZoom: path.length >= 2 ? 13.5 : zoom,
+          initialCenter: _previewCenter(coordinate, path, markers),
+          initialZoom: path.length >= 2 || markers.isNotEmpty ? 13.5 : zoom,
           markers: {
             CatchMapMarker(
               id: 'catch-map-preview-location',
               position: coordinate,
               hue: markerHue,
             ),
+            ...markers,
           },
           polylines: {
             if (path.length >= 2)
@@ -99,9 +102,22 @@ class CatchMapPreview extends StatelessWidget {
   }
 }
 
-LocationCoordinate? _routeCenter(List<LocationCoordinate> path) {
-  if (path.isEmpty) return null;
-  final latitude = path.fold<double>(0, (sum, point) => sum + point.latitude);
-  final longitude = path.fold<double>(0, (sum, point) => sum + point.longitude);
-  return LocationCoordinate(latitude / path.length, longitude / path.length);
+LocationCoordinate _previewCenter(
+  LocationCoordinate meetingPoint,
+  List<LocationCoordinate> path,
+  List<CatchMapMarker> markers,
+) {
+  final points = [
+    if (path.isEmpty) meetingPoint else ...path,
+    ...markers.map((marker) => marker.position),
+  ];
+  final latitude = points.fold<double>(0, (sum, point) => sum + point.latitude);
+  final longitude = points.fold<double>(
+    0,
+    (sum, point) => sum + point.longitude,
+  );
+  return LocationCoordinate(
+    latitude / points.length,
+    longitude / points.length,
+  );
 }

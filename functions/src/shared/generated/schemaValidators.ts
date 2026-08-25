@@ -102,6 +102,7 @@ import {EventRuntimeParticipantDocument} from "./eventRuntimeParticipantDocument
 import {EventVenueSessionDocument} from "./eventVenueSessionDocument";
 import {EventVenueSessionRedemptionDocument} from "./eventVenueSessionRedemptionDocument";
 import {EventSuccessPresenceDocument} from "./eventSuccessPresenceDocument";
+import {EventLivePositionDocument} from "./eventLivePositionDocument";
 import {EventSuccessLateArrivalDocument} from "./eventSuccessLateArrivalDocument";
 import {EventRehearsalDocument} from "./eventRehearsalDocument";
 import {EventRehearsalActorDocument} from "./eventRehearsalActorDocument";
@@ -421,6 +422,8 @@ import {RecordEventSuccessUnitOutcomesCallablePayload} from "./recordEventSucces
 import {RecordEventSuccessUnitOutcomesCallableResponse} from "./recordEventSuccessUnitOutcomesCallableResponse";
 import {HeartbeatEventSuccessPresenceCallablePayload} from "./heartbeatEventSuccessPresenceCallablePayload";
 import {HeartbeatEventSuccessPresenceCallableResponse} from "./heartbeatEventSuccessPresenceCallableResponse";
+import {PublishEventLivePositionCallablePayload} from "./publishEventLivePositionCallablePayload";
+import {PublishEventLivePositionCallableResponse} from "./publishEventLivePositionCallableResponse";
 import {GetEventSuccessPresenceSummaryCallableResponse} from "./getEventSuccessPresenceSummaryCallableResponse";
 import {ResolveEventSuccessLateArrivalCallablePayload} from "./resolveEventSuccessLateArrivalCallablePayload";
 import {ResolveEventSuccessLateArrivalCallableResponse} from "./resolveEventSuccessLateArrivalCallableResponse";
@@ -597,6 +600,7 @@ import {
   eventVenueSessionDocumentSchema,
   eventVenueSessionRedemptionDocumentSchema,
   eventSuccessPresenceDocumentSchema,
+  eventLivePositionDocumentSchema,
   eventSuccessLateArrivalDocumentSchema,
   eventRehearsalDocumentSchema,
   eventRehearsalActorDocumentSchema,
@@ -916,6 +920,8 @@ import {
   recordEventSuccessUnitOutcomesCallableResponseSchema,
   heartbeatEventSuccessPresenceCallablePayloadSchema,
   heartbeatEventSuccessPresenceCallableResponseSchema,
+  publishEventLivePositionCallablePayloadSchema,
+  publishEventLivePositionCallableResponseSchema,
   getEventSuccessPresenceSummaryCallableResponseSchema,
   resolveEventSuccessLateArrivalCallablePayloadSchema,
   resolveEventSuccessLateArrivalCallableResponseSchema,
@@ -1390,6 +1396,10 @@ export const validateEventSuccessPresenceDocument:
   ValidateFunction<EventSuccessPresenceDocument> =
     ajv.compile(eventSuccessPresenceDocumentSchema) as
       ValidateFunction<EventSuccessPresenceDocument>;
+export const validateEventLivePositionDocument:
+  ValidateFunction<EventLivePositionDocument> =
+    ajv.compile(eventLivePositionDocumentSchema) as
+      ValidateFunction<EventLivePositionDocument>;
 export const validateEventSuccessLateArrivalDocument:
   ValidateFunction<EventSuccessLateArrivalDocument> =
     ajv.compile(eventSuccessLateArrivalDocumentSchema) as
@@ -2666,6 +2676,14 @@ export const validateHeartbeatEventSuccessPresenceCallableResponse:
   ValidateFunction<HeartbeatEventSuccessPresenceCallableResponse> =
     ajv.compile(heartbeatEventSuccessPresenceCallableResponseSchema) as
       ValidateFunction<HeartbeatEventSuccessPresenceCallableResponse>;
+export const validatePublishEventLivePositionCallablePayload:
+  ValidateFunction<PublishEventLivePositionCallablePayload> =
+    ajv.compile(publishEventLivePositionCallablePayloadSchema) as
+      ValidateFunction<PublishEventLivePositionCallablePayload>;
+export const validatePublishEventLivePositionCallableResponse:
+  ValidateFunction<PublishEventLivePositionCallableResponse> =
+    ajv.compile(publishEventLivePositionCallableResponseSchema) as
+      ValidateFunction<PublishEventLivePositionCallableResponse>;
 export const validateGetEventSuccessPresenceSummaryCallableResponse:
   ValidateFunction<GetEventSuccessPresenceSummaryCallableResponse> =
     ajv.compile(getEventSuccessPresenceSummaryCallableResponseSchema) as

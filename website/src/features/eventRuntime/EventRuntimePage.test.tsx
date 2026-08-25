@@ -35,6 +35,7 @@ function controller() {
         checkedInCount: 18,
         locationName: "The Courtyard",
         moduleIds: [],
+        serverTimeMillis: Date.now(),
         startTimeMillis: Date.now() - 3_600_000,
         title: "Courtyard Social",
       },
@@ -149,6 +150,121 @@ describe("EventRuntimePage conversation graph", () => {
     );
     expect(screen.getByLabelText(eventRuntimeCopy.checkedInCount(18)))
       .toBeTruthy();
+  });
+
+  it("renders authored movement, pace groups, and a private route schematic", () => {
+    const now = Date.now();
+    runtimeController.value = controller();
+    runtimeController.value.bootstrap.event.startTimeMillis = now - 3_600_000;
+    runtimeController.value.bootstrap.event.serverTimeMillis = now;
+    runtimeController.value.bootstrap.event.itinerary = [{
+      id: "next-stop",
+      kind: "stop",
+      offsetMinutes: 90,
+      title: "Water regroup",
+    }];
+    runtimeController.value.bootstrap.event.routePlan = {
+      version: 2,
+      movementMode: "run",
+      routeShape: "loop",
+      groupStrategy: "paceGroups",
+      stopCadence: "hostedStops",
+      stopKinds: ["water"],
+      roleKinds: ["routeLead", "sweep"],
+      path: [
+        {latitude: 19.1, longitude: 72.8},
+        {latitude: 19.2, longitude: 72.9},
+      ],
+      paceGroups: [{
+        id: "social",
+        label: "Social",
+        targetPaceSecondsPerKm: 450,
+        sortOrder: 0,
+      }],
+    };
+    runtimeController.value.bootstrap.event.livePositions = [{
+      role: "host",
+      latitude: 19.15,
+      longitude: 72.85,
+      accuracyMeters: 8,
+      headingDegrees: 90,
+      recordedAtMillis: now,
+      staleAtMillis: now + 120_000,
+    }];
+
+    render(
+      <MemoryRouter initialEntries={["/join/runtime-1"]}>
+        <Routes>
+          <Route path="/join/:publicRuntimeId" element={<EventRuntimePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole("heading", {
+      name: eventRuntimeCopy.runOfShowTitle,
+    })).toBeTruthy();
+    expect(screen.getByText("Water regroup")).toBeTruthy();
+    expect(screen.getByText("Social")).toBeTruthy();
+    expect(screen.getByText("7:30/km")).toBeTruthy();
+    expect(screen.getByRole("img", {
+      name: eventRuntimeCopy.movingGroupMapLabel,
+    })).toBeTruthy();
+    expect(screen.getByText(
+      eventRuntimeCopy.nextPublishedStop("Water regroup")
+    )).toBeTruthy();
+  });
+
+  it("gives an approved late arrival scheduled guidance before venue check-in", () => {
+    const now = Date.now();
+    runtimeController.value = controller();
+    runtimeController.value.stage = "venue";
+    runtimeController.value.bootstrap.participant.attendanceStatus = "registered";
+    runtimeController.value.bootstrap.event.startTimeMillis = now - 3_600_000;
+    runtimeController.value.bootstrap.event.serverTimeMillis = now;
+    runtimeController.value.bootstrap.event.itinerary = [{
+      id: "next-stop",
+      kind: "stop",
+      offsetMinutes: 90,
+      title: "Water regroup",
+      location: {
+        name: "North gate",
+        latitude: 19.16,
+        longitude: 72.86,
+      },
+    }];
+    runtimeController.value.bootstrap.event.routePlan = {
+      version: 2,
+      movementMode: "run",
+      routeShape: "loop",
+      groupStrategy: "together",
+      stopCadence: "hostedStops",
+      stopKinds: ["water"],
+      roleKinds: ["routeLead", "sweep"],
+      path: [
+        {latitude: 19.1, longitude: 72.8},
+        {latitude: 19.2, longitude: 72.9},
+      ],
+    };
+    runtimeController.value.bootstrap.event.livePositions = [];
+
+    render(
+      <MemoryRouter initialEntries={["/join/runtime-1"]}>
+        <Routes>
+          <Route path="/join/:publicRuntimeId" element={<EventRuntimePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole("heading", {
+      name: eventRuntimeCopy.venueTitle,
+    })).toBeTruthy();
+    expect(screen.getByText(eventRuntimeCopy.movingGroupScheduledBody))
+      .toBeTruthy();
+    expect(screen.getByText(
+      eventRuntimeCopy.nextPublishedStop("Water regroup")
+    )).toBeTruthy();
+    expect(screen.queryByRole("heading", {name: eventRuntimeCopy.shareTitle}))
+      .toBeNull();
   });
 
   it("renders the disclosure level selected by the live run-of-show", () => {

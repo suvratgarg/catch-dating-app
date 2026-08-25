@@ -21,7 +21,42 @@
         "durationMinutes": {"type": "integer", "minimum": 30, "maximum": 360},
         "hostGoal": {"type": "string", "minLength": 1, "maxLength": 240},
         "attendeePrompt": {"type": "string", "minLength": 1, "maxLength": 320},
-        "moduleIds": {"type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/definitions/moduleId"}}
+        "moduleIds": {"type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/definitions/moduleId"}},
+        "movementSimulation": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Frozen, synthetic-only movement truth used by dress rehearsal. It never reads or writes a real person's live position.",
+          "required": ["itinerary", "routePlan", "livePositions", "lateArrivalGuidance"],
+          "properties": {
+            "itinerary": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {"$ref": "event_common.schema.json#/definitions/eventItineraryItem"}
+            },
+            "routePlan": {
+              "anyOf": [
+                {"type": "null"},
+                {"$ref": "event_common.schema.json#/definitions/routeEventPlan"}
+              ]
+            },
+            "livePositions": {
+              "type": "array",
+              "maxItems": 2,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["role", "latitude", "longitude", "recordedOffsetMinutes"],
+                "properties": {
+                  "role": {"type": "string", "enum": ["host", "operator"]},
+                  "latitude": {"$ref": "profile_common.schema.json#/definitions/strictLatitude"},
+                  "longitude": {"$ref": "profile_common.schema.json#/definitions/strictLongitude"},
+                  "recordedOffsetMinutes": {"type": "integer", "minimum": 0, "maximum": 360}
+                }
+              }
+            },
+            "lateArrivalGuidance": {"type": ["string", "null"], "maxLength": 320}
+          }
+        }
       }
     }
   }

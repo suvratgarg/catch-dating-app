@@ -46,6 +46,26 @@ export const eventRuntimeCopy = {
   runtimeEyebrow: "Live at your event",
   checkedIn: "Checked in",
   checkedInCount: (count: number) => `${count} checked in`,
+  runOfShowTitle: "Tonight's run of show",
+  movementTitle: "Route and pace groups",
+  mappedRoute: (count: number) =>
+    `${count} mapped route ${count === 1 ? "point" : "points"}`,
+  paceTarget: (secondsPerKm: number) => {
+    const minutes = Math.floor(secondsPerKm / 60);
+    const seconds = `${secondsPerKm % 60}`.padStart(2, "0");
+    return `${minutes}:${seconds}/km`;
+  },
+  movingGroupTitle: "Find the moving group",
+  movingGroupBody: "This fresh Host or route-operator position is shown against the saved route. Catch never shares attendee locations.",
+  movingGroupMapLabel: "Saved route and current moving-group position",
+  movingGroupMapHelp: "Route schematic — use the next published stop for arrival guidance.",
+  movingGroupScheduledBody: "No fresh Host position is available. Follow the next published stop as scheduled guidance and confirm with the Host when you arrive.",
+  movingGroupUpdated: (recordedAtMillis: number) =>
+    `Updated ${new Intl.DateTimeFormat(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(recordedAtMillis))}`,
+  nextPublishedStop: (title: string) => `Next published stop: ${title}`,
   shareTitle: "Bring someone along",
   shareBody: "Share your personal event link. Catch can see when it is opened. Registration and check-in credit appears only when Catch or the booking provider can reconcile that same link.",
   shareAction: "Share this event",

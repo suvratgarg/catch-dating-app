@@ -603,6 +603,43 @@
   font-size: .7rem;
 }
 
+.event-runtime__route-map {
+  background: rgb(255 253 248 / 82%);
+  border: 1px solid rgb(34 17 14 / 14%);
+  border-radius: 14px;
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 12px;
+}
+
+.event-runtime__route-map svg {
+  aspect-ratio: 16 / 9;
+  background: #f4efe6;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.event-runtime__route-map polyline {
+  fill: none;
+  stroke: var(--runtime-coral);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.event-runtime__route-map circle {
+  fill: var(--runtime-ink);
+  stroke: #fffdf8;
+  stroke-width: 2;
+}
+
+.event-runtime__route-map figcaption {
+  color: #6c675f;
+  font-size: .72rem;
+  line-height: 1.4;
+}
+
 .event-runtime__privacy {
   color: #787269;
   font-size: .75rem;

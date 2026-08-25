@@ -1,6 +1,6 @@
 ---
 doc_id: event_run_of_show_and_movement_runtime_spec
-version: 0.1.0
+version: 1.0.0
 updated: 2026-08-25
 owner: events
 status: active
@@ -145,10 +145,9 @@ Activity composition is:
 
 Current positions use a new server-only
 `eventLivePositions/{eventId_operatorUid}` collection. The source document is
-short lived and contains event/organizer/operator identity, a public tracker
-kind and label, optional pace-group id, coordinates, accuracy, optional heading
-and speed, server receipt time, device sample time, sharing session id, and TTL
-expiry.
+short lived and contains event/club/organizer/operator identity, the authorized
+operator role, coordinates, optional accuracy and heading, the server-recorded
+sample time, creation/update times, and TTL expiry.
 
 Direct Firestore reads and writes are denied. App-Check-protected callables own
 publishing and stopping. Authorization requires either organizer-manager
@@ -156,10 +155,11 @@ authority or an active event staff grant with the new `publishLiveLocation`
 permission. The event must be active, within the bounded live window, and have
 a route plan whose policy enables that operator class.
 
-The public runtime projection contains no UID, phone number, or personal
-profile. It exposes only opaque tracker id, public kind/label, optional pace
-group id, coordinates, accuracy, and freshness. Stale or expired rows are
-excluded. Stopping sharing deletes the row. TTL is defense in depth.
+The participant runtime projection contains no UID, phone number, or personal
+profile. It exposes only role, coordinates, optional accuracy and heading, and
+freshness timestamps. Stale or expired rows are excluded. Unclaimed public
+links receive no live positions. Stopping sharing deletes the row. TTL is
+defense in depth.
 
 The first native implementation is foreground-only while the Host live screen
 is open. Background execution, turn-by-turn navigation, and a promise of
@@ -174,26 +174,32 @@ The event runtime bootstrap projects:
 - itinerary with absolute display times calculated from start plus offset;
 - route path and pace-group labels;
 - fresh operator positions; and
-- a deterministic current/next itinerary entry based on server time.
+- authoritative server time so the client can resolve the next published stop.
 
-The web companion draws the course and itinerary locations with the existing
-shared map/route visual language. When a fresh tracker exists it highlights
-that operator or pace group. When none exists it shows the last known scheduled
-stop and truthfully states that live guidance is unavailable; it never implies
-that the Host is at an itinerary stop merely because the clock passed its
-offset.
+The web companion draws a privacy-preserving course schematic and presents
+itinerary locations through the existing shared runtime visual language. When
+a fresh tracker exists it highlights that Host/operator position. When none
+exists it shows the next published scheduled stop and truthfully states that
+live guidance is unavailable; it never implies that the Host is at an
+itinerary stop merely because the clock passed its offset. An authenticated,
+approved participant can see this bounded arrival guidance before venue
+check-in, while assignments and other checked-in Event Success tools remain
+closed.
 
 ### 6. Dress rehearsal
 
 A rehearsal snapshots the effective name, itinerary, route, pace groups, and
-live policy once from the source event. The rehearsal engine creates
-deterministic synthetic tracker positions from virtual time and route progress.
+live policy once from the source event. The rehearsal projection derives
+deterministic synthetic tracker positions from virtual-clock progress along the
+saved path.
 It never calls the production publish/stop functions and never writes
 `eventLivePositions`.
 
-The Host rehearsal and anonymous guest route render the same itinerary/route
-projection as production through adapters. Existing actor, action, revision,
-guest-token, App Check, and 24-hour expiry boundaries remain unchanged.
+The Host rehearsal setup and anonymous guest route both receive the same frozen
+movement projection; the guest renders itinerary, route, synthetic position,
+and late-arrival copy through shared runtime primitives. Existing actor,
+action, revision, guest-token, App Check, and 24-hour expiry boundaries remain
+unchanged.
 
 ## Migration And Compatibility
 
@@ -220,8 +226,8 @@ guest-token, App Check, and 24-hour expiry boundaries remain unchanged.
 - Only claimed runtime participants, active Catch participants, or authorized
   Hosts receive live guidance. A public Event Detail can show static public
   itinerary and route data but not live positions.
-- Accuracy, sample age, event time window, route policy, manager/staff grant,
-  and session revision are validated server-side.
+- Accuracy, sample age, event time window, route policy, and manager/staff grant
+  are validated server-side.
 - Live writes are rate limited and bounded. Stale/expired data fails closed.
 - Rehearsal remains synthetic and isolated from production collections.
 
@@ -229,54 +235,53 @@ guest-token, App Check, and 24-hour expiry boundaries remain unchanged.
 
 ### A. Contract and domain foundation
 
-- [ ] Add event `name` and itinerary schemas plus valid/invalid fixtures.
-- [ ] Extend route-plan contract for bounded path, pace groups, and live policy.
-- [ ] Add `eventLivePositions` and publish/stop callable contracts.
-- [ ] Refresh all generated cross-stack contract outputs.
-- [ ] Add Dart event/itinerary/route models with legacy fallbacks.
-- [ ] Add backend normalization and invariant tests for create/update.
-- [ ] Commit the foundation as one bounded slice.
+- [x] Add event `name` and itinerary schemas plus valid/invalid fixtures.
+- [x] Extend route-plan contract for bounded path, pace groups, and live policy.
+- [x] Add `eventLivePositions` and publish/stop callable contracts.
+- [x] Refresh all generated cross-stack contract outputs.
+- [x] Add Dart event/itinerary/route models with legacy fallbacks.
+- [x] Add backend normalization and invariant tests for create/update.
+- [x] Commit the foundation as one bounded slice.
 
 ### B. Host authoring
 
-- [ ] Add name and itinerary to Host draft persistence/restore/signatures.
-- [ ] Add schema-bound name and itinerary editing to create flow.
-- [ ] Extend the route editor with path, pace groups, and live policy without
+- [x] Add name and itinerary to Host draft persistence/restore/signatures.
+- [x] Add schema-bound name and itinerary editing to create flow.
+- [x] Extend the route editor with path, pace groups, and live policy without
   creating an activity-specific form fork.
-- [ ] Add the same supported fields to Host event edit/manage.
-- [ ] Add focused controller/widget tests and draft round-trip tests.
-- [ ] Commit Host authoring separately from the contract foundation.
+- [x] Add the same supported fields to Host event edit/manage.
+- [x] Add focused controller/widget tests and draft round-trip tests.
+- [x] Commit Host authoring separately from the contract foundation.
 
 ### C. Native attendee and Host live runtime
 
-- [ ] Replace fabricated Event Detail itinerary with persisted entries.
-- [ ] Extend the static event map with route and itinerary pins.
-- [ ] Add foreground publish/stop repository and controller seams.
-- [ ] Add explicit sharing state, stale/error state, and stop-on-dispose behavior
+- [x] Replace fabricated Event Detail itinerary with persisted entries.
+- [x] Extend the static event map with route and itinerary pins.
+- [x] Add foreground publish/stop repository and controller seams.
+- [x] Add explicit sharing state, stale/error state, and stop-on-dispose behavior
   to Host Live.
-- [ ] Add focused domain/controller/widget tests.
-- [ ] Commit native consumption separately.
+- [x] Add focused domain/controller/widget tests.
 
 ### D. Backend and web companion
 
-- [ ] Implement authorization, validation, rate limits, TTL fields, and cleanup
+- [x] Implement authorization, validation, rate limits, TTL fields, and cleanup
   for publish/stop.
-- [ ] Add safe itinerary/route/live guidance to runtime bootstrap.
-- [ ] Render current/next stop, route, pace groups, and fresh tracker state in
+- [x] Add safe itinerary/route/live guidance to runtime bootstrap.
+- [x] Render current/next stop, route, pace groups, and fresh tracker state in
   the web companion using shared primitives.
-- [ ] Add Functions and React behavior tests, typecheck, and build proof.
-- [ ] Commit the backend/web runtime slice separately.
+- [x] Add Functions and React behavior tests, typecheck, and build proof.
 
 ### E. Rehearsal and Event Success integration
 
-- [ ] Snapshot name, itinerary, route, groups, and live policy into rehearsal.
-- [ ] Generate deterministic virtual tracker progress without production
+- [x] Snapshot name, itinerary, route, groups, and live policy into rehearsal.
+- [x] Generate deterministic virtual tracker progress without production
   writes.
-- [ ] Render the shared guidance projection on Host and guest rehearsal paths.
-- [ ] Make Event Success consume current/next itinerary context only through a
+- [x] Render the shared guidance projection on Host and guest rehearsal paths.
+- [x] Make Event Success consume current/next itinerary context only through a
   platform adapter; do not add a tracking or attendance module.
-- [ ] Add isolation, revision, bootstrap, and UI behavior tests.
-- [ ] Commit the rehearsal integration separately.
+- [x] Add isolation, revision, bootstrap, and UI behavior tests.
+- [x] Commit native, backend/web, and rehearsal as one compile-coherent runtime
+  slice after the focused checks pass.
 
 ### F. Parity closeout and delivery
 

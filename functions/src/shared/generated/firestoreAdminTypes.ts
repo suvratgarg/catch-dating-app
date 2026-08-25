@@ -4337,10 +4337,15 @@ export interface EventStaffGrantDocument {
   phoneLastFour: string;
   role: "checkInOperator";
   /**
-   * @minItems 3
-   * @maxItems 3
+   * @minItems 4
+   * @maxItems 4
    */
-  permissions: ("viewRoster" | "setAttendance" | "reviewRuntimeClaims")[];
+  permissions: (
+    | "viewRoster"
+    | "setAttendance"
+    | "reviewRuntimeClaims"
+    | "publishLiveLocation"
+  )[];
   status: "active" | "revoked";
   createdBy: string;
   createdAt: FirebaseFirestore.Timestamp;
@@ -4550,6 +4555,25 @@ export interface EventSuccessPresenceDocument {
 }
 
 /**
+ * Server-owned, short-lived Host or operator position for one moving event. Attendee positions are never collected.
+ */
+export interface EventLivePositionDocument {
+  eventId: string;
+  clubId: string;
+  organizerId: string;
+  uid: string;
+  role: "host" | "operator";
+  latitude: number;
+  longitude: number;
+  accuracyMeters: number | null;
+  headingDegrees: number | null;
+  recordedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-owned Host resolution for a checked-in late attendee stored at eventSuccessLateArrivals/{eventId_uid}.
  */
 export interface EventSuccessLateArrivalDocument {
@@ -4613,6 +4637,101 @@ export interface EventRehearsalDocument {
       | "afterglow"
       | "accountability"
     )[];
+    /**
+     * Frozen, synthetic-only movement truth used by dress rehearsal. It never reads or writes a real person's live position.
+     */
+    movementSimulation?: {
+      /**
+       * @maxItems 40
+       */
+      itinerary: {
+        id: string;
+        kind:
+          | "gather"
+          | "activity"
+          | "stop"
+          | "break"
+          | "transition"
+          | "finish";
+        offsetMinutes: number;
+        durationMinutes?: number | null;
+        title: string;
+        description?: string | null;
+        location?: {
+          name: string;
+          address?: string | null;
+          placeId?: string | null;
+          latitude: number;
+          longitude: number;
+          notes?: string | null;
+        } | null;
+        routeDistanceMeters?: number | null;
+      }[];
+      routePlan: null | {
+        version: 1 | 2;
+        movementMode: "run" | "walk" | "ride" | "mixed";
+        routeShape: "loop" | "outAndBack" | "pointToPoint";
+        groupStrategy: "together" | "paceGroups" | "selfDirected";
+        stopCadence: "continuous" | "flexibleStops" | "hostedStops";
+        /**
+         * @minItems 1
+         * @maxItems 7
+         */
+        stopKinds: (
+          | "water"
+          | "regroup"
+          | "venue"
+          | "photoSpot"
+          | "viewpoint"
+          | "hazard"
+          | "turnaround"
+        )[];
+        /**
+         * @minItems 1
+         * @maxItems 6
+         */
+        roleKinds: (
+          | "routeLead"
+          | "sweep"
+          | "pacer"
+          | "stopHost"
+          | "marshal"
+          | "photographer"
+        )[];
+        /**
+         * @minItems 2
+         * @maxItems 500
+         */
+        path?: {
+          latitude: number;
+          longitude: number;
+        }[];
+        /**
+         * @maxItems 12
+         */
+        paceGroups?: {
+          id: string;
+          label: string;
+          targetPaceSecondsPerKm?: number | null;
+          sortOrder: number;
+        }[];
+        liveTrackingPolicy?: {
+          mode: "disabled" | "hostOnly" | "authorizedOperators";
+          staleAfterSeconds: number;
+          retentionMinutes: number;
+        };
+      };
+      /**
+       * @maxItems 2
+       */
+      livePositions: {
+        role: "host" | "operator";
+        latitude: number;
+        longitude: number;
+        recordedOffsetMinutes: number;
+      }[];
+      lateArrivalGuidance: string | null;
+    };
   };
   setupRevision: number;
   runtimeRevision: number;

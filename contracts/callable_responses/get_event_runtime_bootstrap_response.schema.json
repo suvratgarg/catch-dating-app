@@ -16,6 +16,7 @@
         "title",
         "startTimeMillis",
         "endTimeMillis",
+        "serverTimeMillis",
         "locationName",
         "checkedInCount",
         "runtimeTermsVersion",
@@ -24,7 +25,10 @@
         "requiredFieldIds",
         "optionalFieldIds",
         "questionnaireConfig",
-        "interactionModel"
+        "interactionModel",
+        "itinerary",
+        "routePlan",
+        "livePositions"
       ],
       "properties": {
         "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
@@ -32,6 +36,7 @@
         "title": {"type": "string", "minLength": 1, "maxLength": 240},
         "startTimeMillis": {"type": "integer"},
         "endTimeMillis": {"type": "integer"},
+        "serverTimeMillis": {"type": "integer", "minimum": 0},
         "locationName": {"type": "string", "minLength": 1, "maxLength": 240},
         "checkedInCount": {"type": "integer", "minimum": 0},
         "runtimeTermsVersion": {"type": "string", "minLength": 1, "maxLength": 80},
@@ -52,6 +57,36 @@
             "hostLedProgram",
             "openFormat"
           ]
+        },
+        "itinerary": {
+          "type": "array",
+          "maxItems": 40,
+          "items": {"$ref": "../shared/event_common.schema.json#/definitions/eventItineraryItem"}
+        },
+        "routePlan": {
+          "anyOf": [
+            {"type": "null"},
+            {"$ref": "../shared/event_common.schema.json#/definitions/routeEventPlan"}
+          ]
+        },
+        "livePositions": {
+          "description": "Fresh, privacy-bounded Host/operator positions. Stable account identifiers are never exposed.",
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "latitude", "longitude", "accuracyMeters", "headingDegrees", "recordedAtMillis", "staleAtMillis"],
+            "properties": {
+              "role": {"type": "string", "enum": ["host", "operator"]},
+              "latitude": {"$ref": "../shared/profile_common.schema.json#/definitions/strictLatitude"},
+              "longitude": {"$ref": "../shared/profile_common.schema.json#/definitions/strictLongitude"},
+              "accuracyMeters": {"type": ["number", "null"], "minimum": 0, "maximum": 10000},
+              "headingDegrees": {"type": ["number", "null"], "minimum": 0, "exclusiveMaximum": 360},
+              "recordedAtMillis": {"type": "integer", "minimum": 0},
+              "staleAtMillis": {"type": "integer", "minimum": 0}
+            }
+          }
         },
         "layout": {
           "anyOf": [

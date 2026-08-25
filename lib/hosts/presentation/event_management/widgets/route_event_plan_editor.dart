@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -223,18 +225,27 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   icon: CatchIcons.peopleOutline,
                   iconColor: accent,
                 ),
-                CatchField.action(
+                CatchFieldLanes.single(
                   key: CreateEventFormKeys.routePath,
-                  title: context.l10n.hostsRouteEventPlanPathTitle,
-                  body: plan.path.length >= 2
-                      ? context.l10n.hostsRouteEventPlanPathCount(
-                          count: plan.path.length,
-                        )
-                      : context.l10n.hostsRouteEventPlanPathEmpty,
-                  valueText: context.l10n.hostsRouteEventPlanPathAction,
-                  icon: CatchIcons.mapOutlined,
-                  iconColor: accent,
-                  onTap: () => _editPath(plan),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      CatchFieldContentRow(
+                        title: context.l10n.hostsRouteEventPlanPathTitle,
+                        body: plan.path.length >= 2
+                            ? context.l10n.hostsRouteEventPlanPathCount(
+                                count: plan.path.length,
+                              )
+                            : context.l10n.hostsRouteEventPlanPathEmpty,
+                      ),
+                      gapH8,
+                      CatchButton(
+                        label: context.l10n.hostsRouteEventPlanPathAction,
+                        variant: CatchButtonVariant.secondary,
+                        onPressed: () => _editPath(plan),
+                      ),
+                    ],
+                  ),
                 ),
                 CatchField.choices<_PacePreset>(
                   key: CreateEventFormKeys.routePaceGroups,

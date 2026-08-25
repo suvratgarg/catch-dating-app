@@ -19,6 +19,7 @@ import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
@@ -271,6 +272,19 @@ void main() {
         meetingPoint: 'Race Course Road main gate',
         startingPointLat: 22.7196,
         startingPointLng: 75.8577,
+        itinerary: const [
+          EventItineraryItem(
+            id: 'water-stop',
+            kind: EventItineraryKind.stop,
+            offsetMinutes: 30,
+            title: 'Water stop',
+            location: EventMeetingLocation(
+              name: 'Central fountain',
+              latitude: 22.722,
+              longitude: 75.86,
+            ),
+          ),
+        ],
         eventFormat: EventFormatSnapshot.fromActivityKind(
           ActivityKind.socialRun,
           activityDetails: {
@@ -306,6 +320,12 @@ void main() {
         LocationCoordinate(22.7196, 75.8577),
         LocationCoordinate(22.7241, 75.8621),
       ]);
+      expect(preview.markers, hasLength(1));
+      expect(preview.markers.single.infoTitle, 'Water stop');
+      expect(
+        preview.markers.single.position,
+        const LocationCoordinate(22.722, 75.86),
+      );
       expect(preview.enableNetworkTiles, isFalse);
 
       await tester.tap(find.text('Race Course Road main gate'));

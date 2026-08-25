@@ -44,11 +44,13 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_control.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_staff_section.dart';
@@ -345,6 +347,14 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         hostActions,
       ],
       HostEventWorkspacePhase.runtime => <Widget>[
+        if (event.eventFormat.routePlan?.liveTrackingPolicy.enabled ==
+            true) ...[
+          CatchSection.fieldRows(
+            first: true,
+            children: [HostEventLiveLocationControl(event: event)],
+          ),
+          gapH20,
+        ],
         EventSuccessHostSection(
           event: event,
           initialTab: EventSuccessHostTab.live,

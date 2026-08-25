@@ -14,7 +14,7 @@
     "endAtMillis": {"type": "integer", "minimum": 0},
     "eventStatus": {"type": "string", "enum": ["active", "cancelled"]},
     "actorRole": {"type": "string", "enum": ["manager", "operator"]},
-    "permissions": {"type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true, "items": {"type": "string", "enum": ["viewRoster", "setAttendance", "reviewRuntimeClaims"]}},
+    "permissions": {"type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "enum": ["viewRoster", "setAttendance", "reviewRuntimeClaims", "publishLiveLocation"]}},
     "grantExpiresAtMillis": {"type": ["integer", "null"], "minimum": 0}
   }
 }
