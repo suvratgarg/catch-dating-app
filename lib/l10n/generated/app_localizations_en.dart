@@ -16144,4 +16144,152 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$kind · revision $revision';
   }
+
+  @override
+  String get hostsRoutePathBuilderTitle => 'Build route';
+
+  @override
+  String hostsRoutePathBuilderPoint({required int index}) {
+    return 'Route point $index';
+  }
+
+  @override
+  String get hostsRoutePathBuilderEmpty =>
+      'Tap the map to add the first route point.';
+
+  @override
+  String hostsRoutePathBuilderCount({required int count}) {
+    return '$count route points · tap the map to keep drawing';
+  }
+
+  @override
+  String get hostsRoutePathBuilderUndo => 'Undo point';
+
+  @override
+  String get hostsRoutePathBuilderClear => 'Clear';
+
+  @override
+  String get hostsRoutePathBuilderSave => 'Use this route';
+
+  @override
+  String get hostsRouteEventPlanPathTitle => 'Route path';
+
+  @override
+  String get hostsRouteEventPlanPathEmpty =>
+      'Draw the attendee-facing path on the map.';
+
+  @override
+  String hostsRouteEventPlanPathCount({required int count}) {
+    return '$count mapped points';
+  }
+
+  @override
+  String get hostsRouteEventPlanPathAction => 'Edit map';
+
+  @override
+  String get hostsRouteEventPlanPaceGroupsTitle => 'Pace groups';
+
+  @override
+  String get hostsRouteEventPlanPaceGroupsBody =>
+      'Select every group the Host will lead and account for.';
+
+  @override
+  String get hostsRouteEventPlanPaceSocial => 'Social · 7:30/km';
+
+  @override
+  String get hostsRouteEventPlanPaceSteady => 'Steady · 6:00/km';
+
+  @override
+  String get hostsRouteEventPlanPaceFast => 'Fast · 5:00/km';
+
+  @override
+  String get hostsRouteEventPlanTrackingTitle => 'Live Host position';
+
+  @override
+  String get hostsRouteEventPlanTrackingBody =>
+      'Foreground-only sharing during the event helps late arrivals find the moving group.';
+
+  @override
+  String get hostsRouteEventPlanTrackingDisabled => 'Off';
+
+  @override
+  String get hostsRouteEventPlanTrackingHostOnly => 'Host only';
+
+  @override
+  String get hostsRouteEventPlanTrackingOperators =>
+      'Host and authorized operators';
+
+  @override
+  String get hostsEventItineraryTitle => 'Run of show';
+
+  @override
+  String hostsEventItineraryOffset({required int minutes}) {
+    return 'Starts $minutes minutes after the event begins';
+  }
+
+  @override
+  String get hostsEventItineraryEdit => 'Edit';
+
+  @override
+  String get hostsEventItineraryAdd => 'Add itinerary step';
+
+  @override
+  String get hostsEventItineraryAddBody =>
+      'Publish real timing, stops, transitions, and locations for attendees.';
+
+  @override
+  String get hostsEventItineraryAddAction => 'Add step';
+
+  @override
+  String get hostsEventItineraryDialogAdd => 'Add run-of-show step';
+
+  @override
+  String get hostsEventItineraryDialogEdit => 'Edit run-of-show step';
+
+  @override
+  String get hostsEventItineraryDelete => 'Delete';
+
+  @override
+  String get hostsEventItinerarySave => 'Save step';
+
+  @override
+  String get hostsEventItineraryFieldTitle => 'Step title';
+
+  @override
+  String get hostsEventItineraryFieldTitleHint =>
+      'Gather, activity, stop, or finish';
+
+  @override
+  String get hostsEventItineraryFieldOffset => 'Minutes after start';
+
+  @override
+  String get hostsEventItineraryFieldDuration => 'Duration in minutes';
+
+  @override
+  String get hostsEventItineraryFieldDescription => 'Attendee guidance';
+
+  @override
+  String get hostsEventItineraryFieldKind => 'Step type';
+
+  @override
+  String get hostsEventItineraryUseMeetingPoint =>
+      'Use the event meeting point';
+
+  @override
+  String get hostsEventItineraryKindGather => 'Gather';
+
+  @override
+  String get hostsEventItineraryKindActivity => 'Activity';
+
+  @override
+  String get hostsEventItineraryKindStop => 'Stop';
+
+  @override
+  String get hostsEventItineraryKindBreak => 'Break';
+
+  @override
+  String get hostsEventItineraryKindTransition => 'Transition';
+
+  @override
+  String get hostsEventItineraryKindFinish => 'Finish';
 }

@@ -421,6 +421,11 @@ void main() {
       await _pumpTestAnimation(tester);
       await _enterCreateEventText(
         tester,
+        CreateEventFormKeys.name,
+        'Friday Salsa Social',
+      );
+      await _enterCreateEventText(
+        tester,
         CreateEventFormKeys.customActivityLabel,
         'Salsa night',
       );
@@ -1495,6 +1500,11 @@ Future<void> _pickMapPoint(WidgetTester tester) async {
 }
 
 Future<void> _fillBasicsStep(WidgetTester tester) async {
+  await _enterCreateEventText(
+    tester,
+    CreateEventFormKeys.name,
+    'Sunrise Social 5K',
+  );
   await _enterCreateEventText(tester, CreateEventFormKeys.distance, '7.5');
   await _openCatchField(tester, 'Pace level');
   await _tapCreateEventChip(tester, 'Moderate');

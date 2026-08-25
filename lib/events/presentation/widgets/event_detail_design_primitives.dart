@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -186,6 +187,11 @@ class EventDetailMapCard extends StatelessWidget {
       longitude: event.effectiveStartingPointLng,
     );
     final canOpen = coordinate != null && onTap != null;
+    final routePath =
+        event.eventFormat.routePlan?.path
+            .map((point) => LocationCoordinate(point.latitude, point.longitude))
+            .toList(growable: false) ??
+        const <LocationCoordinate>[];
     final trailingLabel =
         context.l10n.eventsEventDetailDesignPrimitivesActionViewMap;
 
@@ -211,6 +217,7 @@ class EventDetailMapCard extends StatelessWidget {
                   Expanded(
                     child: CatchMapPreview(
                       coordinate: coordinate,
+                      path: routePath,
                       fallbackLabel:
                           context.l10n.eventsEventPinsMapLabelEventMapPreview,
                       enableNetworkTiles: enableNetworkTiles,

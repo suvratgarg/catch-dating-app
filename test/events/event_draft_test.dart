@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -27,6 +28,14 @@ void main() {
           interactionModel: 'pairedRotations',
           paceName: 'easy',
           routePlan: RouteEventPlan.hostedWalk.toJson(),
+          itinerary: const [
+            EventItineraryItem(
+              id: 'gather',
+              kind: EventItineraryKind.gather,
+              offsetMinutes: 0,
+              title: 'Gather at the gate',
+            ),
+          ],
           meetingPoint: 'Bandra Fort',
           locationDetails: 'Near the gate',
           startingPointLat: 19.0596,
@@ -67,6 +76,7 @@ void main() {
           RouteEventPlan.tryFromJson(restored.routePlan),
           RouteEventPlan.hostedWalk,
         );
+        expect(restored.itinerary.single.title, 'Gather at the gate');
         expect(restored.meetingPoint, 'Bandra Fort');
         expect(restored.locationDetails, 'Near the gate');
         expect(restored.startingPointLat, 19.0596);

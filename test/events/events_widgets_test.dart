@@ -19,6 +19,7 @@ import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
@@ -270,6 +271,19 @@ void main() {
         meetingPoint: 'Race Course Road main gate',
         startingPointLat: 22.7196,
         startingPointLng: 75.8577,
+        eventFormat: EventFormatSnapshot.fromActivityKind(
+          ActivityKind.socialRun,
+          activityDetails: {
+            'routePlan': RouteEventPlan.socialRun
+                .copyWith(
+                  path: const [
+                    RoutePoint(latitude: 22.7196, longitude: 75.8577),
+                    RoutePoint(latitude: 22.7241, longitude: 75.8621),
+                  ],
+                )
+                .toJson(),
+          },
+        ),
       );
 
       await pumpEventsTestApp(
@@ -288,6 +302,10 @@ void main() {
         find.byType(CatchMapPreview),
       );
       expect(preview.coordinate, const LocationCoordinate(22.7196, 75.8577));
+      expect(preview.path, const [
+        LocationCoordinate(22.7196, 75.8577),
+        LocationCoordinate(22.7241, 75.8621),
+      ]);
       expect(preview.enableNetworkTiles, isFalse);
 
       await tester.tap(find.text('Race Course Road main gate'));

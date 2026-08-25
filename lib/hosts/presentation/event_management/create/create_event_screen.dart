@@ -24,6 +24,7 @@ import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
@@ -51,6 +52,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dial
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -174,6 +176,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       ActivityKind.socialRun.defaultInteractionModel;
   PaceLevel? _selectedPace;
   RouteEventPlan? _routePlan = RouteEventPlan.socialRun;
+  List<EventItineraryItem> _itinerary = const [];
   var _eventPhotos = const CreateEventPhotoDraftState.empty();
 
   // Step 3 — Rules
@@ -612,6 +615,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             startTime: startTime,
             endTime: endTime,
             meetingLocation: meetingLocation,
+            itinerary: _itinerary,
             eventFormat: _selectedEventFormat,
             distanceKm: _distanceKmForSelectedActivity(),
             pace: _selectedPace ?? PaceLevel.easy,
@@ -868,6 +872,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         interactionModel: _interactionModelDraftValue,
         paceName: _selectedPace?.name,
         routePlan: _routePlan,
+        itinerary: _itinerary,
         meetingPoint: _trimmedTextOrNull(_meetingPointController),
         locationDetails: _trimmedTextOrNull(_locationDetailsController),
         meetingLocationAddress: _locationState.meetingLocationAddress,
@@ -970,6 +975,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _selectedInteractionModel = restore.interactionModel;
     _selectedPace = restore.pace;
     _routePlan = restore.routePlan;
+    _itinerary = restore.itinerary;
 
     // Where
     if (restore.meetingPointText != null) {
@@ -1320,6 +1326,23 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               routePlan: _routePlan,
                               onRoutePlanChanged: (plan) =>
                                   setState(() => _routePlan = plan),
+                              itinerary: _itinerary,
+                              onItineraryChanged: (items) =>
+                                  setState(() => _itinerary = items),
+                              defaultItineraryLocation: _currentMeetingLocation,
+                              routeInitialCenter:
+                                  _locationState.startingPoint ??
+                                  _locationState.initialCenter(
+                                    ref
+                                        .read(deviceLocationProvider)
+                                        .asData
+                                        ?.value,
+                                  ) ??
+                                  LocationCoordinate(
+                                    defaultCityDataForMarket().latitude,
+                                    defaultCityDataForMarket().longitude,
+                                  ),
+                              loadMapTiles: widget.loadMapTiles,
                               externalBookingMode: _externalBookingMode,
                               externalBookingProvider: _externalBookingProvider,
                               externalEventUrlController:

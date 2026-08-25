@@ -21,6 +21,15 @@ abstract final class CreateEventFormKeys {
   static const routeStopCadence = ValueKey('create-event-route-stop-cadence');
   static const routeStopKinds = ValueKey('create-event-route-stop-kinds');
   static const routeRoleKinds = ValueKey('create-event-route-role-kinds');
+  static const routePath = ValueKey('create-event-route-path');
+  static const routePaceGroups = ValueKey('create-event-route-pace-groups');
+  static const routeLiveTracking = ValueKey('create-event-route-live-tracking');
+  static const itineraryTitle = ValueKey('create-event-itinerary-title');
+  static const itineraryOffset = ValueKey('create-event-itinerary-offset');
+  static const itineraryDuration = ValueKey('create-event-itinerary-duration');
+  static const itineraryDescription = ValueKey(
+    'create-event-itinerary-description',
+  );
   static const externalBookingProvider = ValueKey(
     'create-event-external-booking-provider',
   );

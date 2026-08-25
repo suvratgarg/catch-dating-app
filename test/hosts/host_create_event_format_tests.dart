@@ -29,6 +29,13 @@ void runHostCreateEventFormatTests() {
       await _openCreateEventFlow(tester);
 
       expect(find.text('Run · Pace groups · Continuous'), findsOneWidget);
+      expect(
+        find.byKey(
+          const ValueKey('create-event-itinerary-add'),
+          skipOffstage: false,
+        ),
+        findsOneWidget,
+      );
 
       await _tapActivityKind(tester, 'Walking');
       expect(find.text('Walk · One group · Flexible stops'), findsOneWidget);
@@ -36,6 +43,9 @@ void runHostCreateEventFormatTests() {
       await _tapActivityKind(tester, 'Bar crawl');
       expect(find.text('Walk · One group · Hosted stops'), findsOneWidget);
       await _openCatchField(tester, 'Route operations');
+      expect(find.text('Route path'), findsOneWidget);
+      expect(find.text('Pace groups'), findsOneWidget);
+      expect(find.text('Live Host position'), findsOneWidget);
       expect(
         find.byWidgetPredicate(
           (widget) =>
@@ -80,4 +90,36 @@ void runHostCreateEventFormatTests() {
       );
     },
   );
+
+  testWidgets('adds a real run-of-show entry', (tester) async {
+    await _pumpCreateEventFlow(tester);
+    await _openCreateEventFlow(tester);
+
+    final addStep = find.byKey(
+      const ValueKey('create-event-itinerary-add'),
+      skipOffstage: false,
+    );
+    await Scrollable.ensureVisible(tester.element(addStep), alignment: 0.25);
+    await tester.pump();
+    await tester.tap(addStep);
+    await _pumpTestAnimation(tester);
+    await _enterCreateEventText(
+      tester,
+      CreateEventFormKeys.itineraryTitle,
+      'Water and regroup stop',
+    );
+    await _enterCreateEventText(
+      tester,
+      CreateEventFormKeys.itineraryOffset,
+      '35',
+    );
+    await tester.tap(find.widgetWithText(CatchButton, 'Save step'));
+    await _pumpTestAnimation(tester);
+
+    expect(find.text('Water and regroup stop'), findsOneWidget);
+    expect(
+      find.text('Starts 35 minutes after the event begins'),
+      findsOneWidget,
+    );
+  });
 }

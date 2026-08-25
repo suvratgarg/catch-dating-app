@@ -25519,6 +25519,270 @@ abstract class AppLocalizations {
     required String kind,
     required int revision,
   });
+
+  /// Route path builder title.
+  ///
+  /// In en, this message translates to:
+  /// **'Build route'**
+  String get hostsRoutePathBuilderTitle;
+
+  /// Indexed route point map label.
+  ///
+  /// In en, this message translates to:
+  /// **'Route point {index}'**
+  String hostsRoutePathBuilderPoint({required int index});
+
+  /// Empty route builder guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the map to add the first route point.'**
+  String get hostsRoutePathBuilderEmpty;
+
+  /// Route builder point count guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} route points · tap the map to keep drawing'**
+  String hostsRoutePathBuilderCount({required int count});
+
+  /// Undo the latest route point.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo point'**
+  String get hostsRoutePathBuilderUndo;
+
+  /// Clear all route points.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get hostsRoutePathBuilderClear;
+
+  /// Save route path action.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this route'**
+  String get hostsRoutePathBuilderSave;
+
+  /// Route path field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Route path'**
+  String get hostsRouteEventPlanPathTitle;
+
+  /// Empty route path guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw the attendee-facing path on the map.'**
+  String get hostsRouteEventPlanPathEmpty;
+
+  /// Mapped route point count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} mapped points'**
+  String hostsRouteEventPlanPathCount({required int count});
+
+  /// Open route builder action.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit map'**
+  String get hostsRouteEventPlanPathAction;
+
+  /// Pace group field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace groups'**
+  String get hostsRouteEventPlanPaceGroupsTitle;
+
+  /// Pace group field guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Select every group the Host will lead and account for.'**
+  String get hostsRouteEventPlanPaceGroupsBody;
+
+  /// Social pace group preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Social · 7:30/km'**
+  String get hostsRouteEventPlanPaceSocial;
+
+  /// Steady pace group preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Steady · 6:00/km'**
+  String get hostsRouteEventPlanPaceSteady;
+
+  /// Fast pace group preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast · 5:00/km'**
+  String get hostsRouteEventPlanPaceFast;
+
+  /// Live route tracking field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Host position'**
+  String get hostsRouteEventPlanTrackingTitle;
+
+  /// Live route tracking privacy guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Foreground-only sharing during the event helps late arrivals find the moving group.'**
+  String get hostsRouteEventPlanTrackingBody;
+
+  /// Disabled route tracking choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get hostsRouteEventPlanTrackingDisabled;
+
+  /// Host-only route tracking choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Host only'**
+  String get hostsRouteEventPlanTrackingHostOnly;
+
+  /// Authorized operator route tracking choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Host and authorized operators'**
+  String get hostsRouteEventPlanTrackingOperators;
+
+  /// Event itinerary editor section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Run of show'**
+  String get hostsEventItineraryTitle;
+
+  /// Itinerary relative start time.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts {minutes} minutes after the event begins'**
+  String hostsEventItineraryOffset({required int minutes});
+
+  /// Edit itinerary entry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get hostsEventItineraryEdit;
+
+  /// Add itinerary entry title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add itinerary step'**
+  String get hostsEventItineraryAdd;
+
+  /// Add itinerary entry guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish real timing, stops, transitions, and locations for attendees.'**
+  String get hostsEventItineraryAddBody;
+
+  /// Add itinerary entry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Add step'**
+  String get hostsEventItineraryAddAction;
+
+  /// New itinerary entry dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add run-of-show step'**
+  String get hostsEventItineraryDialogAdd;
+
+  /// Existing itinerary entry dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit run-of-show step'**
+  String get hostsEventItineraryDialogEdit;
+
+  /// Delete itinerary entry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get hostsEventItineraryDelete;
+
+  /// Save itinerary entry action.
+  ///
+  /// In en, this message translates to:
+  /// **'Save step'**
+  String get hostsEventItinerarySave;
+
+  /// Itinerary entry title field.
+  ///
+  /// In en, this message translates to:
+  /// **'Step title'**
+  String get hostsEventItineraryFieldTitle;
+
+  /// Itinerary entry title hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Gather, activity, stop, or finish'**
+  String get hostsEventItineraryFieldTitleHint;
+
+  /// Itinerary offset field.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes after start'**
+  String get hostsEventItineraryFieldOffset;
+
+  /// Itinerary duration field.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration in minutes'**
+  String get hostsEventItineraryFieldDuration;
+
+  /// Itinerary guidance field.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendee guidance'**
+  String get hostsEventItineraryFieldDescription;
+
+  /// Itinerary entry kind field.
+  ///
+  /// In en, this message translates to:
+  /// **'Step type'**
+  String get hostsEventItineraryFieldKind;
+
+  /// Copies meeting location into itinerary entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the event meeting point'**
+  String get hostsEventItineraryUseMeetingPoint;
+
+  /// Gather itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Gather'**
+  String get hostsEventItineraryKindGather;
+
+  /// Activity itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get hostsEventItineraryKindActivity;
+
+  /// Stop itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get hostsEventItineraryKindStop;
+
+  /// Break itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Break'**
+  String get hostsEventItineraryKindBreak;
+
+  /// Transition itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Transition'**
+  String get hostsEventItineraryKindTransition;
+
+  /// Finish itinerary kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get hostsEventItineraryKindFinish;
 }
 
 class _AppLocalizationsDelegate

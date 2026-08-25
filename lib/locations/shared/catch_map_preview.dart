@@ -18,6 +18,7 @@ class CatchMapPreview extends StatelessWidget {
     required this.coordinate,
     required this.fallbackLabel,
     this.markerHue = CatchMapMarkerHue.orange,
+    this.path = const [],
     this.enableNetworkTiles = true,
     this.zoom = 15.5,
   });
@@ -25,6 +26,7 @@ class CatchMapPreview extends StatelessWidget {
   final LocationCoordinate? coordinate;
   final String fallbackLabel;
   final CatchMapMarkerHue markerHue;
+  final List<LocationCoordinate> path;
   final bool enableNetworkTiles;
   final double zoom;
 
@@ -66,14 +68,22 @@ class CatchMapPreview extends StatelessWidget {
       label: fallbackLabel,
       child: IgnorePointer(
         child: CatchGoogleMap(
-          initialCenter: coordinate,
-          initialZoom: zoom,
+          initialCenter: _routeCenter(path) ?? coordinate,
+          initialZoom: path.length >= 2 ? 13.5 : zoom,
           markers: {
             CatchMapMarker(
               id: 'catch-map-preview-location',
               position: coordinate,
               hue: markerHue,
             ),
+          },
+          polylines: {
+            if (path.length >= 2)
+              CatchMapPolyline(
+                id: 'catch-map-preview-route',
+                points: path,
+                color: CatchTokens.of(context).primary,
+              ),
           },
           rotateGesturesEnabled: false,
           scrollGesturesEnabled: false,
@@ -87,4 +97,11 @@ class CatchMapPreview extends StatelessWidget {
       ),
     );
   }
+}
+
+LocationCoordinate? _routeCenter(List<LocationCoordinate> path) {
+  if (path.isEmpty) return null;
+  final latitude = path.fold<double>(0, (sum, point) => sum + point.latitude);
+  final longitude = path.fold<double>(0, (sum, point) => sum + point.longitude);
+  return LocationCoordinate(latitude / path.length, longitude / path.length);
 }
