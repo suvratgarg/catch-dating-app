@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 abstract final class CreateEventFormKeys {
+  static const name = ValueKey('create-event-name-field');
   static const distance = ValueKey('create-event-distance-field');
   static const activityType = ValueKey('create-event-activity-type');
   static const customActivityLabel = ValueKey(

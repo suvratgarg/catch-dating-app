@@ -4,6 +4,7 @@ import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 
 class CreateEventDraftSnapshot {
   const CreateEventDraftSnapshot({
+    required this.name,
     required this.distance,
     required this.capacity,
     required this.price,
@@ -48,6 +49,7 @@ class CreateEventDraftSnapshot {
     required this.eventPhotoIds,
   });
 
+  final String? name;
   final String? distance;
   final String? capacity;
   final String? price;
@@ -92,6 +94,7 @@ class CreateEventDraftSnapshot {
   final String eventPhotoIds;
 
   Object get signature => (
+    name: name,
     distance: distance,
     capacity: capacity,
     price: price,
@@ -145,6 +148,7 @@ class CreateEventDraftSnapshot {
       id: id,
       clubId: clubId,
       savedAt: savedAt,
+      name: name,
       distance: distance,
       capacity: capacity,
       price: price,

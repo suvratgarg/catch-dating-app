@@ -326,6 +326,7 @@ function payload(overrides: FakeData = {}): FakeData {
   return {
     eventId: "event-1",
     organizerId: "club-1",
+    name: "Sunrise Social 5K",
     startTimeMillis: Date.parse("2026-05-02T01:30:00.000Z"),
     endTimeMillis: Date.parse("2026-05-02T02:30:00.000Z"),
     meetingPoint: "Carter Road",
@@ -372,6 +373,7 @@ test("createEventHandler creates a server-owned event for the club host",
     assert.deepEqual(h.firestore.get("events/event-1"), {
       clubId: "club-1",
       organizerId: "club-1",
+      name: "Sunrise Social 5K",
       eventOrigin: {
         mode: "catchNative",
         bookingAuthority: "catch",
@@ -404,6 +406,7 @@ test("createEventHandler creates a server-owned event for the club host",
       startingPointLat: 19.07,
       startingPointLng: 72.82,
       locationDetails: null,
+      itinerary: [],
       photoUrl: null,
       eventPhotos: [],
       eventFormat: {
@@ -479,6 +482,86 @@ test("createEventHandler creates a server-owned event for the club host",
       cohortCounts: {},
       waitlistedCohortCounts: {},
     });
+  }
+);
+
+test("createEventHandler persists only valid itinerary and route combinations",
+  async () => {
+    const itinerary = [
+      {
+        id: "gather",
+        kind: "gather",
+        offsetMinutes: 0,
+        durationMinutes: 10,
+        title: "  Gather at Carter Road  ",
+      },
+      {
+        id: "run",
+        kind: "activity",
+        offsetMinutes: 10,
+        title: "Social 5K",
+        routeDistanceMeters: 5000,
+      },
+    ];
+    const eventFormat = {
+      version: 1,
+      activityKind: "socialRun",
+      interactionModel: "pacePods",
+      activityDetails: {
+        routePlan: {
+          version: 2,
+          movementMode: "run",
+          routeShape: "loop",
+          groupStrategy: "paceGroups",
+          stopCadence: "continuous",
+          stopKinds: ["water", "regroup"],
+          roleKinds: ["routeLead", "sweep", "pacer"],
+          path: [
+            {latitude: 19.0608, longitude: 72.8365},
+            {latitude: 19.0641, longitude: 72.8412},
+          ],
+          liveTrackingPolicy: {
+            mode: "hostOnly",
+            staleAfterSeconds: 120,
+            retentionMinutes: 60,
+          },
+        },
+      },
+    };
+    const h = harness({"organizers/club-1": club()});
+
+    await createEventHandler(
+      request("host-1", payload({itinerary, eventFormat})),
+      h.deps
+    );
+
+    assert.deepEqual(h.firestore.get("events/event-1")?.itinerary, [
+      {...itinerary[0], title: "Gather at Carter Road", description: null,
+        location: null, routeDistanceMeters: null},
+      {...itinerary[1], durationMinutes: null, description: null,
+        location: null},
+    ]);
+
+    const duplicateHarness = harness({"organizers/club-1": club()});
+    await assert.rejects(
+      () => createEventHandler(
+        request("host-1", payload({
+          itinerary: [itinerary[0], {...itinerary[1], id: "gather"}],
+          eventFormat,
+        })),
+        duplicateHarness.deps
+      ),
+      (error) => assertHttpsCode(error, "invalid-argument")
+    );
+
+    const missingPathHarness = harness({"organizers/club-1": club()});
+    await assert.rejects(
+      () => createEventHandler(
+        request("host-1", payload({itinerary})),
+        missingPathHarness.deps
+      ),
+      (error) => assertHttpsCode(error, "invalid-argument")
+    );
   }
 );
 

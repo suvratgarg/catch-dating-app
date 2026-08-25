@@ -7,6 +7,7 @@ void main() {
 
   Event buildEvent({
     String id = 'event-1',
+    String name = '',
     DateTime? startTime,
     DateTime? endTime,
     int capacityLimit = 20,
@@ -23,6 +24,7 @@ void main() {
     return Event(
       id: id,
       clubId: 'club-1',
+      name: name,
       startTime: start,
       endTime: endTime ?? start.add(const Duration(hours: 1)),
       meetingPoint: 'Carter Road',
@@ -51,6 +53,13 @@ void main() {
   // ── #1-2: title ────────────────────────────────────────────────────────────
 
   group('Event.title', () {
+    test('uses the authored event name verbatim after trimming', () {
+      final event = buildEvent(name: '  Sunrise Social 5K  ');
+
+      expect(event.title, 'Sunrise Social 5K');
+      expect(event.legacyDerivedTitle, isNotEmpty);
+    });
+
     test('#1 Saturday 6 AM -> "Saturday Morning Run"', () {
       // Find the next Saturday 06:00
       var dt = DateTime(2025, 1, 1, 6); // 2025-01-01 is a Wednesday

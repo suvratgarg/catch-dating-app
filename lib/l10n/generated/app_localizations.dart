@@ -3020,6 +3020,18 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (title).
   ///
   /// In en, this message translates to:
+  /// **'Event name'**
+  String get hostsEventDetailsStepTitleEventName;
+
+  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (placeholder).
+  ///
+  /// In en, this message translates to:
+  /// **'Friday night social'**
+  String get hostsEventDetailsStepPlaceholderEventName;
+
+  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (title).
+  ///
+  /// In en, this message translates to:
   /// **'Format name'**
   String get hostsEventDetailsStepTitleFormatName;
 

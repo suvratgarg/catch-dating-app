@@ -26,6 +26,7 @@ final class CreateEventPrivateAccess {
 final class CreateEventCallableRequest {
   const CreateEventCallableRequest({
     this.eventId,
+    required this.name,
     required this.organizerId,
     this.clubId,
     required this.startTimeMillis,
@@ -35,6 +36,7 @@ final class CreateEventCallableRequest {
     required this.startingPointLat,
     required this.startingPointLng,
     this.locationDetails,
+    this.itinerary,
     this.photoUrl,
     this.eventPhotos,
     required this.distanceKm,
@@ -53,6 +55,7 @@ final class CreateEventCallableRequest {
   });
 
   final String? eventId;
+  final String name;
   final String organizerId;
   final String? clubId;
   final int startTimeMillis;
@@ -62,6 +65,7 @@ final class CreateEventCallableRequest {
   final double startingPointLat;
   final double startingPointLng;
   final String? locationDetails;
+  final List<Map<String, Object?>>? itinerary;
   final String? photoUrl;
   final List<Map<String, Object?>>? eventPhotos;
   final double distanceKm;
@@ -80,6 +84,7 @@ final class CreateEventCallableRequest {
 
   Map<String, Object?> toJson() => {
     'eventId': ?eventId,
+    'name': name,
     'organizerId': organizerId,
     'clubId': ?clubId,
     'startTimeMillis': startTimeMillis,
@@ -89,6 +94,7 @@ final class CreateEventCallableRequest {
     'startingPointLat': startingPointLat,
     'startingPointLng': startingPointLng,
     'locationDetails': ?locationDetails,
+    'itinerary': ?itinerary,
     'photoUrl': ?photoUrl,
     'eventPhotos': ?eventPhotos,
     'distanceKm': distanceKm,

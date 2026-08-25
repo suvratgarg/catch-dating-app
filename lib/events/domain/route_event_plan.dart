@@ -21,6 +21,116 @@ enum RouteStopKind {
 
 enum RouteRoleKind { routeLead, sweep, pacer, stopHost, marshal, photographer }
 
+enum RouteLiveTrackingMode { disabled, hostOnly, authorizedOperators }
+
+class RoutePoint {
+  const RoutePoint({required this.latitude, required this.longitude});
+
+  factory RoutePoint.fromJson(Map<Object?, Object?> json) => RoutePoint(
+    latitude: (json['latitude'] as num).toDouble(),
+    longitude: (json['longitude'] as num).toDouble(),
+  );
+
+  final double latitude;
+  final double longitude;
+
+  Map<String, dynamic> toJson() => {
+    'latitude': latitude,
+    'longitude': longitude,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      other is RoutePoint &&
+      latitude == other.latitude &&
+      longitude == other.longitude;
+
+  @override
+  int get hashCode => Object.hash(latitude, longitude);
+}
+
+class RoutePaceGroup {
+  const RoutePaceGroup({
+    required this.id,
+    required this.label,
+    required this.sortOrder,
+    this.targetPaceSecondsPerKm,
+  });
+
+  factory RoutePaceGroup.fromJson(Map<Object?, Object?> json) => RoutePaceGroup(
+    id: json['id']! as String,
+    label: json['label']! as String,
+    sortOrder: json['sortOrder']! as int,
+    targetPaceSecondsPerKm: json['targetPaceSecondsPerKm'] as int?,
+  );
+
+  final String id;
+  final String label;
+  final int sortOrder;
+  final int? targetPaceSecondsPerKm;
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'label': label,
+    'sortOrder': sortOrder,
+    'targetPaceSecondsPerKm': targetPaceSecondsPerKm,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      other is RoutePaceGroup &&
+      id == other.id &&
+      label == other.label &&
+      sortOrder == other.sortOrder &&
+      targetPaceSecondsPerKm == other.targetPaceSecondsPerKm;
+
+  @override
+  int get hashCode => Object.hash(id, label, sortOrder, targetPaceSecondsPerKm);
+}
+
+class RouteLiveTrackingPolicy {
+  const RouteLiveTrackingPolicy({
+    required this.mode,
+    required this.staleAfterSeconds,
+    required this.retentionMinutes,
+  });
+
+  static const disabled = RouteLiveTrackingPolicy(
+    mode: RouteLiveTrackingMode.disabled,
+    staleAfterSeconds: 120,
+    retentionMinutes: 60,
+  );
+
+  factory RouteLiveTrackingPolicy.fromJson(Map<Object?, Object?> json) =>
+      RouteLiveTrackingPolicy(
+        mode: RouteLiveTrackingMode.values.byName(json['mode']! as String),
+        staleAfterSeconds: json['staleAfterSeconds']! as int,
+        retentionMinutes: json['retentionMinutes']! as int,
+      );
+
+  final RouteLiveTrackingMode mode;
+  final int staleAfterSeconds;
+  final int retentionMinutes;
+
+  bool get enabled => mode != RouteLiveTrackingMode.disabled;
+
+  Map<String, dynamic> toJson() => {
+    'mode': mode.name,
+    'staleAfterSeconds': staleAfterSeconds,
+    'retentionMinutes': retentionMinutes,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      other is RouteLiveTrackingPolicy &&
+      mode == other.mode &&
+      staleAfterSeconds == other.staleAfterSeconds &&
+      retentionMinutes == other.retentionMinutes;
+
+  @override
+  int get hashCode => Object.hash(mode, staleAfterSeconds, retentionMinutes);
+}
+
 /// Activity-agnostic operations for an event that moves through a route.
 ///
 /// Activity type remains responsible for the broader event format. This plan
@@ -35,6 +145,9 @@ class RouteEventPlan {
     required this.stopCadence,
     required this.stopKinds,
     required this.roleKinds,
+    this.path = const [],
+    this.paceGroups = const [],
+    this.liveTrackingPolicy = RouteLiveTrackingPolicy.disabled,
   });
 
   static const socialRun = RouteEventPlan(
@@ -159,7 +272,12 @@ class RouteEventPlan {
     );
     final stopKinds = _enumList(RouteStopKind.values, value['stopKinds']);
     final roleKinds = _enumList(RouteRoleKind.values, value['roleKinds']);
-    if (version != 1 ||
+    final hasVersionTwoFields =
+        value.containsKey('path') ||
+        value.containsKey('paceGroups') ||
+        value.containsKey('liveTrackingPolicy');
+    if ((version != 1 && version != 2) ||
+        (version == 2 && !hasVersionTwoFields) ||
         movementMode == null ||
         routeShape == null ||
         groupStrategy == null ||
@@ -168,13 +286,26 @@ class RouteEventPlan {
         roleKinds.isEmpty) {
       return null;
     }
+    final path = _objectMapList(
+      value['path'],
+    ).map(RoutePoint.fromJson).toList(growable: false);
+    final paceGroups = _objectMapList(
+      value['paceGroups'],
+    ).map(RoutePaceGroup.fromJson).toList(growable: false);
+    final liveTrackingPolicy = value['liveTrackingPolicy'];
     return RouteEventPlan(
+      version: version as int,
       movementMode: movementMode,
       routeShape: routeShape,
       groupStrategy: groupStrategy,
       stopCadence: stopCadence,
       stopKinds: stopKinds,
       roleKinds: roleKinds,
+      path: path,
+      paceGroups: paceGroups,
+      liveTrackingPolicy: liveTrackingPolicy is Map<Object?, Object?>
+          ? RouteLiveTrackingPolicy.fromJson(liveTrackingPolicy)
+          : RouteLiveTrackingPolicy.disabled,
     );
   }
 
@@ -185,22 +316,36 @@ class RouteEventPlan {
   final RouteStopCadence stopCadence;
   final List<RouteStopKind> stopKinds;
   final List<RouteRoleKind> roleKinds;
+  final List<RoutePoint> path;
+  final List<RoutePaceGroup> paceGroups;
+  final RouteLiveTrackingPolicy liveTrackingPolicy;
 
   RouteEventPlan copyWith({
+    int? version,
     RouteMovementMode? movementMode,
     RouteShape? routeShape,
     RouteGroupStrategy? groupStrategy,
     RouteStopCadence? stopCadence,
     List<RouteStopKind>? stopKinds,
     List<RouteRoleKind>? roleKinds,
+    List<RoutePoint>? path,
+    List<RoutePaceGroup>? paceGroups,
+    RouteLiveTrackingPolicy? liveTrackingPolicy,
   }) => RouteEventPlan(
-    version: version,
+    version:
+        version ??
+        (path != null || paceGroups != null || liveTrackingPolicy != null
+            ? 2
+            : this.version),
     movementMode: movementMode ?? this.movementMode,
     routeShape: routeShape ?? this.routeShape,
     groupStrategy: groupStrategy ?? this.groupStrategy,
     stopCadence: stopCadence ?? this.stopCadence,
     stopKinds: stopKinds ?? this.stopKinds,
     roleKinds: roleKinds ?? this.roleKinds,
+    path: path ?? this.path,
+    paceGroups: paceGroups ?? this.paceGroups,
+    liveTrackingPolicy: liveTrackingPolicy ?? this.liveTrackingPolicy,
   );
 
   Map<String, dynamic> toJson() => {
@@ -211,6 +356,15 @@ class RouteEventPlan {
     'stopCadence': stopCadence.name,
     'stopKinds': stopKinds.map((value) => value.name).toList(growable: false),
     'roleKinds': roleKinds.map((value) => value.name).toList(growable: false),
+    if (version >= 2) ...{
+      if (path.isNotEmpty)
+        'path': path.map((value) => value.toJson()).toList(growable: false),
+      if (paceGroups.isNotEmpty)
+        'paceGroups': paceGroups
+            .map((value) => value.toJson())
+            .toList(growable: false),
+      'liveTrackingPolicy': liveTrackingPolicy.toJson(),
+    },
   };
 
   @override
@@ -229,7 +383,13 @@ class RouteEventPlan {
           const ListEquality<RouteRoleKind>().equals(
             roleKinds,
             other.roleKinds,
-          );
+          ) &&
+          const ListEquality<RoutePoint>().equals(path, other.path) &&
+          const ListEquality<RoutePaceGroup>().equals(
+            paceGroups,
+            other.paceGroups,
+          ) &&
+          liveTrackingPolicy == other.liveTrackingPolicy;
 
   @override
   int get hashCode => Object.hash(
@@ -240,6 +400,9 @@ class RouteEventPlan {
     stopCadence,
     const ListEquality<RouteStopKind>().hash(stopKinds),
     const ListEquality<RouteRoleKind>().hash(roleKinds),
+    const ListEquality<RoutePoint>().hash(path),
+    const ListEquality<RoutePaceGroup>().hash(paceGroups),
+    liveTrackingPolicy,
   );
 }
 
@@ -264,4 +427,9 @@ List<T> _enumList<T extends Enum>(List<T> values, Object? rawValues) {
     if (value != null && !resolved.contains(value)) resolved.add(value);
   }
   return resolved;
+}
+
+List<Map<Object?, Object?>> _objectMapList(Object? rawValues) {
+  if (rawValues is! List<Object?>) return const [];
+  return rawValues.whereType<Map<Object?, Object?>>().toList(growable: false);
 }

@@ -2,6 +2,7 @@
   "eventId": "event-1",
   "organizerId": "club-1",
   "clubId": "club-1",
+  "name": "Sunrise Social 5K",
   "startTimeMillis": 1778889600000,
   "endTimeMillis": 1778893800000,
   "meetingPoint": "Race Course Road gate",
@@ -16,6 +17,38 @@
   "startingPointLat": 22.7196,
   "startingPointLng": 75.8577,
   "locationDetails": "Meet near the main gate.",
+  "itinerary": [
+    {
+      "id": "gather",
+      "kind": "gather",
+      "offsetMinutes": 0,
+      "durationMinutes": 15,
+      "title": "Gather at the main gate",
+      "description": "Host check-in and pace group introductions.",
+      "location": {
+        "name": "Race Course Road gate",
+        "address": "Race Course Road, Indore",
+        "placeId": "race-course-road-gate",
+        "latitude": 22.7196,
+        "longitude": 75.8577,
+        "notes": "Meet near the main gate."
+      }
+    },
+    {
+      "id": "run",
+      "kind": "activity",
+      "offsetMinutes": 15,
+      "durationMinutes": 45,
+      "title": "Social 5K",
+      "routeDistanceMeters": 5000
+    },
+    {
+      "id": "coffee",
+      "kind": "finish",
+      "offsetMinutes": 60,
+      "title": "Coffee and cooldown"
+    }
+  ],
   "photoUrl": "https://img.example/events/event-1.jpg",
   "eventFormat": {
     "version": 1,
@@ -24,13 +57,30 @@
     "defaultPlaybookId": "social_run_light",
     "activityDetails": {
       "routePlan": {
-        "version": 1,
+        "version": 2,
         "movementMode": "run",
         "routeShape": "loop",
         "groupStrategy": "paceGroups",
         "stopCadence": "continuous",
         "stopKinds": ["water", "regroup", "hazard"],
-        "roleKinds": ["routeLead", "sweep", "pacer"]
+        "roleKinds": ["routeLead", "sweep", "pacer"],
+        "path": [
+          {"latitude": 22.7196, "longitude": 75.8577},
+          {"latitude": 22.7241, "longitude": 75.8621}
+        ],
+        "paceGroups": [
+          {
+            "id": "social",
+            "label": "Social pace",
+            "targetPaceSecondsPerKm": 420,
+            "sortOrder": 0
+          }
+        ],
+        "liveTrackingPolicy": {
+          "mode": "hostOnly",
+          "staleAfterSeconds": 120,
+          "retentionMinutes": 60
+        }
       }
     }
   },

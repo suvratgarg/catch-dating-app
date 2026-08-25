@@ -11,6 +11,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_service.dart';
@@ -99,6 +100,7 @@ class CreateEventController extends _$CreateEventController {
 
   Future<Event> submit({
     required String clubId,
+    required String name,
     required DateTime startTime,
     required DateTime endTime,
     required EventMeetingLocation meetingLocation,
@@ -109,6 +111,7 @@ class CreateEventController extends _$CreateEventController {
     required String currency,
     required EventConstraints constraints,
     required EventPolicyBundle eventPolicy,
+    List<EventItineraryItem> itinerary = const [],
     String? inviteCode,
     XFile? photoImage,
     List<XFile> photoImages = const [],
@@ -120,6 +123,11 @@ class CreateEventController extends _$CreateEventController {
       clubId,
       fieldName: 'clubId',
       code: 'event-club-required',
+    );
+    final normalizedName = _requireNonBlank(
+      name,
+      fieldName: 'name',
+      code: 'event-name-required',
     );
     final normalizedMeetingLocation = _requireMeetingLocation(meetingLocation);
     final normalizedDescription = description.trim();
@@ -173,6 +181,7 @@ class CreateEventController extends _$CreateEventController {
     final event = Event(
       id: eventId,
       clubId: normalizedClubId,
+      name: normalizedName,
       startTime: startTime,
       endTime: endTime,
       meetingPoint: normalizedMeetingLocation.name,
@@ -180,6 +189,7 @@ class CreateEventController extends _$CreateEventController {
       startingPointLat: normalizedMeetingLocation.latitude,
       startingPointLng: normalizedMeetingLocation.longitude,
       locationDetails: normalizedMeetingLocation.notes,
+      itinerary: itinerary,
       eventFormat: eventFormat,
       distanceKm: distanceKm,
       pace: pace,

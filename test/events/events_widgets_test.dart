@@ -18,10 +18,13 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
 import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
@@ -31,6 +34,7 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
@@ -135,6 +139,26 @@ void main() {
           endTime: DateTime(2025, 4, 23, 7, 45),
           meetingPoint: 'Bandra Fort',
           locationDetails: 'Meet by the parking lot',
+          itinerary: const [
+            EventItineraryItem(
+              id: 'gather',
+              kind: EventItineraryKind.gather,
+              offsetMinutes: 0,
+              title: 'Gather at Bandra Fort',
+            ),
+            EventItineraryItem(
+              id: 'run',
+              kind: EventItineraryKind.activity,
+              offsetMinutes: 15,
+              title: 'Social 5K',
+            ),
+            EventItineraryItem(
+              id: 'finish',
+              kind: EventItineraryKind.finish,
+              offsetMinutes: 75,
+              title: 'Coffee and cooldown',
+            ),
+          ],
           distanceKm: 5.5,
           bookedCount: 3,
           constraints: const EventConstraints(
@@ -177,6 +201,8 @@ void main() {
         expect(find.text('6:45 AM'), findsOneWidget);
         expect(find.text('7:45 AM'), findsOneWidget);
         expect(find.text('Gather at Bandra Fort'), findsOneWidget);
+        expect(find.text('Social 5K'), findsOneWidget);
+        expect(find.text('Coffee and cooldown'), findsOneWidget);
         expect(find.text('Bandra Fort'), findsOneWidget);
         expect(find.text('PIN DROPS MORNING-OF'), findsNothing);
         expect(find.text('Wednesday Morning Run'), findsNothing);
@@ -184,6 +210,33 @@ void main() {
         expect(find.text('5.5km'), findsNothing);
       },
     );
+
+    testWidgets('does not fabricate an itinerary for legacy event documents', (
+      tester,
+    ) async {
+      final event = buildEvent();
+      await pumpEventsTestApp(
+        tester,
+        Scaffold(
+          body: SingleChildScrollView(
+            child: Builder(
+              builder: (context) => EventDetailOverviewSection(
+                event: event,
+                informationState: eventDetailInformationStateFrom(
+                  event: event,
+                  l10n: context.l10n,
+                ),
+                enableMapNetworkTiles: false,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Itinerary'), findsNothing);
+      expect(find.textContaining('Gather at'), findsNothing);
+      expect(find.text('Wrap up'), findsNothing);
+    });
 
     testWidgets('stats strip adapts its labels for non-distance events', (
       tester,

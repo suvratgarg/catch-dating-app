@@ -1734,6 +1734,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsDraftPickerSheetMessageDeleteDraft => 'Delete draft';
 
   @override
+  String get hostsEventDetailsStepTitleEventName => 'Event name';
+
+  @override
+  String get hostsEventDetailsStepPlaceholderEventName => 'Friday night social';
+
+  @override
   String get hostsEventDetailsStepTitleFormatName => 'Format name';
 
   @override

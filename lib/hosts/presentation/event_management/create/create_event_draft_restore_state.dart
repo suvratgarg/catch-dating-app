@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 
 class CreateEventDraftRestoreState {
   const CreateEventDraftRestoreState({
+    required this.nameText,
     required this.distanceText,
     required this.capacityText,
     required this.priceText,
@@ -63,6 +64,7 @@ class CreateEventDraftRestoreState {
     );
 
     return CreateEventDraftRestoreState(
+      nameText: draft.name,
       distanceText: draft.distance,
       capacityText: draft.capacity,
       priceText: draft.price,
@@ -118,6 +120,7 @@ class CreateEventDraftRestoreState {
   }
 
   final String? distanceText;
+  final String? nameText;
   final String? capacityText;
   final String? priceText;
   final String? descriptionText;

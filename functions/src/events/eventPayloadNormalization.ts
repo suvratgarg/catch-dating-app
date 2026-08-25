@@ -12,6 +12,7 @@ export function normalizeCreateEventPayload(data: unknown): unknown {
       "eventId",
       "clubId",
       "organizerId",
+      "name",
       "meetingPoint",
       "description",
       "currency",
@@ -31,6 +32,12 @@ export function normalizeCreateEventPayload(data: unknown): unknown {
     payload.meetingLocation = normalizeMeetingLocation(
       payload.meetingLocation
     );
+  }
+  if (Array.isArray(payload.itinerary)) {
+    payload.itinerary = normalizeItinerary(payload.itinerary);
+  }
+  if (isRecord(payload.eventFormat)) {
+    payload.eventFormat = normalizeEventFormatPayload(payload.eventFormat);
   }
   if (typeof payload.currency === "string") {
     payload.currency = payload.currency.toUpperCase();
@@ -53,12 +60,22 @@ export function normalizeUpdateEventPayload(data: unknown): unknown {
   const payload = normalizeFields(data, {stringFields: ["eventId"]});
   if (!isRecord(payload.fields)) return payload;
   const normalizedFields = normalizeFields(payload.fields, {
-    stringFields: ["meetingPoint", "description"],
+    stringFields: ["name", "meetingPoint", "description"],
     nullableStringFields: ["locationDetails", "photoUrl"],
   });
   if (isRecord(normalizedFields.meetingLocation)) {
     normalizedFields.meetingLocation = normalizeMeetingLocation(
       normalizedFields.meetingLocation
+    );
+  }
+  if (Array.isArray(normalizedFields.itinerary)) {
+    normalizedFields.itinerary = normalizeItinerary(
+      normalizedFields.itinerary
+    );
+  }
+  if (isRecord(normalizedFields.eventFormat)) {
+    normalizedFields.eventFormat = normalizeEventFormatPayload(
+      normalizedFields.eventFormat
     );
   }
   if (isRecord(normalizedFields.privateAccess)) {
@@ -191,6 +208,41 @@ function normalizeMeetingLocation(data: PayloadRecord): PayloadRecord {
     stringFields: ["name"],
     nullableStringFields: ["address", "placeId", "notes"],
   });
+}
+
+function normalizeItinerary(values: unknown[]): unknown[] {
+  return values.map((value) => {
+    if (!isRecord(value)) return value;
+    const entry = normalizeFields(value, {
+      stringFields: ["id", "title"],
+      nullableStringFields: ["description"],
+    });
+    if (isRecord(entry.location)) {
+      entry.location = normalizeMeetingLocation(entry.location);
+    }
+    return entry;
+  });
+}
+
+function normalizeEventFormatPayload(data: PayloadRecord): PayloadRecord {
+  const format = normalizeFields(data, {
+    nullableStringFields: ["customActivityLabel", "defaultPlaybookId"],
+  });
+  if (!isRecord(format.activityDetails)) return format;
+  const activityDetails = {...format.activityDetails};
+  if (isRecord(activityDetails.routePlan)) {
+    const routePlan = {...activityDetails.routePlan};
+    if (Array.isArray(routePlan.paceGroups)) {
+      routePlan.paceGroups = routePlan.paceGroups.map((value) =>
+        isRecord(value) ? normalizeFields(value, {
+          stringFields: ["id", "label"],
+        }) : value
+      );
+    }
+    activityDetails.routePlan = routePlan;
+  }
+  format.activityDetails = activityDetails;
+  return format;
 }
 
 /**

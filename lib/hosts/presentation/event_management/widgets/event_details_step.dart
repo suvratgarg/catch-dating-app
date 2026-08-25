@@ -28,6 +28,7 @@ class EventDetailsStep extends StatefulWidget {
     required this.onReorderPhoto,
     required this.organizerName,
     this.organizerLogoUrl,
+    required this.nameController,
     required this.distanceController,
     required this.customActivityLabelController,
     required this.descriptionController,
@@ -62,6 +63,7 @@ class EventDetailsStep extends StatefulWidget {
   final void Function(int fromIndex, int toIndex)? onReorderPhoto;
   final String organizerName;
   final String? organizerLogoUrl;
+  final TextEditingController nameController;
   final TextEditingController distanceController;
   final TextEditingController customActivityLabelController;
   final TextEditingController descriptionController;
@@ -313,6 +315,27 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
               ),
               CatchSection.fieldRows(
                 children: [
+                  CatchField.input(
+                    key: CreateEventFormKeys.name,
+                    title: context.l10n.hostsEventDetailsStepTitleEventName,
+                    contract:
+                        CatchContractConstraints.createEventCallablePayloadName,
+                    controller: widget.nameController,
+                    inputHint:
+                        context.l10n.hostsEventDetailsStepPlaceholderEventName,
+                    icon: CatchIcons.eventAvailableOutlined,
+                    textCapitalization: TextCapitalization.words,
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      final normalized = value?.trim() ?? '';
+                      if (normalized.isEmpty) {
+                        return context
+                            .l10n
+                            .hostsEventDetailsStepVisiblecopyRequired;
+                      }
+                      return null;
+                    },
+                  ),
                   CatchField.choices<ActivityKind>(
                     key: CreateEventFormKeys.activityType,
                     title: context.l10n.hostsEventDetailsStepLabelActivityType,

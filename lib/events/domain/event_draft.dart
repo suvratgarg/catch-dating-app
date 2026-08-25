@@ -16,6 +16,7 @@ abstract class EventDraft with _$EventDraft {
     required String clubId,
     required DateTime savedAt,
     // Event Details step
+    String? name,
     String? distance,
     String? capacity,
     String? price,
@@ -76,6 +77,7 @@ abstract class EventDraft with _$EventDraft {
 
 extension EventDraftX on EventDraft {
   bool get isEmpty =>
+      name == null &&
       distance == null &&
       capacity == null &&
       price == null &&
@@ -129,6 +131,7 @@ extension EventDraftX on EventDraft {
 
   String get summary {
     final parts = <String>[];
+    if (name != null) parts.add(name!);
     if (distance != null) {
       var distPart = '${distance!}km';
       if (paceName != null) distPart += ' $paceName';

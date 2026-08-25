@@ -3473,6 +3473,20 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
   },
+  "hostsEventDetailsStepTitleEventName": "Event name",
+  "@hostsEventDetailsStepTitleEventName": {
+    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (title).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
+  "hostsEventDetailsStepPlaceholderEventName": "Friday night social",
+  "@hostsEventDetailsStepPlaceholderEventName": {
+    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (placeholder).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
+  },
   "hostsEventDetailsStepTitleFormatName": "Format name",
   "@hostsEventDetailsStepTitleFormatName": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (title).",

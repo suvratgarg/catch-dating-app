@@ -157,6 +157,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   CreateEventLocationState _locationState = const CreateEventLocationState();
 
   // Step 0 — Event details
+  final _nameController = TextEditingController();
   final _distanceController = TextEditingController();
   final _capacityController = TextEditingController();
   final _priceController = TextEditingController();
@@ -312,6 +313,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _startTimeController.dispose();
     _meetingPointController.dispose();
     _locationDetailsController.dispose();
+    _nameController.dispose();
     _distanceController.dispose();
     _capacityController.dispose();
     _priceController.dispose();
@@ -606,6 +608,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           .get(createEventControllerProvider.notifier)
           .submit(
             clubId: widget.club.id,
+            name: _nameController.text,
             startTime: startTime,
             endTime: endTime,
             meetingLocation: meetingLocation,
@@ -837,6 +840,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   CreateEventDraftSnapshot get _currentDraftSnapshot =>
       CreateEventDraftSnapshot(
+        name: _trimmedTextOrNull(_nameController),
         distance: _trimmedTextOrNull(_distanceController),
         capacity: _trimmedTextOrNull(_capacityController),
         price: _trimmedTextOrNull(_priceController),
@@ -931,6 +935,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
 
     // Event details
+    if (restore.nameText != null) {
+      _nameController.text = restore.nameText!;
+    }
     if (restore.distanceText != null) {
       _distanceController.text = restore.distanceText!;
     }
@@ -1266,6 +1273,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               onReorderPhoto: _reorderEventPhoto,
                               organizerName: widget.club.name,
                               organizerLogoUrl: widget.club.profileImageUrl,
+                              nameController: _nameController,
                               distanceController: _distanceController,
                               customActivityLabelController:
                                   _customActivityLabelController,

@@ -13,6 +13,7 @@
       "additionalProperties": false,
       "minProperties": 1,
       "properties": {
+        "name": {"type": "string", "minLength": 1, "maxLength": 120},
         "startTimeMillis": {"type": "integer"},
         "endTimeMillis": {"type": "integer"},
         "meetingPoint": {"type": "string", "minLength": 1, "maxLength": 240},
@@ -26,6 +27,16 @@
           "$ref": "../shared/profile_common.schema.json#/definitions/strictLongitude"
         },
         "locationDetails": {"type": ["string", "null"], "maxLength": 1000},
+        "itinerary": {
+          "type": "array",
+          "maxItems": 40,
+          "items": {
+            "$ref": "../shared/event_common.schema.json#/definitions/eventItineraryItem"
+          }
+        },
+        "eventFormat": {
+          "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
+        },
         "photoUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
         "eventPhotos": {
           "type": "array",

@@ -63,6 +63,13 @@ const schemaEventDocumentSchema = <String, Object?>{
     'discoveryMaxAge',
   ],
   'properties': <String, Object?>{
+    'name': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Organizer-authored event name. Legacy documents may omit it and use the client-derived fallback title.',
+      'x-catch-ownership': 'callable-owned',
+    },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
@@ -357,6 +364,130 @@ const schemaEventDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 1000,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'itinerary': <String, Object?>{
+      'type': 'array',
+      'maxItems': 40,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'description': 'One public, event-local run-of-show entry. Offset is measured from the event start so rescheduling does not rewrite the itinerary.',
+        'required': <Object?>[
+          'id',
+          'kind',
+          'offsetMinutes',
+          'title',
+        ],
+        'properties': <String, Object?>{
+          'id': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+            'pattern': '^[A-Za-z0-9_-]+\$',
+          },
+          'kind': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'gather',
+              'activity',
+              'stop',
+              'break',
+              'transition',
+              'finish',
+            ],
+          },
+          'offsetMinutes': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 1440,
+          },
+          'durationMinutes': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 1,
+            'maximum': 1440,
+          },
+          'title': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+          'description': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'maxLength': 500,
+          },
+          'location': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+                'required': <Object?>[
+                  'name',
+                  'latitude',
+                  'longitude',
+                ],
+                'properties': <String, Object?>{
+                  'name': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 240,
+                  },
+                  'address': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'maxLength': 500,
+                  },
+                  'placeId': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'minLength': 1,
+                    'maxLength': 256,
+                  },
+                  'latitude': <String, Object?>{
+                    'type': 'number',
+                    'minimum': -90,
+                    'maximum': 90,
+                  },
+                  'longitude': <String, Object?>{
+                    'type': 'number',
+                    'minimum': -180,
+                    'maximum': 180,
+                  },
+                  'notes': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'maxLength': 1000,
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'routeDistanceMeters': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 0,
+            'maximum': 1000000,
+          },
+        },
+      },
       'x-catch-ownership': 'callable-owned',
     },
     'photoUrl': <String, Object?>{
@@ -716,7 +847,10 @@ const schemaEventDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'version': <String, Object?>{
                   'type': 'integer',
-                  'const': 1,
+                  'enum': <Object?>[
+                    1,
+                    2,
+                  ],
                 },
                 'movementMode': <String, Object?>{
                   'type': 'string',
@@ -784,6 +918,99 @@ const schemaEventDocumentSchema = <String, Object?>{
                       'marshal',
                       'photographer',
                     ],
+                  },
+                },
+                'path': <String, Object?>{
+                  'type': 'array',
+                  'minItems': 2,
+                  'maxItems': 500,
+                  'items': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'latitude',
+                      'longitude',
+                    ],
+                    'properties': <String, Object?>{
+                      'latitude': <String, Object?>{
+                        'type': 'number',
+                        'minimum': -90,
+                        'maximum': 90,
+                      },
+                      'longitude': <String, Object?>{
+                        'type': 'number',
+                        'minimum': -180,
+                        'maximum': 180,
+                      },
+                    },
+                  },
+                },
+                'paceGroups': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 12,
+                  'items': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'id',
+                      'label',
+                      'sortOrder',
+                    ],
+                    'properties': <String, Object?>{
+                      'id': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 80,
+                        'pattern': '^[A-Za-z0-9_-]+\$',
+                      },
+                      'label': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 80,
+                      },
+                      'targetPaceSecondsPerKm': <String, Object?>{
+                        'type': <Object?>[
+                          'integer',
+                          'null',
+                        ],
+                        'minimum': 120,
+                        'maximum': 1800,
+                      },
+                      'sortOrder': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 1000,
+                      },
+                    },
+                  },
+                },
+                'liveTrackingPolicy': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'mode',
+                    'staleAfterSeconds',
+                    'retentionMinutes',
+                  ],
+                  'properties': <String, Object?>{
+                    'mode': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'disabled',
+                        'hostOnly',
+                        'authorizedOperators',
+                      ],
+                    },
+                    'staleAfterSeconds': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 30,
+                      'maximum': 600,
+                    },
+                    'retentionMinutes': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 5,
+                      'maximum': 1440,
+                    },
                   },
                 },
               },

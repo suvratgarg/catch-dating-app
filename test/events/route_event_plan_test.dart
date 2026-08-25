@@ -37,6 +37,31 @@ void main() {
       expect(restored.roleKinds, contains(RouteRoleKind.photographer));
     });
 
+    test('round-trips v2 path, pace groups, and live tracking policy', () {
+      final plan = RouteEventPlan.socialRun.copyWith(
+        path: const [
+          RoutePoint(latitude: 19.0608, longitude: 72.8365),
+          RoutePoint(latitude: 19.0641, longitude: 72.8412),
+        ],
+        paceGroups: const [
+          RoutePaceGroup(
+            id: 'social',
+            label: 'Social pace',
+            sortOrder: 0,
+            targetPaceSecondsPerKm: 420,
+          ),
+        ],
+        liveTrackingPolicy: const RouteLiveTrackingPolicy(
+          mode: RouteLiveTrackingMode.hostOnly,
+          staleAfterSeconds: 120,
+          retentionMinutes: 60,
+        ),
+      );
+
+      expect(plan.version, 2);
+      expect(RouteEventPlan.tryFromJson(plan.toJson()), plan);
+    });
+
     test('rejects incomplete or unsupported route plans', () {
       expect(RouteEventPlan.tryFromJson(null), isNull);
       expect(

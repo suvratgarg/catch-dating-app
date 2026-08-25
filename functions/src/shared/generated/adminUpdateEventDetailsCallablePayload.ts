@@ -86,7 +86,7 @@ export interface AdminUpdateEventDetailsCallablePayload {
          * Composable operations for an event that moves through a route. Activity kind remains the broader format authority.
          */
         routePlan?: {
-          version: 1;
+          version: 1 | 2;
           movementMode: "run" | "walk" | "ride" | "mixed";
           routeShape: "loop" | "outAndBack" | "pointToPoint";
           groupStrategy: "together" | "paceGroups" | "selfDirected";
@@ -116,6 +116,28 @@ export interface AdminUpdateEventDetailsCallablePayload {
             | "marshal"
             | "photographer"
           )[];
+          /**
+           * @minItems 2
+           * @maxItems 500
+           */
+          path?: {
+            latitude: number;
+            longitude: number;
+          }[];
+          /**
+           * @maxItems 12
+           */
+          paceGroups?: {
+            id: string;
+            label: string;
+            targetPaceSecondsPerKm?: number | null;
+            sortOrder: number;
+          }[];
+          liveTrackingPolicy?: {
+            mode: "disabled" | "hostOnly" | "authorizedOperators";
+            staleAfterSeconds: number;
+            retentionMinutes: number;
+          };
         };
         [k: string]: unknown;
       };

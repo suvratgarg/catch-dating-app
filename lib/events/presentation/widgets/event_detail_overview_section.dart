@@ -74,17 +74,18 @@ class EventDetailOverviewSection extends StatelessWidget {
             ],
           ),
         ),
-        CatchSection.divided(
-          title: context.l10n.eventsEventDetailOverviewSectionTitleItinerary,
-          dividerColor: style?.dividerColor,
-          titleColor: style?.headingColor,
-          child: EventDetailItinerary(
-            event: event,
+        if (event.itinerary.isNotEmpty)
+          CatchSection.divided(
+            title: context.l10n.eventsEventDetailOverviewSectionTitleItinerary,
+            dividerColor: style?.dividerColor,
             titleColor: style?.headingColor,
-            detailColor: style?.bodyColor,
-            dotBackgroundColor: style?.surfaceBackground,
+            child: EventDetailItinerary(
+              event: event,
+              titleColor: style?.headingColor,
+              detailColor: style?.bodyColor,
+              dotBackgroundColor: style?.surfaceBackground,
+            ),
           ),
-        ),
         if (event.eventPhotos.isNotEmpty)
           CatchSection.divided(
             title: context.l10n.eventsEventDetailOverviewSectionTitlePhotos,

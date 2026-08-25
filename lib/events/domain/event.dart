@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
@@ -211,6 +212,7 @@ abstract class Event with _$Event {
     @JsonKey(includeToJson: false) String? seedPrefix,
     @JsonKey(name: 'organizerId', readValue: _readOrganizerId)
     required String clubId,
+    @Default('') String name,
     @TimestampConverter() required DateTime startTime,
     @TimestampConverter() required DateTime endTime,
     required String meetingPoint,
@@ -218,6 +220,7 @@ abstract class Event with _$Event {
     double? startingPointLat,
     double? startingPointLng,
     String? locationDetails,
+    @Default([]) List<EventItineraryItem> itinerary,
     @JsonKey(includeIfNull: false) String? photoUrl,
     @Default([]) List<UploadedPhoto> eventPhotos,
     @Default(EventFormatSnapshot.socialRun()) EventFormatSnapshot eventFormat,
@@ -395,6 +398,12 @@ abstract class Event with _$Event {
   }
 
   String get title {
+    final authoredName = name.trim();
+    if (authoredName.isNotEmpty) return authoredName;
+    return legacyDerivedTitle;
+  }
+
+  String get legacyDerivedTitle {
     final weekday = AppTimeFormatters.longWeekday(startTime);
     final hour = startTime.hour;
     final period = hour < 12
