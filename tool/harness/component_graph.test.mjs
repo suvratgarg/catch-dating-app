@@ -196,22 +196,29 @@ test("full mode cannot grant main or release authority", () => {
   }
 });
 
-test("operational app release gates validate without authorizing signed packages", () => {
+test("operational app release status validates without authorizing signed packages", () => {
   const status = plan("tool/app_target_external_gates.json", "main");
   assert.deepEqual(status.directComponents, ["repo.tooling"]);
   assert.deepEqual(status.operations.ciTargets, ["tools"]);
   assert.deepEqual(status.operations.releaseTargets, []);
   assert.deepEqual(status.operations.releaseRoles, []);
+});
 
-  const targetContract = plan("tool/app_targets.json", "main");
-  assert.deepEqual(targetContract.directComponents, ["app.build-control"]);
-  assert.deepEqual(targetContract.operations.releaseTargets, [
-    "consumer-android",
-    "consumer-ios",
-    "host-android",
-    "host-ios",
-  ]);
-  assert.deepEqual(targetContract.operations.releaseRoles, ["consumer", "host"]);
+test("mobile build contracts authorize fresh signed packages for every installable target", () => {
+  for (const path of [
+    "tool/app_targets.json",
+    "tool/platform/mobile_package_policy.json",
+  ]) {
+    const result = plan(path, "main");
+    assert.deepEqual(result.directComponents, ["app.build-control"], path);
+    assert.deepEqual(result.operations.releaseTargets, [
+      "consumer-android",
+      "consumer-ios",
+      "host-android",
+      "host-ios",
+    ], path);
+    assert.deepEqual(result.operations.releaseRoles, ["consumer", "host"], path);
+  }
 });
 
 test("ordinary and root documentation use the single docs lane", () => {
