@@ -1,6 +1,37 @@
 part of 'catch_primitives_test.dart';
 
 void _registerCatchPrimitivesControlsTests() {
+  testWidgets('CatchField sortable owns inline hierarchy and handle lane', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 360,
+          child: CatchFieldLanes.single(
+            child: CatchField.sortable(
+              title: 'Full name',
+              metadata: 'Short text · Required',
+              reorderHandle: const SizedBox(
+                key: ValueKey('sortable-handle'),
+                child: Icon(Icons.drag_indicator_rounded),
+              ),
+              onTap: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final inline = find.textContaining('Full name', findRichText: true);
+    expect(inline, findsOneWidget);
+    expect(
+      tester.getCenter(find.byKey(const ValueKey('sortable-handle'))).dx,
+      lessThan(tester.getTopLeft(inline).dx),
+    );
+    expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
+  });
+
   testWidgets('Catch map reveal opens a veil and respects reduced motion', (
     tester,
   ) async {

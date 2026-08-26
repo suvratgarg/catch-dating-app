@@ -773,23 +773,24 @@ class _CompactQuestionRows extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               CatchFieldLanes.single(
-                child: CatchField.nav(
+                child: CatchField.sortable(
                   title: question.label,
-                  body: _questionSummary(context, question),
-                  emphasis: CatchFieldEmphasis.title,
-                  divider: true,
-                  action: section.questions.length > 1
+                  metadata: _questionSummary(context, question),
+                  reorderHandle: section.questions.length > 1
                       ? ReorderableDragStartListener(
                           index: questionIndex,
                           child: Tooltip(
                             message: context.l10n.hostFormReorderQuestion,
-                            child: Padding(
-                              padding: CatchInsets.iconChipContent,
+                            child: SizedBox.square(
+                              key: ValueKey(
+                                'form-question-${question.questionId}-drag',
+                              ),
+                              dimension: CatchSpacing.s11,
                               child: Icon(CatchIcons.dragIndicatorRounded),
                             ),
                           ),
                         )
-                      : null,
+                      : const SizedBox.square(dimension: CatchSpacing.s11),
                   onTap: () {
                     onSelectionChanged(sectionIndex, questionIndex);
                     onQuestionExpansionChanged(question.questionId);

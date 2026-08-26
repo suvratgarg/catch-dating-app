@@ -61,6 +61,7 @@ final class _RowConfig extends _CatchFieldConfig {
     CatchFieldStatus status = CatchFieldStatus.idle,
     bool divider = false,
   }) : contentRow = false,
+       inlineMetadata = null,
        showChevron = null,
        isOptional = false,
        error = null,
@@ -117,6 +118,7 @@ final class _RowConfig extends _CatchFieldConfig {
     CatchFieldStatus status = CatchFieldStatus.idle,
     bool divider = false,
   }) : contentRow = true,
+       inlineMetadata = null,
        placeholder = null,
        error = null,
        errorText = null,
@@ -173,6 +175,7 @@ final class _RowConfig extends _CatchFieldConfig {
     CatchFieldStatus status = CatchFieldStatus.idle,
     bool divider = false,
   }) : contentRow = false,
+       inlineMetadata = null,
        isOptional = false,
        add = false,
        navigation = true,
@@ -203,6 +206,36 @@ final class _RowConfig extends _CatchFieldConfig {
          divider: divider,
        );
 
+  const _RowConfig.sortable({
+    Key? key,
+    required String title,
+    required String metadata,
+    required Widget reorderHandle,
+    required this.onTap,
+    this.showChevron = true,
+    bool divider = true,
+  }) : titleMaxLines = 1,
+       bodyMaxLines = 1,
+       contentRow = false,
+       inlineMetadata = metadata,
+       valueText = null,
+       valueMaxLines = 1,
+       placeholder = null,
+       isOptional = false,
+       error = null,
+       errorText = null,
+       valid = false,
+       add = false,
+       navigation = true,
+       super(
+         key: key,
+         title: title,
+         emphasis: CatchFieldEmphasis.title,
+         leading: reorderHandle,
+         leadingExtent: CatchSpacing.s11,
+         divider: divider,
+       );
+
   const _RowConfig.action({
     Key? key,
     String? title,
@@ -226,6 +259,7 @@ final class _RowConfig extends _CatchFieldConfig {
     CatchFieldStatus status = CatchFieldStatus.idle,
     bool divider = false,
   }) : contentRow = false,
+       inlineMetadata = null,
        showChevron = null,
        isOptional = false,
        add = false,
@@ -266,6 +300,7 @@ final class _RowConfig extends _CatchFieldConfig {
   }) : titleMaxLines = 1,
        bodyMaxLines = 2,
        contentRow = false,
+       inlineMetadata = null,
        valueText = null,
        valueMaxLines = 1,
        showChevron = null,
@@ -281,6 +316,7 @@ final class _RowConfig extends _CatchFieldConfig {
   final int titleMaxLines;
   final int bodyMaxLines;
   final bool contentRow;
+  final String? inlineMetadata;
   final String? valueText;
   final int valueMaxLines;
   final bool? showChevron;

@@ -1900,6 +1900,7 @@ Widget catchFieldContractStates(BuildContext context) {
       'row-value',
       'row-title',
       'custom-leading',
+      'sortable-inline-metadata',
       'content-row-2-3-clamp',
       'value-line',
       'chevron',
@@ -1988,6 +1989,20 @@ Widget catchFieldContractStates(BuildContext context) {
           body: 'Private to attendees',
           icon: CatchIcons.lockOutlineRounded,
           emphasis: CatchFieldEmphasis.title,
+        ),
+      ),
+      fieldState(
+        label: 'sortable-inline-metadata',
+        description:
+            'A caller-owned drag target sits left of one strong-title plus muted-metadata sentence.',
+        child: CatchField.sortable(
+          title: 'Why do you want to join?',
+          metadata: 'Long text · Required',
+          reorderHandle: const SizedBox.square(
+            dimension: CatchSpacing.s11,
+            child: Icon(CatchIcons.dragIndicatorRounded),
+          ),
+          onTap: _noop,
         ),
       ),
       fieldState(
@@ -3499,7 +3514,6 @@ Widget catchIconButtonContractStates(BuildContext context) {
       'active',
       'disabled',
       'bordered',
-      'plain-actions',
       'float',
       'plain',
       'counted',
@@ -5590,7 +5604,6 @@ Widget catchOptionGroupContractStates(BuildContext context) {
       'mono',
       'selected',
       'disabled',
-      'rounded-button',
       'accented',
       'trailing',
       'overflow',

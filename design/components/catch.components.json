@@ -16,6 +16,7 @@
         "read",
         "content",
         "nav",
+        "sortable",
         "action",
         "toggle",
         "input",
@@ -1918,9 +1919,9 @@
                 "name": "Type",
                 "type": "VARIANT",
                 "defaultValue": "Read",
-                "variantOptions": ["Read", "Content", "Nav", "Action", "Toggle", "Input", "Input Actions", "Control", "Choices", "Option Cards", "Stepper", "Add", "Select"],
+                "variantOptions": ["Read", "Content", "Nav", "Sortable", "Action", "Toggle", "Input", "Input Actions", "Control", "Choices", "Option Cards", "Stepper", "Add", "Select"],
                 "sourceProps": [],
-                "notes": "Maps one-to-one to the 13 named CatchField constructors."
+                "notes": "Maps one-to-one to the 14 named CatchField constructors."
               },
               {
                 "name": "Title",
@@ -2008,6 +2009,20 @@
             "type": "string",
             "required": false,
             "dartType": "String?"
+          },
+          {
+            "name": "metadata",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "CatchField.sortable metadata rendered inline after the strong title, with two-line reflow at large text sizes."
+          },
+          {
+            "name": "reorderHandle",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "Caller-owned drag behavior placed in the sortable field's canonical leading target lane."
           },
           {
             "name": "titleMaxLines",
@@ -2331,6 +2346,7 @@
           "row-value",
           "row-title",
           "custom-leading",
+          "sortable-inline-metadata",
           "content-row-2-3-clamp",
           "value-line",
           "chevron",

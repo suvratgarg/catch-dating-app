@@ -29,8 +29,14 @@ void main() {
       find.text('Choose the questions that will help you decide who to call.'),
       findsOneWidget,
     );
-    expect(find.text('Full name'), findsOneWidget);
-    expect(find.text('Short text · Required'), findsOneWidget);
+    expect(
+      find.textContaining('Full name', findRichText: true),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('Short text · Required', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.text('Add question'), findsOneWidget);
     expect(find.text('Reorder questions'), findsNothing);
     expect(find.byIcon(Icons.drag_indicator_rounded), findsNWidgets(2));
@@ -62,7 +68,7 @@ void main() {
       final fullNameRowLabel = find
           .descendant(
             of: find.byKey(const ValueKey('form-question-question_1')),
-            matching: find.text('Full name'),
+            matching: find.textContaining('Full name', findRichText: true),
           )
           .first;
       await ensureCentered(tester, fullNameRowLabel);
@@ -111,7 +117,7 @@ void main() {
   ) async {
     await _pumpBuilder(tester);
 
-    await tester.tap(find.text('Full name'));
+    await tester.tap(find.textContaining('Full name', findRichText: true));
     await pumpFeatureUi(tester);
     expect(
       find.byKey(const ValueKey('form-question-question_1-editor')),
@@ -120,7 +126,7 @@ void main() {
 
     final phoneNumberRowLabel = find.descendant(
       of: find.byKey(const ValueKey('form-question-question_2')),
-      matching: find.text('Phone number'),
+      matching: find.textContaining('Phone number', findRichText: true),
     );
     await ensureCentered(tester, phoneNumberRowLabel);
     await tester.tap(phoneNumberRowLabel);
@@ -159,15 +165,23 @@ void main() {
 
     final phoneRow = find.descendant(
       of: find.byKey(const ValueKey('form-question-question_2')),
-      matching: find.text('Phone number'),
+      matching: find.textContaining('Phone number', findRichText: true),
     );
     final nameRow = find.descendant(
       of: find.byKey(const ValueKey('form-question-question_1')),
-      matching: find.text('Full name'),
+      matching: find.textContaining('Full name', findRichText: true),
     );
     expect(
       tester.getTopLeft(phoneRow).dy,
       lessThan(tester.getTopLeft(nameRow).dy),
+    );
+    expect(
+      tester
+          .getCenter(
+            find.byKey(const ValueKey('form-question-question_2-drag')),
+          )
+          .dx,
+      lessThan(tester.getTopLeft(phoneRow).dx),
     );
   });
 }
