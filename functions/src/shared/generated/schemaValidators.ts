@@ -1004,1994 +1004,1014 @@ import {
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
-export const validateMobileFormState:
-  ValidateFunction<MobileFormState> =
-    ajv.compile(mobileFormStateSchema) as
-      ValidateFunction<MobileFormState>;
-export const validateOperationRun:
-  ValidateFunction<OperationRun> =
-    ajv.compile(operationRunSchema) as
-      ValidateFunction<OperationRun>;
-export const validateOperationWorkItem:
-  ValidateFunction<OperationWorkItem> =
-    ajv.compile(operationWorkItemSchema) as
-      ValidateFunction<OperationWorkItem>;
-export const validateProfilePromptAnswer:
-  ValidateFunction<ProfilePromptAnswer> =
-    ajv.compile(profilePromptAnswerSchema) as
-      ValidateFunction<ProfilePromptAnswer>;
-export const validatePhotoPromptAnswer:
-  ValidateFunction<PhotoPromptAnswer> =
-    ajv.compile(photoPromptAnswerSchema) as
-      ValidateFunction<PhotoPromptAnswer>;
-export const validateProfilePhoto:
-  ValidateFunction<ProfilePhoto> =
-    ajv.compile(profilePhotoSchema) as
-      ValidateFunction<ProfilePhoto>;
-export const validateUploadedPhoto:
-  ValidateFunction<UploadedPhoto> =
-    ajv.compile(uploadedPhotoSchema) as
-      ValidateFunction<UploadedPhoto>;
-export const validateEventOrigin:
-  ValidateFunction<EventOrigin> =
-    ajv.compile(eventOriginSchema) as
-      ValidateFunction<EventOrigin>;
-export const validateEventRuntimeAccess:
-  ValidateFunction<EventRuntimeAccess> =
-    ajv.compile(eventRuntimeAccessSchema) as
-      ValidateFunction<EventRuntimeAccess>;
-export const validateActivityPreferences:
-  ValidateFunction<ActivityPreferences> =
-    ajv.compile(activityPreferencesSchema) as
-      ValidateFunction<ActivityPreferences>;
-export const validateOrganizerSupplyCapabilities:
-  ValidateFunction<OrganizerSupplyCapabilities> =
-    ajv.compile(organizerSupplyCapabilitiesSchema) as
-      ValidateFunction<OrganizerSupplyCapabilities>;
-export const validateExternalEventBlockerResolution:
-  ValidateFunction<ExternalEventBlockerResolution> =
-    ajv.compile(externalEventBlockerResolutionSchema) as
-      ValidateFunction<ExternalEventBlockerResolution>;
-export const validateExternalEventPublicationReceiptDocument:
-  ValidateFunction<ExternalEventPublicationReceiptDocument> =
-    ajv.compile(externalEventPublicationReceiptDocumentSchema) as
-      ValidateFunction<ExternalEventPublicationReceiptDocument>;
-export const validateConfigCitiesDocument:
-  ValidateFunction<ConfigCitiesDocument> =
-    ajv.compile(configCitiesDocumentSchema) as
-      ValidateFunction<ConfigCitiesDocument>;
-export const validateOnboardingDraftDocument:
-  ValidateFunction<OnboardingDraftDocument> =
-    ajv.compile(onboardingDraftDocumentSchema) as
-      ValidateFunction<OnboardingDraftDocument>;
-export const validateAccessApplicationDocument:
-  ValidateFunction<AccessApplicationDocument> =
-    ajv.compile(accessApplicationDocumentSchema) as
-      ValidateFunction<AccessApplicationDocument>;
-export const validateUserProfileDocument:
-  ValidateFunction<UserProfileDocument> =
-    ajv.compile(userProfileDocumentSchema) as
-      ValidateFunction<UserProfileDocument>;
-export const validatePublicProfileDocument:
-  ValidateFunction<PublicProfileDocument> =
-    ajv.compile(publicProfileDocumentSchema) as
-      ValidateFunction<PublicProfileDocument>;
-export const validateHostProfileDocument:
-  ValidateFunction<HostProfileDocument> =
-    ajv.compile(hostProfileDocumentSchema) as
-      ValidateFunction<HostProfileDocument>;
-export const validateClubDocument:
-  ValidateFunction<ClubDocument> =
-    ajv.compile(clubDocumentSchema) as
-      ValidateFunction<ClubDocument>;
-export const validateOrganizerDocument:
-  ValidateFunction<OrganizerDocument> =
-    ajv.compile(organizerDocumentSchema) as
-      ValidateFunction<OrganizerDocument>;
-export const validateOrganizerPostDocument:
-  ValidateFunction<OrganizerPostDocument> =
-    ajv.compile(organizerPostDocumentSchema) as
-      ValidateFunction<OrganizerPostDocument>;
-export const validateOrganizerPostDeliveryOperationDocument:
-  ValidateFunction<OrganizerPostDeliveryOperationDocument> =
-    ajv.compile(organizerPostDeliveryOperationDocumentSchema) as
-      ValidateFunction<OrganizerPostDeliveryOperationDocument>;
-export const validateOrganizerPostDeliveryRecipientDocument:
-  ValidateFunction<OrganizerPostDeliveryRecipientDocument> =
-    ajv.compile(organizerPostDeliveryRecipientDocumentSchema) as
-      ValidateFunction<OrganizerPostDeliveryRecipientDocument>;
-export const validateOrganizerTeamMembershipDocument:
-  ValidateFunction<OrganizerTeamMembershipDocument> =
-    ajv.compile(organizerTeamMembershipDocumentSchema) as
-      ValidateFunction<OrganizerTeamMembershipDocument>;
-export const validateOrganizerFollowDocument:
-  ValidateFunction<OrganizerFollowDocument> =
-    ajv.compile(organizerFollowDocumentSchema) as
-      ValidateFunction<OrganizerFollowDocument>;
-export const validateOrganizerCommunicationPreferenceDocument:
-  ValidateFunction<OrganizerCommunicationPreferenceDocument> =
-    ajv.compile(organizerCommunicationPreferenceDocumentSchema) as
-      ValidateFunction<OrganizerCommunicationPreferenceDocument>;
-export const validateOrganizerContactDocument:
-  ValidateFunction<OrganizerContactDocument> =
-    ajv.compile(organizerContactDocumentSchema) as
-      ValidateFunction<OrganizerContactDocument>;
-export const validateOrganizerContactNoteDocument:
-  ValidateFunction<OrganizerContactNoteDocument> =
-    ajv.compile(organizerContactNoteDocumentSchema) as
-      ValidateFunction<OrganizerContactNoteDocument>;
-export const validateOrganizerContactTagVocabularyDocument:
-  ValidateFunction<OrganizerContactTagVocabularyDocument> =
-    ajv.compile(organizerContactTagVocabularyDocumentSchema) as
-      ValidateFunction<OrganizerContactTagVocabularyDocument>;
-export const validateOrganizerContactIdentityLinkDocument:
-  ValidateFunction<OrganizerContactIdentityLinkDocument> =
-    ajv.compile(organizerContactIdentityLinkDocumentSchema) as
-      ValidateFunction<OrganizerContactIdentityLinkDocument>;
-export const validateOrganizerContactIdentityClaimDocument:
-  ValidateFunction<OrganizerContactIdentityClaimDocument> =
-    ajv.compile(organizerContactIdentityClaimDocumentSchema) as
-      ValidateFunction<OrganizerContactIdentityClaimDocument>;
-export const validateOrganizerContactEventEdgeDocument:
-  ValidateFunction<OrganizerContactEventEdgeDocument> =
-    ajv.compile(organizerContactEventEdgeDocumentSchema) as
-      ValidateFunction<OrganizerContactEventEdgeDocument>;
-export const validateOrganizerContactTraitDocument:
-  ValidateFunction<OrganizerContactTraitDocument> =
-    ajv.compile(organizerContactTraitDocumentSchema) as
-      ValidateFunction<OrganizerContactTraitDocument>;
-export const validateOrganizerAudienceSummaryDocument:
-  ValidateFunction<OrganizerAudienceSummaryDocument> =
-    ajv.compile(organizerAudienceSummaryDocumentSchema) as
-      ValidateFunction<OrganizerAudienceSummaryDocument>;
-export const validateOrganizerAudienceProjectionReceiptDocument:
-  ValidateFunction<OrganizerAudienceProjectionReceiptDocument> =
-    ajv.compile(organizerAudienceProjectionReceiptDocumentSchema) as
-      ValidateFunction<OrganizerAudienceProjectionReceiptDocument>;
-export const validateOrganizerContactMergeReceiptDocument:
-  ValidateFunction<OrganizerContactMergeReceiptDocument> =
-    ajv.compile(organizerContactMergeReceiptDocumentSchema) as
-      ValidateFunction<OrganizerContactMergeReceiptDocument>;
-export const validateOrganizerContactMergeReviewDecisionDocument:
-  ValidateFunction<OrganizerContactMergeReviewDecisionDocument> =
-    ajv.compile(organizerContactMergeReviewDecisionDocumentSchema) as
-      ValidateFunction<OrganizerContactMergeReviewDecisionDocument>;
-export const validateOrganizerSenderConnectionDocument:
-  ValidateFunction<OrganizerSenderConnectionDocument> =
-    ajv.compile(organizerSenderConnectionDocumentSchema) as
-      ValidateFunction<OrganizerSenderConnectionDocument>;
-export const validateOrganizerProviderConnectionDocument:
-  ValidateFunction<OrganizerProviderConnectionDocument> =
-    ajv.compile(organizerProviderConnectionDocumentSchema) as
-      ValidateFunction<OrganizerProviderConnectionDocument>;
-export const validateOrganizerApplicationFormDocument:
-  ValidateFunction<OrganizerApplicationFormDocument> =
-    ajv.compile(organizerApplicationFormDocumentSchema) as
-      ValidateFunction<OrganizerApplicationFormDocument>;
-export const validateOrganizerApplicationFormVersionDocument:
-  ValidateFunction<OrganizerApplicationFormVersionDocument> =
-    ajv.compile(organizerApplicationFormVersionDocumentSchema) as
-      ValidateFunction<OrganizerApplicationFormVersionDocument>;
-export const validateOrganizerFormDocument:
-  ValidateFunction<OrganizerFormDocument> =
-    ajv.compile(organizerFormDocumentSchema) as
-      ValidateFunction<OrganizerFormDocument>;
-export const validateOrganizerFormDraftDocument:
-  ValidateFunction<OrganizerFormDraftDocument> =
-    ajv.compile(organizerFormDraftDocumentSchema) as
-      ValidateFunction<OrganizerFormDraftDocument>;
-export const validateOrganizerFormVersionDocument:
-  ValidateFunction<OrganizerFormVersionDocument> =
-    ajv.compile(organizerFormVersionDocumentSchema) as
-      ValidateFunction<OrganizerFormVersionDocument>;
-export const validateOrganizerFormResponseDraftDocument:
-  ValidateFunction<OrganizerFormResponseDraftDocument> =
-    ajv.compile(organizerFormResponseDraftDocumentSchema) as
-      ValidateFunction<OrganizerFormResponseDraftDocument>;
-export const validateOrganizerFormResponseDocument:
-  ValidateFunction<OrganizerFormResponseDocument> =
-    ajv.compile(organizerFormResponseDocumentSchema) as
-      ValidateFunction<OrganizerFormResponseDocument>;
-export const validateOrganizerFormAssetDocument:
-  ValidateFunction<OrganizerFormAssetDocument> =
-    ajv.compile(organizerFormAssetDocumentSchema) as
-      ValidateFunction<OrganizerFormAssetDocument>;
-export const validateOrganizerFormAggregateDocument:
-  ValidateFunction<OrganizerFormAggregateDocument> =
-    ajv.compile(organizerFormAggregateDocumentSchema) as
-      ValidateFunction<OrganizerFormAggregateDocument>;
-export const validateOrganizerFormAggregateEventDocument:
-  ValidateFunction<OrganizerFormAggregateEventDocument> =
-    ajv.compile(organizerFormAggregateEventDocumentSchema) as
-      ValidateFunction<OrganizerFormAggregateEventDocument>;
-export const validateOrganizerFormExportDocument:
-  ValidateFunction<OrganizerFormExportDocument> =
-    ajv.compile(organizerFormExportDocumentSchema) as
-      ValidateFunction<OrganizerFormExportDocument>;
-export const validateOrganizerFormAutomationRuleDocument:
-  ValidateFunction<OrganizerFormAutomationRuleDocument> =
-    ajv.compile(organizerFormAutomationRuleDocumentSchema) as
-      ValidateFunction<OrganizerFormAutomationRuleDocument>;
-export const validateOrganizerFormAutomationRunDocument:
-  ValidateFunction<OrganizerFormAutomationRunDocument> =
-    ajv.compile(organizerFormAutomationRunDocumentSchema) as
-      ValidateFunction<OrganizerFormAutomationRunDocument>;
-export const validateOrganizerFormConversionReceiptDocument:
-  ValidateFunction<OrganizerFormConversionReceiptDocument> =
-    ajv.compile(organizerFormConversionReceiptDocumentSchema) as
-      ValidateFunction<OrganizerFormConversionReceiptDocument>;
-export const validateOrganizerFormShareLinkDocument:
-  ValidateFunction<OrganizerFormShareLinkDocument> =
-    ajv.compile(organizerFormShareLinkDocumentSchema) as
-      ValidateFunction<OrganizerFormShareLinkDocument>;
-export const validateOrganizerApplicationDocument:
-  ValidateFunction<OrganizerApplicationDocument> =
-    ajv.compile(organizerApplicationDocumentSchema) as
-      ValidateFunction<OrganizerApplicationDocument>;
-export const validateOrganizerApplicationResponseDocument:
-  ValidateFunction<OrganizerApplicationResponseDocument> =
-    ajv.compile(organizerApplicationResponseDocumentSchema) as
-      ValidateFunction<OrganizerApplicationResponseDocument>;
-export const validateOrganizerApplicationAssetDocument:
-  ValidateFunction<OrganizerApplicationAssetDocument> =
-    ajv.compile(organizerApplicationAssetDocumentSchema) as
-      ValidateFunction<OrganizerApplicationAssetDocument>;
-export const validateOrganizerApplicationSourceMappingDocument:
-  ValidateFunction<OrganizerApplicationSourceMappingDocument> =
-    ajv.compile(organizerApplicationSourceMappingDocumentSchema) as
-      ValidateFunction<OrganizerApplicationSourceMappingDocument>;
-export const validateOrganizerApplicationImportReceiptDocument:
-  ValidateFunction<OrganizerApplicationImportReceiptDocument> =
-    ajv.compile(organizerApplicationImportReceiptDocumentSchema) as
-      ValidateFunction<OrganizerApplicationImportReceiptDocument>;
-export const validateParticipantIntakeProfileDocument:
-  ValidateFunction<ParticipantIntakeProfileDocument> =
-    ajv.compile(participantIntakeProfileDocumentSchema) as
-      ValidateFunction<ParticipantIntakeProfileDocument>;
-export const validateParticipantOrganizerDataGrantDocument:
-  ValidateFunction<ParticipantOrganizerDataGrantDocument> =
-    ajv.compile(participantOrganizerDataGrantDocumentSchema) as
-      ValidateFunction<ParticipantOrganizerDataGrantDocument>;
-export const validateExternalEventMappingDocument:
-  ValidateFunction<ExternalEventMappingDocument> =
-    ajv.compile(externalEventMappingDocumentSchema) as
-      ValidateFunction<ExternalEventMappingDocument>;
-export const validateProviderSyncRunDocument:
-  ValidateFunction<ProviderSyncRunDocument> =
-    ajv.compile(providerSyncRunDocumentSchema) as
-      ValidateFunction<ProviderSyncRunDocument>;
-export const validateOrganizerMessageTemplateDocument:
-  ValidateFunction<OrganizerMessageTemplateDocument> =
-    ajv.compile(organizerMessageTemplateDocumentSchema) as
-      ValidateFunction<OrganizerMessageTemplateDocument>;
-export const validateOrganizerContactChannelStateDocument:
-  ValidateFunction<OrganizerContactChannelStateDocument> =
-    ajv.compile(organizerContactChannelStateDocumentSchema) as
-      ValidateFunction<OrganizerContactChannelStateDocument>;
-export const validateOrganizerCampaignDocument:
-  ValidateFunction<OrganizerCampaignDocument> =
-    ajv.compile(organizerCampaignDocumentSchema) as
-      ValidateFunction<OrganizerCampaignDocument>;
-export const validateOrganizerBroadcastSummaryDocument:
-  ValidateFunction<OrganizerBroadcastSummaryDocument> =
-    ajv.compile(organizerBroadcastSummaryDocumentSchema) as
-      ValidateFunction<OrganizerBroadcastSummaryDocument>;
-export const validateOrganizerCampaignRecipientDocument:
-  ValidateFunction<OrganizerCampaignRecipientDocument> =
-    ajv.compile(organizerCampaignRecipientDocumentSchema) as
-      ValidateFunction<OrganizerCampaignRecipientDocument>;
-export const validateOrganizerCampaignWebhookReceiptDocument:
-  ValidateFunction<OrganizerCampaignWebhookReceiptDocument> =
-    ajv.compile(organizerCampaignWebhookReceiptDocumentSchema) as
-      ValidateFunction<OrganizerCampaignWebhookReceiptDocument>;
-export const validateOrganizerMessagingWebhookEventDocument:
-  ValidateFunction<OrganizerMessagingWebhookEventDocument> =
-    ajv.compile(organizerMessagingWebhookEventDocumentSchema) as
-      ValidateFunction<OrganizerMessagingWebhookEventDocument>;
-export const validateOrganizerWhatsappThreadDocument:
-  ValidateFunction<OrganizerWhatsappThreadDocument> =
-    ajv.compile(organizerWhatsappThreadDocumentSchema) as
-      ValidateFunction<OrganizerWhatsappThreadDocument>;
-export const validateOrganizerWhatsappMessageDocument:
-  ValidateFunction<OrganizerWhatsappMessageDocument> =
-    ajv.compile(organizerWhatsappMessageDocumentSchema) as
-      ValidateFunction<OrganizerWhatsappMessageDocument>;
-export const validateOrganizerWhatsappReplyOperationDocument:
-  ValidateFunction<OrganizerWhatsappReplyOperationDocument> =
-    ajv.compile(organizerWhatsappReplyOperationDocumentSchema) as
-      ValidateFunction<OrganizerWhatsappReplyOperationDocument>;
-export const validateOrganizerClaimRequestDocument:
-  ValidateFunction<OrganizerClaimRequestDocument> =
-    ajv.compile(organizerClaimRequestDocumentSchema) as
-      ValidateFunction<OrganizerClaimRequestDocument>;
-export const validateOrganizerScheduleLockDocument:
-  ValidateFunction<OrganizerScheduleLockDocument> =
-    ajv.compile(organizerScheduleLockDocumentSchema) as
-      ValidateFunction<OrganizerScheduleLockDocument>;
-export const validateClubPostDocument:
-  ValidateFunction<ClubPostDocument> =
-    ajv.compile(clubPostDocumentSchema) as
-      ValidateFunction<ClubPostDocument>;
-export const validateClubMembershipDocument:
-  ValidateFunction<ClubMembershipDocument> =
-    ajv.compile(clubMembershipDocumentSchema) as
-      ValidateFunction<ClubMembershipDocument>;
-export const validateClubHostClaimDocument:
-  ValidateFunction<ClubHostClaimDocument> =
-    ajv.compile(clubHostClaimDocumentSchema) as
-      ValidateFunction<ClubHostClaimDocument>;
-export const validateClubClaimRequestDocument:
-  ValidateFunction<ClubClaimRequestDocument> =
-    ajv.compile(clubClaimRequestDocumentSchema) as
-      ValidateFunction<ClubClaimRequestDocument>;
-export const validateEventDocument:
-  ValidateFunction<EventDocument> =
-    ajv.compile(eventDocumentSchema) as
-      ValidateFunction<EventDocument>;
-export const validateExternalEventDocument:
-  ValidateFunction<ExternalEventDocument> =
-    ajv.compile(externalEventDocumentSchema) as
-      ValidateFunction<ExternalEventDocument>;
-export const validateEventPrivateAccessDocument:
-  ValidateFunction<EventPrivateAccessDocument> =
-    ajv.compile(eventPrivateAccessDocumentSchema) as
-      ValidateFunction<EventPrivateAccessDocument>;
-export const validateEventInviteLinkDocument:
-  ValidateFunction<EventInviteLinkDocument> =
-    ajv.compile(eventInviteLinkDocumentSchema) as
-      ValidateFunction<EventInviteLinkDocument>;
-export const validateEventInviteLinkSecretDocument:
-  ValidateFunction<EventInviteLinkSecretDocument> =
-    ajv.compile(eventInviteLinkSecretDocumentSchema) as
-      ValidateFunction<EventInviteLinkSecretDocument>;
-export const validateEventInviteTouchDocument:
-  ValidateFunction<EventInviteTouchDocument> =
-    ajv.compile(eventInviteTouchDocumentSchema) as
-      ValidateFunction<EventInviteTouchDocument>;
-export const validateEventShareIntentDocument:
-  ValidateFunction<EventShareIntentDocument> =
-    ajv.compile(eventShareIntentDocumentSchema) as
-      ValidateFunction<EventShareIntentDocument>;
-export const validateEventInviteAttributionDocument:
-  ValidateFunction<EventInviteAttributionDocument> =
-    ajv.compile(eventInviteAttributionDocumentSchema) as
-      ValidateFunction<EventInviteAttributionDocument>;
-export const validateEventParticipationDocument:
-  ValidateFunction<EventParticipationDocument> =
-    ajv.compile(eventParticipationDocumentSchema) as
-      ValidateFunction<EventParticipationDocument>;
-export const validateEventAttendeeDocument:
-  ValidateFunction<EventAttendeeDocument> =
-    ajv.compile(eventAttendeeDocumentSchema) as
-      ValidateFunction<EventAttendeeDocument>;
-export const validateEventStaffGrantDocument:
-  ValidateFunction<EventStaffGrantDocument> =
-    ajv.compile(eventStaffGrantDocumentSchema) as
-      ValidateFunction<EventStaffGrantDocument>;
-export const validateEventAttendeeAttendanceReceiptDocument:
-  ValidateFunction<EventAttendeeAttendanceReceiptDocument> =
-    ajv.compile(eventAttendeeAttendanceReceiptDocumentSchema) as
-      ValidateFunction<EventAttendeeAttendanceReceiptDocument>;
-export const validateEventAttendeeImportDocument:
-  ValidateFunction<EventAttendeeImportDocument> =
-    ajv.compile(eventAttendeeImportDocumentSchema) as
-      ValidateFunction<EventAttendeeImportDocument>;
-export const validateEventRosterHandoffDocument:
-  ValidateFunction<EventRosterHandoffDocument> =
-    ajv.compile(eventRosterHandoffDocumentSchema) as
-      ValidateFunction<EventRosterHandoffDocument>;
-export const validateEventRuntimeParticipantDocument:
-  ValidateFunction<EventRuntimeParticipantDocument> =
-    ajv.compile(eventRuntimeParticipantDocumentSchema) as
-      ValidateFunction<EventRuntimeParticipantDocument>;
-export const validateEventVenueSessionDocument:
-  ValidateFunction<EventVenueSessionDocument> =
-    ajv.compile(eventVenueSessionDocumentSchema) as
-      ValidateFunction<EventVenueSessionDocument>;
-export const validateEventVenueSessionRedemptionDocument:
-  ValidateFunction<EventVenueSessionRedemptionDocument> =
-    ajv.compile(eventVenueSessionRedemptionDocumentSchema) as
-      ValidateFunction<EventVenueSessionRedemptionDocument>;
-export const validateEventSuccessPresenceDocument:
-  ValidateFunction<EventSuccessPresenceDocument> =
-    ajv.compile(eventSuccessPresenceDocumentSchema) as
-      ValidateFunction<EventSuccessPresenceDocument>;
-export const validateEventLivePositionDocument:
-  ValidateFunction<EventLivePositionDocument> =
-    ajv.compile(eventLivePositionDocumentSchema) as
-      ValidateFunction<EventLivePositionDocument>;
-export const validateEventSuccessLateArrivalDocument:
-  ValidateFunction<EventSuccessLateArrivalDocument> =
-    ajv.compile(eventSuccessLateArrivalDocumentSchema) as
-      ValidateFunction<EventSuccessLateArrivalDocument>;
-export const validateEventRehearsalDocument:
-  ValidateFunction<EventRehearsalDocument> =
-    ajv.compile(eventRehearsalDocumentSchema) as
-      ValidateFunction<EventRehearsalDocument>;
-export const validateEventRehearsalActorDocument:
-  ValidateFunction<EventRehearsalActorDocument> =
-    ajv.compile(eventRehearsalActorDocumentSchema) as
-      ValidateFunction<EventRehearsalActorDocument>;
-export const validateEventRehearsalActionDocument:
-  ValidateFunction<EventRehearsalActionDocument> =
-    ajv.compile(eventRehearsalActionDocumentSchema) as
-      ValidateFunction<EventRehearsalActionDocument>;
-export const validateEventRehearsalGuestViewDocument:
-  ValidateFunction<EventRehearsalGuestViewDocument> =
-    ajv.compile(eventRehearsalGuestViewDocumentSchema) as
-      ValidateFunction<EventRehearsalGuestViewDocument>;
-export const validateEventRuntimeClaimRequestDocument:
-  ValidateFunction<EventRuntimeClaimRequestDocument> =
-    ajv.compile(eventRuntimeClaimRequestDocumentSchema) as
-      ValidateFunction<EventRuntimeClaimRequestDocument>;
-export const validateEventCrossPathsConsentDocument:
-  ValidateFunction<EventCrossPathsConsentDocument> =
-    ajv.compile(eventCrossPathsConsentDocumentSchema) as
-      ValidateFunction<EventCrossPathsConsentDocument>;
-export const validateCrossPathsShowcaseEligibilityDocument:
-  ValidateFunction<CrossPathsShowcaseEligibilityDocument> =
-    ajv.compile(crossPathsShowcaseEligibilityDocumentSchema) as
-      ValidateFunction<CrossPathsShowcaseEligibilityDocument>;
-export const validateCrossPathsSuggestionExposureDocument:
-  ValidateFunction<CrossPathsSuggestionExposureDocument> =
-    ajv.compile(crossPathsSuggestionExposureDocumentSchema) as
-      ValidateFunction<CrossPathsSuggestionExposureDocument>;
-export const validateCrossPathsInvitationDocument:
-  ValidateFunction<CrossPathsInvitationDocument> =
-    ajv.compile(crossPathsInvitationDocumentSchema) as
-      ValidateFunction<CrossPathsInvitationDocument>;
-export const validateCrossPathsPairHoldDocument:
-  ValidateFunction<CrossPathsPairHoldDocument> =
-    ajv.compile(crossPathsPairHoldDocumentSchema) as
-      ValidateFunction<CrossPathsPairHoldDocument>;
-export const validateEventBroadcastDocument:
-  ValidateFunction<EventBroadcastDocument> =
-    ajv.compile(eventBroadcastDocumentSchema) as
-      ValidateFunction<EventBroadcastDocument>;
-export const validateEventWaitlistOfferDocument:
-  ValidateFunction<EventWaitlistOfferDocument> =
-    ajv.compile(eventWaitlistOfferDocumentSchema) as
-      ValidateFunction<EventWaitlistOfferDocument>;
-export const validateEventSuccessPlanDocument:
-  ValidateFunction<EventSuccessPlanDocument> =
-    ajv.compile(eventSuccessPlanDocumentSchema) as
-      ValidateFunction<EventSuccessPlanDocument>;
-export const validateEventSuccessConversationGraphDocument:
-  ValidateFunction<EventSuccessConversationGraphDocument> =
-    ajv.compile(eventSuccessConversationGraphDocumentSchema) as
-      ValidateFunction<EventSuccessConversationGraphDocument>;
-export const validateOrganizerEventSuccessLayoutDocument:
-  ValidateFunction<OrganizerEventSuccessLayoutDocument> =
-    ajv.compile(organizerEventSuccessLayoutDocumentSchema) as
-      ValidateFunction<OrganizerEventSuccessLayoutDocument>;
-export const validateEventSuccessAssignmentDraftDocument:
-  ValidateFunction<EventSuccessAssignmentDraftDocument> =
-    ajv.compile(eventSuccessAssignmentDraftDocumentSchema) as
-      ValidateFunction<EventSuccessAssignmentDraftDocument>;
-export const validateEventSuccessFeedbackDocument:
-  ValidateFunction<EventSuccessFeedbackDocument> =
-    ajv.compile(eventSuccessFeedbackDocumentSchema) as
-      ValidateFunction<EventSuccessFeedbackDocument>;
-export const validateEventSuccessPreferenceDocument:
-  ValidateFunction<EventSuccessPreferenceDocument> =
-    ajv.compile(eventSuccessPreferenceDocumentSchema) as
-      ValidateFunction<EventSuccessPreferenceDocument>;
-export const validateEventSuccessCompatibilityResponseDocument:
-  ValidateFunction<EventSuccessCompatibilityResponseDocument> =
-    ajv.compile(eventSuccessCompatibilityResponseDocumentSchema) as
-      ValidateFunction<EventSuccessCompatibilityResponseDocument>;
-export const validateEventSuccessWingmanRequestDocument:
-  ValidateFunction<EventSuccessWingmanRequestDocument> =
-    ajv.compile(eventSuccessWingmanRequestDocumentSchema) as
-      ValidateFunction<EventSuccessWingmanRequestDocument>;
-export const validateEventSuccessArrivalMissionDocument:
-  ValidateFunction<EventSuccessArrivalMissionDocument> =
-    ajv.compile(eventSuccessArrivalMissionDocumentSchema) as
-      ValidateFunction<EventSuccessArrivalMissionDocument>;
-export const validateEventSuccessAssignmentDocument:
-  ValidateFunction<EventSuccessAssignmentDocument> =
-    ajv.compile(eventSuccessAssignmentDocumentSchema) as
-      ValidateFunction<EventSuccessAssignmentDocument>;
-export const validateEventSuccessUnitOutcomesDocument:
-  ValidateFunction<EventSuccessUnitOutcomesDocument> =
-    ajv.compile(eventSuccessUnitOutcomesDocumentSchema) as
-      ValidateFunction<EventSuccessUnitOutcomesDocument>;
-export const validateEventSuccessStandingsDocument:
-  ValidateFunction<EventSuccessStandingsDocument> =
-    ajv.compile(eventSuccessStandingsDocumentSchema) as
-      ValidateFunction<EventSuccessStandingsDocument>;
-export const validateEventSuccessScorecardDocument:
-  ValidateFunction<EventSuccessScorecardDocument> =
-    ajv.compile(eventSuccessScorecardDocumentSchema) as
-      ValidateFunction<EventSuccessScorecardDocument>;
-export const validateEventSafetyReportDocument:
-  ValidateFunction<EventSafetyReportDocument> =
-    ajv.compile(eventSafetyReportDocumentSchema) as
-      ValidateFunction<EventSafetyReportDocument>;
-export const validateClubScheduleLockDocument:
-  ValidateFunction<ClubScheduleLockDocument> =
-    ajv.compile(clubScheduleLockDocumentSchema) as
-      ValidateFunction<ClubScheduleLockDocument>;
-export const validateUserEventScheduleLockDocument:
-  ValidateFunction<UserEventScheduleLockDocument> =
-    ajv.compile(userEventScheduleLockDocumentSchema) as
-      ValidateFunction<UserEventScheduleLockDocument>;
-export const validateSavedEventDocument:
-  ValidateFunction<SavedEventDocument> =
-    ajv.compile(savedEventDocumentSchema) as
-      ValidateFunction<SavedEventDocument>;
-export const validateHostAnalyticsEvent:
-  ValidateFunction<HostAnalyticsEvent> =
-    ajv.compile(hostAnalyticsEventSchema) as
-      ValidateFunction<HostAnalyticsEvent>;
-export const validateUserProfileExposureEvent:
-  ValidateFunction<UserProfileExposureEvent> =
-    ajv.compile(userProfileExposureEventSchema) as
-      ValidateFunction<UserProfileExposureEvent>;
-export const validatePaymentDocument:
-  ValidateFunction<PaymentDocument> =
-    ajv.compile(paymentDocumentSchema) as
-      ValidateFunction<PaymentDocument>;
-export const validateHostPaymentAccountDocument:
-  ValidateFunction<HostPaymentAccountDocument> =
-    ajv.compile(hostPaymentAccountDocumentSchema) as
-      ValidateFunction<HostPaymentAccountDocument>;
-export const validateRazorpayPendingOrderDocument:
-  ValidateFunction<RazorpayPendingOrderDocument> =
-    ajv.compile(razorpayPendingOrderDocumentSchema) as
-      ValidateFunction<RazorpayPendingOrderDocument>;
-export const validateSwipeDocument:
-  ValidateFunction<SwipeDocument> =
-    ajv.compile(swipeDocumentSchema) as
-      ValidateFunction<SwipeDocument>;
-export const validateMatchDocument:
-  ValidateFunction<MatchDocument> =
-    ajv.compile(matchDocumentSchema) as
-      ValidateFunction<MatchDocument>;
-export const validateChatMessageDocument:
-  ValidateFunction<ChatMessageDocument> =
-    ajv.compile(chatMessageDocumentSchema) as
-      ValidateFunction<ChatMessageDocument>;
-export const validateActivityNotificationDocument:
-  ValidateFunction<ActivityNotificationDocument> =
-    ajv.compile(activityNotificationDocumentSchema) as
-      ValidateFunction<ActivityNotificationDocument>;
-export const validateReviewDocument:
-  ValidateFunction<ReviewDocument> =
-    ajv.compile(reviewDocumentSchema) as
-      ValidateFunction<ReviewDocument>;
-export const validateBlockDocument:
-  ValidateFunction<BlockDocument> =
-    ajv.compile(blockDocumentSchema) as
-      ValidateFunction<BlockDocument>;
-export const validateReportDocument:
-  ValidateFunction<ReportDocument> =
-    ajv.compile(reportDocumentSchema) as
-      ValidateFunction<ReportDocument>;
-export const validateModerationFlagDocument:
-  ValidateFunction<ModerationFlagDocument> =
-    ajv.compile(moderationFlagDocumentSchema) as
-      ValidateFunction<ModerationFlagDocument>;
-export const validateDeletedUserTombstoneDocument:
-  ValidateFunction<DeletedUserTombstoneDocument> =
-    ajv.compile(deletedUserTombstoneDocumentSchema) as
-      ValidateFunction<DeletedUserTombstoneDocument>;
-export const validateRateLimitDocument:
-  ValidateFunction<RateLimitDocument> =
-    ajv.compile(rateLimitDocumentSchema) as
-      ValidateFunction<RateLimitDocument>;
-export const validateHostAnalyticsSnapshotDocument:
-  ValidateFunction<HostAnalyticsSnapshotDocument> =
-    ajv.compile(hostAnalyticsSnapshotDocumentSchema) as
-      ValidateFunction<HostAnalyticsSnapshotDocument>;
-export const validateFunctionEventReceiptDocument:
-  ValidateFunction<FunctionEventReceiptDocument> =
-    ajv.compile(functionEventReceiptDocumentSchema) as
-      ValidateFunction<FunctionEventReceiptDocument>;
-export const validatePublicRouteReservationDocument:
-  ValidateFunction<PublicRouteReservationDocument> =
-    ajv.compile(publicRouteReservationDocumentSchema) as
-      ValidateFunction<PublicRouteReservationDocument>;
-export const validateSeedEventManifestDocument:
-  ValidateFunction<SeedEventManifestDocument> =
-    ajv.compile(seedEventManifestDocumentSchema) as
-      ValidateFunction<SeedEventManifestDocument>;
-export const validateOrganizerIntakeReviewDecisionDocument:
-  ValidateFunction<OrganizerIntakeReviewDecisionDocument> =
-    ajv.compile(organizerIntakeReviewDecisionDocumentSchema) as
-      ValidateFunction<OrganizerIntakeReviewDecisionDocument>;
-export const validateEventIntakeReviewDecisionDocument:
-  ValidateFunction<EventIntakeReviewDecisionDocument> =
-    ajv.compile(eventIntakeReviewDecisionDocumentSchema) as
-      ValidateFunction<EventIntakeReviewDecisionDocument>;
-export const validateOrganizerIntakeCurationDecisionDocument:
-  ValidateFunction<OrganizerIntakeCurationDecisionDocument> =
-    ajv.compile(organizerIntakeCurationDecisionDocumentSchema) as
-      ValidateFunction<OrganizerIntakeCurationDecisionDocument>;
-export const validateOrganizerIntakeFieldCorrectionDocument:
-  ValidateFunction<OrganizerIntakeFieldCorrectionDocument> =
-    ajv.compile(organizerIntakeFieldCorrectionDocumentSchema) as
-      ValidateFunction<OrganizerIntakeFieldCorrectionDocument>;
-export const validateOrganizerEventCandidateReviewDecisionDocument:
-  ValidateFunction<OrganizerEventCandidateReviewDecisionDocument> =
-    ajv.compile(organizerEventCandidateReviewDecisionDocumentSchema) as
-      ValidateFunction<OrganizerEventCandidateReviewDecisionDocument>;
-export const validateOrganizerEventLocationResolutionDecisionDocument:
-  ValidateFunction<OrganizerEventLocationResolutionDecisionDocument> =
-    ajv.compile(organizerEventLocationResolutionDecisionDocumentSchema) as
-      ValidateFunction<OrganizerEventLocationResolutionDecisionDocument>;
-export const validateOrganizerPolicyGapReviewDecisionDocument:
-  ValidateFunction<OrganizerPolicyGapReviewDecisionDocument> =
-    ajv.compile(organizerPolicyGapReviewDecisionDocumentSchema) as
-      ValidateFunction<OrganizerPolicyGapReviewDecisionDocument>;
-export const validateUpdateUserProfileCallablePayload:
-  ValidateFunction<UpdateUserProfileCallablePayload> =
-    ajv.compile(updateUserProfileCallablePayloadSchema) as
-      ValidateFunction<UpdateUserProfileCallablePayload>;
-export const validateCreateClubCallablePayload:
-  ValidateFunction<CreateClubCallablePayload> =
-    ajv.compile(createClubCallablePayloadSchema) as
-      ValidateFunction<CreateClubCallablePayload>;
-export const validateCreateOrganizerCallablePayload:
-  ValidateFunction<CreateOrganizerCallablePayload> =
-    ajv.compile(createOrganizerCallablePayloadSchema) as
-      ValidateFunction<CreateOrganizerCallablePayload>;
-export const validateCreateOrganizerCallableResponse:
-  ValidateFunction<CreateOrganizerCallableResponse> =
-    ajv.compile(createOrganizerCallableResponseSchema) as
-      ValidateFunction<CreateOrganizerCallableResponse>;
-export const validateUpdateOrganizerCallablePayload:
-  ValidateFunction<UpdateOrganizerCallablePayload> =
-    ajv.compile(updateOrganizerCallablePayloadSchema) as
-      ValidateFunction<UpdateOrganizerCallablePayload>;
-export const validateArchiveOrganizerCallablePayload:
-  ValidateFunction<ArchiveOrganizerCallablePayload> =
-    ajv.compile(archiveOrganizerCallablePayloadSchema) as
-      ValidateFunction<ArchiveOrganizerCallablePayload>;
-export const validateDeleteOrganizerCallablePayload:
-  ValidateFunction<DeleteOrganizerCallablePayload> =
-    ajv.compile(deleteOrganizerCallablePayloadSchema) as
-      ValidateFunction<DeleteOrganizerCallablePayload>;
-export const validateCreateOrganizerPostCallablePayload:
-  ValidateFunction<CreateOrganizerPostCallablePayload> =
-    ajv.compile(createOrganizerPostCallablePayloadSchema) as
-      ValidateFunction<CreateOrganizerPostCallablePayload>;
-export const validateCreateOrganizerPostCallableResponse:
-  ValidateFunction<CreateOrganizerPostCallableResponse> =
-    ajv.compile(createOrganizerPostCallableResponseSchema) as
-      ValidateFunction<CreateOrganizerPostCallableResponse>;
-export const validateRequestOrganizerClaimCallablePayload:
-  ValidateFunction<RequestOrganizerClaimCallablePayload> =
-    ajv.compile(requestOrganizerClaimCallablePayloadSchema) as
-      ValidateFunction<RequestOrganizerClaimCallablePayload>;
-export const validateRequestOrganizerClaimCallableResponse:
-  ValidateFunction<RequestOrganizerClaimCallableResponse> =
-    ajv.compile(requestOrganizerClaimCallableResponseSchema) as
-      ValidateFunction<RequestOrganizerClaimCallableResponse>;
-export const validateAdminDecideOrganizerClaimCallablePayload:
-  ValidateFunction<AdminDecideOrganizerClaimCallablePayload> =
-    ajv.compile(adminDecideOrganizerClaimCallablePayloadSchema) as
-      ValidateFunction<AdminDecideOrganizerClaimCallablePayload>;
-export const validateCreateClubCallableResponse:
-  ValidateFunction<CreateClubCallableResponse> =
-    ajv.compile(createClubCallableResponseSchema) as
-      ValidateFunction<CreateClubCallableResponse>;
-export const validateCreateClubPostCallablePayload:
-  ValidateFunction<CreateClubPostCallablePayload> =
-    ajv.compile(createClubPostCallablePayloadSchema) as
-      ValidateFunction<CreateClubPostCallablePayload>;
-export const validateCreateClubPostCallableResponse:
-  ValidateFunction<CreateClubPostCallableResponse> =
-    ajv.compile(createClubPostCallableResponseSchema) as
-      ValidateFunction<CreateClubPostCallableResponse>;
-export const validateSendEventBroadcastCallablePayload:
-  ValidateFunction<SendEventBroadcastCallablePayload> =
-    ajv.compile(sendEventBroadcastCallablePayloadSchema) as
-      ValidateFunction<SendEventBroadcastCallablePayload>;
-export const validateSendEventBroadcastCallableResponse:
-  ValidateFunction<SendEventBroadcastCallableResponse> =
-    ajv.compile(sendEventBroadcastCallableResponseSchema) as
-      ValidateFunction<SendEventBroadcastCallableResponse>;
-export const validateUpdateClubCallablePayload:
-  ValidateFunction<UpdateClubCallablePayload> =
-    ajv.compile(updateClubCallablePayloadSchema) as
-      ValidateFunction<UpdateClubCallablePayload>;
-export const validateHostAnalyticsQueryCallablePayload:
-  ValidateFunction<HostAnalyticsQueryCallablePayload> =
-    ajv.compile(hostAnalyticsQueryCallablePayloadSchema) as
-      ValidateFunction<HostAnalyticsQueryCallablePayload>;
-export const validateHostAnalyticsCallableResponse:
-  ValidateFunction<HostAnalyticsCallableResponse> =
-    ajv.compile(hostAnalyticsCallableResponseSchema) as
-      ValidateFunction<HostAnalyticsCallableResponse>;
-export const validateUserAnalyticsQueryCallablePayload:
-  ValidateFunction<UserAnalyticsQueryCallablePayload> =
-    ajv.compile(userAnalyticsQueryCallablePayloadSchema) as
-      ValidateFunction<UserAnalyticsQueryCallablePayload>;
-export const validateUserAnalyticsCallableResponse:
-  ValidateFunction<UserAnalyticsCallableResponse> =
-    ajv.compile(userAnalyticsCallableResponseSchema) as
-      ValidateFunction<UserAnalyticsCallableResponse>;
-export const validateAddClubHostCallablePayload:
-  ValidateFunction<AddClubHostCallablePayload> =
-    ajv.compile(addClubHostCallablePayloadSchema) as
-      ValidateFunction<AddClubHostCallablePayload>;
-export const validateOrganizerFollowCallablePayload:
-  ValidateFunction<OrganizerFollowCallablePayload> =
-    ajv.compile(organizerFollowCallablePayloadSchema) as
-      ValidateFunction<OrganizerFollowCallablePayload>;
-export const validateSetOrganizerNotificationPreferenceCallablePayload:
-  ValidateFunction<SetOrganizerNotificationPreferenceCallablePayload> =
-    ajv.compile(setOrganizerNotificationPreferenceCallablePayloadSchema) as
-      ValidateFunction<SetOrganizerNotificationPreferenceCallablePayload>;
-export const validateAddOrganizerManagerCallablePayload:
-  ValidateFunction<AddOrganizerManagerCallablePayload> =
-    ajv.compile(addOrganizerManagerCallablePayloadSchema) as
-      ValidateFunction<AddOrganizerManagerCallablePayload>;
-export const validateRemoveOrganizerManagerCallablePayload:
-  ValidateFunction<RemoveOrganizerManagerCallablePayload> =
-    ajv.compile(removeOrganizerManagerCallablePayloadSchema) as
-      ValidateFunction<RemoveOrganizerManagerCallablePayload>;
-export const validateTransferOrganizerOwnershipCallablePayload:
-  ValidateFunction<TransferOrganizerOwnershipCallablePayload> =
-    ajv.compile(transferOrganizerOwnershipCallablePayloadSchema) as
-      ValidateFunction<TransferOrganizerOwnershipCallablePayload>;
-export const validateRemoveClubHostCallablePayload:
-  ValidateFunction<RemoveClubHostCallablePayload> =
-    ajv.compile(removeClubHostCallablePayloadSchema) as
-      ValidateFunction<RemoveClubHostCallablePayload>;
-export const validateTransferClubOwnershipCallablePayload:
-  ValidateFunction<TransferClubOwnershipCallablePayload> =
-    ajv.compile(transferClubOwnershipCallablePayloadSchema) as
-      ValidateFunction<TransferClubOwnershipCallablePayload>;
-export const validateRequestClubClaimCallablePayload:
-  ValidateFunction<RequestClubClaimCallablePayload> =
-    ajv.compile(requestClubClaimCallablePayloadSchema) as
-      ValidateFunction<RequestClubClaimCallablePayload>;
-export const validateRequestClubClaimCallableResponse:
-  ValidateFunction<RequestClubClaimCallableResponse> =
-    ajv.compile(requestClubClaimCallableResponseSchema) as
-      ValidateFunction<RequestClubClaimCallableResponse>;
-export const validateAdminDecideClubClaimCallablePayload:
-  ValidateFunction<AdminDecideClubClaimCallablePayload> =
-    ajv.compile(adminDecideClubClaimCallablePayloadSchema) as
-      ValidateFunction<AdminDecideClubClaimCallablePayload>;
-export const validateAdminDecideOrganizerIntakeCallablePayload:
-  ValidateFunction<AdminDecideOrganizerIntakeCallablePayload> =
-    ajv.compile(adminDecideOrganizerIntakeCallablePayloadSchema) as
-      ValidateFunction<AdminDecideOrganizerIntakeCallablePayload>;
-export const validateAdminRecordOrganizerCurationCallablePayload:
-  ValidateFunction<AdminRecordOrganizerCurationCallablePayload> =
-    ajv.compile(adminRecordOrganizerCurationCallablePayloadSchema) as
-      ValidateFunction<AdminRecordOrganizerCurationCallablePayload>;
-export const validateAdminRecordEventIntakeReviewDecisionCallablePayload:
-  ValidateFunction<AdminRecordEventIntakeReviewDecisionCallablePayload> =
-    ajv.compile(adminRecordEventIntakeReviewDecisionCallablePayloadSchema) as
-      ValidateFunction<AdminRecordEventIntakeReviewDecisionCallablePayload>;
-export const validateAdminListIntakeOperationsCallablePayload:
-  ValidateFunction<AdminListIntakeOperationsCallablePayload> =
-    ajv.compile(adminListIntakeOperationsCallablePayloadSchema) as
-      ValidateFunction<AdminListIntakeOperationsCallablePayload>;
-export const validateAdminListActionExecutionsCallablePayload:
-  ValidateFunction<AdminListActionExecutionsCallablePayload> =
-    ajv.compile(adminListActionExecutionsCallablePayloadSchema) as
-      ValidateFunction<AdminListActionExecutionsCallablePayload>;
-export const validateAdminRecordActionExecutionCallablePayload:
-  ValidateFunction<AdminRecordActionExecutionCallablePayload> =
-    ajv.compile(adminRecordActionExecutionCallablePayloadSchema) as
-      ValidateFunction<AdminRecordActionExecutionCallablePayload>;
-export const validateAdminDecideOrganizerEventCandidateCallablePayload:
-  ValidateFunction<AdminDecideOrganizerEventCandidateCallablePayload> =
-    ajv.compile(adminDecideOrganizerEventCandidateCallablePayloadSchema) as
-      ValidateFunction<AdminDecideOrganizerEventCandidateCallablePayload>;
-export const validateAdminDecideOrganizerPolicyGapCallablePayload:
-  ValidateFunction<AdminDecideOrganizerPolicyGapCallablePayload> =
-    ajv.compile(adminDecideOrganizerPolicyGapCallablePayloadSchema) as
-      ValidateFunction<AdminDecideOrganizerPolicyGapCallablePayload>;
-export const validateAdminResolveOrganizerEventLocationCallablePayload:
-  ValidateFunction<AdminResolveOrganizerEventLocationCallablePayload> =
-    ajv.compile(adminResolveOrganizerEventLocationCallablePayloadSchema) as
-      ValidateFunction<AdminResolveOrganizerEventLocationCallablePayload>;
-export const validateAdminSetClubIndexStatusCallablePayload:
-  ValidateFunction<AdminSetClubIndexStatusCallablePayload> =
-    ajv.compile(adminSetClubIndexStatusCallablePayloadSchema) as
-      ValidateFunction<AdminSetClubIndexStatusCallablePayload>;
-export const validateAdminListCrossPathsShowcaseCandidatesCallablePayload:
-  ValidateFunction<AdminListCrossPathsShowcaseCandidatesCallablePayload> =
-    ajv.compile(adminListCrossPathsShowcaseCandidatesCallablePayloadSchema) as
-      ValidateFunction<AdminListCrossPathsShowcaseCandidatesCallablePayload>;
-export const validateAdminSetCrossPathsShowcaseEligibilityCallablePayload:
-  ValidateFunction<AdminSetCrossPathsShowcaseEligibilityCallablePayload> =
-    ajv.compile(adminSetCrossPathsShowcaseEligibilityCallablePayloadSchema) as
-      ValidateFunction<AdminSetCrossPathsShowcaseEligibilityCallablePayload>;
-export const validateAdminGetClubDetailsCallablePayload:
-  ValidateFunction<AdminGetClubDetailsCallablePayload> =
-    ajv.compile(adminGetClubDetailsCallablePayloadSchema) as
-      ValidateFunction<AdminGetClubDetailsCallablePayload>;
-export const validateAdminListClubDetailsCallablePayload:
-  ValidateFunction<AdminListClubDetailsCallablePayload> =
-    ajv.compile(adminListClubDetailsCallablePayloadSchema) as
-      ValidateFunction<AdminListClubDetailsCallablePayload>;
-export const validateAdminUpdateClubDetailsCallablePayload:
-  ValidateFunction<AdminUpdateClubDetailsCallablePayload> =
-    ajv.compile(adminUpdateClubDetailsCallablePayloadSchema) as
-      ValidateFunction<AdminUpdateClubDetailsCallablePayload>;
-export const validateAdminGetOrganizerDetailsCallablePayload:
-  ValidateFunction<AdminGetOrganizerDetailsCallablePayload> =
-    ajv.compile(adminGetOrganizerDetailsCallablePayloadSchema) as
-      ValidateFunction<AdminGetOrganizerDetailsCallablePayload>;
-export const validateAdminListOrganizerDetailsCallablePayload:
-  ValidateFunction<AdminListOrganizerDetailsCallablePayload> =
-    ajv.compile(adminListOrganizerDetailsCallablePayloadSchema) as
-      ValidateFunction<AdminListOrganizerDetailsCallablePayload>;
-export const validateAdminUpdateOrganizerDetailsCallablePayload:
-  ValidateFunction<AdminUpdateOrganizerDetailsCallablePayload> =
-    ajv.compile(adminUpdateOrganizerDetailsCallablePayloadSchema) as
-      ValidateFunction<AdminUpdateOrganizerDetailsCallablePayload>;
-export const validateAdminGetEventDetailsCallablePayload:
-  ValidateFunction<AdminGetEventDetailsCallablePayload> =
-    ajv.compile(adminGetEventDetailsCallablePayloadSchema) as
-      ValidateFunction<AdminGetEventDetailsCallablePayload>;
-export const validateAdminListEventDetailsCallablePayload:
-  ValidateFunction<AdminListEventDetailsCallablePayload> =
-    ajv.compile(adminListEventDetailsCallablePayloadSchema) as
-      ValidateFunction<AdminListEventDetailsCallablePayload>;
-export const validateAdminListExternalEventDetailsCallablePayload:
-  ValidateFunction<AdminListExternalEventDetailsCallablePayload> =
-    ajv.compile(adminListExternalEventDetailsCallablePayloadSchema) as
-      ValidateFunction<AdminListExternalEventDetailsCallablePayload>;
-export const validateAdminUpdateEventDetailsCallablePayload:
-  ValidateFunction<AdminUpdateEventDetailsCallablePayload> =
-    ajv.compile(adminUpdateEventDetailsCallablePayloadSchema) as
-      ValidateFunction<AdminUpdateEventDetailsCallablePayload>;
-export const validateAdminPublishExternalEventCallablePayload:
-  ValidateFunction<AdminPublishExternalEventCallablePayload> =
-    ajv.compile(adminPublishExternalEventCallablePayloadSchema) as
-      ValidateFunction<AdminPublishExternalEventCallablePayload>;
-export const validateAdminTakedownExternalEventCallablePayload:
-  ValidateFunction<AdminTakedownExternalEventCallablePayload> =
-    ajv.compile(adminTakedownExternalEventCallablePayloadSchema) as
-      ValidateFunction<AdminTakedownExternalEventCallablePayload>;
-export const validateStartClubHostConversationCallablePayload:
-  ValidateFunction<StartClubHostConversationCallablePayload> =
-    ajv.compile(startClubHostConversationCallablePayloadSchema) as
-      ValidateFunction<StartClubHostConversationCallablePayload>;
-export const validateStartOrganizerConversationCallablePayload:
-  ValidateFunction<StartOrganizerConversationCallablePayload> =
-    ajv.compile(startOrganizerConversationCallablePayloadSchema) as
-      ValidateFunction<StartOrganizerConversationCallablePayload>;
-export const validateStartOrganizerContactConversationCallablePayload:
-  ValidateFunction<StartOrganizerContactConversationCallablePayload> =
-    ajv.compile(startOrganizerContactConversationCallablePayloadSchema) as
-      ValidateFunction<StartOrganizerContactConversationCallablePayload>;
-export const validateArchiveClubCallablePayload:
-  ValidateFunction<ArchiveClubCallablePayload> =
-    ajv.compile(archiveClubCallablePayloadSchema) as
-      ValidateFunction<ArchiveClubCallablePayload>;
-export const validateDeleteClubCallablePayload:
-  ValidateFunction<DeleteClubCallablePayload> =
-    ajv.compile(deleteClubCallablePayloadSchema) as
-      ValidateFunction<DeleteClubCallablePayload>;
-export const validateClubMembershipCallablePayload:
-  ValidateFunction<ClubMembershipCallablePayload> =
-    ajv.compile(clubMembershipCallablePayloadSchema) as
-      ValidateFunction<ClubMembershipCallablePayload>;
-export const validateSetClubNotificationPreferenceCallablePayload:
-  ValidateFunction<SetClubNotificationPreferenceCallablePayload> =
-    ajv.compile(setClubNotificationPreferenceCallablePayloadSchema) as
-      ValidateFunction<SetClubNotificationPreferenceCallablePayload>;
-export const validateCreateEventCallablePayload:
-  ValidateFunction<CreateEventCallablePayload> =
-    ajv.compile(createEventCallablePayloadSchema) as
-      ValidateFunction<CreateEventCallablePayload>;
-export const validateUpdateEventCallablePayload:
-  ValidateFunction<UpdateEventCallablePayload> =
-    ajv.compile(updateEventCallablePayloadSchema) as
-      ValidateFunction<UpdateEventCallablePayload>;
-export const validateCancelEventCallablePayload:
-  ValidateFunction<CancelEventCallablePayload> =
-    ajv.compile(cancelEventCallablePayloadSchema) as
-      ValidateFunction<CancelEventCallablePayload>;
-export const validateDeleteEventCallablePayload:
-  ValidateFunction<DeleteEventCallablePayload> =
-    ajv.compile(deleteEventCallablePayloadSchema) as
-      ValidateFunction<DeleteEventCallablePayload>;
-export const validateEventIdCallablePayload:
-  ValidateFunction<EventIdCallablePayload> =
-    ajv.compile(eventIdCallablePayloadSchema) as
-      ValidateFunction<EventIdCallablePayload>;
-export const validateSetCrossPathsEventConsentCallablePayload:
-  ValidateFunction<SetCrossPathsEventConsentCallablePayload> =
-    ajv.compile(setCrossPathsEventConsentCallablePayloadSchema) as
-      ValidateFunction<SetCrossPathsEventConsentCallablePayload>;
-export const validateGetCrossPathsSuggestionsCallablePayload:
-  ValidateFunction<GetCrossPathsSuggestionsCallablePayload> =
-    ajv.compile(getCrossPathsSuggestionsCallablePayloadSchema) as
-      ValidateFunction<GetCrossPathsSuggestionsCallablePayload>;
-export const validateSendCrossPathsInvitationCallablePayload:
-  ValidateFunction<SendCrossPathsInvitationCallablePayload> =
-    ajv.compile(sendCrossPathsInvitationCallablePayloadSchema) as
-      ValidateFunction<SendCrossPathsInvitationCallablePayload>;
-export const validateRespondCrossPathsInvitationCallablePayload:
-  ValidateFunction<RespondCrossPathsInvitationCallablePayload> =
-    ajv.compile(respondCrossPathsInvitationCallablePayloadSchema) as
-      ValidateFunction<RespondCrossPathsInvitationCallablePayload>;
-export const validateCancelCrossPathsInvitationOrPlanCallablePayload:
-  ValidateFunction<CancelCrossPathsInvitationOrPlanCallablePayload> =
-    ajv.compile(cancelCrossPathsInvitationOrPlanCallablePayloadSchema) as
-      ValidateFunction<CancelCrossPathsInvitationOrPlanCallablePayload>;
-export const validateCreateEventWaitlistOffersCallablePayload:
-  ValidateFunction<CreateEventWaitlistOffersCallablePayload> =
-    ajv.compile(createEventWaitlistOffersCallablePayloadSchema) as
-      ValidateFunction<CreateEventWaitlistOffersCallablePayload>;
-export const validateCreateEventInviteLinkCallablePayload:
-  ValidateFunction<CreateEventInviteLinkCallablePayload> =
-    ajv.compile(createEventInviteLinkCallablePayloadSchema) as
-      ValidateFunction<CreateEventInviteLinkCallablePayload>;
-export const validateDisableEventInviteLinkCallablePayload:
-  ValidateFunction<DisableEventInviteLinkCallablePayload> =
-    ajv.compile(disableEventInviteLinkCallablePayloadSchema) as
-      ValidateFunction<DisableEventInviteLinkCallablePayload>;
-export const validateRecordEventInviteLinkOpenCallablePayload:
-  ValidateFunction<RecordEventInviteLinkOpenCallablePayload> =
-    ajv.compile(recordEventInviteLinkOpenCallablePayloadSchema) as
-      ValidateFunction<RecordEventInviteLinkOpenCallablePayload>;
-export const validateResolveEventInviteLandingCallablePayload:
-  ValidateFunction<ResolveEventInviteLandingCallablePayload> =
-    ajv.compile(resolveEventInviteLandingCallablePayloadSchema) as
-      ValidateFunction<ResolveEventInviteLandingCallablePayload>;
-export const validateResolveEventInviteLandingCallableResponse:
-  ValidateFunction<ResolveEventInviteLandingCallableResponse> =
-    ajv.compile(resolveEventInviteLandingCallableResponseSchema) as
-      ValidateFunction<ResolveEventInviteLandingCallableResponse>;
-export const validateGetEventInviteLinkTokenCallablePayload:
-  ValidateFunction<GetEventInviteLinkTokenCallablePayload> =
-    ajv.compile(getEventInviteLinkTokenCallablePayloadSchema) as
-      ValidateFunction<GetEventInviteLinkTokenCallablePayload>;
-export const validateRecordEventShareIntentCallablePayload:
-  ValidateFunction<RecordEventShareIntentCallablePayload> =
-    ajv.compile(recordEventShareIntentCallablePayloadSchema) as
-      ValidateFunction<RecordEventShareIntentCallablePayload>;
-export const validateUpsertOrganizerCampaignCallablePayload:
-  ValidateFunction<UpsertOrganizerCampaignCallablePayload> =
-    ajv.compile(upsertOrganizerCampaignCallablePayloadSchema) as
-      ValidateFunction<UpsertOrganizerCampaignCallablePayload>;
-export const validateOrganizerCampaignActionCallablePayload:
-  ValidateFunction<OrganizerCampaignActionCallablePayload> =
-    ajv.compile(organizerCampaignActionCallablePayloadSchema) as
-      ValidateFunction<OrganizerCampaignActionCallablePayload>;
-export const validateCompleteOrganizerWhatsappConnectionCallablePayload:
-  ValidateFunction<CompleteOrganizerWhatsappConnectionCallablePayload> =
-    ajv.compile(completeOrganizerWhatsappConnectionCallablePayloadSchema) as
-      ValidateFunction<CompleteOrganizerWhatsappConnectionCallablePayload>;
-export const validateOrganizerSenderConnectionActionCallablePayload:
-  ValidateFunction<OrganizerSenderConnectionActionCallablePayload> =
-    ajv.compile(organizerSenderConnectionActionCallablePayloadSchema) as
-      ValidateFunction<OrganizerSenderConnectionActionCallablePayload>;
-export const validateSendOrganizerWhatsappTestCallablePayload:
-  ValidateFunction<SendOrganizerWhatsappTestCallablePayload> =
-    ajv.compile(sendOrganizerWhatsappTestCallablePayloadSchema) as
-      ValidateFunction<SendOrganizerWhatsappTestCallablePayload>;
-export const validateOrganizerCampaignCallableResponse:
-  ValidateFunction<OrganizerCampaignCallableResponse> =
-    ajv.compile(organizerCampaignCallableResponseSchema) as
-      ValidateFunction<OrganizerCampaignCallableResponse>;
-export const validateListOrganizerCampaignsCallablePayload:
-  ValidateFunction<ListOrganizerCampaignsCallablePayload> =
-    ajv.compile(listOrganizerCampaignsCallablePayloadSchema) as
-      ValidateFunction<ListOrganizerCampaignsCallablePayload>;
-export const validateListOrganizerCampaignsCallableResponse:
-  ValidateFunction<ListOrganizerCampaignsCallableResponse> =
-    ajv.compile(listOrganizerCampaignsCallableResponseSchema) as
-      ValidateFunction<ListOrganizerCampaignsCallableResponse>;
-export const validateOrganizerMessagingSetupCallableResponse:
-  ValidateFunction<OrganizerMessagingSetupCallableResponse> =
-    ajv.compile(organizerMessagingSetupCallableResponseSchema) as
-      ValidateFunction<OrganizerMessagingSetupCallableResponse>;
-export const validateGetOrganizerProviderSetupCallablePayload:
-  ValidateFunction<GetOrganizerProviderSetupCallablePayload> =
-    ajv.compile(getOrganizerProviderSetupCallablePayloadSchema) as
-      ValidateFunction<GetOrganizerProviderSetupCallablePayload>;
-export const validateConnectOrganizerLumaProviderCallablePayload:
-  ValidateFunction<ConnectOrganizerLumaProviderCallablePayload> =
-    ajv.compile(connectOrganizerLumaProviderCallablePayloadSchema) as
-      ValidateFunction<ConnectOrganizerLumaProviderCallablePayload>;
-export const validateListOrganizerLumaEventsCallablePayload:
-  ValidateFunction<ListOrganizerLumaEventsCallablePayload> =
-    ajv.compile(listOrganizerLumaEventsCallablePayloadSchema) as
-      ValidateFunction<ListOrganizerLumaEventsCallablePayload>;
-export const validateSyncOrganizerProviderEventCallablePayload:
-  ValidateFunction<SyncOrganizerProviderEventCallablePayload> =
-    ajv.compile(syncOrganizerProviderEventCallablePayloadSchema) as
-      ValidateFunction<SyncOrganizerProviderEventCallablePayload>;
-export const validateDisconnectOrganizerProviderCallablePayload:
-  ValidateFunction<DisconnectOrganizerProviderCallablePayload> =
-    ajv.compile(disconnectOrganizerProviderCallablePayloadSchema) as
-      ValidateFunction<DisconnectOrganizerProviderCallablePayload>;
-export const validateOrganizerProviderSetupCallableResponse:
-  ValidateFunction<OrganizerProviderSetupCallableResponse> =
-    ajv.compile(organizerProviderSetupCallableResponseSchema) as
-      ValidateFunction<OrganizerProviderSetupCallableResponse>;
-export const validateListOrganizerLumaEventsCallableResponse:
-  ValidateFunction<ListOrganizerLumaEventsCallableResponse> =
-    ajv.compile(listOrganizerLumaEventsCallableResponseSchema) as
-      ValidateFunction<ListOrganizerLumaEventsCallableResponse>;
-export const validateSyncOrganizerProviderEventCallableResponse:
-  ValidateFunction<SyncOrganizerProviderEventCallableResponse> =
-    ajv.compile(syncOrganizerProviderEventCallableResponseSchema) as
-      ValidateFunction<SyncOrganizerProviderEventCallableResponse>;
-export const validateRecordOrganizerAnalyticsEventCallablePayload:
-  ValidateFunction<RecordOrganizerAnalyticsEventCallablePayload> =
-    ajv.compile(recordOrganizerAnalyticsEventCallablePayloadSchema) as
-      ValidateFunction<RecordOrganizerAnalyticsEventCallablePayload>;
-export const validateRecordOrganizerAnalyticsEventCallableResponse:
-  ValidateFunction<RecordOrganizerAnalyticsEventCallableResponse> =
-    ajv.compile(recordOrganizerAnalyticsEventCallableResponseSchema) as
-      ValidateFunction<RecordOrganizerAnalyticsEventCallableResponse>;
-export const validateMarkEventAttendanceCallablePayload:
-  ValidateFunction<MarkEventAttendanceCallablePayload> =
-    ajv.compile(markEventAttendanceCallablePayloadSchema) as
-      ValidateFunction<MarkEventAttendanceCallablePayload>;
-export const validateImportEventAttendeesCallablePayload:
-  ValidateFunction<ImportEventAttendeesCallablePayload> =
-    ajv.compile(importEventAttendeesCallablePayloadSchema) as
-      ValidateFunction<ImportEventAttendeesCallablePayload>;
-export const validateMarkEventAttendeeAttendanceCallablePayload:
-  ValidateFunction<MarkEventAttendeeAttendanceCallablePayload> =
-    ajv.compile(markEventAttendeeAttendanceCallablePayloadSchema) as
-      ValidateFunction<MarkEventAttendeeAttendanceCallablePayload>;
-export const validateSetEventAttendeeAttendanceCallablePayload:
-  ValidateFunction<SetEventAttendeeAttendanceCallablePayload> =
-    ajv.compile(setEventAttendeeAttendanceCallablePayloadSchema) as
-      ValidateFunction<SetEventAttendeeAttendanceCallablePayload>;
-export const validateSetEventAttendeeAttendanceCallableResponse:
-  ValidateFunction<SetEventAttendeeAttendanceCallableResponse> =
-    ajv.compile(setEventAttendeeAttendanceCallableResponseSchema) as
-      ValidateFunction<SetEventAttendeeAttendanceCallableResponse>;
-export const validateEventOperatorAccessCallablePayload:
-  ValidateFunction<EventOperatorAccessCallablePayload> =
-    ajv.compile(eventOperatorAccessCallablePayloadSchema) as
-      ValidateFunction<EventOperatorAccessCallablePayload>;
-export const validateEventOperatorAccessCallableResponse:
-  ValidateFunction<EventOperatorAccessCallableResponse> =
-    ajv.compile(eventOperatorAccessCallableResponseSchema) as
-      ValidateFunction<EventOperatorAccessCallableResponse>;
-export const validateGrantEventStaffCallablePayload:
-  ValidateFunction<GrantEventStaffCallablePayload> =
-    ajv.compile(grantEventStaffCallablePayloadSchema) as
-      ValidateFunction<GrantEventStaffCallablePayload>;
-export const validateRevokeEventStaffCallablePayload:
-  ValidateFunction<RevokeEventStaffCallablePayload> =
-    ajv.compile(revokeEventStaffCallablePayloadSchema) as
-      ValidateFunction<RevokeEventStaffCallablePayload>;
-export const validateEventStaffListCallableResponse:
-  ValidateFunction<EventStaffListCallableResponse> =
-    ajv.compile(eventStaffListCallableResponseSchema) as
-      ValidateFunction<EventStaffListCallableResponse>;
-export const validateRegisterPublicEventCallablePayload:
-  ValidateFunction<RegisterPublicEventCallablePayload> =
-    ajv.compile(registerPublicEventCallablePayloadSchema) as
-      ValidateFunction<RegisterPublicEventCallablePayload>;
-export const validateRegisterPublicEventCallableResponse:
-  ValidateFunction<RegisterPublicEventCallableResponse> =
-    ajv.compile(registerPublicEventCallableResponseSchema) as
-      ValidateFunction<RegisterPublicEventCallableResponse>;
-export const validateGetEventRuntimeBootstrapCallablePayload:
-  ValidateFunction<GetEventRuntimeBootstrapCallablePayload> =
-    ajv.compile(getEventRuntimeBootstrapCallablePayloadSchema) as
-      ValidateFunction<GetEventRuntimeBootstrapCallablePayload>;
-export const validateCreateEventRehearsalCallablePayload:
-  ValidateFunction<CreateEventRehearsalCallablePayload> =
-    ajv.compile(createEventRehearsalCallablePayloadSchema) as
-      ValidateFunction<CreateEventRehearsalCallablePayload>;
-export const validateCreateEventRehearsalCallableResponse:
-  ValidateFunction<CreateEventRehearsalCallableResponse> =
-    ajv.compile(createEventRehearsalCallableResponseSchema) as
-      ValidateFunction<CreateEventRehearsalCallableResponse>;
-export const validateGetEventRehearsalBootstrapCallablePayload:
-  ValidateFunction<GetEventRehearsalBootstrapCallablePayload> =
-    ajv.compile(getEventRehearsalBootstrapCallablePayloadSchema) as
-      ValidateFunction<GetEventRehearsalBootstrapCallablePayload>;
-export const validateEventRehearsalBootstrapCallableResponse:
-  ValidateFunction<EventRehearsalBootstrapCallableResponse> =
-    ajv.compile(eventRehearsalBootstrapCallableResponseSchema) as
-      ValidateFunction<EventRehearsalBootstrapCallableResponse>;
-export const validateUpdateEventRehearsalSetupCallablePayload:
-  ValidateFunction<UpdateEventRehearsalSetupCallablePayload> =
-    ajv.compile(updateEventRehearsalSetupCallablePayloadSchema) as
-      ValidateFunction<UpdateEventRehearsalSetupCallablePayload>;
-export const validateControlEventRehearsalCallablePayload:
-  ValidateFunction<ControlEventRehearsalCallablePayload> =
-    ajv.compile(controlEventRehearsalCallablePayloadSchema) as
-      ValidateFunction<ControlEventRehearsalCallablePayload>;
-export const validateInjectEventRehearsalBehaviorCallablePayload:
-  ValidateFunction<InjectEventRehearsalBehaviorCallablePayload> =
-    ajv.compile(injectEventRehearsalBehaviorCallablePayloadSchema) as
-      ValidateFunction<InjectEventRehearsalBehaviorCallablePayload>;
-export const validateResetEventRehearsalCallablePayload:
-  ValidateFunction<ResetEventRehearsalCallablePayload> =
-    ajv.compile(resetEventRehearsalCallablePayloadSchema) as
-      ValidateFunction<ResetEventRehearsalCallablePayload>;
-export const validateRotateEventRehearsalGuestLinkCallablePayload:
-  ValidateFunction<RotateEventRehearsalGuestLinkCallablePayload> =
-    ajv.compile(rotateEventRehearsalGuestLinkCallablePayloadSchema) as
-      ValidateFunction<RotateEventRehearsalGuestLinkCallablePayload>;
-export const validateGetEventRehearsalGuestBootstrapCallablePayload:
-  ValidateFunction<GetEventRehearsalGuestBootstrapCallablePayload> =
-    ajv.compile(getEventRehearsalGuestBootstrapCallablePayloadSchema) as
-      ValidateFunction<GetEventRehearsalGuestBootstrapCallablePayload>;
-export const validateEventRehearsalGuestBootstrapCallableResponse:
-  ValidateFunction<EventRehearsalGuestBootstrapCallableResponse> =
-    ajv.compile(eventRehearsalGuestBootstrapCallableResponseSchema) as
-      ValidateFunction<EventRehearsalGuestBootstrapCallableResponse>;
-export const validateSubmitEventRehearsalGuestActionCallablePayload:
-  ValidateFunction<SubmitEventRehearsalGuestActionCallablePayload> =
-    ajv.compile(submitEventRehearsalGuestActionCallablePayloadSchema) as
-      ValidateFunction<SubmitEventRehearsalGuestActionCallablePayload>;
-export const validateEventRehearsalReproductionCallableResponse:
-  ValidateFunction<EventRehearsalReproductionCallableResponse> =
-    ajv.compile(eventRehearsalReproductionCallableResponseSchema) as
-      ValidateFunction<EventRehearsalReproductionCallableResponse>;
-export const validateUpsertEventSuccessLayoutCallablePayload:
-  ValidateFunction<UpsertEventSuccessLayoutCallablePayload> =
-    ajv.compile(upsertEventSuccessLayoutCallablePayloadSchema) as
-      ValidateFunction<UpsertEventSuccessLayoutCallablePayload>;
-export const validateUpsertEventSuccessLayoutCallableResponse:
-  ValidateFunction<UpsertEventSuccessLayoutCallableResponse> =
-    ajv.compile(upsertEventSuccessLayoutCallableResponseSchema) as
-      ValidateFunction<UpsertEventSuccessLayoutCallableResponse>;
-export const validateGetEventSuccessSpatialLayoutCallablePayload:
-  ValidateFunction<GetEventSuccessSpatialLayoutCallablePayload> =
-    ajv.compile(getEventSuccessSpatialLayoutCallablePayloadSchema) as
-      ValidateFunction<GetEventSuccessSpatialLayoutCallablePayload>;
-export const validateGetEventSuccessSpatialLayoutCallableResponse:
-  ValidateFunction<GetEventSuccessSpatialLayoutCallableResponse> =
-    ajv.compile(getEventSuccessSpatialLayoutCallableResponseSchema) as
-      ValidateFunction<GetEventSuccessSpatialLayoutCallableResponse>;
-export const validateEventSuccessSpatialActionCallablePayload:
-  ValidateFunction<EventSuccessSpatialActionCallablePayload> =
-    ajv.compile(eventSuccessSpatialActionCallablePayloadSchema) as
-      ValidateFunction<EventSuccessSpatialActionCallablePayload>;
-export const validateEventSuccessSpatialActionCallableResponse:
-  ValidateFunction<EventSuccessSpatialActionCallableResponse> =
-    ajv.compile(eventSuccessSpatialActionCallableResponseSchema) as
-      ValidateFunction<EventSuccessSpatialActionCallableResponse>;
-export const validateGetEventRuntimeBootstrapCallableResponse:
-  ValidateFunction<GetEventRuntimeBootstrapCallableResponse> =
-    ajv.compile(getEventRuntimeBootstrapCallableResponseSchema) as
-      ValidateFunction<GetEventRuntimeBootstrapCallableResponse>;
-export const validateGetEventSuccessConversationGraphCallableResponse:
-  ValidateFunction<GetEventSuccessConversationGraphCallableResponse> =
-    ajv.compile(getEventSuccessConversationGraphCallableResponseSchema) as
-      ValidateFunction<GetEventSuccessConversationGraphCallableResponse>;
-export const validateSubmitEventSuccessConversationGraphCallablePayload:
-  ValidateFunction<SubmitEventSuccessConversationGraphCallablePayload> =
-    ajv.compile(submitEventSuccessConversationGraphCallablePayloadSchema) as
-      ValidateFunction<SubmitEventSuccessConversationGraphCallablePayload>;
-export const validateSubmitEventSuccessConversationGraphCallableResponse:
-  ValidateFunction<SubmitEventSuccessConversationGraphCallableResponse> =
-    ajv.compile(submitEventSuccessConversationGraphCallableResponseSchema) as
-      ValidateFunction<SubmitEventSuccessConversationGraphCallableResponse>;
-export const validateClaimEventRuntimeAccessCallablePayload:
-  ValidateFunction<ClaimEventRuntimeAccessCallablePayload> =
-    ajv.compile(claimEventRuntimeAccessCallablePayloadSchema) as
-      ValidateFunction<ClaimEventRuntimeAccessCallablePayload>;
-export const validateClaimEventRuntimeAccessCallableResponse:
-  ValidateFunction<ClaimEventRuntimeAccessCallableResponse> =
-    ajv.compile(claimEventRuntimeAccessCallableResponseSchema) as
-      ValidateFunction<ClaimEventRuntimeAccessCallableResponse>;
-export const validateSubmitEventRuntimeProfileCallablePayload:
-  ValidateFunction<SubmitEventRuntimeProfileCallablePayload> =
-    ajv.compile(submitEventRuntimeProfileCallablePayloadSchema) as
-      ValidateFunction<SubmitEventRuntimeProfileCallablePayload>;
-export const validateSubmitEventRuntimeProfileCallableResponse:
-  ValidateFunction<SubmitEventRuntimeProfileCallableResponse> =
-    ajv.compile(submitEventRuntimeProfileCallableResponseSchema) as
-      ValidateFunction<SubmitEventRuntimeProfileCallableResponse>;
-export const validateCheckInEventRuntimeCallablePayload:
-  ValidateFunction<CheckInEventRuntimeCallablePayload> =
-    ajv.compile(checkInEventRuntimeCallablePayloadSchema) as
-      ValidateFunction<CheckInEventRuntimeCallablePayload>;
-export const validateCheckInEventRuntimeCallableResponse:
-  ValidateFunction<CheckInEventRuntimeCallableResponse> =
-    ajv.compile(checkInEventRuntimeCallableResponseSchema) as
-      ValidateFunction<CheckInEventRuntimeCallableResponse>;
-export const validateCreateEventVenueSessionCallablePayload:
-  ValidateFunction<CreateEventVenueSessionCallablePayload> =
-    ajv.compile(createEventVenueSessionCallablePayloadSchema) as
-      ValidateFunction<CreateEventVenueSessionCallablePayload>;
-export const validateCreateEventVenueSessionCallableResponse:
-  ValidateFunction<CreateEventVenueSessionCallableResponse> =
-    ajv.compile(createEventVenueSessionCallableResponseSchema) as
-      ValidateFunction<CreateEventVenueSessionCallableResponse>;
-export const validateApproveEventRuntimeClaimCallablePayload:
-  ValidateFunction<ApproveEventRuntimeClaimCallablePayload> =
-    ajv.compile(approveEventRuntimeClaimCallablePayloadSchema) as
-      ValidateFunction<ApproveEventRuntimeClaimCallablePayload>;
-export const validateApproveEventRuntimeClaimCallableResponse:
-  ValidateFunction<ApproveEventRuntimeClaimCallableResponse> =
-    ajv.compile(approveEventRuntimeClaimCallableResponseSchema) as
-      ValidateFunction<ApproveEventRuntimeClaimCallableResponse>;
-export const validateCreateEventRosterHandoffCallablePayload:
-  ValidateFunction<CreateEventRosterHandoffCallablePayload> =
-    ajv.compile(createEventRosterHandoffCallablePayloadSchema) as
-      ValidateFunction<CreateEventRosterHandoffCallablePayload>;
-export const validateCreateEventRosterHandoffCallableResponse:
-  ValidateFunction<CreateEventRosterHandoffCallableResponse> =
-    ajv.compile(createEventRosterHandoffCallableResponseSchema) as
-      ValidateFunction<CreateEventRosterHandoffCallableResponse>;
-export const validateGetOrganizerCrmSummaryCallablePayload:
-  ValidateFunction<GetOrganizerCrmSummaryCallablePayload> =
-    ajv.compile(getOrganizerCrmSummaryCallablePayloadSchema) as
-      ValidateFunction<GetOrganizerCrmSummaryCallablePayload>;
-export const validateGetEventRosterInsightsCallablePayload:
-  ValidateFunction<GetEventRosterInsightsCallablePayload> =
-    ajv.compile(getEventRosterInsightsCallablePayloadSchema) as
-      ValidateFunction<GetEventRosterInsightsCallablePayload>;
-export const validateGetEventRosterInsightsCallableResponse:
-  ValidateFunction<GetEventRosterInsightsCallableResponse> =
-    ajv.compile(getEventRosterInsightsCallableResponseSchema) as
-      ValidateFunction<GetEventRosterInsightsCallableResponse>;
-export const validateGetOrganizerCrmSummaryCallableResponse:
-  ValidateFunction<GetOrganizerCrmSummaryCallableResponse> =
-    ajv.compile(getOrganizerCrmSummaryCallableResponseSchema) as
-      ValidateFunction<GetOrganizerCrmSummaryCallableResponse>;
-export const validateListOrganizerContactsCallablePayload:
-  ValidateFunction<ListOrganizerContactsCallablePayload> =
-    ajv.compile(listOrganizerContactsCallablePayloadSchema) as
-      ValidateFunction<ListOrganizerContactsCallablePayload>;
-export const validateCreateOrganizerFormCallablePayload:
-  ValidateFunction<CreateOrganizerFormCallablePayload> =
-    ajv.compile(createOrganizerFormCallablePayloadSchema) as
-      ValidateFunction<CreateOrganizerFormCallablePayload>;
-export const validateCreateOrganizerFormCallableResponse:
-  ValidateFunction<CreateOrganizerFormCallableResponse> =
-    ajv.compile(createOrganizerFormCallableResponseSchema) as
-      ValidateFunction<CreateOrganizerFormCallableResponse>;
-export const validateUpdateOrganizerFormDraftCallablePayload:
-  ValidateFunction<UpdateOrganizerFormDraftCallablePayload> =
-    ajv.compile(updateOrganizerFormDraftCallablePayloadSchema) as
-      ValidateFunction<UpdateOrganizerFormDraftCallablePayload>;
-export const validateUpdateOrganizerFormDraftCallableResponse:
-  ValidateFunction<UpdateOrganizerFormDraftCallableResponse> =
-    ajv.compile(updateOrganizerFormDraftCallableResponseSchema) as
-      ValidateFunction<UpdateOrganizerFormDraftCallableResponse>;
-export const validateGetOrganizerFormEditorCallablePayload:
-  ValidateFunction<GetOrganizerFormEditorCallablePayload> =
-    ajv.compile(getOrganizerFormEditorCallablePayloadSchema) as
-      ValidateFunction<GetOrganizerFormEditorCallablePayload>;
-export const validateGetOrganizerFormEditorCallableResponse:
-  ValidateFunction<GetOrganizerFormEditorCallableResponse> =
-    ajv.compile(getOrganizerFormEditorCallableResponseSchema) as
-      ValidateFunction<GetOrganizerFormEditorCallableResponse>;
-export const validateListOrganizerFormsCallablePayload:
-  ValidateFunction<ListOrganizerFormsCallablePayload> =
-    ajv.compile(listOrganizerFormsCallablePayloadSchema) as
-      ValidateFunction<ListOrganizerFormsCallablePayload>;
-export const validateListOrganizerFormsCallableResponse:
-  ValidateFunction<ListOrganizerFormsCallableResponse> =
-    ajv.compile(listOrganizerFormsCallableResponseSchema) as
-      ValidateFunction<ListOrganizerFormsCallableResponse>;
-export const validateValidateOrganizerFormDraftCallablePayload:
-  ValidateFunction<ValidateOrganizerFormDraftCallablePayload> =
-    ajv.compile(validateOrganizerFormDraftCallablePayloadSchema) as
-      ValidateFunction<ValidateOrganizerFormDraftCallablePayload>;
-export const validateValidateOrganizerFormDraftCallableResponse:
-  ValidateFunction<ValidateOrganizerFormDraftCallableResponse> =
-    ajv.compile(validateOrganizerFormDraftCallableResponseSchema) as
-      ValidateFunction<ValidateOrganizerFormDraftCallableResponse>;
-export const validatePublishOrganizerFormCallablePayload:
-  ValidateFunction<PublishOrganizerFormCallablePayload> =
-    ajv.compile(publishOrganizerFormCallablePayloadSchema) as
-      ValidateFunction<PublishOrganizerFormCallablePayload>;
-export const validatePublishOrganizerFormCallableResponse:
-  ValidateFunction<PublishOrganizerFormCallableResponse> =
-    ajv.compile(publishOrganizerFormCallableResponseSchema) as
-      ValidateFunction<PublishOrganizerFormCallableResponse>;
-export const validateSetOrganizerFormLifecycleCallablePayload:
-  ValidateFunction<SetOrganizerFormLifecycleCallablePayload> =
-    ajv.compile(setOrganizerFormLifecycleCallablePayloadSchema) as
-      ValidateFunction<SetOrganizerFormLifecycleCallablePayload>;
-export const validateSetOrganizerFormLifecycleCallableResponse:
-  ValidateFunction<SetOrganizerFormLifecycleCallableResponse> =
-    ajv.compile(setOrganizerFormLifecycleCallableResponseSchema) as
-      ValidateFunction<SetOrganizerFormLifecycleCallableResponse>;
-export const validateDuplicateOrganizerFormCallablePayload:
-  ValidateFunction<DuplicateOrganizerFormCallablePayload> =
-    ajv.compile(duplicateOrganizerFormCallablePayloadSchema) as
-      ValidateFunction<DuplicateOrganizerFormCallablePayload>;
-export const validateDuplicateOrganizerFormCallableResponse:
-  ValidateFunction<DuplicateOrganizerFormCallableResponse> =
-    ajv.compile(duplicateOrganizerFormCallableResponseSchema) as
-      ValidateFunction<DuplicateOrganizerFormCallableResponse>;
-export const validateDeleteOrganizerFormDraftCallablePayload:
-  ValidateFunction<DeleteOrganizerFormDraftCallablePayload> =
-    ajv.compile(deleteOrganizerFormDraftCallablePayloadSchema) as
-      ValidateFunction<DeleteOrganizerFormDraftCallablePayload>;
-export const validateDeleteOrganizerFormDraftCallableResponse:
-  ValidateFunction<DeleteOrganizerFormDraftCallableResponse> =
-    ajv.compile(deleteOrganizerFormDraftCallableResponseSchema) as
-      ValidateFunction<DeleteOrganizerFormDraftCallableResponse>;
-export const validateListOrganizerFormTemplatesCallablePayload:
-  ValidateFunction<ListOrganizerFormTemplatesCallablePayload> =
-    ajv.compile(listOrganizerFormTemplatesCallablePayloadSchema) as
-      ValidateFunction<ListOrganizerFormTemplatesCallablePayload>;
-export const validateListOrganizerFormTemplatesCallableResponse:
-  ValidateFunction<ListOrganizerFormTemplatesCallableResponse> =
-    ajv.compile(listOrganizerFormTemplatesCallableResponseSchema) as
-      ValidateFunction<ListOrganizerFormTemplatesCallableResponse>;
-export const validateGetPublicOrganizerFormCallablePayload:
-  ValidateFunction<GetPublicOrganizerFormCallablePayload> =
-    ajv.compile(getPublicOrganizerFormCallablePayloadSchema) as
-      ValidateFunction<GetPublicOrganizerFormCallablePayload>;
-export const validateGetPublicOrganizerFormCallableResponse:
-  ValidateFunction<GetPublicOrganizerFormCallableResponse> =
-    ajv.compile(getPublicOrganizerFormCallableResponseSchema) as
-      ValidateFunction<GetPublicOrganizerFormCallableResponse>;
-export const validateBeginOrganizerFormResponseCallablePayload:
-  ValidateFunction<BeginOrganizerFormResponseCallablePayload> =
-    ajv.compile(beginOrganizerFormResponseCallablePayloadSchema) as
-      ValidateFunction<BeginOrganizerFormResponseCallablePayload>;
-export const validateBeginOrganizerFormResponseCallableResponse:
-  ValidateFunction<BeginOrganizerFormResponseCallableResponse> =
-    ajv.compile(beginOrganizerFormResponseCallableResponseSchema) as
-      ValidateFunction<BeginOrganizerFormResponseCallableResponse>;
-export const validateSaveOrganizerFormResponseDraftCallablePayload:
-  ValidateFunction<SaveOrganizerFormResponseDraftCallablePayload> =
-    ajv.compile(saveOrganizerFormResponseDraftCallablePayloadSchema) as
-      ValidateFunction<SaveOrganizerFormResponseDraftCallablePayload>;
-export const validateSaveOrganizerFormResponseDraftCallableResponse:
-  ValidateFunction<SaveOrganizerFormResponseDraftCallableResponse> =
-    ajv.compile(saveOrganizerFormResponseDraftCallableResponseSchema) as
-      ValidateFunction<SaveOrganizerFormResponseDraftCallableResponse>;
-export const validateCreateOrganizerFormAssetIntentCallablePayload:
-  ValidateFunction<CreateOrganizerFormAssetIntentCallablePayload> =
-    ajv.compile(createOrganizerFormAssetIntentCallablePayloadSchema) as
-      ValidateFunction<CreateOrganizerFormAssetIntentCallablePayload>;
-export const validateCreateOrganizerFormAssetIntentCallableResponse:
-  ValidateFunction<CreateOrganizerFormAssetIntentCallableResponse> =
-    ajv.compile(createOrganizerFormAssetIntentCallableResponseSchema) as
-      ValidateFunction<CreateOrganizerFormAssetIntentCallableResponse>;
-export const validateFinalizeOrganizerFormAssetCallablePayload:
-  ValidateFunction<FinalizeOrganizerFormAssetCallablePayload> =
-    ajv.compile(finalizeOrganizerFormAssetCallablePayloadSchema) as
-      ValidateFunction<FinalizeOrganizerFormAssetCallablePayload>;
-export const validateFinalizeOrganizerFormAssetCallableResponse:
-  ValidateFunction<FinalizeOrganizerFormAssetCallableResponse> =
-    ajv.compile(finalizeOrganizerFormAssetCallableResponseSchema) as
-      ValidateFunction<FinalizeOrganizerFormAssetCallableResponse>;
-export const validateSubmitOrganizerFormResponseCallablePayload:
-  ValidateFunction<SubmitOrganizerFormResponseCallablePayload> =
-    ajv.compile(submitOrganizerFormResponseCallablePayloadSchema) as
-      ValidateFunction<SubmitOrganizerFormResponseCallablePayload>;
-export const validateSubmitOrganizerFormResponseCallableResponse:
-  ValidateFunction<SubmitOrganizerFormResponseCallableResponse> =
-    ajv.compile(submitOrganizerFormResponseCallableResponseSchema) as
-      ValidateFunction<SubmitOrganizerFormResponseCallableResponse>;
-export const validateWithdrawOrganizerFormResponseCallablePayload:
-  ValidateFunction<WithdrawOrganizerFormResponseCallablePayload> =
-    ajv.compile(withdrawOrganizerFormResponseCallablePayloadSchema) as
-      ValidateFunction<WithdrawOrganizerFormResponseCallablePayload>;
-export const validateWithdrawOrganizerFormResponseCallableResponse:
-  ValidateFunction<WithdrawOrganizerFormResponseCallableResponse> =
-    ajv.compile(withdrawOrganizerFormResponseCallableResponseSchema) as
-      ValidateFunction<WithdrawOrganizerFormResponseCallableResponse>;
-export const validateCreateOrganizerFormShareLinkCallablePayload:
-  ValidateFunction<CreateOrganizerFormShareLinkCallablePayload> =
-    ajv.compile(createOrganizerFormShareLinkCallablePayloadSchema) as
-      ValidateFunction<CreateOrganizerFormShareLinkCallablePayload>;
-export const validateCreateOrganizerFormShareLinkCallableResponse:
-  ValidateFunction<CreateOrganizerFormShareLinkCallableResponse> =
-    ajv.compile(createOrganizerFormShareLinkCallableResponseSchema) as
-      ValidateFunction<CreateOrganizerFormShareLinkCallableResponse>;
-export const validateGetOrganizerFormShareAssetsCallablePayload:
-  ValidateFunction<GetOrganizerFormShareAssetsCallablePayload> =
-    ajv.compile(getOrganizerFormShareAssetsCallablePayloadSchema) as
-      ValidateFunction<GetOrganizerFormShareAssetsCallablePayload>;
-export const validateGetOrganizerFormShareAssetsCallableResponse:
-  ValidateFunction<GetOrganizerFormShareAssetsCallableResponse> =
-    ajv.compile(getOrganizerFormShareAssetsCallableResponseSchema) as
-      ValidateFunction<GetOrganizerFormShareAssetsCallableResponse>;
-export const validateListOrganizerFormResponsesCallablePayload:
-  ValidateFunction<ListOrganizerFormResponsesCallablePayload> =
-    ajv.compile(listOrganizerFormResponsesCallablePayloadSchema) as
-      ValidateFunction<ListOrganizerFormResponsesCallablePayload>;
-export const validateListOrganizerFormResponsesCallableResponse:
-  ValidateFunction<ListOrganizerFormResponsesCallableResponse> =
-    ajv.compile(listOrganizerFormResponsesCallableResponseSchema) as
-      ValidateFunction<ListOrganizerFormResponsesCallableResponse>;
-export const validateGetOrganizerFormResponseDetailCallablePayload:
-  ValidateFunction<GetOrganizerFormResponseDetailCallablePayload> =
-    ajv.compile(getOrganizerFormResponseDetailCallablePayloadSchema) as
-      ValidateFunction<GetOrganizerFormResponseDetailCallablePayload>;
-export const validateGetOrganizerFormResponseDetailCallableResponse:
-  ValidateFunction<GetOrganizerFormResponseDetailCallableResponse> =
-    ajv.compile(getOrganizerFormResponseDetailCallableResponseSchema) as
-      ValidateFunction<GetOrganizerFormResponseDetailCallableResponse>;
-export const validateGetOrganizerFormAnalyticsCallablePayload:
-  ValidateFunction<GetOrganizerFormAnalyticsCallablePayload> =
-    ajv.compile(getOrganizerFormAnalyticsCallablePayloadSchema) as
-      ValidateFunction<GetOrganizerFormAnalyticsCallablePayload>;
-export const validateGetOrganizerFormAnalyticsCallableResponse:
-  ValidateFunction<GetOrganizerFormAnalyticsCallableResponse> =
-    ajv.compile(getOrganizerFormAnalyticsCallableResponseSchema) as
-      ValidateFunction<GetOrganizerFormAnalyticsCallableResponse>;
-export const validateRequestOrganizerFormExportCallablePayload:
-  ValidateFunction<RequestOrganizerFormExportCallablePayload> =
-    ajv.compile(requestOrganizerFormExportCallablePayloadSchema) as
-      ValidateFunction<RequestOrganizerFormExportCallablePayload>;
-export const validateRequestOrganizerFormExportCallableResponse:
-  ValidateFunction<RequestOrganizerFormExportCallableResponse> =
-    ajv.compile(requestOrganizerFormExportCallableResponseSchema) as
-      ValidateFunction<RequestOrganizerFormExportCallableResponse>;
-export const validateCreateOrganizerFormAutomationCallablePayload:
-  ValidateFunction<CreateOrganizerFormAutomationCallablePayload> =
-    ajv.compile(createOrganizerFormAutomationCallablePayloadSchema) as
-      ValidateFunction<CreateOrganizerFormAutomationCallablePayload>;
-export const validateCreateOrganizerFormAutomationCallableResponse:
-  ValidateFunction<CreateOrganizerFormAutomationCallableResponse> =
-    ajv.compile(createOrganizerFormAutomationCallableResponseSchema) as
-      ValidateFunction<CreateOrganizerFormAutomationCallableResponse>;
-export const validateSetOrganizerFormAutomationStateCallablePayload:
-  ValidateFunction<SetOrganizerFormAutomationStateCallablePayload> =
-    ajv.compile(setOrganizerFormAutomationStateCallablePayloadSchema) as
-      ValidateFunction<SetOrganizerFormAutomationStateCallablePayload>;
-export const validateSetOrganizerFormAutomationStateCallableResponse:
-  ValidateFunction<SetOrganizerFormAutomationStateCallableResponse> =
-    ajv.compile(setOrganizerFormAutomationStateCallableResponseSchema) as
-      ValidateFunction<SetOrganizerFormAutomationStateCallableResponse>;
-export const validateListOrganizerFormAutomationRunsCallablePayload:
-  ValidateFunction<ListOrganizerFormAutomationRunsCallablePayload> =
-    ajv.compile(listOrganizerFormAutomationRunsCallablePayloadSchema) as
-      ValidateFunction<ListOrganizerFormAutomationRunsCallablePayload>;
-export const validateListOrganizerFormAutomationRunsCallableResponse:
-  ValidateFunction<ListOrganizerFormAutomationRunsCallableResponse> =
-    ajv.compile(listOrganizerFormAutomationRunsCallableResponseSchema) as
-      ValidateFunction<ListOrganizerFormAutomationRunsCallableResponse>;
-export const validatePreviewOrganizerFormConversionCallablePayload:
-  ValidateFunction<PreviewOrganizerFormConversionCallablePayload> =
-    ajv.compile(previewOrganizerFormConversionCallablePayloadSchema) as
-      ValidateFunction<PreviewOrganizerFormConversionCallablePayload>;
-export const validatePreviewOrganizerFormConversionCallableResponse:
-  ValidateFunction<PreviewOrganizerFormConversionCallableResponse> =
-    ajv.compile(previewOrganizerFormConversionCallableResponseSchema) as
-      ValidateFunction<PreviewOrganizerFormConversionCallableResponse>;
-export const validateConvertOrganizerFormResponseCallablePayload:
-  ValidateFunction<ConvertOrganizerFormResponseCallablePayload> =
-    ajv.compile(convertOrganizerFormResponseCallablePayloadSchema) as
-      ValidateFunction<ConvertOrganizerFormResponseCallablePayload>;
-export const validateConvertOrganizerFormResponseCallableResponse:
-  ValidateFunction<ConvertOrganizerFormResponseCallableResponse> =
-    ajv.compile(convertOrganizerFormResponseCallableResponseSchema) as
-      ValidateFunction<ConvertOrganizerFormResponseCallableResponse>;
-export const validatePublishOrganizerApplicationFormCallablePayload:
-  ValidateFunction<PublishOrganizerApplicationFormCallablePayload> =
-    ajv.compile(publishOrganizerApplicationFormCallablePayloadSchema) as
-      ValidateFunction<PublishOrganizerApplicationFormCallablePayload>;
-export const validateGetParticipantOrganizerApplicationFormCallablePayload:
-  ValidateFunction<GetParticipantOrganizerApplicationFormCallablePayload> =
-    ajv.compile(getParticipantOrganizerApplicationFormCallablePayloadSchema) as
-      ValidateFunction<GetParticipantOrganizerApplicationFormCallablePayload>;
-export const validateGetParticipantOrganizerApplicationFormCallableResponse:
-  ValidateFunction<GetParticipantOrganizerApplicationFormCallableResponse> =
-    ajv.compile(getParticipantOrganizerApplicationFormCallableResponseSchema) as
-      ValidateFunction<GetParticipantOrganizerApplicationFormCallableResponse>;
-export const validateSubmitParticipantOrganizerApplicationCallablePayload:
-  ValidateFunction<SubmitParticipantOrganizerApplicationCallablePayload> =
-    ajv.compile(submitParticipantOrganizerApplicationCallablePayloadSchema) as
-      ValidateFunction<SubmitParticipantOrganizerApplicationCallablePayload>;
-export const validateSubmitParticipantOrganizerApplicationCallableResponse:
-  ValidateFunction<SubmitParticipantOrganizerApplicationCallableResponse> =
-    ajv.compile(submitParticipantOrganizerApplicationCallableResponseSchema) as
-      ValidateFunction<SubmitParticipantOrganizerApplicationCallableResponse>;
-export const validateRevokeParticipantOrganizerDataGrantCallablePayload:
-  ValidateFunction<RevokeParticipantOrganizerDataGrantCallablePayload> =
-    ajv.compile(revokeParticipantOrganizerDataGrantCallablePayloadSchema) as
-      ValidateFunction<RevokeParticipantOrganizerDataGrantCallablePayload>;
-export const validateRevokeParticipantOrganizerDataGrantCallableResponse:
-  ValidateFunction<RevokeParticipantOrganizerDataGrantCallableResponse> =
-    ajv.compile(revokeParticipantOrganizerDataGrantCallableResponseSchema) as
-      ValidateFunction<RevokeParticipantOrganizerDataGrantCallableResponse>;
-export const validatePublishOrganizerApplicationFormCallableResponse:
-  ValidateFunction<PublishOrganizerApplicationFormCallableResponse> =
-    ajv.compile(publishOrganizerApplicationFormCallableResponseSchema) as
-      ValidateFunction<PublishOrganizerApplicationFormCallableResponse>;
-export const validatePreviewOrganizerApplicationImportCallablePayload:
-  ValidateFunction<PreviewOrganizerApplicationImportCallablePayload> =
-    ajv.compile(previewOrganizerApplicationImportCallablePayloadSchema) as
-      ValidateFunction<PreviewOrganizerApplicationImportCallablePayload>;
-export const validatePreviewOrganizerApplicationImportCallableResponse:
-  ValidateFunction<PreviewOrganizerApplicationImportCallableResponse> =
-    ajv.compile(previewOrganizerApplicationImportCallableResponseSchema) as
-      ValidateFunction<PreviewOrganizerApplicationImportCallableResponse>;
-export const validateImportOrganizerApplicationsCallablePayload:
-  ValidateFunction<ImportOrganizerApplicationsCallablePayload> =
-    ajv.compile(importOrganizerApplicationsCallablePayloadSchema) as
-      ValidateFunction<ImportOrganizerApplicationsCallablePayload>;
-export const validateImportOrganizerApplicationsCallableResponse:
-  ValidateFunction<ImportOrganizerApplicationsCallableResponse> =
-    ajv.compile(importOrganizerApplicationsCallableResponseSchema) as
-      ValidateFunction<ImportOrganizerApplicationsCallableResponse>;
-export const validateListOrganizerApplicationsCallablePayload:
-  ValidateFunction<ListOrganizerApplicationsCallablePayload> =
-    ajv.compile(listOrganizerApplicationsCallablePayloadSchema) as
-      ValidateFunction<ListOrganizerApplicationsCallablePayload>;
-export const validateListOrganizerApplicationsCallableResponse:
-  ValidateFunction<ListOrganizerApplicationsCallableResponse> =
-    ajv.compile(listOrganizerApplicationsCallableResponseSchema) as
-      ValidateFunction<ListOrganizerApplicationsCallableResponse>;
-export const validateGetOrganizerApplicationDetailCallablePayload:
-  ValidateFunction<GetOrganizerApplicationDetailCallablePayload> =
-    ajv.compile(getOrganizerApplicationDetailCallablePayloadSchema) as
-      ValidateFunction<GetOrganizerApplicationDetailCallablePayload>;
-export const validateGetOrganizerApplicationDetailCallableResponse:
-  ValidateFunction<GetOrganizerApplicationDetailCallableResponse> =
-    ajv.compile(getOrganizerApplicationDetailCallableResponseSchema) as
-      ValidateFunction<GetOrganizerApplicationDetailCallableResponse>;
-export const validateReviewOrganizerApplicationCallablePayload:
-  ValidateFunction<ReviewOrganizerApplicationCallablePayload> =
-    ajv.compile(reviewOrganizerApplicationCallablePayloadSchema) as
-      ValidateFunction<ReviewOrganizerApplicationCallablePayload>;
-export const validateReviewOrganizerApplicationCallableResponse:
-  ValidateFunction<ReviewOrganizerApplicationCallableResponse> =
-    ajv.compile(reviewOrganizerApplicationCallableResponseSchema) as
-      ValidateFunction<ReviewOrganizerApplicationCallableResponse>;
-export const validateCreateOrganizerContactCallablePayload:
-  ValidateFunction<CreateOrganizerContactCallablePayload> =
-    ajv.compile(createOrganizerContactCallablePayloadSchema) as
-      ValidateFunction<CreateOrganizerContactCallablePayload>;
-export const validateCreateOrganizerContactCallableResponse:
-  ValidateFunction<CreateOrganizerContactCallableResponse> =
-    ajv.compile(createOrganizerContactCallableResponseSchema) as
-      ValidateFunction<CreateOrganizerContactCallableResponse>;
-export const validateListOrganizerContactsCallableResponse:
-  ValidateFunction<ListOrganizerContactsCallableResponse> =
-    ajv.compile(listOrganizerContactsCallableResponseSchema) as
-      ValidateFunction<ListOrganizerContactsCallableResponse>;
-export const validateGetOrganizerContactDetailCallablePayload:
-  ValidateFunction<GetOrganizerContactDetailCallablePayload> =
-    ajv.compile(getOrganizerContactDetailCallablePayloadSchema) as
-      ValidateFunction<GetOrganizerContactDetailCallablePayload>;
-export const validateGetOrganizerContactDetailCallableResponse:
-  ValidateFunction<GetOrganizerContactDetailCallableResponse> =
-    ajv.compile(getOrganizerContactDetailCallableResponseSchema) as
-      ValidateFunction<GetOrganizerContactDetailCallableResponse>;
-export const validateMutateOrganizerContactCallablePayload:
-  ValidateFunction<MutateOrganizerContactCallablePayload> =
-    ajv.compile(mutateOrganizerContactCallablePayloadSchema) as
-      ValidateFunction<MutateOrganizerContactCallablePayload>;
-export const validateMutateOrganizerContactCallableResponse:
-  ValidateFunction<MutateOrganizerContactCallableResponse> =
-    ajv.compile(mutateOrganizerContactCallableResponseSchema) as
-      ValidateFunction<MutateOrganizerContactCallableResponse>;
-export const validateCreateOrganizerContactNoteCallablePayload:
-  ValidateFunction<CreateOrganizerContactNoteCallablePayload> =
-    ajv.compile(createOrganizerContactNoteCallablePayloadSchema) as
-      ValidateFunction<CreateOrganizerContactNoteCallablePayload>;
-export const validateMutateOrganizerContactNoteCallablePayload:
-  ValidateFunction<MutateOrganizerContactNoteCallablePayload> =
-    ajv.compile(mutateOrganizerContactNoteCallablePayloadSchema) as
-      ValidateFunction<MutateOrganizerContactNoteCallablePayload>;
-export const validateOrganizerContactNoteCallableResponse:
-  ValidateFunction<OrganizerContactNoteCallableResponse> =
-    ajv.compile(organizerContactNoteCallableResponseSchema) as
-      ValidateFunction<OrganizerContactNoteCallableResponse>;
-export const validateExportOrganizerContactsCallablePayload:
-  ValidateFunction<ExportOrganizerContactsCallablePayload> =
-    ajv.compile(exportOrganizerContactsCallablePayloadSchema) as
-      ValidateFunction<ExportOrganizerContactsCallablePayload>;
-export const validateExportOrganizerContactsCallableResponse:
-  ValidateFunction<ExportOrganizerContactsCallableResponse> =
-    ajv.compile(exportOrganizerContactsCallableResponseSchema) as
-      ValidateFunction<ExportOrganizerContactsCallableResponse>;
-export const validateMergeOrganizerContactsCallablePayload:
-  ValidateFunction<MergeOrganizerContactsCallablePayload> =
-    ajv.compile(mergeOrganizerContactsCallablePayloadSchema) as
-      ValidateFunction<MergeOrganizerContactsCallablePayload>;
-export const validateListOrganizerContactMergeCandidatesCallablePayload:
-  ValidateFunction<ListOrganizerContactMergeCandidatesCallablePayload> =
-    ajv.compile(listOrganizerContactMergeCandidatesCallablePayloadSchema) as
-      ValidateFunction<ListOrganizerContactMergeCandidatesCallablePayload>;
-export const validateListOrganizerContactMergeCandidatesCallableResponse:
-  ValidateFunction<ListOrganizerContactMergeCandidatesCallableResponse> =
-    ajv.compile(listOrganizerContactMergeCandidatesCallableResponseSchema) as
-      ValidateFunction<ListOrganizerContactMergeCandidatesCallableResponse>;
-export const validateReviewOrganizerContactMergeCandidateCallablePayload:
-  ValidateFunction<ReviewOrganizerContactMergeCandidateCallablePayload> =
-    ajv.compile(reviewOrganizerContactMergeCandidateCallablePayloadSchema) as
-      ValidateFunction<ReviewOrganizerContactMergeCandidateCallablePayload>;
-export const validateReviewOrganizerContactMergeCandidateCallableResponse:
-  ValidateFunction<ReviewOrganizerContactMergeCandidateCallableResponse> =
-    ajv.compile(reviewOrganizerContactMergeCandidateCallableResponseSchema) as
-      ValidateFunction<ReviewOrganizerContactMergeCandidateCallableResponse>;
-export const validateListOrganizerWhatsappThreadsCallablePayload:
-  ValidateFunction<ListOrganizerWhatsappThreadsCallablePayload> =
-    ajv.compile(listOrganizerWhatsappThreadsCallablePayloadSchema) as
-      ValidateFunction<ListOrganizerWhatsappThreadsCallablePayload>;
-export const validateListOrganizerWhatsappThreadsCallableResponse:
-  ValidateFunction<ListOrganizerWhatsappThreadsCallableResponse> =
-    ajv.compile(listOrganizerWhatsappThreadsCallableResponseSchema) as
-      ValidateFunction<ListOrganizerWhatsappThreadsCallableResponse>;
-export const validateGetOrganizerWhatsappThreadCallablePayload:
-  ValidateFunction<GetOrganizerWhatsappThreadCallablePayload> =
-    ajv.compile(getOrganizerWhatsappThreadCallablePayloadSchema) as
-      ValidateFunction<GetOrganizerWhatsappThreadCallablePayload>;
-export const validateGetOrganizerWhatsappThreadCallableResponse:
-  ValidateFunction<GetOrganizerWhatsappThreadCallableResponse> =
-    ajv.compile(getOrganizerWhatsappThreadCallableResponseSchema) as
-      ValidateFunction<GetOrganizerWhatsappThreadCallableResponse>;
-export const validateSendOrganizerWhatsappReplyCallablePayload:
-  ValidateFunction<SendOrganizerWhatsappReplyCallablePayload> =
-    ajv.compile(sendOrganizerWhatsappReplyCallablePayloadSchema) as
-      ValidateFunction<SendOrganizerWhatsappReplyCallablePayload>;
-export const validateSendOrganizerWhatsappReplyCallableResponse:
-  ValidateFunction<SendOrganizerWhatsappReplyCallableResponse> =
-    ajv.compile(sendOrganizerWhatsappReplyCallableResponseSchema) as
-      ValidateFunction<SendOrganizerWhatsappReplyCallableResponse>;
-export const validateUnmergeOrganizerContactsCallablePayload:
-  ValidateFunction<UnmergeOrganizerContactsCallablePayload> =
-    ajv.compile(unmergeOrganizerContactsCallablePayloadSchema) as
-      ValidateFunction<UnmergeOrganizerContactsCallablePayload>;
-export const validateMutateOrganizerContactMergeCallableResponse:
-  ValidateFunction<MutateOrganizerContactMergeCallableResponse> =
-    ajv.compile(mutateOrganizerContactMergeCallableResponseSchema) as
-      ValidateFunction<MutateOrganizerContactMergeCallableResponse>;
-export const validateEventJoinRequestDecisionCallablePayload:
-  ValidateFunction<EventJoinRequestDecisionCallablePayload> =
-    ajv.compile(eventJoinRequestDecisionCallablePayloadSchema) as
-      ValidateFunction<EventJoinRequestDecisionCallablePayload>;
-export const validateOverrideEventSuccessRotationsCallablePayload:
-  ValidateFunction<OverrideEventSuccessRotationsCallablePayload> =
-    ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema) as
-      ValidateFunction<OverrideEventSuccessRotationsCallablePayload>;
-export const validatePrepareEventSuccessRotationDraftCallablePayload:
-  ValidateFunction<PrepareEventSuccessRotationDraftCallablePayload> =
-    ajv.compile(prepareEventSuccessRotationDraftCallablePayloadSchema) as
-      ValidateFunction<PrepareEventSuccessRotationDraftCallablePayload>;
-export const validatePublishEventSuccessRotationRoundCallablePayload:
-  ValidateFunction<PublishEventSuccessRotationRoundCallablePayload> =
-    ajv.compile(publishEventSuccessRotationRoundCallablePayloadSchema) as
-      ValidateFunction<PublishEventSuccessRotationRoundCallablePayload>;
-export const validateEventSuccessLiveActionCallablePayload:
-  ValidateFunction<EventSuccessLiveActionCallablePayload> =
-    ajv.compile(eventSuccessLiveActionCallablePayloadSchema) as
-      ValidateFunction<EventSuccessLiveActionCallablePayload>;
-export const validateSetEventSuccessAccountabilityResolutionCallablePayload:
-  ValidateFunction<SetEventSuccessAccountabilityResolutionCallablePayload> =
-    ajv.compile(setEventSuccessAccountabilityResolutionCallablePayloadSchema) as
-      ValidateFunction<SetEventSuccessAccountabilityResolutionCallablePayload>;
-export const validateRecordEventSuccessUnitOutcomesCallablePayload:
-  ValidateFunction<RecordEventSuccessUnitOutcomesCallablePayload> =
-    ajv.compile(recordEventSuccessUnitOutcomesCallablePayloadSchema) as
-      ValidateFunction<RecordEventSuccessUnitOutcomesCallablePayload>;
-export const validateRecordEventSuccessUnitOutcomesCallableResponse:
-  ValidateFunction<RecordEventSuccessUnitOutcomesCallableResponse> =
-    ajv.compile(recordEventSuccessUnitOutcomesCallableResponseSchema) as
-      ValidateFunction<RecordEventSuccessUnitOutcomesCallableResponse>;
-export const validateHeartbeatEventSuccessPresenceCallablePayload:
-  ValidateFunction<HeartbeatEventSuccessPresenceCallablePayload> =
-    ajv.compile(heartbeatEventSuccessPresenceCallablePayloadSchema) as
-      ValidateFunction<HeartbeatEventSuccessPresenceCallablePayload>;
-export const validateHeartbeatEventSuccessPresenceCallableResponse:
-  ValidateFunction<HeartbeatEventSuccessPresenceCallableResponse> =
-    ajv.compile(heartbeatEventSuccessPresenceCallableResponseSchema) as
-      ValidateFunction<HeartbeatEventSuccessPresenceCallableResponse>;
-export const validatePublishEventLivePositionCallablePayload:
-  ValidateFunction<PublishEventLivePositionCallablePayload> =
-    ajv.compile(publishEventLivePositionCallablePayloadSchema) as
-      ValidateFunction<PublishEventLivePositionCallablePayload>;
-export const validatePublishEventLivePositionCallableResponse:
-  ValidateFunction<PublishEventLivePositionCallableResponse> =
-    ajv.compile(publishEventLivePositionCallableResponseSchema) as
-      ValidateFunction<PublishEventLivePositionCallableResponse>;
-export const validateGetEventSuccessPresenceSummaryCallableResponse:
-  ValidateFunction<GetEventSuccessPresenceSummaryCallableResponse> =
-    ajv.compile(getEventSuccessPresenceSummaryCallableResponseSchema) as
-      ValidateFunction<GetEventSuccessPresenceSummaryCallableResponse>;
-export const validateResolveEventSuccessLateArrivalCallablePayload:
-  ValidateFunction<ResolveEventSuccessLateArrivalCallablePayload> =
-    ajv.compile(resolveEventSuccessLateArrivalCallablePayloadSchema) as
-      ValidateFunction<ResolveEventSuccessLateArrivalCallablePayload>;
-export const validateResolveEventSuccessLateArrivalCallableResponse:
-  ValidateFunction<ResolveEventSuccessLateArrivalCallableResponse> =
-    ajv.compile(resolveEventSuccessLateArrivalCallableResponseSchema) as
-      ValidateFunction<ResolveEventSuccessLateArrivalCallableResponse>;
-export const validateOverrideEventSuccessGroupsCallablePayload:
-  ValidateFunction<OverrideEventSuccessGroupsCallablePayload> =
-    ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema) as
-      ValidateFunction<OverrideEventSuccessGroupsCallablePayload>;
-export const validateSubmitEventSuccessWingmanRequestCallablePayload:
-  ValidateFunction<SubmitEventSuccessWingmanRequestCallablePayload> =
-    ajv.compile(submitEventSuccessWingmanRequestCallablePayloadSchema) as
-      ValidateFunction<SubmitEventSuccessWingmanRequestCallablePayload>;
-export const validateStartEventSuccessFirstHelloMissionCallablePayload:
-  ValidateFunction<StartEventSuccessFirstHelloMissionCallablePayload> =
-    ajv.compile(startEventSuccessFirstHelloMissionCallablePayloadSchema) as
-      ValidateFunction<StartEventSuccessFirstHelloMissionCallablePayload>;
-export const validateCompleteEventSuccessFirstHelloMissionCallablePayload:
-  ValidateFunction<CompleteEventSuccessFirstHelloMissionCallablePayload> =
-    ajv.compile(completeEventSuccessFirstHelloMissionCallablePayloadSchema) as
-      ValidateFunction<CompleteEventSuccessFirstHelloMissionCallablePayload>;
-export const validateMarkEventAttendanceCallableResponse:
-  ValidateFunction<MarkEventAttendanceCallableResponse> =
-    ajv.compile(markEventAttendanceCallableResponseSchema) as
-      ValidateFunction<MarkEventAttendanceCallableResponse>;
-export const validateSelfCheckInAttendanceCallablePayload:
-  ValidateFunction<SelfCheckInAttendanceCallablePayload> =
-    ajv.compile(selfCheckInAttendanceCallablePayloadSchema) as
-      ValidateFunction<SelfCheckInAttendanceCallablePayload>;
-export const validateCreateEventReviewCallablePayload:
-  ValidateFunction<CreateEventReviewCallablePayload> =
-    ajv.compile(createEventReviewCallablePayloadSchema) as
-      ValidateFunction<CreateEventReviewCallablePayload>;
-export const validateCreatePublicClubReviewCallablePayload:
-  ValidateFunction<CreatePublicClubReviewCallablePayload> =
-    ajv.compile(createPublicClubReviewCallablePayloadSchema) as
-      ValidateFunction<CreatePublicClubReviewCallablePayload>;
-export const validateCreatePublicClubReviewCallableResponse:
-  ValidateFunction<CreatePublicClubReviewCallableResponse> =
-    ajv.compile(createPublicClubReviewCallableResponseSchema) as
-      ValidateFunction<CreatePublicClubReviewCallableResponse>;
-export const validateListPublicClubReviewsCallablePayload:
-  ValidateFunction<ListPublicClubReviewsCallablePayload> =
-    ajv.compile(listPublicClubReviewsCallablePayloadSchema) as
-      ValidateFunction<ListPublicClubReviewsCallablePayload>;
-export const validateListPublicClubReviewsCallableResponse:
-  ValidateFunction<ListPublicClubReviewsCallableResponse> =
-    ajv.compile(listPublicClubReviewsCallableResponseSchema) as
-      ValidateFunction<ListPublicClubReviewsCallableResponse>;
-export const validateCreatePublicOrganizerReviewCallablePayload:
-  ValidateFunction<CreatePublicOrganizerReviewCallablePayload> =
-    ajv.compile(createPublicOrganizerReviewCallablePayloadSchema) as
-      ValidateFunction<CreatePublicOrganizerReviewCallablePayload>;
-export const validateCreatePublicOrganizerReviewCallableResponse:
-  ValidateFunction<CreatePublicOrganizerReviewCallableResponse> =
-    ajv.compile(createPublicOrganizerReviewCallableResponseSchema) as
-      ValidateFunction<CreatePublicOrganizerReviewCallableResponse>;
-export const validateListPublicOrganizerReviewsCallablePayload:
-  ValidateFunction<ListPublicOrganizerReviewsCallablePayload> =
-    ajv.compile(listPublicOrganizerReviewsCallablePayloadSchema) as
-      ValidateFunction<ListPublicOrganizerReviewsCallablePayload>;
-export const validateListPublicOrganizerReviewsCallableResponse:
-  ValidateFunction<ListPublicOrganizerReviewsCallableResponse> =
-    ajv.compile(listPublicOrganizerReviewsCallableResponseSchema) as
-      ValidateFunction<ListPublicOrganizerReviewsCallableResponse>;
-export const validateUpdateEventReviewCallablePayload:
-  ValidateFunction<UpdateEventReviewCallablePayload> =
-    ajv.compile(updateEventReviewCallablePayloadSchema) as
-      ValidateFunction<UpdateEventReviewCallablePayload>;
-export const validateDeleteEventReviewCallablePayload:
-  ValidateFunction<DeleteEventReviewCallablePayload> =
-    ajv.compile(deleteEventReviewCallablePayloadSchema) as
-      ValidateFunction<DeleteEventReviewCallablePayload>;
-export const validateSetReviewResponseCallablePayload:
-  ValidateFunction<SetReviewResponseCallablePayload> =
-    ajv.compile(setReviewResponseCallablePayloadSchema) as
-      ValidateFunction<SetReviewResponseCallablePayload>;
-export const validateBlockUserCallablePayload:
-  ValidateFunction<BlockUserCallablePayload> =
-    ajv.compile(blockUserCallablePayloadSchema) as
-      ValidateFunction<BlockUserCallablePayload>;
-export const validateUnblockUserCallablePayload:
-  ValidateFunction<UnblockUserCallablePayload> =
-    ajv.compile(unblockUserCallablePayloadSchema) as
-      ValidateFunction<UnblockUserCallablePayload>;
-export const validateReportUserCallablePayload:
-  ValidateFunction<ReportUserCallablePayload> =
-    ajv.compile(reportUserCallablePayloadSchema) as
-      ValidateFunction<ReportUserCallablePayload>;
-export const validateRequestSuvbotDemoOperationCallablePayload:
-  ValidateFunction<RequestSuvbotDemoOperationCallablePayload> =
-    ajv.compile(requestSuvbotDemoOperationCallablePayloadSchema) as
-      ValidateFunction<RequestSuvbotDemoOperationCallablePayload>;
-export const validateListSuvbotDemoActionsCallableResponse:
-  ValidateFunction<ListSuvbotDemoActionsCallableResponse> =
-    ajv.compile(listSuvbotDemoActionsCallableResponseSchema) as
-      ValidateFunction<ListSuvbotDemoActionsCallableResponse>;
-export const validateVerifyRazorpayPaymentCallablePayload:
-  ValidateFunction<VerifyRazorpayPaymentCallablePayload> =
-    ajv.compile(verifyRazorpayPaymentCallablePayloadSchema) as
-      ValidateFunction<VerifyRazorpayPaymentCallablePayload>;
-export const validateEventBookingCallablePayload:
-  ValidateFunction<EventBookingCallablePayload> =
-    ajv.compile(eventBookingCallablePayloadSchema) as
-      ValidateFunction<EventBookingCallablePayload>;
-export const validateCreateRazorpayOrderCallablePayload:
-  ValidateFunction<CreateRazorpayOrderCallablePayload> =
-    ajv.compile(createRazorpayOrderCallablePayloadSchema) as
-      ValidateFunction<CreateRazorpayOrderCallablePayload>;
-export const validateRazorpayOrderCallableResponse:
-  ValidateFunction<RazorpayOrderCallableResponse> =
-    ajv.compile(razorpayOrderCallableResponseSchema) as
-      ValidateFunction<RazorpayOrderCallableResponse>;
-export const validateCreateStripeCheckoutSessionCallablePayload:
-  ValidateFunction<CreateStripeCheckoutSessionCallablePayload> =
-    ajv.compile(createStripeCheckoutSessionCallablePayloadSchema) as
-      ValidateFunction<CreateStripeCheckoutSessionCallablePayload>;
-export const validateStripeCheckoutSessionCallableResponse:
-  ValidateFunction<StripeCheckoutSessionCallableResponse> =
-    ajv.compile(stripeCheckoutSessionCallableResponseSchema) as
-      ValidateFunction<StripeCheckoutSessionCallableResponse>;
-export const validateCreateStripeHostOnboardingLinkCallablePayload:
-  ValidateFunction<CreateStripeHostOnboardingLinkCallablePayload> =
-    ajv.compile(createStripeHostOnboardingLinkCallablePayloadSchema) as
-      ValidateFunction<CreateStripeHostOnboardingLinkCallablePayload>;
-export const validateRefreshStripeHostPaymentAccountCallablePayload:
-  ValidateFunction<RefreshStripeHostPaymentAccountCallablePayload> =
-    ajv.compile(refreshStripeHostPaymentAccountCallablePayloadSchema) as
-      ValidateFunction<RefreshStripeHostPaymentAccountCallablePayload>;
-export const validateCreateRazorpayHostPaymentAccountCallablePayload:
-  ValidateFunction<CreateRazorpayHostPaymentAccountCallablePayload> =
-    ajv.compile(createRazorpayHostPaymentAccountCallablePayloadSchema) as
-      ValidateFunction<CreateRazorpayHostPaymentAccountCallablePayload>;
-export const validateRefreshRazorpayHostPaymentAccountCallablePayload:
-  ValidateFunction<RefreshRazorpayHostPaymentAccountCallablePayload> =
-    ajv.compile(refreshRazorpayHostPaymentAccountCallablePayloadSchema) as
-      ValidateFunction<RefreshRazorpayHostPaymentAccountCallablePayload>;
-export const validateStripeHostOnboardingLinkCallableResponse:
-  ValidateFunction<StripeHostOnboardingLinkCallableResponse> =
-    ajv.compile(stripeHostOnboardingLinkCallableResponseSchema) as
-      ValidateFunction<StripeHostOnboardingLinkCallableResponse>;
-export const validatePlacesAutocompleteCallablePayload:
-  ValidateFunction<PlacesAutocompleteCallablePayload> =
-    ajv.compile(placesAutocompleteCallablePayloadSchema) as
-      ValidateFunction<PlacesAutocompleteCallablePayload>;
-export const validatePlacesAutocompleteCallableResponse:
-  ValidateFunction<PlacesAutocompleteCallableResponse> =
-    ajv.compile(placesAutocompleteCallableResponseSchema) as
-      ValidateFunction<PlacesAutocompleteCallableResponse>;
-export const validatePlaceDetailsCallablePayload:
-  ValidateFunction<PlaceDetailsCallablePayload> =
-    ajv.compile(placeDetailsCallablePayloadSchema) as
-      ValidateFunction<PlaceDetailsCallablePayload>;
-export const validatePlaceDetailsCallableResponse:
-  ValidateFunction<PlaceDetailsCallableResponse> =
-    ajv.compile(placeDetailsCallableResponseSchema) as
-      ValidateFunction<PlaceDetailsCallableResponse>;
-export const validateExploreSearchCallablePayload:
-  ValidateFunction<ExploreSearchCallablePayload> =
-    ajv.compile(exploreSearchCallablePayloadSchema) as
-      ValidateFunction<ExploreSearchCallablePayload>;
-export const validateExploreSearchCallableResponse:
-  ValidateFunction<ExploreSearchCallableResponse> =
-    ajv.compile(exploreSearchCallableResponseSchema) as
-      ValidateFunction<ExploreSearchCallableResponse>;
-export const validateWebsiteHostListingProjection:
-  ValidateFunction<WebsiteHostListingProjection> =
-    ajv.compile(websiteHostListingProjectionSchema) as
-      ValidateFunction<WebsiteHostListingProjection>;
-export const validateFetchEventSuccessWingmanCandidatesCallableResponse:
-  ValidateFunction<FetchEventSuccessWingmanCandidatesCallableResponse> =
-    ajv.compile(fetchEventSuccessWingmanCandidatesCallableResponseSchema) as
-      ValidateFunction<FetchEventSuccessWingmanCandidatesCallableResponse>;
-export const validateFetchSwipeCandidatesCallableResponse:
-  ValidateFunction<FetchSwipeCandidatesCallableResponse> =
-    ajv.compile(fetchSwipeCandidatesCallableResponseSchema) as
-      ValidateFunction<FetchSwipeCandidatesCallableResponse>;
-export const validateSetCrossPathsEventConsentCallableResponse:
-  ValidateFunction<SetCrossPathsEventConsentCallableResponse> =
-    ajv.compile(setCrossPathsEventConsentCallableResponseSchema) as
-      ValidateFunction<SetCrossPathsEventConsentCallableResponse>;
-export const validateGetCrossPathsSuggestionsCallableResponse:
-  ValidateFunction<GetCrossPathsSuggestionsCallableResponse> =
-    ajv.compile(getCrossPathsSuggestionsCallableResponseSchema) as
-      ValidateFunction<GetCrossPathsSuggestionsCallableResponse>;
-export const validateSendCrossPathsInvitationCallableResponse:
-  ValidateFunction<SendCrossPathsInvitationCallableResponse> =
-    ajv.compile(sendCrossPathsInvitationCallableResponseSchema) as
-      ValidateFunction<SendCrossPathsInvitationCallableResponse>;
-export const validateRespondCrossPathsInvitationCallableResponse:
-  ValidateFunction<RespondCrossPathsInvitationCallableResponse> =
-    ajv.compile(respondCrossPathsInvitationCallableResponseSchema) as
-      ValidateFunction<RespondCrossPathsInvitationCallableResponse>;
-export const validateCancelCrossPathsInvitationOrPlanCallableResponse:
-  ValidateFunction<CancelCrossPathsInvitationOrPlanCallableResponse> =
-    ajv.compile(cancelCrossPathsInvitationOrPlanCallableResponseSchema) as
-      ValidateFunction<CancelCrossPathsInvitationOrPlanCallableResponse>;
-export const validateCreateProfileDecisionClientWrite:
-  ValidateFunction<CreateProfileDecisionClientWrite> =
-    ajv.compile(createProfileDecisionClientWriteSchema) as
-      ValidateFunction<CreateProfileDecisionClientWrite>;
-export const validateCreateChatMessageClientWrite:
-  ValidateFunction<CreateChatMessageClientWrite> =
-    ajv.compile(createChatMessageClientWriteSchema) as
-      ValidateFunction<CreateChatMessageClientWrite>;
-export const validateCreateSavedEventClientWrite:
-  ValidateFunction<CreateSavedEventClientWrite> =
-    ajv.compile(createSavedEventClientWriteSchema) as
-      ValidateFunction<CreateSavedEventClientWrite>;
-export const validateDeleteSavedEventClientWrite:
-  ValidateFunction<DeleteSavedEventClientWrite> =
-    ajv.compile(deleteSavedEventClientWriteSchema) as
-      ValidateFunction<DeleteSavedEventClientWrite>;
-export const validateMarkNotificationReadClientWrite:
-  ValidateFunction<MarkNotificationReadClientWrite> =
-    ajv.compile(markNotificationReadClientWriteSchema) as
-      ValidateFunction<MarkNotificationReadClientWrite>;
-export const validateResetMatchUnreadCountClientWrite:
-  ValidateFunction<ResetMatchUnreadCountClientWrite> =
-    ajv.compile(resetMatchUnreadCountClientWriteSchema) as
-      ValidateFunction<ResetMatchUnreadCountClientWrite>;
-export const validateAdminGetOverviewCallablePayload:
-  ValidateFunction<AdminGetOverviewCallablePayload> =
-    ajv.compile(adminGetOverviewCallablePayloadSchema) as
-      ValidateFunction<AdminGetOverviewCallablePayload>;
-export const validateAdminGetOverviewCallableResponse:
-  ValidateFunction<AdminGetOverviewCallableResponse> =
-    ajv.compile(adminGetOverviewCallableResponseSchema) as
-      ValidateFunction<AdminGetOverviewCallableResponse>;
-export const validateAdminDecideAccessApplicationCallablePayload:
-  ValidateFunction<AdminDecideAccessApplicationCallablePayload> =
-    ajv.compile(adminDecideAccessApplicationCallablePayloadSchema) as
-      ValidateFunction<AdminDecideAccessApplicationCallablePayload>;
-export const validateAdminDecideAccessApplicationCallableResponse:
-  ValidateFunction<AdminDecideAccessApplicationCallableResponse> =
-    ajv.compile(adminDecideAccessApplicationCallableResponseSchema) as
-      ValidateFunction<AdminDecideAccessApplicationCallableResponse>;
-export const validateAdminSetAdminUserRolesCallablePayload:
-  ValidateFunction<AdminSetAdminUserRolesCallablePayload> =
-    ajv.compile(adminSetAdminUserRolesCallablePayloadSchema) as
-      ValidateFunction<AdminSetAdminUserRolesCallablePayload>;
-export const validateAdminSetAdminUserRolesCallableResponse:
-  ValidateFunction<AdminSetAdminUserRolesCallableResponse> =
-    ajv.compile(adminSetAdminUserRolesCallableResponseSchema) as
-      ValidateFunction<AdminSetAdminUserRolesCallableResponse>;
-export const validateAdminDecideSafetyTriageItemCallablePayload:
-  ValidateFunction<AdminDecideSafetyTriageItemCallablePayload> =
-    ajv.compile(adminDecideSafetyTriageItemCallablePayloadSchema) as
-      ValidateFunction<AdminDecideSafetyTriageItemCallablePayload>;
-export const validateAdminDecideSafetyTriageItemCallableResponse:
-  ValidateFunction<AdminDecideSafetyTriageItemCallableResponse> =
-    ajv.compile(adminDecideSafetyTriageItemCallableResponseSchema) as
-      ValidateFunction<AdminDecideSafetyTriageItemCallableResponse>;
-export const validateAdminAssignSafetyTriageItemCallablePayload:
-  ValidateFunction<AdminAssignSafetyTriageItemCallablePayload> =
-    ajv.compile(adminAssignSafetyTriageItemCallablePayloadSchema) as
-      ValidateFunction<AdminAssignSafetyTriageItemCallablePayload>;
-export const validateAdminAssignSafetyTriageItemCallableResponse:
-  ValidateFunction<AdminAssignSafetyTriageItemCallableResponse> =
-    ajv.compile(adminAssignSafetyTriageItemCallableResponseSchema) as
-      ValidateFunction<AdminAssignSafetyTriageItemCallableResponse>;
-export const validateAdminCreateOrganizerDraftFromCandidateCallablePayload:
-  ValidateFunction<AdminCreateOrganizerDraftFromCandidateCallablePayload> =
-    ajv.compile(adminCreateOrganizerDraftFromCandidateCallablePayloadSchema) as
-      ValidateFunction<AdminCreateOrganizerDraftFromCandidateCallablePayload>;
-export const validateAdminCreateOrganizerDraftFromCandidateCallableResponse:
-  ValidateFunction<AdminCreateOrganizerDraftFromCandidateCallableResponse> =
-    ajv.compile(adminCreateOrganizerDraftFromCandidateCallableResponseSchema) as
-      ValidateFunction<AdminCreateOrganizerDraftFromCandidateCallableResponse>;
-export const validateAdminCreateMarketingContentDraftCallablePayload:
-  ValidateFunction<AdminCreateMarketingContentDraftCallablePayload> =
-    ajv.compile(adminCreateMarketingContentDraftCallablePayloadSchema) as
-      ValidateFunction<AdminCreateMarketingContentDraftCallablePayload>;
-export const validateAdminCreateMarketingContentDraftCallableResponse:
-  ValidateFunction<AdminCreateMarketingContentDraftCallableResponse> =
-    ajv.compile(adminCreateMarketingContentDraftCallableResponseSchema) as
-      ValidateFunction<AdminCreateMarketingContentDraftCallableResponse>;
-export const validateAdminRecordMarketingReviewDecisionCallablePayload:
-  ValidateFunction<AdminRecordMarketingReviewDecisionCallablePayload> =
-    ajv.compile(adminRecordMarketingReviewDecisionCallablePayloadSchema) as
-      ValidateFunction<AdminRecordMarketingReviewDecisionCallablePayload>;
-export const validateAdminRecordMarketingReviewDecisionCallableResponse:
-  ValidateFunction<AdminRecordMarketingReviewDecisionCallableResponse> =
-    ajv.compile(adminRecordMarketingReviewDecisionCallableResponseSchema) as
-      ValidateFunction<AdminRecordMarketingReviewDecisionCallableResponse>;
-export const validateAdminListCrossPathsShowcaseCandidatesCallableResponse:
-  ValidateFunction<AdminListCrossPathsShowcaseCandidatesCallableResponse> =
-    ajv.compile(adminListCrossPathsShowcaseCandidatesCallableResponseSchema) as
-      ValidateFunction<AdminListCrossPathsShowcaseCandidatesCallableResponse>;
-export const validateAdminSetCrossPathsShowcaseEligibilityCallableResponse:
-  ValidateFunction<AdminSetCrossPathsShowcaseEligibilityCallableResponse> =
-    ajv.compile(adminSetCrossPathsShowcaseEligibilityCallableResponseSchema) as
-      ValidateFunction<AdminSetCrossPathsShowcaseEligibilityCallableResponse>;
-export const validateJoinWaitlistHTTPRequest:
-  ValidateFunction<JoinWaitlistHTTPRequest> =
-    ajv.compile(joinWaitlistHTTPRequestSchema) as
-      ValidateFunction<JoinWaitlistHTTPRequest>;
-export const validateJoinWaitlistHTTPResponse:
-  ValidateFunction<JoinWaitlistHTTPResponse> =
-    ajv.compile(joinWaitlistHTTPResponseSchema) as
-      ValidateFunction<JoinWaitlistHTTPResponse>;
+function lazyValidator<T>(
+  schema: Record<string, unknown>
+): ValidateFunction<T> {
+  let compiled: ValidateFunction<T> | null = null;
+  const validate = ((data: unknown) => {
+    compiled ??= ajv.compile(schema) as ValidateFunction<T>;
+    return compiled(data);
+  }) as ValidateFunction<T>;
+  Object.defineProperty(validate, "errors", {
+    get: () => compiled?.errors ?? null,
+  });
+  return validate;
+}
+
+export const validateMobileFormState =
+  lazyValidator<MobileFormState>(mobileFormStateSchema);
+export const validateOperationRun =
+  lazyValidator<OperationRun>(operationRunSchema);
+export const validateOperationWorkItem =
+  lazyValidator<OperationWorkItem>(operationWorkItemSchema);
+export const validateProfilePromptAnswer =
+  lazyValidator<ProfilePromptAnswer>(profilePromptAnswerSchema);
+export const validatePhotoPromptAnswer =
+  lazyValidator<PhotoPromptAnswer>(photoPromptAnswerSchema);
+export const validateProfilePhoto =
+  lazyValidator<ProfilePhoto>(profilePhotoSchema);
+export const validateUploadedPhoto =
+  lazyValidator<UploadedPhoto>(uploadedPhotoSchema);
+export const validateEventOrigin =
+  lazyValidator<EventOrigin>(eventOriginSchema);
+export const validateEventRuntimeAccess =
+  lazyValidator<EventRuntimeAccess>(eventRuntimeAccessSchema);
+export const validateActivityPreferences =
+  lazyValidator<ActivityPreferences>(activityPreferencesSchema);
+export const validateOrganizerSupplyCapabilities =
+  lazyValidator<OrganizerSupplyCapabilities>(organizerSupplyCapabilitiesSchema);
+export const validateExternalEventBlockerResolution =
+  lazyValidator<ExternalEventBlockerResolution>(externalEventBlockerResolutionSchema);
+export const validateExternalEventPublicationReceiptDocument =
+  lazyValidator<ExternalEventPublicationReceiptDocument>(externalEventPublicationReceiptDocumentSchema);
+export const validateConfigCitiesDocument =
+  lazyValidator<ConfigCitiesDocument>(configCitiesDocumentSchema);
+export const validateOnboardingDraftDocument =
+  lazyValidator<OnboardingDraftDocument>(onboardingDraftDocumentSchema);
+export const validateAccessApplicationDocument =
+  lazyValidator<AccessApplicationDocument>(accessApplicationDocumentSchema);
+export const validateUserProfileDocument =
+  lazyValidator<UserProfileDocument>(userProfileDocumentSchema);
+export const validatePublicProfileDocument =
+  lazyValidator<PublicProfileDocument>(publicProfileDocumentSchema);
+export const validateHostProfileDocument =
+  lazyValidator<HostProfileDocument>(hostProfileDocumentSchema);
+export const validateClubDocument =
+  lazyValidator<ClubDocument>(clubDocumentSchema);
+export const validateOrganizerDocument =
+  lazyValidator<OrganizerDocument>(organizerDocumentSchema);
+export const validateOrganizerPostDocument =
+  lazyValidator<OrganizerPostDocument>(organizerPostDocumentSchema);
+export const validateOrganizerPostDeliveryOperationDocument =
+  lazyValidator<OrganizerPostDeliveryOperationDocument>(organizerPostDeliveryOperationDocumentSchema);
+export const validateOrganizerPostDeliveryRecipientDocument =
+  lazyValidator<OrganizerPostDeliveryRecipientDocument>(organizerPostDeliveryRecipientDocumentSchema);
+export const validateOrganizerTeamMembershipDocument =
+  lazyValidator<OrganizerTeamMembershipDocument>(organizerTeamMembershipDocumentSchema);
+export const validateOrganizerFollowDocument =
+  lazyValidator<OrganizerFollowDocument>(organizerFollowDocumentSchema);
+export const validateOrganizerCommunicationPreferenceDocument =
+  lazyValidator<OrganizerCommunicationPreferenceDocument>(organizerCommunicationPreferenceDocumentSchema);
+export const validateOrganizerContactDocument =
+  lazyValidator<OrganizerContactDocument>(organizerContactDocumentSchema);
+export const validateOrganizerContactNoteDocument =
+  lazyValidator<OrganizerContactNoteDocument>(organizerContactNoteDocumentSchema);
+export const validateOrganizerContactTagVocabularyDocument =
+  lazyValidator<OrganizerContactTagVocabularyDocument>(organizerContactTagVocabularyDocumentSchema);
+export const validateOrganizerContactIdentityLinkDocument =
+  lazyValidator<OrganizerContactIdentityLinkDocument>(organizerContactIdentityLinkDocumentSchema);
+export const validateOrganizerContactIdentityClaimDocument =
+  lazyValidator<OrganizerContactIdentityClaimDocument>(organizerContactIdentityClaimDocumentSchema);
+export const validateOrganizerContactEventEdgeDocument =
+  lazyValidator<OrganizerContactEventEdgeDocument>(organizerContactEventEdgeDocumentSchema);
+export const validateOrganizerContactTraitDocument =
+  lazyValidator<OrganizerContactTraitDocument>(organizerContactTraitDocumentSchema);
+export const validateOrganizerAudienceSummaryDocument =
+  lazyValidator<OrganizerAudienceSummaryDocument>(organizerAudienceSummaryDocumentSchema);
+export const validateOrganizerAudienceProjectionReceiptDocument =
+  lazyValidator<OrganizerAudienceProjectionReceiptDocument>(organizerAudienceProjectionReceiptDocumentSchema);
+export const validateOrganizerContactMergeReceiptDocument =
+  lazyValidator<OrganizerContactMergeReceiptDocument>(organizerContactMergeReceiptDocumentSchema);
+export const validateOrganizerContactMergeReviewDecisionDocument =
+  lazyValidator<OrganizerContactMergeReviewDecisionDocument>(organizerContactMergeReviewDecisionDocumentSchema);
+export const validateOrganizerSenderConnectionDocument =
+  lazyValidator<OrganizerSenderConnectionDocument>(organizerSenderConnectionDocumentSchema);
+export const validateOrganizerProviderConnectionDocument =
+  lazyValidator<OrganizerProviderConnectionDocument>(organizerProviderConnectionDocumentSchema);
+export const validateOrganizerApplicationFormDocument =
+  lazyValidator<OrganizerApplicationFormDocument>(organizerApplicationFormDocumentSchema);
+export const validateOrganizerApplicationFormVersionDocument =
+  lazyValidator<OrganizerApplicationFormVersionDocument>(organizerApplicationFormVersionDocumentSchema);
+export const validateOrganizerFormDocument =
+  lazyValidator<OrganizerFormDocument>(organizerFormDocumentSchema);
+export const validateOrganizerFormDraftDocument =
+  lazyValidator<OrganizerFormDraftDocument>(organizerFormDraftDocumentSchema);
+export const validateOrganizerFormVersionDocument =
+  lazyValidator<OrganizerFormVersionDocument>(organizerFormVersionDocumentSchema);
+export const validateOrganizerFormResponseDraftDocument =
+  lazyValidator<OrganizerFormResponseDraftDocument>(organizerFormResponseDraftDocumentSchema);
+export const validateOrganizerFormResponseDocument =
+  lazyValidator<OrganizerFormResponseDocument>(organizerFormResponseDocumentSchema);
+export const validateOrganizerFormAssetDocument =
+  lazyValidator<OrganizerFormAssetDocument>(organizerFormAssetDocumentSchema);
+export const validateOrganizerFormAggregateDocument =
+  lazyValidator<OrganizerFormAggregateDocument>(organizerFormAggregateDocumentSchema);
+export const validateOrganizerFormAggregateEventDocument =
+  lazyValidator<OrganizerFormAggregateEventDocument>(organizerFormAggregateEventDocumentSchema);
+export const validateOrganizerFormExportDocument =
+  lazyValidator<OrganizerFormExportDocument>(organizerFormExportDocumentSchema);
+export const validateOrganizerFormAutomationRuleDocument =
+  lazyValidator<OrganizerFormAutomationRuleDocument>(organizerFormAutomationRuleDocumentSchema);
+export const validateOrganizerFormAutomationRunDocument =
+  lazyValidator<OrganizerFormAutomationRunDocument>(organizerFormAutomationRunDocumentSchema);
+export const validateOrganizerFormConversionReceiptDocument =
+  lazyValidator<OrganizerFormConversionReceiptDocument>(organizerFormConversionReceiptDocumentSchema);
+export const validateOrganizerFormShareLinkDocument =
+  lazyValidator<OrganizerFormShareLinkDocument>(organizerFormShareLinkDocumentSchema);
+export const validateOrganizerApplicationDocument =
+  lazyValidator<OrganizerApplicationDocument>(organizerApplicationDocumentSchema);
+export const validateOrganizerApplicationResponseDocument =
+  lazyValidator<OrganizerApplicationResponseDocument>(organizerApplicationResponseDocumentSchema);
+export const validateOrganizerApplicationAssetDocument =
+  lazyValidator<OrganizerApplicationAssetDocument>(organizerApplicationAssetDocumentSchema);
+export const validateOrganizerApplicationSourceMappingDocument =
+  lazyValidator<OrganizerApplicationSourceMappingDocument>(organizerApplicationSourceMappingDocumentSchema);
+export const validateOrganizerApplicationImportReceiptDocument =
+  lazyValidator<OrganizerApplicationImportReceiptDocument>(organizerApplicationImportReceiptDocumentSchema);
+export const validateParticipantIntakeProfileDocument =
+  lazyValidator<ParticipantIntakeProfileDocument>(participantIntakeProfileDocumentSchema);
+export const validateParticipantOrganizerDataGrantDocument =
+  lazyValidator<ParticipantOrganizerDataGrantDocument>(participantOrganizerDataGrantDocumentSchema);
+export const validateExternalEventMappingDocument =
+  lazyValidator<ExternalEventMappingDocument>(externalEventMappingDocumentSchema);
+export const validateProviderSyncRunDocument =
+  lazyValidator<ProviderSyncRunDocument>(providerSyncRunDocumentSchema);
+export const validateOrganizerMessageTemplateDocument =
+  lazyValidator<OrganizerMessageTemplateDocument>(organizerMessageTemplateDocumentSchema);
+export const validateOrganizerContactChannelStateDocument =
+  lazyValidator<OrganizerContactChannelStateDocument>(organizerContactChannelStateDocumentSchema);
+export const validateOrganizerCampaignDocument =
+  lazyValidator<OrganizerCampaignDocument>(organizerCampaignDocumentSchema);
+export const validateOrganizerBroadcastSummaryDocument =
+  lazyValidator<OrganizerBroadcastSummaryDocument>(organizerBroadcastSummaryDocumentSchema);
+export const validateOrganizerCampaignRecipientDocument =
+  lazyValidator<OrganizerCampaignRecipientDocument>(organizerCampaignRecipientDocumentSchema);
+export const validateOrganizerCampaignWebhookReceiptDocument =
+  lazyValidator<OrganizerCampaignWebhookReceiptDocument>(organizerCampaignWebhookReceiptDocumentSchema);
+export const validateOrganizerMessagingWebhookEventDocument =
+  lazyValidator<OrganizerMessagingWebhookEventDocument>(organizerMessagingWebhookEventDocumentSchema);
+export const validateOrganizerWhatsappThreadDocument =
+  lazyValidator<OrganizerWhatsappThreadDocument>(organizerWhatsappThreadDocumentSchema);
+export const validateOrganizerWhatsappMessageDocument =
+  lazyValidator<OrganizerWhatsappMessageDocument>(organizerWhatsappMessageDocumentSchema);
+export const validateOrganizerWhatsappReplyOperationDocument =
+  lazyValidator<OrganizerWhatsappReplyOperationDocument>(organizerWhatsappReplyOperationDocumentSchema);
+export const validateOrganizerClaimRequestDocument =
+  lazyValidator<OrganizerClaimRequestDocument>(organizerClaimRequestDocumentSchema);
+export const validateOrganizerScheduleLockDocument =
+  lazyValidator<OrganizerScheduleLockDocument>(organizerScheduleLockDocumentSchema);
+export const validateClubPostDocument =
+  lazyValidator<ClubPostDocument>(clubPostDocumentSchema);
+export const validateClubMembershipDocument =
+  lazyValidator<ClubMembershipDocument>(clubMembershipDocumentSchema);
+export const validateClubHostClaimDocument =
+  lazyValidator<ClubHostClaimDocument>(clubHostClaimDocumentSchema);
+export const validateClubClaimRequestDocument =
+  lazyValidator<ClubClaimRequestDocument>(clubClaimRequestDocumentSchema);
+export const validateEventDocument =
+  lazyValidator<EventDocument>(eventDocumentSchema);
+export const validateExternalEventDocument =
+  lazyValidator<ExternalEventDocument>(externalEventDocumentSchema);
+export const validateEventPrivateAccessDocument =
+  lazyValidator<EventPrivateAccessDocument>(eventPrivateAccessDocumentSchema);
+export const validateEventInviteLinkDocument =
+  lazyValidator<EventInviteLinkDocument>(eventInviteLinkDocumentSchema);
+export const validateEventInviteLinkSecretDocument =
+  lazyValidator<EventInviteLinkSecretDocument>(eventInviteLinkSecretDocumentSchema);
+export const validateEventInviteTouchDocument =
+  lazyValidator<EventInviteTouchDocument>(eventInviteTouchDocumentSchema);
+export const validateEventShareIntentDocument =
+  lazyValidator<EventShareIntentDocument>(eventShareIntentDocumentSchema);
+export const validateEventInviteAttributionDocument =
+  lazyValidator<EventInviteAttributionDocument>(eventInviteAttributionDocumentSchema);
+export const validateEventParticipationDocument =
+  lazyValidator<EventParticipationDocument>(eventParticipationDocumentSchema);
+export const validateEventAttendeeDocument =
+  lazyValidator<EventAttendeeDocument>(eventAttendeeDocumentSchema);
+export const validateEventStaffGrantDocument =
+  lazyValidator<EventStaffGrantDocument>(eventStaffGrantDocumentSchema);
+export const validateEventAttendeeAttendanceReceiptDocument =
+  lazyValidator<EventAttendeeAttendanceReceiptDocument>(eventAttendeeAttendanceReceiptDocumentSchema);
+export const validateEventAttendeeImportDocument =
+  lazyValidator<EventAttendeeImportDocument>(eventAttendeeImportDocumentSchema);
+export const validateEventRosterHandoffDocument =
+  lazyValidator<EventRosterHandoffDocument>(eventRosterHandoffDocumentSchema);
+export const validateEventRuntimeParticipantDocument =
+  lazyValidator<EventRuntimeParticipantDocument>(eventRuntimeParticipantDocumentSchema);
+export const validateEventVenueSessionDocument =
+  lazyValidator<EventVenueSessionDocument>(eventVenueSessionDocumentSchema);
+export const validateEventVenueSessionRedemptionDocument =
+  lazyValidator<EventVenueSessionRedemptionDocument>(eventVenueSessionRedemptionDocumentSchema);
+export const validateEventSuccessPresenceDocument =
+  lazyValidator<EventSuccessPresenceDocument>(eventSuccessPresenceDocumentSchema);
+export const validateEventLivePositionDocument =
+  lazyValidator<EventLivePositionDocument>(eventLivePositionDocumentSchema);
+export const validateEventSuccessLateArrivalDocument =
+  lazyValidator<EventSuccessLateArrivalDocument>(eventSuccessLateArrivalDocumentSchema);
+export const validateEventRehearsalDocument =
+  lazyValidator<EventRehearsalDocument>(eventRehearsalDocumentSchema);
+export const validateEventRehearsalActorDocument =
+  lazyValidator<EventRehearsalActorDocument>(eventRehearsalActorDocumentSchema);
+export const validateEventRehearsalActionDocument =
+  lazyValidator<EventRehearsalActionDocument>(eventRehearsalActionDocumentSchema);
+export const validateEventRehearsalGuestViewDocument =
+  lazyValidator<EventRehearsalGuestViewDocument>(eventRehearsalGuestViewDocumentSchema);
+export const validateEventRuntimeClaimRequestDocument =
+  lazyValidator<EventRuntimeClaimRequestDocument>(eventRuntimeClaimRequestDocumentSchema);
+export const validateEventCrossPathsConsentDocument =
+  lazyValidator<EventCrossPathsConsentDocument>(eventCrossPathsConsentDocumentSchema);
+export const validateCrossPathsShowcaseEligibilityDocument =
+  lazyValidator<CrossPathsShowcaseEligibilityDocument>(crossPathsShowcaseEligibilityDocumentSchema);
+export const validateCrossPathsSuggestionExposureDocument =
+  lazyValidator<CrossPathsSuggestionExposureDocument>(crossPathsSuggestionExposureDocumentSchema);
+export const validateCrossPathsInvitationDocument =
+  lazyValidator<CrossPathsInvitationDocument>(crossPathsInvitationDocumentSchema);
+export const validateCrossPathsPairHoldDocument =
+  lazyValidator<CrossPathsPairHoldDocument>(crossPathsPairHoldDocumentSchema);
+export const validateEventBroadcastDocument =
+  lazyValidator<EventBroadcastDocument>(eventBroadcastDocumentSchema);
+export const validateEventWaitlistOfferDocument =
+  lazyValidator<EventWaitlistOfferDocument>(eventWaitlistOfferDocumentSchema);
+export const validateEventSuccessPlanDocument =
+  lazyValidator<EventSuccessPlanDocument>(eventSuccessPlanDocumentSchema);
+export const validateEventSuccessConversationGraphDocument =
+  lazyValidator<EventSuccessConversationGraphDocument>(eventSuccessConversationGraphDocumentSchema);
+export const validateOrganizerEventSuccessLayoutDocument =
+  lazyValidator<OrganizerEventSuccessLayoutDocument>(organizerEventSuccessLayoutDocumentSchema);
+export const validateEventSuccessAssignmentDraftDocument =
+  lazyValidator<EventSuccessAssignmentDraftDocument>(eventSuccessAssignmentDraftDocumentSchema);
+export const validateEventSuccessFeedbackDocument =
+  lazyValidator<EventSuccessFeedbackDocument>(eventSuccessFeedbackDocumentSchema);
+export const validateEventSuccessPreferenceDocument =
+  lazyValidator<EventSuccessPreferenceDocument>(eventSuccessPreferenceDocumentSchema);
+export const validateEventSuccessCompatibilityResponseDocument =
+  lazyValidator<EventSuccessCompatibilityResponseDocument>(eventSuccessCompatibilityResponseDocumentSchema);
+export const validateEventSuccessWingmanRequestDocument =
+  lazyValidator<EventSuccessWingmanRequestDocument>(eventSuccessWingmanRequestDocumentSchema);
+export const validateEventSuccessArrivalMissionDocument =
+  lazyValidator<EventSuccessArrivalMissionDocument>(eventSuccessArrivalMissionDocumentSchema);
+export const validateEventSuccessAssignmentDocument =
+  lazyValidator<EventSuccessAssignmentDocument>(eventSuccessAssignmentDocumentSchema);
+export const validateEventSuccessUnitOutcomesDocument =
+  lazyValidator<EventSuccessUnitOutcomesDocument>(eventSuccessUnitOutcomesDocumentSchema);
+export const validateEventSuccessStandingsDocument =
+  lazyValidator<EventSuccessStandingsDocument>(eventSuccessStandingsDocumentSchema);
+export const validateEventSuccessScorecardDocument =
+  lazyValidator<EventSuccessScorecardDocument>(eventSuccessScorecardDocumentSchema);
+export const validateEventSafetyReportDocument =
+  lazyValidator<EventSafetyReportDocument>(eventSafetyReportDocumentSchema);
+export const validateClubScheduleLockDocument =
+  lazyValidator<ClubScheduleLockDocument>(clubScheduleLockDocumentSchema);
+export const validateUserEventScheduleLockDocument =
+  lazyValidator<UserEventScheduleLockDocument>(userEventScheduleLockDocumentSchema);
+export const validateSavedEventDocument =
+  lazyValidator<SavedEventDocument>(savedEventDocumentSchema);
+export const validateHostAnalyticsEvent =
+  lazyValidator<HostAnalyticsEvent>(hostAnalyticsEventSchema);
+export const validateUserProfileExposureEvent =
+  lazyValidator<UserProfileExposureEvent>(userProfileExposureEventSchema);
+export const validatePaymentDocument =
+  lazyValidator<PaymentDocument>(paymentDocumentSchema);
+export const validateHostPaymentAccountDocument =
+  lazyValidator<HostPaymentAccountDocument>(hostPaymentAccountDocumentSchema);
+export const validateRazorpayPendingOrderDocument =
+  lazyValidator<RazorpayPendingOrderDocument>(razorpayPendingOrderDocumentSchema);
+export const validateSwipeDocument =
+  lazyValidator<SwipeDocument>(swipeDocumentSchema);
+export const validateMatchDocument =
+  lazyValidator<MatchDocument>(matchDocumentSchema);
+export const validateChatMessageDocument =
+  lazyValidator<ChatMessageDocument>(chatMessageDocumentSchema);
+export const validateActivityNotificationDocument =
+  lazyValidator<ActivityNotificationDocument>(activityNotificationDocumentSchema);
+export const validateReviewDocument =
+  lazyValidator<ReviewDocument>(reviewDocumentSchema);
+export const validateBlockDocument =
+  lazyValidator<BlockDocument>(blockDocumentSchema);
+export const validateReportDocument =
+  lazyValidator<ReportDocument>(reportDocumentSchema);
+export const validateModerationFlagDocument =
+  lazyValidator<ModerationFlagDocument>(moderationFlagDocumentSchema);
+export const validateDeletedUserTombstoneDocument =
+  lazyValidator<DeletedUserTombstoneDocument>(deletedUserTombstoneDocumentSchema);
+export const validateRateLimitDocument =
+  lazyValidator<RateLimitDocument>(rateLimitDocumentSchema);
+export const validateHostAnalyticsSnapshotDocument =
+  lazyValidator<HostAnalyticsSnapshotDocument>(hostAnalyticsSnapshotDocumentSchema);
+export const validateFunctionEventReceiptDocument =
+  lazyValidator<FunctionEventReceiptDocument>(functionEventReceiptDocumentSchema);
+export const validatePublicRouteReservationDocument =
+  lazyValidator<PublicRouteReservationDocument>(publicRouteReservationDocumentSchema);
+export const validateSeedEventManifestDocument =
+  lazyValidator<SeedEventManifestDocument>(seedEventManifestDocumentSchema);
+export const validateOrganizerIntakeReviewDecisionDocument =
+  lazyValidator<OrganizerIntakeReviewDecisionDocument>(organizerIntakeReviewDecisionDocumentSchema);
+export const validateEventIntakeReviewDecisionDocument =
+  lazyValidator<EventIntakeReviewDecisionDocument>(eventIntakeReviewDecisionDocumentSchema);
+export const validateOrganizerIntakeCurationDecisionDocument =
+  lazyValidator<OrganizerIntakeCurationDecisionDocument>(organizerIntakeCurationDecisionDocumentSchema);
+export const validateOrganizerIntakeFieldCorrectionDocument =
+  lazyValidator<OrganizerIntakeFieldCorrectionDocument>(organizerIntakeFieldCorrectionDocumentSchema);
+export const validateOrganizerEventCandidateReviewDecisionDocument =
+  lazyValidator<OrganizerEventCandidateReviewDecisionDocument>(organizerEventCandidateReviewDecisionDocumentSchema);
+export const validateOrganizerEventLocationResolutionDecisionDocument =
+  lazyValidator<OrganizerEventLocationResolutionDecisionDocument>(organizerEventLocationResolutionDecisionDocumentSchema);
+export const validateOrganizerPolicyGapReviewDecisionDocument =
+  lazyValidator<OrganizerPolicyGapReviewDecisionDocument>(organizerPolicyGapReviewDecisionDocumentSchema);
+export const validateUpdateUserProfileCallablePayload =
+  lazyValidator<UpdateUserProfileCallablePayload>(updateUserProfileCallablePayloadSchema);
+export const validateCreateClubCallablePayload =
+  lazyValidator<CreateClubCallablePayload>(createClubCallablePayloadSchema);
+export const validateCreateOrganizerCallablePayload =
+  lazyValidator<CreateOrganizerCallablePayload>(createOrganizerCallablePayloadSchema);
+export const validateCreateOrganizerCallableResponse =
+  lazyValidator<CreateOrganizerCallableResponse>(createOrganizerCallableResponseSchema);
+export const validateUpdateOrganizerCallablePayload =
+  lazyValidator<UpdateOrganizerCallablePayload>(updateOrganizerCallablePayloadSchema);
+export const validateArchiveOrganizerCallablePayload =
+  lazyValidator<ArchiveOrganizerCallablePayload>(archiveOrganizerCallablePayloadSchema);
+export const validateDeleteOrganizerCallablePayload =
+  lazyValidator<DeleteOrganizerCallablePayload>(deleteOrganizerCallablePayloadSchema);
+export const validateCreateOrganizerPostCallablePayload =
+  lazyValidator<CreateOrganizerPostCallablePayload>(createOrganizerPostCallablePayloadSchema);
+export const validateCreateOrganizerPostCallableResponse =
+  lazyValidator<CreateOrganizerPostCallableResponse>(createOrganizerPostCallableResponseSchema);
+export const validateRequestOrganizerClaimCallablePayload =
+  lazyValidator<RequestOrganizerClaimCallablePayload>(requestOrganizerClaimCallablePayloadSchema);
+export const validateRequestOrganizerClaimCallableResponse =
+  lazyValidator<RequestOrganizerClaimCallableResponse>(requestOrganizerClaimCallableResponseSchema);
+export const validateAdminDecideOrganizerClaimCallablePayload =
+  lazyValidator<AdminDecideOrganizerClaimCallablePayload>(adminDecideOrganizerClaimCallablePayloadSchema);
+export const validateCreateClubCallableResponse =
+  lazyValidator<CreateClubCallableResponse>(createClubCallableResponseSchema);
+export const validateCreateClubPostCallablePayload =
+  lazyValidator<CreateClubPostCallablePayload>(createClubPostCallablePayloadSchema);
+export const validateCreateClubPostCallableResponse =
+  lazyValidator<CreateClubPostCallableResponse>(createClubPostCallableResponseSchema);
+export const validateSendEventBroadcastCallablePayload =
+  lazyValidator<SendEventBroadcastCallablePayload>(sendEventBroadcastCallablePayloadSchema);
+export const validateSendEventBroadcastCallableResponse =
+  lazyValidator<SendEventBroadcastCallableResponse>(sendEventBroadcastCallableResponseSchema);
+export const validateUpdateClubCallablePayload =
+  lazyValidator<UpdateClubCallablePayload>(updateClubCallablePayloadSchema);
+export const validateHostAnalyticsQueryCallablePayload =
+  lazyValidator<HostAnalyticsQueryCallablePayload>(hostAnalyticsQueryCallablePayloadSchema);
+export const validateHostAnalyticsCallableResponse =
+  lazyValidator<HostAnalyticsCallableResponse>(hostAnalyticsCallableResponseSchema);
+export const validateUserAnalyticsQueryCallablePayload =
+  lazyValidator<UserAnalyticsQueryCallablePayload>(userAnalyticsQueryCallablePayloadSchema);
+export const validateUserAnalyticsCallableResponse =
+  lazyValidator<UserAnalyticsCallableResponse>(userAnalyticsCallableResponseSchema);
+export const validateAddClubHostCallablePayload =
+  lazyValidator<AddClubHostCallablePayload>(addClubHostCallablePayloadSchema);
+export const validateOrganizerFollowCallablePayload =
+  lazyValidator<OrganizerFollowCallablePayload>(organizerFollowCallablePayloadSchema);
+export const validateSetOrganizerNotificationPreferenceCallablePayload =
+  lazyValidator<SetOrganizerNotificationPreferenceCallablePayload>(setOrganizerNotificationPreferenceCallablePayloadSchema);
+export const validateAddOrganizerManagerCallablePayload =
+  lazyValidator<AddOrganizerManagerCallablePayload>(addOrganizerManagerCallablePayloadSchema);
+export const validateRemoveOrganizerManagerCallablePayload =
+  lazyValidator<RemoveOrganizerManagerCallablePayload>(removeOrganizerManagerCallablePayloadSchema);
+export const validateTransferOrganizerOwnershipCallablePayload =
+  lazyValidator<TransferOrganizerOwnershipCallablePayload>(transferOrganizerOwnershipCallablePayloadSchema);
+export const validateRemoveClubHostCallablePayload =
+  lazyValidator<RemoveClubHostCallablePayload>(removeClubHostCallablePayloadSchema);
+export const validateTransferClubOwnershipCallablePayload =
+  lazyValidator<TransferClubOwnershipCallablePayload>(transferClubOwnershipCallablePayloadSchema);
+export const validateRequestClubClaimCallablePayload =
+  lazyValidator<RequestClubClaimCallablePayload>(requestClubClaimCallablePayloadSchema);
+export const validateRequestClubClaimCallableResponse =
+  lazyValidator<RequestClubClaimCallableResponse>(requestClubClaimCallableResponseSchema);
+export const validateAdminDecideClubClaimCallablePayload =
+  lazyValidator<AdminDecideClubClaimCallablePayload>(adminDecideClubClaimCallablePayloadSchema);
+export const validateAdminDecideOrganizerIntakeCallablePayload =
+  lazyValidator<AdminDecideOrganizerIntakeCallablePayload>(adminDecideOrganizerIntakeCallablePayloadSchema);
+export const validateAdminRecordOrganizerCurationCallablePayload =
+  lazyValidator<AdminRecordOrganizerCurationCallablePayload>(adminRecordOrganizerCurationCallablePayloadSchema);
+export const validateAdminRecordEventIntakeReviewDecisionCallablePayload =
+  lazyValidator<AdminRecordEventIntakeReviewDecisionCallablePayload>(adminRecordEventIntakeReviewDecisionCallablePayloadSchema);
+export const validateAdminListIntakeOperationsCallablePayload =
+  lazyValidator<AdminListIntakeOperationsCallablePayload>(adminListIntakeOperationsCallablePayloadSchema);
+export const validateAdminListActionExecutionsCallablePayload =
+  lazyValidator<AdminListActionExecutionsCallablePayload>(adminListActionExecutionsCallablePayloadSchema);
+export const validateAdminRecordActionExecutionCallablePayload =
+  lazyValidator<AdminRecordActionExecutionCallablePayload>(adminRecordActionExecutionCallablePayloadSchema);
+export const validateAdminDecideOrganizerEventCandidateCallablePayload =
+  lazyValidator<AdminDecideOrganizerEventCandidateCallablePayload>(adminDecideOrganizerEventCandidateCallablePayloadSchema);
+export const validateAdminDecideOrganizerPolicyGapCallablePayload =
+  lazyValidator<AdminDecideOrganizerPolicyGapCallablePayload>(adminDecideOrganizerPolicyGapCallablePayloadSchema);
+export const validateAdminResolveOrganizerEventLocationCallablePayload =
+  lazyValidator<AdminResolveOrganizerEventLocationCallablePayload>(adminResolveOrganizerEventLocationCallablePayloadSchema);
+export const validateAdminSetClubIndexStatusCallablePayload =
+  lazyValidator<AdminSetClubIndexStatusCallablePayload>(adminSetClubIndexStatusCallablePayloadSchema);
+export const validateAdminListCrossPathsShowcaseCandidatesCallablePayload =
+  lazyValidator<AdminListCrossPathsShowcaseCandidatesCallablePayload>(adminListCrossPathsShowcaseCandidatesCallablePayloadSchema);
+export const validateAdminSetCrossPathsShowcaseEligibilityCallablePayload =
+  lazyValidator<AdminSetCrossPathsShowcaseEligibilityCallablePayload>(adminSetCrossPathsShowcaseEligibilityCallablePayloadSchema);
+export const validateAdminGetClubDetailsCallablePayload =
+  lazyValidator<AdminGetClubDetailsCallablePayload>(adminGetClubDetailsCallablePayloadSchema);
+export const validateAdminListClubDetailsCallablePayload =
+  lazyValidator<AdminListClubDetailsCallablePayload>(adminListClubDetailsCallablePayloadSchema);
+export const validateAdminUpdateClubDetailsCallablePayload =
+  lazyValidator<AdminUpdateClubDetailsCallablePayload>(adminUpdateClubDetailsCallablePayloadSchema);
+export const validateAdminGetOrganizerDetailsCallablePayload =
+  lazyValidator<AdminGetOrganizerDetailsCallablePayload>(adminGetOrganizerDetailsCallablePayloadSchema);
+export const validateAdminListOrganizerDetailsCallablePayload =
+  lazyValidator<AdminListOrganizerDetailsCallablePayload>(adminListOrganizerDetailsCallablePayloadSchema);
+export const validateAdminUpdateOrganizerDetailsCallablePayload =
+  lazyValidator<AdminUpdateOrganizerDetailsCallablePayload>(adminUpdateOrganizerDetailsCallablePayloadSchema);
+export const validateAdminGetEventDetailsCallablePayload =
+  lazyValidator<AdminGetEventDetailsCallablePayload>(adminGetEventDetailsCallablePayloadSchema);
+export const validateAdminListEventDetailsCallablePayload =
+  lazyValidator<AdminListEventDetailsCallablePayload>(adminListEventDetailsCallablePayloadSchema);
+export const validateAdminListExternalEventDetailsCallablePayload =
+  lazyValidator<AdminListExternalEventDetailsCallablePayload>(adminListExternalEventDetailsCallablePayloadSchema);
+export const validateAdminUpdateEventDetailsCallablePayload =
+  lazyValidator<AdminUpdateEventDetailsCallablePayload>(adminUpdateEventDetailsCallablePayloadSchema);
+export const validateAdminPublishExternalEventCallablePayload =
+  lazyValidator<AdminPublishExternalEventCallablePayload>(adminPublishExternalEventCallablePayloadSchema);
+export const validateAdminTakedownExternalEventCallablePayload =
+  lazyValidator<AdminTakedownExternalEventCallablePayload>(adminTakedownExternalEventCallablePayloadSchema);
+export const validateStartClubHostConversationCallablePayload =
+  lazyValidator<StartClubHostConversationCallablePayload>(startClubHostConversationCallablePayloadSchema);
+export const validateStartOrganizerConversationCallablePayload =
+  lazyValidator<StartOrganizerConversationCallablePayload>(startOrganizerConversationCallablePayloadSchema);
+export const validateStartOrganizerContactConversationCallablePayload =
+  lazyValidator<StartOrganizerContactConversationCallablePayload>(startOrganizerContactConversationCallablePayloadSchema);
+export const validateArchiveClubCallablePayload =
+  lazyValidator<ArchiveClubCallablePayload>(archiveClubCallablePayloadSchema);
+export const validateDeleteClubCallablePayload =
+  lazyValidator<DeleteClubCallablePayload>(deleteClubCallablePayloadSchema);
+export const validateClubMembershipCallablePayload =
+  lazyValidator<ClubMembershipCallablePayload>(clubMembershipCallablePayloadSchema);
+export const validateSetClubNotificationPreferenceCallablePayload =
+  lazyValidator<SetClubNotificationPreferenceCallablePayload>(setClubNotificationPreferenceCallablePayloadSchema);
+export const validateCreateEventCallablePayload =
+  lazyValidator<CreateEventCallablePayload>(createEventCallablePayloadSchema);
+export const validateUpdateEventCallablePayload =
+  lazyValidator<UpdateEventCallablePayload>(updateEventCallablePayloadSchema);
+export const validateCancelEventCallablePayload =
+  lazyValidator<CancelEventCallablePayload>(cancelEventCallablePayloadSchema);
+export const validateDeleteEventCallablePayload =
+  lazyValidator<DeleteEventCallablePayload>(deleteEventCallablePayloadSchema);
+export const validateEventIdCallablePayload =
+  lazyValidator<EventIdCallablePayload>(eventIdCallablePayloadSchema);
+export const validateSetCrossPathsEventConsentCallablePayload =
+  lazyValidator<SetCrossPathsEventConsentCallablePayload>(setCrossPathsEventConsentCallablePayloadSchema);
+export const validateGetCrossPathsSuggestionsCallablePayload =
+  lazyValidator<GetCrossPathsSuggestionsCallablePayload>(getCrossPathsSuggestionsCallablePayloadSchema);
+export const validateSendCrossPathsInvitationCallablePayload =
+  lazyValidator<SendCrossPathsInvitationCallablePayload>(sendCrossPathsInvitationCallablePayloadSchema);
+export const validateRespondCrossPathsInvitationCallablePayload =
+  lazyValidator<RespondCrossPathsInvitationCallablePayload>(respondCrossPathsInvitationCallablePayloadSchema);
+export const validateCancelCrossPathsInvitationOrPlanCallablePayload =
+  lazyValidator<CancelCrossPathsInvitationOrPlanCallablePayload>(cancelCrossPathsInvitationOrPlanCallablePayloadSchema);
+export const validateCreateEventWaitlistOffersCallablePayload =
+  lazyValidator<CreateEventWaitlistOffersCallablePayload>(createEventWaitlistOffersCallablePayloadSchema);
+export const validateCreateEventInviteLinkCallablePayload =
+  lazyValidator<CreateEventInviteLinkCallablePayload>(createEventInviteLinkCallablePayloadSchema);
+export const validateDisableEventInviteLinkCallablePayload =
+  lazyValidator<DisableEventInviteLinkCallablePayload>(disableEventInviteLinkCallablePayloadSchema);
+export const validateRecordEventInviteLinkOpenCallablePayload =
+  lazyValidator<RecordEventInviteLinkOpenCallablePayload>(recordEventInviteLinkOpenCallablePayloadSchema);
+export const validateResolveEventInviteLandingCallablePayload =
+  lazyValidator<ResolveEventInviteLandingCallablePayload>(resolveEventInviteLandingCallablePayloadSchema);
+export const validateResolveEventInviteLandingCallableResponse =
+  lazyValidator<ResolveEventInviteLandingCallableResponse>(resolveEventInviteLandingCallableResponseSchema);
+export const validateGetEventInviteLinkTokenCallablePayload =
+  lazyValidator<GetEventInviteLinkTokenCallablePayload>(getEventInviteLinkTokenCallablePayloadSchema);
+export const validateRecordEventShareIntentCallablePayload =
+  lazyValidator<RecordEventShareIntentCallablePayload>(recordEventShareIntentCallablePayloadSchema);
+export const validateUpsertOrganizerCampaignCallablePayload =
+  lazyValidator<UpsertOrganizerCampaignCallablePayload>(upsertOrganizerCampaignCallablePayloadSchema);
+export const validateOrganizerCampaignActionCallablePayload =
+  lazyValidator<OrganizerCampaignActionCallablePayload>(organizerCampaignActionCallablePayloadSchema);
+export const validateCompleteOrganizerWhatsappConnectionCallablePayload =
+  lazyValidator<CompleteOrganizerWhatsappConnectionCallablePayload>(completeOrganizerWhatsappConnectionCallablePayloadSchema);
+export const validateOrganizerSenderConnectionActionCallablePayload =
+  lazyValidator<OrganizerSenderConnectionActionCallablePayload>(organizerSenderConnectionActionCallablePayloadSchema);
+export const validateSendOrganizerWhatsappTestCallablePayload =
+  lazyValidator<SendOrganizerWhatsappTestCallablePayload>(sendOrganizerWhatsappTestCallablePayloadSchema);
+export const validateOrganizerCampaignCallableResponse =
+  lazyValidator<OrganizerCampaignCallableResponse>(organizerCampaignCallableResponseSchema);
+export const validateListOrganizerCampaignsCallablePayload =
+  lazyValidator<ListOrganizerCampaignsCallablePayload>(listOrganizerCampaignsCallablePayloadSchema);
+export const validateListOrganizerCampaignsCallableResponse =
+  lazyValidator<ListOrganizerCampaignsCallableResponse>(listOrganizerCampaignsCallableResponseSchema);
+export const validateOrganizerMessagingSetupCallableResponse =
+  lazyValidator<OrganizerMessagingSetupCallableResponse>(organizerMessagingSetupCallableResponseSchema);
+export const validateGetOrganizerProviderSetupCallablePayload =
+  lazyValidator<GetOrganizerProviderSetupCallablePayload>(getOrganizerProviderSetupCallablePayloadSchema);
+export const validateConnectOrganizerLumaProviderCallablePayload =
+  lazyValidator<ConnectOrganizerLumaProviderCallablePayload>(connectOrganizerLumaProviderCallablePayloadSchema);
+export const validateListOrganizerLumaEventsCallablePayload =
+  lazyValidator<ListOrganizerLumaEventsCallablePayload>(listOrganizerLumaEventsCallablePayloadSchema);
+export const validateSyncOrganizerProviderEventCallablePayload =
+  lazyValidator<SyncOrganizerProviderEventCallablePayload>(syncOrganizerProviderEventCallablePayloadSchema);
+export const validateDisconnectOrganizerProviderCallablePayload =
+  lazyValidator<DisconnectOrganizerProviderCallablePayload>(disconnectOrganizerProviderCallablePayloadSchema);
+export const validateOrganizerProviderSetupCallableResponse =
+  lazyValidator<OrganizerProviderSetupCallableResponse>(organizerProviderSetupCallableResponseSchema);
+export const validateListOrganizerLumaEventsCallableResponse =
+  lazyValidator<ListOrganizerLumaEventsCallableResponse>(listOrganizerLumaEventsCallableResponseSchema);
+export const validateSyncOrganizerProviderEventCallableResponse =
+  lazyValidator<SyncOrganizerProviderEventCallableResponse>(syncOrganizerProviderEventCallableResponseSchema);
+export const validateRecordOrganizerAnalyticsEventCallablePayload =
+  lazyValidator<RecordOrganizerAnalyticsEventCallablePayload>(recordOrganizerAnalyticsEventCallablePayloadSchema);
+export const validateRecordOrganizerAnalyticsEventCallableResponse =
+  lazyValidator<RecordOrganizerAnalyticsEventCallableResponse>(recordOrganizerAnalyticsEventCallableResponseSchema);
+export const validateMarkEventAttendanceCallablePayload =
+  lazyValidator<MarkEventAttendanceCallablePayload>(markEventAttendanceCallablePayloadSchema);
+export const validateImportEventAttendeesCallablePayload =
+  lazyValidator<ImportEventAttendeesCallablePayload>(importEventAttendeesCallablePayloadSchema);
+export const validateMarkEventAttendeeAttendanceCallablePayload =
+  lazyValidator<MarkEventAttendeeAttendanceCallablePayload>(markEventAttendeeAttendanceCallablePayloadSchema);
+export const validateSetEventAttendeeAttendanceCallablePayload =
+  lazyValidator<SetEventAttendeeAttendanceCallablePayload>(setEventAttendeeAttendanceCallablePayloadSchema);
+export const validateSetEventAttendeeAttendanceCallableResponse =
+  lazyValidator<SetEventAttendeeAttendanceCallableResponse>(setEventAttendeeAttendanceCallableResponseSchema);
+export const validateEventOperatorAccessCallablePayload =
+  lazyValidator<EventOperatorAccessCallablePayload>(eventOperatorAccessCallablePayloadSchema);
+export const validateEventOperatorAccessCallableResponse =
+  lazyValidator<EventOperatorAccessCallableResponse>(eventOperatorAccessCallableResponseSchema);
+export const validateGrantEventStaffCallablePayload =
+  lazyValidator<GrantEventStaffCallablePayload>(grantEventStaffCallablePayloadSchema);
+export const validateRevokeEventStaffCallablePayload =
+  lazyValidator<RevokeEventStaffCallablePayload>(revokeEventStaffCallablePayloadSchema);
+export const validateEventStaffListCallableResponse =
+  lazyValidator<EventStaffListCallableResponse>(eventStaffListCallableResponseSchema);
+export const validateRegisterPublicEventCallablePayload =
+  lazyValidator<RegisterPublicEventCallablePayload>(registerPublicEventCallablePayloadSchema);
+export const validateRegisterPublicEventCallableResponse =
+  lazyValidator<RegisterPublicEventCallableResponse>(registerPublicEventCallableResponseSchema);
+export const validateGetEventRuntimeBootstrapCallablePayload =
+  lazyValidator<GetEventRuntimeBootstrapCallablePayload>(getEventRuntimeBootstrapCallablePayloadSchema);
+export const validateCreateEventRehearsalCallablePayload =
+  lazyValidator<CreateEventRehearsalCallablePayload>(createEventRehearsalCallablePayloadSchema);
+export const validateCreateEventRehearsalCallableResponse =
+  lazyValidator<CreateEventRehearsalCallableResponse>(createEventRehearsalCallableResponseSchema);
+export const validateGetEventRehearsalBootstrapCallablePayload =
+  lazyValidator<GetEventRehearsalBootstrapCallablePayload>(getEventRehearsalBootstrapCallablePayloadSchema);
+export const validateEventRehearsalBootstrapCallableResponse =
+  lazyValidator<EventRehearsalBootstrapCallableResponse>(eventRehearsalBootstrapCallableResponseSchema);
+export const validateUpdateEventRehearsalSetupCallablePayload =
+  lazyValidator<UpdateEventRehearsalSetupCallablePayload>(updateEventRehearsalSetupCallablePayloadSchema);
+export const validateControlEventRehearsalCallablePayload =
+  lazyValidator<ControlEventRehearsalCallablePayload>(controlEventRehearsalCallablePayloadSchema);
+export const validateInjectEventRehearsalBehaviorCallablePayload =
+  lazyValidator<InjectEventRehearsalBehaviorCallablePayload>(injectEventRehearsalBehaviorCallablePayloadSchema);
+export const validateResetEventRehearsalCallablePayload =
+  lazyValidator<ResetEventRehearsalCallablePayload>(resetEventRehearsalCallablePayloadSchema);
+export const validateRotateEventRehearsalGuestLinkCallablePayload =
+  lazyValidator<RotateEventRehearsalGuestLinkCallablePayload>(rotateEventRehearsalGuestLinkCallablePayloadSchema);
+export const validateGetEventRehearsalGuestBootstrapCallablePayload =
+  lazyValidator<GetEventRehearsalGuestBootstrapCallablePayload>(getEventRehearsalGuestBootstrapCallablePayloadSchema);
+export const validateEventRehearsalGuestBootstrapCallableResponse =
+  lazyValidator<EventRehearsalGuestBootstrapCallableResponse>(eventRehearsalGuestBootstrapCallableResponseSchema);
+export const validateSubmitEventRehearsalGuestActionCallablePayload =
+  lazyValidator<SubmitEventRehearsalGuestActionCallablePayload>(submitEventRehearsalGuestActionCallablePayloadSchema);
+export const validateEventRehearsalReproductionCallableResponse =
+  lazyValidator<EventRehearsalReproductionCallableResponse>(eventRehearsalReproductionCallableResponseSchema);
+export const validateUpsertEventSuccessLayoutCallablePayload =
+  lazyValidator<UpsertEventSuccessLayoutCallablePayload>(upsertEventSuccessLayoutCallablePayloadSchema);
+export const validateUpsertEventSuccessLayoutCallableResponse =
+  lazyValidator<UpsertEventSuccessLayoutCallableResponse>(upsertEventSuccessLayoutCallableResponseSchema);
+export const validateGetEventSuccessSpatialLayoutCallablePayload =
+  lazyValidator<GetEventSuccessSpatialLayoutCallablePayload>(getEventSuccessSpatialLayoutCallablePayloadSchema);
+export const validateGetEventSuccessSpatialLayoutCallableResponse =
+  lazyValidator<GetEventSuccessSpatialLayoutCallableResponse>(getEventSuccessSpatialLayoutCallableResponseSchema);
+export const validateEventSuccessSpatialActionCallablePayload =
+  lazyValidator<EventSuccessSpatialActionCallablePayload>(eventSuccessSpatialActionCallablePayloadSchema);
+export const validateEventSuccessSpatialActionCallableResponse =
+  lazyValidator<EventSuccessSpatialActionCallableResponse>(eventSuccessSpatialActionCallableResponseSchema);
+export const validateGetEventRuntimeBootstrapCallableResponse =
+  lazyValidator<GetEventRuntimeBootstrapCallableResponse>(getEventRuntimeBootstrapCallableResponseSchema);
+export const validateGetEventSuccessConversationGraphCallableResponse =
+  lazyValidator<GetEventSuccessConversationGraphCallableResponse>(getEventSuccessConversationGraphCallableResponseSchema);
+export const validateSubmitEventSuccessConversationGraphCallablePayload =
+  lazyValidator<SubmitEventSuccessConversationGraphCallablePayload>(submitEventSuccessConversationGraphCallablePayloadSchema);
+export const validateSubmitEventSuccessConversationGraphCallableResponse =
+  lazyValidator<SubmitEventSuccessConversationGraphCallableResponse>(submitEventSuccessConversationGraphCallableResponseSchema);
+export const validateClaimEventRuntimeAccessCallablePayload =
+  lazyValidator<ClaimEventRuntimeAccessCallablePayload>(claimEventRuntimeAccessCallablePayloadSchema);
+export const validateClaimEventRuntimeAccessCallableResponse =
+  lazyValidator<ClaimEventRuntimeAccessCallableResponse>(claimEventRuntimeAccessCallableResponseSchema);
+export const validateSubmitEventRuntimeProfileCallablePayload =
+  lazyValidator<SubmitEventRuntimeProfileCallablePayload>(submitEventRuntimeProfileCallablePayloadSchema);
+export const validateSubmitEventRuntimeProfileCallableResponse =
+  lazyValidator<SubmitEventRuntimeProfileCallableResponse>(submitEventRuntimeProfileCallableResponseSchema);
+export const validateCheckInEventRuntimeCallablePayload =
+  lazyValidator<CheckInEventRuntimeCallablePayload>(checkInEventRuntimeCallablePayloadSchema);
+export const validateCheckInEventRuntimeCallableResponse =
+  lazyValidator<CheckInEventRuntimeCallableResponse>(checkInEventRuntimeCallableResponseSchema);
+export const validateCreateEventVenueSessionCallablePayload =
+  lazyValidator<CreateEventVenueSessionCallablePayload>(createEventVenueSessionCallablePayloadSchema);
+export const validateCreateEventVenueSessionCallableResponse =
+  lazyValidator<CreateEventVenueSessionCallableResponse>(createEventVenueSessionCallableResponseSchema);
+export const validateApproveEventRuntimeClaimCallablePayload =
+  lazyValidator<ApproveEventRuntimeClaimCallablePayload>(approveEventRuntimeClaimCallablePayloadSchema);
+export const validateApproveEventRuntimeClaimCallableResponse =
+  lazyValidator<ApproveEventRuntimeClaimCallableResponse>(approveEventRuntimeClaimCallableResponseSchema);
+export const validateCreateEventRosterHandoffCallablePayload =
+  lazyValidator<CreateEventRosterHandoffCallablePayload>(createEventRosterHandoffCallablePayloadSchema);
+export const validateCreateEventRosterHandoffCallableResponse =
+  lazyValidator<CreateEventRosterHandoffCallableResponse>(createEventRosterHandoffCallableResponseSchema);
+export const validateGetOrganizerCrmSummaryCallablePayload =
+  lazyValidator<GetOrganizerCrmSummaryCallablePayload>(getOrganizerCrmSummaryCallablePayloadSchema);
+export const validateGetEventRosterInsightsCallablePayload =
+  lazyValidator<GetEventRosterInsightsCallablePayload>(getEventRosterInsightsCallablePayloadSchema);
+export const validateGetEventRosterInsightsCallableResponse =
+  lazyValidator<GetEventRosterInsightsCallableResponse>(getEventRosterInsightsCallableResponseSchema);
+export const validateGetOrganizerCrmSummaryCallableResponse =
+  lazyValidator<GetOrganizerCrmSummaryCallableResponse>(getOrganizerCrmSummaryCallableResponseSchema);
+export const validateListOrganizerContactsCallablePayload =
+  lazyValidator<ListOrganizerContactsCallablePayload>(listOrganizerContactsCallablePayloadSchema);
+export const validateCreateOrganizerFormCallablePayload =
+  lazyValidator<CreateOrganizerFormCallablePayload>(createOrganizerFormCallablePayloadSchema);
+export const validateCreateOrganizerFormCallableResponse =
+  lazyValidator<CreateOrganizerFormCallableResponse>(createOrganizerFormCallableResponseSchema);
+export const validateUpdateOrganizerFormDraftCallablePayload =
+  lazyValidator<UpdateOrganizerFormDraftCallablePayload>(updateOrganizerFormDraftCallablePayloadSchema);
+export const validateUpdateOrganizerFormDraftCallableResponse =
+  lazyValidator<UpdateOrganizerFormDraftCallableResponse>(updateOrganizerFormDraftCallableResponseSchema);
+export const validateGetOrganizerFormEditorCallablePayload =
+  lazyValidator<GetOrganizerFormEditorCallablePayload>(getOrganizerFormEditorCallablePayloadSchema);
+export const validateGetOrganizerFormEditorCallableResponse =
+  lazyValidator<GetOrganizerFormEditorCallableResponse>(getOrganizerFormEditorCallableResponseSchema);
+export const validateListOrganizerFormsCallablePayload =
+  lazyValidator<ListOrganizerFormsCallablePayload>(listOrganizerFormsCallablePayloadSchema);
+export const validateListOrganizerFormsCallableResponse =
+  lazyValidator<ListOrganizerFormsCallableResponse>(listOrganizerFormsCallableResponseSchema);
+export const validateValidateOrganizerFormDraftCallablePayload =
+  lazyValidator<ValidateOrganizerFormDraftCallablePayload>(validateOrganizerFormDraftCallablePayloadSchema);
+export const validateValidateOrganizerFormDraftCallableResponse =
+  lazyValidator<ValidateOrganizerFormDraftCallableResponse>(validateOrganizerFormDraftCallableResponseSchema);
+export const validatePublishOrganizerFormCallablePayload =
+  lazyValidator<PublishOrganizerFormCallablePayload>(publishOrganizerFormCallablePayloadSchema);
+export const validatePublishOrganizerFormCallableResponse =
+  lazyValidator<PublishOrganizerFormCallableResponse>(publishOrganizerFormCallableResponseSchema);
+export const validateSetOrganizerFormLifecycleCallablePayload =
+  lazyValidator<SetOrganizerFormLifecycleCallablePayload>(setOrganizerFormLifecycleCallablePayloadSchema);
+export const validateSetOrganizerFormLifecycleCallableResponse =
+  lazyValidator<SetOrganizerFormLifecycleCallableResponse>(setOrganizerFormLifecycleCallableResponseSchema);
+export const validateDuplicateOrganizerFormCallablePayload =
+  lazyValidator<DuplicateOrganizerFormCallablePayload>(duplicateOrganizerFormCallablePayloadSchema);
+export const validateDuplicateOrganizerFormCallableResponse =
+  lazyValidator<DuplicateOrganizerFormCallableResponse>(duplicateOrganizerFormCallableResponseSchema);
+export const validateDeleteOrganizerFormDraftCallablePayload =
+  lazyValidator<DeleteOrganizerFormDraftCallablePayload>(deleteOrganizerFormDraftCallablePayloadSchema);
+export const validateDeleteOrganizerFormDraftCallableResponse =
+  lazyValidator<DeleteOrganizerFormDraftCallableResponse>(deleteOrganizerFormDraftCallableResponseSchema);
+export const validateListOrganizerFormTemplatesCallablePayload =
+  lazyValidator<ListOrganizerFormTemplatesCallablePayload>(listOrganizerFormTemplatesCallablePayloadSchema);
+export const validateListOrganizerFormTemplatesCallableResponse =
+  lazyValidator<ListOrganizerFormTemplatesCallableResponse>(listOrganizerFormTemplatesCallableResponseSchema);
+export const validateGetPublicOrganizerFormCallablePayload =
+  lazyValidator<GetPublicOrganizerFormCallablePayload>(getPublicOrganizerFormCallablePayloadSchema);
+export const validateGetPublicOrganizerFormCallableResponse =
+  lazyValidator<GetPublicOrganizerFormCallableResponse>(getPublicOrganizerFormCallableResponseSchema);
+export const validateBeginOrganizerFormResponseCallablePayload =
+  lazyValidator<BeginOrganizerFormResponseCallablePayload>(beginOrganizerFormResponseCallablePayloadSchema);
+export const validateBeginOrganizerFormResponseCallableResponse =
+  lazyValidator<BeginOrganizerFormResponseCallableResponse>(beginOrganizerFormResponseCallableResponseSchema);
+export const validateSaveOrganizerFormResponseDraftCallablePayload =
+  lazyValidator<SaveOrganizerFormResponseDraftCallablePayload>(saveOrganizerFormResponseDraftCallablePayloadSchema);
+export const validateSaveOrganizerFormResponseDraftCallableResponse =
+  lazyValidator<SaveOrganizerFormResponseDraftCallableResponse>(saveOrganizerFormResponseDraftCallableResponseSchema);
+export const validateCreateOrganizerFormAssetIntentCallablePayload =
+  lazyValidator<CreateOrganizerFormAssetIntentCallablePayload>(createOrganizerFormAssetIntentCallablePayloadSchema);
+export const validateCreateOrganizerFormAssetIntentCallableResponse =
+  lazyValidator<CreateOrganizerFormAssetIntentCallableResponse>(createOrganizerFormAssetIntentCallableResponseSchema);
+export const validateFinalizeOrganizerFormAssetCallablePayload =
+  lazyValidator<FinalizeOrganizerFormAssetCallablePayload>(finalizeOrganizerFormAssetCallablePayloadSchema);
+export const validateFinalizeOrganizerFormAssetCallableResponse =
+  lazyValidator<FinalizeOrganizerFormAssetCallableResponse>(finalizeOrganizerFormAssetCallableResponseSchema);
+export const validateSubmitOrganizerFormResponseCallablePayload =
+  lazyValidator<SubmitOrganizerFormResponseCallablePayload>(submitOrganizerFormResponseCallablePayloadSchema);
+export const validateSubmitOrganizerFormResponseCallableResponse =
+  lazyValidator<SubmitOrganizerFormResponseCallableResponse>(submitOrganizerFormResponseCallableResponseSchema);
+export const validateWithdrawOrganizerFormResponseCallablePayload =
+  lazyValidator<WithdrawOrganizerFormResponseCallablePayload>(withdrawOrganizerFormResponseCallablePayloadSchema);
+export const validateWithdrawOrganizerFormResponseCallableResponse =
+  lazyValidator<WithdrawOrganizerFormResponseCallableResponse>(withdrawOrganizerFormResponseCallableResponseSchema);
+export const validateCreateOrganizerFormShareLinkCallablePayload =
+  lazyValidator<CreateOrganizerFormShareLinkCallablePayload>(createOrganizerFormShareLinkCallablePayloadSchema);
+export const validateCreateOrganizerFormShareLinkCallableResponse =
+  lazyValidator<CreateOrganizerFormShareLinkCallableResponse>(createOrganizerFormShareLinkCallableResponseSchema);
+export const validateGetOrganizerFormShareAssetsCallablePayload =
+  lazyValidator<GetOrganizerFormShareAssetsCallablePayload>(getOrganizerFormShareAssetsCallablePayloadSchema);
+export const validateGetOrganizerFormShareAssetsCallableResponse =
+  lazyValidator<GetOrganizerFormShareAssetsCallableResponse>(getOrganizerFormShareAssetsCallableResponseSchema);
+export const validateListOrganizerFormResponsesCallablePayload =
+  lazyValidator<ListOrganizerFormResponsesCallablePayload>(listOrganizerFormResponsesCallablePayloadSchema);
+export const validateListOrganizerFormResponsesCallableResponse =
+  lazyValidator<ListOrganizerFormResponsesCallableResponse>(listOrganizerFormResponsesCallableResponseSchema);
+export const validateGetOrganizerFormResponseDetailCallablePayload =
+  lazyValidator<GetOrganizerFormResponseDetailCallablePayload>(getOrganizerFormResponseDetailCallablePayloadSchema);
+export const validateGetOrganizerFormResponseDetailCallableResponse =
+  lazyValidator<GetOrganizerFormResponseDetailCallableResponse>(getOrganizerFormResponseDetailCallableResponseSchema);
+export const validateGetOrganizerFormAnalyticsCallablePayload =
+  lazyValidator<GetOrganizerFormAnalyticsCallablePayload>(getOrganizerFormAnalyticsCallablePayloadSchema);
+export const validateGetOrganizerFormAnalyticsCallableResponse =
+  lazyValidator<GetOrganizerFormAnalyticsCallableResponse>(getOrganizerFormAnalyticsCallableResponseSchema);
+export const validateRequestOrganizerFormExportCallablePayload =
+  lazyValidator<RequestOrganizerFormExportCallablePayload>(requestOrganizerFormExportCallablePayloadSchema);
+export const validateRequestOrganizerFormExportCallableResponse =
+  lazyValidator<RequestOrganizerFormExportCallableResponse>(requestOrganizerFormExportCallableResponseSchema);
+export const validateCreateOrganizerFormAutomationCallablePayload =
+  lazyValidator<CreateOrganizerFormAutomationCallablePayload>(createOrganizerFormAutomationCallablePayloadSchema);
+export const validateCreateOrganizerFormAutomationCallableResponse =
+  lazyValidator<CreateOrganizerFormAutomationCallableResponse>(createOrganizerFormAutomationCallableResponseSchema);
+export const validateSetOrganizerFormAutomationStateCallablePayload =
+  lazyValidator<SetOrganizerFormAutomationStateCallablePayload>(setOrganizerFormAutomationStateCallablePayloadSchema);
+export const validateSetOrganizerFormAutomationStateCallableResponse =
+  lazyValidator<SetOrganizerFormAutomationStateCallableResponse>(setOrganizerFormAutomationStateCallableResponseSchema);
+export const validateListOrganizerFormAutomationRunsCallablePayload =
+  lazyValidator<ListOrganizerFormAutomationRunsCallablePayload>(listOrganizerFormAutomationRunsCallablePayloadSchema);
+export const validateListOrganizerFormAutomationRunsCallableResponse =
+  lazyValidator<ListOrganizerFormAutomationRunsCallableResponse>(listOrganizerFormAutomationRunsCallableResponseSchema);
+export const validatePreviewOrganizerFormConversionCallablePayload =
+  lazyValidator<PreviewOrganizerFormConversionCallablePayload>(previewOrganizerFormConversionCallablePayloadSchema);
+export const validatePreviewOrganizerFormConversionCallableResponse =
+  lazyValidator<PreviewOrganizerFormConversionCallableResponse>(previewOrganizerFormConversionCallableResponseSchema);
+export const validateConvertOrganizerFormResponseCallablePayload =
+  lazyValidator<ConvertOrganizerFormResponseCallablePayload>(convertOrganizerFormResponseCallablePayloadSchema);
+export const validateConvertOrganizerFormResponseCallableResponse =
+  lazyValidator<ConvertOrganizerFormResponseCallableResponse>(convertOrganizerFormResponseCallableResponseSchema);
+export const validatePublishOrganizerApplicationFormCallablePayload =
+  lazyValidator<PublishOrganizerApplicationFormCallablePayload>(publishOrganizerApplicationFormCallablePayloadSchema);
+export const validateGetParticipantOrganizerApplicationFormCallablePayload =
+  lazyValidator<GetParticipantOrganizerApplicationFormCallablePayload>(getParticipantOrganizerApplicationFormCallablePayloadSchema);
+export const validateGetParticipantOrganizerApplicationFormCallableResponse =
+  lazyValidator<GetParticipantOrganizerApplicationFormCallableResponse>(getParticipantOrganizerApplicationFormCallableResponseSchema);
+export const validateSubmitParticipantOrganizerApplicationCallablePayload =
+  lazyValidator<SubmitParticipantOrganizerApplicationCallablePayload>(submitParticipantOrganizerApplicationCallablePayloadSchema);
+export const validateSubmitParticipantOrganizerApplicationCallableResponse =
+  lazyValidator<SubmitParticipantOrganizerApplicationCallableResponse>(submitParticipantOrganizerApplicationCallableResponseSchema);
+export const validateRevokeParticipantOrganizerDataGrantCallablePayload =
+  lazyValidator<RevokeParticipantOrganizerDataGrantCallablePayload>(revokeParticipantOrganizerDataGrantCallablePayloadSchema);
+export const validateRevokeParticipantOrganizerDataGrantCallableResponse =
+  lazyValidator<RevokeParticipantOrganizerDataGrantCallableResponse>(revokeParticipantOrganizerDataGrantCallableResponseSchema);
+export const validatePublishOrganizerApplicationFormCallableResponse =
+  lazyValidator<PublishOrganizerApplicationFormCallableResponse>(publishOrganizerApplicationFormCallableResponseSchema);
+export const validatePreviewOrganizerApplicationImportCallablePayload =
+  lazyValidator<PreviewOrganizerApplicationImportCallablePayload>(previewOrganizerApplicationImportCallablePayloadSchema);
+export const validatePreviewOrganizerApplicationImportCallableResponse =
+  lazyValidator<PreviewOrganizerApplicationImportCallableResponse>(previewOrganizerApplicationImportCallableResponseSchema);
+export const validateImportOrganizerApplicationsCallablePayload =
+  lazyValidator<ImportOrganizerApplicationsCallablePayload>(importOrganizerApplicationsCallablePayloadSchema);
+export const validateImportOrganizerApplicationsCallableResponse =
+  lazyValidator<ImportOrganizerApplicationsCallableResponse>(importOrganizerApplicationsCallableResponseSchema);
+export const validateListOrganizerApplicationsCallablePayload =
+  lazyValidator<ListOrganizerApplicationsCallablePayload>(listOrganizerApplicationsCallablePayloadSchema);
+export const validateListOrganizerApplicationsCallableResponse =
+  lazyValidator<ListOrganizerApplicationsCallableResponse>(listOrganizerApplicationsCallableResponseSchema);
+export const validateGetOrganizerApplicationDetailCallablePayload =
+  lazyValidator<GetOrganizerApplicationDetailCallablePayload>(getOrganizerApplicationDetailCallablePayloadSchema);
+export const validateGetOrganizerApplicationDetailCallableResponse =
+  lazyValidator<GetOrganizerApplicationDetailCallableResponse>(getOrganizerApplicationDetailCallableResponseSchema);
+export const validateReviewOrganizerApplicationCallablePayload =
+  lazyValidator<ReviewOrganizerApplicationCallablePayload>(reviewOrganizerApplicationCallablePayloadSchema);
+export const validateReviewOrganizerApplicationCallableResponse =
+  lazyValidator<ReviewOrganizerApplicationCallableResponse>(reviewOrganizerApplicationCallableResponseSchema);
+export const validateCreateOrganizerContactCallablePayload =
+  lazyValidator<CreateOrganizerContactCallablePayload>(createOrganizerContactCallablePayloadSchema);
+export const validateCreateOrganizerContactCallableResponse =
+  lazyValidator<CreateOrganizerContactCallableResponse>(createOrganizerContactCallableResponseSchema);
+export const validateListOrganizerContactsCallableResponse =
+  lazyValidator<ListOrganizerContactsCallableResponse>(listOrganizerContactsCallableResponseSchema);
+export const validateGetOrganizerContactDetailCallablePayload =
+  lazyValidator<GetOrganizerContactDetailCallablePayload>(getOrganizerContactDetailCallablePayloadSchema);
+export const validateGetOrganizerContactDetailCallableResponse =
+  lazyValidator<GetOrganizerContactDetailCallableResponse>(getOrganizerContactDetailCallableResponseSchema);
+export const validateMutateOrganizerContactCallablePayload =
+  lazyValidator<MutateOrganizerContactCallablePayload>(mutateOrganizerContactCallablePayloadSchema);
+export const validateMutateOrganizerContactCallableResponse =
+  lazyValidator<MutateOrganizerContactCallableResponse>(mutateOrganizerContactCallableResponseSchema);
+export const validateCreateOrganizerContactNoteCallablePayload =
+  lazyValidator<CreateOrganizerContactNoteCallablePayload>(createOrganizerContactNoteCallablePayloadSchema);
+export const validateMutateOrganizerContactNoteCallablePayload =
+  lazyValidator<MutateOrganizerContactNoteCallablePayload>(mutateOrganizerContactNoteCallablePayloadSchema);
+export const validateOrganizerContactNoteCallableResponse =
+  lazyValidator<OrganizerContactNoteCallableResponse>(organizerContactNoteCallableResponseSchema);
+export const validateExportOrganizerContactsCallablePayload =
+  lazyValidator<ExportOrganizerContactsCallablePayload>(exportOrganizerContactsCallablePayloadSchema);
+export const validateExportOrganizerContactsCallableResponse =
+  lazyValidator<ExportOrganizerContactsCallableResponse>(exportOrganizerContactsCallableResponseSchema);
+export const validateMergeOrganizerContactsCallablePayload =
+  lazyValidator<MergeOrganizerContactsCallablePayload>(mergeOrganizerContactsCallablePayloadSchema);
+export const validateListOrganizerContactMergeCandidatesCallablePayload =
+  lazyValidator<ListOrganizerContactMergeCandidatesCallablePayload>(listOrganizerContactMergeCandidatesCallablePayloadSchema);
+export const validateListOrganizerContactMergeCandidatesCallableResponse =
+  lazyValidator<ListOrganizerContactMergeCandidatesCallableResponse>(listOrganizerContactMergeCandidatesCallableResponseSchema);
+export const validateReviewOrganizerContactMergeCandidateCallablePayload =
+  lazyValidator<ReviewOrganizerContactMergeCandidateCallablePayload>(reviewOrganizerContactMergeCandidateCallablePayloadSchema);
+export const validateReviewOrganizerContactMergeCandidateCallableResponse =
+  lazyValidator<ReviewOrganizerContactMergeCandidateCallableResponse>(reviewOrganizerContactMergeCandidateCallableResponseSchema);
+export const validateListOrganizerWhatsappThreadsCallablePayload =
+  lazyValidator<ListOrganizerWhatsappThreadsCallablePayload>(listOrganizerWhatsappThreadsCallablePayloadSchema);
+export const validateListOrganizerWhatsappThreadsCallableResponse =
+  lazyValidator<ListOrganizerWhatsappThreadsCallableResponse>(listOrganizerWhatsappThreadsCallableResponseSchema);
+export const validateGetOrganizerWhatsappThreadCallablePayload =
+  lazyValidator<GetOrganizerWhatsappThreadCallablePayload>(getOrganizerWhatsappThreadCallablePayloadSchema);
+export const validateGetOrganizerWhatsappThreadCallableResponse =
+  lazyValidator<GetOrganizerWhatsappThreadCallableResponse>(getOrganizerWhatsappThreadCallableResponseSchema);
+export const validateSendOrganizerWhatsappReplyCallablePayload =
+  lazyValidator<SendOrganizerWhatsappReplyCallablePayload>(sendOrganizerWhatsappReplyCallablePayloadSchema);
+export const validateSendOrganizerWhatsappReplyCallableResponse =
+  lazyValidator<SendOrganizerWhatsappReplyCallableResponse>(sendOrganizerWhatsappReplyCallableResponseSchema);
+export const validateUnmergeOrganizerContactsCallablePayload =
+  lazyValidator<UnmergeOrganizerContactsCallablePayload>(unmergeOrganizerContactsCallablePayloadSchema);
+export const validateMutateOrganizerContactMergeCallableResponse =
+  lazyValidator<MutateOrganizerContactMergeCallableResponse>(mutateOrganizerContactMergeCallableResponseSchema);
+export const validateEventJoinRequestDecisionCallablePayload =
+  lazyValidator<EventJoinRequestDecisionCallablePayload>(eventJoinRequestDecisionCallablePayloadSchema);
+export const validateOverrideEventSuccessRotationsCallablePayload =
+  lazyValidator<OverrideEventSuccessRotationsCallablePayload>(overrideEventSuccessRotationsCallablePayloadSchema);
+export const validatePrepareEventSuccessRotationDraftCallablePayload =
+  lazyValidator<PrepareEventSuccessRotationDraftCallablePayload>(prepareEventSuccessRotationDraftCallablePayloadSchema);
+export const validatePublishEventSuccessRotationRoundCallablePayload =
+  lazyValidator<PublishEventSuccessRotationRoundCallablePayload>(publishEventSuccessRotationRoundCallablePayloadSchema);
+export const validateEventSuccessLiveActionCallablePayload =
+  lazyValidator<EventSuccessLiveActionCallablePayload>(eventSuccessLiveActionCallablePayloadSchema);
+export const validateSetEventSuccessAccountabilityResolutionCallablePayload =
+  lazyValidator<SetEventSuccessAccountabilityResolutionCallablePayload>(setEventSuccessAccountabilityResolutionCallablePayloadSchema);
+export const validateRecordEventSuccessUnitOutcomesCallablePayload =
+  lazyValidator<RecordEventSuccessUnitOutcomesCallablePayload>(recordEventSuccessUnitOutcomesCallablePayloadSchema);
+export const validateRecordEventSuccessUnitOutcomesCallableResponse =
+  lazyValidator<RecordEventSuccessUnitOutcomesCallableResponse>(recordEventSuccessUnitOutcomesCallableResponseSchema);
+export const validateHeartbeatEventSuccessPresenceCallablePayload =
+  lazyValidator<HeartbeatEventSuccessPresenceCallablePayload>(heartbeatEventSuccessPresenceCallablePayloadSchema);
+export const validateHeartbeatEventSuccessPresenceCallableResponse =
+  lazyValidator<HeartbeatEventSuccessPresenceCallableResponse>(heartbeatEventSuccessPresenceCallableResponseSchema);
+export const validatePublishEventLivePositionCallablePayload =
+  lazyValidator<PublishEventLivePositionCallablePayload>(publishEventLivePositionCallablePayloadSchema);
+export const validatePublishEventLivePositionCallableResponse =
+  lazyValidator<PublishEventLivePositionCallableResponse>(publishEventLivePositionCallableResponseSchema);
+export const validateGetEventSuccessPresenceSummaryCallableResponse =
+  lazyValidator<GetEventSuccessPresenceSummaryCallableResponse>(getEventSuccessPresenceSummaryCallableResponseSchema);
+export const validateResolveEventSuccessLateArrivalCallablePayload =
+  lazyValidator<ResolveEventSuccessLateArrivalCallablePayload>(resolveEventSuccessLateArrivalCallablePayloadSchema);
+export const validateResolveEventSuccessLateArrivalCallableResponse =
+  lazyValidator<ResolveEventSuccessLateArrivalCallableResponse>(resolveEventSuccessLateArrivalCallableResponseSchema);
+export const validateOverrideEventSuccessGroupsCallablePayload =
+  lazyValidator<OverrideEventSuccessGroupsCallablePayload>(overrideEventSuccessGroupsCallablePayloadSchema);
+export const validateSubmitEventSuccessWingmanRequestCallablePayload =
+  lazyValidator<SubmitEventSuccessWingmanRequestCallablePayload>(submitEventSuccessWingmanRequestCallablePayloadSchema);
+export const validateStartEventSuccessFirstHelloMissionCallablePayload =
+  lazyValidator<StartEventSuccessFirstHelloMissionCallablePayload>(startEventSuccessFirstHelloMissionCallablePayloadSchema);
+export const validateCompleteEventSuccessFirstHelloMissionCallablePayload =
+  lazyValidator<CompleteEventSuccessFirstHelloMissionCallablePayload>(completeEventSuccessFirstHelloMissionCallablePayloadSchema);
+export const validateMarkEventAttendanceCallableResponse =
+  lazyValidator<MarkEventAttendanceCallableResponse>(markEventAttendanceCallableResponseSchema);
+export const validateSelfCheckInAttendanceCallablePayload =
+  lazyValidator<SelfCheckInAttendanceCallablePayload>(selfCheckInAttendanceCallablePayloadSchema);
+export const validateCreateEventReviewCallablePayload =
+  lazyValidator<CreateEventReviewCallablePayload>(createEventReviewCallablePayloadSchema);
+export const validateCreatePublicClubReviewCallablePayload =
+  lazyValidator<CreatePublicClubReviewCallablePayload>(createPublicClubReviewCallablePayloadSchema);
+export const validateCreatePublicClubReviewCallableResponse =
+  lazyValidator<CreatePublicClubReviewCallableResponse>(createPublicClubReviewCallableResponseSchema);
+export const validateListPublicClubReviewsCallablePayload =
+  lazyValidator<ListPublicClubReviewsCallablePayload>(listPublicClubReviewsCallablePayloadSchema);
+export const validateListPublicClubReviewsCallableResponse =
+  lazyValidator<ListPublicClubReviewsCallableResponse>(listPublicClubReviewsCallableResponseSchema);
+export const validateCreatePublicOrganizerReviewCallablePayload =
+  lazyValidator<CreatePublicOrganizerReviewCallablePayload>(createPublicOrganizerReviewCallablePayloadSchema);
+export const validateCreatePublicOrganizerReviewCallableResponse =
+  lazyValidator<CreatePublicOrganizerReviewCallableResponse>(createPublicOrganizerReviewCallableResponseSchema);
+export const validateListPublicOrganizerReviewsCallablePayload =
+  lazyValidator<ListPublicOrganizerReviewsCallablePayload>(listPublicOrganizerReviewsCallablePayloadSchema);
+export const validateListPublicOrganizerReviewsCallableResponse =
+  lazyValidator<ListPublicOrganizerReviewsCallableResponse>(listPublicOrganizerReviewsCallableResponseSchema);
+export const validateUpdateEventReviewCallablePayload =
+  lazyValidator<UpdateEventReviewCallablePayload>(updateEventReviewCallablePayloadSchema);
+export const validateDeleteEventReviewCallablePayload =
+  lazyValidator<DeleteEventReviewCallablePayload>(deleteEventReviewCallablePayloadSchema);
+export const validateSetReviewResponseCallablePayload =
+  lazyValidator<SetReviewResponseCallablePayload>(setReviewResponseCallablePayloadSchema);
+export const validateBlockUserCallablePayload =
+  lazyValidator<BlockUserCallablePayload>(blockUserCallablePayloadSchema);
+export const validateUnblockUserCallablePayload =
+  lazyValidator<UnblockUserCallablePayload>(unblockUserCallablePayloadSchema);
+export const validateReportUserCallablePayload =
+  lazyValidator<ReportUserCallablePayload>(reportUserCallablePayloadSchema);
+export const validateRequestSuvbotDemoOperationCallablePayload =
+  lazyValidator<RequestSuvbotDemoOperationCallablePayload>(requestSuvbotDemoOperationCallablePayloadSchema);
+export const validateListSuvbotDemoActionsCallableResponse =
+  lazyValidator<ListSuvbotDemoActionsCallableResponse>(listSuvbotDemoActionsCallableResponseSchema);
+export const validateVerifyRazorpayPaymentCallablePayload =
+  lazyValidator<VerifyRazorpayPaymentCallablePayload>(verifyRazorpayPaymentCallablePayloadSchema);
+export const validateEventBookingCallablePayload =
+  lazyValidator<EventBookingCallablePayload>(eventBookingCallablePayloadSchema);
+export const validateCreateRazorpayOrderCallablePayload =
+  lazyValidator<CreateRazorpayOrderCallablePayload>(createRazorpayOrderCallablePayloadSchema);
+export const validateRazorpayOrderCallableResponse =
+  lazyValidator<RazorpayOrderCallableResponse>(razorpayOrderCallableResponseSchema);
+export const validateCreateStripeCheckoutSessionCallablePayload =
+  lazyValidator<CreateStripeCheckoutSessionCallablePayload>(createStripeCheckoutSessionCallablePayloadSchema);
+export const validateStripeCheckoutSessionCallableResponse =
+  lazyValidator<StripeCheckoutSessionCallableResponse>(stripeCheckoutSessionCallableResponseSchema);
+export const validateCreateStripeHostOnboardingLinkCallablePayload =
+  lazyValidator<CreateStripeHostOnboardingLinkCallablePayload>(createStripeHostOnboardingLinkCallablePayloadSchema);
+export const validateRefreshStripeHostPaymentAccountCallablePayload =
+  lazyValidator<RefreshStripeHostPaymentAccountCallablePayload>(refreshStripeHostPaymentAccountCallablePayloadSchema);
+export const validateCreateRazorpayHostPaymentAccountCallablePayload =
+  lazyValidator<CreateRazorpayHostPaymentAccountCallablePayload>(createRazorpayHostPaymentAccountCallablePayloadSchema);
+export const validateRefreshRazorpayHostPaymentAccountCallablePayload =
+  lazyValidator<RefreshRazorpayHostPaymentAccountCallablePayload>(refreshRazorpayHostPaymentAccountCallablePayloadSchema);
+export const validateStripeHostOnboardingLinkCallableResponse =
+  lazyValidator<StripeHostOnboardingLinkCallableResponse>(stripeHostOnboardingLinkCallableResponseSchema);
+export const validatePlacesAutocompleteCallablePayload =
+  lazyValidator<PlacesAutocompleteCallablePayload>(placesAutocompleteCallablePayloadSchema);
+export const validatePlacesAutocompleteCallableResponse =
+  lazyValidator<PlacesAutocompleteCallableResponse>(placesAutocompleteCallableResponseSchema);
+export const validatePlaceDetailsCallablePayload =
+  lazyValidator<PlaceDetailsCallablePayload>(placeDetailsCallablePayloadSchema);
+export const validatePlaceDetailsCallableResponse =
+  lazyValidator<PlaceDetailsCallableResponse>(placeDetailsCallableResponseSchema);
+export const validateExploreSearchCallablePayload =
+  lazyValidator<ExploreSearchCallablePayload>(exploreSearchCallablePayloadSchema);
+export const validateExploreSearchCallableResponse =
+  lazyValidator<ExploreSearchCallableResponse>(exploreSearchCallableResponseSchema);
+export const validateWebsiteHostListingProjection =
+  lazyValidator<WebsiteHostListingProjection>(websiteHostListingProjectionSchema);
+export const validateFetchEventSuccessWingmanCandidatesCallableResponse =
+  lazyValidator<FetchEventSuccessWingmanCandidatesCallableResponse>(fetchEventSuccessWingmanCandidatesCallableResponseSchema);
+export const validateFetchSwipeCandidatesCallableResponse =
+  lazyValidator<FetchSwipeCandidatesCallableResponse>(fetchSwipeCandidatesCallableResponseSchema);
+export const validateSetCrossPathsEventConsentCallableResponse =
+  lazyValidator<SetCrossPathsEventConsentCallableResponse>(setCrossPathsEventConsentCallableResponseSchema);
+export const validateGetCrossPathsSuggestionsCallableResponse =
+  lazyValidator<GetCrossPathsSuggestionsCallableResponse>(getCrossPathsSuggestionsCallableResponseSchema);
+export const validateSendCrossPathsInvitationCallableResponse =
+  lazyValidator<SendCrossPathsInvitationCallableResponse>(sendCrossPathsInvitationCallableResponseSchema);
+export const validateRespondCrossPathsInvitationCallableResponse =
+  lazyValidator<RespondCrossPathsInvitationCallableResponse>(respondCrossPathsInvitationCallableResponseSchema);
+export const validateCancelCrossPathsInvitationOrPlanCallableResponse =
+  lazyValidator<CancelCrossPathsInvitationOrPlanCallableResponse>(cancelCrossPathsInvitationOrPlanCallableResponseSchema);
+export const validateCreateProfileDecisionClientWrite =
+  lazyValidator<CreateProfileDecisionClientWrite>(createProfileDecisionClientWriteSchema);
+export const validateCreateChatMessageClientWrite =
+  lazyValidator<CreateChatMessageClientWrite>(createChatMessageClientWriteSchema);
+export const validateCreateSavedEventClientWrite =
+  lazyValidator<CreateSavedEventClientWrite>(createSavedEventClientWriteSchema);
+export const validateDeleteSavedEventClientWrite =
+  lazyValidator<DeleteSavedEventClientWrite>(deleteSavedEventClientWriteSchema);
+export const validateMarkNotificationReadClientWrite =
+  lazyValidator<MarkNotificationReadClientWrite>(markNotificationReadClientWriteSchema);
+export const validateResetMatchUnreadCountClientWrite =
+  lazyValidator<ResetMatchUnreadCountClientWrite>(resetMatchUnreadCountClientWriteSchema);
+export const validateAdminGetOverviewCallablePayload =
+  lazyValidator<AdminGetOverviewCallablePayload>(adminGetOverviewCallablePayloadSchema);
+export const validateAdminGetOverviewCallableResponse =
+  lazyValidator<AdminGetOverviewCallableResponse>(adminGetOverviewCallableResponseSchema);
+export const validateAdminDecideAccessApplicationCallablePayload =
+  lazyValidator<AdminDecideAccessApplicationCallablePayload>(adminDecideAccessApplicationCallablePayloadSchema);
+export const validateAdminDecideAccessApplicationCallableResponse =
+  lazyValidator<AdminDecideAccessApplicationCallableResponse>(adminDecideAccessApplicationCallableResponseSchema);
+export const validateAdminSetAdminUserRolesCallablePayload =
+  lazyValidator<AdminSetAdminUserRolesCallablePayload>(adminSetAdminUserRolesCallablePayloadSchema);
+export const validateAdminSetAdminUserRolesCallableResponse =
+  lazyValidator<AdminSetAdminUserRolesCallableResponse>(adminSetAdminUserRolesCallableResponseSchema);
+export const validateAdminDecideSafetyTriageItemCallablePayload =
+  lazyValidator<AdminDecideSafetyTriageItemCallablePayload>(adminDecideSafetyTriageItemCallablePayloadSchema);
+export const validateAdminDecideSafetyTriageItemCallableResponse =
+  lazyValidator<AdminDecideSafetyTriageItemCallableResponse>(adminDecideSafetyTriageItemCallableResponseSchema);
+export const validateAdminAssignSafetyTriageItemCallablePayload =
+  lazyValidator<AdminAssignSafetyTriageItemCallablePayload>(adminAssignSafetyTriageItemCallablePayloadSchema);
+export const validateAdminAssignSafetyTriageItemCallableResponse =
+  lazyValidator<AdminAssignSafetyTriageItemCallableResponse>(adminAssignSafetyTriageItemCallableResponseSchema);
+export const validateAdminCreateOrganizerDraftFromCandidateCallablePayload =
+  lazyValidator<AdminCreateOrganizerDraftFromCandidateCallablePayload>(adminCreateOrganizerDraftFromCandidateCallablePayloadSchema);
+export const validateAdminCreateOrganizerDraftFromCandidateCallableResponse =
+  lazyValidator<AdminCreateOrganizerDraftFromCandidateCallableResponse>(adminCreateOrganizerDraftFromCandidateCallableResponseSchema);
+export const validateAdminCreateMarketingContentDraftCallablePayload =
+  lazyValidator<AdminCreateMarketingContentDraftCallablePayload>(adminCreateMarketingContentDraftCallablePayloadSchema);
+export const validateAdminCreateMarketingContentDraftCallableResponse =
+  lazyValidator<AdminCreateMarketingContentDraftCallableResponse>(adminCreateMarketingContentDraftCallableResponseSchema);
+export const validateAdminRecordMarketingReviewDecisionCallablePayload =
+  lazyValidator<AdminRecordMarketingReviewDecisionCallablePayload>(adminRecordMarketingReviewDecisionCallablePayloadSchema);
+export const validateAdminRecordMarketingReviewDecisionCallableResponse =
+  lazyValidator<AdminRecordMarketingReviewDecisionCallableResponse>(adminRecordMarketingReviewDecisionCallableResponseSchema);
+export const validateAdminListCrossPathsShowcaseCandidatesCallableResponse =
+  lazyValidator<AdminListCrossPathsShowcaseCandidatesCallableResponse>(adminListCrossPathsShowcaseCandidatesCallableResponseSchema);
+export const validateAdminSetCrossPathsShowcaseEligibilityCallableResponse =
+  lazyValidator<AdminSetCrossPathsShowcaseEligibilityCallableResponse>(adminSetCrossPathsShowcaseEligibilityCallableResponseSchema);
+export const validateJoinWaitlistHTTPRequest =
+  lazyValidator<JoinWaitlistHTTPRequest>(joinWaitlistHTTPRequestSchema);
+export const validateJoinWaitlistHTTPResponse =
+  lazyValidator<JoinWaitlistHTTPResponse>(joinWaitlistHTTPResponseSchema);
 
 export function schemaErrorMessages(
   validator: ValidateFunction<unknown>
