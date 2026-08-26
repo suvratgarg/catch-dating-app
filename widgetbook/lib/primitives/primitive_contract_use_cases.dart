@@ -1487,6 +1487,8 @@ Widget catchButtonContractStates(BuildContext context) {
       'full-width',
       'with-icon',
       'rounded',
+      'large-text',
+      'reduced-motion',
     ],
     children: [
       _StateCard(
@@ -1552,6 +1554,26 @@ Widget catchButtonContractStates(BuildContext context) {
           shape: CatchButtonShape.rounded,
           fullWidth: true,
           onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'large-text',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: CatchButton(
+            label: 'Review every submitted response',
+            fullWidth: true,
+            onPressed: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced-motion',
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: CatchButton(label: 'Continue', onPressed: _noop),
         ),
       ),
     ],
@@ -1998,7 +2020,7 @@ Widget catchFieldContractStates(BuildContext context) {
         child: CatchField.sortable(
           title: 'Why do you want to join?',
           metadata: 'Long text · Required',
-          reorderHandle: const SizedBox.square(
+          reorderHandle: SizedBox.square(
             dimension: CatchSpacing.s11,
             child: Icon(CatchIcons.dragIndicatorRounded),
           ),
@@ -4038,6 +4060,7 @@ Widget catchMetricStripContractStates(BuildContext context) {
       'four-items',
       'long-copy',
       'surface-overrides',
+      'large-text-reflow',
     ],
     children: [
       _StateCard(
@@ -4104,6 +4127,21 @@ Widget catchMetricStripContractStates(BuildContext context) {
             CatchMetricStripItem(value: '2', label: 'pending'),
             CatchMetricStripItem(value: '1', label: 'open'),
           ],
+        ),
+      ),
+      _StateCard(
+        label: 'large-text-reflow',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: CatchMetricStrip(
+            items: const [
+              CatchMetricStripItem(value: '12', label: 'responses'),
+              CatchMetricStripItem(value: '6', label: 'questions'),
+              CatchMetricStripItem(value: '1', label: 'published version'),
+            ],
+          ),
         ),
       ),
     ],
@@ -7150,7 +7188,7 @@ Widget catchBottomActionContractStates(BuildContext context) {
         label: 'scroll-overlay',
         child: SizedBox(
           width: WidgetbookPreviewLayout.dockFrameWidth,
-          height: 360,
+          height: WidgetbookPreviewLayout.bodyFrameExtent,
           child: CatchBottomActionOverlay(
             body: ListView(
               padding: CatchInsets.formStepBodyWithBottomActions,

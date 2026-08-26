@@ -66,6 +66,13 @@ class _CatchButtonState extends State<CatchButton> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final spec = _ButtonSizeSpec.from(widget.size);
+    final mediaQuery = MediaQuery.maybeOf(context);
+    final reduceMotion = mediaQuery?.disableAnimations ?? false;
+    final transitionDuration = reduceMotion
+        ? CatchMotion.none
+        : CatchMotion.fast;
+    final reflowLabel =
+        widget.fullWidth && (mediaQuery?.textScaler.scale(1) ?? 1) >= 1.4;
     final radius = widget.shape == CatchButtonShape.pill
         ? CatchRadius.pill
         : CatchRadius.md;
@@ -98,9 +105,12 @@ class _CatchButtonState extends State<CatchButton> {
             ),
           ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: spec.padding),
+          padding: EdgeInsets.symmetric(
+            horizontal: spec.padding,
+            vertical: reflowLabel ? CatchSpacing.s2 : 0,
+          ),
           child: AnimatedSwitcher(
-            duration: CatchMotion.fast,
+            duration: transitionDuration,
             switchInCurve: CatchMotion.standardCurve,
             switchOutCurve: CatchMotion.standardCurve,
             child: widget.isLoading
@@ -111,6 +121,7 @@ class _CatchButtonState extends State<CatchButton> {
                     icon: widget.icon,
                     gap: spec.gap,
                     fullWidth: widget.fullWidth,
+                    allowMultiline: reflowLabel,
                     textStyle: spec.textStyle(context),
                   ),
           ),
@@ -118,8 +129,11 @@ class _CatchButtonState extends State<CatchButton> {
       ],
     );
 
-    final decoratedButton = SizedBox(
-      height: spec.height,
+    final decoratedButton = ConstrainedBox(
+      constraints: BoxConstraints(
+        minHeight: spec.height,
+        maxHeight: reflowLabel ? double.infinity : spec.height,
+      ),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: palette.background,
@@ -153,11 +167,11 @@ class _CatchButtonState extends State<CatchButton> {
 
     final child = AnimatedScale(
       scale: _enabled && _pressed ? 0.97 : 1,
-      duration: CatchMotion.fast,
+      duration: transitionDuration,
       curve: CatchMotion.standardCurve,
       child: AnimatedOpacity(
         opacity: widget.isInteractive && !_enabled ? 0.4 : 1,
-        duration: CatchMotion.fast,
+        duration: transitionDuration,
         curve: CatchMotion.standardCurve,
         child: decoratedButton,
       ),
@@ -183,6 +197,7 @@ class CatchButtonLabel extends StatelessWidget {
     this.icon,
     this.gap = CatchSpacing.micro6,
     this.fullWidth = false,
+    this.allowMultiline = false,
   });
 
   final String label;
@@ -190,13 +205,23 @@ class CatchButtonLabel extends StatelessWidget {
   final Widget? icon;
   final double gap;
   final bool fullWidth;
+  final bool allowMultiline;
   final TextStyle textStyle;
 
   @override
   Widget build(BuildContext context) {
     final iconWidget = icon;
+    final labelWidget = Text(
+      label,
+      maxLines: allowMultiline ? 2 : 1,
+      overflow: allowMultiline ? TextOverflow.visible : TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
+      style: textStyle.copyWith(color: color),
+    );
     final content = Row(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: allowMultiline && fullWidth
+          ? MainAxisSize.max
+          : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (iconWidget != null) ...[
@@ -206,15 +231,14 @@ class CatchButtonLabel extends StatelessWidget {
           ),
           SizedBox(width: gap),
         ],
-        Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: textStyle.copyWith(color: color),
-        ),
+        if (allowMultiline && fullWidth)
+          Expanded(child: labelWidget)
+        else
+          labelWidget,
       ],
     );
 
+    if (allowMultiline) return content;
     if (fullWidth) {
       return Center(
         child: FittedBox(fit: BoxFit.scaleDown, child: content),

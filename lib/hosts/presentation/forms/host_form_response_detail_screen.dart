@@ -88,27 +88,7 @@ class _HostFormResponseDetailScreenState
           builder: (context, value) => ListView(
             padding: CatchInsets.pageBody.copyWith(bottom: 0),
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      value.response.identity.primaryLabel ??
-                          context.l10n.hostFormResponsesAnonymous,
-                      key: const ValueKey('host-form-response-name'),
-                      style: CatchTextStyles.eventTitle(context),
-                    ),
-                  ),
-                  gapW12,
-                  CatchChip.tag(
-                    label:
-                        value.response.status ==
-                            HostFormResponseStatus.submitted
-                        ? context.l10n.hostFormResponsesSubmitted
-                        : context.l10n.hostFormResponsesWithdrawn,
-                  ),
-                ],
-              ),
+              _ResponseIdentityHeader(detail: value),
               gapH8,
               Text(
                 value.response.formTitle,
@@ -362,6 +342,43 @@ class _HostFormResponseDetailScreenState
   }
 }
 
+class _ResponseIdentityHeader extends StatelessWidget {
+  const _ResponseIdentityHeader({required this.detail});
+
+  final HostFormResponseDetail detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final accessibleStack = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    final name = Text(
+      detail.response.identity.primaryLabel ??
+          context.l10n.hostFormResponsesAnonymous,
+      key: const ValueKey('host-form-response-name'),
+      style: CatchTextStyles.eventTitle(context),
+    );
+    final status = CatchChip.tag(
+      key: const ValueKey('host-form-response-status'),
+      label: detail.response.status == HostFormResponseStatus.submitted
+          ? context.l10n.hostFormResponsesSubmitted
+          : context.l10n.hostFormResponsesWithdrawn,
+    );
+    if (accessibleStack) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [name, gapH8, status],
+      );
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: name),
+        gapW12,
+        status,
+      ],
+    );
+  }
+}
+
 class _ResponseSubmissionSummary extends StatelessWidget {
   const _ResponseSubmissionSummary({required this.detail});
 
@@ -522,52 +539,70 @@ class _ResponseConversionDock extends StatelessWidget {
       HostFormConversionKind.eventAttendeeProposal,
     );
     final busy = converting != null;
+    final accessibleStack = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    final applicationAction = CatchButton(
+      key: const ValueKey('host-form-response-convert-application'),
+      label: context.l10n.hostFormConvertApplication,
+      shape: CatchButtonShape.rounded,
+      fullWidth: true,
+      isLoading: converting == HostFormConversionKind.application,
+      onPressed: applicationComplete || busy
+          ? null
+          : () => onConvert(HostFormConversionKind.application),
+    );
+    final crmAction = CatchButton(
+      key: const ValueKey('host-form-response-convert-crm'),
+      label: context.l10n.hostFormConvertCrm,
+      shape: CatchButtonShape.rounded,
+      variant: CatchButtonVariant.secondary,
+      fullWidth: true,
+      isLoading: converting == HostFormConversionKind.crmContact,
+      onPressed: crmComplete || busy
+          ? null
+          : () => onConvert(HostFormConversionKind.crmContact),
+    );
+    final attendeeAction = CatchActionMenu<HostFormConversionKind>(
+      tooltip: context.l10n.hostFormResponseOperationsSection,
+      enabled: !busy,
+      items: [
+        CatchActionMenuItem(
+          value: HostFormConversionKind.eventAttendeeProposal,
+          label: context.l10n.hostFormConvertAttendee,
+          icon: CatchIcons.eventAvailableOutlined,
+          enabled: !attendeeComplete,
+          sublabel: attendeeComplete
+              ? context.l10n.hostFormConversionComplete
+              : null,
+        ),
+      ],
+      onSelected: onConvert,
+    );
     return CatchBottomDock(
-      child: Row(
-        children: [
-          Expanded(
-            child: CatchButton(
-              key: const ValueKey('host-form-response-convert-application'),
-              label: context.l10n.hostFormConvertApplication,
-              shape: CatchButtonShape.rounded,
-              isLoading: converting == HostFormConversionKind.application,
-              onPressed: applicationComplete || busy
-                  ? null
-                  : () => onConvert(HostFormConversionKind.application),
+      child: accessibleStack
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                applicationAction,
+                gapH8,
+                Row(
+                  children: [
+                    Expanded(child: crmAction),
+                    gapW8,
+                    attendeeAction,
+                  ],
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(child: applicationAction),
+                gapW8,
+                Expanded(child: crmAction),
+                gapW8,
+                attendeeAction,
+              ],
             ),
-          ),
-          gapW8,
-          Expanded(
-            child: CatchButton(
-              key: const ValueKey('host-form-response-convert-crm'),
-              label: context.l10n.hostFormConvertCrm,
-              shape: CatchButtonShape.rounded,
-              variant: CatchButtonVariant.secondary,
-              isLoading: converting == HostFormConversionKind.crmContact,
-              onPressed: crmComplete || busy
-                  ? null
-                  : () => onConvert(HostFormConversionKind.crmContact),
-            ),
-          ),
-          gapW8,
-          CatchActionMenu<HostFormConversionKind>(
-            tooltip: context.l10n.hostFormResponseOperationsSection,
-            enabled: !busy,
-            items: [
-              CatchActionMenuItem(
-                value: HostFormConversionKind.eventAttendeeProposal,
-                label: context.l10n.hostFormConvertAttendee,
-                icon: CatchIcons.eventAvailableOutlined,
-                enabled: !attendeeComplete,
-                sublabel: attendeeComplete
-                    ? context.l10n.hostFormConversionComplete
-                    : null,
-              ),
-            ],
-            onSelected: onConvert,
-          ),
-        ],
-      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
@@ -17,35 +18,7 @@ void main() {
     tester,
   ) async {
     final launched = <Uri>[];
-    final detail = HostFormResponseDetail.fromCallableData(_detailMap());
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          hostFormResponseDetailProvider(
-            organizerId: 'org_1',
-            responseId: 'response_1',
-          ).overrideWith((ref) async => detail),
-          externalUrlLauncherProvider.overrideWithValue((
-            uri, {
-            mode = LaunchMode.platformDefault,
-          }) async {
-            launched.add(uri);
-            return true;
-          }),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const HostFormResponseDetailScreen(
-            organizerId: 'org_1',
-            responseId: 'response_1',
-          ),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
+    await _pumpDetail(tester, launched: launched);
 
     expect(
       find.byKey(const ValueKey('host-form-response-name')),
@@ -78,6 +51,94 @@ void main() {
     await pumpFeatureUi(tester);
     expect(launched.single, Uri(scheme: 'tel', path: '+919876543210'));
   });
+
+  testWidgets('response detail reflows identity and actions at large text', (
+    tester,
+  ) async {
+    await _pumpDetail(
+      tester,
+      theme: AppTheme.dark,
+      textScale: 2,
+      disableAnimations: true,
+    );
+
+    expect(tester.takeException(), isNull);
+    final name = find.byKey(const ValueKey('host-form-response-name'));
+    final status = find.byKey(const ValueKey('host-form-response-status'));
+    await pumpUntilFound(tester, name);
+    expect(
+      tester.getBottomLeft(name).dy,
+      lessThan(tester.getTopLeft(status).dy),
+    );
+    expect(
+      tester
+          .getSize(
+            find.byKey(
+              const ValueKey('host-form-response-convert-application'),
+            ),
+          )
+          .height,
+      greaterThan(CatchSpacing.s12),
+    );
+    expect(
+      tester
+          .getSize(find.byKey(const ValueKey('host-form-response-convert-crm')))
+          .height,
+      greaterThan(CatchSpacing.s12),
+    );
+    expect(find.byType(CatchBottomDock), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+}
+
+Future<void> _pumpDetail(
+  WidgetTester tester, {
+  List<Uri>? launched,
+  ThemeData? theme,
+  double textScale = 1,
+  bool disableAnimations = false,
+}) async {
+  tester.view.devicePixelRatio = 1;
+  tester.view.physicalSize = const Size(390, 844);
+  addTearDown(tester.view.resetDevicePixelRatio);
+  addTearDown(tester.view.resetPhysicalSize);
+  final detail = HostFormResponseDetail.fromCallableData(_detailMap());
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        hostFormResponseDetailProvider(
+          organizerId: 'org_1',
+          responseId: 'response_1',
+        ).overrideWith((ref) => detail),
+        externalUrlLauncherProvider.overrideWithValue((
+          uri, {
+          mode = LaunchMode.platformDefault,
+        }) async {
+          launched?.add(uri);
+          return true;
+        }),
+      ],
+      child: MaterialApp(
+        theme: theme ?? AppTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(textScale),
+            disableAnimations: disableAnimations,
+          ),
+          child: child!,
+        ),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const HostFormResponseDetailScreen(
+          organizerId: 'org_1',
+          responseId: 'response_1',
+        ),
+      ),
+    ),
+  );
+  await pumpFeatureUi(tester);
+  await pumpFeatureUiFor(tester, CatchMotion.fast);
+  await pumpFeatureUi(tester);
 }
 
 Map<String, Object?> _detailMap() => {

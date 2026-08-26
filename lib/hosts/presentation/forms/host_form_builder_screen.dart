@@ -508,35 +508,41 @@ class _PublishedFormCommandCenter extends ConsumerWidget {
     ).value?.responses.firstOrNull;
     final lifecycle = hostFormStatusLabel(context, form.status);
     final purpose = hostFormPurposeLabel(context, form.purpose);
+    final accessibleStack = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    final title = Text(
+      definition.title,
+      key: const ValueKey('host-form-command-center-title'),
+      style: CatchTextStyles.eventTitle(context, color: t.ink),
+    );
+    final editAction = CatchTextButton(
+      key: const ValueKey('host-form-command-center-edit'),
+      label: context.l10n.hostFormsOpen,
+      tone: CatchTextButtonTone.neutral,
+      minimumSize: const Size(0, CatchSpacing.s10),
+      padding: EdgeInsets.zero,
+      textStyle: CatchTextStyles.labelL(
+        context,
+        color: t.ink,
+      ).copyWith(decoration: TextDecoration.underline),
+      onPressed: onEdit,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: Text(
-                definition.title,
-                key: const ValueKey('host-form-command-center-title'),
-                style: CatchTextStyles.eventTitle(context, color: t.ink),
-              ),
-            ),
-            gapW12,
-            CatchTextButton(
-              key: const ValueKey('host-form-command-center-edit'),
-              label: context.l10n.hostFormsOpen,
-              tone: CatchTextButtonTone.neutral,
-              minimumSize: const Size(0, CatchSpacing.s10),
-              padding: EdgeInsets.zero,
-              textStyle: CatchTextStyles.labelL(
-                context,
-                color: t.ink,
-              ).copyWith(decoration: TextDecoration.underline),
-              onPressed: onEdit,
-            ),
-          ],
-        ),
+        if (accessibleStack) ...[
+          title,
+          gapH8,
+          Align(alignment: Alignment.centerLeft, child: editAction),
+        ] else
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(child: title),
+              gapW12,
+              editAction,
+            ],
+          ),
         gapH12,
         Row(
           children: [
@@ -560,24 +566,38 @@ class _PublishedFormCommandCenter extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                children: [
-                  Text(
-                    '${form.submittedResponseCount}',
-                    style: CatchTextStyles.display(
-                      context,
-                      color: t.primary,
-                    ).copyWith(fontSize: 56),
-                  ),
-                  gapW16,
-                  Expanded(
-                    child: Text(
-                      context.l10n.hostFormsViewResponses,
-                      style: CatchTextStyles.headlineS(context, color: t.ink),
+              if (accessibleStack) ...[
+                Text(
+                  '${form.submittedResponseCount}',
+                  style: CatchTextStyles.display(
+                    context,
+                    color: t.primary,
+                  ).copyWith(fontSize: 56),
+                ),
+                gapH4,
+                Text(
+                  context.l10n.hostFormsViewResponses,
+                  style: CatchTextStyles.headlineS(context, color: t.ink),
+                ),
+              ] else
+                Row(
+                  children: [
+                    Text(
+                      '${form.submittedResponseCount}',
+                      style: CatchTextStyles.display(
+                        context,
+                        color: t.primary,
+                      ).copyWith(fontSize: 56),
                     ),
-                  ),
-                ],
-              ),
+                    gapW16,
+                    Expanded(
+                      child: Text(
+                        context.l10n.hostFormsViewResponses,
+                        style: CatchTextStyles.headlineS(context, color: t.ink),
+                      ),
+                    ),
+                  ],
+                ),
               gapH8,
               Text(
                 context.l10n.hostFormResponsesSubtitle,

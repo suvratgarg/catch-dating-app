@@ -228,6 +228,81 @@ void _registerCatchPrimitivesControlsTests() {
     );
   });
 
+  testWidgets('CatchButton reflows full-width labels at large text', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 220,
+          child: CatchButton(
+            key: const ValueKey('large-text-button'),
+            label: 'Review every submitted response',
+            fullWidth: true,
+            onPressed: () {},
+          ),
+        ),
+        textScale: 2,
+      ),
+    );
+
+    expect(
+      tester.getSize(find.byKey(const ValueKey('large-text-button'))).height,
+      greaterThan(CatchSpacing.s12),
+    );
+    final label = tester.widget<CatchButtonLabel>(
+      find.byType(CatchButtonLabel),
+    );
+    expect(label.allowMultiline, isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('CatchButton resolves transitions under reduced motion', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: CatchButton(
+            key: const ValueKey('reduced-motion-button'),
+            label: 'Continue',
+            onPressed: () {},
+          ),
+        ),
+      ),
+    );
+
+    final button = find.byKey(const ValueKey('reduced-motion-button'));
+    expect(
+      tester
+          .widget<AnimatedScale>(
+            find.descendant(of: button, matching: find.byType(AnimatedScale)),
+          )
+          .duration,
+      CatchMotion.none,
+    );
+    expect(
+      tester
+          .widget<AnimatedOpacity>(
+            find.descendant(of: button, matching: find.byType(AnimatedOpacity)),
+          )
+          .duration,
+      CatchMotion.none,
+    );
+    expect(
+      tester
+          .widget<AnimatedSwitcher>(
+            find.descendant(
+              of: button,
+              matching: find.byType(AnimatedSwitcher),
+            ),
+          )
+          .duration,
+      CatchMotion.none,
+    );
+  });
+
   testWidgets('CatchButton pairs primary activity accent with white ink', (
     tester,
   ) async {

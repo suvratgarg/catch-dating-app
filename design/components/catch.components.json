@@ -609,7 +609,9 @@
           "loading",
           "full-width",
           "with-icon",
-          "rounded"
+          "rounded",
+          "large-text",
+          "reduced-motion"
         ],
         "slots": [
           {
@@ -4454,7 +4456,8 @@
           "with-unit",
           "four-items",
           "long-copy",
-          "surface-overrides"
+          "surface-overrides",
+          "large-text-reflow"
         ],
         "slots": [],
         "tokens": [

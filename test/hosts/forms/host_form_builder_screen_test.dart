@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
@@ -219,9 +221,49 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('published command center reflows at large text in dark mode', (
+    tester,
+  ) async {
+    await _pumpBuilder(
+      tester,
+      published: true,
+      textScale: 2,
+      disableAnimations: true,
+      theme: AppTheme.dark,
+    );
+
+    final title = find.byKey(const ValueKey('host-form-command-center-title'));
+    final edit = find.byKey(const ValueKey('host-form-command-center-edit'));
+    expect(
+      tester.getBottomLeft(title).dy,
+      lessThan(tester.getTopLeft(edit).dy),
+    );
+    expect(
+      find.byKey(const ValueKey('catch_metric_strip.reflow')),
+      findsOneWidget,
+    );
+    final metricCells = find.byType(CatchMetricStripCell);
+    expect(metricCells, findsNWidgets(3));
+    expect(
+      tester.getCenter(metricCells.at(0)).dy,
+      lessThan(tester.getCenter(metricCells.at(1)).dy),
+    );
+    expect(
+      tester.getSize(find.widgetWithText(CatchButton, 'View responses')).height,
+      greaterThan(CatchSpacing.s12),
+    );
+    expect(tester.takeException(), isNull);
+  });
 }
 
-Future<void> _pumpBuilder(WidgetTester tester, {bool published = false}) async {
+Future<void> _pumpBuilder(
+  WidgetTester tester, {
+  bool published = false,
+  double textScale = 1,
+  bool disableAnimations = false,
+  ThemeData? theme,
+}) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = const Size(390, 844);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -262,7 +304,14 @@ Future<void> _pumpBuilder(WidgetTester tester, {bool published = false}) async {
           ),
       ],
       child: MaterialApp(
-        theme: AppTheme.light,
+        theme: theme ?? AppTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(textScale),
+            disableAnimations: disableAnimations,
+          ),
+          child: child!,
+        ),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const HostFormBuilderScreen(
