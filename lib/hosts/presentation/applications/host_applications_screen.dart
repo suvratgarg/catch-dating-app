@@ -127,36 +127,34 @@ class _HostApplicationsScreenState
                 ),
               ),
               gapH12,
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    CatchChip.selectable(
-                      label: context.l10n.hostApplicationsFilterAll,
-                      selected: _status == null,
-                      contractExemption:
-                          'All intentionally omits the optional reviewStatus.',
-                      onChanged: (_) => setState(() => _status = null),
+              CatchAdaptiveSelectionControl<HostApplicationReviewStatus?>(
+                key: const ValueKey('host-applications-review-status'),
+                title: context.l10n.hostApplicationsReviewStatusFilter,
+                tooltip: context.l10n.hostApplicationsReviewStatusFilter,
+                items: [
+                  CatchSelectionMenuItem(
+                    value: null,
+                    label: context.l10n.hostApplicationsFilterAll,
+                  ),
+                  for (final status in const [
+                    HostApplicationReviewStatus.submitted,
+                    HostApplicationReviewStatus.inReview,
+                    HostApplicationReviewStatus.approved,
+                    HostApplicationReviewStatus.waitlisted,
+                    HostApplicationReviewStatus.declined,
+                  ])
+                    CatchSelectionMenuItem(
+                      value: status,
+                      label: hostApplicationStatusLabel(context, status),
                     ),
-                    for (final status in const [
-                      HostApplicationReviewStatus.submitted,
-                      HostApplicationReviewStatus.inReview,
-                      HostApplicationReviewStatus.approved,
-                      HostApplicationReviewStatus.waitlisted,
-                      HostApplicationReviewStatus.declined,
-                    ]) ...[
-                      gapW8,
-                      CatchChip.selectable(
-                        label: hostApplicationStatusLabel(context, status),
-                        selected: _status == status,
-                        contract: CatchContractConstraints
-                            .listOrganizerApplicationsCallablePayloadReviewStatus,
-                        contractValue: status.name,
-                        onChanged: (_) => setState(() => _status = status),
-                      ),
-                    ],
-                  ],
-                ),
+                ],
+                value: _status,
+                triggerLabel: (selected) =>
+                    context.l10n.hostApplicationsReviewStatusFilterValue(
+                      status: selected.label,
+                    ),
+                icon: CatchIcons.tune,
+                onSelected: (status) => setState(() => _status = status),
               ),
               gapH16,
               Expanded(

@@ -14273,6 +14273,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationsFilterAll => 'All';
 
   @override
+  String get hostApplicationsReviewStatusFilter => 'Filter by review status';
+
+  @override
+  String hostApplicationsReviewStatusFilterValue({required String status}) {
+    return 'Review status: $status';
+  }
+
+  @override
   String get hostApplicationsStatusSubmitted => 'Submitted';
 
   @override

@@ -22220,6 +22220,18 @@ abstract class AppLocalizations {
   /// **'All'**
   String get hostApplicationsFilterAll;
 
+  /// Accessible title and tooltip for the application review-status filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by review status'**
+  String get hostApplicationsReviewStatusFilter;
+
+  /// Visible application review-status filter value.
+  ///
+  /// In en, this message translates to:
+  /// **'Review status: {status}'**
+  String hostApplicationsReviewStatusFilterValue({required String status});
+
   /// New organizer application status.
   ///
   /// In en, this message translates to:
