@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical hairline index row for compact directories and browse lists.
@@ -27,8 +28,9 @@ class CatchIndexRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final content = InkWell(
+    final content = CatchRowPressSurface(
       onTap: onTap,
+      semanticButton: false,
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: Border(bottom: BorderSide(color: t.line)),

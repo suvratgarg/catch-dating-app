@@ -555,6 +555,89 @@ void main() {
     },
   );
 
+  testWidgets(
+    'contained row press states use one group clip for every row position',
+    (tester) async {
+      Future<void> pumpRows(int count) {
+        return tester.pumpWidget(
+          _wrap(
+            SizedBox(
+              width: 360,
+              child: CatchSection.containedFieldRows(
+                children: [
+                  for (var index = 0; index < count; index++)
+                    CatchField.nav(
+                      key: ValueKey('row-$index'),
+                      title: 'Row $index',
+                      onTap: () {},
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+
+      for (final rowCount in [1, 3]) {
+        await pumpRows(rowCount);
+
+        final clipFinder = find.byKey(CatchSectionFocusSurface.rowGroupClipKey);
+        final clip = tester.widget<ClipRRect>(clipFinder);
+        expect(clip.clipBehavior, Clip.hardEdge);
+        expect(
+          clip.borderRadius,
+          BorderRadius.circular(CatchFieldTokens.sectionRadius),
+        );
+        final clipRect = tester.getRect(clipFinder);
+        final overlays = find.byKey(CatchField.pressOverlayKey);
+        expect(overlays, findsNWidgets(rowCount));
+
+        for (var index = 0; index < rowCount; index++) {
+          final rowFinder = find.byKey(ValueKey('row-$index'));
+          final overlayFinder = overlays.at(index);
+          final overlayDecoration =
+              tester.widget<AnimatedContainer>(overlayFinder).decoration!
+                  as BoxDecoration;
+          expect(overlayDecoration.color, Colors.transparent);
+          expect(overlayDecoration.borderRadius, BorderRadius.zero);
+          expect(overlayDecoration.border, isNull);
+          expect(
+            find.ancestor(of: overlayFinder, matching: clipFinder),
+            findsOneWidget,
+          );
+
+          final gesture = await tester.startGesture(
+            tester.getCenter(rowFinder),
+          );
+          await tester.pump();
+          final pressedDecoration =
+              tester.widget<AnimatedContainer>(overlayFinder).decoration!
+                  as BoxDecoration;
+          expect(pressedDecoration.color, isNot(Colors.transparent));
+          expect(pressedDecoration.borderRadius, BorderRadius.zero);
+
+          final overlayRect = tester.getRect(overlayFinder);
+          expect(overlayRect.left, closeTo(clipRect.left, 0.001));
+          expect(overlayRect.right, closeTo(clipRect.right, 0.001));
+          if (index == 0) {
+            expect(overlayRect.top, closeTo(clipRect.top, 0.001));
+          }
+          if (index == rowCount - 1) {
+            expect(overlayRect.bottom, closeTo(clipRect.bottom, 0.001));
+          } else {
+            final nextOverlayRect = tester.getRect(overlays.at(index + 1));
+            expect(
+              overlayRect.bottom,
+              greaterThanOrEqualTo(nextOverlayRect.top),
+            );
+          }
+          await gesture.up();
+          await tester.pump();
+        }
+      }
+    },
+  );
+
   testWidgets('CatchSection contained reflects descendant focus', (
     tester,
   ) async {

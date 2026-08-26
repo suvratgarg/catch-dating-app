@@ -910,6 +910,15 @@ class CatchSectionFocusSurface extends StatefulWidget {
     this.fieldRows = false,
   });
 
+  /// The single rounded clip that owns every contained row's external corners.
+  ///
+  /// Individual row press surfaces stay rectangular. Their top, middle,
+  /// bottom, and single-row shapes are produced only where this group clip
+  /// intersects the active row.
+  static const rowGroupClipKey = ValueKey<String>(
+    'catch-section-row-group-clip',
+  );
+
   final Widget child;
   final EdgeInsetsGeometry padding;
   final Color? backgroundColor;
@@ -947,33 +956,40 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
         activeOverlayBleed: CatchStroke.hairline,
         child: widget.child,
       );
-      return AnimatedContainer(
-        duration: duration,
-        curve: CatchFieldTokens.curve,
+      final sectionRadius = BorderRadius.circular(
+        CatchFieldTokens.sectionRadius,
+      );
+      return ClipRRect(
+        key: CatchSectionFocusSurface.rowGroupClipKey,
+        borderRadius: sectionRadius,
         clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: widget.backgroundColor ?? t.surface,
-          borderRadius: BorderRadius.circular(CatchFieldTokens.sectionRadius),
-        ),
-        // Paint the perimeter after the row tiles. Active edge rows overlap
-        // this same perimeter geometry and first/last rows overlap their
-        // internal hairlines, but neither may obscure the section-owned edge.
-        foregroundDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(CatchFieldTokens.sectionRadius),
-          border: Border.all(
-            color: widget.hasError
-                ? t.danger
-                : widget.focused
-                ? t.ink
-                : widget.borderColor ?? t.line2,
+        child: AnimatedContainer(
+          duration: duration,
+          curve: CatchFieldTokens.curve,
+          decoration: BoxDecoration(
+            color: widget.backgroundColor ?? t.surface,
+            borderRadius: sectionRadius,
           ),
-        ),
-        child: Padding(
-          // A decoration border contributes its dimensions to Container's
-          // child layout; a foreground border does not. Preserve that exact
-          // one-hairline content inset while moving only paint order forward.
-          padding: const EdgeInsets.all(CatchStroke.hairline),
-          child: Padding(padding: widget.padding, child: fieldContent),
+          // Paint the perimeter after the row tiles. Active edge rows overlap
+          // this same perimeter geometry and first/last rows overlap their
+          // internal hairlines, but neither may obscure the section-owned edge.
+          foregroundDecoration: BoxDecoration(
+            borderRadius: sectionRadius,
+            border: Border.all(
+              color: widget.hasError
+                  ? t.danger
+                  : widget.focused
+                  ? t.ink
+                  : widget.borderColor ?? t.line2,
+            ),
+          ),
+          child: Padding(
+            // A decoration border contributes its dimensions to Container's
+            // child layout; a foreground border does not. Preserve that exact
+            // one-hairline content inset while moving only paint order forward.
+            padding: const EdgeInsets.all(CatchStroke.hairline),
+            child: Padding(padding: widget.padding, child: fieldContent),
+          ),
         ),
       );
     }
