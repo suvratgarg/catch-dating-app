@@ -819,9 +819,16 @@ linked accounts, imports, and explicit WhatsApp/SMS reachability. During the
 dual-write migration it falls back to the legacy bounded attendee/preference
 scan for organizers without exact coverage. Partial summaries remain migration
 diagnostics and never replace the legacy cards. It never returns attendee
-identity or contact fields. `listOrganizerContacts` and
-`getOrganizerContactDetail` are separate manager-authorized, server-paginated
-boundaries. They return only organizer-owned endpoints plus explainable
+identity or contact fields. `listOrganizerContacts` and the sectioned
+`getOrganizerContactSection` are separate manager-authorized,
+server-paginated boundaries. The `overview` section is the primary Customer
+route payload: identity, traits, tags, and bounded notes. The `history` section
+is optional enrichment: revenue, event attendance, sends, and active merge
+receipts. Clients request history only when that lower route content is
+revealed; both sections carry the contact revision so they cannot be composed
+across a concurrent mutation. `getOrganizerContactDetail` retains the combined
+shape only for rolling-client compatibility. These boundaries return only
+organizer-owned endpoints plus explainable
 attendance/reachability facts; no Event Success private input is a CRM field.
 The directory accepts `lastSeen`, `mostAttended`, or `name`; every opaque cursor
 is versioned and bound to its query plan, filters, and ordering. Filtered sorts

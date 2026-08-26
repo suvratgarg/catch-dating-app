@@ -83334,6 +83334,1710 @@ export const getOrganizerContactDetailCallableResponseSchema = {
   }
 };
 
+export const getOrganizerContactSectionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_contact_section_payload.schema.json",
+  "title": "GetOrganizerContactSectionCallablePayload",
+  "description": "Manager-authorized request for one independently loadable organizer contact section.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "section"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "section": {
+      "type": "string",
+      "enum": [
+        "overview",
+        "history"
+      ]
+    }
+  }
+};
+
+export const getOrganizerContactSectionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_contact_section_response.schema.json",
+  "title": "GetOrganizerContactSectionCallableResponse",
+  "description": "One independently loadable organizer contact section. Overview is the primary route payload; history is optional enrichment.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "section",
+        "organizerId",
+        "contactId",
+        "displayName",
+        "sourceDisplayName",
+        "displayNameOverride",
+        "phoneE164",
+        "email",
+        "linkedAccount",
+        "identityState",
+        "identityConfidence",
+        "contactDetailsEditable",
+        "ambiguousCandidateContactIds",
+        "whatsappAdminSuppressed",
+        "traits",
+        "manualTags",
+        "manualTagVocabulary",
+        "notes",
+        "notesTruncated",
+        "notesCoverage",
+        "revision"
+      ],
+      "properties": {
+        "section": {
+          "const": "overview"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "sourceDisplayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "displayNameOverride": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "phoneE164": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "email",
+          "maxLength": 320
+        },
+        "linkedAccount": {
+          "type": "boolean"
+        },
+        "identityState": {
+          "type": "string",
+          "enum": [
+            "unlinked",
+            "verified",
+            "ambiguous"
+          ]
+        },
+        "identityConfidence": {
+          "type": "string",
+          "enum": [
+            "eventOnly",
+            "proposed",
+            "verified"
+          ]
+        },
+        "contactDetailsEditable": {
+          "type": "boolean"
+        },
+        "ambiguousCandidateContactIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        },
+        "whatsappAdminSuppressed": {
+          "type": "boolean"
+        },
+        "traits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "expectedEventCount",
+            "attendedEventCount",
+            "cancelledEventCount",
+            "noShowCount",
+            "importedEventCount",
+            "attendanceRate",
+            "segmentIds",
+            "whatsappStatus",
+            "smsStatus",
+            "sourceCoverage"
+          ],
+          "properties": {
+            "expectedEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "attendedEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "cancelledEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "noShowCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "importedEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "attendanceRate": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "segmentIds": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 16,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "new_to_organizer",
+                  "first_time_attendee",
+                  "repeat_attendee",
+                  "regular",
+                  "lapsed_regular",
+                  "reliable_attendee",
+                  "needs_confirmation",
+                  "advocate",
+                  "high_impact_advocate",
+                  "whatsapp_reachable",
+                  "sms_reachable"
+                ]
+              }
+            },
+            "whatsappStatus": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ]
+            },
+            "smsStatus": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ]
+            },
+            "sourceCoverage": {
+              "type": "string",
+              "enum": [
+                "exact",
+                "partial",
+                "insufficientData"
+              ]
+            }
+          }
+        },
+        "manualTags": {
+          "type": "array",
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tagId",
+              "label"
+            ],
+            "properties": {
+              "tagId": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{32}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              }
+            }
+          }
+        },
+        "manualTagVocabulary": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tagId",
+              "label"
+            ],
+            "properties": {
+              "tagId": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{32}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              }
+            }
+          }
+        },
+        "notes": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "noteId",
+              "body",
+              "authorUid",
+              "createdAtMillis",
+              "updatedAtMillis",
+              "revision"
+            ],
+            "properties": {
+              "noteId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "body": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "authorUid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "createdAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "updatedAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        },
+        "notesTruncated": {
+          "type": "boolean"
+        },
+        "notesCoverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "unavailable"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "section",
+        "organizerId",
+        "contactId",
+        "revenue",
+        "events",
+        "eventsTruncated",
+        "sends",
+        "sendsTruncated",
+        "sendsCoverage",
+        "activeMerges",
+        "revision"
+      ],
+      "properties": {
+        "section": {
+          "const": "history"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "revenue": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "coverage",
+            "amounts"
+          ],
+          "properties": {
+            "coverage": {
+              "type": "string",
+              "enum": [
+                "exact",
+                "partial",
+                "unavailable"
+              ]
+            },
+            "amounts": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "currency",
+                  "amountMinor",
+                  "factCount",
+                  "sources"
+                ],
+                "properties": {
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "amountMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "factCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "sources": {
+                    "type": "array",
+                    "maxItems": 4,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "source",
+                        "amountMinor",
+                        "factCount"
+                      ],
+                      "properties": {
+                        "source": {
+                          "type": "string",
+                          "enum": [
+                            "catchPayment",
+                            "hostImport",
+                            "hostEstimate",
+                            "providerOrder"
+                          ]
+                        },
+                        "amountMinor": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "factCount": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000000
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "events": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "eventId",
+              "attendeeId",
+              "displayName",
+              "eventOriginMode",
+              "eventProvider",
+              "source",
+              "status",
+              "expected",
+              "registered",
+              "cancelled",
+              "checkedIn",
+              "eventStartAtMillis",
+              "eventEndAtMillis",
+              "registeredAtMillis",
+              "cancelledAtMillis",
+              "checkedInAtMillis",
+              "revenues"
+            ],
+            "properties": {
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "attendeeId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "displayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "eventOriginMode": {
+                "type": "string",
+                "enum": [
+                  "catchNative",
+                  "externalCompanion",
+                  "unknown"
+                ]
+              },
+              "eventProvider": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "catch",
+                  "generic",
+                  "luma",
+                  "eventbrite",
+                  "partiful",
+                  "posh",
+                  "bookmyshow",
+                  "district",
+                  "sortmyscene",
+                  "airbnb",
+                  null
+                ]
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "catchBooking",
+                  "hostImport",
+                  "hostManual",
+                  "webOtp",
+                  "providerSync"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "invited",
+                  "registered",
+                  "waitlisted",
+                  "checkedIn",
+                  "cancelled"
+                ]
+              },
+              "expected": {
+                "type": "boolean"
+              },
+              "registered": {
+                "type": "boolean"
+              },
+              "cancelled": {
+                "type": "boolean"
+              },
+              "checkedIn": {
+                "type": "boolean"
+              },
+              "eventStartAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "eventEndAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "registeredAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "cancelledAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "checkedInAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "revenues": {
+                "type": "array",
+                "maxItems": 8,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "currency",
+                    "amountMinor",
+                    "source",
+                    "factCount",
+                    "allocation"
+                  ],
+                  "properties": {
+                    "currency": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    "amountMinor": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "catchPayment",
+                        "hostImport",
+                        "hostEstimate",
+                        "providerOrder"
+                      ]
+                    },
+                    "factCount": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 1000000
+                    },
+                    "allocation": {
+                      "type": "string",
+                      "enum": [
+                        "perAttendee",
+                        "sharedOrder"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "eventsTruncated": {
+          "type": "boolean"
+        },
+        "sends": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "campaignId",
+                  "name",
+                  "messageClass",
+                  "deliveryStatus",
+                  "createdAtMillis",
+                  "sentAtMillis",
+                  "updatedAtMillis"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "campaign"
+                  },
+                  "campaignId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "messageClass": {
+                    "type": "string",
+                    "enum": [
+                      "eventFollowUp",
+                      "organizerUpdate",
+                      "organizerPromotion"
+                    ]
+                  },
+                  "deliveryStatus": {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "sending",
+                      "suppressed",
+                      "accepted",
+                      "sent",
+                      "delivered",
+                      "read",
+                      "failed",
+                      "replied",
+                      "optedOut"
+                    ]
+                  },
+                  "createdAtMillis": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "sentAtMillis": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "updatedAtMillis": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "broadcastId",
+                  "eventId",
+                  "eventName",
+                  "audience",
+                  "deliveryStatus",
+                  "sentAtMillis",
+                  "partialFailure"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "announcement"
+                  },
+                  "broadcastId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "eventName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "audience": {
+                    "type": "string",
+                    "enum": [
+                      "booked",
+                      "prospective",
+                      "everyone"
+                    ]
+                  },
+                  "deliveryStatus": {
+                    "type": "string",
+                    "enum": [
+                      "available",
+                      "failed"
+                    ]
+                  },
+                  "sentAtMillis": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "partialFailure": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "sendsTruncated": {
+          "type": "boolean"
+        },
+        "sendsCoverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "unavailable"
+          ]
+        },
+        "activeMerges": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mergeReceiptId",
+              "sourceContactId",
+              "sourceDisplayName",
+              "evidence",
+              "conflicts",
+              "movedFactCount",
+              "mergedAtMillis"
+            ],
+            "properties": {
+              "mergeReceiptId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "sourceContactId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "sourceDisplayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "evidence": {
+                "type": "array",
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "sameVerifiedUid",
+                    "sameVerifiedPhone",
+                    "sameImportedPhone",
+                    "sameEmail",
+                    "managerConfirmed"
+                  ]
+                }
+              },
+              "conflicts": {
+                "type": "array",
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 120
+                }
+              },
+              "movedFactCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 400
+              },
+              "mergedAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "overview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "section",
+        "organizerId",
+        "contactId",
+        "displayName",
+        "sourceDisplayName",
+        "displayNameOverride",
+        "phoneE164",
+        "email",
+        "linkedAccount",
+        "identityState",
+        "identityConfidence",
+        "contactDetailsEditable",
+        "ambiguousCandidateContactIds",
+        "whatsappAdminSuppressed",
+        "traits",
+        "manualTags",
+        "manualTagVocabulary",
+        "notes",
+        "notesTruncated",
+        "notesCoverage",
+        "revision"
+      ],
+      "properties": {
+        "section": {
+          "const": "overview"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "sourceDisplayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "displayNameOverride": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "phoneE164": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "email",
+          "maxLength": 320
+        },
+        "linkedAccount": {
+          "type": "boolean"
+        },
+        "identityState": {
+          "type": "string",
+          "enum": [
+            "unlinked",
+            "verified",
+            "ambiguous"
+          ]
+        },
+        "identityConfidence": {
+          "type": "string",
+          "enum": [
+            "eventOnly",
+            "proposed",
+            "verified"
+          ]
+        },
+        "contactDetailsEditable": {
+          "type": "boolean"
+        },
+        "ambiguousCandidateContactIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        },
+        "whatsappAdminSuppressed": {
+          "type": "boolean"
+        },
+        "traits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "expectedEventCount",
+            "attendedEventCount",
+            "cancelledEventCount",
+            "noShowCount",
+            "importedEventCount",
+            "attendanceRate",
+            "segmentIds",
+            "whatsappStatus",
+            "smsStatus",
+            "sourceCoverage"
+          ],
+          "properties": {
+            "expectedEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "attendedEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "cancelledEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "noShowCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "importedEventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "attendanceRate": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "segmentIds": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 16,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "new_to_organizer",
+                  "first_time_attendee",
+                  "repeat_attendee",
+                  "regular",
+                  "lapsed_regular",
+                  "reliable_attendee",
+                  "needs_confirmation",
+                  "advocate",
+                  "high_impact_advocate",
+                  "whatsapp_reachable",
+                  "sms_reachable"
+                ]
+              }
+            },
+            "whatsappStatus": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ]
+            },
+            "smsStatus": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ]
+            },
+            "sourceCoverage": {
+              "type": "string",
+              "enum": [
+                "exact",
+                "partial",
+                "insufficientData"
+              ]
+            }
+          }
+        },
+        "manualTags": {
+          "type": "array",
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tagId",
+              "label"
+            ],
+            "properties": {
+              "tagId": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{32}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              }
+            }
+          }
+        },
+        "manualTagVocabulary": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tagId",
+              "label"
+            ],
+            "properties": {
+              "tagId": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{32}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              }
+            }
+          }
+        },
+        "notes": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "noteId",
+              "body",
+              "authorUid",
+              "createdAtMillis",
+              "updatedAtMillis",
+              "revision"
+            ],
+            "properties": {
+              "noteId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "body": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "authorUid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "createdAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "updatedAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        },
+        "notesTruncated": {
+          "type": "boolean"
+        },
+        "notesCoverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "unavailable"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "history": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "section",
+        "organizerId",
+        "contactId",
+        "revenue",
+        "events",
+        "eventsTruncated",
+        "sends",
+        "sendsTruncated",
+        "sendsCoverage",
+        "activeMerges",
+        "revision"
+      ],
+      "properties": {
+        "section": {
+          "const": "history"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "revenue": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "coverage",
+            "amounts"
+          ],
+          "properties": {
+            "coverage": {
+              "type": "string",
+              "enum": [
+                "exact",
+                "partial",
+                "unavailable"
+              ]
+            },
+            "amounts": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "currency",
+                  "amountMinor",
+                  "factCount",
+                  "sources"
+                ],
+                "properties": {
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "amountMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "factCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "sources": {
+                    "type": "array",
+                    "maxItems": 4,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "source",
+                        "amountMinor",
+                        "factCount"
+                      ],
+                      "properties": {
+                        "source": {
+                          "type": "string",
+                          "enum": [
+                            "catchPayment",
+                            "hostImport",
+                            "hostEstimate",
+                            "providerOrder"
+                          ]
+                        },
+                        "amountMinor": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "factCount": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000000
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "events": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "eventId",
+              "attendeeId",
+              "displayName",
+              "eventOriginMode",
+              "eventProvider",
+              "source",
+              "status",
+              "expected",
+              "registered",
+              "cancelled",
+              "checkedIn",
+              "eventStartAtMillis",
+              "eventEndAtMillis",
+              "registeredAtMillis",
+              "cancelledAtMillis",
+              "checkedInAtMillis",
+              "revenues"
+            ],
+            "properties": {
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "attendeeId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "displayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "eventOriginMode": {
+                "type": "string",
+                "enum": [
+                  "catchNative",
+                  "externalCompanion",
+                  "unknown"
+                ]
+              },
+              "eventProvider": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "catch",
+                  "generic",
+                  "luma",
+                  "eventbrite",
+                  "partiful",
+                  "posh",
+                  "bookmyshow",
+                  "district",
+                  "sortmyscene",
+                  "airbnb",
+                  null
+                ]
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "catchBooking",
+                  "hostImport",
+                  "hostManual",
+                  "webOtp",
+                  "providerSync"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "invited",
+                  "registered",
+                  "waitlisted",
+                  "checkedIn",
+                  "cancelled"
+                ]
+              },
+              "expected": {
+                "type": "boolean"
+              },
+              "registered": {
+                "type": "boolean"
+              },
+              "cancelled": {
+                "type": "boolean"
+              },
+              "checkedIn": {
+                "type": "boolean"
+              },
+              "eventStartAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "eventEndAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "registeredAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "cancelledAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "checkedInAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "revenues": {
+                "type": "array",
+                "maxItems": 8,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "currency",
+                    "amountMinor",
+                    "source",
+                    "factCount",
+                    "allocation"
+                  ],
+                  "properties": {
+                    "currency": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    "amountMinor": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "catchPayment",
+                        "hostImport",
+                        "hostEstimate",
+                        "providerOrder"
+                      ]
+                    },
+                    "factCount": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 1000000
+                    },
+                    "allocation": {
+                      "type": "string",
+                      "enum": [
+                        "perAttendee",
+                        "sharedOrder"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "eventsTruncated": {
+          "type": "boolean"
+        },
+        "sends": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "campaignId",
+                  "name",
+                  "messageClass",
+                  "deliveryStatus",
+                  "createdAtMillis",
+                  "sentAtMillis",
+                  "updatedAtMillis"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "campaign"
+                  },
+                  "campaignId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "messageClass": {
+                    "type": "string",
+                    "enum": [
+                      "eventFollowUp",
+                      "organizerUpdate",
+                      "organizerPromotion"
+                    ]
+                  },
+                  "deliveryStatus": {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "sending",
+                      "suppressed",
+                      "accepted",
+                      "sent",
+                      "delivered",
+                      "read",
+                      "failed",
+                      "replied",
+                      "optedOut"
+                    ]
+                  },
+                  "createdAtMillis": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "sentAtMillis": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "updatedAtMillis": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "broadcastId",
+                  "eventId",
+                  "eventName",
+                  "audience",
+                  "deliveryStatus",
+                  "sentAtMillis",
+                  "partialFailure"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "announcement"
+                  },
+                  "broadcastId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "eventName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "audience": {
+                    "type": "string",
+                    "enum": [
+                      "booked",
+                      "prospective",
+                      "everyone"
+                    ]
+                  },
+                  "deliveryStatus": {
+                    "type": "string",
+                    "enum": [
+                      "available",
+                      "failed"
+                    ]
+                  },
+                  "sentAtMillis": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "partialFailure": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "sendsTruncated": {
+          "type": "boolean"
+        },
+        "sendsCoverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "unavailable"
+          ]
+        },
+        "activeMerges": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mergeReceiptId",
+              "sourceContactId",
+              "sourceDisplayName",
+              "evidence",
+              "conflicts",
+              "movedFactCount",
+              "mergedAtMillis"
+            ],
+            "properties": {
+              "mergeReceiptId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "sourceContactId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "sourceDisplayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "evidence": {
+                "type": "array",
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "sameVerifiedUid",
+                    "sameVerifiedPhone",
+                    "sameImportedPhone",
+                    "sameEmail",
+                    "managerConfirmed"
+                  ]
+                }
+              },
+              "conflicts": {
+                "type": "array",
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 120
+                }
+              },
+              "movedFactCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 400
+              },
+              "mergedAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+};
+
 export const mutateOrganizerContactCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/mutate_organizer_contact_payload.schema.json",

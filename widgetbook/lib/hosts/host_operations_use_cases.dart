@@ -802,7 +802,7 @@ Widget hostCustomersStates(BuildContext context) {
           child: _HostShellScope(
             child: ProviderScope(
               overrides: [
-                hostAudienceContactDetailProvider(
+                hostAudienceContactOverviewProvider(
                   organizerId,
                   contactId,
                 ).overrideWithValue(AsyncData(detail)),
@@ -833,6 +833,11 @@ Widget hostCustomersStates(BuildContext context) {
             onMessagingEnabledChanged: (_) {},
             onRemove: () {},
             onUndoMerge: (_) {},
+            historyRequested: true,
+            historyLoading: false,
+            historyError: null,
+            onLoadHistory: () {},
+            onRetryHistory: () {},
           ),
         ),
       ),

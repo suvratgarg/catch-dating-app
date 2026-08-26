@@ -107,6 +107,7 @@ export 'callables/get_event_runtime_bootstrap_callable_request.g.dart';
 export 'callables/get_event_success_spatial_layout_callable_request.g.dart';
 export 'callables/get_organizer_application_detail_callable_request.g.dart';
 export 'callables/get_organizer_contact_detail_callable_request.g.dart';
+export 'callables/get_organizer_contact_section_callable_request.g.dart';
 export 'callables/get_organizer_crm_summary_callable_request.g.dart';
 export 'callables/get_organizer_form_analytics_callable_request.g.dart';
 export 'callables/get_organizer_form_editor_callable_request.g.dart';

@@ -51,8 +51,33 @@ class HostCustomerDetailScreen extends ConsumerStatefulWidget {
 
 class _HostCustomerDetailScreenState
     extends ConsumerState<HostCustomerDetailScreen> {
+  late final ScrollController _scrollController;
   bool _openingConversation = false;
   bool _updatingCustomer = false;
+  bool _historyRequested = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()..addListener(_loadHistoryOnScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_loadHistoryOnScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _loadHistoryOnScroll() {
+    if (_scrollController.offset >= 240) _requestHistory();
+  }
+
+  void _requestHistory() {
+    if (_historyRequested || !mounted) return;
+    setState(() => _historyRequested = true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +85,19 @@ class _HostCustomerDetailScreenState
       ref.watch(uidProvider),
     ).value;
     final detail = ref.watch(
-      hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
+      hostAudienceContactOverviewProvider(widget.organizerId, widget.contactId),
     );
+    final history = _historyRequested
+        ? ref.watch(
+            hostAudienceContactHistoryProvider(
+              widget.organizerId,
+              widget.contactId,
+            ),
+          )
+        : null;
+    final historyState = history == null
+        ? null
+        : catchAsyncStateFromAsyncValue(history);
     final detailState = catchAsyncStateFromAsyncValue(detail);
     final initialDisplayName = widget.initialDisplayName?.trim();
     final displayName =
@@ -81,7 +117,7 @@ class _HostCustomerDetailScreenState
         child: CatchAsyncValueView<HostAudienceContactDetail>(
           value: detail,
           onRetry: () => ref.invalidate(
-            hostAudienceContactDetailProvider(
+            hostAudienceContactOverviewProvider(
               widget.organizerId,
               widget.contactId,
             ),
@@ -109,6 +145,12 @@ class _HostCustomerDetailScreenState
               onMessagingEnabledChanged: (_) {},
               onRemove: _noop,
               onUndoMerge: (_) {},
+              scrollController: _scrollController,
+              historyRequested: false,
+              historyLoading: false,
+              historyError: null,
+              onLoadHistory: _requestHistory,
+              onRetryHistory: _refreshHistory,
             ),
           ),
           errorBuilder: (_, error, _) => CatchPageBody(
@@ -116,38 +158,56 @@ class _HostCustomerDetailScreenState
               error,
               context: AppErrorContext.customer,
               onRetry: () => ref.invalidate(
-                hostAudienceContactDetailProvider(
+                hostAudienceContactOverviewProvider(
                   widget.organizerId,
                   widget.contactId,
                 ),
               ),
             ),
           ),
-          builder: (context, customer) => HostCustomerDetailBody(
-            customer: customer,
-            currentUid: currentUid,
-            openingConversation: _openingConversation,
-            updatingCustomer: _updatingCustomer,
-            onSaveDetails: ({required displayName, phoneE164, email}) =>
-                _saveCustomerDetails(
-                  customer,
-                  displayName: displayName,
-                  phoneE164: phoneE164,
-                  email: email,
-                ),
-            onEditTags: () => _editTags(customer),
-            onAddNote: () => _editNote(customer),
-            onEditNote: (note) => _editNote(customer, note: note),
-            onReviewDuplicates: _reviewDuplicates,
-            onStartConversation: () => _startConversation(customer),
-            onOpenWhatsapp: customer.canUsePersonalWhatsappHandoff
-                ? () => _openWhatsapp(customer)
-                : null,
-            onMessagingEnabledChanged: (enabled) =>
-                _setMessagingEnabled(customer, enabled),
-            onRemove: () => _removeCustomer(customer),
-            onUndoMerge: _undoMerge,
-          ),
+          builder: (context, overview) {
+            var customer = overview;
+            Object? historyError = historyState?.error;
+            final loadedHistory = historyState?.value;
+            if (loadedHistory != null) {
+              try {
+                customer = overview.withHistory(loadedHistory);
+              } on Object catch (error) {
+                historyError = error;
+              }
+            }
+            return HostCustomerDetailBody(
+              customer: customer,
+              currentUid: currentUid,
+              openingConversation: _openingConversation,
+              updatingCustomer: _updatingCustomer,
+              onSaveDetails: ({required displayName, phoneE164, email}) =>
+                  _saveCustomerDetails(
+                    customer,
+                    displayName: displayName,
+                    phoneE164: phoneE164,
+                    email: email,
+                  ),
+              onEditTags: () => _editTags(customer),
+              onAddNote: () => _editNote(customer),
+              onEditNote: (note) => _editNote(customer, note: note),
+              onReviewDuplicates: _reviewDuplicates,
+              onStartConversation: () => _startConversation(customer),
+              onOpenWhatsapp: customer.canUsePersonalWhatsappHandoff
+                  ? () => _openWhatsapp(customer)
+                  : null,
+              onMessagingEnabledChanged: (enabled) =>
+                  _setMessagingEnabled(customer, enabled),
+              onRemove: () => _removeCustomer(customer),
+              onUndoMerge: _undoMerge,
+              scrollController: _scrollController,
+              historyRequested: _historyRequested,
+              historyLoading: historyState?.isLoading ?? false,
+              historyError: historyError,
+              onLoadHistory: _requestHistory,
+              onRetryHistory: _refreshHistory,
+            );
+          },
         ),
       ),
     );
@@ -176,9 +236,24 @@ class _HostCustomerDetailScreenState
     _refreshDetail();
   }
 
-  void _refreshDetail() => ref.invalidate(
-    hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
-  );
+  void _refreshDetail() {
+    if (_historyRequested) {
+      _refreshHistory();
+      return;
+    }
+    ref.invalidate(
+      hostAudienceContactOverviewProvider(widget.organizerId, widget.contactId),
+    );
+  }
+
+  void _refreshHistory() {
+    ref.invalidate(
+      hostAudienceContactOverviewProvider(widget.organizerId, widget.contactId),
+    );
+    ref.invalidate(
+      hostAudienceContactHistoryProvider(widget.organizerId, widget.contactId),
+    );
+  }
 
   Future<void> _reviewDuplicates() async {
     final changed = await showCatchBottomSheet<bool>(
@@ -494,6 +569,12 @@ class HostCustomerDetailBody extends StatelessWidget {
     required this.onMessagingEnabledChanged,
     required this.onRemove,
     required this.onUndoMerge,
+    this.scrollController,
+    required this.historyRequested,
+    required this.historyLoading,
+    required this.historyError,
+    required this.onLoadHistory,
+    required this.onRetryHistory,
   });
 
   final HostAudienceContactDetail customer;
@@ -510,6 +591,12 @@ class HostCustomerDetailBody extends StatelessWidget {
   final ValueChanged<bool> onMessagingEnabledChanged;
   final VoidCallback onRemove;
   final ValueChanged<HostActiveContactMerge> onUndoMerge;
+  final ScrollController? scrollController;
+  final bool historyRequested;
+  final bool historyLoading;
+  final Object? historyError;
+  final VoidCallback onLoadHistory;
+  final VoidCallback onRetryHistory;
 
   @override
   Widget build(BuildContext context) {
@@ -522,6 +609,7 @@ class HostCustomerDetailBody extends StatelessWidget {
         ) ==
         HostCustomerConversationAvailability.ready;
     return ListView(
+      controller: scrollController,
       padding: CatchInsets.pageBody.copyWith(bottom: 0),
       children: [
         CatchSectionList(
@@ -539,14 +627,15 @@ class HostCustomerDetailBody extends StatelessWidget {
               key: const ValueKey('host-customer-activity'),
               child: HostCustomerAttendanceCard(customer: customer),
             ),
-            HostCustomerRevenueCard(revenue: customer.revenue),
-            HostCustomerAttendanceHistory(customer: customer),
-            HostCustomerSendHistory(customer: customer),
-            if (customer.activeMerges.isNotEmpty)
-              HostCustomerActiveMergesSection(
-                merges: customer.activeMerges,
-                onUndo: onUndoMerge,
-              ),
+            _HostCustomerHistoryBoundary(
+              customer: customer,
+              requested: historyRequested,
+              loading: historyLoading,
+              error: historyError,
+              onLoad: onLoadHistory,
+              onRetry: onRetryHistory,
+              onUndoMerge: onUndoMerge,
+            ),
             HostCustomerConversationCard(
               customer: customer,
               loading: openingConversation,
@@ -576,6 +665,74 @@ class HostCustomerDetailBody extends StatelessWidget {
           ],
         ),
         const CatchScrollTerminalPadding(),
+      ],
+    );
+  }
+}
+
+class _HostCustomerHistoryBoundary extends StatelessWidget {
+  const _HostCustomerHistoryBoundary({
+    required this.customer,
+    required this.requested,
+    required this.loading,
+    required this.error,
+    required this.onLoad,
+    required this.onRetry,
+    required this.onUndoMerge,
+  });
+
+  final HostAudienceContactDetail customer;
+  final bool requested;
+  final bool loading;
+  final Object? error;
+  final VoidCallback onLoad;
+  final VoidCallback onRetry;
+  final ValueChanged<HostActiveContactMerge> onUndoMerge;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!requested) {
+      return CatchSection.plain(
+        key: const ValueKey('host-customer-load-history'),
+        title: context.l10n.hostCustomersEventHistory,
+        child: CatchButton(
+          label: context.l10n.hostCustomersLoadMore,
+          onPressed: onLoad,
+          variant: CatchButtonVariant.secondary,
+          fullWidth: true,
+        ),
+      );
+    }
+    if (error != null) {
+      return CatchErrorState.fromError(
+        error!,
+        key: const ValueKey('host-customer-history-error'),
+        context: AppErrorContext.customer,
+        onRetry: onRetry,
+        mode: CatchErrorStateMode.inline,
+      );
+    }
+    if (loading) {
+      return CatchSkeletonized(
+        child: Column(
+          children: [
+            HostCustomerRevenueCard(revenue: customer.revenue),
+            HostCustomerAttendanceHistory(customer: customer),
+            HostCustomerSendHistory(customer: customer),
+          ],
+        ),
+      );
+    }
+    return Column(
+      children: [
+        HostCustomerRevenueCard(revenue: customer.revenue),
+        HostCustomerAttendanceHistory(customer: customer),
+        HostCustomerSendHistory(customer: customer),
+        if (customer.activeMerges.isNotEmpty)
+          HostCustomerActiveMergesSection(
+            merges: customer.activeMerges,
+            onUndo: onUndoMerge,
+          ),
       ],
     );
   }

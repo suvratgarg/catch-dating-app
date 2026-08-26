@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_contact_section_response.schema.json",
+  "title": "GetOrganizerContactSectionCallableResponse",
+  "description": "One independently loadable organizer contact section. Overview is the primary route payload; history is optional enrichment.",
+  "oneOf": [
+    {"$ref": "#/definitions/overview"},
+    {"$ref": "#/definitions/history"}
+  ],
+  "definitions": {
+    "overview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["section", "organizerId", "contactId", "displayName", "sourceDisplayName", "displayNameOverride", "phoneE164", "email", "linkedAccount", "identityState", "identityConfidence", "contactDetailsEditable", "ambiguousCandidateContactIds", "whatsappAdminSuppressed", "traits", "manualTags", "manualTagVocabulary", "notes", "notesTruncated", "notesCoverage", "revision"],
+      "properties": {
+        "section": {"const": "overview"},
+        "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
+        "sourceDisplayName": {"type": "string", "minLength": 1, "maxLength": 120},
+        "displayNameOverride": {"type": ["string", "null"], "minLength": 1, "maxLength": 120},
+        "phoneE164": {"type": ["string", "null"], "pattern": "^\\+[1-9][0-9]{7,14}$"},
+        "email": {"type": ["string", "null"], "format": "email", "maxLength": 320},
+        "linkedAccount": {"type": "boolean"},
+        "identityState": {"type": "string", "enum": ["unlinked", "verified", "ambiguous"]},
+        "identityConfidence": {"type": "string", "enum": ["eventOnly", "proposed", "verified"]},
+        "contactDetailsEditable": {"type": "boolean"},
+        "ambiguousCandidateContactIds": {"type": "array", "uniqueItems": true, "maxItems": 20, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}},
+        "whatsappAdminSuppressed": {"type": "boolean"},
+        "traits": {"$ref": "get_organizer_contact_detail_response.schema.json#/definitions/traits"},
+        "manualTags": {"type": "array", "maxItems": 5, "uniqueItems": true, "items": {"$ref": "get_organizer_contact_detail_response.schema.json#/definitions/manualTag"}},
+        "manualTagVocabulary": {"type": "array", "maxItems": 20, "uniqueItems": true, "items": {"$ref": "get_organizer_contact_detail_response.schema.json#/definitions/manualTag"}},
+        "notes": {"type": "array", "maxItems": 100, "items": {"$ref": "get_organizer_contact_detail_response.schema.json#/definitions/note"}},
+        "notesTruncated": {"type": "boolean"},
+        "notesCoverage": {"type": "string", "enum": ["exact", "unavailable"]},
+        "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
+      }
+    },
+    "history": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["section", "organizerId", "contactId", "revenue", "events", "eventsTruncated", "sends", "sendsTruncated", "sendsCoverage", "activeMerges", "revision"],
+      "properties": {
+        "section": {"const": "history"},
+        "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "revenue": {"$ref": "get_organizer_contact_detail_response.schema.json#/definitions/revenue"},
+        "events": {"type": "array", "maxItems": 100, "items": {"$ref": "get_organizer_contact_detail_response.schema.json#/definitions/event"}},
+        "eventsTruncated": {"type": "boolean"},
+        "sends": {"type": "array", "maxItems": 100, "items": {"$ref": "get_organizer_contact_detail_response.schema.json#/definitions/send"}},
+        "sendsTruncated": {"type": "boolean"},
+        "sendsCoverage": {"type": "string", "enum": ["exact", "unavailable"]},
+        "activeMerges": {"type": "array", "maxItems": 50, "items": {"$ref": "get_organizer_contact_detail_response.schema.json#/definitions/activeMerge"}},
+        "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
+      }
+    }
+  }
+}

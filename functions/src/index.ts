@@ -135,6 +135,7 @@ export {
   createOrganizerContactNote,
   exportOrganizerContacts,
   getOrganizerContactDetail,
+  getOrganizerContactSection,
   listOrganizerContacts,
   mutateOrganizerContact,
   mutateOrganizerContactNote,

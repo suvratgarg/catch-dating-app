@@ -441,11 +441,7 @@ void main() {
             'amountMinor': 450000,
             'factCount': 3,
             'sources': [
-              {
-                'source': 'catchPayment',
-                'amountMinor': 450000,
-                'factCount': 3,
-              },
+              {'source': 'catchPayment', 'amountMinor': 450000, 'factCount': 3},
             ],
           },
         ],
@@ -501,6 +497,37 @@ void main() {
     expect(detail.events.single.checkedIn, isTrue);
     expect(detail.activeMerges.single.sourceContactId, 'contact-2');
     expect(detail.activeMerges.single.movedFactCount, 4);
+
+    final overviewData = Map<String, Object?>.from(data)
+      ..['section'] = 'overview'
+      ..remove('revenue')
+      ..remove('events')
+      ..remove('eventsTruncated')
+      ..remove('sends')
+      ..remove('sendsTruncated')
+      ..remove('sendsCoverage')
+      ..remove('activeMerges');
+    final overview = HostAudienceContactDetail.fromOverviewCallableData(
+      overviewData,
+    );
+    final history = HostAudienceContactHistory.fromCallableData({
+      'section': 'history',
+      'organizerId': data['organizerId'],
+      'contactId': data['contactId'],
+      'revenue': data['revenue'],
+      'events': data['events'],
+      'eventsTruncated': data['eventsTruncated'],
+      'sends': <Object?>[],
+      'sendsTruncated': false,
+      'sendsCoverage': 'exact',
+      'activeMerges': data['activeMerges'],
+      'revision': data['revision'],
+    });
+    final composed = overview.withHistory(history);
+    expect(overview.events, isEmpty);
+    expect(composed.revenue.amounts.single.amountMinor, 450000);
+    expect(composed.events.single.displayName, 'Social run');
+    expect(composed.activeMerges.single.mergeReceiptId, 'receipt-1');
 
     data['whatsappAdminSuppressed'] = false;
     final optedOutTraits = Map<String, Object?>.from(data['traits']! as Map);

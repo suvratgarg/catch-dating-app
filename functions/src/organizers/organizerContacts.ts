@@ -13,6 +13,10 @@ import {GetOrganizerContactDetailCallablePayload} from
   "../shared/generated/getOrganizerContactDetailCallablePayload";
 import {GetOrganizerContactDetailCallableResponse} from
   "../shared/generated/getOrganizerContactDetailCallableResponse";
+import {GetOrganizerContactSectionCallablePayload} from
+  "../shared/generated/getOrganizerContactSectionCallablePayload";
+import {GetOrganizerContactSectionCallableResponse} from
+  "../shared/generated/getOrganizerContactSectionCallableResponse";
 import {CreateOrganizerContactCallablePayload} from
   "../shared/generated/createOrganizerContactCallablePayload";
 import {CreateOrganizerContactCallableResponse} from
@@ -57,6 +61,7 @@ import {
   validateCreateOrganizerContactNoteCallablePayload,
   validateCreateOrganizerContactCallablePayload,
   validateGetOrganizerContactDetailCallablePayload,
+  validateGetOrganizerContactSectionCallablePayload,
   validateListOrganizerContactsCallablePayload,
   validateMutateOrganizerContactCallablePayload,
   validateMutateOrganizerContactNoteCallablePayload,
@@ -88,6 +93,14 @@ const maxContactManualTags = 5;
 const maxSortedCandidateScan = 2500;
 
 type ContactSort = NonNullable<ListOrganizerContactsCallablePayload["sort"]>;
+type ContactOverviewResponse = Extract<
+  GetOrganizerContactSectionCallableResponse,
+  {section: "overview"}
+>;
+type ContactHistoryResponse = Extract<
+  GetOrganizerContactSectionCallableResponse,
+  {section: "history"}
+>;
 
 interface OrganizerContactsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -472,127 +485,66 @@ export async function createOrganizerContactRecord(params: {
   };
 }
 
-/** Returns one manager-only contact record and its bounded event timeline. */
-export async function getOrganizerContactDetailHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerContactsDeps = defaultDeps
-): Promise<GetOrganizerContactDetailCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<
-    GetOrganizerContactDetailCallablePayload
-  >(
-    request,
-    validateGetOrganizerContactDetailCallablePayload,
-    normalizeContactDetailPayload
-  );
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerContactDetail");
-  await requireOrganizerManager({
-    db,
-    organizerId: data.organizerId,
-    actorUid,
-  });
-  const contactRef = db.collection("organizerContacts").doc(data.contactId);
-  const traitRef = db.collection("organizerContactTraits").doc(data.contactId);
-  const channelRef = db.collection("organizerContactChannelStates").doc(
-    organizerContactChannelStateId(data.organizerId, data.contactId)
-  );
-  const [
-    contactSnap,
-    traitSnap,
-    eventSnap,
-    channelSnap,
-    noteSnap,
-    recipientSnap,
-    broadcastSnap,
-    tagVocabularySnap,
-    mergeReceiptSnap,
-  ] = await Promise.all([
-    contactRef.get(),
-    traitRef.get(),
-    db.collection("organizerContactEventEdges")
-      .where("contactId", "==", data.contactId)
-      .orderBy("eventStartAt", "desc")
-      .limit(maxDetailEvents + 1)
-      .get(),
-    channelRef.get(),
-    optionalContactQuery(
-      db.collection("organizerContactNotes")
-        .where("organizerId", "==", data.organizerId)
-        .where("contactId", "==", data.contactId)
-        .orderBy("createdAt", "desc")
-        .orderBy(admin.firestore.FieldPath.documentId(), "desc")
-        .limit(maxDetailNotes + 1)
-        .get(),
-      "notes",
-      data.organizerId,
-      data.contactId
-    ),
-    optionalContactQuery(
-      db.collection("organizerCampaignRecipients")
-        .where("organizerId", "==", data.organizerId)
-        .where("contactId", "==", data.contactId)
-        .orderBy("createdAt", "desc")
-        .orderBy(admin.firestore.FieldPath.documentId(), "desc")
-        .limit(maxDetailSends + 1)
-        .get(),
-      "campaign sends",
-      data.organizerId,
-      data.contactId
-    ),
-    optionalContactQuery(
-      db.collection("organizerBroadcastSummaries")
-        .where("recipientContactIds", "array-contains", data.contactId)
-        .get(),
-      "announcement sends",
-      data.organizerId,
-      data.contactId
-    ),
-    db.collection("organizerContactTagVocabularies")
-      .doc(data.organizerId).get(),
-    db.collection("organizerContactMergeReceipts")
-      .where("organizerId", "==", data.organizerId)
-      .where("survivorContactId", "==", data.contactId)
-      .orderBy("createdAt", "desc")
-      .orderBy(admin.firestore.FieldPath.documentId(), "desc")
-      .limit(maxDetailMergeReceipts)
-      .get(),
-  ]);
-  const contact = contactSnap.data() as OrganizerContactDocument | undefined;
-  const traits = traitSnap.data() as OrganizerContactTraitDocument | undefined;
-  if (!contact || contact.organizerId !== data.organizerId ||
+type ContactSnapshotPromise = Promise<
+  FirebaseFirestore.DocumentSnapshot<
+    FirebaseFirestore.DocumentData,
+    FirebaseFirestore.DocumentData
+  >
+>;
+
+function activeContactFromSnapshot(
+  snapshot: FirebaseFirestore.DocumentSnapshot,
+  organizerId: string
+): OrganizerContactDocument {
+  const contact = snapshot.data() as OrganizerContactDocument | undefined;
+  if (!contact || contact.organizerId !== organizerId ||
       contact.deletedAt !== null || contact.hiddenAt != null ||
-      contact.identityState === "merged" ||
-      !traits || traits.organizerId !== data.organizerId) {
+      contact.identityState === "merged") {
     throw new HttpsError("not-found", "Audience contact not found.");
   }
-  const eventDocuments = eventSnap.docs.slice(0, maxDetailEvents)
-    .map((doc) => doc.data() as OrganizerContactEventEdgeDocument);
-  const uniqueEventIds = [
-    ...new Set(eventDocuments.map((edge) => edge.eventId)),
-  ];
-  const hydratedEventSnaps = uniqueEventIds.length === 0 ? [] : await db.getAll(
-    ...uniqueEventIds.map((eventId) => db.collection("events").doc(eventId))
-  );
-  const hydratedEvents = new Map(hydratedEventSnaps
-    .filter((snapshot) => snapshot.exists)
-    .map((snapshot) => [
-      snapshot.id,
-      snapshot.data() as EventDocument,
-    ]));
-  const revenueResult = await contactRevenue({
-    db,
-    contact,
-    eventEdges: eventDocuments,
-    eventHistoryTruncated: eventSnap.size > maxDetailEvents,
-  });
-  const events = eventDocuments.map((doc) => eventDetailRow(
-    doc,
-    revenueResult.byEvent.get(doc.eventId) ?? [],
-    hydratedEvents.get(doc.eventId),
-  ));
+  return contact;
+}
+
+async function loadContactOverview(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  contactId: string;
+  contactSnapshot?: ContactSnapshotPromise;
+}): Promise<ContactOverviewResponse> {
+  const contactSnapshot = params.contactSnapshot ?? params.db
+    .collection("organizerContacts").doc(params.contactId).get();
+  const [contactSnap, traitSnap, channelSnap, noteSnap, tagVocabularySnap] =
+    await Promise.all([
+      contactSnapshot,
+      params.db.collection("organizerContactTraits")
+        .doc(params.contactId).get(),
+      params.db.collection("organizerContactChannelStates")
+        .doc(organizerContactChannelStateId(
+          params.organizerId,
+          params.contactId
+        )).get(),
+      optionalContactQuery(
+        params.db.collection("organizerContactNotes")
+          .where("organizerId", "==", params.organizerId)
+          .where("contactId", "==", params.contactId)
+          .orderBy("createdAt", "desc")
+          .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+          .limit(maxDetailNotes + 1)
+          .get(),
+        "notes",
+        params.organizerId,
+        params.contactId
+      ),
+      params.db.collection("organizerContactTagVocabularies")
+        .doc(params.organizerId).get(),
+    ]);
+  const contact = activeContactFromSnapshot(contactSnap, params.organizerId);
+  const traits = traitSnap.data() as OrganizerContactTraitDocument | undefined;
+  if (!traits || traits.organizerId !== params.organizerId) {
+    throw new HttpsError("not-found", "Audience contact not found.");
+  }
   const tagVocabulary = safeManualTagVocabulary(
-    data.organizerId,
+    params.organizerId,
     tagVocabularySnap.data() as
       OrganizerContactTagVocabularyDocument | undefined
   );
@@ -605,44 +557,10 @@ export async function getOrganizerContactDetailHandler(
       doc.data() as OrganizerContactNoteDocument
     ))
     .filter((note): note is NonNullable<typeof note> => note !== null);
-  const campaignSendsResult = recipientSnap === null ? null :
-    await optionalContactHistory(
-      contactCampaignSendHistory({
-        db,
-        organizerId: data.organizerId,
-        recipientDocuments: recipientSnap.docs.slice(0, maxDetailSends).map(
-          (doc) => ({
-            id: doc.id,
-            data: doc.data() as OrganizerCampaignRecipientDocument,
-          })
-        ),
-      }),
-      "campaign send hydration",
-      data.organizerId,
-      data.contactId
-    );
-  const campaignSends = campaignSendsResult ?? [];
-  const broadcastSends = contactBroadcastSendHistory({
-    organizerId: data.organizerId,
-    contactId: data.contactId,
-    summaries: (broadcastSnap?.docs ?? []).map((doc) =>
-      doc.data() as OrganizerBroadcastSummaryDocument),
-  });
-  const allSends = [...campaignSends, ...broadcastSends].sort(
-    (left, right) => sendHistoryMillis(right) - sendHistoryMillis(left),
-  );
-  const sends = allSends.slice(0, maxDetailSends);
-  const activeMerges = await activeMergeRows({
-    db,
-    organizerId: data.organizerId,
-    receipts: mergeReceiptSnap.docs.map((document) => ({
-      id: document.id,
-      data: document.data() as OrganizerContactMergeReceiptDocument,
-    })),
-  });
   return {
-    organizerId: data.organizerId,
-    contactId: data.contactId,
+    section: "overview",
+    organizerId: params.organizerId,
+    contactId: params.contactId,
     displayName: effectiveDisplayName(contact),
     sourceDisplayName: contact.displayName,
     displayNameOverride: contact.displayNameOverride ?? null,
@@ -668,15 +586,132 @@ export async function getOrganizerContactDetailHandler(
       smsStatus: traits.smsStatus,
       sourceCoverage: traits.sourceCoverage,
     },
-    revenue: revenueResult.revenue,
-    events,
-    eventsTruncated: eventSnap.size > maxDetailEvents,
     manualTags: manualTagsForContact(contact, manualTagsById),
     manualTagVocabulary: tagVocabulary,
     notes,
     notesTruncated: (noteSnap?.size ?? 0) > maxDetailNotes,
     notesCoverage: noteSnap === null ? "unavailable" : "exact",
-    sends,
+    revision: contact.revision,
+  };
+}
+
+async function loadContactHistory(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  contactId: string;
+  contactSnapshot?: ContactSnapshotPromise;
+}): Promise<ContactHistoryResponse> {
+  const contactSnapshot = params.contactSnapshot ?? params.db
+    .collection("organizerContacts").doc(params.contactId).get();
+  const [
+    contactSnap,
+    eventSnap,
+    recipientSnap,
+    broadcastSnap,
+    mergeReceiptSnap,
+  ] = await Promise.all([
+    contactSnapshot,
+    params.db.collection("organizerContactEventEdges")
+      .where("contactId", "==", params.contactId)
+      .orderBy("eventStartAt", "desc")
+      .limit(maxDetailEvents + 1)
+      .get(),
+    optionalContactQuery(
+      params.db.collection("organizerCampaignRecipients")
+        .where("organizerId", "==", params.organizerId)
+        .where("contactId", "==", params.contactId)
+        .orderBy("createdAt", "desc")
+        .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+        .limit(maxDetailSends + 1)
+        .get(),
+      "campaign sends",
+      params.organizerId,
+      params.contactId
+    ),
+    optionalContactQuery(
+      params.db.collection("organizerBroadcastSummaries")
+        .where("recipientContactIds", "array-contains", params.contactId)
+        .get(),
+      "announcement sends",
+      params.organizerId,
+      params.contactId
+    ),
+    params.db.collection("organizerContactMergeReceipts")
+      .where("organizerId", "==", params.organizerId)
+      .where("survivorContactId", "==", params.contactId)
+      .orderBy("createdAt", "desc")
+      .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+      .limit(maxDetailMergeReceipts)
+      .get(),
+  ]);
+  const contact = activeContactFromSnapshot(contactSnap, params.organizerId);
+  const eventDocuments = eventSnap.docs.slice(0, maxDetailEvents)
+    .map((doc) => doc.data() as OrganizerContactEventEdgeDocument);
+  const uniqueEventIds = [
+    ...new Set(eventDocuments.map((edge) => edge.eventId)),
+  ];
+  const hydratedEventSnaps = uniqueEventIds.length === 0 ? [] :
+    await params.db.getAll(...uniqueEventIds.map((eventId) =>
+      params.db.collection("events").doc(eventId)));
+  const hydratedEvents = new Map(hydratedEventSnaps
+    .filter((snapshot) => snapshot.exists)
+    .map((snapshot) => [
+      snapshot.id,
+      snapshot.data() as EventDocument,
+    ]));
+  const revenueResult = await contactRevenue({
+    db: params.db,
+    contact,
+    eventEdges: eventDocuments,
+    eventHistoryTruncated: eventSnap.size > maxDetailEvents,
+  });
+  const events = eventDocuments.map((doc) => eventDetailRow(
+    doc,
+    revenueResult.byEvent.get(doc.eventId) ?? [],
+    hydratedEvents.get(doc.eventId),
+  ));
+  const campaignSendsResult = recipientSnap === null ? null :
+    await optionalContactHistory(
+      contactCampaignSendHistory({
+        db: params.db,
+        organizerId: params.organizerId,
+        recipientDocuments: recipientSnap.docs.slice(0, maxDetailSends).map(
+          (doc) => ({
+            id: doc.id,
+            data: doc.data() as OrganizerCampaignRecipientDocument,
+          })
+        ),
+      }),
+      "campaign send hydration",
+      params.organizerId,
+      params.contactId
+    );
+  const campaignSends = campaignSendsResult ?? [];
+  const broadcastSends = contactBroadcastSendHistory({
+    organizerId: params.organizerId,
+    contactId: params.contactId,
+    summaries: (broadcastSnap?.docs ?? []).map((doc) =>
+      doc.data() as OrganizerBroadcastSummaryDocument),
+  });
+  const allSends = [...campaignSends, ...broadcastSends].sort(
+    (left, right) => sendHistoryMillis(right) - sendHistoryMillis(left),
+  );
+  const activeMerges = await activeMergeRows({
+    db: params.db,
+    organizerId: params.organizerId,
+    receipts: mergeReceiptSnap.docs.map((document) => ({
+      id: document.id,
+      data: document.data() as OrganizerContactMergeReceiptDocument,
+    })),
+  });
+  return {
+    section: "history",
+    organizerId: params.organizerId,
+    contactId: params.contactId,
+    revenue: revenueResult.revenue,
+    events,
+    eventsTruncated: eventSnap.size > maxDetailEvents,
+    sends: allSends.slice(0, maxDetailSends),
     sendsTruncated:
       (recipientSnap?.size ?? 0) > maxDetailSends ||
       allSends.length > maxDetailSends,
@@ -685,6 +720,98 @@ export async function getOrganizerContactDetailHandler(
       campaignSendsResult === null ? "unavailable" : "exact",
     activeMerges,
     revision: contact.revision,
+  };
+}
+
+/** Returns the primary or deferred section of one manager-only contact. */
+export async function getOrganizerContactSectionHandler(
+  request: CallableRequest<unknown>,
+  deps: OrganizerContactsDeps = defaultDeps
+): Promise<GetOrganizerContactSectionCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<
+    GetOrganizerContactSectionCallablePayload
+  >(
+    request,
+    validateGetOrganizerContactSectionCallablePayload,
+    normalizeContactDetailPayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "getOrganizerContactSection");
+  await requireOrganizerManager({
+    db,
+    organizerId: data.organizerId,
+    actorUid,
+  });
+  const params = {
+    db,
+    organizerId: data.organizerId,
+    contactId: data.contactId,
+  };
+  return data.section === "overview" ?
+    loadContactOverview(params) : loadContactHistory(params);
+}
+
+/** Legacy full response retained for rolling clients. */
+export async function getOrganizerContactDetailHandler(
+  request: CallableRequest<unknown>,
+  deps: OrganizerContactsDeps = defaultDeps
+): Promise<GetOrganizerContactDetailCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<
+    GetOrganizerContactDetailCallablePayload
+  >(
+    request,
+    validateGetOrganizerContactDetailCallablePayload,
+    normalizeContactDetailPayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "getOrganizerContactDetail");
+  await requireOrganizerManager({
+    db,
+    organizerId: data.organizerId,
+    actorUid,
+  });
+  const contactSnapshot = db.collection("organizerContacts")
+    .doc(data.contactId).get();
+  const shared = {
+    db,
+    organizerId: data.organizerId,
+    contactId: data.contactId,
+    contactSnapshot,
+  };
+  const [overview, history] = await Promise.all([
+    loadContactOverview(shared),
+    loadContactHistory(shared),
+  ]);
+  return {
+    organizerId: overview.organizerId,
+    contactId: overview.contactId,
+    displayName: overview.displayName,
+    sourceDisplayName: overview.sourceDisplayName,
+    displayNameOverride: overview.displayNameOverride,
+    phoneE164: overview.phoneE164,
+    email: overview.email,
+    linkedAccount: overview.linkedAccount,
+    identityState: overview.identityState,
+    identityConfidence: overview.identityConfidence,
+    contactDetailsEditable: overview.contactDetailsEditable,
+    ambiguousCandidateContactIds: overview.ambiguousCandidateContactIds,
+    whatsappAdminSuppressed: overview.whatsappAdminSuppressed,
+    traits: overview.traits,
+    revenue: history.revenue,
+    events: history.events,
+    eventsTruncated: history.eventsTruncated,
+    manualTags: overview.manualTags,
+    manualTagVocabulary: overview.manualTagVocabulary,
+    notes: overview.notes,
+    notesTruncated: overview.notesTruncated,
+    notesCoverage: overview.notesCoverage,
+    sends: history.sends,
+    sendsTruncated: history.sendsTruncated,
+    sendsCoverage: history.sendsCoverage,
+    activeMerges: history.activeMerges,
+    revision: overview.revision,
   };
 }
 
@@ -706,11 +833,18 @@ async function activeMergeRows(params: {
     receipt.data.operation === "merge" &&
     !reversedReceiptIds.has(receipt.id)
   ).slice(0, 50);
-  return Promise.all(activeReceipts.map(async (receipt) => {
-    const sourceSnapshot = await params.db.collection("organizerContacts")
-      .doc(receipt.data.sourceContactId).get();
-    const source = sourceSnapshot.data() as
-      OrganizerContactDocument | undefined;
+  const sourceSnapshots = activeReceipts.length === 0 ? [] :
+    await params.db.getAll(...activeReceipts.map((receipt) =>
+      params.db.collection("organizerContacts")
+        .doc(receipt.data.sourceContactId)));
+  const sources = new Map(sourceSnapshots
+    .filter((source) => source.exists)
+    .map((source) => [
+      source.id,
+      source.data() as OrganizerContactDocument,
+    ]));
+  return activeReceipts.map((receipt) => {
+    const source = sources.get(receipt.data.sourceContactId);
     return {
       mergeReceiptId: receipt.id,
       sourceContactId: receipt.data.sourceContactId,
@@ -723,7 +857,7 @@ async function activeMergeRows(params: {
         receipt.data.movedClaimCount,
       mergedAtMillis: receipt.data.createdAt.toMillis(),
     };
-  }));
+  });
 }
 
 async function contactRevenue(params: {
@@ -2386,4 +2520,9 @@ export const listOrganizerContacts = onCall(
 export const getOrganizerContactDetail = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
   (request) => getOrganizerContactDetailHandler(request)
+);
+
+export const getOrganizerContactSection = onCall(
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
+  (request) => getOrganizerContactSectionHandler(request)
 );

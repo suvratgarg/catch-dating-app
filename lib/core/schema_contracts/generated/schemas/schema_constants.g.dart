@@ -224,6 +224,8 @@ export 'get_organizer_application_detail_callable_payload.g.dart';
 export 'get_organizer_application_detail_callable_response.g.dart';
 export 'get_organizer_contact_detail_callable_payload.g.dart';
 export 'get_organizer_contact_detail_callable_response.g.dart';
+export 'get_organizer_contact_section_callable_payload.g.dart';
+export 'get_organizer_contact_section_callable_response.g.dart';
 export 'get_organizer_crm_summary_callable_payload.g.dart';
 export 'get_organizer_crm_summary_callable_response.g.dart';
 export 'get_organizer_form_analytics_callable_payload.g.dart';

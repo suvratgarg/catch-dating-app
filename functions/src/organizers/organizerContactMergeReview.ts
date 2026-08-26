@@ -410,14 +410,13 @@ async function hydrateCandidates(params: {
   if (params.seeds.length === 0) return [];
   const contactIds = [...new Set(params.seeds.flatMap((seed) =>
     seed.contactIds))];
-  const contactEntries = await Promise.all(contactIds.map(async (contactId) => {
-    const snapshot = await params.db.collection("organizerContacts")
-      .doc(contactId).get();
-    return [
-      contactId,
-      snapshot.data() as OrganizerContactDocument | undefined,
-    ] as const;
-  }));
+  const contactSnapshots = await params.db.getAll(...contactIds.map(
+    (contactId) => params.db.collection("organizerContacts").doc(contactId)
+  ));
+  const contactEntries = contactSnapshots.map((snapshot) => [
+    snapshot.id,
+    snapshot.data() as OrganizerContactDocument | undefined,
+  ] as const);
   const contacts = new Map(contactEntries.filter((entry) => {
     const contact = entry[1];
     return contact?.organizerId === params.organizerId &&
@@ -427,15 +426,15 @@ async function hydrateCandidates(params: {
   const [edges, links, decisions] = await Promise.all([
     loadEdges(params.db, params.organizerId, [...contacts.keys()]),
     loadSupportingLinks(params.db, params.organizerId, params.seeds),
-    Promise.all(params.seeds.map(async (seed) => {
-      const snapshot = await params.db
-        .collection("organizerContactMergeReviewDecisions")
-        .doc(seed.candidateId).get();
-      return [seed.candidateId, snapshot.data() as
-        OrganizerContactMergeReviewDecisionDocument | undefined] as const;
-    })),
+    params.db.getAll(...params.seeds.map((seed) => params.db
+      .collection("organizerContactMergeReviewDecisions")
+      .doc(seed.candidateId))),
   ]);
-  const decisionById = new Map(decisions);
+  const decisionById = new Map(decisions.map((snapshot) => [
+    snapshot.id,
+    snapshot.data() as
+      OrganizerContactMergeReviewDecisionDocument | undefined,
+  ] as const));
   const result: Candidate[] = [];
   for (const seed of params.seeds) {
     const left = contacts.get(seed.contactIds[0]);

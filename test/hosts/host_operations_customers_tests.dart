@@ -336,7 +336,7 @@ void _registerHostOperationsCustomersTests() {
       ),
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        hostAudienceContactDetailProvider(
+        hostAudienceContactOverviewProvider(
           'organizer-1',
           'contact-1',
         ).overrideWithValue(
@@ -622,7 +622,7 @@ void _registerHostOperationsCustomersTests() {
       ),
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        hostAudienceContactDetailProvider(
+        hostAudienceContactOverviewProvider(
           'organizer-1',
           'contact-1',
         ).overrideWithValue(const AsyncLoading()),
@@ -918,7 +918,7 @@ void _registerHostOperationsCustomersTests() {
       ),
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        hostAudienceContactDetailProvider(
+        hostAudienceContactOverviewProvider(
           'organizer-1',
           'contact-1',
         ).overrideWithValue(AsyncData(detail)),
@@ -959,7 +959,7 @@ void _registerHostOperationsCustomersTests() {
       ),
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        hostAudienceContactDetailProvider(
+        hostAudienceContactOverviewProvider(
           'organizer-1',
           'contact-1',
         ).overrideWithValue(AsyncData(_customerDetail())),
@@ -995,7 +995,7 @@ void _registerHostOperationsCustomersTests() {
       ),
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        hostAudienceContactDetailProvider(
+        hostAudienceContactOverviewProvider(
           'organizer-1',
           'contact-1',
         ).overrideWithValue(AsyncData(detail)),

@@ -392,6 +392,8 @@ import {CreateOrganizerContactCallableResponse} from "./createOrganizerContactCa
 import {ListOrganizerContactsCallableResponse} from "./listOrganizerContactsCallableResponse";
 import {GetOrganizerContactDetailCallablePayload} from "./getOrganizerContactDetailCallablePayload";
 import {GetOrganizerContactDetailCallableResponse} from "./getOrganizerContactDetailCallableResponse";
+import {GetOrganizerContactSectionCallablePayload} from "./getOrganizerContactSectionCallablePayload";
+import {GetOrganizerContactSectionCallableResponse} from "./getOrganizerContactSectionCallableResponse";
 import {MutateOrganizerContactCallablePayload} from "./mutateOrganizerContactCallablePayload";
 import {MutateOrganizerContactCallableResponse} from "./mutateOrganizerContactCallableResponse";
 import {CreateOrganizerContactNoteCallablePayload} from "./createOrganizerContactNoteCallablePayload";
@@ -890,6 +892,8 @@ import {
   listOrganizerContactsCallableResponseSchema,
   getOrganizerContactDetailCallablePayloadSchema,
   getOrganizerContactDetailCallableResponseSchema,
+  getOrganizerContactSectionCallablePayloadSchema,
+  getOrganizerContactSectionCallableResponseSchema,
   mutateOrganizerContactCallablePayloadSchema,
   mutateOrganizerContactCallableResponseSchema,
   createOrganizerContactNoteCallablePayloadSchema,
@@ -1794,6 +1798,10 @@ export const validateGetOrganizerContactDetailCallablePayload =
   lazyValidator<GetOrganizerContactDetailCallablePayload>(getOrganizerContactDetailCallablePayloadSchema);
 export const validateGetOrganizerContactDetailCallableResponse =
   lazyValidator<GetOrganizerContactDetailCallableResponse>(getOrganizerContactDetailCallableResponseSchema);
+export const validateGetOrganizerContactSectionCallablePayload =
+  lazyValidator<GetOrganizerContactSectionCallablePayload>(getOrganizerContactSectionCallablePayloadSchema);
+export const validateGetOrganizerContactSectionCallableResponse =
+  lazyValidator<GetOrganizerContactSectionCallableResponse>(getOrganizerContactSectionCallableResponseSchema);
 export const validateMutateOrganizerContactCallablePayload =
   lazyValidator<MutateOrganizerContactCallablePayload>(mutateOrganizerContactCallablePayloadSchema);
 export const validateMutateOrganizerContactCallableResponse =

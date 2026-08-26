@@ -377,6 +377,183 @@ final class HostAudienceContactDetailFamily extends $Family
   String toString() => r'hostAudienceContactDetailProvider';
 }
 
+@ProviderFor(hostAudienceContactOverview)
+final hostAudienceContactOverviewProvider =
+    HostAudienceContactOverviewFamily._();
+
+final class HostAudienceContactOverviewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostAudienceContactDetail>,
+          HostAudienceContactDetail,
+          FutureOr<HostAudienceContactDetail>
+        >
+    with
+        $FutureModifier<HostAudienceContactDetail>,
+        $FutureProvider<HostAudienceContactDetail> {
+  HostAudienceContactOverviewProvider._({
+    required HostAudienceContactOverviewFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostAudienceContactOverviewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostAudienceContactOverviewHash();
+
+  @override
+  String toString() {
+    return r'hostAudienceContactOverviewProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostAudienceContactDetail> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostAudienceContactDetail> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return hostAudienceContactOverview(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostAudienceContactOverviewProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostAudienceContactOverviewHash() =>
+    r'112efae2f74784a92dd0c0936b61d7ee44efd535';
+
+final class HostAudienceContactOverviewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostAudienceContactDetail>,
+          (String, String)
+        > {
+  HostAudienceContactOverviewFamily._()
+    : super(
+        retry: null,
+        name: r'hostAudienceContactOverviewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostAudienceContactOverviewProvider call(
+    String organizerId,
+    String contactId,
+  ) => HostAudienceContactOverviewProvider._(
+    argument: (organizerId, contactId),
+    from: this,
+  );
+
+  @override
+  String toString() => r'hostAudienceContactOverviewProvider';
+}
+
+@ProviderFor(hostAudienceContactHistory)
+final hostAudienceContactHistoryProvider = HostAudienceContactHistoryFamily._();
+
+final class HostAudienceContactHistoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostAudienceContactHistory>,
+          HostAudienceContactHistory,
+          FutureOr<HostAudienceContactHistory>
+        >
+    with
+        $FutureModifier<HostAudienceContactHistory>,
+        $FutureProvider<HostAudienceContactHistory> {
+  HostAudienceContactHistoryProvider._({
+    required HostAudienceContactHistoryFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostAudienceContactHistoryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostAudienceContactHistoryHash();
+
+  @override
+  String toString() {
+    return r'hostAudienceContactHistoryProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostAudienceContactHistory> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostAudienceContactHistory> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return hostAudienceContactHistory(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostAudienceContactHistoryProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostAudienceContactHistoryHash() =>
+    r'ec4b6f2188eca8f1c0e4e75e82b35db0bb02ff27';
+
+final class HostAudienceContactHistoryFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostAudienceContactHistory>,
+          (String, String)
+        > {
+  HostAudienceContactHistoryFamily._()
+    : super(
+        retry: null,
+        name: r'hostAudienceContactHistoryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostAudienceContactHistoryProvider call(
+    String organizerId,
+    String contactId,
+  ) => HostAudienceContactHistoryProvider._(
+    argument: (organizerId, contactId),
+    from: this,
+  );
+
+  @override
+  String toString() => r'hostAudienceContactHistoryProvider';
+}
+
 @ProviderFor(hostMessagingSetup)
 final hostMessagingSetupProvider = HostMessagingSetupFamily._();
 

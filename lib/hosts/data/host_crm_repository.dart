@@ -1038,8 +1038,22 @@ class HostAudienceContactDetail {
     required this.revision,
   });
 
-  factory HostAudienceContactDetail.fromCallableData(Object? data) {
-    final map = _requiredMap(data, 'organizer contact detail');
+  factory HostAudienceContactDetail.fromCallableData(Object? data) =>
+      HostAudienceContactDetail._fromMap(
+        _requiredMap(data, 'organizer contact detail'),
+        includeHistory: true,
+      );
+
+  factory HostAudienceContactDetail.fromOverviewCallableData(Object? data) {
+    final map = _requiredMap(data, 'organizer contact overview');
+    _requireContactSection(map, 'overview');
+    return HostAudienceContactDetail._fromMap(map, includeHistory: false);
+  }
+
+  factory HostAudienceContactDetail._fromMap(
+    Map<Object?, Object?> map, {
+    required bool includeHistory,
+  }) {
     return HostAudienceContactDetail(
       organizerId: _requiredString(map, 'organizerId'),
       contactId: _requiredString(map, 'contactId'),
@@ -1065,14 +1079,23 @@ class HostAudienceContactDetail {
       traits: HostCustomerTraits.fromMap(
         _requiredMap(map['traits'], 'customer traits'),
       ),
-      revenue: HostCustomerRevenue.fromMap(
-        _requiredMap(map['revenue'], 'customer revenue'),
-      ),
-      events: _mapList(
-        map['events'],
-        'contact events',
-      ).map(HostAudienceEventFact.fromMap).toList(growable: false),
-      eventsTruncated: _requiredBool(map, 'eventsTruncated'),
+      revenue: includeHistory
+          ? HostCustomerRevenue.fromMap(
+              _requiredMap(map['revenue'], 'customer revenue'),
+            )
+          : const HostCustomerRevenue(
+              coverage: HostCustomerRevenueCoverage.unavailable,
+              amounts: [],
+            ),
+      events: includeHistory
+          ? _mapList(
+              map['events'],
+              'contact events',
+            ).map(HostAudienceEventFact.fromMap).toList(growable: false)
+          : const [],
+      eventsTruncated: includeHistory
+          ? _requiredBool(map, 'eventsTruncated')
+          : false,
       manualTags: _optionalMapList(
         map['manualTags'],
         'manual tags',
@@ -1095,25 +1118,72 @@ class HostAudienceContactDetail {
               _requiredString(map, 'notesCoverage'),
               'notes coverage',
             ),
-      sends: _optionalMapList(
-        map['sends'],
-        'contact sends',
-      ).map(HostCustomerSend.fromMap).toList(growable: false),
-      sendsTruncated: map['sendsTruncated'] == null
-          ? false
-          : _requiredBool(map, 'sendsTruncated'),
-      sendsCoverage: map['sendsCoverage'] == null
-          ? HostCustomerHistoryCoverage.exact
-          : _enumByName(
-              HostCustomerHistoryCoverage.values,
-              _requiredString(map, 'sendsCoverage'),
-              'sends coverage',
-            ),
-      activeMerges: _optionalMapList(
-        map['activeMerges'],
-        'active contact merges',
-      ).map(HostActiveContactMerge.fromMap).toList(growable: false),
+      sends: includeHistory
+          ? _optionalMapList(
+              map['sends'],
+              'contact sends',
+            ).map(HostCustomerSend.fromMap).toList(growable: false)
+          : const [],
+      sendsTruncated: includeHistory
+          ? map['sendsTruncated'] == null
+                ? false
+                : _requiredBool(map, 'sendsTruncated')
+          : false,
+      sendsCoverage: includeHistory
+          ? map['sendsCoverage'] == null
+                ? HostCustomerHistoryCoverage.exact
+                : _enumByName(
+                    HostCustomerHistoryCoverage.values,
+                    _requiredString(map, 'sendsCoverage'),
+                    'sends coverage',
+                  )
+          : HostCustomerHistoryCoverage.unavailable,
+      activeMerges: includeHistory
+          ? _optionalMapList(
+              map['activeMerges'],
+              'active contact merges',
+            ).map(HostActiveContactMerge.fromMap).toList(growable: false)
+          : const [],
       revision: _requiredInt(map, 'revision'),
+    );
+  }
+
+  HostAudienceContactDetail withHistory(HostAudienceContactHistory history) {
+    if (history.organizerId != organizerId ||
+        history.contactId != contactId ||
+        history.revision != revision) {
+      throw const FormatException(
+        'Customer history does not match the loaded overview.',
+      );
+    }
+    return HostAudienceContactDetail(
+      organizerId: organizerId,
+      contactId: contactId,
+      displayName: displayName,
+      sourceDisplayName: sourceDisplayName,
+      displayNameOverride: displayNameOverride,
+      phoneE164: phoneE164,
+      email: email,
+      linkedAccount: linkedAccount,
+      identityState: identityState,
+      identityConfidence: identityConfidence,
+      contactDetailsEditable: contactDetailsEditable,
+      ambiguousCandidateCount: ambiguousCandidateCount,
+      whatsappAdminSuppressed: whatsappAdminSuppressed,
+      traits: traits,
+      revenue: history.revenue,
+      events: history.events,
+      eventsTruncated: history.eventsTruncated,
+      manualTags: manualTags,
+      manualTagVocabulary: manualTagVocabulary,
+      notes: notes,
+      notesTruncated: notesTruncated,
+      notesCoverage: notesCoverage,
+      sends: history.sends,
+      sendsTruncated: history.sendsTruncated,
+      sendsCoverage: history.sendsCoverage,
+      activeMerges: history.activeMerges,
+      revision: revision,
     );
   }
 
@@ -1164,6 +1234,64 @@ class HostAudienceContactDetail {
   bool get canUsePersonalWhatsappHandoff =>
       personalWhatsappHandoffAvailability ==
       HostPersonalWhatsappHandoffAvailability.ready;
+}
+
+class HostAudienceContactHistory {
+  const HostAudienceContactHistory({
+    required this.organizerId,
+    required this.contactId,
+    required this.revenue,
+    required this.events,
+    required this.eventsTruncated,
+    required this.sends,
+    required this.sendsTruncated,
+    required this.sendsCoverage,
+    required this.activeMerges,
+    required this.revision,
+  });
+
+  factory HostAudienceContactHistory.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'organizer contact history');
+    _requireContactSection(map, 'history');
+    return HostAudienceContactHistory(
+      organizerId: _requiredString(map, 'organizerId'),
+      contactId: _requiredString(map, 'contactId'),
+      revenue: HostCustomerRevenue.fromMap(
+        _requiredMap(map['revenue'], 'customer revenue'),
+      ),
+      events: _mapList(
+        map['events'],
+        'contact events',
+      ).map(HostAudienceEventFact.fromMap).toList(growable: false),
+      eventsTruncated: _requiredBool(map, 'eventsTruncated'),
+      sends: _mapList(
+        map['sends'],
+        'contact sends',
+      ).map(HostCustomerSend.fromMap).toList(growable: false),
+      sendsTruncated: _requiredBool(map, 'sendsTruncated'),
+      sendsCoverage: _enumByName(
+        HostCustomerHistoryCoverage.values,
+        _requiredString(map, 'sendsCoverage'),
+        'sends coverage',
+      ),
+      activeMerges: _mapList(
+        map['activeMerges'],
+        'active contact merges',
+      ).map(HostActiveContactMerge.fromMap).toList(growable: false),
+      revision: _requiredInt(map, 'revision'),
+    );
+  }
+
+  final String organizerId;
+  final String contactId;
+  final HostCustomerRevenue revenue;
+  final List<HostAudienceEventFact> events;
+  final bool eventsTruncated;
+  final List<HostCustomerSend> sends;
+  final bool sendsTruncated;
+  final HostCustomerHistoryCoverage sendsCoverage;
+  final List<HostActiveContactMerge> activeMerges;
+  final int revision;
 }
 
 class HostCreatedCustomer {
@@ -1837,6 +1965,34 @@ class HostCrmRepository {
     parse: HostAudienceContactDetail.fromCallableData,
   );
 
+  Future<HostAudienceContactDetail> getContactOverview(
+    String organizerId,
+    String contactId,
+  ) => _call(
+    name: 'getOrganizerContactSection',
+    payload: GetOrganizerContactSectionCallableRequest(
+      organizerId: organizerId,
+      contactId: contactId,
+      section: 'overview',
+    ).toJson(),
+    action: 'load organizer contact overview',
+    parse: HostAudienceContactDetail.fromOverviewCallableData,
+  );
+
+  Future<HostAudienceContactHistory> getContactHistory(
+    String organizerId,
+    String contactId,
+  ) => _call(
+    name: 'getOrganizerContactSection',
+    payload: GetOrganizerContactSectionCallableRequest(
+      organizerId: organizerId,
+      contactId: contactId,
+      section: 'history',
+    ).toJson(),
+    action: 'load organizer contact history',
+    parse: HostAudienceContactHistory.fromCallableData,
+  );
+
   Future<HostCreatedCustomer> createContact({
     required String organizerId,
     required String displayName,
@@ -2292,6 +2448,24 @@ Future<HostAudienceContactDetail> hostAudienceContactDetail(
     .getContactDetail(organizerId, contactId);
 
 @riverpod
+Future<HostAudienceContactDetail> hostAudienceContactOverview(
+  Ref ref,
+  String organizerId,
+  String contactId,
+) => ref
+    .read(hostCrmRepositoryProvider)
+    .getContactOverview(organizerId, contactId);
+
+@riverpod
+Future<HostAudienceContactHistory> hostAudienceContactHistory(
+  Ref ref,
+  String organizerId,
+  String contactId,
+) => ref
+    .read(hostCrmRepositoryProvider)
+    .getContactHistory(organizerId, contactId);
+
+@riverpod
 Future<HostMessagingSetup> hostMessagingSetup(Ref ref, String organizerId) =>
     ref.read(hostCrmRepositoryProvider).getMessagingSetup(organizerId);
 
@@ -2317,6 +2491,12 @@ List<Map<Object?, Object?>> _mapList(Object? value, String label) {
 
 List<Map<Object?, Object?>> _optionalMapList(Object? value, String label) =>
     value == null ? const [] : _mapList(value, label);
+
+void _requireContactSection(Map<Object?, Object?> map, String expected) {
+  if (_requiredString(map, 'section') != expected) {
+    throw FormatException('Invalid organizer contact $expected response.');
+  }
+}
 
 List<String> _stringList(Object? value) {
   if (value is! List<Object?> || value.any((item) => item is! String)) {
