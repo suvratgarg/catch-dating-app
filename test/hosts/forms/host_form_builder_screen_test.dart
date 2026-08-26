@@ -19,7 +19,9 @@ void main() {
 
     expect(find.text('Build'), findsOneWidget);
     expect(find.text('Responses 2'), findsOneWidget);
-    expect(find.text('What do you need to know?'), findsOneWidget);
+    expect(find.text('DRAFT · 2 QUESTIONS'), findsOneWidget);
+    expect(find.text('Questions'), findsWidgets);
+    expect(find.text('What do you need to know?'), findsNothing);
     expect(
       find.text('Choose the questions that will help you decide who to call.'),
       findsOneWidget,

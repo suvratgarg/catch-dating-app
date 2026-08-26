@@ -456,6 +456,7 @@ class _CompactFormEditorState extends State<_CompactFormEditor> {
           organizerId: widget.organizerId,
           formId: widget.formId,
           definition: definition,
+          status: widget.state.editor.form.status,
           notifier: widget.notifier,
           expandedQuestionId: _expandedQuestionId,
           onQuestionExpansionChanged: (questionId) {
@@ -484,6 +485,7 @@ class _CompactQuestionsStep extends StatelessWidget {
     required this.organizerId,
     required this.formId,
     required this.definition,
+    required this.status,
     required this.notifier,
     required this.expandedQuestionId,
     required this.onQuestionExpansionChanged,
@@ -493,6 +495,7 @@ class _CompactQuestionsStep extends StatelessWidget {
   final String organizerId;
   final String formId;
   final HostFormDefinition definition;
+  final HostFormLifecycleStatus status;
   final HostFormEditorController notifier;
   final String? expandedQuestionId;
   final ValueChanged<String> onQuestionExpansionChanged;
@@ -501,17 +504,28 @@ class _CompactQuestionsStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final questionCount = definition.sections.fold<int>(
+      0,
+      (count, section) => count + section.questions.length,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          context.l10n.hostFormQuestionsPrompt,
-          style: CatchTextStyles.titleL(context),
+          '${hostFormStatusLabel(context, status)} · '
+                  '${context.l10n.hostFormQuestionCount(count: questionCount)}'
+              .toUpperCase(),
+          style: CatchTextStyles.kickerLg(context, color: t.ink2),
         ),
-        gapH8,
+        gapH12,
+        Text(
+          context.l10n.hostFormQuestionsTitle,
+          style: CatchTextStyles.headline(context),
+        ),
+        gapH12,
         Text(
           context.l10n.hostFormQuestionsPromptHelp,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+          style: CatchTextStyles.proseM(context, color: t.ink2),
         ),
         gapH24,
         for (final sectionEntry in definition.sections.indexed) ...[
@@ -608,12 +622,12 @@ class _CompactPublishStep extends StatelessWidget {
       children: [
         Text(
           context.l10n.hostFormPublishPrompt,
-          style: CatchTextStyles.titleL(context),
+          style: CatchTextStyles.headlineS(context),
         ),
         gapH8,
         Text(
           context.l10n.hostFormReviewPublishSubtitle,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+          style: CatchTextStyles.proseM(context, color: t.ink2),
         ),
         gapH24,
         CatchSection.fieldRows(
