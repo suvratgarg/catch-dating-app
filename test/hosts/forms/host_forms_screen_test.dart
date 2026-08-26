@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
@@ -68,6 +69,14 @@ void main() {
         tester.widget<CatchTabbedScreenScaffold>(scaffold).search?.placeholder,
         'Search forms',
       );
+      expect(
+        find.byType(CatchOptionGroup<HostFormLifecycleStatus?>),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('Published'));
+      await pumpFeatureUi(tester);
+      expect(formRequests.last.statuses, {HostFormLifecycleStatus.published});
 
       await tester.tap(find.byIcon(CatchIcons.search));
       await pumpFeatureUiFor(tester, CatchMotion.base);
@@ -95,6 +104,16 @@ void main() {
         tester.widget<CatchTabbedScreenScaffold>(scaffold).search?.placeholder,
         'Search responses',
       );
+      expect(
+        find.byType(CatchOptionGroup<HostFormResponseStatus?>),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('Submitted'));
+      await pumpFeatureUi(tester);
+      expect(responseRequests.last.statuses, {
+        HostFormResponseStatus.submitted,
+      });
 
       await tester.enterText(
         find.descendant(

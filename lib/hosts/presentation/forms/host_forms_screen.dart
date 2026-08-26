@@ -13,7 +13,6 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -392,30 +391,25 @@ class _HostFormsLibraryPage extends ConsumerWidget {
                 style: CatchTextStyles.supporting(context, color: tokens.ink2),
               ),
               gapH16,
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    CatchChip.selectable(
-                      label: context.l10n.hostFormsFilterAll,
-                      selected: status == null,
-                      contractExemption:
-                          'All intentionally omits the optional status filter.',
-                      onChanged: (_) => onStatusChanged(null),
+              CatchOptionGroup<HostFormLifecycleStatus?>(
+                options: [
+                  CatchOption(
+                    value: null,
+                    label: context.l10n.hostFormsFilterAll,
+                  ),
+                  for (final candidate in HostFormLifecycleStatus.values)
+                    CatchOption(
+                      value: candidate,
+                      label: hostFormStatusLabel(context, candidate),
                     ),
-                    for (final candidate in HostFormLifecycleStatus.values) ...[
-                      gapW8,
-                      CatchChip.selectable(
-                        label: hostFormStatusLabel(context, candidate),
-                        selected: status == candidate,
-                        contract: CatchContractConstraints
-                            .listOrganizerFormsCallablePayloadStatusesItems,
-                        contractValue: candidate.name,
-                        onChanged: (_) => onStatusChanged(candidate),
-                      ),
-                    ],
-                  ],
-                ),
+                ],
+                selected: status,
+                contractExemption:
+                    'The lifecycle rail maps All to no status and every other '
+                    'option to one item in the statuses array contract.',
+                onChanged: onStatusChanged,
+                scrollable: true,
+                showDivider: false,
               ),
               gapH16,
               CatchAsyncValueView<HostFormsDirectoryState>(
