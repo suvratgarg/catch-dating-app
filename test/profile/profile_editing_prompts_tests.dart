@@ -606,6 +606,31 @@ void _registerProfileEditingPromptsTests() {
     );
     expect(highlightedPromptFields(), 1);
     expectPromptEdgesShareGeometry();
+    final highlightedOverlay = tester.widget<AnimatedContainer>(
+      find.descendant(
+        of: card,
+        matching: find.byWidgetPredicate((widget) {
+          if (widget is! AnimatedContainer ||
+              widget.key !=
+                  const ValueKey<String>('catch-field-active-overlay')) {
+            return false;
+          }
+          final decoration = widget.decoration;
+          return decoration is BoxDecoration && decoration.border != null;
+        }),
+      ),
+    );
+    expect(
+      (highlightedOverlay.decoration! as BoxDecoration).borderRadius,
+      BorderRadius.zero,
+    );
+    expect(
+      find.ancestor(
+        of: find.byWidget(highlightedOverlay),
+        matching: find.byType(ClipRRect),
+      ),
+      findsWidgets,
+    );
 
     await tester.tap(_promptAnswerEditableText(0));
     await _pumpProfileSheet(tester);

@@ -791,6 +791,54 @@ void main() {
   });
 
   testWidgets(
+    'CatchFieldLanes preserves section-owned grouped active geometry',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 360,
+            child: CatchSection.containedFieldRows(
+              children: [
+                CatchFieldLanes.divided(
+                  children: const [
+                    CatchField.control(
+                      title: 'Prompt',
+                      body: 'Question',
+                      open: true,
+                      control: Text('Prompt choices'),
+                    ),
+                    CatchField.read(title: 'Answer', body: 'Response'),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final overlayFinder = find.byKey(
+        const ValueKey<String>('catch-field-active-overlay'),
+      );
+      final overlay = tester.widget<AnimatedContainer>(overlayFinder);
+      final decoration = overlay.decoration! as BoxDecoration;
+      final sectionRect = tester.getRect(find.byType(CatchSectionFocusSurface));
+      final overlayRect = tester.getRect(overlayFinder);
+
+      expect(decoration.border, isNotNull);
+      expect(decoration.borderRadius, BorderRadius.zero);
+      expect(overlayRect.left, closeTo(sectionRect.left, 0.1));
+      expect(overlayRect.right, closeTo(sectionRect.right, 0.1));
+      expect(
+        find.ancestor(
+          of: overlayFinder,
+          matching: find.byKey(CatchSectionFocusSurface.rowGroupClipKey),
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
     'CatchField disables field chrome animation when reduced motion is on',
     (tester) async {
       await tester.pumpWidget(

@@ -777,29 +777,24 @@ void main() {
   });
 
   testWidgets(
-    'CatchSection contained perimeter and active edge fields share geometry',
+    'contained active states use one group clip for every row position',
     (tester) async {
-      Future<void> pump({required bool firstOpen}) {
+      Future<void> pump({required int rowCount, required int activeIndex}) {
         return tester.pumpWidget(
           _wrap(
             SizedBox(
               width: 360,
               child: CatchSection.containedFieldRows(
                 children: [
-                  CatchField.control(
-                    title: 'Prompt',
-                    body: 'Question',
-                    open: firstOpen,
-                    onOpenChanged: (_) {},
-                    control: const Text('Question choices'),
-                  ),
-                  CatchField.control(
-                    title: 'Answer',
-                    body: 'Response',
-                    open: !firstOpen,
-                    onOpenChanged: (_) {},
-                    control: const Text('Answer editor'),
-                  ),
+                  for (var index = 0; index < rowCount; index++)
+                    CatchField.control(
+                      key: ValueKey('active-row-$index'),
+                      title: 'Row $index',
+                      body: 'Value $index',
+                      open: index == activeIndex,
+                      onOpenChanged: (_) {},
+                      control: Text('Control $index'),
+                    ),
                 ],
               ),
             ),
@@ -807,60 +802,79 @@ void main() {
         );
       }
 
-      for (final firstOpen in [true, false]) {
-        await pump(firstOpen: firstOpen);
-        final surface = tester.widget<AnimatedContainer>(
-          find
-              .descendant(
-                of: find.byType(CatchSectionFocusSurface),
-                matching: find.byType(AnimatedContainer),
-              )
-              .first,
-        );
-        final background = surface.decoration! as BoxDecoration;
-        final perimeter = surface.foregroundDecoration! as BoxDecoration;
-        final activeOverlayFinder = find.byWidgetPredicate((widget) {
-          if (widget is! AnimatedContainer ||
-              widget.key != const ValueKey('catch-field-active-overlay')) {
-            return false;
-          }
-          final decoration = widget.decoration;
-          return decoration is BoxDecoration && decoration.border != null;
-        }, description: 'active CatchField overlay with a painted border');
-        final activeFieldFinder = find.ancestor(
-          of: activeOverlayFinder,
-          matching: find.byType(CatchField),
-        );
-        expect(activeOverlayFinder, findsOneWidget);
-        expect(activeFieldFinder, findsOneWidget);
-        final activeOverlayRect = tester.getRect(activeOverlayFinder);
-        final surfaceRect = tester.getRect(
-          find.byType(CatchSectionFocusSurface),
-        );
-        final activeFieldRect = tester.getRect(activeFieldFinder);
-
-        expect(background.border, isNull);
-        expect(
-          perimeter.border,
-          Border.all(color: CatchTokens.editorialLight.line2),
-        );
-        expect(activeOverlayRect.left, closeTo(surfaceRect.left, 0.1));
-        expect(activeOverlayRect.right, closeTo(surfaceRect.right, 0.1));
-        expect(
-          activeFieldRect.left,
-          closeTo(surfaceRect.left + CatchStroke.hairline, 0.1),
-        );
-        expect(
-          activeFieldRect.right,
-          closeTo(surfaceRect.right - CatchStroke.hairline, 0.1),
-        );
-        if (firstOpen) {
-          expect(activeOverlayRect.top, lessThanOrEqualTo(surfaceRect.top));
-        } else {
-          expect(
-            activeOverlayRect.bottom,
-            greaterThanOrEqualTo(surfaceRect.bottom),
+      for (final rowCount in [1, 3]) {
+        for (var activeIndex = 0; activeIndex < rowCount; activeIndex++) {
+          await pump(rowCount: rowCount, activeIndex: activeIndex);
+          final surface = tester.widget<AnimatedContainer>(
+            find
+                .descendant(
+                  of: find.byType(CatchSectionFocusSurface),
+                  matching: find.byType(AnimatedContainer),
+                )
+                .first,
           );
+          final background = surface.decoration! as BoxDecoration;
+          final perimeter = surface.foregroundDecoration! as BoxDecoration;
+          final activeOverlayFinder = find.byWidgetPredicate((widget) {
+            if (widget is! AnimatedContainer ||
+                widget.key != const ValueKey('catch-field-active-overlay')) {
+              return false;
+            }
+            final decoration = widget.decoration;
+            return decoration is BoxDecoration && decoration.border != null;
+          }, description: 'active CatchField overlay with a painted border');
+          final activeFieldFinder = find.ancestor(
+            of: activeOverlayFinder,
+            matching: find.byType(CatchField),
+          );
+          final clipFinder = find.byKey(
+            CatchSectionFocusSurface.rowGroupClipKey,
+          );
+          expect(activeOverlayFinder, findsOneWidget);
+          expect(activeFieldFinder, findsOneWidget);
+          expect(
+            find.ancestor(of: activeOverlayFinder, matching: clipFinder),
+            findsOneWidget,
+          );
+          final activeOverlay = tester.widget<AnimatedContainer>(
+            activeOverlayFinder,
+          );
+          final activeDecoration = activeOverlay.decoration! as BoxDecoration;
+          final activeOverlayRect = tester.getRect(activeOverlayFinder);
+          final surfaceRect = tester.getRect(
+            find.byType(CatchSectionFocusSurface),
+          );
+          final activeFieldRect = tester.getRect(activeFieldFinder);
+
+          expect(background.border, isNull);
+          expect(
+            perimeter.border,
+            Border.all(color: CatchTokens.editorialLight.line2),
+          );
+          expect(activeDecoration.borderRadius, BorderRadius.zero);
+          expect(activeOverlayRect.left, closeTo(surfaceRect.left, 0.1));
+          expect(activeOverlayRect.right, closeTo(surfaceRect.right, 0.1));
+          expect(
+            activeFieldRect.left,
+            closeTo(surfaceRect.left + CatchStroke.hairline, 0.1),
+          );
+          expect(
+            activeFieldRect.right,
+            closeTo(surfaceRect.right - CatchStroke.hairline, 0.1),
+          );
+          if (activeIndex == 0) {
+            expect(activeOverlayRect.top, lessThanOrEqualTo(surfaceRect.top));
+          } else {
+            expect(activeOverlayRect.top, greaterThan(surfaceRect.top));
+          }
+          if (activeIndex == rowCount - 1) {
+            expect(
+              activeOverlayRect.bottom,
+              greaterThanOrEqualTo(surfaceRect.bottom),
+            );
+          } else {
+            expect(activeOverlayRect.bottom, lessThan(surfaceRect.bottom));
+          }
         }
       }
     },
@@ -893,7 +907,14 @@ void main() {
       final activeOverlayRect = tester.getRect(
         find.byKey(const ValueKey('catch-field-active-overlay')),
       );
+      final activeOverlay = tester.widget<AnimatedContainer>(
+        find.byKey(const ValueKey('catch-field-active-overlay')),
+      );
 
+      expect(
+        (activeOverlay.decoration! as BoxDecoration).borderRadius,
+        BorderRadius.zero,
+      );
       expect(activeOverlayRect.left, closeTo(surfaceRect.left, 0.1));
       expect(activeOverlayRect.right, closeTo(surfaceRect.right, 0.1));
       expect(
