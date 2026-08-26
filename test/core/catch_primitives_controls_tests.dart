@@ -29,7 +29,16 @@ void _registerCatchPrimitivesControlsTests() {
       tester.getCenter(find.byKey(const ValueKey('sortable-handle'))).dx,
       lessThan(tester.getTopLeft(inline).dx),
     );
-    expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
+    final chevron = find.byIcon(CatchIcons.chevronRightRounded);
+    expect(chevron, findsOneWidget);
+    expect(
+      tester.getCenter(find.byKey(const ValueKey('sortable-handle'))).dy,
+      closeTo(tester.getCenter(inline).dy, 0.5),
+    );
+    expect(
+      tester.getCenter(chevron).dy,
+      closeTo(tester.getCenter(inline).dy, 0.5),
+    );
   });
 
   testWidgets('Catch map reveal opens a veil and respects reduced motion', (

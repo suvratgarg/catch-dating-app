@@ -61,8 +61,10 @@ extension _CatchFieldRowModes on _CatchFieldState {
     } else {
       rowAction = null;
     }
+    final hasInlineMetadata = widget.inlineMetadata?.trim().isNotEmpty == true;
     final centerVertically =
         _isToggle ||
+        hasInlineMetadata ||
         (widget._contentRow && widget.emphasis == CatchFieldEmphasis.title);
     final leadingTopPadding = centerVertically
         ? 0.0

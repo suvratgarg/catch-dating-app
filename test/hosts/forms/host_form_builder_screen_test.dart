@@ -216,6 +216,14 @@ void main() {
           .dx,
       lessThan(tester.getTopLeft(phoneRow).dx),
     );
+    expect(
+      tester
+          .getCenter(
+            find.byKey(const ValueKey('form-question-question_2-drag')),
+          )
+          .dy,
+      closeTo(tester.getCenter(phoneRow).dy, 0.5),
+    );
   });
 
   testWidgets('published form opens on its operational command center', (
