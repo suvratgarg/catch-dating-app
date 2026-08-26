@@ -38,8 +38,6 @@ import 'package:go_router/go_router.dart';
 enum _HostFormsView { forms, responses }
 
 enum _HostFormRowAction {
-  open,
-  responses,
   analytics,
   automations,
   duplicate,
@@ -74,8 +72,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   late _HostFormsView _view;
   late final TabController _tabController;
   String? _responseFormId;
-  String? _responseFormTitle;
-  bool _openingFilteredResponses = false;
 
   @override
   void initState() {
@@ -218,10 +214,8 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
                     organizerId: selectedClub.id,
                     query: _responseQuery,
                     formId: _responseFormId,
-                    formTitle: _responseFormTitle,
                     onClearFormFilter: () => setState(() {
                       _responseFormId = null;
-                      _responseFormTitle = null;
                     }),
                   ),
                 ),
@@ -261,11 +255,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     _searchDebounce?.cancel();
     setState(() {
       _view = nextView;
-      if (nextView == _HostFormsView.responses && !_openingFilteredResponses) {
-        _responseFormId = null;
-        _responseFormTitle = null;
-      }
-      _openingFilteredResponses = false;
+      if (nextView == _HostFormsView.responses) _responseFormId = null;
     });
   }
 
@@ -281,19 +271,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     HostFormSummary form,
     HostFormListRequest request,
   ) async {
-    if (action == _HostFormRowAction.open) {
-      _openForm(form);
-      return;
-    }
-    if (action == _HostFormRowAction.responses) {
-      setState(() {
-        _responseFormId = form.formId;
-        _responseFormTitle = form.title;
-        _openingFilteredResponses = true;
-      });
-      _tabController.animateTo(_HostFormsView.responses.index);
-      return;
-    }
     if (action == _HostFormRowAction.analytics) {
       await context.pushNamed(
         Routes.hostFormAnalyticsScreen.name,
@@ -312,8 +289,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     }
     try {
       switch (action) {
-        case _HostFormRowAction.open:
-        case _HostFormRowAction.responses:
         case _HostFormRowAction.analytics:
         case _HostFormRowAction.automations:
           break;
@@ -481,7 +456,7 @@ class _HostFormsLibraryPage extends ConsumerWidget {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      CatchSection.containedFieldRows(
+                      CatchSection.fieldRows(
                         children: [
                           for (final form in state.forms)
                             CatchField.nav(
@@ -560,17 +535,6 @@ List<CatchActionMenuItem<_HostFormRowAction>> _hostFormRowActions(
   BuildContext context,
   HostFormSummary form,
 ) => [
-  CatchActionMenuItem(
-    value: _HostFormRowAction.open,
-    label: context.l10n.hostFormsOpen,
-    icon: CatchIcons.edit,
-  ),
-  if (form.submittedResponseCount > 0)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.responses,
-      label: context.l10n.hostFormsViewResponsesAction,
-      icon: CatchIcons.descriptionOutlined,
-    ),
   if (form.activeVersionId != null)
     CatchActionMenuItem(
       value: _HostFormRowAction.analytics,
