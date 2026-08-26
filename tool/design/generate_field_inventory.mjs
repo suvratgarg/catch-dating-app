@@ -15,6 +15,7 @@ export const facadeUseWhen = Object.freeze({
   read: "Display a non-interactive value row with optional validity and save status.",
   content: "Display title and supporting copy as a stable content row with an optional action.",
   nav: "Open another destination or picker from a row that may show a current value.",
+  sortable: "Reorder a compact one-line title and metadata row that also opens item details.",
   action: "Run a non-navigation row action without implying inline value editing.",
   toggle: "Edit one boolean value with a row-owned toggle control.",
   input: "Edit text directly in a field with validation, helper copy, and optional adornments.",

@@ -23,6 +23,7 @@ test("extracts every current facade and semantic slot", () => {
       "read",
       "content",
       "nav",
+      "sortable",
       "action",
       "toggle",
       "input",
@@ -62,7 +63,7 @@ test("known-bad deleted facade changes generated inventory", () => {
   );
   const modes = extractCatchFieldFacades(deleted).map((entry) => entry.mode);
   assert.ok(!modes.includes("add"));
-  assert.equal(modes.length, 12);
+  assert.equal(modes.length, 13);
 });
 
 test("known-bad added slot parameter changes generated inventory", () => {
