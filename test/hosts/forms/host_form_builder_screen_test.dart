@@ -42,10 +42,21 @@ void main() {
     (tester) async {
       await _pumpBuilder(tester);
 
-      await tester.tap(find.text('Full name'));
+      final fullNameRowLabel = find
+          .descendant(
+            of: find.byKey(const ValueKey('form-question-question_1')),
+            matching: find.text('Full name'),
+          )
+          .first;
+      await ensureCentered(tester, fullNameRowLabel);
+      await tester.tap(fullNameRowLabel);
       await pumpFeatureUi(tester);
 
-      expect(find.text('Edit question'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('form-question-question_1-editor')),
+        findsOneWidget,
+      );
+      expect(find.text('Edit question'), findsNothing);
       expect(find.text('Question'), findsOneWidget);
       expect(find.text('Answer type'), findsOneWidget);
       expect(find.text('Response required'), findsOneWidget);
@@ -59,8 +70,14 @@ void main() {
       expect(find.text('Prefill behavior'), findsOneWidget);
       expect(find.text('Host response view'), findsOneWidget);
 
-      Navigator.of(tester.element(find.text('Question'))).pop();
+      await ensureCentered(tester, fullNameRowLabel);
+      await tester.tap(fullNameRowLabel);
       await pumpFeatureUi(tester);
+
+      expect(
+        find.byKey(const ValueKey('form-question-question_1-editor')),
+        findsNothing,
+      );
 
       await ensureCentered(tester, find.text('Form settings'));
       await tester.tap(find.text('Form settings'));
@@ -71,6 +88,36 @@ void main() {
       expect(find.text('Who can respond'), findsWidgets);
     },
   );
+
+  testWidgets('opening a question closes the previously expanded editor', (
+    tester,
+  ) async {
+    await _pumpBuilder(tester);
+
+    await tester.tap(find.text('Full name'));
+    await pumpFeatureUi(tester);
+    expect(
+      find.byKey(const ValueKey('form-question-question_1-editor')),
+      findsOneWidget,
+    );
+
+    final phoneNumberRowLabel = find.descendant(
+      of: find.byKey(const ValueKey('form-question-question_2')),
+      matching: find.text('Phone number'),
+    );
+    await ensureCentered(tester, phoneNumberRowLabel);
+    await tester.tap(phoneNumberRowLabel);
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.byKey(const ValueKey('form-question-question_1-editor')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('form-question-question_2-editor')),
+      findsOneWidget,
+    );
+  });
 
   testWidgets('single page summarizes readiness and keeps preview explicit', (
     tester,

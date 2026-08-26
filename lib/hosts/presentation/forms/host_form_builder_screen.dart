@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -422,7 +421,7 @@ class _HostFormBuilderBottomAction extends StatelessWidget {
   }
 }
 
-class _CompactFormEditor extends StatelessWidget {
+class _CompactFormEditor extends StatefulWidget {
   const _CompactFormEditor({
     required this.organizerId,
     required this.formId,
@@ -440,23 +439,41 @@ class _CompactFormEditor extends StatelessWidget {
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
+  State<_CompactFormEditor> createState() => _CompactFormEditorState();
+}
+
+class _CompactFormEditorState extends State<_CompactFormEditor> {
+  String? _expandedQuestionId;
+
+  @override
   Widget build(BuildContext context) {
-    final definition = state.editor.definition;
+    final definition = widget.state.editor.definition;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _FormStatusNotices(state: state, notifier: notifier),
+        _FormStatusNotices(state: widget.state, notifier: widget.notifier),
         _CompactQuestionsStep(
-          organizerId: organizerId,
-          formId: formId,
+          organizerId: widget.organizerId,
+          formId: widget.formId,
           definition: definition,
-          notifier: notifier,
-          onSelectionChanged: onSelectionChanged,
+          notifier: widget.notifier,
+          expandedQuestionId: _expandedQuestionId,
+          onQuestionExpansionChanged: (questionId) {
+            setState(() {
+              _expandedQuestionId = _expandedQuestionId == questionId
+                  ? null
+                  : questionId;
+            });
+          },
+          onSelectionChanged: widget.onSelectionChanged,
         ),
         gapH24,
-        _CompactFormSettingsEntry(definition: definition, notifier: notifier),
+        _CompactFormSettingsEntry(
+          definition: definition,
+          notifier: widget.notifier,
+        ),
         gapH24,
-        _CompactPublishStep(state: state, onPreview: onPreview),
+        _CompactPublishStep(state: widget.state, onPreview: widget.onPreview),
       ],
     );
   }
@@ -468,6 +485,8 @@ class _CompactQuestionsStep extends StatelessWidget {
     required this.formId,
     required this.definition,
     required this.notifier,
+    required this.expandedQuestionId,
+    required this.onQuestionExpansionChanged,
     required this.onSelectionChanged,
   });
 
@@ -475,6 +494,8 @@ class _CompactQuestionsStep extends StatelessWidget {
   final String formId;
   final HostFormDefinition definition;
   final HostFormEditorController notifier;
+  final String? expandedQuestionId;
+  final ValueChanged<String> onQuestionExpansionChanged;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
@@ -502,6 +523,8 @@ class _CompactQuestionsStep extends StatelessWidget {
             section: sectionEntry.$2,
             sectionCount: definition.sections.length,
             notifier: notifier,
+            expandedQuestionId: expandedQuestionId,
+            onQuestionExpansionChanged: onQuestionExpansionChanged,
             onSelectionChanged: onSelectionChanged,
           ),
           gapH20,
@@ -630,6 +653,8 @@ class _CompactSectionOutline extends StatelessWidget {
     required this.section,
     required this.sectionCount,
     required this.notifier,
+    required this.expandedQuestionId,
+    required this.onQuestionExpansionChanged,
     required this.onSelectionChanged,
   });
 
@@ -640,6 +665,8 @@ class _CompactSectionOutline extends StatelessWidget {
   final HostFormSection section;
   final int sectionCount;
   final HostFormEditorController notifier;
+  final String? expandedQuestionId;
+  final ValueChanged<String> onQuestionExpansionChanged;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
@@ -702,6 +729,8 @@ class _CompactSectionOutline extends StatelessWidget {
       sectionIndex: sectionIndex,
       section: section,
       notifier: notifier,
+      expandedQuestionId: expandedQuestionId,
+      onQuestionExpansionChanged: onQuestionExpansionChanged,
       onSelectionChanged: onSelectionChanged,
     ),
   );
@@ -715,6 +744,8 @@ class _CompactQuestionRows extends StatelessWidget {
     required this.sectionIndex,
     required this.section,
     required this.notifier,
+    required this.expandedQuestionId,
+    required this.onQuestionExpansionChanged,
     required this.onSelectionChanged,
   });
 
@@ -724,6 +755,8 @@ class _CompactQuestionRows extends StatelessWidget {
   final int sectionIndex;
   final HostFormSection section;
   final HostFormEditorController notifier;
+  final String? expandedQuestionId;
+  final ValueChanged<String> onQuestionExpansionChanged;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
@@ -742,40 +775,62 @@ class _CompactQuestionRows extends StatelessWidget {
         },
         itemBuilder: (context, questionIndex) {
           final question = section.questions[questionIndex];
-          return CatchFieldLanes.single(
+          final expanded = expandedQuestionId == question.questionId;
+          return Column(
             key: ValueKey('form-question-${question.questionId}'),
-            child: CatchField.nav(
-              title: question.label,
-              body: _questionSummary(context, question),
-              emphasis: CatchFieldEmphasis.title,
-              divider: true,
-              action: section.questions.length > 1
-                  ? ReorderableDragStartListener(
-                      index: questionIndex,
-                      child: Tooltip(
-                        message: context.l10n.hostFormReorderQuestion,
-                        child: Padding(
-                          padding: CatchInsets.iconChipContent,
-                          child: Icon(CatchIcons.dragIndicatorRounded),
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CatchFieldLanes.single(
+                child: CatchField.nav(
+                  title: question.label,
+                  body: _questionSummary(context, question),
+                  emphasis: CatchFieldEmphasis.title,
+                  divider: true,
+                  action: section.questions.length > 1
+                      ? ReorderableDragStartListener(
+                          index: questionIndex,
+                          child: Tooltip(
+                            message: context.l10n.hostFormReorderQuestion,
+                            child: Padding(
+                              padding: CatchInsets.iconChipContent,
+                              child: Icon(CatchIcons.dragIndicatorRounded),
+                            ),
+                          ),
+                        )
+                      : null,
+                  onTap: () {
+                    onSelectionChanged(sectionIndex, questionIndex);
+                    onQuestionExpansionChanged(question.questionId);
+                  },
+                ),
+              ),
+              AnimatedSize(
+                duration: MediaQuery.maybeOf(context)?.disableAnimations == true
+                    ? CatchMotion.none
+                    : CatchMotion.base,
+                curve: CatchMotion.easeOutCubicCurve,
+                alignment: Alignment.topCenter,
+                child: expanded
+                    ? Padding(
+                        key: ValueKey(
+                          'form-question-${question.questionId}-editor',
                         ),
-                      ),
-                    )
-                  : null,
-              onTap: () {
-                onSelectionChanged(sectionIndex, questionIndex);
-                _showQuestionEditorSheet(
-                  context,
-                  organizerId: organizerId,
-                  formId: formId,
-                  sectionIndex: sectionIndex,
-                  questionIndex: questionIndex,
-                  question: question,
-                  questionCount: section.questions.length,
-                  sections: definition.sections,
-                  notifier: notifier,
-                );
-              },
-            ),
+                        padding: CatchInsets.sectionItemBottomGap,
+                        child: _QuestionEditFields(
+                          sectionIndex: sectionIndex,
+                          questionIndex: questionIndex,
+                          question: question,
+                          questionCount: section.questions.length,
+                          sections: definition.sections,
+                          notifier: notifier,
+                          compact: true,
+                          onRemoved: () =>
+                              onQuestionExpansionChanged(question.questionId),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
           );
         },
       ),
@@ -842,70 +897,6 @@ Future<void> _showSectionEditorSheet(
               ),
             ),
           ],
-        ),
-      );
-    },
-  ),
-);
-
-Future<void> _showQuestionEditorSheet(
-  BuildContext context, {
-  required String organizerId,
-  required String formId,
-  required int sectionIndex,
-  required int questionIndex,
-  required HostFormQuestion question,
-  required int questionCount,
-  required List<HostFormSection> sections,
-  required HostFormEditorController notifier,
-}) => showCatchBottomSheet<void>(
-  context: context,
-  builder: (sheetContext) => Consumer(
-    builder: (sheetContext, ref, _) {
-      final liveDefinition = catchAsyncStateFromAsyncValue(
-        ref.watch(hostFormEditorControllerProvider(organizerId, formId)),
-      ).value?.editor.definition;
-      var currentSectionIndex = sectionIndex;
-      var currentQuestionIndex = questionIndex;
-      var currentQuestion = question;
-      var currentQuestionCount = questionCount;
-      if (liveDefinition != null) {
-        final candidateSection = liveDefinition.sections.indexWhere(
-          (section) => section.questions.any(
-            (candidate) => candidate.questionId == question.questionId,
-          ),
-        );
-        if (candidateSection >= 0) {
-          currentSectionIndex = candidateSection;
-          final questions = liveDefinition.sections[candidateSection].questions;
-          currentQuestionIndex = questions.indexWhere(
-            (candidate) => candidate.questionId == question.questionId,
-          );
-          currentQuestion = questions[currentQuestionIndex];
-          currentQuestionCount = questions.length;
-        }
-      }
-      return CatchBottomSheetScaffold(
-        title: context.l10n.hostFormEditQuestion,
-        subtitle: _questionSummary(context, currentQuestion),
-        keyboardSafe: true,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.72,
-          ),
-          child: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            child: _QuestionEditFields(
-              sectionIndex: currentSectionIndex,
-              questionIndex: currentQuestionIndex,
-              question: currentQuestion,
-              questionCount: currentQuestionCount,
-              sections: liveDefinition?.sections ?? sections,
-              notifier: notifier,
-              compact: true,
-              onRemoved: () => Navigator.of(sheetContext).pop(),
-            ),
-          ),
         ),
       );
     },
