@@ -24,7 +24,9 @@ class CatchOption<T> {
 }
 
 /// Design-system OptionGroup: an underline selection row for tabs, lenses, and
-/// inline scope controls.
+/// inline scalar scope controls whose fixed, terse options fit the viewport.
+/// Use `CatchAdaptiveSelectionControl` when the choices are numerous, long, or
+/// dynamic enough that the inline row would hide their meaning.
 class CatchOptionGroup<T> extends StatefulWidget {
   const CatchOptionGroup({
     super.key,

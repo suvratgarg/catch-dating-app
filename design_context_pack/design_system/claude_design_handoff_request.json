@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedBy": "tool/design/build_context_pack.mjs",
-  "sourceDigest": "a31c0583f25e62977df838f3c3e38924afa44e980cbc9ce893c59c090b310fc8",
+  "sourceDigest": "39ca4a5c0410b3d3cf9456763f7dc1f50fb8f9bd467d89baad589f3d9c58adb8",
   "contextFiles": {
     "components": "design_system/components.json",
     "tokens": "design_system/tokens.json",
@@ -61,6 +61,7 @@
         "row-value",
         "row-title",
         "custom-leading",
+        "sortable-inline-metadata",
         "content-row-2-3-clamp",
         "value-line",
         "chevron",
@@ -108,8 +109,8 @@
         "select-error",
         "add"
       ],
-      "supportedStatesDigest": "ee398cdd3a79231ef1b7b95faebb2f30aef914c3eeeb91ae217164350176cbeb",
-      "propsDigest": "9bdd3669e2b474a51561381dc84c5a972a3f4a971cc3b8fb29dd49356f0aa66d",
+      "supportedStatesDigest": "adb5de9605a60a3474197d597d00871e7dc8135bc9ce2bc3f6153521a4d48db3",
+      "propsDigest": "5431e2277a8c303f7043ebe905c8933999e29a14b1338503360886d982415f08",
       "tokens": [
         "space.micro10",
         "space.micro14",

@@ -991,7 +991,8 @@
           "Choose tag, selectable, activity, or removable by semantic intent; do not add boolean/callback combinations to an unrestricted constructor.",
           "Selected choices use a solid fill, inverse ink, subtle selected shadow, and press-only scale. Selection state is always parent-owned.",
           "Use badges for compact status metadata, compact controls for floating actions, identity switchers for current-context menus, and progress cues for sequence state.",
-          "Use OptionCard when each choice needs explanatory copy."
+          "Use OptionCard when each choice needs explanatory copy.",
+          "Do not compose scalar scope, lifecycle, or mode rails from selectable chips. Use CatchOptionGroup when fixed terse choices fit, or CatchAdaptiveSelectionControl when they do not."
         ]
       },
       "governance": {
@@ -5320,7 +5321,7 @@
         ],
         "notes": [
           "Use CatchActionMenu only for short command lists. Keep sort, filter, and other selected choices out of overflow.",
-          "Use CatchAdaptiveSelectionControl when the current choice should remain visible, or CatchAdaptiveSelectionMenu with a custom trigger.",
+          "Use CatchAdaptiveSelectionControl when the current choice should remain visible or mutually-exclusive choices are too numerous, long, or dynamic for an inline CatchOptionGroup; use CatchAdaptiveSelectionMenu with a custom trigger when needed.",
           "Informational status belongs on the owning page, not as a disabled menu row. Disabled commands must explain why they are unavailable.",
           "Use explicit section boundaries instead of drawing a divider after every row."
         ]
@@ -8470,7 +8471,7 @@
           "catch.icon_button"
         ],
         "notes": [
-          "Use as the canonical single-select scope and mode row across Flutter surfaces, including lifecycle, audience, granularity, and workspace section switching."
+          "Use as the canonical inline single-select scope and mode row when a fixed set of terse lifecycle, audience, granularity, or workspace choices remains legible in the viewport. Use CatchAdaptiveSelectionControl when it does not."
         ]
       },
       "governance": {

@@ -22716,41 +22716,11 @@ abstract class AppLocalizations {
   /// **'Questions'**
   String get hostFormQuestionsTitle;
 
-  /// Settings label in the compact builder progress rail.
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get hostFormSettingsStep;
-
-  /// Publish label in the compact builder progress rail.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish'**
-  String get hostFormPublishStep;
-
-  /// Accessible label for compact form builder steps.
-  ///
-  /// In en, this message translates to:
-  /// **'Form builder progress'**
-  String get hostFormBuilderProgress;
-
-  /// Question-selection step heading for application forms.
-  ///
-  /// In en, this message translates to:
-  /// **'What do you need to know?'**
-  String get hostFormQuestionsPrompt;
-
   /// Question-selection guidance for application forms.
   ///
   /// In en, this message translates to:
   /// **'Choose the questions that will help you decide who to call.'**
   String get hostFormQuestionsPromptHelp;
-
-  /// Compact form settings step heading.
-  ///
-  /// In en, this message translates to:
-  /// **'How should this form work?'**
-  String get hostFormSettingsPrompt;
 
   /// Compact form settings step guidance.
   ///
@@ -22764,29 +22734,11 @@ abstract class AppLocalizations {
   /// **'Ready to publish?'**
   String get hostFormPublishPrompt;
 
-  /// Advances from compact questions to form settings.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue to settings'**
-  String get hostFormContinueToSettings;
-
-  /// Advances from compact settings to publish review.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue to publish'**
-  String get hostFormContinueToPublish;
-
   /// Accessible label for a question drag handle.
   ///
   /// In en, this message translates to:
   /// **'Drag to reorder question'**
   String get hostFormReorderQuestion;
-
-  /// Title for the focused question editor.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit question'**
-  String get hostFormEditQuestion;
 
   /// Disclosure label for less common question settings.
   ///
@@ -22910,12 +22862,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Preview'**
   String get hostFormPreview;
-
-  /// Guidance for previewing from the publish step.
-  ///
-  /// In en, this message translates to:
-  /// **'Check the exact respondent experience before publishing.'**
-  String get hostFormPreviewHelp;
 
   /// Explains preview fidelity.
   ///
@@ -24047,12 +23993,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Next actions'**
   String get hostFormResponseOperationsSection;
-
-  /// Response identity name field.
-  ///
-  /// In en, this message translates to:
-  /// **'Name'**
-  String get hostFormResponseName;
 
   /// Response identity email field.
   ///
