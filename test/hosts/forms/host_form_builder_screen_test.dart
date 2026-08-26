@@ -1,9 +1,11 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
@@ -50,11 +52,38 @@ void main() {
     expect(find.text('Continue to settings'), findsNothing);
     expect(find.text('Continue to publish'), findsNothing);
     expect(find.text('Form title'), findsNothing);
+    final topBar = find.byType(CatchTopBar);
+    final topBarButtons = find.descendant(
+      of: topBar,
+      matching: find.byType(CatchIconButton),
+    );
+    expect(topBarButtons, findsNWidgets(3));
     expect(
       tester
-          .widgetList<CatchIconButton>(find.byType(CatchIconButton))
+          .widgetList<CatchIconButton>(topBarButtons)
           .map((button) => button.variant),
-      everyElement(CatchIconButtonVariant.plain),
+      everyElement(CatchIconButtonVariant.bordered),
+    );
+    expect(
+      find.descendant(
+        of: topBar,
+        matching: find.byIcon(CatchIcons.arrowBackIosNewRounded),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: topBar,
+        matching: find.byIcon(CatchIcons.visibilityOutlined),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: topBar,
+        matching: find.byIcon(CatchIcons.moreHorizRounded),
+      ),
+      findsOneWidget,
     );
     expect(
       tester
@@ -152,7 +181,7 @@ void main() {
     await _pumpBuilder(tester);
 
     expect(find.text('2 questions · Ready to publish?'), findsOneWidget);
-    expect(find.text('Preview'), findsOneWidget);
+    expect(find.byTooltip('Preview'), findsOneWidget);
     expect(find.text('Review & publish'), findsOneWidget);
   });
 

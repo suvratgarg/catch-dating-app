@@ -104,7 +104,6 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             ? null
             : _saveLabel(context, editorValue),
         leadingType: CatchTopBarLeading.back,
-        leadingActionVariant: CatchIconButtonVariant.plain,
         divider: scrolledUnder,
         bottom: commandCenter
             ? null
@@ -128,16 +127,15 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
               ),
         actions: [
           if (_view == _BuilderView.build && !commandCenter)
-            CatchTopBarTextAction(
-              label: context.l10n.hostFormPreview,
-              foregroundColor: CatchTokens.of(context).ink,
+            CatchIconAction(
+              icon: CatchIcons.visibilityOutlined,
+              tooltip: context.l10n.hostFormPreview,
               onPressed: editorValue == null ? null : _openPreview,
             ),
           if (editorValue != null &&
               _builderActions(context, editorValue).isNotEmpty)
             CatchActionMenu<_BuilderAction>(
               tooltip: context.l10n.hostFormsActions,
-              variant: CatchIconButtonVariant.plain,
               items: _builderActions(context, editorValue),
               onSelected: (action) => _runBuilderAction(notifier, action),
             ),
