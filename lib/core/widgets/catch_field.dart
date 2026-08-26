@@ -66,8 +66,8 @@ abstract class CatchField extends StatefulWidget {
   /// Rectangular pressed band used by interactive field rows.
   ///
   /// A surrounding [CatchSection.containedFieldRows] owns any rounded group
-  /// corners. The field's separate active overlay may remain rounded for
-  /// focus, disclosure, and editing states.
+  /// corners. Its separate active overlay follows the same rule: rectangular
+  /// inside a contained row group, locally rounded only when standalone.
   static const pressOverlayKey = ValueKey<String>('catch-field-press-overlay');
 
   const CatchField._shared({

@@ -253,6 +253,10 @@ void main() {
     expect(pressedDecoration().borderRadius, BorderRadius.zero);
     expect(pressedDecoration().color, Colors.transparent);
     expect(activeDecoration().border, isNull);
+    expect(
+      activeDecoration().borderRadius,
+      BorderRadius.circular(CatchFieldTokens.tileRadius),
+    );
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(CatchField)),
     );
@@ -271,6 +275,10 @@ void main() {
     await tester.pump();
 
     expect(activeDecoration().border, isNotNull);
+    expect(
+      activeDecoration().borderRadius,
+      BorderRadius.circular(CatchFieldTokens.tileRadius),
+    );
     expect(activeDecoration().boxShadow, isNotEmpty);
     expect(focusNode.hasFocus, isTrue);
     expect(tester.testTextInput.isVisible, isTrue);

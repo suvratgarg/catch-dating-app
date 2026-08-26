@@ -40,24 +40,31 @@ class CatchFieldVisibilityScope extends InheritedWidget {
 ///
 /// [activeOverlayBleed] is independent from the content inset. It lets a
 /// containing section publish how far active row chrome must overlap its edge.
-/// Contained FieldSections use one hairline so the child ring and outer
-/// perimeter occupy the same geometry instead of painting adjacent vertical
-/// strokes. When omitted, flush rows retain their divided-section tile bleed.
+/// [grouped] declares that an ancestor owns one rounded clip for the whole row
+/// group, so pressed and active descendants stay rectangular and inherit only
+/// the external corners they actually touch. Contained FieldSections use one
+/// hairline so the child ring and outer perimeter occupy the same geometry
+/// instead of painting adjacent vertical strokes. When omitted, flush rows
+/// retain their divided-section tile bleed.
 class CatchFieldInsetScope extends InheritedWidget {
   const CatchFieldInsetScope({
     super.key,
     required this.flush,
     this.activeOverlayBleed,
+    this.grouped = false,
     required super.child,
   }) : assert(activeOverlayBleed == null || activeOverlayBleed >= 0);
 
   final bool flush;
   final double? activeOverlayBleed;
+  final bool grouped;
 
   static CatchFieldInsetScope? _of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<CatchFieldInsetScope>();
 
   static bool flushOf(BuildContext context) => _of(context)?.flush ?? false;
+
+  static bool groupedOf(BuildContext context) => _of(context)?.grouped ?? false;
 
   static double activeOverlayBleedOf(BuildContext context) {
     final scope = _of(context);
@@ -68,5 +75,6 @@ class CatchFieldInsetScope extends InheritedWidget {
   @override
   bool updateShouldNotify(CatchFieldInsetScope oldWidget) =>
       flush != oldWidget.flush ||
-      activeOverlayBleed != oldWidget.activeOverlayBleed;
+      activeOverlayBleed != oldWidget.activeOverlayBleed ||
+      grouped != oldWidget.grouped;
 }

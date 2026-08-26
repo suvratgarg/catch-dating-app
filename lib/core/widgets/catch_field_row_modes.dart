@@ -125,11 +125,14 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final action = rowAction;
     final canInteract = action != null;
     if (!canInteract && !_active && !_hasControl) return row;
+    final grouped = CatchFieldInsetScope.groupedOf(context);
     final activeDecoration = BoxDecoration(
       color: _active && !_pressed
           ? CatchFieldTokens.activeSurface(t)
           : Colors.transparent,
-      borderRadius: BorderRadius.circular(CatchFieldTokens.tileRadius),
+      borderRadius: grouped
+          ? BorderRadius.zero
+          : BorderRadius.circular(CatchFieldTokens.tileRadius),
       border: _active ? Border.all(color: t.line) : null,
       boxShadow: _active
           ? CatchElevation.fieldActive(Theme.of(context).brightness)

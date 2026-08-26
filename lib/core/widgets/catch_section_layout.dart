@@ -954,6 +954,10 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
         // adjacent vertical strokes. Keep this contract here so direct users
         // of CatchSectionFocusSurface cannot bypass it.
         activeOverlayBleed: CatchStroke.hairline,
+        // This surface owns one rounded clip for the complete row group.
+        // Descendant press, focus, edit, and disclosure chrome therefore stays
+        // rectangular and receives only the external corners it touches.
+        grouped: true,
         child: widget.child,
       );
       final sectionRadius = BorderRadius.circular(

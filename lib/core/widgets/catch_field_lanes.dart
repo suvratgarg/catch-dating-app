@@ -54,7 +54,15 @@ class CatchFieldLanes extends StatelessWidget {
           );
     final flushOverride = flush;
     if (flushOverride == null) return content;
-    return CatchFieldInsetScope(flush: flushOverride, child: content);
+    final grouped = CatchFieldInsetScope.groupedOf(context);
+    return CatchFieldInsetScope(
+      flush: flushOverride,
+      activeOverlayBleed: grouped
+          ? CatchFieldInsetScope.activeOverlayBleedOf(context)
+          : null,
+      grouped: grouped,
+      child: content,
+    );
   }
 }
 
