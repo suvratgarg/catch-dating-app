@@ -125,15 +125,12 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final action = rowAction;
     final canInteract = action != null;
     if (!canInteract && !_active && !_hasControl) return row;
-    final highlighted = _active || _pressed;
-    final decoration = BoxDecoration(
-      color: _pressed
-          ? CatchFieldTokens.pressedSurface(t)
-          : _active
+    final activeDecoration = BoxDecoration(
+      color: _active && !_pressed
           ? CatchFieldTokens.activeSurface(t)
           : Colors.transparent,
       borderRadius: BorderRadius.circular(CatchFieldTokens.tileRadius),
-      border: highlighted ? Border.all(color: t.line) : null,
+      border: _active ? Border.all(color: t.line) : null,
       boxShadow: _active
           ? CatchElevation.fieldActive(Theme.of(context).brightness)
           : CatchElevation.none,
@@ -250,18 +247,38 @@ extension _CatchFieldRowModes on _CatchFieldState {
           top: -CatchStroke.hairline,
           bottom: -CatchStroke.hairline,
           child: IgnorePointer(
-            child: AnimatedContainer(
-              key: const ValueKey('catch-field-active-overlay'),
-              duration: _fieldDuration(
-                context,
-                _pressed
-                    ? CatchFieldTokens.pressIn
-                    : _active
-                    ? CatchFieldTokens.standard
-                    : CatchFieldTokens.pressOut,
-              ),
-              curve: CatchFieldTokens.curve,
-              decoration: decoration,
+            child: Stack(
+              fit: StackFit.expand,
+              clipBehavior: Clip.none,
+              children: [
+                AnimatedContainer(
+                  key: CatchField.pressOverlayKey,
+                  duration: _fieldDuration(
+                    context,
+                    _pressed
+                        ? CatchFieldTokens.pressIn
+                        : CatchFieldTokens.pressOut,
+                  ),
+                  curve: CatchFieldTokens.curve,
+                  decoration: BoxDecoration(
+                    color: _pressed
+                        ? CatchFieldTokens.pressedSurface(t)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.zero,
+                  ),
+                ),
+                AnimatedContainer(
+                  key: const ValueKey('catch-field-active-overlay'),
+                  duration: _fieldDuration(
+                    context,
+                    _active
+                        ? CatchFieldTokens.standard
+                        : CatchFieldTokens.pressOut,
+                  ),
+                  curve: CatchFieldTokens.curve,
+                  decoration: activeDecoration,
+                ),
+              ],
             ),
           ),
         ),

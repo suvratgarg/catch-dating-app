@@ -95,16 +95,14 @@ void _registerHostOperationsCustomersTests() {
     );
 
     final frame = find.byKey(const ValueKey('host-customers-directory-list'));
-    final clippedContainer = tester
-        .widgetList<AnimatedContainer>(
-          find.descendant(of: frame, matching: find.byType(AnimatedContainer)),
-        )
-        .firstWhere((container) => container.clipBehavior == Clip.hardEdge);
-    expect(clippedContainer.decoration, isA<BoxDecoration>());
-    expect(
-      (clippedContainer.decoration! as BoxDecoration).borderRadius,
-      isNotNull,
+    final groupClip = tester.widget<ClipRRect>(
+      find.descendant(
+        of: frame,
+        matching: find.byKey(CatchSectionFocusSurface.rowGroupClipKey),
+      ),
     );
+    expect(groupClip.clipBehavior, Clip.hardEdge);
+    expect(groupClip.borderRadius, isNot(BorderRadius.zero));
 
     final row = find.byType(HostCustomerRow);
     final gesture = await tester.startGesture(tester.getCenter(row));

@@ -4910,10 +4910,8 @@ function renderTsValidators() {
   const schemaImports = schemaSpecs.map((spec) =>
     `  ${schemaConstName(spec)},`
   ).join("\n");
-  const validators = schemaSpecs.map((spec) => `export const ${validatorName(spec)}:
-  ValidateFunction<${spec.name}> =
-    ajv.compile(${schemaConstName(spec)}) as
-      ValidateFunction<${spec.name}>;`).join("\n");
+  const validators = schemaSpecs.map((spec) => `export const ${validatorName(spec)} =
+  lazyValidator<${spec.name}>(${schemaConstName(spec)});`).join("\n");
 
   return `${tsGeneratedHeader()}import Ajv, {ValidateFunction} from "ajv";
 import addFormats from "ajv-formats";
@@ -4924,6 +4922,20 @@ ${schemaImports}
 
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
+
+function lazyValidator<T>(
+  schema: Record<string, unknown>
+): ValidateFunction<T> {
+  let compiled: ValidateFunction<T> | null = null;
+  const validate = ((data: unknown) => {
+    compiled ??= ajv.compile(schema) as ValidateFunction<T>;
+    return compiled(data);
+  }) as ValidateFunction<T>;
+  Object.defineProperty(validate, "errors", {
+    get: () => compiled?.errors ?? null,
+  });
+  return validate;
+}
 
 ${validators}
 

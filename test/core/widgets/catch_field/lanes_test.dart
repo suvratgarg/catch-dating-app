@@ -537,9 +537,7 @@ void main() {
     final fieldRect = tester.getRect(find.byType(CatchField));
     final overlayFinder = find.descendant(
       of: find.byType(CatchField),
-      matching: find.byKey(
-        const ValueKey<String>('catch-field-active-overlay'),
-      ),
+      matching: find.byKey(CatchField.pressOverlayKey),
     );
     final overlayRect = tester.getRect(overlayFinder);
 
@@ -567,7 +565,8 @@ void main() {
       pressedDecoration.color,
       CatchFieldTokens.pressedSurface(CatchTokens.editorialLight),
     );
-    expect(pressedDecoration.border, isNotNull);
+    expect(pressedDecoration.borderRadius, BorderRadius.zero);
+    expect(pressedDecoration.border, isNull);
 
     await gesture.up();
     await tester.pump();
@@ -596,9 +595,7 @@ void main() {
     );
 
     final fieldRect = tester.getRect(find.byType(CatchField));
-    final overlayFinder = find.byKey(
-      const ValueKey<String>('catch-field-active-overlay'),
-    );
+    final overlayFinder = find.byKey(CatchField.pressOverlayKey);
 
     await tester.sendEventToBinding(
       PointerDownEvent(

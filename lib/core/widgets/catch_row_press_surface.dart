@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 /// Full-row interaction layer for list and field rows.
 ///
 /// The child owns its content padding, lanes, and dividers. This surface owns
-/// only the full-width hover/focus/pressed band and tap semantics.
+/// only the full-width hover/focus/pressed band and tap semantics. The band is
+/// deliberately rectangular: when rows are stacked in a rounded section, the
+/// section owns the one outer clip so only external-facing corners are round.
 class CatchRowPressSurface extends StatefulWidget {
   const CatchRowPressSurface({
     super.key,
@@ -42,6 +44,7 @@ class _CatchRowPressSurfaceState extends State<CatchRowPressSurface> {
 
         final stack = Stack(
           fit: StackFit.passthrough,
+          clipBehavior: Clip.none,
           children: [
             child,
             Positioned.fill(
