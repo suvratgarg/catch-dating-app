@@ -5,10 +5,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
@@ -84,39 +84,24 @@ class _HostFormResponsesPanelState
           ),
           gapH16,
         ],
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              CatchChip.selectable(
-                label: context.l10n.hostFormResponsesAll,
-                selected: _status == null,
-                contractExemption:
-                    'All responses intentionally omits the status filter.',
-                onChanged: (_) => setState(() => _status = null),
-              ),
-              gapW8,
-              CatchChip.selectable(
-                label: context.l10n.hostFormResponsesSubmitted,
-                selected: _status == HostFormResponseStatus.submitted,
-                contract: CatchContractConstraints
-                    .listOrganizerFormResponsesCallablePayloadStatusesItems,
-                contractValue: HostFormResponseStatus.submitted.name,
-                onChanged: (_) =>
-                    setState(() => _status = HostFormResponseStatus.submitted),
-              ),
-              gapW8,
-              CatchChip.selectable(
-                label: context.l10n.hostFormResponsesWithdrawn,
-                selected: _status == HostFormResponseStatus.withdrawn,
-                contract: CatchContractConstraints
-                    .listOrganizerFormResponsesCallablePayloadStatusesItems,
-                contractValue: HostFormResponseStatus.withdrawn.name,
-                onChanged: (_) =>
-                    setState(() => _status = HostFormResponseStatus.withdrawn),
-              ),
-            ],
-          ),
+        CatchOptionGroup<HostFormResponseStatus?>(
+          options: [
+            CatchOption(value: null, label: context.l10n.hostFormResponsesAll),
+            CatchOption(
+              value: HostFormResponseStatus.submitted,
+              label: context.l10n.hostFormResponsesSubmitted,
+            ),
+            CatchOption(
+              value: HostFormResponseStatus.withdrawn,
+              label: context.l10n.hostFormResponsesWithdrawn,
+            ),
+          ],
+          selected: _status,
+          contractExemption:
+              'The response rail maps All to no status and every other option '
+              'to one item in the statuses array contract.',
+          onChanged: (status) => setState(() => _status = status),
+          showDivider: false,
         ),
         gapH16,
         CatchAsyncValueView<HostFormResponsesState>(

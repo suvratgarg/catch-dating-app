@@ -136,6 +136,7 @@ class CatchTopBarMenuAction<T> extends StatelessWidget {
     required this.tooltip,
     this.onSelected,
     this.enabled = true,
+    this.variant = CatchIconButtonVariant.bordered,
     IconData? icon,
     // Keep the public parameter name as `icon` while storing the optional
     // override privately.
@@ -146,6 +147,7 @@ class CatchTopBarMenuAction<T> extends StatelessWidget {
   final ValueChanged<T>? onSelected;
   final String tooltip;
   final bool enabled;
+  final CatchIconButtonVariant variant;
   final IconData? _icon;
 
   IconData get icon => _icon ?? CatchIcons.moreHorizRounded;
@@ -158,6 +160,7 @@ class CatchTopBarMenuAction<T> extends StatelessWidget {
       onSelected: onSelected,
       enabled: enabled,
       icon: icon,
+      variant: variant,
     );
   }
 }

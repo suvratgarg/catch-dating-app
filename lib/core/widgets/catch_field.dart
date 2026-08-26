@@ -163,6 +163,21 @@ abstract class CatchField extends StatefulWidget {
     bool divider,
   }) = _RowConfig.nav;
 
+  /// A compact, reorderable navigation row with one inline metadata sentence.
+  ///
+  /// The caller owns drag behavior through [reorderHandle]. The field owns the
+  /// left-handle lane, title/metadata hierarchy, divider, press semantics, and
+  /// trailing disclosure affordance.
+  const factory CatchField.sortable({
+    Key? key,
+    required String title,
+    required String metadata,
+    required Widget reorderHandle,
+    required VoidCallback? onTap,
+    bool showChevron,
+    bool divider,
+  }) = _RowConfig.sortable;
+
   /// A tappable field-shaped row whose action does not navigate or edit the
   /// value. Unlike [CatchField.nav], this constructor never renders a chevron.
   const factory CatchField.action({
@@ -748,6 +763,7 @@ abstract class CatchField extends StatefulWidget {
     _ => 2,
   };
   bool get _contentRow => _rowConfig?.contentRow ?? false;
+  String? get inlineMetadata => _rowConfig?.inlineMetadata;
   String? get leadingUnit => _editConfig?.leadingUnit;
   bool? get showChevron => _rowConfig?.showChevron;
 

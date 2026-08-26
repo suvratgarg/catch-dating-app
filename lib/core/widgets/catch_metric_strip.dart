@@ -48,27 +48,51 @@ class CatchMetricStrip extends StatelessWidget {
     assert(items.isNotEmpty);
 
     final t = CatchTokens.of(context);
+    final reflow = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
 
     return CatchSurface(
       padding: padding,
       radius: CatchRadius.md,
       backgroundColor: backgroundColor,
       borderColor: borderColor ?? t.line,
-      child: Row(
-        children: [
-          for (final item in items) ...[
-            CatchMetricStripCell(
-              item: item,
-              valueColor: valueColor,
-              unitColor: unitColor,
-              labelColor: labelColor,
-              expanded: true,
+      child: reflow
+          ? Column(
+              key: const ValueKey('catch_metric_strip.reflow'),
+              children: [
+                for (final item in items) ...[
+                  Padding(
+                    padding: CatchInsets.contentVerticalCompact,
+                    child: CatchMetricStripCell(
+                      item: item,
+                      valueColor: valueColor,
+                      unitColor: unitColor,
+                      labelColor: labelColor,
+                    ),
+                  ),
+                  if (item != items.last)
+                    SizedBox(
+                      width: double.infinity,
+                      height: CatchStroke.hairline,
+                      child: ColoredBox(color: dividerColor ?? t.line),
+                    ),
+                ],
+              ],
+            )
+          : Row(
+              children: [
+                for (final item in items) ...[
+                  CatchMetricStripCell(
+                    item: item,
+                    valueColor: valueColor,
+                    unitColor: unitColor,
+                    labelColor: labelColor,
+                    expanded: true,
+                  ),
+                  if (item != items.last)
+                    CatchMetricStripDivider(color: dividerColor ?? t.line),
+                ],
+              ],
             ),
-            if (item != items.last)
-              CatchMetricStripDivider(color: dividerColor ?? t.line),
-          ],
-        ],
-      ),
     );
   }
 }
@@ -92,6 +116,7 @@ class CatchMetricStripCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final reflow = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     final cell = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -127,8 +152,8 @@ class CatchMetricStripCell extends StatelessWidget {
             color: labelColor ?? t.ink3,
           ),
           textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+          maxLines: reflow ? 2 : 1,
+          overflow: reflow ? TextOverflow.visible : TextOverflow.ellipsis,
         ),
       ],
     );

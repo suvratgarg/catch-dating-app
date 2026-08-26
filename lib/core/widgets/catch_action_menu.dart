@@ -30,6 +30,7 @@ class CatchActionMenu<T> extends StatefulWidget {
     this.onSelected,
     this.enabled = true,
     this.icon,
+    this.variant = CatchIconButtonVariant.bordered,
   }) : assert(tooltip != '', 'CatchActionMenu requires an accessible tooltip.');
 
   final List<CatchActionMenuItem<T>> items;
@@ -37,6 +38,7 @@ class CatchActionMenu<T> extends StatefulWidget {
   final String tooltip;
   final bool enabled;
   final IconData? icon;
+  final CatchIconButtonVariant variant;
 
   @override
   State<CatchActionMenu<T>> createState() => _CatchActionMenuState<T>();
@@ -104,6 +106,7 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
           key: _anchorKey,
           child: CatchIconButton(
             tooltip: widget.tooltip,
+            variant: widget.variant,
             onTap: _canOpen
                 ? () =>
                       controller.isOpen ? controller.close() : controller.open()

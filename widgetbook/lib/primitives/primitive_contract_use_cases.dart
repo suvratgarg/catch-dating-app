@@ -1486,6 +1486,9 @@ Widget catchButtonContractStates(BuildContext context) {
       'loading',
       'full-width',
       'with-icon',
+      'rounded',
+      'large-text',
+      'reduced-motion',
     ],
     children: [
       _StateCard(
@@ -1542,6 +1545,35 @@ Widget catchButtonContractStates(BuildContext context) {
           label: 'Add to calendar',
           icon: Icon(CatchIcons.calendarAdd),
           onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'rounded editorial bar',
+        child: CatchButton(
+          label: 'Review & publish',
+          shape: CatchButtonShape.rounded,
+          fullWidth: true,
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'large-text',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: CatchButton(
+            label: 'Review every submitted response',
+            fullWidth: true,
+            onPressed: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced-motion',
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: CatchButton(label: 'Continue', onPressed: _noop),
         ),
       ),
     ],
@@ -1890,6 +1922,7 @@ Widget catchFieldContractStates(BuildContext context) {
       'row-value',
       'row-title',
       'custom-leading',
+      'sortable-inline-metadata',
       'content-row-2-3-clamp',
       'value-line',
       'chevron',
@@ -1978,6 +2011,20 @@ Widget catchFieldContractStates(BuildContext context) {
           body: 'Private to attendees',
           icon: CatchIcons.lockOutlineRounded,
           emphasis: CatchFieldEmphasis.title,
+        ),
+      ),
+      fieldState(
+        label: 'sortable-inline-metadata',
+        description:
+            'A caller-owned drag target sits left of one strong-title plus muted-metadata sentence.',
+        child: CatchField.sortable(
+          title: 'Why do you want to join?',
+          metadata: 'Long text · Required',
+          reorderHandle: SizedBox.square(
+            dimension: CatchSpacing.s11,
+            child: Icon(CatchIcons.dragIndicatorRounded),
+          ),
+          onTap: _noop,
         ),
       ),
       fieldState(
@@ -4013,6 +4060,7 @@ Widget catchMetricStripContractStates(BuildContext context) {
       'four-items',
       'long-copy',
       'surface-overrides',
+      'large-text-reflow',
     ],
     children: [
       _StateCard(
@@ -4079,6 +4127,21 @@ Widget catchMetricStripContractStates(BuildContext context) {
             CatchMetricStripItem(value: '2', label: 'pending'),
             CatchMetricStripItem(value: '1', label: 'open'),
           ],
+        ),
+      ),
+      _StateCard(
+        label: 'large-text-reflow',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: CatchMetricStrip(
+            items: const [
+              CatchMetricStripItem(value: '12', label: 'responses'),
+              CatchMetricStripItem(value: '6', label: 'questions'),
+              CatchMetricStripItem(value: '1', label: 'published version'),
+            ],
+          ),
         ),
       ),
     ],
@@ -4195,6 +4258,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       'conversation-title',
       'surface',
       'bordered',
+      'plain-actions',
     ],
     children: [
       _StateCard(
@@ -4220,6 +4284,27 @@ Widget catchTopBarContractStates(BuildContext context) {
             title: 'Event details',
             leadingType: CatchTopBarLeading.back,
             onBack: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'plain-actions',
+        child: _TopBarFrame(
+          child: CatchTopBar(
+            title: 'Form builder',
+            leadingType: CatchTopBarLeading.back,
+            leadingActionVariant: CatchIconButtonVariant.plain,
+            onBack: _noop,
+            actions: [
+              CatchTopBarTextAction(label: 'Preview', onPressed: _noop),
+              CatchTopBarMenuAction<String>(
+                tooltip: 'Form actions',
+                variant: CatchIconButtonVariant.plain,
+                items: const [
+                  CatchActionMenuItem(value: 'share', label: 'Share form'),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -7059,6 +7144,7 @@ Widget catchBottomActionContractStates(BuildContext context) {
       'scroll-overlay',
       'loading',
       'disabled',
+      'rounded-button',
     ],
     children: [
       _StateCard(
@@ -7078,6 +7164,16 @@ Widget catchBottomActionContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'rounded-button',
+        child: _DockFrame(
+          child: CatchBottomAction(
+            label: 'Review & publish',
+            buttonShape: CatchButtonShape.rounded,
+            onPressed: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'catch-line-footnote',
         child: _DockFrame(
           child: CatchBottomAction(
@@ -7092,7 +7188,7 @@ Widget catchBottomActionContractStates(BuildContext context) {
         label: 'scroll-overlay',
         child: SizedBox(
           width: WidgetbookPreviewLayout.dockFrameWidth,
-          height: 360,
+          height: WidgetbookPreviewLayout.bodyFrameExtent,
           child: CatchBottomActionOverlay(
             body: ListView(
               padding: CatchInsets.formStepBodyWithBottomActions,

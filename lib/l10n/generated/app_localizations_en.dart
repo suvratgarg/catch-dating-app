@@ -14273,6 +14273,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationsFilterAll => 'All';
 
   @override
+  String get hostApplicationsReviewStatusFilter => 'Filter by review status';
+
+  @override
+  String hostApplicationsReviewStatusFilterValue({required String status}) {
+    return 'Review status: $status';
+  }
+
+  @override
   String get hostApplicationsStatusSubmitted => 'Submitted';
 
   @override
@@ -14559,23 +14567,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormQuestionsTitle => 'Questions';
 
   @override
-  String get hostFormSettingsStep => 'Settings';
-
-  @override
-  String get hostFormPublishStep => 'Publish';
-
-  @override
-  String get hostFormBuilderProgress => 'Form builder progress';
-
-  @override
-  String get hostFormQuestionsPrompt => 'What do you need to know?';
-
-  @override
   String get hostFormQuestionsPromptHelp =>
       'Choose the questions that will help you decide who to call.';
-
-  @override
-  String get hostFormSettingsPrompt => 'How should this form work?';
 
   @override
   String get hostFormSettingsPromptHelp =>
@@ -14585,16 +14578,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormPublishPrompt => 'Ready to publish?';
 
   @override
-  String get hostFormContinueToSettings => 'Continue to settings';
-
-  @override
-  String get hostFormContinueToPublish => 'Continue to publish';
-
-  @override
   String get hostFormReorderQuestion => 'Drag to reorder question';
-
-  @override
-  String get hostFormEditQuestion => 'Edit question';
 
   @override
   String get hostFormAdvancedQuestionSettings => 'Advanced settings';
@@ -14668,10 +14652,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormPreview => 'Preview';
-
-  @override
-  String get hostFormPreviewHelp =>
-      'Check the exact respondent experience before publishing.';
 
   @override
   String get hostFormPreviewSubtitle =>
@@ -15273,9 +15253,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormResponseOperationsSection => 'Next actions';
-
-  @override
-  String get hostFormResponseName => 'Name';
 
   @override
   String get hostFormResponseEmail => 'Email';

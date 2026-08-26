@@ -5,22 +5,29 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
+import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_renderer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -32,8 +39,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 enum _BuilderView { build, responses }
-
-enum _CompactBuilderStep { questions, settings, publish }
 
 enum _BuilderAction { undo, redo, share, pause, resume, archive }
 
@@ -58,7 +63,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
   int? _selectedSection;
   int? _selectedQuestion;
   _BuilderView _view = _BuilderView.build;
-  _CompactBuilderStep _compactStep = _CompactBuilderStep.questions;
+  bool _editingPublishedForm = false;
 
   @override
   Widget build(BuildContext context) {
@@ -78,11 +83,16 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final compact =
         MediaQuery.sizeOf(context).width <
         CatchLayout.formBuilderExpandedBreakpoint;
+    final commandCenter =
+        compact &&
+        !_editingPublishedForm &&
+        _view == _BuilderView.build &&
+        editorValue?.editor.form.activeVersionId != null;
 
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        title: compact ? null : title,
-        titleWidget: compact
+        title: commandCenter || compact ? null : title,
+        titleWidget: compact && !commandCenter
             ? Text(
                 title,
                 maxLines: 1,
@@ -90,28 +100,33 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                 style: CatchTextStyles.sectionTitle(context),
               )
             : null,
-        subtitle: editorValue == null ? null : _saveLabel(context, editorValue),
+        subtitle: commandCenter || editorValue == null
+            ? null
+            : _saveLabel(context, editorValue),
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
-        bottom: CatchTabRail<_BuilderView>(
-          groupKey: const ValueKey('host-form-builder-tabs'),
-          selected: _view,
-          options: [
-            CatchOption(
-              value: _BuilderView.build,
-              label: context.l10n.hostFormBuildTab,
-            ),
-            CatchOption(
-              value: _BuilderView.responses,
-              label: context.l10n.hostFormResponsesTab(
-                count: editorValue?.editor.form.submittedResponseCount ?? 0,
+        bottom: commandCenter
+            ? null
+            : CatchTabRail<_BuilderView>(
+                groupKey: const ValueKey('host-form-builder-tabs'),
+                selected: _view,
+                options: [
+                  CatchOption(
+                    value: _BuilderView.build,
+                    label: context.l10n.hostFormBuildTab,
+                  ),
+                  CatchOption(
+                    value: _BuilderView.responses,
+                    label: context.l10n.hostFormResponsesTab(
+                      count:
+                          editorValue?.editor.form.submittedResponseCount ?? 0,
+                    ),
+                  ),
+                ],
+                onChanged: (view) => setState(() => _view = view),
               ),
-            ),
-          ],
-          onChanged: (view) => setState(() => _view = view),
-        ),
         actions: [
-          if (_view == _BuilderView.build)
+          if (_view == _BuilderView.build && !commandCenter)
             CatchIconAction(
               icon: CatchIcons.visibilityOutlined,
               tooltip: context.l10n.hostFormPreview,
@@ -128,14 +143,10 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
       ),
       bottomNavigationBar: _HostFormBuilderBottomAction(
         state: editorValue,
-        visible: _view == _BuilderView.build,
-        compact: compact,
-        step: _compactStep,
-        onStepChanged: (step) => setState(() => _compactStep = step),
+        visible: _view == _BuilderView.build && !commandCenter,
         onReviewAndPublish: editorValue == null
             ? null
             : () => _reviewAndPublish(notifier, editorValue),
-        onPublish: () => _publish(notifier),
       ),
       body: SafeArea(
         top: false,
@@ -153,7 +164,29 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
               onRetry: notifier.reload,
             ),
           ),
-          builder: (context, value) => _view == _BuilderView.responses
+          builder: (context, value) => commandCenter
+              ? CatchScreenBody(
+                  key: const ValueKey('host-form-command-center'),
+                  pb: CatchSpacing.s10,
+                  child: _PublishedFormCommandCenter(
+                    organizerId: widget.organizerId,
+                    state: value,
+                    onEdit: () => setState(() => _editingPublishedForm = true),
+                    onReviewResponses: () =>
+                        setState(() => _view = _BuilderView.responses),
+                    onQuestions: () =>
+                        setState(() => _editingPublishedForm = true),
+                    onAudience: () => _showFormSettingsSheet(
+                      context,
+                      definition: value.editor.definition,
+                      notifier: notifier,
+                    ),
+                    onShare: () =>
+                        _runBuilderAction(notifier, _BuilderAction.share),
+                    onPreview: _openPreview,
+                  ),
+                )
+              : _view == _BuilderView.responses
               ? CatchScreenBody(
                   key: const ValueKey('host-form-builder-responses'),
                   pb: CatchSpacing.s10,
@@ -174,11 +207,6 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       formId: widget.formId,
                       state: value,
                       notifier: notifier,
-                      step: _compactStep,
-                      onStepChanged: (step) => setState(() {
-                        _compactStep = step;
-                      }),
-                      onPreview: _openPreview,
                       onSelectionChanged: (section, question) => setState(() {
                         _selectedSection = section;
                         _selectedQuestion = question;
@@ -407,20 +435,12 @@ class _HostFormBuilderBottomAction extends StatelessWidget {
   const _HostFormBuilderBottomAction({
     required this.state,
     required this.visible,
-    required this.compact,
-    required this.step,
-    required this.onStepChanged,
     required this.onReviewAndPublish,
-    required this.onPublish,
   });
 
   final HostFormEditorState? state;
   final bool visible;
-  final bool compact;
-  final _CompactBuilderStep step;
-  final ValueChanged<_CompactBuilderStep> onStepChanged;
   final VoidCallback? onReviewAndPublish;
-  final VoidCallback onPublish;
 
   @override
   Widget build(BuildContext context) {
@@ -431,51 +451,248 @@ class _HostFormBuilderBottomAction extends StatelessWidget {
       return const SizedBox.shrink();
     }
     final isLoading = current.operationInProgress;
-    if (!compact) {
-      return CatchBottomAction(
-        label: current.editor.form.status == HostFormLifecycleStatus.published
-            ? context.l10n.hostFormReviewPublishChanges
-            : context.l10n.hostFormReviewPublish,
-        isLoading: isLoading,
-        onPressed: isLoading ? null : onReviewAndPublish,
-      );
-    }
-    final label = switch (step) {
-      _CompactBuilderStep.questions => context.l10n.hostFormContinueToSettings,
-      _CompactBuilderStep.settings => context.l10n.hostFormContinueToPublish,
-      _CompactBuilderStep.publish =>
-        current.editor.form.status == HostFormLifecycleStatus.published
-            ? context.l10n.hostFormPublishChanges
-            : context.l10n.hostFormPublish,
-    };
     return CatchBottomAction(
-      label: label,
+      label: current.editor.form.status == HostFormLifecycleStatus.published
+          ? context.l10n.hostFormReviewPublishChanges
+          : context.l10n.hostFormReviewPublish,
       isLoading: isLoading,
-      onPressed: isLoading
-          ? null
-          : () {
-              switch (step) {
-                case _CompactBuilderStep.questions:
-                  onStepChanged(_CompactBuilderStep.settings);
-                case _CompactBuilderStep.settings:
-                  onStepChanged(_CompactBuilderStep.publish);
-                case _CompactBuilderStep.publish:
-                  onPublish();
-              }
-            },
+      buttonShape: CatchButtonShape.rounded,
+      onPressed: isLoading ? null : onReviewAndPublish,
     );
   }
 }
 
-class _CompactFormEditor extends StatelessWidget {
+class _PublishedFormCommandCenter extends ConsumerWidget {
+  const _PublishedFormCommandCenter({
+    required this.organizerId,
+    required this.state,
+    required this.onEdit,
+    required this.onReviewResponses,
+    required this.onQuestions,
+    required this.onAudience,
+    required this.onShare,
+    required this.onPreview,
+  });
+
+  final String organizerId;
+  final HostFormEditorState state;
+  final VoidCallback onEdit;
+  final VoidCallback onReviewResponses;
+  final VoidCallback onQuestions;
+  final VoidCallback onAudience;
+  final VoidCallback onShare;
+  final VoidCallback onPreview;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    final form = state.editor.form;
+    final definition = state.editor.definition;
+    final questionCount = definition.sections.fold<int>(
+      0,
+      (count, section) => count + section.questions.length,
+    );
+    final responseRequest = HostFormResponseListRequest(
+      organizerId: organizerId,
+      formId: form.formId,
+      statuses: const {HostFormResponseStatus.submitted},
+      limit: 1,
+    );
+    final responses = ref.watch(
+      hostFormResponsesControllerProvider(responseRequest),
+    );
+    final latestResponse = catchAsyncStateFromAsyncValue(
+      responses,
+    ).value?.responses.firstOrNull;
+    final lifecycle = hostFormStatusLabel(context, form.status);
+    final purpose = hostFormPurposeLabel(context, form.purpose);
+    final accessibleStack = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    final title = Text(
+      definition.title,
+      key: const ValueKey('host-form-command-center-title'),
+      style: CatchTextStyles.eventTitle(context, color: t.ink),
+    );
+    final editAction = CatchTextButton(
+      key: const ValueKey('host-form-command-center-edit'),
+      label: context.l10n.hostFormsOpen,
+      tone: CatchTextButtonTone.neutral,
+      minimumSize: const Size(0, CatchSpacing.s10),
+      padding: EdgeInsets.zero,
+      textStyle: CatchTextStyles.labelL(
+        context,
+        color: t.ink,
+      ).copyWith(decoration: TextDecoration.underline),
+      onPressed: onEdit,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (accessibleStack) ...[
+          title,
+          gapH8,
+          Align(alignment: Alignment.centerLeft, child: editAction),
+        ] else
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(child: title),
+              gapW12,
+              editAction,
+            ],
+          ),
+        gapH12,
+        Row(
+          children: [
+            Flexible(child: CatchMonoLabel(lifecycle, color: t.ink2)),
+            Padding(
+              padding: CatchInsets.inlineHorizontal,
+              child: Text(
+                '·',
+                style: CatchTextStyles.monoLabel(context, color: t.ink3),
+              ),
+            ),
+            Flexible(child: CatchMonoLabel(purpose, color: t.ink2)),
+          ],
+        ),
+        gapH32,
+        CatchSurface.tinted(
+          key: const ValueKey('host-form-response-command'),
+          radius: CatchRadius.md,
+          backgroundColor: t.primarySoft,
+          padding: CatchInsets.contentRelaxed,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (accessibleStack) ...[
+                Text(
+                  '${form.submittedResponseCount}',
+                  style: CatchTextStyles.display(
+                    context,
+                    color: t.primary,
+                  ).copyWith(fontSize: 56),
+                ),
+                gapH4,
+                Text(
+                  context.l10n.hostFormsViewResponses,
+                  style: CatchTextStyles.headlineS(context, color: t.ink),
+                ),
+              ] else
+                Row(
+                  children: [
+                    Text(
+                      '${form.submittedResponseCount}',
+                      style: CatchTextStyles.display(
+                        context,
+                        color: t.primary,
+                      ).copyWith(fontSize: 56),
+                    ),
+                    gapW16,
+                    Expanded(
+                      child: Text(
+                        context.l10n.hostFormsViewResponses,
+                        style: CatchTextStyles.headlineS(context, color: t.ink),
+                      ),
+                    ),
+                  ],
+                ),
+              gapH8,
+              Text(
+                context.l10n.hostFormResponsesSubtitle,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+              gapH20,
+              CatchButton(
+                label: context.l10n.hostFormsViewResponsesAction,
+                shape: CatchButtonShape.rounded,
+                fullWidth: true,
+                onPressed: onReviewResponses,
+              ),
+            ],
+          ),
+        ),
+        gapH24,
+        CatchMetricStrip(
+          key: const ValueKey('host-form-command-center-metrics'),
+          backgroundColor: Colors.transparent,
+          borderColor: Colors.transparent,
+          items: [
+            CatchMetricStripItem(
+              value: '${form.submittedResponseCount}',
+              label: context.l10n.hostFormsViewResponses,
+            ),
+            CatchMetricStripItem(
+              value: '$questionCount',
+              label: context.l10n.hostFormQuestionsTitle,
+            ),
+            CatchMetricStripItem(
+              value: '${form.publishedVersion}',
+              label: context.l10n.hostFormsStatusPublished,
+            ),
+          ],
+        ),
+        if (latestResponse != null) ...[
+          gapH24,
+          CatchFieldLanes.single(
+            child: CatchField.nav(
+              key: const ValueKey('host-form-command-center-recent-response'),
+              title:
+                  latestResponse.identity.primaryLabel ??
+                  context.l10n.hostFormResponsesAnonymous,
+              body:
+                  latestResponse.sourceLabel ??
+                  context.l10n.hostFormResponseTitle,
+              emphasis: CatchFieldEmphasis.title,
+              valueText: AppTimeFormatters.compactRelativeTime(
+                latestResponse.submittedAt,
+              ),
+              divider: true,
+              onTap: onReviewResponses,
+            ),
+          ),
+        ],
+        gapH24,
+        CatchFieldLanes.divided(
+          children: [
+            CatchField.nav(
+              title: context.l10n.hostFormQuestionsTitle,
+              body: context.l10n.hostFormQuestionCount(count: questionCount),
+              icon: CatchIcons.helpOutline,
+              emphasis: CatchFieldEmphasis.title,
+              onTap: onQuestions,
+            ),
+            CatchField.nav(
+              title: context.l10n.hostFormIdentityLabel,
+              body: hostFormIdentityLabel(context, definition.identityPolicy),
+              icon: CatchIcons.verifiedUserOutlined,
+              emphasis: CatchFieldEmphasis.title,
+              onTap: onAudience,
+            ),
+            CatchField.nav(
+              title: context.l10n.hostFormShare,
+              icon: CatchIcons.share,
+              emphasis: CatchFieldEmphasis.title,
+              onTap: onShare,
+            ),
+            CatchField.nav(
+              title: context.l10n.hostFormPreview,
+              icon: CatchIcons.eye,
+              emphasis: CatchFieldEmphasis.title,
+              onTap: onPreview,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _CompactFormEditor extends StatefulWidget {
   const _CompactFormEditor({
     required this.organizerId,
     required this.formId,
     required this.state,
     required this.notifier,
-    required this.step,
-    required this.onStepChanged,
-    required this.onPreview,
     required this.onSelectionChanged,
   });
 
@@ -483,121 +700,46 @@ class _CompactFormEditor extends StatelessWidget {
   final String formId;
   final HostFormEditorState state;
   final HostFormEditorController notifier;
-  final _CompactBuilderStep step;
-  final ValueChanged<_CompactBuilderStep> onStepChanged;
-  final VoidCallback onPreview;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
-  Widget build(BuildContext context) {
-    final definition = state.editor.definition;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _FormStatusNotices(state: state, notifier: notifier),
-        _CompactBuilderProgress(step: step, onStepChanged: onStepChanged),
-        gapH24,
-        switch (step) {
-          _CompactBuilderStep.questions => _CompactQuestionsStep(
-            organizerId: organizerId,
-            formId: formId,
-            definition: definition,
-            notifier: notifier,
-            onSelectionChanged: onSelectionChanged,
-          ),
-          _CompactBuilderStep.settings => _CompactSettingsStep(
-            definition: definition,
-            notifier: notifier,
-          ),
-          _CompactBuilderStep.publish => _CompactPublishStep(
-            state: state,
-            onPreview: onPreview,
-          ),
-        },
-      ],
-    );
-  }
+  State<_CompactFormEditor> createState() => _CompactFormEditorState();
 }
 
-class _CompactBuilderProgress extends StatelessWidget {
-  const _CompactBuilderProgress({
-    required this.step,
-    required this.onStepChanged,
-  });
-
-  final _CompactBuilderStep step;
-  final ValueChanged<_CompactBuilderStep> onStepChanged;
+class _CompactFormEditorState extends State<_CompactFormEditor> {
+  String? _expandedQuestionId;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final steps = [
-      (
-        step: _CompactBuilderStep.questions,
-        label: context.l10n.hostFormQuestionsTitle,
-      ),
-      (
-        step: _CompactBuilderStep.settings,
-        label: context.l10n.hostFormSettingsStep,
-      ),
-      (
-        step: _CompactBuilderStep.publish,
-        label: context.l10n.hostFormPublishStep,
-      ),
-    ];
-    return Semantics(
-      label: context.l10n.hostFormBuilderProgress,
-      child: Row(
-        children: [
-          for (final entry in steps.indexed) ...[
-            Expanded(
-              child: InkWell(
-                key: ValueKey('host-form-step-${entry.$2.step.name}'),
-                borderRadius: BorderRadius.circular(CatchRadius.md),
-                onTap: () => onStepChanged(entry.$2.step),
-                child: Padding(
-                  padding: CatchInsets.contentVerticalCompact,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (entry.$1 <= step.index)
-                        CatchBadge.solid(label: '${entry.$1 + 1}')
-                      else
-                        CatchBadge(
-                          label: '${entry.$1 + 1}',
-                          size: CatchBadgeSize.md,
-                          backgroundColor: Colors.transparent,
-                          foregroundColor: t.ink2,
-                          borderColor: t.ink2,
-                        ),
-                      gapW8,
-                      Flexible(
-                        child: Text(
-                          entry.$2.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.labelL(
-                            context,
-                            color: entry.$2.step == step ? t.ink : t.ink2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            if (entry.$1 < steps.length - 1)
-              SizedBox(
-                width: CatchSpacing.s4,
-                child: Divider(
-                  color: entry.$1 < step.index ? t.ink : t.line,
-                  height: 1,
-                ),
-              ),
-          ],
-        ],
-      ),
+    final definition = widget.state.editor.definition;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _FormStatusNotices(state: widget.state, notifier: widget.notifier),
+        _CompactQuestionsStep(
+          organizerId: widget.organizerId,
+          formId: widget.formId,
+          definition: definition,
+          status: widget.state.editor.form.status,
+          notifier: widget.notifier,
+          expandedQuestionId: _expandedQuestionId,
+          onQuestionExpansionChanged: (questionId) {
+            setState(() {
+              _expandedQuestionId = _expandedQuestionId == questionId
+                  ? null
+                  : questionId;
+            });
+          },
+          onSelectionChanged: widget.onSelectionChanged,
+        ),
+        gapH24,
+        _CompactFormSettingsEntry(
+          definition: definition,
+          notifier: widget.notifier,
+        ),
+        gapH24,
+        _CompactPublishStep(state: widget.state),
+      ],
     );
   }
 }
@@ -607,30 +749,47 @@ class _CompactQuestionsStep extends StatelessWidget {
     required this.organizerId,
     required this.formId,
     required this.definition,
+    required this.status,
     required this.notifier,
+    required this.expandedQuestionId,
+    required this.onQuestionExpansionChanged,
     required this.onSelectionChanged,
   });
 
   final String organizerId;
   final String formId;
   final HostFormDefinition definition;
+  final HostFormLifecycleStatus status;
   final HostFormEditorController notifier;
+  final String? expandedQuestionId;
+  final ValueChanged<String> onQuestionExpansionChanged;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final questionCount = definition.sections.fold<int>(
+      0,
+      (count, section) => count + section.questions.length,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          context.l10n.hostFormQuestionsPrompt,
-          style: CatchTextStyles.titleL(context),
+          '${hostFormStatusLabel(context, status)} · '
+                  '${context.l10n.hostFormQuestionCount(count: questionCount)}'
+              .toUpperCase(),
+          style: CatchTextStyles.kickerLg(context, color: t.ink2),
         ),
-        gapH8,
+        gapH12,
+        Text(
+          context.l10n.hostFormQuestionsTitle,
+          style: CatchTextStyles.headline(context),
+        ),
+        gapH12,
         Text(
           context.l10n.hostFormQuestionsPromptHelp,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+          style: CatchTextStyles.proseM(context, color: t.ink2),
         ),
         gapH24,
         for (final sectionEntry in definition.sections.indexed) ...[
@@ -642,6 +801,8 @@ class _CompactQuestionsStep extends StatelessWidget {
             section: sectionEntry.$2,
             sectionCount: definition.sections.length,
             notifier: notifier,
+            expandedQuestionId: expandedQuestionId,
+            onQuestionExpansionChanged: onQuestionExpansionChanged,
             onSelectionChanged: onSelectionChanged,
           ),
           gapH20,
@@ -660,8 +821,8 @@ class _CompactQuestionsStep extends StatelessWidget {
   }
 }
 
-class _CompactSettingsStep extends StatelessWidget {
-  const _CompactSettingsStep({
+class _CompactFormSettingsEntry extends StatelessWidget {
+  const _CompactFormSettingsEntry({
     required this.definition,
     required this.notifier,
   });
@@ -670,32 +831,46 @@ class _CompactSettingsStep extends StatelessWidget {
   final HostFormEditorController notifier;
 
   @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          context.l10n.hostFormSettingsPrompt,
-          style: CatchTextStyles.titleL(context),
+  Widget build(BuildContext context) => CatchSection.fieldRows(
+    children: [
+      CatchField.nav(
+        key: const ValueKey('host-form-settings-entry'),
+        title: context.l10n.hostFormSettings,
+        body: context.l10n.hostFormSettingsPromptHelp,
+        icon: CatchIcons.settingsOutlined,
+        onTap: () => _showFormSettingsSheet(
+          context,
+          definition: definition,
+          notifier: notifier,
         ),
-        gapH8,
-        Text(
-          context.l10n.hostFormSettingsPromptHelp,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
-        ),
-        gapH24,
-        _FormSettings(definition: definition, notifier: notifier),
-      ],
-    );
-  }
+      ),
+    ],
+  );
 }
 
+Future<void> _showFormSettingsSheet(
+  BuildContext context, {
+  required HostFormDefinition definition,
+  required HostFormEditorController notifier,
+}) => showCatchBottomSheet<void>(
+  context: context,
+  builder: (sheetContext) => CatchBottomSheetScaffold(
+    title: context.l10n.hostFormSettings,
+    subtitle: context.l10n.hostFormSettingsPromptHelp,
+    keyboardSafe: true,
+    child: SizedBox(
+      height: MediaQuery.sizeOf(sheetContext).height * 0.62,
+      child: SingleChildScrollView(
+        child: _FormSettings(definition: definition, notifier: notifier),
+      ),
+    ),
+  ),
+);
+
 class _CompactPublishStep extends StatelessWidget {
-  const _CompactPublishStep({required this.state, required this.onPreview});
+  const _CompactPublishStep({required this.state});
 
   final HostFormEditorState state;
-  final VoidCallback onPreview;
 
   @override
   Widget build(BuildContext context) {
@@ -704,42 +879,19 @@ class _CompactPublishStep extends StatelessWidget {
       0,
       (count, section) => count + section.questions.length,
     );
-    final t = CatchTokens.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          context.l10n.hostFormPublishPrompt,
-          style: CatchTextStyles.titleL(context),
-        ),
-        gapH8,
-        Text(
-          context.l10n.hostFormReviewPublishSubtitle,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
-        ),
-        gapH24,
-        CatchSection.fieldRows(
-          children: [
-            CatchField.read(
-              title: context.l10n.hostFormQuestionsTitle,
-              body: context.l10n.hostFormQuestionCount(count: questionCount),
-            ),
-            CatchField.read(
-              title: context.l10n.hostFormIdentityLabel,
-              body: hostFormIdentityLabel(context, definition.identityPolicy),
-            ),
-            CatchField.read(
-              title: context.l10n.hostFormAvailability,
-              body: _availabilitySummary(context, definition),
-            ),
-            CatchField.nav(
-              key: const ValueKey('host-form-publish-preview'),
-              title: context.l10n.hostFormPreview,
-              body: context.l10n.hostFormPreviewHelp,
-              icon: CatchIcons.visibilityOutlined,
-              onTap: onPreview,
-            ),
-          ],
+        const CatchDivider.section(),
+        Padding(
+          padding: CatchInsets.contentVerticalMedium,
+          child: Text(
+            '${context.l10n.hostFormQuestionCount(count: questionCount)} · '
+            '${context.l10n.hostFormPublishPrompt}',
+            key: const ValueKey('host-form-readiness-summary'),
+            textAlign: TextAlign.center,
+            style: CatchTextStyles.supporting(context),
+          ),
         ),
       ],
     );
@@ -755,6 +907,8 @@ class _CompactSectionOutline extends StatelessWidget {
     required this.section,
     required this.sectionCount,
     required this.notifier,
+    required this.expandedQuestionId,
+    required this.onQuestionExpansionChanged,
     required this.onSelectionChanged,
   });
 
@@ -765,6 +919,8 @@ class _CompactSectionOutline extends StatelessWidget {
   final HostFormSection section;
   final int sectionCount;
   final HostFormEditorController notifier;
+  final String? expandedQuestionId;
+  final ValueChanged<String> onQuestionExpansionChanged;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
@@ -773,6 +929,7 @@ class _CompactSectionOutline extends StatelessWidget {
     first: sectionIndex == 0,
     trailing: CatchActionMenu<_SectionAction>(
       tooltip: context.l10n.hostFormSectionActions,
+      variant: CatchIconButtonVariant.plain,
       items: [
         CatchActionMenuItem(
           value: _SectionAction.edit,
@@ -827,6 +984,8 @@ class _CompactSectionOutline extends StatelessWidget {
       sectionIndex: sectionIndex,
       section: section,
       notifier: notifier,
+      expandedQuestionId: expandedQuestionId,
+      onQuestionExpansionChanged: onQuestionExpansionChanged,
       onSelectionChanged: onSelectionChanged,
     ),
   );
@@ -840,6 +999,8 @@ class _CompactQuestionRows extends StatelessWidget {
     required this.sectionIndex,
     required this.section,
     required this.notifier,
+    required this.expandedQuestionId,
+    required this.onQuestionExpansionChanged,
     required this.onSelectionChanged,
   });
 
@@ -849,6 +1010,8 @@ class _CompactQuestionRows extends StatelessWidget {
   final int sectionIndex;
   final HostFormSection section;
   final HostFormEditorController notifier;
+  final String? expandedQuestionId;
+  final ValueChanged<String> onQuestionExpansionChanged;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
@@ -867,40 +1030,63 @@ class _CompactQuestionRows extends StatelessWidget {
         },
         itemBuilder: (context, questionIndex) {
           final question = section.questions[questionIndex];
-          return CatchFieldLanes.single(
+          final expanded = expandedQuestionId == question.questionId;
+          return Column(
             key: ValueKey('form-question-${question.questionId}'),
-            child: CatchField.nav(
-              title: question.label,
-              body: _questionSummary(context, question),
-              emphasis: CatchFieldEmphasis.title,
-              divider: true,
-              action: section.questions.length > 1
-                  ? ReorderableDragStartListener(
-                      index: questionIndex,
-                      child: Tooltip(
-                        message: context.l10n.hostFormReorderQuestion,
-                        child: Padding(
-                          padding: CatchInsets.iconChipContent,
-                          child: Icon(CatchIcons.dragIndicatorRounded),
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CatchFieldLanes.single(
+                child: CatchField.sortable(
+                  title: question.label,
+                  metadata: _questionSummary(context, question),
+                  reorderHandle: section.questions.length > 1
+                      ? ReorderableDragStartListener(
+                          index: questionIndex,
+                          child: Tooltip(
+                            message: context.l10n.hostFormReorderQuestion,
+                            child: SizedBox.square(
+                              key: ValueKey(
+                                'form-question-${question.questionId}-drag',
+                              ),
+                              dimension: CatchSpacing.s11,
+                              child: Icon(CatchIcons.dragIndicatorRounded),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.square(dimension: CatchSpacing.s11),
+                  onTap: () {
+                    onSelectionChanged(sectionIndex, questionIndex);
+                    onQuestionExpansionChanged(question.questionId);
+                  },
+                ),
+              ),
+              AnimatedSize(
+                duration: MediaQuery.maybeOf(context)?.disableAnimations == true
+                    ? CatchMotion.none
+                    : CatchMotion.base,
+                curve: CatchMotion.easeOutCubicCurve,
+                alignment: Alignment.topCenter,
+                child: expanded
+                    ? Padding(
+                        key: ValueKey(
+                          'form-question-${question.questionId}-editor',
                         ),
-                      ),
-                    )
-                  : null,
-              onTap: () {
-                onSelectionChanged(sectionIndex, questionIndex);
-                _showQuestionEditorSheet(
-                  context,
-                  organizerId: organizerId,
-                  formId: formId,
-                  sectionIndex: sectionIndex,
-                  questionIndex: questionIndex,
-                  question: question,
-                  questionCount: section.questions.length,
-                  sections: definition.sections,
-                  notifier: notifier,
-                );
-              },
-            ),
+                        padding: CatchInsets.sectionItemBottomGap,
+                        child: _QuestionEditFields(
+                          sectionIndex: sectionIndex,
+                          questionIndex: questionIndex,
+                          question: question,
+                          questionCount: section.questions.length,
+                          sections: definition.sections,
+                          notifier: notifier,
+                          compact: true,
+                          onRemoved: () =>
+                              onQuestionExpansionChanged(question.questionId),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
           );
         },
       ),
@@ -967,70 +1153,6 @@ Future<void> _showSectionEditorSheet(
               ),
             ),
           ],
-        ),
-      );
-    },
-  ),
-);
-
-Future<void> _showQuestionEditorSheet(
-  BuildContext context, {
-  required String organizerId,
-  required String formId,
-  required int sectionIndex,
-  required int questionIndex,
-  required HostFormQuestion question,
-  required int questionCount,
-  required List<HostFormSection> sections,
-  required HostFormEditorController notifier,
-}) => showCatchBottomSheet<void>(
-  context: context,
-  builder: (sheetContext) => Consumer(
-    builder: (sheetContext, ref, _) {
-      final liveDefinition = catchAsyncStateFromAsyncValue(
-        ref.watch(hostFormEditorControllerProvider(organizerId, formId)),
-      ).value?.editor.definition;
-      var currentSectionIndex = sectionIndex;
-      var currentQuestionIndex = questionIndex;
-      var currentQuestion = question;
-      var currentQuestionCount = questionCount;
-      if (liveDefinition != null) {
-        final candidateSection = liveDefinition.sections.indexWhere(
-          (section) => section.questions.any(
-            (candidate) => candidate.questionId == question.questionId,
-          ),
-        );
-        if (candidateSection >= 0) {
-          currentSectionIndex = candidateSection;
-          final questions = liveDefinition.sections[candidateSection].questions;
-          currentQuestionIndex = questions.indexWhere(
-            (candidate) => candidate.questionId == question.questionId,
-          );
-          currentQuestion = questions[currentQuestionIndex];
-          currentQuestionCount = questions.length;
-        }
-      }
-      return CatchBottomSheetScaffold(
-        title: context.l10n.hostFormEditQuestion,
-        subtitle: _questionSummary(context, currentQuestion),
-        keyboardSafe: true,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.72,
-          ),
-          child: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            child: _QuestionEditFields(
-              sectionIndex: currentSectionIndex,
-              questionIndex: currentQuestionIndex,
-              question: currentQuestion,
-              questionCount: currentQuestionCount,
-              sections: liveDefinition?.sections ?? sections,
-              notifier: notifier,
-              compact: true,
-              onRemoved: () => Navigator.of(sheetContext).pop(),
-            ),
-          ),
         ),
       );
     },

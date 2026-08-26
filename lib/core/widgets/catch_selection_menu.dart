@@ -188,7 +188,8 @@ Future<T?> showCatchSelectionSheet<T>({
 );
 
 /// A standard visible selection control that uses a sheet on phones and an
-/// anchored picker on wider Host layouts.
+/// anchored picker on wider Host layouts. Prefer this over an inline option
+/// group when mutually-exclusive choices are numerous, long, or dynamic.
 class CatchAdaptiveSelectionControl<T> extends StatelessWidget {
   const CatchAdaptiveSelectionControl({
     super.key,

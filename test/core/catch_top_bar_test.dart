@@ -447,10 +447,21 @@ void main() {
   testWidgets('CatchTopBar can render an icon-only onboarding bar', (
     tester,
   ) async {
-    await tester.pumpWidget(_wrap(const CatchTopBar(showBackButton: true)));
+    await tester.pumpWidget(
+      _wrap(
+        const CatchTopBar(
+          showBackButton: true,
+          leadingActionVariant: CatchIconButtonVariant.plain,
+        ),
+      ),
+    );
 
     expect(find.byIcon(CatchIcons.arrowBackIosNewRounded), findsOneWidget);
     expect(find.byType(CatchIconButton), findsOneWidget);
+    expect(
+      tester.widget<CatchIconButton>(find.byType(CatchIconButton)).variant,
+      CatchIconButtonVariant.plain,
+    );
   });
 
   testWidgets('CatchTopBar supports tab bottoms and overflow menus', (

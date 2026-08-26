@@ -6,7 +6,9 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
@@ -67,6 +69,14 @@ void main() {
         tester.widget<CatchTabbedScreenScaffold>(scaffold).search?.placeholder,
         'Search forms',
       );
+      expect(
+        find.byType(CatchOptionGroup<HostFormLifecycleStatus?>),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('Published'));
+      await pumpFeatureUi(tester);
+      expect(formRequests.last.statuses, {HostFormLifecycleStatus.published});
 
       await tester.tap(find.byIcon(CatchIcons.search));
       await pumpFeatureUiFor(tester, CatchMotion.base);
@@ -94,6 +104,16 @@ void main() {
         tester.widget<CatchTabbedScreenScaffold>(scaffold).search?.placeholder,
         'Search responses',
       );
+      expect(
+        find.byType(CatchOptionGroup<HostFormResponseStatus?>),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('Submitted'));
+      await pumpFeatureUi(tester);
+      expect(responseRequests.last.statuses, {
+        HostFormResponseStatus.submitted,
+      });
 
       await tester.enterText(
         find.descendant(
@@ -108,17 +128,68 @@ void main() {
       expect(formRequests.last.query, 'waiver');
     },
   );
+
+  testWidgets('Forms directory is flat and published row menus stay bounded', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'forms-club', ownerUserId: 'host-1');
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          hostOperableClubsProvider(
+            'host-1',
+          ).overrideWithValue(AsyncData([club])),
+          hostFormsDirectoryControllerProvider.overrideWith2(
+            (_) => _FixedHostFormsDirectoryController(
+              <HostFormListRequest>[],
+              forms: [
+                _formSummary(
+                  id: 'published',
+                  status: HostFormLifecycleStatus.published,
+                ),
+                _formSummary(
+                  id: 'paused',
+                  status: HostFormLifecycleStatus.paused,
+                ),
+              ],
+            ),
+          ),
+          hostFormResponsesControllerProvider.overrideWith2(
+            (_) => _FixedHostFormResponsesController(
+              <HostFormResponseListRequest>[],
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const HostFormsScreen(),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.byKey(CatchSectionFocusSurface.rowGroupClipKey), findsNothing);
+    expect(find.byKey(const ValueKey('host-form-published')), findsOneWidget);
+    expect(find.byKey(const ValueKey('host-form-paused')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 class _FixedHostFormsDirectoryController extends HostFormsDirectoryController {
-  _FixedHostFormsDirectoryController(this.requests);
+  _FixedHostFormsDirectoryController(
+    this.requests, {
+    this.forms = const <HostFormSummary>[],
+  });
 
   final List<HostFormListRequest> requests;
+  final List<HostFormSummary> forms;
 
   @override
   Future<HostFormsDirectoryState> build(HostFormListRequest request) async {
     requests.add(request);
-    return const HostFormsDirectoryState(forms: [], nextCursor: null);
+    return HostFormsDirectoryState(forms: forms, nextCursor: null);
   }
 }
 
@@ -135,3 +206,26 @@ class _FixedHostFormResponsesController extends HostFormResponsesController {
     return const HostFormResponsesState(responses: [], nextCursor: null);
   }
 }
+
+HostFormSummary _formSummary({
+  required String id,
+  required HostFormLifecycleStatus status,
+}) => HostFormSummary(
+  organizerId: 'forms-club',
+  formId: id,
+  title: '$id form',
+  description: null,
+  purpose: HostFormPurpose.application,
+  status: status,
+  templateId: null,
+  publicFormId: 'public-$id',
+  defaultTargetKind: HostFormTargetKind.organizer,
+  defaultTargetId: 'forms-club',
+  activeVersionId: 'version-$id',
+  draftRevision: 1,
+  publishedVersion: 1,
+  submittedResponseCount: 12,
+  updatedAt: DateTime(2026, 8, 26),
+  publishedAt: DateTime(2026, 8, 20),
+  lastResponseAt: DateTime(2026, 8, 26),
+);

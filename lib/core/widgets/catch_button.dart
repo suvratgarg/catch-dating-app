@@ -6,6 +6,10 @@ enum CatchButtonVariant { primary, secondary, ghost, danger, light }
 
 enum CatchButtonSize { sm, md, lg }
 
+/// Named button geometry. Pill remains the product default; rounded is for
+/// editorial/full-width actions whose container should read as a bar.
+enum CatchButtonShape { pill, rounded }
+
 /// Canonical Catch button primitive.
 ///
 /// Use [variant] for visual hierarchy and [size] for density. Screens should
@@ -17,6 +21,7 @@ class CatchButton extends StatefulWidget {
     required this.onPressed,
     this.variant = CatchButtonVariant.primary,
     this.size = CatchButtonSize.md,
+    this.shape = CatchButtonShape.pill,
     this.icon,
     this.isLoading = false,
     this.fullWidth = false,
@@ -32,6 +37,7 @@ class CatchButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final CatchButtonVariant variant;
   final CatchButtonSize size;
+  final CatchButtonShape shape;
   final Widget? icon;
   final bool isLoading;
   final bool fullWidth;
@@ -60,6 +66,16 @@ class _CatchButtonState extends State<CatchButton> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final spec = _ButtonSizeSpec.from(widget.size);
+    final mediaQuery = MediaQuery.maybeOf(context);
+    final reduceMotion = mediaQuery?.disableAnimations ?? false;
+    final transitionDuration = reduceMotion
+        ? CatchMotion.none
+        : CatchMotion.fast;
+    final reflowLabel =
+        widget.fullWidth && (mediaQuery?.textScaler.scale(1) ?? 1) >= 1.4;
+    final radius = widget.shape == CatchButtonShape.pill
+        ? CatchRadius.pill
+        : CatchRadius.md;
     var palette = _ButtonPalette.from(widget.variant, t);
     final accent = widget.accentColor;
     if (accent != null && widget.variant == CatchButtonVariant.primary) {
@@ -89,9 +105,12 @@ class _CatchButtonState extends State<CatchButton> {
             ),
           ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: spec.padding),
+          padding: EdgeInsets.symmetric(
+            horizontal: spec.padding,
+            vertical: reflowLabel ? CatchSpacing.s2 : 0,
+          ),
           child: AnimatedSwitcher(
-            duration: CatchMotion.fast,
+            duration: transitionDuration,
             switchInCurve: CatchMotion.standardCurve,
             switchOutCurve: CatchMotion.standardCurve,
             child: widget.isLoading
@@ -102,6 +121,7 @@ class _CatchButtonState extends State<CatchButton> {
                     icon: widget.icon,
                     gap: spec.gap,
                     fullWidth: widget.fullWidth,
+                    allowMultiline: reflowLabel,
                     textStyle: spec.textStyle(context),
                   ),
           ),
@@ -109,19 +129,22 @@ class _CatchButtonState extends State<CatchButton> {
       ],
     );
 
-    final decoratedButton = SizedBox(
-      height: spec.height,
+    final decoratedButton = ConstrainedBox(
+      constraints: BoxConstraints(
+        minHeight: spec.height,
+        maxHeight: reflowLabel ? double.infinity : spec.height,
+      ),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: palette.background,
-          borderRadius: BorderRadius.circular(CatchRadius.pill),
+          borderRadius: BorderRadius.circular(radius),
           border: Border.all(
             color: palette.border,
             width: widget.variant == CatchButtonVariant.secondary ? 1.5 : 1,
           ),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(CatchRadius.pill),
+          borderRadius: BorderRadius.circular(radius),
           child: widget.isInteractive
               ? Material(
                   color: Colors.transparent,
@@ -144,11 +167,11 @@ class _CatchButtonState extends State<CatchButton> {
 
     final child = AnimatedScale(
       scale: _enabled && _pressed ? 0.97 : 1,
-      duration: CatchMotion.fast,
+      duration: transitionDuration,
       curve: CatchMotion.standardCurve,
       child: AnimatedOpacity(
         opacity: widget.isInteractive && !_enabled ? 0.4 : 1,
-        duration: CatchMotion.fast,
+        duration: transitionDuration,
         curve: CatchMotion.standardCurve,
         child: decoratedButton,
       ),
@@ -174,6 +197,7 @@ class CatchButtonLabel extends StatelessWidget {
     this.icon,
     this.gap = CatchSpacing.micro6,
     this.fullWidth = false,
+    this.allowMultiline = false,
   });
 
   final String label;
@@ -181,13 +205,23 @@ class CatchButtonLabel extends StatelessWidget {
   final Widget? icon;
   final double gap;
   final bool fullWidth;
+  final bool allowMultiline;
   final TextStyle textStyle;
 
   @override
   Widget build(BuildContext context) {
     final iconWidget = icon;
+    final labelWidget = Text(
+      label,
+      maxLines: allowMultiline ? 2 : 1,
+      overflow: allowMultiline ? TextOverflow.visible : TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
+      style: textStyle.copyWith(color: color),
+    );
     final content = Row(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: allowMultiline && fullWidth
+          ? MainAxisSize.max
+          : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (iconWidget != null) ...[
@@ -197,15 +231,14 @@ class CatchButtonLabel extends StatelessWidget {
           ),
           SizedBox(width: gap),
         ],
-        Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: textStyle.copyWith(color: color),
-        ),
+        if (allowMultiline && fullWidth)
+          Expanded(child: labelWidget)
+        else
+          labelWidget,
       ],
     );
 
+    if (allowMultiline) return content;
     if (fullWidth) {
       return Center(
         child: FittedBox(fit: BoxFit.scaleDown, child: content),

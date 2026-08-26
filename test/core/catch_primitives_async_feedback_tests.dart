@@ -96,6 +96,41 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.byType(CatchMetricStripDivider), findsNWidgets(2));
   });
 
+  testWidgets('CatchMetricStrip stacks data pairs at large text', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 320,
+          child: CatchMetricStrip(
+            items: [
+              CatchMetricStripItem(value: '12', label: 'responses'),
+              CatchMetricStripItem(value: '6', label: 'questions'),
+              CatchMetricStripItem(value: '1', label: 'published version'),
+            ],
+          ),
+        ),
+        textScale: 2,
+      ),
+    );
+
+    expect(
+      find.byKey(const ValueKey('catch_metric_strip.reflow')),
+      findsOneWidget,
+    );
+    expect(
+      tester.getCenter(find.text('12')).dy,
+      lessThan(tester.getCenter(find.text('6')).dy),
+    );
+    expect(
+      tester.getCenter(find.text('6')).dy,
+      lessThan(tester.getCenter(find.text('1')).dy),
+    );
+    expect(find.byType(CatchMetricStripDivider), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('CatchDaySectionHeader composes count renderer', (tester) async {
     await tester.pumpWidget(
       _wrap(const CatchDaySectionHeader(label: 'Today', count: 3)),

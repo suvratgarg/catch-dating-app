@@ -258,12 +258,15 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   not compose parallel header rows.
 - Screen hierarchy follows one control per level. Shell destinations express
   product-level navigation; pinned `CatchTabRail` / `CatchTabbedScreenScaffold`
-  tabs switch peer views within one destination; chips and adaptive selection
-  controls filter the active view. A query that searches the whole active view
-  belongs to that screen's top bar through expanding `CatchTopBarSearch`, while
-  a permanently visible `CatchSearchField.expanded` is reserved for a
-  search-first browse toolbar. Feature-local pill groups do not substitute for
-  peer-view tabs.
+  tabs switch peer views within one destination. A small fixed set of terse,
+  mutually-exclusive filters uses `CatchOptionGroup`; longer, numerous, or
+  dynamic mutually-exclusive filters use `CatchAdaptiveSelectionControl` so
+  options do not disappear beyond the viewport. Selectable chips express
+  independent binary or multi-select values, not scalar scope or lifecycle
+  rails. A query that searches the whole active view belongs to that screen's
+  top bar through expanding `CatchTopBarSearch`, while a permanently visible
+  `CatchSearchField.expanded` is reserved for a search-first browse toolbar.
+  Feature-local pill groups do not substitute for peer-view tabs.
 - Pushed utility/list and identity chrome routes through
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
   vertical content has actually scrolled beneath the compact bar. Root tab
@@ -307,7 +310,9 @@ from the live Flutter API and carries this doctrine's forbidden storytelling
 surfaces for review. Run `npm run design:fields:facades:check` after changing
 the field or section API.
 
-Terse filter and tag labels use `CatchField.choices` and selectable chips.
+Field-local terse binary and multi-select labels use `CatchField.choices` and
+selectable chips. Page-level scalar filters follow the option-group/adaptive
+selection rule above.
 Mutually exclusive options with per-option guidance use
 `CatchField.optionCards`: the selected title owns the collapsed value, and
 each expanded title plus description stays inside one clickable

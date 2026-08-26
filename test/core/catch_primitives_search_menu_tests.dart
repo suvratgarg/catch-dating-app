@@ -898,6 +898,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
       _wrap(
         CatchActionMenu<String>(
           tooltip: 'More actions',
+          variant: CatchIconButtonVariant.plain,
           items: [
             CatchActionMenuItem(
               value: 'active',
@@ -914,6 +915,11 @@ void _registerCatchPrimitivesSearchMenuTests() {
           onSelected: (value) => selected = value,
         ),
       ),
+    );
+
+    expect(
+      tester.widget<CatchIconButton>(find.byType(CatchIconButton)).variant,
+      CatchIconButtonVariant.plain,
     );
 
     await tester.tap(find.byTooltip('More actions'));

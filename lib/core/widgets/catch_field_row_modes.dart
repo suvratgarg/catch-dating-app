@@ -61,8 +61,10 @@ extension _CatchFieldRowModes on _CatchFieldState {
     } else {
       rowAction = null;
     }
+    final hasInlineMetadata = widget.inlineMetadata?.trim().isNotEmpty == true;
     final centerVertically =
         _isToggle ||
+        hasInlineMetadata ||
         (widget._contentRow && widget.emphasis == CatchFieldEmphasis.title);
     final leadingTopPadding = centerVertically
         ? 0.0
@@ -593,6 +595,35 @@ extension _CatchFieldRowModes on _CatchFieldState {
       );
     }
     if (_isEdit) return _buildTextEntryBody(t);
+    final inlineMetadata = widget.inlineMetadata?.trim();
+    if (inlineMetadata?.isNotEmpty == true) {
+      final title = _title?.trim() ?? '';
+      final allowWrap = MediaQuery.textScalerOf(context).scale(1) >= 2;
+      return Semantics(
+        label: '$title, $inlineMetadata',
+        excludeSemantics: true,
+        child: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: title,
+                style: _fieldValueTextStyle(
+                  context,
+                  color: _toneColor(t, primaryFallback: t.ink),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              TextSpan(
+                text: '  ·  $inlineMetadata',
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ],
+          ),
+          maxLines: allowWrap ? 2 : 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    }
     if (widget._contentRow) {
       final hasError = _displayError?.trim().isNotEmpty == true;
       return CatchFieldContentRow(
