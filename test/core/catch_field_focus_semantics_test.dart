@@ -231,47 +231,50 @@ void main() {
     },
   );
 
-  testWidgets(
-    'pressed outline appears on pointer down and focus arrives on pointer up',
-    (tester) async {
-      final controller = TextEditingController();
-      final focusNode = FocusNode();
-      addTearDown(controller.dispose);
-      addTearDown(focusNode.dispose);
+  testWidgets('rectangular press band appears before rounded focus chrome', (
+    tester,
+  ) async {
+    final controller = TextEditingController();
+    final focusNode = FocusNode();
+    addTearDown(controller.dispose);
+    addTearDown(focusNode.dispose);
 
-      await _pumpField(tester, controller: controller, focusNode: focusNode);
+    await _pumpField(tester, controller: controller, focusNode: focusNode);
 
-      BoxDecoration pressedDecoration() =>
-          tester
-                  .widget<AnimatedContainer>(
-                    find.byKey(
-                      const ValueKey<String>('catch-field-active-overlay'),
-                    ),
-                  )
-                  .decoration
-              as BoxDecoration;
+    BoxDecoration overlayDecoration(Key key) =>
+        tester.widget<AnimatedContainer>(find.byKey(key)).decoration
+            as BoxDecoration;
+    BoxDecoration pressedDecoration() =>
+        overlayDecoration(CatchField.pressOverlayKey);
+    BoxDecoration activeDecoration() =>
+        overlayDecoration(const ValueKey<String>('catch-field-active-overlay'));
 
-      expect(pressedDecoration().border, isNull);
-      final gesture = await tester.startGesture(
-        tester.getCenter(find.byType(CatchField)),
-      );
-      await tester.pump();
+    expect(pressedDecoration().border, isNull);
+    expect(pressedDecoration().borderRadius, BorderRadius.zero);
+    expect(pressedDecoration().color, Colors.transparent);
+    expect(activeDecoration().border, isNull);
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(CatchField)),
+    );
+    await tester.pump();
 
-      expect(pressedDecoration().border, isNotNull);
-      expect(focusNode.hasFocus, isFalse);
-      await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
-      expect(pressedDecoration().border, isNotNull);
-      expect(pressedDecoration().color, isNot(equals(Colors.transparent)));
+    expect(pressedDecoration().border, isNull);
+    expect(pressedDecoration().borderRadius, BorderRadius.zero);
+    expect(pressedDecoration().color, isNot(equals(Colors.transparent)));
+    expect(activeDecoration().border, isNull);
+    expect(focusNode.hasFocus, isFalse);
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
+    expect(pressedDecoration().border, isNull);
+    expect(pressedDecoration().color, isNot(equals(Colors.transparent)));
 
-      await gesture.up();
-      await tester.pump();
+    await gesture.up();
+    await tester.pump();
 
-      expect(pressedDecoration().border, isNotNull);
-      expect(pressedDecoration().boxShadow, isNotEmpty);
-      expect(focusNode.hasFocus, isTrue);
-      expect(tester.testTextInput.isVisible, isTrue);
-    },
-  );
+    expect(activeDecoration().border, isNotNull);
+    expect(activeDecoration().boxShadow, isNotEmpty);
+    expect(focusNode.hasFocus, isTrue);
+    expect(tester.testTextInput.isVisible, isTrue);
+  });
 
   testWidgets(
     'non-text disclosure label becomes primary only after the opening gesture',
