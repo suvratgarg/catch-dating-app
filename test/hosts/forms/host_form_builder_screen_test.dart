@@ -3,7 +3,9 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
+import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -184,16 +186,65 @@ void main() {
       lessThan(tester.getTopLeft(phoneRow).dx),
     );
   });
+
+  testWidgets('published form opens on its operational command center', (
+    tester,
+  ) async {
+    await _pumpBuilder(tester, published: true);
+
+    expect(
+      find.byKey(const ValueKey('host-form-command-center')),
+      findsOneWidget,
+    );
+    expect(find.text('Saturday Social application'), findsOneWidget);
+    expect(find.text('View responses'), findsOneWidget);
+    expect(find.text('Maya Kapoor'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-form-command-center-metrics')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('host-form-builder-tabs')), findsNothing);
+
+    await tester.tap(
+      find.byKey(const ValueKey('host-form-command-center-edit')),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.byKey(const ValueKey('host-form-command-center')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('host-form-builder-tabs')),
+      findsOneWidget,
+    );
+  });
 }
 
-Future<void> _pumpBuilder(WidgetTester tester) async {
+Future<void> _pumpBuilder(WidgetTester tester, {bool published = false}) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = const Size(390, 844);
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
+  final summary = _summaryMap();
+  if (published) {
+    summary
+      ..['status'] = 'published'
+      ..['activeVersionId'] = 'version_1'
+      ..['publishedVersion'] = 1
+      ..['submittedResponseCount'] = 12
+      ..['publishedAtMillis'] = DateTime(2026, 8, 20).millisecondsSinceEpoch
+      ..['lastResponseAtMillis'] = DateTime(
+        2026,
+        8,
+        20,
+        10,
+        42,
+      ).millisecondsSinceEpoch;
+  }
   final state = HostFormEditorState(
     editor: HostFormEditor(
-      form: HostFormSummary.fromMap(_summaryMap()),
+      form: HostFormSummary.fromMap(summary),
       definition: HostFormDefinition.fromMap(_definitionMap()),
       validationIssues: const [],
     ),
@@ -205,6 +256,10 @@ Future<void> _pumpBuilder(WidgetTester tester) async {
           'org_1',
           'form_1',
         ).overrideWith(() => _FakeHostFormEditorController(state)),
+        if (published)
+          hostFormResponsesControllerProvider.overrideWith2(
+            (_) => _FakeHostFormResponsesController(),
+          ),
       ],
       child: MaterialApp(
         theme: AppTheme.light,
@@ -218,6 +273,16 @@ Future<void> _pumpBuilder(WidgetTester tester) async {
     ),
   );
   await pumpFeatureUi(tester);
+}
+
+class _FakeHostFormResponsesController extends HostFormResponsesController {
+  @override
+  Future<HostFormResponsesState> build(
+    HostFormResponseListRequest request,
+  ) async => HostFormResponsesState(
+    responses: [HostFormResponseSummary.fromMap(_responseSummaryMap())],
+    nextCursor: null,
+  );
 }
 
 class _FakeHostFormEditorController extends HostFormEditorController {
@@ -264,6 +329,28 @@ Map<String, Object?> _summaryMap() => {
   'updatedAtMillis': 1,
   'publishedAtMillis': null,
   'lastResponseAtMillis': null,
+};
+
+Map<String, Object?> _responseSummaryMap() => {
+  'responseId': 'response_1',
+  'formId': 'form_1',
+  'formTitle': 'Saturday Social application',
+  'versionId': 'version_1',
+  'version': 1,
+  'status': 'submitted',
+  'identityKind': 'phoneVerified',
+  'identity': {
+    'displayName': 'Maya Kapoor',
+    'email': null,
+    'phoneE164': '+919876543210',
+    'origin': 'respondentGranted',
+  },
+  'sourceLinkId': null,
+  'sourceLabel': 'Instagram',
+  'submittedAtMillis': DateTime(2026, 8, 20, 10, 42).millisecondsSinceEpoch,
+  'withdrawnAtMillis': null,
+  'highlights': <Object?>[],
+  'conversionKinds': <Object?>[],
 };
 
 Map<String, Object?> _definitionMap() => {

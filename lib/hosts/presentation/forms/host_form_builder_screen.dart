@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
@@ -13,14 +14,20 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
+import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_renderer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -56,6 +63,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
   int? _selectedSection;
   int? _selectedQuestion;
   _BuilderView _view = _BuilderView.build;
+  bool _editingPublishedForm = false;
 
   @override
   Widget build(BuildContext context) {
@@ -75,11 +83,16 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final compact =
         MediaQuery.sizeOf(context).width <
         CatchLayout.formBuilderExpandedBreakpoint;
+    final commandCenter =
+        compact &&
+        !_editingPublishedForm &&
+        _view == _BuilderView.build &&
+        editorValue?.editor.form.activeVersionId != null;
 
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        title: compact ? null : title,
-        titleWidget: compact
+        title: commandCenter || compact ? null : title,
+        titleWidget: compact && !commandCenter
             ? Text(
                 title,
                 maxLines: 1,
@@ -87,29 +100,34 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                 style: CatchTextStyles.sectionTitle(context),
               )
             : null,
-        subtitle: editorValue == null ? null : _saveLabel(context, editorValue),
+        subtitle: commandCenter || editorValue == null
+            ? null
+            : _saveLabel(context, editorValue),
         leadingType: CatchTopBarLeading.back,
         leadingActionVariant: CatchIconButtonVariant.plain,
         divider: scrolledUnder,
-        bottom: CatchTabRail<_BuilderView>(
-          groupKey: const ValueKey('host-form-builder-tabs'),
-          selected: _view,
-          options: [
-            CatchOption(
-              value: _BuilderView.build,
-              label: context.l10n.hostFormBuildTab,
-            ),
-            CatchOption(
-              value: _BuilderView.responses,
-              label: context.l10n.hostFormResponsesTab(
-                count: editorValue?.editor.form.submittedResponseCount ?? 0,
+        bottom: commandCenter
+            ? null
+            : CatchTabRail<_BuilderView>(
+                groupKey: const ValueKey('host-form-builder-tabs'),
+                selected: _view,
+                options: [
+                  CatchOption(
+                    value: _BuilderView.build,
+                    label: context.l10n.hostFormBuildTab,
+                  ),
+                  CatchOption(
+                    value: _BuilderView.responses,
+                    label: context.l10n.hostFormResponsesTab(
+                      count:
+                          editorValue?.editor.form.submittedResponseCount ?? 0,
+                    ),
+                  ),
+                ],
+                onChanged: (view) => setState(() => _view = view),
               ),
-            ),
-          ],
-          onChanged: (view) => setState(() => _view = view),
-        ),
         actions: [
-          if (_view == _BuilderView.build)
+          if (_view == _BuilderView.build && !commandCenter)
             CatchTopBarTextAction(
               label: context.l10n.hostFormPreview,
               foregroundColor: CatchTokens.of(context).ink,
@@ -127,7 +145,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
       ),
       bottomNavigationBar: _HostFormBuilderBottomAction(
         state: editorValue,
-        visible: _view == _BuilderView.build,
+        visible: _view == _BuilderView.build && !commandCenter,
         onReviewAndPublish: editorValue == null
             ? null
             : () => _reviewAndPublish(notifier, editorValue),
@@ -148,7 +166,29 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
               onRetry: notifier.reload,
             ),
           ),
-          builder: (context, value) => _view == _BuilderView.responses
+          builder: (context, value) => commandCenter
+              ? CatchScreenBody(
+                  key: const ValueKey('host-form-command-center'),
+                  pb: CatchSpacing.s10,
+                  child: _PublishedFormCommandCenter(
+                    organizerId: widget.organizerId,
+                    state: value,
+                    onEdit: () => setState(() => _editingPublishedForm = true),
+                    onReviewResponses: () =>
+                        setState(() => _view = _BuilderView.responses),
+                    onQuestions: () =>
+                        setState(() => _editingPublishedForm = true),
+                    onAudience: () => _showFormSettingsSheet(
+                      context,
+                      definition: value.editor.definition,
+                      notifier: notifier,
+                    ),
+                    onShare: () =>
+                        _runBuilderAction(notifier, _BuilderAction.share),
+                    onPreview: _openPreview,
+                  ),
+                )
+              : _view == _BuilderView.responses
               ? CatchScreenBody(
                   key: const ValueKey('host-form-builder-responses'),
                   pb: CatchSpacing.s10,
@@ -420,6 +460,211 @@ class _HostFormBuilderBottomAction extends StatelessWidget {
       isLoading: isLoading,
       buttonShape: CatchButtonShape.rounded,
       onPressed: isLoading ? null : onReviewAndPublish,
+    );
+  }
+}
+
+class _PublishedFormCommandCenter extends ConsumerWidget {
+  const _PublishedFormCommandCenter({
+    required this.organizerId,
+    required this.state,
+    required this.onEdit,
+    required this.onReviewResponses,
+    required this.onQuestions,
+    required this.onAudience,
+    required this.onShare,
+    required this.onPreview,
+  });
+
+  final String organizerId;
+  final HostFormEditorState state;
+  final VoidCallback onEdit;
+  final VoidCallback onReviewResponses;
+  final VoidCallback onQuestions;
+  final VoidCallback onAudience;
+  final VoidCallback onShare;
+  final VoidCallback onPreview;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    final form = state.editor.form;
+    final definition = state.editor.definition;
+    final questionCount = definition.sections.fold<int>(
+      0,
+      (count, section) => count + section.questions.length,
+    );
+    final responseRequest = HostFormResponseListRequest(
+      organizerId: organizerId,
+      formId: form.formId,
+      statuses: const {HostFormResponseStatus.submitted},
+      limit: 1,
+    );
+    final responses = ref.watch(
+      hostFormResponsesControllerProvider(responseRequest),
+    );
+    final latestResponse = catchAsyncStateFromAsyncValue(
+      responses,
+    ).value?.responses.firstOrNull;
+    final lifecycle = hostFormStatusLabel(context, form.status);
+    final purpose = hostFormPurposeLabel(context, form.purpose);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: Text(
+                definition.title,
+                key: const ValueKey('host-form-command-center-title'),
+                style: CatchTextStyles.eventTitle(context, color: t.ink),
+              ),
+            ),
+            gapW12,
+            CatchTextButton(
+              key: const ValueKey('host-form-command-center-edit'),
+              label: context.l10n.hostFormsOpen,
+              tone: CatchTextButtonTone.neutral,
+              minimumSize: const Size(0, CatchSpacing.s10),
+              padding: EdgeInsets.zero,
+              textStyle: CatchTextStyles.labelL(
+                context,
+                color: t.ink,
+              ).copyWith(decoration: TextDecoration.underline),
+              onPressed: onEdit,
+            ),
+          ],
+        ),
+        gapH12,
+        Row(
+          children: [
+            Flexible(child: CatchMonoLabel(lifecycle, color: t.ink2)),
+            Padding(
+              padding: CatchInsets.inlineHorizontal,
+              child: Text(
+                '·',
+                style: CatchTextStyles.monoLabel(context, color: t.ink3),
+              ),
+            ),
+            Flexible(child: CatchMonoLabel(purpose, color: t.ink2)),
+          ],
+        ),
+        gapH32,
+        CatchSurface.tinted(
+          key: const ValueKey('host-form-response-command'),
+          radius: CatchRadius.md,
+          backgroundColor: t.primarySoft,
+          padding: CatchInsets.contentRelaxed,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    '${form.submittedResponseCount}',
+                    style: CatchTextStyles.display(
+                      context,
+                      color: t.primary,
+                    ).copyWith(fontSize: 56),
+                  ),
+                  gapW16,
+                  Expanded(
+                    child: Text(
+                      context.l10n.hostFormsViewResponses,
+                      style: CatchTextStyles.headlineS(context, color: t.ink),
+                    ),
+                  ),
+                ],
+              ),
+              gapH8,
+              Text(
+                context.l10n.hostFormResponsesSubtitle,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+              gapH20,
+              CatchButton(
+                label: context.l10n.hostFormsViewResponsesAction,
+                shape: CatchButtonShape.rounded,
+                fullWidth: true,
+                onPressed: onReviewResponses,
+              ),
+            ],
+          ),
+        ),
+        gapH24,
+        CatchMetricStrip(
+          key: const ValueKey('host-form-command-center-metrics'),
+          backgroundColor: Colors.transparent,
+          borderColor: Colors.transparent,
+          items: [
+            CatchMetricStripItem(
+              value: '${form.submittedResponseCount}',
+              label: context.l10n.hostFormsViewResponses,
+            ),
+            CatchMetricStripItem(
+              value: '$questionCount',
+              label: context.l10n.hostFormQuestionsTitle,
+            ),
+            CatchMetricStripItem(
+              value: '${form.publishedVersion}',
+              label: context.l10n.hostFormsStatusPublished,
+            ),
+          ],
+        ),
+        if (latestResponse != null) ...[
+          gapH24,
+          CatchFieldLanes.single(
+            child: CatchField.nav(
+              key: const ValueKey('host-form-command-center-recent-response'),
+              title:
+                  latestResponse.identity.primaryLabel ??
+                  context.l10n.hostFormResponsesAnonymous,
+              body:
+                  latestResponse.sourceLabel ??
+                  context.l10n.hostFormResponseTitle,
+              emphasis: CatchFieldEmphasis.title,
+              valueText: AppTimeFormatters.compactRelativeTime(
+                latestResponse.submittedAt,
+              ),
+              divider: true,
+              onTap: onReviewResponses,
+            ),
+          ),
+        ],
+        gapH24,
+        CatchFieldLanes.divided(
+          children: [
+            CatchField.nav(
+              title: context.l10n.hostFormQuestionsTitle,
+              body: context.l10n.hostFormQuestionCount(count: questionCount),
+              icon: CatchIcons.helpOutline,
+              emphasis: CatchFieldEmphasis.title,
+              onTap: onQuestions,
+            ),
+            CatchField.nav(
+              title: context.l10n.hostFormIdentityLabel,
+              body: hostFormIdentityLabel(context, definition.identityPolicy),
+              icon: CatchIcons.verifiedUserOutlined,
+              emphasis: CatchFieldEmphasis.title,
+              onTap: onAudience,
+            ),
+            CatchField.nav(
+              title: context.l10n.hostFormShare,
+              icon: CatchIcons.share,
+              emphasis: CatchFieldEmphasis.title,
+              onTap: onShare,
+            ),
+            CatchField.nav(
+              title: context.l10n.hostFormPreview,
+              icon: CatchIcons.eye,
+              emphasis: CatchFieldEmphasis.title,
+              onTap: onPreview,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
