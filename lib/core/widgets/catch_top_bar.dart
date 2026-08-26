@@ -387,6 +387,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.titleWidget,
     this.leading,
     this.leadingType = CatchTopBarLeading.auto,
+    this.leadingActionVariant = CatchIconButtonVariant.bordered,
     this.actions = const <Widget>[],
     this.showBackButton,
     this.onBack,
@@ -415,6 +416,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.onIdentityTap,
     this.leading,
     this.leadingType = CatchTopBarLeading.auto,
+    this.leadingActionVariant = CatchIconButtonVariant.bordered,
     this.actions = const <Widget>[],
     this.showBackButton,
     this.onBack,
@@ -448,6 +450,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onIdentityTap;
   final Widget? leading;
   final CatchTopBarLeading leadingType;
+  final CatchIconButtonVariant leadingActionVariant;
   final List<Widget> actions;
   final bool? showBackButton;
   final VoidCallback? onBack;
@@ -576,6 +579,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
           ? localizations.closeButtonTooltip
           : localizations.backButtonTooltip,
       icon: isClose ? CatchIcons.close : CatchIcons.arrowBackIosNewRounded,
+      variant: widget.leadingActionVariant,
       onPressed: widget.onBack ?? () => Navigator.of(context).maybePop(),
     );
   }

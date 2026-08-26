@@ -139,6 +139,7 @@ class CatchBottomAction extends StatelessWidget {
     this.backgroundColor,
     this.dividerColor,
     this.buttonAccentColor,
+    this.buttonShape = CatchButtonShape.pill,
     this.catchLine,
     this.catchLineAccent,
     this.footnote,
@@ -152,6 +153,7 @@ class CatchBottomAction extends StatelessWidget {
   final Color? backgroundColor;
   final Color? dividerColor;
   final Color? buttonAccentColor;
+  final CatchButtonShape buttonShape;
   final String? catchLine;
   final Color? catchLineAccent;
   final String? footnote;
@@ -190,6 +192,7 @@ class CatchBottomAction extends StatelessWidget {
               buttonKey: buttonKey,
               isLoading: isLoading,
               buttonAccentColor: buttonAccentColor,
+              buttonShape: buttonShape,
               catchLine: catchLine,
               catchLineAccent: catchLineAccent,
               footnote: footnote,
@@ -215,6 +218,7 @@ class CatchBottomAction extends StatelessWidget {
             buttonKey: buttonKey,
             isLoading: isLoading,
             buttonAccentColor: buttonAccentColor,
+            buttonShape: buttonShape,
             catchLine: catchLine,
             catchLineAccent: catchLineAccent,
             footnote: footnote,
@@ -239,6 +243,7 @@ class CatchBottomActionContent extends StatelessWidget {
     this.buttonKey,
     this.isLoading = false,
     this.buttonAccentColor,
+    this.buttonShape = CatchButtonShape.pill,
     this.catchLine,
     this.catchLineAccent,
     this.footnote,
@@ -251,6 +256,7 @@ class CatchBottomActionContent extends StatelessWidget {
   final Key? buttonKey;
   final bool isLoading;
   final Color? buttonAccentColor;
+  final CatchButtonShape buttonShape;
   final String? catchLine;
   final Color? catchLineAccent;
   final String? footnote;
@@ -313,6 +319,7 @@ class CatchBottomActionContent extends StatelessWidget {
                       size: CatchButtonSize.lg,
                       isLoading: isLoading,
                       fullWidth: true,
+                      shape: buttonShape,
                       accentColor: buttonAccentColor,
                     ),
                   ),

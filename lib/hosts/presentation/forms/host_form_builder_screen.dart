@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
@@ -88,6 +89,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             : null,
         subtitle: editorValue == null ? null : _saveLabel(context, editorValue),
         leadingType: CatchTopBarLeading.back,
+        leadingActionVariant: CatchIconButtonVariant.plain,
         divider: scrolledUnder,
         bottom: CatchTabRail<_BuilderView>(
           groupKey: const ValueKey('host-form-builder-tabs'),
@@ -108,15 +110,16 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         ),
         actions: [
           if (_view == _BuilderView.build)
-            CatchIconAction(
-              icon: CatchIcons.visibilityOutlined,
-              tooltip: context.l10n.hostFormPreview,
+            CatchTopBarTextAction(
+              label: context.l10n.hostFormPreview,
+              foregroundColor: CatchTokens.of(context).ink,
               onPressed: editorValue == null ? null : _openPreview,
             ),
           if (editorValue != null &&
               _builderActions(context, editorValue).isNotEmpty)
             CatchActionMenu<_BuilderAction>(
               tooltip: context.l10n.hostFormsActions,
+              variant: CatchIconButtonVariant.plain,
               items: _builderActions(context, editorValue),
               onSelected: (action) => _runBuilderAction(notifier, action),
             ),
@@ -166,7 +169,6 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       formId: widget.formId,
                       state: value,
                       notifier: notifier,
-                      onPreview: _openPreview,
                       onSelectionChanged: (section, question) => setState(() {
                         _selectedSection = section;
                         _selectedQuestion = question;
@@ -416,6 +418,7 @@ class _HostFormBuilderBottomAction extends StatelessWidget {
           ? context.l10n.hostFormReviewPublishChanges
           : context.l10n.hostFormReviewPublish,
       isLoading: isLoading,
+      buttonShape: CatchButtonShape.rounded,
       onPressed: isLoading ? null : onReviewAndPublish,
     );
   }
@@ -427,7 +430,6 @@ class _CompactFormEditor extends StatefulWidget {
     required this.formId,
     required this.state,
     required this.notifier,
-    required this.onPreview,
     required this.onSelectionChanged,
   });
 
@@ -435,7 +437,6 @@ class _CompactFormEditor extends StatefulWidget {
   final String formId;
   final HostFormEditorState state;
   final HostFormEditorController notifier;
-  final VoidCallback onPreview;
   final void Function(int section, int? question) onSelectionChanged;
 
   @override
@@ -474,7 +475,7 @@ class _CompactFormEditorState extends State<_CompactFormEditor> {
           notifier: widget.notifier,
         ),
         gapH24,
-        _CompactPublishStep(state: widget.state, onPreview: widget.onPreview),
+        _CompactPublishStep(state: widget.state),
       ],
     );
   }
@@ -604,10 +605,9 @@ Future<void> _showFormSettingsSheet(
 );
 
 class _CompactPublishStep extends StatelessWidget {
-  const _CompactPublishStep({required this.state, required this.onPreview});
+  const _CompactPublishStep({required this.state});
 
   final HostFormEditorState state;
-  final VoidCallback onPreview;
 
   @override
   Widget build(BuildContext context) {
@@ -616,42 +616,19 @@ class _CompactPublishStep extends StatelessWidget {
       0,
       (count, section) => count + section.questions.length,
     );
-    final t = CatchTokens.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          context.l10n.hostFormPublishPrompt,
-          style: CatchTextStyles.headlineS(context),
-        ),
-        gapH8,
-        Text(
-          context.l10n.hostFormReviewPublishSubtitle,
-          style: CatchTextStyles.proseM(context, color: t.ink2),
-        ),
-        gapH24,
-        CatchSection.fieldRows(
-          children: [
-            CatchField.read(
-              title: context.l10n.hostFormQuestionsTitle,
-              body: context.l10n.hostFormQuestionCount(count: questionCount),
-            ),
-            CatchField.read(
-              title: context.l10n.hostFormIdentityLabel,
-              body: hostFormIdentityLabel(context, definition.identityPolicy),
-            ),
-            CatchField.read(
-              title: context.l10n.hostFormAvailability,
-              body: _availabilitySummary(context, definition),
-            ),
-            CatchField.nav(
-              key: const ValueKey('host-form-publish-preview'),
-              title: context.l10n.hostFormPreview,
-              body: context.l10n.hostFormPreviewHelp,
-              icon: CatchIcons.visibilityOutlined,
-              onTap: onPreview,
-            ),
-          ],
+        const CatchDivider.section(),
+        Padding(
+          padding: CatchInsets.contentVerticalMedium,
+          child: Text(
+            '${context.l10n.hostFormQuestionCount(count: questionCount)} · '
+            '${context.l10n.hostFormPublishPrompt}',
+            key: const ValueKey('host-form-readiness-summary'),
+            textAlign: TextAlign.center,
+            style: CatchTextStyles.supporting(context),
+          ),
         ),
       ],
     );
@@ -689,6 +666,7 @@ class _CompactSectionOutline extends StatelessWidget {
     first: sectionIndex == 0,
     trailing: CatchActionMenu<_SectionAction>(
       tooltip: context.l10n.hostFormSectionActions,
+      variant: CatchIconButtonVariant.plain,
       items: [
         CatchActionMenuItem(
           value: _SectionAction.edit,

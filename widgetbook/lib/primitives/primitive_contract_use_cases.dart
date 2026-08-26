@@ -1486,6 +1486,7 @@ Widget catchButtonContractStates(BuildContext context) {
       'loading',
       'full-width',
       'with-icon',
+      'rounded',
     ],
     children: [
       _StateCard(
@@ -1541,6 +1542,15 @@ Widget catchButtonContractStates(BuildContext context) {
         child: CatchButton(
           label: 'Add to calendar',
           icon: Icon(CatchIcons.calendarAdd),
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'rounded editorial bar',
+        child: CatchButton(
+          label: 'Review & publish',
+          shape: CatchButtonShape.rounded,
+          fullWidth: true,
           onPressed: _noop,
         ),
       ),
@@ -3489,6 +3499,7 @@ Widget catchIconButtonContractStates(BuildContext context) {
       'active',
       'disabled',
       'bordered',
+      'plain-actions',
       'float',
       'plain',
       'counted',
@@ -4195,6 +4206,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       'conversation-title',
       'surface',
       'bordered',
+      'plain-actions',
     ],
     children: [
       _StateCard(
@@ -4220,6 +4232,27 @@ Widget catchTopBarContractStates(BuildContext context) {
             title: 'Event details',
             leadingType: CatchTopBarLeading.back,
             onBack: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'plain-actions',
+        child: _TopBarFrame(
+          child: CatchTopBar(
+            title: 'Form builder',
+            leadingType: CatchTopBarLeading.back,
+            leadingActionVariant: CatchIconButtonVariant.plain,
+            onBack: _noop,
+            actions: [
+              CatchTopBarTextAction(label: 'Preview', onPressed: _noop),
+              CatchTopBarMenuAction<String>(
+                tooltip: 'Form actions',
+                variant: CatchIconButtonVariant.plain,
+                items: const [
+                  CatchActionMenuItem(value: 'share', label: 'Share form'),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -5557,6 +5590,7 @@ Widget catchOptionGroupContractStates(BuildContext context) {
       'mono',
       'selected',
       'disabled',
+      'rounded-button',
       'accented',
       'trailing',
       'overflow',
@@ -7059,6 +7093,7 @@ Widget catchBottomActionContractStates(BuildContext context) {
       'scroll-overlay',
       'loading',
       'disabled',
+      'rounded-button',
     ],
     children: [
       _StateCard(
@@ -7073,6 +7108,16 @@ Widget catchBottomActionContractStates(BuildContext context) {
           child: CatchBottomAction(
             label: 'Join waitlist',
             leadingContent: const CatchBadge(label: '4 left'),
+            onPressed: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'rounded-button',
+        child: _DockFrame(
+          child: CatchBottomAction(
+            label: 'Review & publish',
+            buttonShape: CatchButtonShape.rounded,
             onPressed: _noop,
           ),
         ),

@@ -1,4 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -32,11 +35,23 @@ void main() {
     expect(find.text('Reorder questions'), findsNothing);
     expect(find.byIcon(Icons.drag_indicator_rounded), findsNWidgets(2));
     expect(find.text('Form settings'), findsOneWidget);
-    expect(find.text('Ready to publish?'), findsOneWidget);
+    expect(find.text('2 questions · Ready to publish?'), findsOneWidget);
     expect(find.text('Review & publish'), findsOneWidget);
     expect(find.text('Continue to settings'), findsNothing);
     expect(find.text('Continue to publish'), findsNothing);
     expect(find.text('Form title'), findsNothing);
+    expect(
+      tester
+          .widgetList<CatchIconButton>(find.byType(CatchIconButton))
+          .map((button) => button.variant),
+      everyElement(CatchIconButtonVariant.plain),
+    );
+    expect(
+      tester
+          .widget<CatchBottomAction>(find.byType(CatchBottomAction))
+          .buttonShape,
+      CatchButtonShape.rounded,
+    );
   });
 
   testWidgets(
@@ -126,10 +141,8 @@ void main() {
   ) async {
     await _pumpBuilder(tester);
 
-    expect(find.text('Ready to publish?'), findsOneWidget);
-    expect(find.text('Verified phone required'), findsOneWidget);
-    expect(find.text('2 questions'), findsOneWidget);
-    expect(find.text('Preview'), findsWidgets);
+    expect(find.text('2 questions · Ready to publish?'), findsOneWidget);
+    expect(find.text('Preview'), findsOneWidget);
     expect(find.text('Review & publish'), findsOneWidget);
   });
 

@@ -171,6 +171,32 @@ void _registerCatchPrimitivesControlsTests() {
     },
   );
 
+  testWidgets('CatchButton exposes named rounded editorial geometry', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchButton(
+          key: const ValueKey('rounded-button'),
+          label: 'Review & publish',
+          shape: CatchButtonShape.rounded,
+          onPressed: () {},
+        ),
+      ),
+    );
+
+    final decoration = tester.widget<DecoratedBox>(
+      find.descendant(
+        of: find.byKey(const ValueKey('rounded-button')),
+        matching: find.byType(DecoratedBox),
+      ),
+    );
+    expect(
+      (decoration.decoration as BoxDecoration).borderRadius,
+      BorderRadius.circular(CatchRadius.md),
+    );
+  });
+
   testWidgets('CatchButton pairs primary activity accent with white ink', (
     tester,
   ) async {
@@ -211,6 +237,7 @@ void _registerCatchPrimitivesControlsTests() {
             label: 'Join event',
             onPressed: () {},
             buttonAccentColor: accent,
+            buttonShape: CatchButtonShape.rounded,
           ),
         ),
       );
@@ -220,6 +247,7 @@ void _registerCatchPrimitivesControlsTests() {
         find.widgetWithText(CatchButton, 'Join event'),
       );
       expect(button.accentColor, accent);
+      expect(button.shape, CatchButtonShape.rounded);
     },
   );
 

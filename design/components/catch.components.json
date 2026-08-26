@@ -563,6 +563,17 @@
             ]
           },
           {
+            "name": "shape",
+            "type": "enum",
+            "required": false,
+            "default": "pill",
+            "dartType": "CatchButtonShape",
+            "values": [
+              "pill",
+              "rounded"
+            ]
+          },
+          {
             "name": "icon",
             "type": "widget",
             "required": false,
@@ -596,7 +607,8 @@
           "disabled",
           "loading",
           "full-width",
-          "with-icon"
+          "with-icon",
+          "rounded"
         ],
         "slots": [
           {
@@ -611,6 +623,7 @@
           "space.s3",
           "space.s4",
           "space.micro6",
+          "radius.md",
           "radius.pill",
           "theme.light.color.primary",
           "theme.light.color.primaryInk",
@@ -6277,6 +6290,18 @@
             ]
           },
           {
+            "name": "leadingActionVariant",
+            "type": "enum",
+            "required": false,
+            "default": "bordered",
+            "dartType": "CatchIconButtonVariant",
+            "values": [
+              "bordered",
+              "float",
+              "plain"
+            ]
+          },
+          {
             "name": "surface",
             "type": "bool",
             "required": false,
@@ -6318,7 +6343,8 @@
           "with-search",
           "conversation-title",
           "surface",
-          "bordered"
+          "bordered",
+          "plain-actions"
         ],
         "slots": [
           {
@@ -13111,6 +13137,17 @@
             "dartType": "Color?"
           },
           {
+            "name": "buttonShape",
+            "type": "enum",
+            "required": false,
+            "default": "pill",
+            "dartType": "CatchButtonShape",
+            "values": [
+              "pill",
+              "rounded"
+            ]
+          },
+          {
             "name": "catchLine",
             "type": "string",
             "required": false,
@@ -13137,7 +13174,8 @@
           "footnote",
           "scroll-overlay",
           "loading",
-          "disabled"
+          "disabled",
+          "rounded-button"
         ],
         "slots": [
           {
