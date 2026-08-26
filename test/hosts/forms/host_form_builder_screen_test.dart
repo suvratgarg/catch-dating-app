@@ -29,12 +29,16 @@ void main() {
     expect(find.text('Add question'), findsOneWidget);
     expect(find.text('Reorder questions'), findsNothing);
     expect(find.byIcon(Icons.drag_indicator_rounded), findsNWidgets(2));
-    expect(find.text('Continue to settings'), findsOneWidget);
+    expect(find.text('Form settings'), findsOneWidget);
+    expect(find.text('Ready to publish?'), findsOneWidget);
+    expect(find.text('Review & publish'), findsOneWidget);
+    expect(find.text('Continue to settings'), findsNothing);
+    expect(find.text('Continue to publish'), findsNothing);
     expect(find.text('Form title'), findsNothing);
   });
 
   testWidgets(
-    'question editor stays focused and settings are a distinct step',
+    'question editor stays focused and settings remain directly reachable',
     (tester) async {
       await _pumpBuilder(tester);
 
@@ -58,32 +62,26 @@ void main() {
       Navigator.of(tester.element(find.text('Question'))).pop();
       await pumpFeatureUi(tester);
 
-      await tester.tap(find.text('Continue to settings'));
+      await ensureCentered(tester, find.text('Form settings'));
+      await tester.tap(find.text('Form settings'));
       await pumpFeatureUi(tester);
 
-      expect(find.text('How should this form work?'), findsOneWidget);
+      expect(find.text('Form settings'), findsWidgets);
       expect(find.text('Form title'), findsOneWidget);
-      expect(find.text('Who can respond'), findsOneWidget);
-      expect(find.text('Continue to publish'), findsOneWidget);
+      expect(find.text('Who can respond'), findsWidgets);
     },
   );
 
-  testWidgets('publish step summarizes readiness and keeps preview explicit', (
+  testWidgets('single page summarizes readiness and keeps preview explicit', (
     tester,
   ) async {
     await _pumpBuilder(tester);
-
-    await tester.tap(find.text('Continue to settings'));
-    await pumpFeatureUi(tester);
-    await ensureCentered(tester, find.text('Continue to publish'));
-    await tester.tap(find.text('Continue to publish'));
-    await pumpFeatureUi(tester);
 
     expect(find.text('Ready to publish?'), findsOneWidget);
     expect(find.text('Verified phone required'), findsOneWidget);
     expect(find.text('2 questions'), findsOneWidget);
     expect(find.text('Preview'), findsWidgets);
-    expect(find.text('Publish form'), findsOneWidget);
+    expect(find.text('Review & publish'), findsOneWidget);
   });
 
   testWidgets('inline drag handle changes the persisted question order', (

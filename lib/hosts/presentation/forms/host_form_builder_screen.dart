@@ -33,8 +33,6 @@ import 'package:go_router/go_router.dart';
 
 enum _BuilderView { build, responses }
 
-enum _CompactBuilderStep { questions, settings, publish }
-
 enum _BuilderAction { undo, redo, share, pause, resume, archive }
 
 enum _SectionAction { edit, moveUp, moveDown, remove }
@@ -58,7 +56,6 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
   int? _selectedSection;
   int? _selectedQuestion;
   _BuilderView _view = _BuilderView.build;
-  _CompactBuilderStep _compactStep = _CompactBuilderStep.questions;
 
   @override
   Widget build(BuildContext context) {
@@ -129,13 +126,9 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
       bottomNavigationBar: _HostFormBuilderBottomAction(
         state: editorValue,
         visible: _view == _BuilderView.build,
-        compact: compact,
-        step: _compactStep,
-        onStepChanged: (step) => setState(() => _compactStep = step),
         onReviewAndPublish: editorValue == null
             ? null
             : () => _reviewAndPublish(notifier, editorValue),
-        onPublish: () => _publish(notifier),
       ),
       body: SafeArea(
         top: false,
@@ -174,10 +167,6 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       formId: widget.formId,
                       state: value,
                       notifier: notifier,
-                      step: _compactStep,
-                      onStepChanged: (step) => setState(() {
-                        _compactStep = step;
-                      }),
                       onPreview: _openPreview,
                       onSelectionChanged: (section, question) => setState(() {
                         _selectedSection = section;
@@ -407,20 +396,12 @@ class _HostFormBuilderBottomAction extends StatelessWidget {
   const _HostFormBuilderBottomAction({
     required this.state,
     required this.visible,
-    required this.compact,
-    required this.step,
-    required this.onStepChanged,
     required this.onReviewAndPublish,
-    required this.onPublish,
   });
 
   final HostFormEditorState? state;
   final bool visible;
-  final bool compact;
-  final _CompactBuilderStep step;
-  final ValueChanged<_CompactBuilderStep> onStepChanged;
   final VoidCallback? onReviewAndPublish;
-  final VoidCallback onPublish;
 
   @override
   Widget build(BuildContext context) {
@@ -431,38 +412,12 @@ class _HostFormBuilderBottomAction extends StatelessWidget {
       return const SizedBox.shrink();
     }
     final isLoading = current.operationInProgress;
-    if (!compact) {
-      return CatchBottomAction(
-        label: current.editor.form.status == HostFormLifecycleStatus.published
-            ? context.l10n.hostFormReviewPublishChanges
-            : context.l10n.hostFormReviewPublish,
-        isLoading: isLoading,
-        onPressed: isLoading ? null : onReviewAndPublish,
-      );
-    }
-    final label = switch (step) {
-      _CompactBuilderStep.questions => context.l10n.hostFormContinueToSettings,
-      _CompactBuilderStep.settings => context.l10n.hostFormContinueToPublish,
-      _CompactBuilderStep.publish =>
-        current.editor.form.status == HostFormLifecycleStatus.published
-            ? context.l10n.hostFormPublishChanges
-            : context.l10n.hostFormPublish,
-    };
     return CatchBottomAction(
-      label: label,
+      label: current.editor.form.status == HostFormLifecycleStatus.published
+          ? context.l10n.hostFormReviewPublishChanges
+          : context.l10n.hostFormReviewPublish,
       isLoading: isLoading,
-      onPressed: isLoading
-          ? null
-          : () {
-              switch (step) {
-                case _CompactBuilderStep.questions:
-                  onStepChanged(_CompactBuilderStep.settings);
-                case _CompactBuilderStep.settings:
-                  onStepChanged(_CompactBuilderStep.publish);
-                case _CompactBuilderStep.publish:
-                  onPublish();
-              }
-            },
+      onPressed: isLoading ? null : onReviewAndPublish,
     );
   }
 }
@@ -473,8 +428,6 @@ class _CompactFormEditor extends StatelessWidget {
     required this.formId,
     required this.state,
     required this.notifier,
-    required this.step,
-    required this.onStepChanged,
     required this.onPreview,
     required this.onSelectionChanged,
   });
@@ -483,8 +436,6 @@ class _CompactFormEditor extends StatelessWidget {
   final String formId;
   final HostFormEditorState state;
   final HostFormEditorController notifier;
-  final _CompactBuilderStep step;
-  final ValueChanged<_CompactBuilderStep> onStepChanged;
   final VoidCallback onPreview;
   final void Function(int section, int? question) onSelectionChanged;
 
@@ -495,109 +446,18 @@ class _CompactFormEditor extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _FormStatusNotices(state: state, notifier: notifier),
-        _CompactBuilderProgress(step: step, onStepChanged: onStepChanged),
+        _CompactQuestionsStep(
+          organizerId: organizerId,
+          formId: formId,
+          definition: definition,
+          notifier: notifier,
+          onSelectionChanged: onSelectionChanged,
+        ),
         gapH24,
-        switch (step) {
-          _CompactBuilderStep.questions => _CompactQuestionsStep(
-            organizerId: organizerId,
-            formId: formId,
-            definition: definition,
-            notifier: notifier,
-            onSelectionChanged: onSelectionChanged,
-          ),
-          _CompactBuilderStep.settings => _CompactSettingsStep(
-            definition: definition,
-            notifier: notifier,
-          ),
-          _CompactBuilderStep.publish => _CompactPublishStep(
-            state: state,
-            onPreview: onPreview,
-          ),
-        },
+        _CompactFormSettingsEntry(definition: definition, notifier: notifier),
+        gapH24,
+        _CompactPublishStep(state: state, onPreview: onPreview),
       ],
-    );
-  }
-}
-
-class _CompactBuilderProgress extends StatelessWidget {
-  const _CompactBuilderProgress({
-    required this.step,
-    required this.onStepChanged,
-  });
-
-  final _CompactBuilderStep step;
-  final ValueChanged<_CompactBuilderStep> onStepChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final steps = [
-      (
-        step: _CompactBuilderStep.questions,
-        label: context.l10n.hostFormQuestionsTitle,
-      ),
-      (
-        step: _CompactBuilderStep.settings,
-        label: context.l10n.hostFormSettingsStep,
-      ),
-      (
-        step: _CompactBuilderStep.publish,
-        label: context.l10n.hostFormPublishStep,
-      ),
-    ];
-    return Semantics(
-      label: context.l10n.hostFormBuilderProgress,
-      child: Row(
-        children: [
-          for (final entry in steps.indexed) ...[
-            Expanded(
-              child: InkWell(
-                key: ValueKey('host-form-step-${entry.$2.step.name}'),
-                borderRadius: BorderRadius.circular(CatchRadius.md),
-                onTap: () => onStepChanged(entry.$2.step),
-                child: Padding(
-                  padding: CatchInsets.contentVerticalCompact,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (entry.$1 <= step.index)
-                        CatchBadge.solid(label: '${entry.$1 + 1}')
-                      else
-                        CatchBadge(
-                          label: '${entry.$1 + 1}',
-                          size: CatchBadgeSize.md,
-                          backgroundColor: Colors.transparent,
-                          foregroundColor: t.ink2,
-                          borderColor: t.ink2,
-                        ),
-                      gapW8,
-                      Flexible(
-                        child: Text(
-                          entry.$2.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.labelL(
-                            context,
-                            color: entry.$2.step == step ? t.ink : t.ink2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            if (entry.$1 < steps.length - 1)
-              SizedBox(
-                width: CatchSpacing.s4,
-                child: Divider(
-                  color: entry.$1 < step.index ? t.ink : t.line,
-                  height: 1,
-                ),
-              ),
-          ],
-        ],
-      ),
     );
   }
 }
@@ -660,8 +520,8 @@ class _CompactQuestionsStep extends StatelessWidget {
   }
 }
 
-class _CompactSettingsStep extends StatelessWidget {
-  const _CompactSettingsStep({
+class _CompactFormSettingsEntry extends StatelessWidget {
+  const _CompactFormSettingsEntry({
     required this.definition,
     required this.notifier,
   });
@@ -670,26 +530,41 @@ class _CompactSettingsStep extends StatelessWidget {
   final HostFormEditorController notifier;
 
   @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          context.l10n.hostFormSettingsPrompt,
-          style: CatchTextStyles.titleL(context),
+  Widget build(BuildContext context) => CatchSection.fieldRows(
+    children: [
+      CatchField.nav(
+        key: const ValueKey('host-form-settings-entry'),
+        title: context.l10n.hostFormSettings,
+        body: context.l10n.hostFormSettingsPromptHelp,
+        icon: CatchIcons.settingsOutlined,
+        onTap: () => _showFormSettingsSheet(
+          context,
+          definition: definition,
+          notifier: notifier,
         ),
-        gapH8,
-        Text(
-          context.l10n.hostFormSettingsPromptHelp,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
-        ),
-        gapH24,
-        _FormSettings(definition: definition, notifier: notifier),
-      ],
-    );
-  }
+      ),
+    ],
+  );
 }
+
+Future<void> _showFormSettingsSheet(
+  BuildContext context, {
+  required HostFormDefinition definition,
+  required HostFormEditorController notifier,
+}) => showCatchBottomSheet<void>(
+  context: context,
+  builder: (sheetContext) => CatchBottomSheetScaffold(
+    title: context.l10n.hostFormSettings,
+    subtitle: context.l10n.hostFormSettingsPromptHelp,
+    keyboardSafe: true,
+    child: SizedBox(
+      height: MediaQuery.sizeOf(sheetContext).height * 0.62,
+      child: SingleChildScrollView(
+        child: _FormSettings(definition: definition, notifier: notifier),
+      ),
+    ),
+  ),
+);
 
 class _CompactPublishStep extends StatelessWidget {
   const _CompactPublishStep({required this.state, required this.onPreview});
