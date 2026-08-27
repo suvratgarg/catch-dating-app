@@ -33,6 +33,8 @@ import 'package:widgetbook_workspace/foundation/foundation_token_use_cases.dart'
     as _widgetbook_workspace_foundation_foundation_token_use_cases;
 import 'package:widgetbook_workspace/geometry/component_geometry_use_cases.dart'
     as _widgetbook_workspace_geometry_component_geometry_use_cases;
+import 'package:widgetbook_workspace/geometry/field_transition_prototype.dart'
+    as _widgetbook_workspace_geometry_field_transition_prototype;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
 import 'package:widgetbook_workspace/hosts/host_operations_use_cases.dart'
@@ -4777,6 +4779,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Responsive page contexts',
             builder: _widgetbook_workspace_geometry_component_geometry_use_cases
                 .responsivePageContextMatrix,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Unified interaction transition prototype',
+            builder: _widgetbook_workspace_geometry_field_transition_prototype
+                .fieldTransitionPrototype,
           ),
         ],
       ),
