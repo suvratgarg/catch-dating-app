@@ -89,10 +89,12 @@ typed content boundaries, and decide whether generic `contained` deserves a
 name separate from field sections. Do not introduce a parallel public section
 facade or compatibility aliases in the meantime.
 
-Implemented sizes (2026-07-17): the stable `catch_field.dart` entry point is
-**999 lines**; each extracted part is below 850 lines. The private constructor
-still centralizes the mode matrix, while rendering and state behavior are
-separated by responsibility. `catch_section_layout.dart` remains 1,074 lines.
+Current sizes (2026-08-28): the stable `catch_field.dart` entry point is
+**913 lines** and each extracted part remains below 850 lines. The private
+constructor still centralizes the mode matrix, while rendering and state
+behavior are separated by responsibility. `catch_section_layout.dart` is
+1,364 lines, which is why its internal configuration split is the next bounded
+structural pass after the open visual decisions are settled.
 
 ## 1. Usage census (2026-07-17)
 
