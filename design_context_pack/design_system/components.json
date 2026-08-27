@@ -77,6 +77,7 @@
       ],
       "rules": [
         "The section owns grouping, dividers, contained chrome, header composition, and field-row focus or error treatment.",
+        "Contained field-row titles, counts, and trailing actions sit outside the row-group outline; generic contained content-card titles remain inside their surface.",
         "Product surfaces keep route layout and domain state outside the section contract.",
         "Use field sections for data entry and management surfaces, never as a generic storytelling container."
       ]
@@ -3016,7 +3017,7 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical information-grouping primitive for divided field rows, exact contained field-row surfaces with shared child-edge geometry, generic contained sections, and plain titled content groups. Call sites use named constructors so header, divider, focus, and surface ownership stay explicit.",
+      "summary": "Canonical information-grouping primitive for divided field rows, exact contained field-row surfaces with external group headers and shared child-edge geometry, generic contained sections with internal card titles, and plain titled content groups. Call sites use named constructors so header, divider, focus, and surface ownership stay explicit.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -3247,7 +3248,7 @@
           "contained-section",
           "plain-section",
           "divided-field-rows",
-          "header-footer-metrics",
+          "contained-field-rows-external-header",
           "contained-field-rows-child-active",
           "contained-field-rows-explicit-focused",
           "field-list",
@@ -3282,6 +3283,7 @@
         ],
         "tokens": [
           "space.s1",
+          "space.s2",
           "space.s3",
           "space.s4",
           "space.s6",
@@ -3471,10 +3473,10 @@
         ],
         "notes": [
           "Use divided sections for top-level information groups when nested rounded rectangles would add visual clutter.",
-          "Use containedFieldRows for the handoff field surface: it owns a clipped 14 px radius, neutral line border, explicit section-focus/error border, inset internal rules, and no generic elevation. Descendant field focus remains child-owned; the section publishes a one-hairline active-overlay overlap so child chrome and the outer perimeter share identical left/right geometry, then paints the section edge last. Its optional title, right-aligned count, and trailing slot use 14 px / 16 px / 2 px in-card header padding; its optional footer stays inside the border with 2 px / 16 px / 12 px padding. Divided fieldRows footers render outside the rows with 8 px top padding and the field-caption style. Headerless prompt cards begin directly with their first field row. Use contained for non-field carded content that needs one bounded surface.",
+          "Use containedFieldRows for the handoff field surface: it owns a clipped 14 px radius, neutral line border, explicit section-focus/error border, inset internal rules, and no generic elevation. Descendant field focus remains child-owned; the section publishes a one-hairline active-overlay overlap so child chrome and the outer perimeter share identical left/right geometry, then paints the section edge last. Its optional title, right-aligned count, and trailing slot form an external kicker row aligned 16 px from the group edge with an 8 px gap before the outline, so the perimeter begins with the first field row. Its optional footer stays inside the border with 2 px / 16 px / 12 px padding. Divided fieldRows footers render outside the rows with 8 px top padding and the field-caption style. Headerless prompt cards begin directly with their first field row. Use contained for non-field carded content that needs one bounded surface and an internal title.",
           "Use plain sections for compact titled blocks without a container or divider.",
           "The section owns the outer grouping and internal dividers. Outer section rules use the full line token; boundaries between sibling field rows use the muted fieldRow tone and remain coverable by an active field's 10 px bleed. Direct CatchField children derive a zero or text-lane divider inset from their leading icons; adapter-wrapped rows pass dividerInset explicitly. Fields own information content and interaction mode.",
-          "Divided and contained field-row headers accept title, count, and trailing content. Contained footers use 2 px top padding; divided footers use 8 px. Field-section kickers use the exact 11 px, 600-weight, 1.43 px tracking treatment.",
+          "Divided and contained field-row headers accept title, count, and trailing content. Contained field-row headers sit outside the outline; generic contained content-card titles remain inside. Contained footers use 2 px top padding; divided footers use 8 px. Field-section kickers use the exact 11 px, 600-weight, 1.43 px tracking treatment.",
           "Section headers, section labels, day headers, vertical sections, and horizontal rails are public members of this grouping family, not separate section systems."
         ]
       },

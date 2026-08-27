@@ -3138,7 +3138,7 @@ Widget catchSectionContractStates(BuildContext context) {
       'contained-section',
       'plain-section',
       'divided-field-rows',
-      'header-footer-metrics',
+      'contained-field-rows-external-header',
       'contained-field-rows-child-active',
       'contained-field-rows-explicit-focused',
       'field-list',
@@ -3296,7 +3296,7 @@ Widget catchSectionContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'header-footer-metrics',
+        label: 'contained-field-rows-external-header',
         child: _FieldWidth(
           child: CatchSectionList(
             emptyStateOmitted: true,

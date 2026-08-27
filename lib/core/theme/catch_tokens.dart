@@ -1930,8 +1930,6 @@ abstract final class CatchFieldTokens {
 
   static const double tileRadius = CatchRadius.interactiveTile;
   static const double sectionRadius = CatchRadius.md;
-  static const double sectionHeaderTopPadding = CatchSpacing.micro14;
-  static const double sectionHeaderBottomPadding = CatchSpacing.micro2;
   static const double sectionHeaderGap = CatchSpacing.s3;
   static const double sectionRuleGap = CatchSpacing.s2;
   static const double containedSectionFooterTopPadding = CatchSpacing.micro2;

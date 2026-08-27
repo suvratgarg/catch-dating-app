@@ -394,7 +394,9 @@ class CatchSection extends StatelessWidget {
 
   /// Contained FieldSection variant from the form-field handoff. Unlike the
   /// generic card constructor, this surface clips field rows, owns a 1px
-  /// line/ink focus border, and never adds generic card elevation.
+  /// line/ink focus border, and never adds generic card elevation. Its optional
+  /// title, count, and trailing action form an external group header; the
+  /// outline begins with the first row.
   const CatchSection.containedFieldRows({
     Key? key,
     String? title,
@@ -417,7 +419,7 @@ class CatchSection extends StatelessWidget {
          trailing: trailing,
          variant: _CatchSectionVariant.contained,
          titleColor: titleColor,
-         bodyGap: CatchFieldTokens.sectionHeaderGap,
+         bodyGap: CatchSpacing.s2,
          padding: EdgeInsets.zero,
          backgroundColor: backgroundColor,
          borderColor: borderColor,
@@ -668,23 +670,6 @@ class CatchSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (hasHeader)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchFieldTokens.rowHorizontalPadding,
-                    CatchFieldTokens.sectionHeaderTopPadding,
-                    CatchFieldTokens.rowHorizontalPadding,
-                    CatchFieldTokens.sectionHeaderBottomPadding,
-                  ),
-                  child: _buildCatchSectionKicker(
-                    context,
-                    text: hasTitle ? displayTitle : null,
-                    count: hasCount ? displayCount : null,
-                    trailing: sectionTrailing,
-                    color: titleColor ?? t.ink2,
-                    size: CatchKickerSize.fieldSection,
-                  ),
-                ),
               _body(context, t),
               if (sectionFooter != null)
                 Padding(
@@ -705,7 +690,7 @@ class CatchSection extends StatelessWidget {
             ],
           )
         : _sectionContent(context, t, contained: true);
-    return CatchFieldInsetScope(
+    final surface = CatchFieldInsetScope(
       // Generic contained sections own their content gutter. Field-row
       // sections leave row gutters to CatchField, while the focus surface
       // below owns the active edge geometry for every composition path.
@@ -722,6 +707,29 @@ class CatchSection extends StatelessWidget {
         fieldRows: _fieldRows,
         child: content,
       ),
+    );
+    if (!_fieldRows || !hasHeader) return surface;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CatchFieldTokens.rowHorizontalPadding,
+          ),
+          child: _buildCatchSectionKicker(
+            context,
+            text: hasTitle ? displayTitle : null,
+            count: hasCount ? displayCount : null,
+            trailing: sectionTrailing,
+            color: titleColor ?? t.ink2,
+            size: CatchKickerSize.fieldSection,
+          ),
+        ),
+        SizedBox(height: bodyGap),
+        surface,
+      ],
     );
   }
 

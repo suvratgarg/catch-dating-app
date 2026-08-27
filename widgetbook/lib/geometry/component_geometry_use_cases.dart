@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
@@ -40,9 +39,9 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
     children: [
       _specimen(
         context,
-        label: 'Section-header placement',
+        label: 'Approved section-header roles',
         description:
-            'Compare the current internal kicker with three role-based alternatives. The row content stays identical so only header ownership changes.',
+            'Field-row groups label the rows from outside the outline; contextual groups omit redundant labels; content cards keep their title inside.',
         child: LayoutBuilder(
           builder: (context, constraints) {
             final comparisonWidth = constraints.maxWidth >= 720
@@ -55,9 +54,9 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
                 _sectionHeaderComparison(
                   context,
                   width: comparisonWidth,
-                  label: 'Current',
+                  label: 'Field-row group',
                   description:
-                      'The group label occupies the first band inside.',
+                      'The label names the group; the outline begins with the rows.',
                   child: CatchSection.containedFieldRows(
                     title: 'Event settings',
                     children: _eventSettingRows(),
@@ -66,32 +65,7 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
                 _sectionHeaderComparison(
                   context,
                   width: comparisonWidth,
-                  label: 'Recommended · row group',
-                  description:
-                      'The label names the group; the outline begins with the rows.',
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: CatchFieldTokens.rowHorizontalPadding,
-                        ),
-                        child: const CatchKicker(
-                          label: 'Event settings',
-                          size: CatchKickerSize.fieldSection,
-                        ),
-                      ),
-                      const SizedBox(height: CatchSpacing.s2),
-                      CatchSection.containedFieldRows(
-                        children: _eventSettingRows(),
-                      ),
-                    ],
-                  ),
-                ),
-                _sectionHeaderComparison(
-                  context,
-                  width: comparisonWidth,
-                  label: 'Recommended · contextual',
+                  label: 'Contextual field rows',
                   description:
                       'Omit the label when the page or step title already names the group.',
                   child: CatchSection.containedFieldRows(
@@ -101,7 +75,7 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
                 _sectionHeaderComparison(
                   context,
                   width: comparisonWidth,
-                  label: 'Recommended · content card',
+                  label: 'Content card',
                   description:
                       'Keep an internal title when the whole surface is one actionable module.',
                   child: CatchSection.contained(
@@ -477,9 +451,9 @@ Widget bottomNavigationGeometryMatrix(BuildContext context) {
           child: Theme(
             data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
             child: MediaQuery(
-              data: MediaQuery.of(
-                context,
-              ).copyWith(padding: const EdgeInsets.only(bottom: 24)),
+              data: MediaQuery.of(context).copyWith(
+                padding: const EdgeInsets.only(bottom: CatchSpacing.s6),
+              ),
               child: CatchTabBar<String>(
                 items: items,
                 active: 'chats',
@@ -532,7 +506,7 @@ Widget menuGeometryMatrix(BuildContext context) {
         context,
         label: 'Panel anatomy',
         child: CatchMenu<String>(
-          width: 300,
+          width: CatchLayout.actionMenuWidth,
           onSelected: (value, _) => _ignoreString(value),
           items: [
             CatchMenuItem(
@@ -791,11 +765,14 @@ Widget _geometryPage(
                 const SizedBox(height: CatchSpacing.s4),
                 Text(
                   'Comparative geometry only. Use each component’s Contract states page for the exhaustive API and state inventory.',
-                  style: CatchTextStyles.bodyM(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
                 const SizedBox(height: CatchSpacing.s4),
                 for (final principle in principles) ...[
-                  Text('— $principle', style: CatchTextStyles.bodyM(context)),
+                  Text(
+                    '— $principle',
+                    style: CatchTextStyles.supporting(context),
+                  ),
                   const SizedBox(height: CatchSpacing.s1),
                 ],
                 const SizedBox(height: CatchSpacing.s6),

@@ -450,13 +450,20 @@ void main() {
     expect(find.text('28%'), findsOneWidget);
     expect(find.text('Section body'), findsOneWidget);
     expect(find.text('PROFILE STRENGTH'), findsNothing);
+    expect(
+      find.ancestor(
+        of: find.text('Profile strength'),
+        matching: find.byType(CatchSurface),
+      ),
+      findsOneWidget,
+    );
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
     expect(surface.role, CatchSurfaceRole.card);
     expect(surface.elevation, CatchSurfaceElevation.card);
   });
 
   testWidgets(
-    'CatchSection contained field rows keep header and footer inside the card',
+    'CatchSection contained field rows place the header outside the outline',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
@@ -484,6 +491,21 @@ void main() {
       final title = tester.widget<Text>(find.text('WHERE'));
       final countRect = tester.getRect(find.text('2 OF 4'));
       final trailingRect = tester.getRect(find.text('Ready'));
+      final headerRect = tester.getRect(
+        find
+            .ancestor(
+              of: find.text('WHERE'),
+              matching: find.byWidgetPredicate(
+                (widget) =>
+                    widget is Padding &&
+                    widget.padding ==
+                        const EdgeInsets.symmetric(
+                          horizontal: CatchFieldTokens.rowHorizontalPadding,
+                        ),
+              ),
+            )
+            .first,
+      );
       final fieldRect = tester.getRect(find.byType(CatchField));
       final footerRect = tester.getRect(
         find.text('Attendees see this on event cards.'),
@@ -498,17 +520,18 @@ void main() {
       );
       expect(
         titleRect.left - surfaceRect.left,
-        CatchStroke.hairline + CatchFieldTokens.rowHorizontalPadding,
-      );
-      expect(
-        titleRect.top - surfaceRect.top,
-        CatchStroke.hairline + CatchFieldTokens.sectionHeaderTopPadding,
+        CatchFieldTokens.rowHorizontalPadding,
       );
       expect(countRect.right, lessThan(trailingRect.left));
       expect(
         surfaceRect.right - trailingRect.right,
-        CatchStroke.hairline + CatchFieldTokens.rowHorizontalPadding,
+        CatchFieldTokens.rowHorizontalPadding,
       );
+      expect(
+        surfaceRect.top - headerRect.bottom,
+        closeTo(CatchSpacing.s2, 0.001),
+      );
+      expect(fieldRect.top, surfaceRect.top + CatchStroke.hairline);
       expect(
         surfaceRect.bottom - footerRect.bottom,
         CatchStroke.hairline + CatchFieldTokens.rowVerticalPadding,
@@ -516,6 +539,27 @@ void main() {
       expect(
         footerRect.top - fieldRect.bottom,
         closeTo(CatchFieldTokens.containedSectionFooterTopPadding, 0.001),
+      );
+      expect(
+        find.ancestor(
+          of: find.text('WHERE'),
+          matching: find.byType(AnimatedContainer),
+        ),
+        findsNothing,
+      );
+      expect(
+        find.ancestor(
+          of: find.text('2 OF 4'),
+          matching: find.byType(AnimatedContainer),
+        ),
+        findsNothing,
+      );
+      expect(
+        find.ancestor(
+          of: find.text('Ready'),
+          matching: find.byType(AnimatedContainer),
+        ),
+        findsNothing,
       );
       expect(
         find.ancestor(
