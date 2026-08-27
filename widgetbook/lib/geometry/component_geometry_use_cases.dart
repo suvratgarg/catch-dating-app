@@ -5,11 +5,13 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -36,6 +38,97 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
       'Expanded and focused children preserve the section silhouette.',
     ],
     children: [
+      _specimen(
+        context,
+        label: 'Section-header placement',
+        description:
+            'Compare the current internal kicker with three role-based alternatives. The row content stays identical so only header ownership changes.',
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final comparisonWidth = constraints.maxWidth >= 720
+                ? (constraints.maxWidth - CatchSpacing.s4) / 2
+                : constraints.maxWidth.clamp(0, _componentWidth).toDouble();
+            return Wrap(
+              spacing: CatchSpacing.s4,
+              runSpacing: CatchSpacing.s5,
+              children: [
+                _sectionHeaderComparison(
+                  context,
+                  width: comparisonWidth,
+                  label: 'Current',
+                  description:
+                      'The group label occupies the first band inside.',
+                  child: CatchSection.containedFieldRows(
+                    title: 'Event settings',
+                    children: _eventSettingRows(),
+                  ),
+                ),
+                _sectionHeaderComparison(
+                  context,
+                  width: comparisonWidth,
+                  label: 'Recommended · row group',
+                  description:
+                      'The label names the group; the outline begins with the rows.',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: CatchFieldTokens.rowHorizontalPadding,
+                        ),
+                        child: const CatchKicker(
+                          label: 'Event settings',
+                          size: CatchKickerSize.fieldSection,
+                        ),
+                      ),
+                      const SizedBox(height: CatchSpacing.s2),
+                      CatchSection.containedFieldRows(
+                        children: _eventSettingRows(),
+                      ),
+                    ],
+                  ),
+                ),
+                _sectionHeaderComparison(
+                  context,
+                  width: comparisonWidth,
+                  label: 'Recommended · contextual',
+                  description:
+                      'Omit the label when the page or step title already names the group.',
+                  child: CatchSection.containedFieldRows(
+                    children: _eventSettingRows(),
+                  ),
+                ),
+                _sectionHeaderComparison(
+                  context,
+                  width: comparisonWidth,
+                  label: 'Recommended · content card',
+                  description:
+                      'Keep an internal title when the whole surface is one actionable module.',
+                  child: CatchSection.contained(
+                    title: 'Event readiness',
+                    subtitle: '3 of 4 setup steps complete',
+                    trailing: CatchTextButton(
+                      label: 'Review',
+                      tone: CatchTextButtonTone.neutral,
+                      onPressed: _noop,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: CatchSpacing.s1,
+                      ),
+                    ),
+                    child: Text(
+                      'Add the venue entry note before invitations go out.',
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: CatchTokens.of(context).ink2,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
       _specimen(
         context,
         label: 'Standalone fields',
@@ -624,6 +717,50 @@ Widget modalGeometryMatrix(BuildContext context) {
     ],
   );
 }
+
+Widget _sectionHeaderComparison(
+  BuildContext context, {
+  required double width,
+  required String label,
+  required String description,
+  required Widget child,
+}) {
+  final t = CatchTokens.of(context);
+
+  return SizedBox(
+    width: width,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(label, style: CatchTextStyles.labelL(context, color: t.ink)),
+        const SizedBox(height: CatchSpacing.s1),
+        Text(
+          description,
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
+        const SizedBox(height: CatchSpacing.s3),
+        child,
+      ],
+    ),
+  );
+}
+
+List<Widget> _eventSettingRows() => [
+  CatchField.read(title: 'Host', body: 'Catch Hosts', icon: CatchIcons.hosted),
+  CatchField.nav(
+    title: 'Location',
+    body: 'Carter Road promenade',
+    icon: CatchIcons.pinOutlined,
+    onTap: _noop,
+  ),
+  CatchField.toggle(
+    title: 'Allow reminders',
+    body: 'Push and email',
+    icon: CatchIcons.notificationsOutlined,
+    value: true,
+    onChanged: _ignoreBool,
+  ),
+];
 
 Widget _geometryPage(
   BuildContext context, {
