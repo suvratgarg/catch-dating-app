@@ -736,7 +736,12 @@ Widget _sectionHeaderComparison(
 }
 
 List<Widget> _eventSettingRows() => [
-  CatchField.read(title: 'Host', body: 'Catch Hosts', icon: CatchIcons.hosted),
+  CatchField.action(
+    title: 'Host',
+    body: 'Catch Hosts',
+    icon: CatchIcons.hosted,
+    onTap: _noop,
+  ),
   CatchField.nav(
     title: 'Location',
     body: 'Carter Road promenade',
