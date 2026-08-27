@@ -94,6 +94,36 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
       ),
       _specimen(
         context,
+        label: 'Active field treatment · choose one',
+        description:
+            'The content and open state are identical in every specimen. Compare how each treatment behaves when the section owns a perimeter and when it does not; you can choose one shared rule or a different treatment for each context. Tap Host to collapse or reopen either field.',
+        child: const Column(
+          children: [
+            _ActiveFieldTreatmentOption(
+              label: 'A · Ring + lift · current',
+              description:
+                  'The active field paints a complete border and shadow. It is the strongest cue, but the contained version duplicates the section’s left and right edges.',
+              treatment: _ActiveFieldTreatment.currentRingAndLift,
+            ),
+            SizedBox(height: CatchSpacing.s4),
+            _ActiveFieldTreatmentOption(
+              label: 'B · Tinted tile',
+              description:
+                  'The active surface carries the state without another border or shadow. Contained rows inherit the group silhouette; uncontained rows keep a local tile radius.',
+              treatment: _ActiveFieldTreatment.tintedTile,
+            ),
+            SizedBox(height: CatchSpacing.s4),
+            _ActiveFieldTreatmentOption(
+              label: 'C · Section band',
+              description:
+                  'The header rule supplies the upper boundary and one lower rule closes the active band. The field stays part of the row stack in both section types.',
+              treatment: _ActiveFieldTreatment.sectionBand,
+            ),
+          ],
+        ),
+      ),
+      _specimen(
+        context,
         label: 'Next decision · what earns an outline',
         description:
             'The content is identical. Decide whether an ordinary page-level field group stays flat or receives a perimeter; plain remains reserved for a plane already owned by its parent.',
@@ -610,6 +640,223 @@ Widget modalGeometryMatrix(BuildContext context) {
   );
 }
 
+enum _ActiveFieldTreatment { currentRingAndLift, tintedTile, sectionBand }
+
+class _ActiveFieldTreatmentOption extends StatefulWidget {
+  const _ActiveFieldTreatmentOption({
+    required this.label,
+    required this.description,
+    required this.treatment,
+  });
+
+  final String label;
+  final String description;
+  final _ActiveFieldTreatment treatment;
+
+  @override
+  State<_ActiveFieldTreatmentOption> createState() =>
+      _ActiveFieldTreatmentOptionState();
+}
+
+class _ActiveFieldTreatmentOptionState
+    extends State<_ActiveFieldTreatmentOption> {
+  bool _containedOpen = true;
+  bool _uncontainedOpen = true;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.bg,
+        border: Border.all(color: t.line2),
+        borderRadius: BorderRadius.circular(CatchRadius.md),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(CatchSpacing.s4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              widget.label,
+              style: CatchTextStyles.labelL(context, color: t.ink),
+            ),
+            const SizedBox(height: CatchSpacing.s1),
+            Text(
+              widget.description,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+            const SizedBox(height: CatchSpacing.s4),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final comparisonWidth = constraints.maxWidth >= 720
+                    ? (constraints.maxWidth - CatchSpacing.s4) / 2
+                    : constraints.maxWidth.clamp(0, _componentWidth).toDouble();
+                return Wrap(
+                  spacing: CatchSpacing.s4,
+                  runSpacing: CatchSpacing.s5,
+                  children: [
+                    _sectionHeaderComparison(
+                      context,
+                      width: comparisonWidth,
+                      label: 'Contained',
+                      description:
+                          'The section owns the rounded perimeter and internal header rule.',
+                      child: CatchSection.containedFieldRows(
+                        title: 'Event settings',
+                        headerPlacement:
+                            CatchSectionFieldHeaderPlacement.internal,
+                        showInternalDividers: false,
+                        children: [
+                          _ActiveFieldTreatmentMock(
+                            treatment: widget.treatment,
+                            contained: true,
+                            open: _containedOpen,
+                            onOpenChanged: (open) =>
+                                setState(() => _containedOpen = open),
+                          ),
+                          CatchField.nav(
+                            title: 'Location',
+                            body: 'Carter Road promenade',
+                            icon: CatchIcons.pinOutlined,
+                            divider:
+                                widget.treatment ==
+                                _ActiveFieldTreatment.tintedTile,
+                            onTap: _noop,
+                          ),
+                        ],
+                      ),
+                    ),
+                    _sectionHeaderComparison(
+                      context,
+                      width: comparisonWidth,
+                      label: 'Uncontained',
+                      description:
+                          'The section supplies a header rule and row rhythm, but no outer perimeter.',
+                      child: CatchSection.fieldRows(
+                        title: 'Event settings',
+                        showInternalDividers: false,
+                        children: [
+                          _ActiveFieldTreatmentMock(
+                            treatment: widget.treatment,
+                            contained: false,
+                            open: _uncontainedOpen,
+                            onOpenChanged: (open) =>
+                                setState(() => _uncontainedOpen = open),
+                          ),
+                          CatchField.nav(
+                            title: 'Location',
+                            body: 'Carter Road promenade',
+                            icon: CatchIcons.pinOutlined,
+                            divider:
+                                widget.treatment ==
+                                _ActiveFieldTreatment.tintedTile,
+                            onTap: _noop,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ActiveFieldTreatmentMock extends StatelessWidget {
+  const _ActiveFieldTreatmentMock({
+    required this.treatment,
+    required this.contained,
+    required this.open,
+    required this.onOpenChanged,
+  });
+
+  final _ActiveFieldTreatment treatment;
+  final bool contained;
+  final bool open;
+  final ValueChanged<bool> onOpenChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final borderRadius = switch (treatment) {
+      _ActiveFieldTreatment.sectionBand => BorderRadius.zero,
+      _ =>
+        contained
+            ? BorderRadius.zero
+            : BorderRadius.circular(CatchFieldTokens.tileRadius),
+    };
+    final border = !open
+        ? null
+        : switch (treatment) {
+            _ActiveFieldTreatment.currentRingAndLift => Border.all(
+              color: t.line,
+            ),
+            _ActiveFieldTreatment.tintedTile => null,
+            _ActiveFieldTreatment.sectionBand => Border(
+              bottom: BorderSide(color: t.line),
+            ),
+          };
+    final shadow = open && treatment == _ActiveFieldTreatment.currentRingAndLift
+        ? CatchElevation.fieldActive(Theme.of(context).brightness)
+        : CatchElevation.none;
+
+    return AnimatedContainer(
+      duration: CatchFieldTokens.standard,
+      curve: CatchFieldTokens.curve,
+      decoration: BoxDecoration(
+        color: open ? CatchFieldTokens.activeSurface(t) : Colors.transparent,
+        borderRadius: borderRadius,
+        border: border,
+        boxShadow: shadow,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CatchField.action(
+            title: 'Host',
+            body: 'Catch Hosts',
+            icon: CatchIcons.hosted,
+            action: CatchFieldTrailing.rotatingChevron(open: open),
+            onTap: () => onOpenChanged(!open),
+          ),
+          AnimatedSize(
+            duration: CatchFieldTokens.reveal,
+            curve: CatchFieldTokens.curve,
+            child: open
+                ? Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      CatchFieldTokens.rowHorizontalPadding +
+                          CatchFieldTokens.textLaneInset,
+                      0,
+                      CatchFieldTokens.rowHorizontalPadding,
+                      CatchFieldTokens.rowVerticalPadding,
+                    ),
+                    child: CatchFieldChoiceControl<String>(
+                      values: const [
+                        'Catch Hosts',
+                        'Sunday Social',
+                        'Bandra Runs',
+                      ],
+                      itemLabel: _identityString,
+                      selected: const {'Catch Hosts'},
+                      multi: false,
+                      onSelectionChanged: _ignoreStrings,
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 Widget _sectionHeaderComparison(
   BuildContext context, {
   required double width,
@@ -806,3 +1053,7 @@ void _noop() {}
 void _ignoreBool(bool _) {}
 
 void _ignoreString(String _) {}
+
+void _ignoreStrings(Set<String> _) {}
+
+String _identityString(String value) => value;
