@@ -1,6 +1,6 @@
 # CatchField / CatchSection System Review & Hardening Spec (for Codex)
 
-Status: phases A-E implemented · Phase D prototype awaiting owner API review · stretch goals not started · 2026-07-17
+Status: living review · phases A-E implemented · greenfield API pass updated 2026-08-28
 Scope: `lib/core/widgets/catch_field.dart`, `lib/core/widgets/catch_section_layout.dart`, `lib/core/forms/` (new, Phase D), `test/core/`, `widgetbook/`, `docs/design_language.md`, `docs/widget_catalog.md`
 Companions: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md) ("edit spec"), [`host_club_insights_spec.md`](host_club_insights_spec.md) ("insights spec") — coordination points in §11, including ONE superseded line in the edit spec (§8.2 here).
 Origin: 2026-07-17 owner + Claude system review. Every number below was
@@ -31,6 +31,63 @@ same Dart library, split across bounded `part` files: `CatchFieldRow`,
 `containedFieldRows`, `plain` variants with `title/count/trailing/footer/
 first/lead` slots and divider-role control, plus `CatchSectionList` /
 `CatchSectionStack` rhythm wrappers.
+
+### 0.1 2026-08-28 greenfield API assessment
+
+The current source has 713 `CatchField.*` references and 289
+`CatchSection.*` references across `lib/` and `test/`, but only three
+production `CatchFormRowList<P>` composition sites. `CatchField.input` exposes
+53 named parameters and the shared private `CatchSection` constructor carries
+31. Those numbers do not mean every caller sees every option: `CatchField`
+already redirects its public named constructors into sealed private per-mode
+configs, so illegal cross-mode combinations are mostly unrepresentable. The
+remaining pressure is ownership and migration, not a need for one more generic
+bag-of-options constructor.
+
+If the system were written from scratch, it would keep the existing named-mode
+facade but enforce five layers:
+
+1. **Page composition** owns screen gutter, readable-width clamp, complete
+   section placement, bottom-navigation obstruction, and responsive lanes.
+   `CatchResponsiveSectionPage` is this owner; fields never inspect viewport
+   classes.
+2. **Field-section composition** owns divided versus outlined containment,
+   header placement, group clipping, perimeter, row dividers, and section
+   rhythm. Fields inherit this through semantic geometry scope rather than
+   receiving radius, bleed, or position flags.
+3. **Field mode** is selected structurally (`read`, `content`, `nav`, `toggle`,
+   `input`, `inputActions`, `control`, typed choices, option cards, stepper,
+   select, add). Each constructor accepts only that capability's data and
+   callbacks. Typography, lanes, affordances, and interaction chrome are not
+   caller options.
+4. **Form orchestration** owns accordion state, typed patch conversion,
+   validation, async feedback, and one commit model for the complete form
+   section. Explicit Cancel/Done confirmation is the default for new text-form
+   sections. Existing blur-save behavior is a section-level compatibility
+   policy, never a repeated per-row boolean.
+5. **Internal render/state objects** may be split by responsibility, but their
+   public identity remains the field or section primitive so keyed state and
+   contract inventory stay stable.
+
+The first implementation from this review moves text commit behavior from
+`CatchFormTextRow` to `CatchFormRowList.textCommitMode`. Host Club Identity and
+Contact inherit the explicit default and delete six repeated arguments.
+Consumer Profile About You keeps its current behavior with one
+`CatchFormTextCommitMode.onBlur` list override, so the API improves without a
+silent product migration or a call-site sweep. The mapper also drops nine
+unused visual pass-throughs; its constructor now exposes semantic section
+content and orchestration only, while `CatchSection.fieldRows` owns divider,
+rhythm, color, and position defaults.
+
+The next structural refactor should happen only after the open visual decisions
+are settled: replace `CatchSection`'s 31-field internal state matrix with sealed
+private configs for divided field groups, outlined field groups, generic
+contained modules, and plain content. Keep the public constructors stable for
+that internal pass. A later owner-reviewed migration may then remove
+feature-facing color/gap/padding knobs, replace `child`/`children` duality with
+typed content boundaries, and decide whether generic `contained` deserves a
+name separate from field sections. Do not introduce a parallel public section
+facade or compatibility aliases in the meantime.
 
 Implemented sizes (2026-07-17): the stable `catch_field.dart` entry point is
 **999 lines**; each extracted part is below 850 lines. The private constructor

@@ -20,7 +20,6 @@ void main() {
       _wrap(
         CatchFormRowList<_Patch>(
           title: 'About you',
-          dividerInset: CatchFieldRow.textLaneInset,
           rows: [
             CatchFormReadRow<_Patch>(
               id: 'identity',
@@ -114,6 +113,86 @@ void main() {
     expect(text.patchForValue('After').value, 'After');
     expect(multi.patchForValues(_Option.values).value, 'MumbaiDelhi');
     expect(range.patchForRange(3, 7).value, '3-7');
+  });
+
+  testWidgets('text rows default to explicit confirmation', (tester) async {
+    _Patch? savedPatch;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchFormRowList<_Patch>(
+          rows: [
+            CatchFormTextRow<_Patch>(
+              id: 'name',
+              icon: CatchIcons.personOutlined,
+              label: 'Name',
+              currentValue: 'Before',
+              patchForValue: (value) => _Patch(value as String),
+            ),
+          ],
+          savePatch: (patch) async {
+            savedPatch = patch;
+            return true;
+          },
+          errorText: (_, error) => error.toString(),
+        ),
+      ),
+    );
+
+    expect(find.byKey(const ValueKey('catch-field-done')), findsNothing);
+
+    await tester.tap(find.text('Name'));
+    await _pumpFieldMotion(tester);
+
+    expect(find.byKey(const ValueKey('catch-field-cancel')), findsOneWidget);
+    expect(find.byKey(const ValueKey('catch-field-done')), findsOneWidget);
+
+    await tester.enterText(
+      find.byKey(const ValueKey('catch-field-text-entry')),
+      'After',
+    );
+    await tester.tap(find.byKey(const ValueKey('catch-field-done')));
+    await tester.pump();
+
+    expect(savedPatch?.value, 'After');
+  });
+
+  testWidgets('a form section can preserve on-blur text commits', (
+    tester,
+  ) async {
+    _Patch? savedPatch;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchFormRowList<_Patch>(
+          textCommitMode: CatchFormTextCommitMode.onBlur,
+          rows: [
+            CatchFormTextRow<_Patch>(
+              id: 'name',
+              icon: CatchIcons.personOutlined,
+              label: 'Name',
+              currentValue: 'Before',
+              patchForValue: (value) => _Patch(value as String),
+            ),
+          ],
+          savePatch: (patch) async {
+            savedPatch = patch;
+            return true;
+          },
+          errorText: (_, error) => error.toString(),
+        ),
+      ),
+    );
+
+    expect(find.byKey(const ValueKey('catch-field-done')), findsNothing);
+
+    final input = find.byKey(const ValueKey('catch-field-text-entry'));
+    await tester.enterText(input, 'After');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+
+    expect(savedPatch?.value, 'After');
+    expect(find.byKey(const ValueKey('catch-field-done')), findsNothing);
   });
 }
 

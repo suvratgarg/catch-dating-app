@@ -1537,7 +1537,8 @@ Widget _catchFormDescriptorPreview() {
     contractId: 'catch.form.descriptors.prototype',
     children: [
       _StateCard(
-        label: 'read, text, choice, multi-choice, and range rows',
+        label:
+            'read, explicit-confirm text, choice, multi-choice, and range rows',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
           child: CatchFormRowList<_WidgetbookFormPatch>(
@@ -2609,30 +2610,26 @@ class _SectionFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-      overrides: [
-        uidProvider.overrideWithValue(AsyncData<String?>(_viewer.uid)),
-        userProfileRepositoryProvider.overrideWithValue(
-          ProfileFixtureUserProfileRepository(profile: _viewer),
-        ),
-        userAnalyticsRepositoryProvider.overrideWithValue(
-          ProfileFixtureUserAnalyticsRepository(
-            report: ProfileSurfaceFixtures.analyticsReport,
+    return SizedBox(
+      width: WidgetbookPreviewLayout.phoneChromeWidth,
+      height: height,
+      child: ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(AsyncData<String?>(_viewer.uid)),
+          userProfileRepositoryProvider.overrideWithValue(
+            ProfileFixtureUserProfileRepository(profile: _viewer),
           ),
-        ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        home: Scaffold(
-          body: SafeArea(
-            child: SizedBox(
-              width: WidgetbookPreviewLayout.phoneChromeWidth,
-              height: height,
-              child: child,
+          userAnalyticsRepositoryProvider.overrideWithValue(
+            ProfileFixtureUserAnalyticsRepository(
+              report: ProfileSurfaceFixtures.analyticsReport,
             ),
           ),
+        ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          home: Scaffold(body: SafeArea(child: child)),
         ),
       ),
     );

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -15,6 +14,14 @@ import 'package:flutter/services.dart';
 typedef CatchFormSave<P> = Future<bool> Function(P patch);
 typedef CatchFormErrorText =
     String Function(BuildContext context, Object error);
+
+/// Commit contract for text rows in one [CatchFormRowList].
+///
+/// A form section owns this policy so sibling text rows cannot accidentally
+/// mix interaction models. Explicit confirmation is the default for new form
+/// sections; [onBlur] remains available for an existing surface that has not
+/// yet migrated its product behavior.
+enum CatchFormTextCommitMode { explicit, onBlur }
 
 /// P is the patch type committed by the owning surface.
 sealed class CatchFormRowDescriptor<P> {
@@ -86,7 +93,6 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
     this.contract,
     this.maxLength,
     this.inputFormatters,
-    this.explicitSave = false,
     this.maxLines = 1,
     this.minLines,
     this.normalizeInput,
@@ -108,7 +114,6 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
   final CatchContractFieldConstraints? contract;
   final int? maxLength;
   final List<TextInputFormatter>? inputFormatters;
-  final bool explicitSave;
   final int? maxLines;
   final int? minLines;
   final String Function(String value)? normalizeInput;
@@ -345,12 +350,14 @@ class CatchFormRowScope<P> {
     required this.toggle,
     required this.collapse,
     required this.save,
+    required this.textCommitMode,
   });
 
   final bool isExpanded;
   final VoidCallback toggle;
   final VoidCallback collapse;
   final CatchFormSave<P> save;
+  final CatchFormTextCommitMode textCommitMode;
 }
 
 /// Maps typed form descriptors to canonical CatchField rows inside one
@@ -365,16 +372,8 @@ class CatchFormRowList<P> extends StatefulWidget {
     this.title,
     this.count,
     this.trailing,
-    this.activityKind,
-    this.lead = false,
-    this.first = false,
     this.footer,
-    this.dividerColor,
-    this.dividerInset,
-    this.dividerRole = CatchDividerRole.section,
-    this.titleColor,
-    this.bodyGap = CatchFieldTokens.sectionRuleGap,
-    this.showInternalDividers = true,
+    this.textCommitMode = CatchFormTextCommitMode.explicit,
   });
 
   final List<CatchFormRowDescriptor<P>> rows;
@@ -384,16 +383,8 @@ class CatchFormRowList<P> extends StatefulWidget {
   final String? title;
   final Object? count;
   final Widget? trailing;
-  final ActivityKind? activityKind;
-  final bool lead;
-  final bool first;
   final Widget? footer;
-  final Color? dividerColor;
-  final double? dividerInset;
-  final CatchDividerRole dividerRole;
-  final Color? titleColor;
-  final double bodyGap;
-  final bool showInternalDividers;
+  final CatchFormTextCommitMode textCommitMode;
 
   @override
   State<CatchFormRowList<P>> createState() => _CatchFormRowListState<P>();
@@ -440,16 +431,7 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
       title: widget.title,
       count: widget.count,
       trailing: widget.trailing,
-      activityKind: widget.activityKind,
-      lead: widget.lead,
-      first: widget.first,
       footer: widget.footer,
-      dividerColor: widget.dividerColor,
-      dividerInset: widget.dividerInset,
-      dividerRole: widget.dividerRole,
-      titleColor: widget.titleColor,
-      bodyGap: widget.bodyGap,
-      showInternalDividers: widget.showInternalDividers,
       children: [
         for (final row in widget.rows)
           row.buildRow(context, _scopeFor(row), widget.errorText),
@@ -464,6 +446,7 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
       toggle: () => _accordion.toggle(key),
       collapse: _accordion.collapse,
       save: widget.savePatch,
+      textCommitMode: widget.textCommitMode,
     );
   }
 }
@@ -506,6 +489,9 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
   Object? _lastCommittedValue;
   String? _validationError;
   bool _hasFocus = false;
+
+  bool get _usesExplicitCommit =>
+      widget.scope.textCommitMode == CatchFormTextCommitMode.explicit;
 
   @override
   void initState() {
@@ -577,7 +563,7 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
     if (value == comparable ||
         (value == null && descriptor.currentValue.trim().isEmpty) ||
         (value == '' && descriptor.currentFieldValue == null)) {
-      if (descriptor.explicitSave) widget.scope.collapse();
+      if (_usesExplicitCommit) widget.scope.collapse();
       return;
     }
     setState(() {
@@ -608,7 +594,7 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
           setState(() => _saveState.status = CatchFieldStatus.idle);
         }
       });
-      if (descriptor.explicitSave) widget.scope.collapse();
+      if (_usesExplicitCommit) widget.scope.collapse();
     } catch (error) {
       if (!mounted) return;
       setState(() {
@@ -627,7 +613,7 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
     final error =
         _validationError ??
         (saveError == null ? null : widget.errorText(context, saveError));
-    if (descriptor.explicitSave) {
+    if (_usesExplicitCommit) {
       return CatchField.inputActions(
         icon: descriptor.icon,
         title: descriptor.label,
