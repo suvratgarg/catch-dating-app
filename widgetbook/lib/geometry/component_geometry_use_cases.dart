@@ -194,7 +194,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
       'Split-screen widths return to one column without a tablet-only override.',
     ],
     children: [
-      _dividedFieldGutterStudy(context),
+      _mixedSectionGeometryStudy(context),
       _responsivePageContextSpecimen(
         context,
         label: 'Compact phone · centered single column',
@@ -249,12 +249,12 @@ Widget responsivePageContextMatrix(BuildContext context) {
   );
 }
 
-Widget _dividedFieldGutterStudy(BuildContext context) {
+Widget _mixedSectionGeometryStudy(BuildContext context) {
   return _specimen(
     context,
-    label: 'Open decision · divided field gutter',
+    label: 'Open decision · mixed section interaction geometry',
     description:
-        'Compare both the resting and active states. The proposal aligns the active tile with the 20 px section edge by moving the existing 10 px bleed inside the field at all times.',
+        'Judge the whole page, not an isolated tile. Each frame combines one contained and one divided section; the active frames also show whether the divided rule is replaced by, or competes with, the field outline.',
     child: LayoutBuilder(
       builder: (context, constraints) {
         final comparisonWidth = constraints.maxWidth >= 720
@@ -264,21 +264,41 @@ Widget _dividedFieldGutterStudy(BuildContext context) {
           spacing: CatchSpacing.s4,
           runSpacing: CatchSpacing.s5,
           children: [
-            _sectionHeaderComparison(
+            _mixedSectionPageSample(
               context,
               width: comparisonWidth,
-              label: 'Current · content at 20, active edge at 10',
+              label: 'Current · resting',
               description:
-                  'Resting content follows the page gutter; the active tile expands halfway into it.',
-              child: _dividedFieldGutterStates(alignActiveToSectionEdge: false),
+                  'Contained outline and divided rule share the 20 px page gutter; divided row content begins on that same edge.',
+              proposed: false,
+              active: false,
             ),
-            _sectionHeaderComparison(
+            _mixedSectionPageSample(
               context,
               width: comparisonWidth,
-              label: 'Proposed · content at 30, active edge at 20',
+              label: 'Proposed · resting',
               description:
-                  'The section rule and active tile share one edge; resting content keeps the same 10 px internal inset.',
-              child: _dividedFieldGutterStates(alignActiveToSectionEdge: true),
+                  'The divided rule still shares the 20 px page gutter; divided row content keeps a stable 10 px internal inset.',
+              proposed: true,
+              active: false,
+            ),
+            _mixedSectionPageSample(
+              context,
+              width: comparisonWidth,
+              label: 'Current · active',
+              description:
+                  'The divided rule remains while the active outline expands to 10 px, so two unrelated boundaries compete.',
+              proposed: false,
+              active: true,
+            ),
+            _mixedSectionPageSample(
+              context,
+              width: comparisonWidth,
+              label: 'Proposed · active',
+              description:
+                  'The divided rule is consumed by the active outline. Its top and bottom edges replace the adjacent section dividers at 20 px.',
+              proposed: true,
+              active: true,
             ),
           ],
         );
@@ -287,52 +307,101 @@ Widget _dividedFieldGutterStudy(BuildContext context) {
   );
 }
 
-Widget _dividedFieldGutterStates({required bool alignActiveToSectionEdge}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      _dividedFieldGutterState(
-        label: 'Resting',
-        open: false,
-        alignActiveToSectionEdge: alignActiveToSectionEdge,
+Widget _mixedSectionPageSample(
+  BuildContext context, {
+  required double width,
+  required String label,
+  required String description,
+  required bool proposed,
+  required bool active,
+}) {
+  final t = CatchTokens.of(context);
+  return _sectionHeaderComparison(
+    context,
+    width: width,
+    label: label,
+    description: description,
+    child: CatchSurface(
+      tone: CatchSurfaceTone.raised,
+      borderColor: t.line,
+      radius: CatchRadius.lg,
+      clipBehavior: Clip.antiAlias,
+      child: CatchSectionStack(
+        padding: CatchInsets.pageBody,
+        gap: CatchGaps.section,
+        children: [
+          _mixedContainedSection(active: active),
+          _mixedDividedSection(proposed: proposed, active: active),
+        ],
       ),
-      const SizedBox(height: CatchSpacing.s5),
-      _dividedFieldGutterState(
-        label: 'Active',
-        open: true,
-        alignActiveToSectionEdge: alignActiveToSectionEdge,
+    ),
+  );
+}
+
+Widget _mixedContainedSection({required bool active}) {
+  return CatchSection.containedFieldRows(
+    title: 'Event settings',
+    headerPlacement: CatchSectionFieldHeaderPlacement.internal,
+    children: [
+      CatchField.choices<String>(
+        title: 'Host',
+        icon: CatchIcons.hosted,
+        values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
+        itemLabel: _identityString,
+        selected: const {'Catch Hosts'},
+        onSelectionChanged: _ignoreStrings,
+        open: active,
+      ),
+      CatchField.nav(
+        title: 'Location',
+        body: 'Carter Road promenade',
+        icon: CatchIcons.pinOutlined,
+        onTap: _noop,
       ),
     ],
   );
 }
 
-Widget _dividedFieldGutterState({
-  required String label,
-  required bool open,
-  required bool alignActiveToSectionEdge,
-}) {
-  final field = CatchField.choices<String>(
-    title: 'Host',
-    icon: CatchIcons.hosted,
-    values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
+Widget _mixedDividedSection({required bool proposed, required bool active}) {
+  final timingField = CatchField.choices<String>(
+    title: 'Reminder timing',
+    icon: CatchIcons.clock,
+    values: const ['Two hours before', 'One day before', 'Off'],
     itemLabel: _identityString,
-    selected: const {'Catch Hosts'},
+    selected: const {'Two hours before'},
     onSelectionChanged: _ignoreStrings,
-    open: open,
+    open: active,
+  );
+  final deliveryField = CatchField.nav(
+    title: 'Delivery',
+    body: 'Push and email',
+    icon: CatchIcons.notificationsOutlined,
+    divider: !active,
+    onTap: _noop,
   );
   return CatchSection.fieldRows(
-    title: label,
+    title: 'Notifications',
     first: true,
+    showTopDivider: !(proposed && active),
+    showInternalDividers: false,
     children: [
-      if (alignActiveToSectionEdge)
+      if (proposed) ...[
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: CatchFieldTokens.dividedRowBleed,
           ),
-          child: field,
-        )
-      else
-        field,
+          child: timingField,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CatchFieldTokens.dividedRowBleed,
+          ),
+          child: deliveryField,
+        ),
+      ] else ...[
+        timingField,
+        deliveryField,
+      ],
     ],
   );
 }
