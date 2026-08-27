@@ -2,12 +2,14 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
-    show CatchField, CatchFieldInsetScope;
+    show CatchField, CatchFieldInsetScope, CatchFieldVisibilityScope;
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -263,6 +265,187 @@ class CatchSectionStack extends StatelessWidget {
         emptyStateOmitted: true,
         gap: gap,
         children: children,
+      ),
+    );
+  }
+}
+
+/// Page-level section composition selected by the owning route.
+///
+/// [centered] keeps one readable lane at every width. [adaptiveTwoColumn]
+/// preserves the same compact ordering, then moves complete sections into
+/// primary and secondary lanes when the page's local width can support both.
+enum CatchResponsiveSectionComposition { centered, adaptiveTwoColumn }
+
+/// Wide-layout lane for one complete section.
+///
+/// This is placement metadata only. A section's field rows, perimeter, header,
+/// and active geometry remain wholly owned by [CatchSection].
+enum CatchResponsiveSectionLane { primary, secondary }
+
+@immutable
+class CatchResponsiveSectionItem {
+  const CatchResponsiveSectionItem({
+    required this.child,
+    this.lane = CatchResponsiveSectionLane.primary,
+  });
+
+  final Widget child;
+  final CatchResponsiveSectionLane lane;
+}
+
+/// Responsive layout for pages composed from complete [CatchSection] blocks.
+///
+/// Compact layout always follows [sections] order in one centered, capped lane.
+/// When [composition] allows two columns and the component's remaining local
+/// width reaches [breakpoint], complete sections move into their declared
+/// lanes. Individual sections and fields are never split across columns.
+class CatchResponsiveSectionLayout extends StatelessWidget {
+  const CatchResponsiveSectionLayout({
+    super.key,
+    required this.sections,
+    this.composition = CatchResponsiveSectionComposition.centered,
+    this.breakpoint = ComponentBreakpoints.sectionPageTwoColumnBreakpoint,
+    this.maxSingleColumnWidth = CatchLayout.maxContentWidth,
+    this.sectionGap = CatchGaps.section,
+    this.columnGap = CatchGaps.section,
+  }) : assert(breakpoint >= 0),
+       assert(maxSingleColumnWidth > 0),
+       assert(sectionGap >= 0),
+       assert(columnGap >= 0);
+
+  final List<CatchResponsiveSectionItem> sections;
+  final CatchResponsiveSectionComposition composition;
+  final double breakpoint;
+  final double maxSingleColumnWidth;
+  final double sectionGap;
+  final double columnGap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (sections.isEmpty) return const SizedBox.shrink();
+
+    if (composition == CatchResponsiveSectionComposition.centered) {
+      return _buildSingleColumn();
+    }
+
+    return ComponentResponsiveBuilder(
+      breakpoint: breakpoint,
+      compact: (_) => _buildSingleColumn(),
+      expanded: (_) => _buildTwoColumns(),
+    );
+  }
+
+  Widget _buildSingleColumn() {
+    return Align(
+      alignment: AlignmentDirectional.topCenter,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxSingleColumnWidth),
+        child: CatchSectionStack(
+          padding: EdgeInsets.zero,
+          gap: sectionGap,
+          children: [for (final section in sections) section.child],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTwoColumns() {
+    final primary = <Widget>[];
+    final secondary = <Widget>[];
+    for (final section in sections) {
+      if (section.lane == CatchResponsiveSectionLane.primary) {
+        primary.add(section.child);
+      } else {
+        secondary.add(section.child);
+      }
+    }
+
+    if (primary.isEmpty || secondary.isEmpty) return _buildSingleColumn();
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: CatchSectionStack(
+            padding: EdgeInsets.zero,
+            gap: sectionGap,
+            children: primary,
+          ),
+        ),
+        SizedBox(width: columnGap),
+        Expanded(
+          child: CatchSectionStack(
+            padding: EdgeInsets.zero,
+            gap: sectionGap,
+            children: secondary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Standard scrolling page body for responsive section-based routes.
+///
+/// This composes [CatchScreenBody], [CatchResponsiveSectionLayout], and
+/// [CatchScrollTerminalPadding] so the route gets one page gutter, one scroll
+/// owner, and correct terminal clearance for floating, anchored, side, or absent
+/// shell navigation. It also publishes the floating bottom obstruction to
+/// expanding [CatchField] controls so their commit actions remain revealable.
+class CatchResponsiveSectionPage extends StatelessWidget {
+  const CatchResponsiveSectionPage({
+    super.key,
+    required this.sections,
+    this.composition = CatchResponsiveSectionComposition.centered,
+    this.pt,
+    this.controller,
+    this.physics,
+    this.primary,
+    this.breakpoint = ComponentBreakpoints.sectionPageTwoColumnBreakpoint,
+    this.maxSingleColumnWidth = CatchLayout.maxContentWidth,
+    this.sectionGap = CatchGaps.section,
+    this.columnGap = CatchGaps.section,
+    this.terminalExtra = CatchSpacing.screenPb,
+  }) : assert(terminalExtra >= 0);
+
+  final List<CatchResponsiveSectionItem> sections;
+  final CatchResponsiveSectionComposition composition;
+  final double? pt;
+  final ScrollController? controller;
+  final ScrollPhysics? physics;
+  final bool? primary;
+  final double breakpoint;
+  final double maxSingleColumnWidth;
+  final double sectionGap;
+  final double columnGap;
+  final double terminalExtra;
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomObstruction = AppShellActiveTab.bottomOverlayInsetOf(context);
+    return CatchFieldVisibilityScope(
+      bottomObstruction: bottomObstruction,
+      child: CatchScreenBody(
+        pt: pt,
+        pb: 0,
+        controller: controller,
+        physics: physics,
+        primary: primary,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchResponsiveSectionLayout(
+              sections: sections,
+              composition: composition,
+              breakpoint: breakpoint,
+              maxSingleColumnWidth: maxSingleColumnWidth,
+              sectionGap: sectionGap,
+              columnGap: columnGap,
+            ),
+            CatchScrollTerminalPadding(extra: terminalExtra),
+          ],
+        ),
       ),
     );
   }

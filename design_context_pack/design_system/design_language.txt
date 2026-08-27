@@ -282,10 +282,13 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   section's divided, contained, or plain surface decision; state changes do not
   introduce a second border or switch a peer module to a different variant.
 - `CatchSection.containedFieldRows` treats its title, count, and trailing action
-  as an external label for a row group, so the outline begins with the first
-  field. Omit that label when the page or step title already supplies the same
-  context. `CatchSection.contained` keeps its title inside only when the bounded
-  surface is itself one actionable content module.
+  as an external label by default, so the outline begins with the first field.
+  When that header belongs to the bounded field group itself, opt into
+  `CatchSectionFieldHeaderPlacement.internal`; the header moves inside the
+  outline and owns the same padded section rule used by uncontained field
+  sections. Omit the label when the page or step title already supplies the
+  same context. `CatchSection.contained` keeps its sentence-case title inside
+  only when the bounded surface is itself one actionable content module.
 
 The API boundary is the first enforcement layer: duplicate placement variants
 are deleted rather than kept as aliases. Component contracts, Widgetbook

@@ -48,60 +48,69 @@ class _HostFormTemplatesScreenState
       body: SafeArea(
         top: false,
         bottom: false,
-        child: CatchScreenBody(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                context.l10n.hostFormTemplatesSubtitle,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-              gapH20,
-              CatchAsyncValueView<List<HostFormTemplateSummary>>(
-                value: templates,
-                onRetry: () => ref.invalidate(
-                  hostFormTemplatesProvider(widget.organizerId),
-                ),
-                initialLoadTimeout: null,
-                loadingBuilder: (_) => const CatchSkeletonRows(count: 7),
-                errorBuilder: (_, error, _) => CatchErrorState.fromError(
-                  error,
-                  context: AppErrorContext.forms,
-                  onRetry: () => ref.invalidate(
-                    hostFormTemplatesProvider(widget.organizerId),
-                  ),
-                ),
-                builder: (context, values) => CatchSection.containedFieldRows(
+        child: CatchResponsiveSectionPage(
+          sections: [
+            CatchResponsiveSectionItem(
+              child: CatchSection.plain(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    for (final template in values)
-                      CatchField.nav(
-                        key: ValueKey(
-                          'host-form-template-${template.templateId}',
-                        ),
-                        title: template.title,
-                        body: template.description,
-                        valueText: context.l10n.hostFormTemplateSummary(
-                          purpose: hostFormPurposeLabel(
-                            context,
-                            template.purpose,
-                          ),
-                          count: template.questionCount,
-                        ),
-                        icon: template.templateId == 'blank_form'
-                            ? CatchIcons.addRounded
-                            : CatchIcons.descriptionOutlined,
-                        status: _creatingTemplateId == template.templateId
-                            ? CatchFieldStatus.saving
-                            : CatchFieldStatus.idle,
-                        onTap: _creatingTemplateId == null
-                            ? () => _create(template)
-                            : null,
+                    Text(
+                      context.l10n.hostFormTemplatesSubtitle,
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                    ),
+                    gapH20,
+                    CatchAsyncValueView<List<HostFormTemplateSummary>>(
+                      value: templates,
+                      onRetry: () => ref.invalidate(
+                        hostFormTemplatesProvider(widget.organizerId),
                       ),
+                      initialLoadTimeout: null,
+                      loadingBuilder: (_) => const CatchSkeletonRows(count: 7),
+                      errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                        error,
+                        context: AppErrorContext.forms,
+                        onRetry: () => ref.invalidate(
+                          hostFormTemplatesProvider(widget.organizerId),
+                        ),
+                      ),
+                      builder: (context, values) =>
+                          CatchSection.containedFieldRows(
+                            children: [
+                              for (final template in values)
+                                CatchField.nav(
+                                  key: ValueKey(
+                                    'host-form-template-${template.templateId}',
+                                  ),
+                                  title: template.title,
+                                  body: template.description,
+                                  valueText: context.l10n
+                                      .hostFormTemplateSummary(
+                                        purpose: hostFormPurposeLabel(
+                                          context,
+                                          template.purpose,
+                                        ),
+                                        count: template.questionCount,
+                                      ),
+                                  icon: template.templateId == 'blank_form'
+                                      ? CatchIcons.addRounded
+                                      : CatchIcons.descriptionOutlined,
+                                  status:
+                                      _creatingTemplateId == template.templateId
+                                      ? CatchFieldStatus.saving
+                                      : CatchFieldStatus.idle,
+                                  onTap: _creatingTemplateId == null
+                                      ? () => _create(template)
+                                      : null,
+                                ),
+                            ],
+                          ),
+                    ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

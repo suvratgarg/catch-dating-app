@@ -9,6 +9,12 @@
 /// expanded). Use [ScreenSize] for app-shell decisions (bottom bar vs nav
 /// rail); use these for in-widget reflow. Migrated verbatim from `CatchLayout`.
 abstract final class ComponentBreakpoints {
+  /// A section page can place two readable field lanes side by side above this
+  /// local width. The shell may already have removed rail or sidebar space, so
+  /// this is deliberately measured by `ComponentResponsiveBuilder` rather than
+  /// by the whole-window [ScreenSize].
+  static const double sectionPageTwoColumnBreakpoint = 660.0;
+
   /// Host invite-link heading stacks its creation action below this width.
   static const double hostInviteLinksHeaderStackBreakpoint = 360.0;
 

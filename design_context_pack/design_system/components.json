@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-08-13",
+  "updated": "2026-08-27",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -3475,7 +3475,7 @@
           "Use divided sections for top-level information groups when nested rounded rectangles would add visual clutter.",
           "Use containedFieldRows for the handoff field surface: it owns a clipped 14 px radius, neutral line border, explicit section-focus/error border, inset internal rules, and no generic elevation. Descendant field focus remains child-owned; the section publishes a one-hairline active-overlay overlap so child chrome and the outer perimeter share identical left/right geometry, then paints the section edge last. Its optional title, right-aligned count, and trailing slot form an external kicker row aligned 16 px from the group edge with an 8 px gap before the outline, so the perimeter begins with the first field row. Its optional footer stays inside the border with 2 px / 16 px / 12 px padding. Divided fieldRows footers render outside the rows with 8 px top padding and the field-caption style. Headerless prompt cards begin directly with their first field row. Use contained for non-field carded content that needs one bounded surface and an internal title.",
           "Use plain sections for compact titled blocks without a container or divider.",
-          "The section owns the outer grouping and internal dividers. Outer section rules use the full line token; boundaries between sibling field rows use the muted fieldRow tone and remain coverable by an active field's 10 px bleed. Direct CatchField children derive a zero or text-lane divider inset from their leading icons; adapter-wrapped rows pass dividerInset explicitly. Fields own information content and interaction mode.",
+          "The section owns the outer grouping and internal dividers. Header boundaries and separators between sibling fields use the same full line token and one-pixel stroke; the header boundary spans the section while sibling-field rules begin at the derived text lane, so inset alone communicates hierarchy. Active fields may cover those rules with their 10 px bleed. Direct CatchField children derive a zero or text-lane divider inset from their leading icons; adapter-wrapped rows pass dividerInset explicitly. Fields own information content and interaction mode.",
           "Divided and contained field-row headers accept title, count, and trailing content. Contained field-row headers sit outside the outline; generic contained content-card titles remain inside. Contained footers use 2 px top padding; divided footers use 8 px. Field-section kickers use the exact 11 px, 600-weight, 1.43 px tracking treatment.",
           "Section headers, section labels, day headers, vertical sections, and horizontal rails are public members of this grouping family, not separate section systems."
         ]
@@ -7006,7 +7006,8 @@
           "CatchSpacing.screenPb",
           "CatchPageBody",
           "CatchSliverPageBody",
-          "CatchFormStepBody"
+          "CatchFormStepBody",
+          "CatchResponsiveSectionPage"
         ],
         "goldens": [],
         "members": [
@@ -7060,6 +7061,24 @@
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.screen_body"
             }
+          },
+          {
+            "id": "catch.screen_body.responsive_section_page",
+            "symbol": "CatchResponsiveSectionPage",
+            "summary": "Scrolling section-page adapter that combines standard gutters, responsive section composition, shell-aware terminal clearance, and expanding-field visibility.",
+            "states": [
+              "centered",
+              "adaptive-two-column",
+              "floating-bottom-navigation",
+              "side-navigation"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
           }
         ],
         "accessibility": {
@@ -7085,6 +7104,7 @@
         "notes": [
           "Use for regular non-sliver route bodies before composing ad hoc page padding.",
           "Screens may override top/bottom rhythm but should not hand-roll the horizontal gutter.",
+          "Use CatchResponsiveSectionPage when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
           "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding."
         ]
       },
@@ -7197,7 +7217,11 @@
           "CatchSectionList",
           "CatchSection",
           "CatchGaps.section",
-          "CatchDetailSliverSectionList"
+          "CatchDetailSliverSectionList",
+          "CatchResponsiveSectionLayout",
+          "CatchResponsiveSectionItem",
+          "CatchResponsiveSectionLane",
+          "CatchResponsiveSectionComposition"
         ],
         "goldens": [],
         "members": [
@@ -7235,6 +7259,24 @@
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.section_stack"
             }
+          },
+          {
+            "id": "catch.section_stack.responsive_section_layout",
+            "symbol": "CatchResponsiveSectionLayout",
+            "summary": "Local-width section layout that preserves compact reading order and moves only complete sections into declared primary or secondary lanes.",
+            "states": [
+              "centered",
+              "compact-fallback",
+              "two-column",
+              "single-lane-fallback"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section_stack",
+              "parentConceptId": "catch.section_stack",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section_stack"
+            }
           }
         ],
         "accessibility": {
@@ -7261,7 +7303,8 @@
         "notes": [
           "Use under CatchScreenBody or sliver wrappers to prevent screen-local section spacing drift.",
           "Let CatchSection own section dividers; use the gap prop only for explicit non-handoff stacks.",
-          "SectionList and DetailSliverSectionList are public members of catch.section_stack for placement-specific layout, not separate section systems."
+          "ResponsiveSectionLayout moves complete section blocks between lanes from local width; it never splits a CatchSection or adds responsive behavior to CatchField.",
+          "SectionList, ResponsiveSectionLayout, and DetailSliverSectionList are public members of catch.section_stack for placement-specific layout, not separate section systems."
         ]
       },
       "governance": {

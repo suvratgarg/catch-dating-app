@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/core/presentation/app_shell.dart'
     show AppShellSideNavigation;
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -174,14 +172,14 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Responsive page contexts · decision lab',
+  name: 'Responsive page contexts',
   type: CatchSection,
   path: '[Geometry system]',
 )
 Widget responsivePageContextMatrix(BuildContext context) {
   return _geometryPage(
     context,
-    title: 'Responsive page contexts · decision lab',
+    title: 'Responsive page contexts',
     contractIds: const [
       'catch.screen_body',
       'catch.section_stack',
@@ -204,7 +202,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _compactPhoneViewportWidth,
         viewportHeight: _compactViewportHeight,
         platform: TargetPlatform.iOS,
-        composition: _ResponsiveSectionComposition.centered,
+        composition: CatchResponsiveSectionComposition.centered,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -214,7 +212,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _tabletPortraitViewportWidth,
         viewportHeight: _compactViewportHeight,
         platform: TargetPlatform.android,
-        composition: _ResponsiveSectionComposition.centered,
+        composition: CatchResponsiveSectionComposition.centered,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -224,7 +222,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _tabletWorkspaceViewportWidth,
         viewportHeight: _tabletViewportHeight,
         platform: TargetPlatform.android,
-        composition: _ResponsiveSectionComposition.adaptiveTwoColumn,
+        composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -234,7 +232,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _expandedViewportWidth,
         viewportHeight: _expandedViewportHeight,
         platform: TargetPlatform.android,
-        composition: _ResponsiveSectionComposition.adaptiveTwoColumn,
+        composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -244,7 +242,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _splitScreenViewportWidth,
         viewportHeight: _compactViewportHeight,
         platform: TargetPlatform.iOS,
-        composition: _ResponsiveSectionComposition.adaptiveTwoColumn,
+        composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
       ),
     ],
   );
@@ -723,8 +721,6 @@ Widget modalGeometryMatrix(BuildContext context) {
   );
 }
 
-enum _ResponsiveSectionComposition { centered, adaptiveTwoColumn }
-
 Widget _responsivePageContextSpecimen(
   BuildContext context, {
   required String label,
@@ -732,7 +728,7 @@ Widget _responsivePageContextSpecimen(
   required double viewportWidth,
   required double viewportHeight,
   required TargetPlatform platform,
-  required _ResponsiveSectionComposition composition,
+  required CatchResponsiveSectionComposition composition,
 }) {
   return _specimen(
     context,
@@ -797,7 +793,7 @@ Widget _scaledReviewViewport(
 }
 
 Widget _responsiveGeometryShell({
-  required _ResponsiveSectionComposition composition,
+  required CatchResponsiveSectionComposition composition,
 }) {
   return CatchAdaptiveTabScaffold(
     activeIndex: 1,
@@ -818,83 +814,24 @@ Widget _responsiveGeometryShell({
       expanded: true,
       title: 'Catch Hosts',
     ),
-    body: Builder(
-      builder: (context) => CatchFieldVisibilityScope(
-        bottomObstruction: AppShellActiveTab.bottomOverlayInsetOf(context),
-        child: CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-            title: 'Event settings',
-            leadingType: CatchTopBarLeading.none,
-            divider: scrolledUnder,
-          ),
-          body: CatchScreenBody(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ResponsiveBuilder(
-                  compact: _buildResponsiveSingleColumn,
-                  medium:
-                      composition ==
-                          _ResponsiveSectionComposition.adaptiveTwoColumn
-                      ? _buildResponsiveTwoColumns
-                      : _buildResponsiveSingleColumn,
-                  expanded:
-                      composition ==
-                          _ResponsiveSectionComposition.adaptiveTwoColumn
-                      ? _buildResponsiveTwoColumns
-                      : _buildResponsiveSingleColumn,
-                ),
-                const CatchScrollTerminalPadding(),
-              ],
-            ),
-          ),
-        ),
+    body: CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        title: 'Event settings',
+        leadingType: CatchTopBarLeading.none,
+        divider: scrolledUnder,
       ),
-    ),
-  );
-}
-
-Widget _buildResponsiveSingleColumn(BuildContext context) {
-  return Align(
-    alignment: AlignmentDirectional.topCenter,
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: CatchLayout.maxContentWidth),
-      child: CatchSectionStack(
-        padding: EdgeInsets.zero,
-        gap: CatchGaps.section,
-        children: [
-          _responsiveEventSettingsSection(),
-          _responsiveNotificationSection(),
-          _responsivePrivacySection(),
+      body: CatchResponsiveSectionPage(
+        composition: composition,
+        sections: [
+          CatchResponsiveSectionItem(child: _responsiveEventSettingsSection()),
+          CatchResponsiveSectionItem(
+            lane: CatchResponsiveSectionLane.secondary,
+            child: _responsiveNotificationSection(),
+          ),
+          CatchResponsiveSectionItem(child: _responsivePrivacySection()),
         ],
       ),
     ),
-  );
-}
-
-Widget _buildResponsiveTwoColumns(BuildContext context) {
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Expanded(
-        child: CatchSectionStack(
-          padding: EdgeInsets.zero,
-          gap: CatchGaps.section,
-          children: [
-            _responsiveEventSettingsSection(),
-            _responsivePrivacySection(),
-          ],
-        ),
-      ),
-      const SizedBox(width: CatchGaps.section),
-      Expanded(
-        child: CatchSectionStack(
-          padding: EdgeInsets.zero,
-          gap: CatchGaps.section,
-          children: [_responsiveNotificationSection()],
-        ),
-      ),
-    ],
   );
 }
 

@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.14.0
-updated: 2026-08-20
+version: 1.14.1
+updated: 2026-08-27
 owner: app_architecture
 status: active
 ---
@@ -604,6 +604,19 @@ the lifecycle list.
 6. Compact child routes may continue above the root navigator. Master-detail
    routes must later preserve selected ids in the branch/URL so resizing,
    browser back/forward, deep links, and window restoration remain truthful.
+
+**Section-page composition**
+
+Section-based non-sliver routes use `CatchResponsiveSectionPage` instead of
+rebuilding screen gutters, a content clamp, field visibility, and terminal
+shell clearance independently. The route explicitly chooses either a centered
+reading lane or `adaptiveTwoColumn`; there is no automatic rule that turns
+every wide form into two columns. Adaptive composition measures the page's
+remaining local width after rail/sidebar chrome and screen gutters. At the
+named 660 px component threshold, complete `CatchSection` blocks move into
+their declared primary or secondary lane; below it, including narrow split
+windows, the original list order returns in one capped column. The layout never
+splits a section or teaches `CatchField` about the viewport.
 
 **Workspace geometry and input**
 
