@@ -2091,7 +2091,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'disclosure-active-pressed',
         description:
-            'The open card holds active chrome. Press and hold its row to inspect the contact outline before release.',
+            'The standalone open field holds rounded active chrome. Press and hold its row to verify that pointer-down retains one rounded outline before release.',
         child: const _ChoiceFieldDemo(initiallyOpen: true),
       ),
       fieldState(

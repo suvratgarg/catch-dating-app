@@ -1,7 +1,7 @@
 ---
 doc_id: section_gutter_divider_followups
-version: 1.0.2
-updated: 2026-08-07
+version: 1.0.3
+updated: 2026-08-27
 owner: design_parity_review
 status: ready-for-implementation
 ---
@@ -44,7 +44,7 @@ task or PR summary only where this spec says to.
 ## Item 1 — Extend the flush contract to contained sections
 
 **Decision.** Containers own gutters; rows are flush inside them. This
-already holds for `CatchSection.divided` (via `CatchFieldInsetScope`). It
+already holds for `CatchSection.divided` (via `CatchFieldGeometryScope`). It
 must also hold for `CatchSection.contained`: the focus surface pads
 `CatchSpacing.s4`, and any `CatchField` inside additionally self-insets
 `s4`, producing a 32pt interior text gutter. Example live today:
@@ -53,10 +53,10 @@ must also hold for `CatchSection.contained`: the focus surface pads
 
 **Change.** In `lib/core/widgets/catch_section_layout.dart`,
 `_buildContained` wraps its section content in
-`CatchFieldInsetScope(flush: true, child: ...)` — the scope goes INSIDE
+`CatchFieldGeometryScope(gutterOwnership: CatchFieldGutterOwnership.container, child: ...)` — the scope goes INSIDE
 `CatchSectionFocusSurface` (the surface padding is the owned gutter), around
 the same subtree that `_sectionContent(...)` returns. Extend the existing
-`show CatchFieldInsetScope` import clause if needed. Do NOT touch
+`show CatchFieldGeometryScope, CatchFieldGutterOwnership` import clause if needed. Do NOT touch
 `CatchSection.plain` — plain sections have no owned gutter; their parents
 decide.
 

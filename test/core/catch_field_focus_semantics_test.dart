@@ -231,7 +231,7 @@ void main() {
     },
   );
 
-  testWidgets('rectangular press band appears before rounded focus chrome', (
+  testWidgets('rounded press chrome transfers to one rounded active outline', (
     tester,
   ) async {
     final controller = TextEditingController();
@@ -250,7 +250,10 @@ void main() {
         overlayDecoration(const ValueKey<String>('catch-field-active-overlay'));
 
     expect(pressedDecoration().border, isNull);
-    expect(pressedDecoration().borderRadius, BorderRadius.zero);
+    expect(
+      pressedDecoration().borderRadius,
+      BorderRadius.circular(CatchFieldTokens.tileRadius),
+    );
     expect(pressedDecoration().color, Colors.transparent);
     expect(activeDecoration().border, isNull);
     expect(
@@ -262,18 +265,38 @@ void main() {
     );
     await tester.pump();
 
-    expect(pressedDecoration().border, isNull);
-    expect(pressedDecoration().borderRadius, BorderRadius.zero);
+    expect(
+      pressedDecoration().border,
+      Border.all(color: CatchTokens.editorialLight.line),
+    );
+    expect(
+      pressedDecoration().borderRadius,
+      BorderRadius.circular(CatchFieldTokens.tileRadius),
+    );
     expect(pressedDecoration().color, isNot(equals(Colors.transparent)));
     expect(activeDecoration().border, isNull);
     expect(focusNode.hasFocus, isFalse);
     await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
-    expect(pressedDecoration().border, isNull);
+    expect(
+      pressedDecoration().border,
+      Border.all(color: CatchTokens.editorialLight.line),
+    );
     expect(pressedDecoration().color, isNot(equals(Colors.transparent)));
 
     await gesture.up();
     await tester.pump();
 
+    // The pressed layer keeps the shared stroke through the tap frame so
+    // focus activation cannot introduce a transparent flash.
+    expect(
+      pressedDecoration().border,
+      Border.all(color: CatchTokens.editorialLight.line),
+    );
+    expect(activeDecoration().border, isNull);
+
+    await tester.pump();
+
+    expect(pressedDecoration().border, isNull);
     expect(activeDecoration().border, isNotNull);
     expect(
       activeDecoration().borderRadius,
@@ -282,6 +305,21 @@ void main() {
     expect(activeDecoration().boxShadow, isNotEmpty);
     expect(focusNode.hasFocus, isTrue);
     expect(tester.testTextInput.isVisible, isTrue);
+
+    final activeGesture = await tester.startGesture(
+      tester.getCenter(find.byType(CatchField)),
+    );
+    await tester.pump();
+
+    expect(
+      pressedDecoration().border,
+      Border.all(color: CatchTokens.editorialLight.line),
+    );
+    expect(activeDecoration().border, isNull);
+    expect(pressedDecoration().borderRadius, activeDecoration().borderRadius);
+
+    await activeGesture.up();
+    await tester.pump();
   });
 
   testWidgets(

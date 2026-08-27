@@ -125,7 +125,7 @@ RELY on the gutter/divider defaults (expected: full-bleed screen placements
 only). If ≤3, flip the defaults — rails render chrome-less by default and
 full-bleed callers opt in with one `fullBleed: true`-style knob; if more,
 make the rails consult the same container-owns-gutter scope the field rows
-use (generalizing `CatchFieldInsetScope`; propose the generalized name in
+use (generalizing `CatchFieldGeometryScope`; propose the generalized name in
 the receipt for review). Either way the 12 zeroings disappear; record the
 inventory count and chosen branch in the receipt.
 

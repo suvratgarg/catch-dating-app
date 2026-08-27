@@ -28,53 +28,65 @@ class CatchFieldVisibilityScope extends InheritedWidget {
       revealPadding != oldWidget.revealPadding;
 }
 
-/// Ambient contract for who owns a field row's horizontal gutter and active
-/// edge geometry.
+/// Owner of the horizontal content gutter around a field row.
+enum CatchFieldGutterOwnership { field, container }
+
+/// Owner of the external corners around field interaction chrome.
+///
+/// [rounded] means the field paints its own complete rounded silhouette.
+/// [sectionClipped] means an ancestor section owns one rounded clip for the
+/// complete group, so each descendant paints a rectangular internal band.
+enum CatchFieldInteractionShape { rounded, sectionClipped }
+
+/// Ambient contract for field-row content and interaction geometry.
 ///
 /// By default a [CatchField] row insets itself horizontally so it can sit
 /// directly on a background or inside an unpadded surface. A container that
 /// owns the horizontal gutter itself (e.g. [CatchSection.divided]) publishes
-/// `flush: true`, and every field row below it drops its own horizontal
-/// inset so content, trailing affordances, and container-drawn dividers all
-/// share the container's edges.
+/// [CatchFieldGutterOwnership.container], and every field row below it drops
+/// its own horizontal inset so content, trailing affordances, and
+/// container-drawn dividers all share the container's edges.
 ///
-/// [activeOverlayBleed] is independent from the content inset. It lets a
-/// containing section publish how far active row chrome must overlap its edge.
-/// [grouped] declares that an ancestor owns one rounded clip for the whole row
-/// group, so pressed and active descendants stay rectangular and inherit only
-/// the external corners they actually touch. Contained FieldSections use one
-/// hairline so the child ring and outer perimeter occupy the same geometry
-/// instead of painting adjacent vertical strokes. When omitted, flush rows
-/// retain their divided-section tile bleed.
-class CatchFieldInsetScope extends InheritedWidget {
-  const CatchFieldInsetScope({
+/// [interactionBleed] is independent from the content gutter. It lets a
+/// containing section publish how far pressed and active chrome must overlap
+/// its edge. [interactionShape] declares whether the field owns its corners or
+/// inherits them from one section clip. Contained field sections use one
+/// hairline of bleed so the child ring and outer perimeter occupy the same
+/// geometry instead of painting adjacent vertical strokes. When omitted,
+/// container-owned gutters retain the divided-section tile bleed.
+class CatchFieldGeometryScope extends InheritedWidget {
+  const CatchFieldGeometryScope({
     super.key,
-    required this.flush,
-    this.activeOverlayBleed,
-    this.grouped = false,
+    required this.gutterOwnership,
+    this.interactionBleed,
+    this.interactionShape = CatchFieldInteractionShape.rounded,
     required super.child,
-  }) : assert(activeOverlayBleed == null || activeOverlayBleed >= 0);
+  }) : assert(interactionBleed == null || interactionBleed >= 0);
 
-  final bool flush;
-  final double? activeOverlayBleed;
-  final bool grouped;
+  final CatchFieldGutterOwnership gutterOwnership;
+  final double? interactionBleed;
+  final CatchFieldInteractionShape interactionShape;
 
-  static CatchFieldInsetScope? _of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<CatchFieldInsetScope>();
+  static CatchFieldGeometryScope? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<CatchFieldGeometryScope>();
 
-  static bool flushOf(BuildContext context) => _of(context)?.flush ?? false;
+  static CatchFieldGutterOwnership gutterOwnershipOf(BuildContext context) =>
+      maybeOf(context)?.gutterOwnership ?? CatchFieldGutterOwnership.field;
 
-  static bool groupedOf(BuildContext context) => _of(context)?.grouped ?? false;
+  static CatchFieldInteractionShape interactionShapeOf(BuildContext context) =>
+      maybeOf(context)?.interactionShape ?? CatchFieldInteractionShape.rounded;
 
-  static double activeOverlayBleedOf(BuildContext context) {
-    final scope = _of(context);
-    return scope?.activeOverlayBleed ??
-        (scope?.flush == true ? CatchFieldTokens.dividedRowBleed : 0.0);
+  static double interactionBleedOf(BuildContext context) {
+    final scope = maybeOf(context);
+    return scope?.interactionBleed ??
+        (scope?.gutterOwnership == CatchFieldGutterOwnership.container
+            ? CatchFieldTokens.dividedRowBleed
+            : 0.0);
   }
 
   @override
-  bool updateShouldNotify(CatchFieldInsetScope oldWidget) =>
-      flush != oldWidget.flush ||
-      activeOverlayBleed != oldWidget.activeOverlayBleed ||
-      grouped != oldWidget.grouped;
+  bool updateShouldNotify(CatchFieldGeometryScope oldWidget) =>
+      gutterOwnership != oldWidget.gutterOwnership ||
+      interactionBleed != oldWidget.interactionBleed ||
+      interactionShape != oldWidget.interactionShape;
 }

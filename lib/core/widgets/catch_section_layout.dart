@@ -9,7 +9,12 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
-    show CatchField, CatchFieldInsetScope, CatchFieldVisibilityScope;
+    show
+        CatchField,
+        CatchFieldGeometryScope,
+        CatchFieldGutterOwnership,
+        CatchFieldInteractionShape,
+        CatchFieldVisibilityScope;
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -800,7 +805,10 @@ class CatchSection extends StatelessWidget {
               color: dividerColor ?? CatchDivider.colorFor(t, dividerRole),
               role: dividerRole,
             ),
-          CatchFieldInsetScope(flush: true, child: _body(context, t)),
+          CatchFieldGeometryScope(
+            gutterOwnership: CatchFieldGutterOwnership.container,
+            child: _body(context, t),
+          ),
         ],
       );
       if (first) return fieldContent;
@@ -825,7 +833,10 @@ class CatchSection extends StatelessWidget {
         // Divided sections own the horizontal gutter: field rows inside
         // render flush so content, trailing affordances, and the section's
         // dividers share the same edges.
-        CatchFieldInsetScope(flush: true, child: _body(context, t)),
+        CatchFieldGeometryScope(
+          gutterOwnership: CatchFieldGutterOwnership.container,
+          child: _body(context, t),
+        ),
       ],
     );
 
@@ -911,11 +922,13 @@ class CatchSection extends StatelessWidget {
             ],
           )
         : _sectionContent(context, t, contained: true);
-    final surface = CatchFieldInsetScope(
+    final surface = CatchFieldGeometryScope(
       // Generic contained sections own their content gutter. Field-row
       // sections leave row gutters to CatchField, while the focus surface
       // below owns the active edge geometry for every composition path.
-      flush: !_fieldRows,
+      gutterOwnership: _fieldRows
+          ? CatchFieldGutterOwnership.field
+          : CatchFieldGutterOwnership.container,
       child: CatchSectionFocusSurface(
         padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
         backgroundColor: backgroundColor,
@@ -1175,18 +1188,18 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
       final duration = MediaQuery.maybeOf(context)?.disableAnimations == true
           ? Duration.zero
           : CatchFieldTokens.standard;
-      final fieldContent = CatchFieldInsetScope(
-        flush: CatchFieldInsetScope.flushOf(context),
+      final fieldContent = CatchFieldGeometryScope(
+        gutterOwnership: CatchFieldGeometryScope.gutterOwnershipOf(context),
         // The section perimeter consumes one hairline of layout on every
         // edge. Active child chrome reclaims that exact horizontal inset so
         // both primitives paint on one coordinate instead of producing two
         // adjacent vertical strokes. Keep this contract here so direct users
         // of CatchSectionFocusSurface cannot bypass it.
-        activeOverlayBleed: CatchStroke.hairline,
+        interactionBleed: CatchStroke.hairline,
         // This surface owns one rounded clip for the complete row group.
         // Descendant press, focus, edit, and disclosure chrome therefore stays
         // rectangular and receives only the external corners it touches.
-        grouped: true,
+        interactionShape: CatchFieldInteractionShape.sectionClipped,
         child: widget.child,
       );
       final sectionRadius = BorderRadius.circular(

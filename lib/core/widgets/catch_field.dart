@@ -63,11 +63,11 @@ enum CatchFieldStatus { idle, saving, saved }
 /// );
 /// ```
 abstract class CatchField extends StatefulWidget {
-  /// Rectangular pressed band used by interactive field rows.
+  /// Stable key for the contextual pressed surface used by field rows.
   ///
-  /// A surrounding [CatchSection.containedFieldRows] owns any rounded group
-  /// corners. Its separate active overlay follows the same rule: rectangular
-  /// inside a contained row group, locally rounded only when standalone.
+  /// Divided and standalone fields paint a complete rounded tint and outline.
+  /// A surrounding [CatchSection.containedFieldRows] instead publishes one
+  /// group clip, so its descendant press surfaces remain rectangular bands.
   static const pressOverlayKey = ValueKey<String>('catch-field-press-overlay');
 
   const CatchField._shared({

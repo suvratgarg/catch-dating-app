@@ -62,7 +62,7 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
       emptyStateOmitted: true,
       children: [
         CatchFieldLanes.single(
-          flush: true,
+          gutterOwnership: CatchFieldGutterOwnership.container,
           child: CatchField.toggle(
             title: title,
             contract: CatchContractConstraints

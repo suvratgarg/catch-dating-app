@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "d79fdfcce0eb49331179b249bf767f9f28fe90061227ee5a1f02622b2c5d76a7",
+  "sourceDigest": "59ce4906e2b244cdc5d96096874ae8cc98a7ef7561af02d498ccc247bd757720",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "d79fdfcce0eb49331179b249bf767f9f28fe90061227ee5a1f02622b2c5d76a7",
-    "contractDigest": "d79fdfcce0eb49331179b249bf767f9f28fe90061227ee5a1f02622b2c5d76a7"
+    "digest": "59ce4906e2b244cdc5d96096874ae8cc98a7ef7561af02d498ccc247bd757720",
+    "contractDigest": "59ce4906e2b244cdc5d96096874ae8cc98a7ef7561af02d498ccc247bd757720"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "fd9ace760dca9f4d13cec5ed09d041ca80b9d956d4ceff4934cd2e6b0b021116",
+    "handoffRequestDigest": "cb98c9bbdc1395c9afbf4db4b35ed5dfa3126bf3c7e2d8840396178a445efa4b",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -220,7 +220,7 @@
           "CatchFieldDisclosureDrawer",
           "CatchFieldExplicitSaveControl",
           "CatchFieldFocusOutline",
-          "CatchFieldInsetScope",
+          "CatchFieldGeometryScope",
           "CatchFieldOptionCardControl",
           "CatchFieldRepeatButton",
           "CatchFieldRow",
@@ -822,7 +822,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "ecdd03e211003b0d0ec37aabee78c27c635ad118a25f6c0f9d9678d5321ee0e0"
+      "contractDigest": "4c0fde75e84dd083158eac4deafbb45dd152b5adea11f4dd38c81e0adce86ba0"
     },
     {
       "contractId": "catch.section",

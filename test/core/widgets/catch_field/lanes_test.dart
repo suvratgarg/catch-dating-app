@@ -66,15 +66,15 @@ void main() {
     expect(fieldRect.right - valueRight, CatchSpacing.s4);
   });
 
-  testWidgets('CatchFieldInsetScope flush hands the gutter to the container', (
+  testWidgets('CatchFieldGeometryScope assigns the gutter to the container', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
         SizedBox(
           width: 360,
-          child: CatchFieldInsetScope(
-            flush: true,
+          child: CatchFieldGeometryScope(
+            gutterOwnership: CatchFieldGutterOwnership.container,
             child: CatchField.read(
               title: 'Notifications',
               valueText: 'On',
@@ -565,8 +565,14 @@ void main() {
       pressedDecoration.color,
       CatchFieldTokens.pressedSurface(CatchTokens.editorialLight),
     );
-    expect(pressedDecoration.borderRadius, BorderRadius.zero);
-    expect(pressedDecoration.border, isNull);
+    expect(
+      pressedDecoration.borderRadius,
+      BorderRadius.circular(CatchFieldTokens.tileRadius),
+    );
+    expect(
+      pressedDecoration.border,
+      Border.all(color: CatchTokens.editorialLight.line),
+    );
 
     await gesture.up();
     await tester.pump();

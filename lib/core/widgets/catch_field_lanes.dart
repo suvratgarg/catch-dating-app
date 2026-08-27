@@ -9,21 +9,27 @@ part of 'catch_field.dart';
 /// This keeps field gutter and divider ownership visible in the widget tree
 /// without introducing another surface.
 class CatchFieldLanes extends StatelessWidget {
-  const CatchFieldLanes.single({super.key, required this.child, this.flush})
-    : children = const [],
-      dividerIndent = CatchLayout.fieldRowTextLaneInset;
+  const CatchFieldLanes.single({
+    super.key,
+    required this.child,
+    this.gutterOwnership,
+  }) : children = const [],
+       dividerIndent = CatchLayout.fieldRowTextLaneInset;
 
   /// Declares field-lane ownership around a specialized layout whose spacing
   /// is intentionally not a simple divided row list (for example, a phone
   /// field paired with a country-code control).
-  const CatchFieldLanes.custom({super.key, required this.child, this.flush})
-    : children = const [],
-      dividerIndent = CatchLayout.fieldRowTextLaneInset;
+  const CatchFieldLanes.custom({
+    super.key,
+    required this.child,
+    this.gutterOwnership,
+  }) : children = const [],
+       dividerIndent = CatchLayout.fieldRowTextLaneInset;
 
   const CatchFieldLanes.divided({
     super.key,
     required this.children,
-    this.flush = true,
+    this.gutterOwnership = CatchFieldGutterOwnership.container,
     this.dividerIndent = CatchLayout.fieldRowTextLaneInset,
   }) : assert(children.length > 1),
        child = null;
@@ -33,8 +39,8 @@ class CatchFieldLanes extends StatelessWidget {
 
   /// Overrides ambient field gutter ownership when non-null. Single/custom
   /// boundaries preserve the surrounding section by default; divided lanes
-  /// own their gutter by default.
-  final bool? flush;
+  /// assign their gutter to the lane container by default.
+  final CatchFieldGutterOwnership? gutterOwnership;
   final double dividerIndent;
 
   @override
@@ -52,15 +58,15 @@ class CatchFieldLanes extends StatelessWidget {
               ],
             ],
           );
-    final flushOverride = flush;
-    if (flushOverride == null) return content;
-    final grouped = CatchFieldInsetScope.groupedOf(context);
-    return CatchFieldInsetScope(
-      flush: flushOverride,
-      activeOverlayBleed: grouped
-          ? CatchFieldInsetScope.activeOverlayBleedOf(context)
-          : null,
-      grouped: grouped,
+    final gutterOverride = gutterOwnership;
+    if (gutterOverride == null) return content;
+    final inheritedGeometry = CatchFieldGeometryScope.maybeOf(context);
+    return CatchFieldGeometryScope(
+      gutterOwnership: gutterOverride,
+      interactionBleed: inheritedGeometry?.interactionBleed,
+      interactionShape:
+          inheritedGeometry?.interactionShape ??
+          CatchFieldInteractionShape.rounded,
       child: content,
     );
   }

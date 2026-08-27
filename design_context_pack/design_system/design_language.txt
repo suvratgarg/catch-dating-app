@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.8.1
+version: 1.8.2
 updated: 2026-08-27
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -289,6 +289,12 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   sections. Omit the label when the page or step title already supplies the
   same context. `CatchSection.contained` keeps its sentence-case title inside
   only when the bounded surface is itself one actionable content module.
+- `CatchField` owns one contextual interaction silhouette for both pointer-down
+  and active/open states. Standalone and divided fields paint a complete
+  rounded tint plus hairline outline; divided overlays reclaim their adjacent
+  divider bleed. Contained field rows paint rectangular internal bands and
+  inherit external corners from the section's single group clip. Callers never
+  select radii or redraw this chrome.
 
 The API boundary is the first enforcement layer: duplicate placement variants
 are deleted rather than kept as aliases. Component contracts, Widgetbook
