@@ -194,6 +194,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
       'Split-screen widths return to one column without a tablet-only override.',
     ],
     children: [
+      _dividedFieldGutterStudy(context),
       _responsivePageContextSpecimen(
         context,
         label: 'Compact phone · centered single column',
@@ -244,6 +245,94 @@ Widget responsivePageContextMatrix(BuildContext context) {
         platform: TargetPlatform.iOS,
         composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
       ),
+    ],
+  );
+}
+
+Widget _dividedFieldGutterStudy(BuildContext context) {
+  return _specimen(
+    context,
+    label: 'Open decision · divided field gutter',
+    description:
+        'Compare both the resting and active states. The proposal aligns the active tile with the 20 px section edge by moving the existing 10 px bleed inside the field at all times.',
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final comparisonWidth = constraints.maxWidth >= 720
+            ? (constraints.maxWidth - CatchSpacing.s4) / 2
+            : constraints.maxWidth.clamp(0, _componentWidth).toDouble();
+        return Wrap(
+          spacing: CatchSpacing.s4,
+          runSpacing: CatchSpacing.s5,
+          children: [
+            _sectionHeaderComparison(
+              context,
+              width: comparisonWidth,
+              label: 'Current · content at 20, active edge at 10',
+              description:
+                  'Resting content follows the page gutter; the active tile expands halfway into it.',
+              child: _dividedFieldGutterStates(alignActiveToSectionEdge: false),
+            ),
+            _sectionHeaderComparison(
+              context,
+              width: comparisonWidth,
+              label: 'Proposed · content at 30, active edge at 20',
+              description:
+                  'The section rule and active tile share one edge; resting content keeps the same 10 px internal inset.',
+              child: _dividedFieldGutterStates(alignActiveToSectionEdge: true),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+}
+
+Widget _dividedFieldGutterStates({required bool alignActiveToSectionEdge}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      _dividedFieldGutterState(
+        label: 'Resting',
+        open: false,
+        alignActiveToSectionEdge: alignActiveToSectionEdge,
+      ),
+      const SizedBox(height: CatchSpacing.s5),
+      _dividedFieldGutterState(
+        label: 'Active',
+        open: true,
+        alignActiveToSectionEdge: alignActiveToSectionEdge,
+      ),
+    ],
+  );
+}
+
+Widget _dividedFieldGutterState({
+  required String label,
+  required bool open,
+  required bool alignActiveToSectionEdge,
+}) {
+  final field = CatchField.choices<String>(
+    title: 'Host',
+    icon: CatchIcons.hosted,
+    values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
+    itemLabel: _identityString,
+    selected: const {'Catch Hosts'},
+    onSelectionChanged: _ignoreStrings,
+    open: open,
+  );
+  return CatchSection.fieldRows(
+    title: label,
+    first: true,
+    children: [
+      if (alignActiveToSectionEdge)
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CatchFieldTokens.dividedRowBleed,
+          ),
+          child: field,
+        )
+      else
+        field,
     ],
   );
 }
