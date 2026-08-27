@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -33,21 +34,60 @@ class _FieldTransitionPrototypePage extends StatefulWidget {
 }
 
 class _FieldTransitionPrototypePageState
-    extends State<_FieldTransitionPrototypePage> {
-  final _containedKey = GlobalKey<_TransitionVariantState>();
-  final _dividedKey = GlobalKey<_TransitionVariantState>();
-  bool _slowMotion = true;
+    extends State<_FieldTransitionPrototypePage>
+    with SingleTickerProviderStateMixin {
+  static const _playbackDuration = Duration(milliseconds: 700);
+  static const _replayLeadIn = Duration(milliseconds: 120);
 
-  double get _speedFactor => _slowMotion ? 4 : 1;
+  late final AnimationController _timeline;
+  int _replayRun = 0;
 
-  Future<void> _replayBoth({required bool opening}) async {
-    final futures = [
-      if (_containedKey.currentState case final state?)
-        state.replay(opening: opening),
-      if (_dividedKey.currentState case final state?)
-        state.replay(opening: opening),
-    ];
-    await Future.wait(futures);
+  @override
+  void initState() {
+    super.initState();
+    _timeline = AnimationController(vsync: this, duration: _playbackDuration);
+  }
+
+  @override
+  void dispose() {
+    _timeline.dispose();
+    super.dispose();
+  }
+
+  Future<void> _replay({required bool opening}) async {
+    final run = ++_replayRun;
+    _timeline.stop();
+    _timeline.value = opening ? 0 : 1;
+    await Future<void>.delayed(_replayLeadIn);
+    if (!mounted || run != _replayRun) return;
+    await _timeline.animateTo(
+      opening ? 1 : 0,
+      duration: _playbackDuration,
+      curve: Curves.linear,
+    );
+  }
+
+  Future<void> _animateTo(double target) async {
+    _replayRun++;
+    final distance = (target - _timeline.value).abs();
+    if (distance == 0) return;
+    final duration = Duration(
+      milliseconds: math.max(
+        140,
+        (_playbackDuration.inMilliseconds * distance).round(),
+      ),
+    );
+    await _timeline.animateTo(target, duration: duration, curve: Curves.linear);
+  }
+
+  void _setProgress(double progress) {
+    _replayRun++;
+    _timeline.stop();
+    _timeline.value = progress.clamp(0, 1).toDouble();
+  }
+
+  void _toggleFromField() {
+    unawaited(_animateTo(_timeline.value >= 0.5 ? 0 : 1));
   }
 
   @override
@@ -68,7 +108,7 @@ class _FieldTransitionPrototypePageState
               ),
               const SizedBox(height: CatchSpacing.s2),
               Text(
-                'Prototype only — production CatchField is unchanged. Press and hold either Host row, release to open it, or replay both variants in slow motion.',
+                'Prototype only — production CatchField is unchanged. Replay at normal speed, drag the timeline to inspect any frame, or jump to a named geometry state.',
                 style: CatchTextStyles.proseM(context, color: t.ink2),
               ),
               const SizedBox(height: CatchSpacing.s4),
@@ -77,30 +117,75 @@ class _FieldTransitionPrototypePageState
                 runSpacing: CatchSpacing.s2,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  CatchChip.selectable(
-                    label: '4× slow motion',
-                    selected: _slowMotion,
-                    onChanged: (selected) =>
-                        setState(() => _slowMotion = selected),
-                  ),
                   CatchButton(
                     label: 'Replay opening',
                     size: CatchButtonSize.sm,
                     variant: CatchButtonVariant.secondary,
-                    onPressed: () => _replayBoth(opening: true),
+                    onPressed: () => unawaited(_replay(opening: true)),
                   ),
                   CatchButton(
                     label: 'Replay closing',
                     size: CatchButtonSize.sm,
                     variant: CatchButtonVariant.ghost,
-                    onPressed: () => _replayBoth(opening: false),
+                    onPressed: () => unawaited(_replay(opening: false)),
                   ),
                 ],
+              ),
+              const SizedBox(height: CatchSpacing.s4),
+              AnimatedBuilder(
+                animation: _timeline,
+                builder: (context, _) {
+                  final progress = _timeline.value;
+                  final nearest = _TransitionStop.nearest(progress);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Timeline · ${nearest.label} · ${(progress * 100).round()}%',
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
+                      ),
+                      SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: t.ink,
+                          inactiveTrackColor: t.line,
+                          thumbColor: t.ink,
+                          overlayColor: t.ink.withValues(alpha: 0.08),
+                          trackHeight: CatchStroke.hairline,
+                        ),
+                        child: Semantics(
+                          label: 'Field transition timeline',
+                          value:
+                              '${nearest.label}, ${(progress * 100).round()}%',
+                          child: Slider(
+                            value: progress,
+                            divisions: 100,
+                            onChanged: _setProgress,
+                          ),
+                        ),
+                      ),
+                      Wrap(
+                        spacing: CatchSpacing.s2,
+                        runSpacing: CatchSpacing.s2,
+                        children: [
+                          for (final stop in _TransitionStop.values)
+                            CatchChip.selectable(
+                              label: stop.label,
+                              selected: (progress - stop.progress).abs() < 0.01,
+                              onChanged: (_) => _setProgress(stop.progress),
+                            ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: CatchSpacing.s6),
               LayoutBuilder(
                 builder: (context, constraints) {
-                  final itemWidth = constraints.maxWidth >= 760
+                  final itemWidth = constraints.maxWidth >= 900
                       ? (constraints.maxWidth - CatchSpacing.s5) / 2
                       : constraints.maxWidth;
                   return Wrap(
@@ -110,17 +195,17 @@ class _FieldTransitionPrototypePageState
                       SizedBox(
                         width: itemWidth,
                         child: _TransitionVariant(
-                          key: _containedKey,
                           contained: true,
-                          speedFactor: _speedFactor,
+                          timeline: _timeline,
+                          onToggle: _toggleFromField,
                         ),
                       ),
                       SizedBox(
                         width: itemWidth,
                         child: _TransitionVariant(
-                          key: _dividedKey,
                           contained: false,
-                          speedFactor: _speedFactor,
+                          timeline: _timeline,
+                          onToggle: _toggleFromField,
                         ),
                       ),
                     ],
@@ -140,34 +225,46 @@ class _FieldTransitionPrototypePageState
   }
 }
 
-class _TransitionVariant extends StatefulWidget {
+enum _TransitionStop {
+  resting('Resting', 0),
+  pressed('Pressed', 0.24),
+  handoff('Handoff', 0.52),
+  selected('Selected', 1);
+
+  const _TransitionStop(this.label, this.progress);
+
+  final String label;
+  final double progress;
+
+  static _TransitionStop nearest(double progress) {
+    return values.reduce(
+      (best, candidate) =>
+          (candidate.progress - progress).abs() <
+              (best.progress - progress).abs()
+          ? candidate
+          : best,
+    );
+  }
+}
+
+class _TransitionVariant extends StatelessWidget {
   const _TransitionVariant({
-    super.key,
     required this.contained,
-    required this.speedFactor,
+    required this.timeline,
+    required this.onToggle,
   });
 
   final bool contained;
-  final double speedFactor;
-
-  @override
-  State<_TransitionVariant> createState() => _TransitionVariantState();
-}
-
-class _TransitionVariantState extends State<_TransitionVariant> {
-  final _fieldKey = GlobalKey<_UnifiedInteractionFieldState>();
-
-  Future<void> replay({required bool opening}) async {
-    await _fieldKey.currentState?.replay(opening: opening);
-  }
+  final Animation<double> timeline;
+  final VoidCallback onToggle;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final prototypeField = _UnifiedInteractionField(
-      key: _fieldKey,
-      contained: widget.contained,
-      speedFactor: widget.speedFactor,
+      contained: contained,
+      timeline: timeline,
+      onToggle: onToggle,
     );
     final fields = [
       prototypeField,
@@ -182,18 +279,18 @@ class _TransitionVariantState extends State<_TransitionVariant> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          widget.contained ? 'Contained section' : 'Divided section',
+          contained ? 'Contained section' : 'Divided section',
           style: CatchTextStyles.labelL(context, color: t.ink),
         ),
         const SizedBox(height: CatchSpacing.s1),
         Text(
-          widget.contained
+          contained
               ? 'The section owns the rounded perimeter; the field surface remains rectangular inside its clip.'
               : 'The field owns one rounded surface that covers the adjacent section dividers while engaged.',
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         const SizedBox(height: CatchSpacing.s3),
-        if (widget.contained)
+        if (contained)
           CatchSection.containedFieldRows(
             title: 'Event settings',
             headerPlacement: CatchSectionFieldHeaderPlacement.internal,
@@ -212,13 +309,14 @@ class _TransitionVariantState extends State<_TransitionVariant> {
 
 class _UnifiedInteractionField extends StatefulWidget {
   const _UnifiedInteractionField({
-    super.key,
     required this.contained,
-    required this.speedFactor,
+    required this.timeline,
+    required this.onToggle,
   });
 
   final bool contained;
-  final double speedFactor;
+  final Animation<double> timeline;
+  final VoidCallback onToggle;
 
   @override
   State<_UnifiedInteractionField> createState() =>
@@ -226,105 +324,98 @@ class _UnifiedInteractionField extends StatefulWidget {
 }
 
 class _UnifiedInteractionFieldState extends State<_UnifiedInteractionField> {
-  bool _pressed = false;
-  bool _open = false;
-  int _replayRun = 0;
   Set<String> _selected = const {'Catch Hosts'};
 
-  Duration _duration(Duration value) {
-    // This review surface must always expose the transition, even when the
-    // surrounding Widgetbook preview has reduced motion enabled. Production
-    // CatchField continues to respect the user's accessibility preference.
-    return Duration(
-      microseconds: (value.inMicroseconds * widget.speedFactor).round(),
-    );
-  }
-
-  Future<void> _wait(Duration value) async {
-    await Future<void>.delayed(
-      Duration(
-        microseconds: (value.inMicroseconds * widget.speedFactor).round(),
-      ),
-    );
-  }
-
-  Future<void> replay({required bool opening}) async {
-    final run = ++_replayRun;
-    setState(() {
-      _pressed = false;
-      _open = !opening;
-    });
-    await _wait(CatchFieldTokens.reveal);
-    if (!mounted || run != _replayRun) return;
-    setState(() => _pressed = true);
-    await _wait(const Duration(milliseconds: 180));
-    if (!mounted || run != _replayRun) return;
-    setState(() {
-      _open = opening;
-    });
-    await _wait(CatchFieldTokens.pressIn);
-    if (!mounted || run != _replayRun) return;
-    setState(() => _pressed = false);
-  }
-
-  void _toggleOpen() {
-    _replayRun++;
-    setState(() => _open = !_open);
-  }
-
-  void _handlePointerDown(PointerDownEvent event) {
-    _replayRun++;
-    if (!_pressed) setState(() => _pressed = true);
-  }
-
-  void _handlePointerEnd(PointerEvent event) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _pressed) setState(() => _pressed = false);
-    });
+  double _interval(double value, double start, double end) {
+    return ((value - start) / (end - start)).clamp(0, 1).toDouble();
   }
 
   @override
   Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: widget.timeline,
+      builder: (context, _) => _buildAtProgress(
+        context,
+        widget.timeline.value.clamp(0, 1).toDouble(),
+      ),
+    );
+  }
+
+  Widget _buildAtProgress(BuildContext context, double progress) {
     final t = CatchTokens.of(context);
     final containerOwnsGutter =
         CatchFieldGeometryScope.gutterOwnershipOf(context) ==
         CatchFieldGutterOwnership.container;
-    final rowPadding = EdgeInsets.fromLTRB(
-      containerOwnsGutter ? 0 : CatchFieldTokens.rowHorizontalPadding,
-      CatchFieldTokens.rowVerticalPadding,
-      containerOwnsGutter ? 0 : CatchFieldTokens.rowHorizontalPadding,
-      _open ? 0 : CatchFieldTokens.rowVerticalPadding,
+    final pressIn = Curves.easeOutCubic.transform(
+      _interval(progress, 0, _TransitionStop.pressed.progress),
     );
-    final radius = widget.contained
-        ? BorderRadius.zero
-        : BorderRadius.circular(CatchFieldTokens.tileRadius);
-    final engaged = _pressed || _open;
-    final interactionColor = _pressed
-        ? CatchFieldTokens.pressedSurface(t)
-        : _open
-        ? CatchFieldTokens.activeSurface(t)
-        : Colors.transparent;
-    final border = switch ((widget.contained, _pressed, _open)) {
-      (false, true, _) || (false, false, true) => Border.all(color: t.line),
-      (true, false, true) => Border.all(color: t.line),
-      _ => null,
-    };
+    final pressOut =
+        1 -
+        Curves.easeInOutCubic.transform(
+          _interval(progress, _TransitionStop.handoff.progress, 0.86),
+        );
+    final pressedAmount = math.min(pressIn, pressOut);
+    final activeAmount = CatchFieldTokens.curve.transform(
+      _interval(progress, 0.44, 1),
+    );
+    final reveal = CatchMotion.standardCurve.transform(
+      _interval(progress, _TransitionStop.handoff.progress, 1),
+    );
+    final shadowAmount = CatchFieldTokens.curve.transform(
+      _interval(progress, 0.68, 1),
+    );
+    final engagedAmount = math.max(pressedAmount, activeAmount);
+    final rowHorizontalPadding = containerOwnsGutter
+        ? 0.0
+        : CatchFieldTokens.rowHorizontalPadding;
+    final rowPadding = EdgeInsets.fromLTRB(
+      rowHorizontalPadding,
+      CatchFieldTokens.rowVerticalPadding,
+      rowHorizontalPadding,
+      CatchFieldTokens.rowVerticalPadding * (1 - reveal),
+    );
+    final pressedColor = Color.lerp(
+      Colors.transparent,
+      CatchFieldTokens.pressedSurface(t),
+      pressedAmount,
+    )!;
+    final interactionColor = Color.lerp(
+      pressedColor,
+      CatchFieldTokens.activeSurface(t),
+      activeAmount,
+    )!;
+    final borderAmount = widget.contained ? activeAmount : engagedAmount;
+    final borderColor = Color.lerp(Colors.transparent, t.line, borderAmount)!;
+    final shadows = BoxShadow.lerpList(
+      CatchElevation.none,
+      CatchElevation.fieldActive(Theme.of(context).brightness),
+      shadowAmount,
+    );
     final overlayBleed = widget.contained
         ? CatchStroke.hairline
         : CatchFieldTokens.dividedRowBleed;
+    final active = engagedAmount > 0.04;
 
     final header = CatchFieldRow.standard(
       padding: rowPadding,
       leading: Icon(
         CatchIcons.hosted,
         size: CatchFieldRow.leadingSlotIconSize,
-        color: engaged ? t.ink : t.ink2,
+        color: Color.lerp(t.ink2, t.ink, engagedAmount),
       ),
-      trailing: CatchFieldTrailing.rotatingChevron(open: _open),
+      trailing: CatchFieldTrailing.custom(
+        child: Transform.rotate(
+          angle: math.pi * reveal,
+          child: Icon(
+            CatchIcons.expandMoreRounded,
+            size: CatchFieldTokens.disclosureGlyphExtent,
+          ),
+        ),
+      ),
       content: _PrototypeFieldCopy(
         title: 'Host',
         body: 'Catch Hosts',
-        active: engaged,
+        active: active,
       ),
     );
     final choices = Wrap(
@@ -350,102 +441,79 @@ class _UnifiedInteractionFieldState extends State<_UnifiedInteractionField> {
 
     return Semantics(
       button: true,
-      expanded: _open,
-      onTap: _toggleOpen,
+      expanded: reveal >= 0.5,
+      onTap: widget.onToggle,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
-        onExit: (_) {
-          if (_pressed) setState(() => _pressed = false);
-        },
-        child: Listener(
+        child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onPointerDown: _handlePointerDown,
-          onPointerUp: _handlePointerEnd,
-          onPointerCancel: _handlePointerEnd,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: _toggleOpen,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                PositionedDirectional(
-                  start: -overlayBleed,
-                  end: -overlayBleed,
-                  top: -CatchStroke.hairline,
-                  bottom: -CatchStroke.hairline,
-                  child: IgnorePointer(
-                    child: AnimatedContainer(
-                      key: ValueKey(
-                        widget.contained
-                            ? 'prototype-contained-interaction-surface'
-                            : 'prototype-divided-interaction-surface',
-                      ),
-                      duration: _duration(
-                        _pressed
-                            ? CatchFieldTokens.pressIn
-                            : _open
-                            ? CatchFieldTokens.standard
-                            : CatchFieldTokens.pressOut,
-                      ),
-                      curve: CatchFieldTokens.curve,
-                      decoration: BoxDecoration(
-                        color: interactionColor,
-                        borderRadius: radius,
-                        border: border,
-                        boxShadow: _open && !_pressed
-                            ? CatchElevation.fieldActive(
-                                Theme.of(context).brightness,
-                              )
-                            : CatchElevation.none,
-                      ),
+          onTap: widget.onToggle,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              PositionedDirectional(
+                start: -overlayBleed,
+                end: -overlayBleed,
+                top: -CatchStroke.hairline,
+                bottom: -CatchStroke.hairline,
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    key: ValueKey(
+                      widget.contained
+                          ? 'prototype-contained-interaction-surface'
+                          : 'prototype-divided-interaction-surface',
+                    ),
+                    decoration: BoxDecoration(
+                      color: engagedAmount > 0.001 ? interactionColor : null,
+                      borderRadius: widget.contained
+                          ? BorderRadius.zero
+                          : BorderRadius.circular(CatchFieldTokens.tileRadius),
+                      border: borderAmount > 0.001
+                          ? Border.all(color: borderColor)
+                          : null,
+                      boxShadow: shadowAmount > 0.001
+                          ? shadows
+                          : CatchElevation.none,
                     ),
                   ),
                 ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    header,
-                    ExcludeSemantics(
-                      excluding: !_open,
-                      child: IgnorePointer(
-                        ignoring: !_open,
-                        child: TweenAnimationBuilder<double>(
-                          duration: _duration(CatchFieldTokens.reveal),
-                          curve: CatchMotion.standardCurve,
-                          tween: Tween<double>(end: _open ? 1 : 0),
-                          child: Padding(
-                            padding: EdgeInsetsDirectional.only(
-                              start:
-                                  rowPadding.left + CatchFieldRow.textLaneInset,
-                              end: rowPadding.right,
-                              top: CatchFieldTokens.controlTopGap,
-                              bottom: CatchFieldTokens.rowVerticalPadding,
-                            ),
-                            child: choices,
-                          ),
-                          builder: (context, reveal, child) => ClipRect(
-                            child: Opacity(
-                              opacity: reveal,
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                heightFactor: reveal,
-                                child: Transform.translate(
-                                  offset: Offset(
-                                    0,
-                                    CatchSpacing.s2 * (1 - reveal),
-                                  ),
-                                  child: child,
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  header,
+                  ExcludeSemantics(
+                    excluding: reveal < 0.5,
+                    child: IgnorePointer(
+                      ignoring: reveal < 0.98,
+                      child: ClipRect(
+                        child: Opacity(
+                          opacity: reveal,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            heightFactor: reveal,
+                            child: Transform.translate(
+                              offset: Offset(0, CatchSpacing.s2 * (1 - reveal)),
+                              child: Padding(
+                                padding: EdgeInsetsDirectional.only(
+                                  start:
+                                      rowPadding.left +
+                                      CatchFieldRow.textLaneInset,
+                                  end: rowPadding.right,
+                                  top: CatchFieldTokens.controlTopGap,
+                                  bottom: CatchFieldTokens.rowVerticalPadding,
                                 ),
+                                child: choices,
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
