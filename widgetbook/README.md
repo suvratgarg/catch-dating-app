@@ -64,3 +64,18 @@ widgets instead of standalone fake surfaces. Examples: `CatchGrade` is reviewed
 through `CatchGradedImage`, `EventTicketShapeClipper` through the ticket-surface
 preview, and celebration effects through `CatchCelebrationScreen` with effects
 disabled for deterministic review.
+
+## Geometry System Atlas
+
+The `[Geometry system]` folder is the durable cross-family comparison surface.
+It is implemented in `lib/geometry/component_geometry_use_cases.dart` and
+renders production fields, sections, buttons, top bars, bottom navigation,
+menus, sheets, and dialogs side by side.
+
+Use the atlas to review shared silhouette, edge ownership, spacing, alignment,
+plane changes, safe areas, and adaptive viewport behavior. Keep exhaustive API
+and state coverage on each component's existing `Contract states` page. When a
+component relationship changes, update the owning production primitive and
+contract first, then update the smallest affected geometry matrix. Do not turn
+the atlas into a second component registry or replace real primitives with
+lookalike review-only widgets.

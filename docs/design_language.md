@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.7.0
-updated: 2026-08-14
+version: 1.8.0
+updated: 2026-08-27
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -286,6 +286,32 @@ The API boundary is the first enforcement layer: duplicate placement variants
 are deleted rather than kept as aliases. Component contracts, Widgetbook
 states, and the section/top-bar scanners provide the review and regression
 layers.
+
+#### Living component geometry review
+
+Cross-family geometry is reviewed code-first in Widgetbook under
+`[Geometry system]`. Those pages render the production primitives and compare
+only the states that reveal shared silhouette, edge, spacing, alignment, plane,
+safe-area, and viewport rules. They complement rather than replace each
+component's exhaustive `Contract states` page.
+
+The review source hierarchy is:
+
+1. Flutter runtime behavior and semantic roles own exact geometry.
+2. `design/components/catch.components.json` owns legal component identity,
+   states, slots, and token dependencies.
+3. Widgetbook's geometry matrices make relationships between component families
+   inspectable at compact and adaptive viewports.
+4. Approved captures or Figma components may document the reviewed result, but
+   do not override runtime behavior without a corresponding code and contract
+   change.
+
+When a geometry review identifies drift, classify it as a token, primitive,
+composition, consumer-override, unsupported-state, or responsive/accessibility
+problem. Fix the lowest shared owner, update its contract states when the legal
+API changes, and update the relevant geometry matrix when the relationship
+between families changes. Do not copy exhaustive component states into the
+matrix or create a second geometry registry.
 
 ### 7.3 CatchField doctrine
 

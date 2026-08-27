@@ -31,6 +31,8 @@ import 'package:widgetbook_workspace/explore/explore_use_cases.dart'
     as _widgetbook_workspace_explore_explore_use_cases;
 import 'package:widgetbook_workspace/foundation/foundation_token_use_cases.dart'
     as _widgetbook_workspace_foundation_foundation_token_use_cases;
+import 'package:widgetbook_workspace/geometry/component_geometry_use_cases.dart'
+    as _widgetbook_workspace_geometry_component_geometry_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
 import 'package:widgetbook_workspace/hosts/host_operations_use_cases.dart'
@@ -4725,6 +4727,71 @@ final directories = <_widgetbook.WidgetbookNode>[
                         .foundationTypographyRoles,
               ),
             ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Geometry system',
+    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'CatchBottomSheetScaffold',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Geometry matrix',
+            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+                .modalGeometryMatrix,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'CatchButton',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Geometry matrix',
+            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+                .buttonGeometryMatrix,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'CatchMenu',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Geometry matrix',
+            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+                .menuGeometryMatrix,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'CatchSection',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Geometry matrix',
+            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+                .fieldAndSectionGeometryMatrix,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'CatchTabBar',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Geometry matrix',
+            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+                .bottomNavigationGeometryMatrix,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'CatchTopBar',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Geometry matrix',
+            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+                .topBarGeometryMatrix,
           ),
         ],
       ),

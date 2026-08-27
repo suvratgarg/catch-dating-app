@@ -8,6 +8,7 @@ const stateMatrixPath = fromRepo("docs/design_parity/state_matrix.json");
 const screenContractsPath = fromRepo("design/screens/catch.screens.json");
 const widgetbookDirectoriesPath = fromRepo("widgetbook/lib/main.directories.g.dart");
 const widgetbookPrimitiveContractsPath = fromRepo("widgetbook/lib/primitives/primitive_contract_use_cases.dart");
+const widgetbookGeometryPath = "widgetbook/lib/geometry/component_geometry_use_cases.dart";
 const requiredFoundationSpecimens = [
   {
     component: "FoundationColorTokens",
@@ -50,6 +51,38 @@ const requiredFoundationSpecimens = [
     builder: "foundationBrandTokens",
   },
 ];
+const requiredGeometrySpecimens = [
+  {
+    component: "CatchBottomSheetScaffold",
+    builder: "modalGeometryMatrix",
+    sourcePath: widgetbookGeometryPath,
+  },
+  {
+    component: "CatchButton",
+    builder: "buttonGeometryMatrix",
+    sourcePath: widgetbookGeometryPath,
+  },
+  {
+    component: "CatchMenu",
+    builder: "menuGeometryMatrix",
+    sourcePath: widgetbookGeometryPath,
+  },
+  {
+    component: "CatchSection",
+    builder: "fieldAndSectionGeometryMatrix",
+    sourcePath: widgetbookGeometryPath,
+  },
+  {
+    component: "CatchTabBar",
+    builder: "bottomNavigationGeometryMatrix",
+    sourcePath: widgetbookGeometryPath,
+  },
+  {
+    component: "CatchTopBar",
+    builder: "topBarGeometryMatrix",
+    sourcePath: widgetbookGeometryPath,
+  },
+];
 
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
@@ -81,6 +114,7 @@ function checkRefs({summary = false} = {}) {
     ...validateComponentPreviews(componentRegistry, widgetbook),
     ...validatePrimitiveContractUseCases(componentRegistry, primitiveContracts),
     ...validateFoundationSpecimens(widgetbook),
+    ...validateGeometrySpecimens(widgetbook, widgetbookSources),
     ...validatePreviewRefs({
       stateMatrix,
       screenContracts,
@@ -98,6 +132,7 @@ function checkRefs({summary = false} = {}) {
         `Annotated Widgetbook use cases: ${widgetbookSources.useCases.length}`,
         `Formal primitive contract previews: ${primitiveContracts.contractIds.size}`,
         `Required foundation specimens: ${requiredFoundationSpecimens.length}`,
+        `Required geometry specimens: ${requiredGeometrySpecimens.length}`,
         `Referenced preview ids: ${collectPreviewRefs(stateMatrix, screenContracts).length}`,
       ].join("\n")
     );
@@ -249,6 +284,36 @@ function validateFoundationSpecimens(widgetbook) {
   return errors;
 }
 
+function validateGeometrySpecimens(widgetbook, widgetbookSources) {
+  const errors = [];
+  for (const specimen of requiredGeometrySpecimens) {
+    const sourceKey = `${specimen.sourcePath}:${specimen.builder}`;
+    const useCase = widgetbookSources.useCaseByKey.get(sourceKey);
+    if (!useCase) {
+      errors.push(
+        `geometry.${slug(specimen.component)}: missing required Widgetbook geometry use case ${specimen.sourcePath}:${specimen.builder}.`
+      );
+      continue;
+    }
+    if (useCase.type !== specimen.component) {
+      errors.push(
+        `geometry.${slug(specimen.component)}: expected @UseCase type ${specimen.component}, found ${useCase.type ?? "none"}.`
+      );
+    }
+    if (useCase.path !== "[Geometry system]") {
+      errors.push(
+        `geometry.${slug(specimen.component)}: expected @UseCase path "[Geometry system]", found ${useCase.path ?? "none"}.`
+      );
+    }
+    if (!widgetbook.generatedUseCaseKeys.has(sourceKey)) {
+      errors.push(
+        `geometry.${slug(specimen.component)}: required geometry use case is missing from generated Widgetbook directories.`
+      );
+    }
+  }
+  return errors;
+}
+
 function validatePreviewRefs({stateMatrix, screenContracts, widgetbook}) {
   const errors = [];
   for (const ref of collectPreviewRefs(stateMatrix, screenContracts)) {
@@ -347,6 +412,7 @@ function parseWidgetbookWorkspaceImports(source) {
 function collectWidgetbookUseCaseSources() {
   const useCases = [];
   const useCaseKeys = new Set();
+  const useCaseByKey = new Map();
   const functionKeys = new Set();
 
   for (const file of collectDartFiles(fromRepo("widgetbook/lib"))) {
@@ -358,15 +424,24 @@ function collectWidgetbookUseCaseSources() {
     }
 
     for (const match of source.matchAll(
-      /@widgetbook\.UseCase\([\s\S]*?\)\s*Widget\s+([A-Za-z0-9_]+)\s*\(/gu
+      /@widgetbook\.UseCase\(([\s\S]*?)\)\s*Widget\s+([A-Za-z0-9_]+)\s*\(/gu
     )) {
-      const builder = match[1];
-      useCases.push({sourcePath, builder});
-      useCaseKeys.add(`${sourcePath}:${builder}`);
+      const annotation = match[1];
+      const builder = match[2];
+      const useCase = {
+        sourcePath,
+        builder,
+        path: matchString(annotation, /\bpath:\s*'([^']+)'/u),
+        type: matchString(annotation, /\btype:\s*([A-Za-z0-9_]+)/u),
+      };
+      const sourceKey = `${sourcePath}:${builder}`;
+      useCases.push(useCase);
+      useCaseKeys.add(sourceKey);
+      useCaseByKey.set(sourceKey, useCase);
     }
   }
 
-  return {useCases, useCaseKeys, functionKeys};
+  return {useCases, useCaseKeys, useCaseByKey, functionKeys};
 }
 
 function collectDartFiles(dir) {
@@ -487,5 +562,6 @@ Validates that component contracts have Widgetbook component entries, formal
 primitive contract previews with matching contract-state lists, and that any
 previewIds declared by screen/state contracts refer to generated Widgetbook
 components, use cases, or builder ids. Also validates that required
-foundation-token specimen pages stay present in generated Widgetbook output.`);
+foundation-token and comparative component-geometry specimen pages stay
+present in generated Widgetbook output.`);
 }
