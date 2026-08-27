@@ -192,27 +192,43 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
       ),
       _specimen(
         context,
-        label: 'Divided and plain sections',
+        label: 'Next decision · what earns an outline',
         description:
-            'Information grouping can retain the same vertical rhythm without earning a perimeter.',
-        child: SizedBox(
-          width: _componentWidth,
-          child: CatchSection.fieldRows(
-            title: 'Account',
-            children: [
-              CatchField.read(
-                title: 'Phone',
-                body: '+91 98765 43210',
-                icon: CatchIcons.phoneOutlined,
-              ),
-              CatchField.nav(
-                title: 'Privacy',
-                body: 'Private',
-                icon: CatchIcons.lockOutlineRounded,
-                onTap: _noop,
-              ),
-            ],
-          ),
+            'The content is identical. Decide whether an ordinary page-level field group stays flat or receives a perimeter; plain remains reserved for a plane already owned by its parent.',
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final comparisonWidth = constraints.maxWidth >= 720
+                ? (constraints.maxWidth - CatchSpacing.s4) / 2
+                : constraints.maxWidth.clamp(0, _componentWidth).toDouble();
+            return Wrap(
+              spacing: CatchSpacing.s4,
+              runSpacing: CatchSpacing.s5,
+              children: [
+                _sectionHeaderComparison(
+                  context,
+                  width: comparisonWidth,
+                  label: 'Divided · page group',
+                  description:
+                      'Recommended default: type and hairlines provide hierarchy without adding another object.',
+                  child: CatchSection.fieldRows(
+                    title: 'Event settings',
+                    children: _eventSettingRows(),
+                  ),
+                ),
+                _sectionHeaderComparison(
+                  context,
+                  width: comparisonWidth,
+                  label: 'Contained · bounded object',
+                  description:
+                      'Use when the fields are perceived and acted on as one discrete object.',
+                  child: CatchSection.containedFieldRows(
+                    title: 'Event settings',
+                    children: _eventSettingRows(),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     ],
