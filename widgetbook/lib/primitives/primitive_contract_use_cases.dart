@@ -3325,6 +3325,30 @@ Widget catchSectionContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'contained-field-rows-internal-header',
+        child: _FieldWidth(
+          child: CatchSection.containedFieldRows(
+            title: 'Event settings',
+            count: '2 fields',
+            trailing: Icon(CatchIcons.infoOutlineRounded),
+            headerPlacement: CatchSectionFieldHeaderPlacement.internal,
+            children: [
+              CatchField.read(
+                title: 'Host',
+                body: 'Catch Hosts',
+                icon: CatchIcons.hosted,
+              ),
+              CatchField.nav(
+                title: 'Location',
+                body: 'Carter Road promenade',
+                icon: CatchIcons.pinOutlined,
+                onTap: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'contained-field-rows-child-active',
         child: _FieldWidth(
           child: CatchSection.containedFieldRows(

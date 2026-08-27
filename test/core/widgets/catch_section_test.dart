@@ -600,6 +600,65 @@ void main() {
   );
 
   testWidgets(
+    'CatchSection internal contained field header owns an inset section rule',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 360,
+            child: CatchSection.containedFieldRows(
+              title: 'Event settings',
+              count: '2 fields',
+              trailing: Text('Ready'),
+              headerPlacement: CatchSectionFieldHeaderPlacement.internal,
+              children: [CatchField.read(title: 'Host', body: 'Catch Hosts')],
+            ),
+          ),
+        ),
+      );
+
+      final surfaceFinder = find
+          .descendant(
+            of: find.byType(CatchSectionFocusSurface),
+            matching: find.byType(AnimatedContainer),
+          )
+          .first;
+      final surfaceRect = tester.getRect(surfaceFinder);
+      final titleRect = tester.getRect(find.text('EVENT SETTINGS'));
+      final fieldRect = tester.getRect(find.byType(CatchField));
+      final dividerFinder = find.descendant(
+        of: surfaceFinder,
+        matching: find.byType(CatchDivider),
+      );
+
+      expect(dividerFinder, findsOneWidget);
+      expect(
+        find.ancestor(
+          of: find.text('EVENT SETTINGS'),
+          matching: find.byType(AnimatedContainer),
+        ),
+        findsOneWidget,
+      );
+      final divider = tester.widget<CatchDivider>(dividerFinder);
+      final dividerRect = tester.getRect(dividerFinder);
+      expect(divider.role, CatchDividerRole.section);
+      expect(
+        dividerRect.left - surfaceRect.left,
+        CatchStroke.hairline + CatchFieldTokens.rowHorizontalPadding,
+      );
+      expect(
+        surfaceRect.right - dividerRect.right,
+        CatchStroke.hairline + CatchFieldTokens.rowHorizontalPadding,
+      );
+      expect(
+        dividerRect.top - titleRect.bottom,
+        closeTo(CatchFieldTokens.sectionRuleGap, 0.001),
+      );
+      expect(fieldRect.top, dividerRect.bottom);
+    },
+  );
+
+  testWidgets(
     'contained row press states use one group clip for every row position',
     (tester) async {
       Future<void> pumpRows(int count) {

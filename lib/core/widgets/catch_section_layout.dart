@@ -268,6 +268,8 @@ class CatchSectionStack extends StatelessWidget {
   }
 }
 
+enum CatchSectionFieldHeaderPlacement { external, internal }
+
 enum _CatchSectionVariant { divided, contained, plain }
 
 /// Design-system `Section`: the canonical primitive for grouping information.
@@ -303,6 +305,7 @@ class CatchSection extends StatelessWidget {
     this.focused = false,
     this.hasError = false,
     this._fieldRows = false,
+    this.fieldHeaderPlacement = CatchSectionFieldHeaderPlacement.external,
     this.children,
     this.child,
   }) : assert(
@@ -395,8 +398,11 @@ class CatchSection extends StatelessWidget {
   /// Contained FieldSection variant from the form-field handoff. Unlike the
   /// generic card constructor, this surface clips field rows, owns a 1px
   /// line/ink focus border, and never adds generic card elevation. Its optional
-  /// title, count, and trailing action form an external group header; the
-  /// outline begins with the first row.
+  /// title, count, and trailing action form an external group header by
+  /// default, so the outline begins with the first row. Set [headerPlacement]
+  /// to [CatchSectionFieldHeaderPlacement.internal] when the label belongs to
+  /// the bounded field group itself; that mode places the header inside the
+  /// outline and gives it the same padded section rule as [fieldRows].
   const CatchSection.containedFieldRows({
     Key? key,
     String? title,
@@ -410,6 +416,8 @@ class CatchSection extends StatelessWidget {
     bool showInternalDividers = true,
     bool focused = false,
     bool hasError = false,
+    CatchSectionFieldHeaderPlacement headerPlacement =
+        CatchSectionFieldHeaderPlacement.external,
     List<Widget>? children,
     Widget? child,
   }) : this._(
@@ -428,6 +436,7 @@ class CatchSection extends StatelessWidget {
          footer: footer,
          focused: focused,
          hasError: hasError,
+         fieldHeaderPlacement: headerPlacement,
          dividerIndent: dividerInset ?? double.nan,
          internalDividerRole: CatchDividerRole.fieldRow,
          fieldRows: true,
@@ -529,6 +538,7 @@ class CatchSection extends StatelessWidget {
   final bool focused;
   final bool hasError;
   final bool _fieldRows;
+  final CatchSectionFieldHeaderPlacement fieldHeaderPlacement;
   final List<Widget>? children;
   final Widget? child;
 
@@ -665,11 +675,39 @@ class CatchSection extends StatelessWidget {
     final sectionTrailing = trailing;
     final sectionFooter = footer;
     final hasHeader = hasTitle || hasCount || sectionTrailing != null;
+    final hasInternalFieldHeader =
+        _fieldRows &&
+        hasHeader &&
+        fieldHeaderPlacement == CatchSectionFieldHeaderPlacement.internal;
     final content = _fieldRows
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
+              if (hasInternalFieldHeader)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    CatchFieldTokens.rowHorizontalPadding,
+                    CatchFieldTokens.rowVerticalPadding,
+                    CatchFieldTokens.rowHorizontalPadding,
+                    0,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildCatchSectionKicker(
+                        context,
+                        text: hasTitle ? displayTitle : null,
+                        count: hasCount ? displayCount : null,
+                        trailing: sectionTrailing,
+                        color: titleColor ?? t.ink2,
+                        size: CatchKickerSize.fieldSection,
+                      ),
+                      const SizedBox(height: CatchFieldTokens.sectionRuleGap),
+                      const CatchDivider.section(),
+                    ],
+                  ),
+                ),
               _body(context, t),
               if (sectionFooter != null)
                 Padding(
@@ -708,7 +746,7 @@ class CatchSection extends StatelessWidget {
         child: content,
       ),
     );
-    if (!_fieldRows || !hasHeader) return surface;
+    if (!_fieldRows || !hasHeader || hasInternalFieldHeader) return surface;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
