@@ -130,45 +130,37 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
       ),
       _specimen(
         context,
-        label: 'Diagnostic · internal header with active first field',
+        label: 'Before / after · contained active field',
         description:
-            'This intentionally keeps the header inside the outline. Tap Host to leave the first field active and inspect its shadow against the shared section clip.',
-        child: SizedBox(
-          width: _componentWidth,
-          child: CatchSection.containedFieldRows(
-            showInternalDividers: false,
-            children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(
-                  CatchFieldTokens.rowHorizontalPadding,
-                  CatchSpacing.micro14,
-                  CatchFieldTokens.rowHorizontalPadding,
-                  CatchSpacing.micro2,
+            'Current production chrome is shown beside the proposed geometry. The proposal gives the header a stable separator and leaves the section as the only perimeter owner; the open field keeps its tint and content without a child border or shadow.',
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final comparisonWidth = constraints.maxWidth >= 720
+                ? (constraints.maxWidth - CatchSpacing.s4) / 2
+                : constraints.maxWidth.clamp(0, _componentWidth).toDouble();
+            return Wrap(
+              spacing: CatchSpacing.s4,
+              runSpacing: CatchSpacing.s5,
+              children: [
+                _sectionHeaderComparison(
+                  context,
+                  width: comparisonWidth,
+                  label: 'Before · current',
+                  description:
+                      'The open field paints a second border and clipped shadow; the header has no stable boundary.',
+                  child: const _CurrentContainedActiveSection(),
                 ),
-                child: CatchKicker(
-                  label: 'Event settings',
-                  size: CatchKickerSize.fieldSection,
+                _sectionHeaderComparison(
+                  context,
+                  width: comparisonWidth,
+                  label: 'After · proposed',
+                  description:
+                      'The header owns its separator. The open field adds only a rectangular active surface.',
+                  child: _proposedContainedActiveSection(context),
                 ),
-              ),
-              CatchField.choices<String>(
-                key: const ValueKey('geometry-internal-header-first-field'),
-                title: 'Host',
-                body: 'Catch Hosts',
-                icon: CatchIcons.hosted,
-                values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
-                itemLabel: (value) => value,
-                selected: const {'Catch Hosts'},
-                onSelectionChanged: _ignoreStrings,
-              ),
-              CatchField.nav(
-                title: 'Location',
-                body: 'Carter Road promenade',
-                icon: CatchIcons.pinOutlined,
-                divider: true,
-                onTap: _noop,
-              ),
-            ],
-          ),
+              ],
+            );
+          },
         ),
       ),
       _specimen(
@@ -779,6 +771,119 @@ Widget _sectionHeaderComparison(
   );
 }
 
+class _CurrentContainedActiveSection extends StatefulWidget {
+  const _CurrentContainedActiveSection();
+
+  @override
+  State<_CurrentContainedActiveSection> createState() =>
+      _CurrentContainedActiveSectionState();
+}
+
+class _CurrentContainedActiveSectionState
+    extends State<_CurrentContainedActiveSection> {
+  bool _open = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSection.containedFieldRows(
+      showInternalDividers: false,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(
+            CatchFieldTokens.rowHorizontalPadding,
+            CatchSpacing.micro14,
+            CatchFieldTokens.rowHorizontalPadding,
+            CatchSpacing.micro2,
+          ),
+          child: CatchKicker(
+            label: 'Event settings',
+            size: CatchKickerSize.fieldSection,
+          ),
+        ),
+        CatchField.choices<String>(
+          key: const ValueKey('geometry-current-internal-header-first-field'),
+          title: 'Host',
+          body: 'Catch Hosts',
+          icon: CatchIcons.hosted,
+          values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
+          itemLabel: (value) => value,
+          selected: const {'Catch Hosts'},
+          open: _open,
+          onOpenChanged: (open) => setState(() => _open = open),
+          onSelectionChanged: _ignoreStrings,
+        ),
+        CatchField.nav(
+          title: 'Location',
+          body: 'Carter Road promenade',
+          icon: CatchIcons.pinOutlined,
+          divider: true,
+          onTap: _noop,
+        ),
+      ],
+    );
+  }
+}
+
+Widget _proposedContainedActiveSection(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return CatchSection.containedFieldRows(
+    showInternalDividers: false,
+    children: [
+      const Padding(
+        padding: EdgeInsets.fromLTRB(
+          CatchFieldTokens.rowHorizontalPadding,
+          CatchSpacing.micro14,
+          CatchFieldTokens.rowHorizontalPadding,
+          CatchSpacing.micro2,
+        ),
+        child: CatchKicker(
+          label: 'Event settings',
+          size: CatchKickerSize.fieldSection,
+        ),
+      ),
+      const CatchDivider.section(),
+      ColoredBox(
+        color: CatchFieldTokens.activeSurface(t),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CatchField.read(
+              title: 'Host',
+              body: 'Catch Hosts',
+              icon: CatchIcons.hosted,
+              action: CatchFieldTrailing.rotatingChevron(open: true),
+            ),
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                CatchFieldTokens.rowHorizontalPadding +
+                    CatchFieldRow.textLaneInset,
+                0,
+                CatchFieldTokens.rowHorizontalPadding,
+                CatchFieldTokens.rowVerticalPadding,
+              ),
+              child: CatchFieldChoiceControl<String>(
+                values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
+                itemLabel: _identityString,
+                selected: const {'Catch Hosts'},
+                multi: false,
+                onSelectionChanged: _ignoreStrings,
+              ),
+            ),
+          ],
+        ),
+      ),
+      CatchField.nav(
+        title: 'Location',
+        body: 'Carter Road promenade',
+        icon: CatchIcons.pinOutlined,
+        divider: true,
+        onTap: _noop,
+      ),
+    ],
+  );
+}
+
 List<Widget> _eventSettingRows() => [
   CatchField.action(
     title: 'Host',
@@ -950,3 +1055,5 @@ void _ignoreBool(bool _) {}
 void _ignoreString(String _) {}
 
 void _ignoreStrings(Set<String> _) {}
+
+String _identityString(String value) => value;
