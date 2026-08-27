@@ -116,7 +116,8 @@ void _registerProfileEditingPromptsTests() {
       of: aboutSection,
       matching: find.byWidgetPredicate(
         (widget) =>
-            widget is CatchDivider && widget.role == CatchDividerRole.fieldRow,
+            widget is CatchDivider &&
+            widget.role == CatchDividerRole.fieldSection,
       ),
     );
     expect(dividers, findsWidgets);

@@ -254,15 +254,10 @@ void _registerHostOperationsClubWorkspaceTests() {
         .toList();
     expect(mayDividers.map((divider) => divider.role), [
       CatchDividerRole.section,
-      CatchDividerRole.fieldRow,
+      CatchDividerRole.fieldSection,
     ]);
     final tokens = CatchTokens.of(tester.element(maySection));
-    expect(
-      CatchDivider.colorFor(tokens, mayDividers.last.role),
-      tokens.line.withValues(
-        alpha: tokens.line.a * CatchOpacity.fieldRowDivider,
-      ),
-    );
+    expect(CatchDivider.colorFor(tokens, mayDividers.last.role), tokens.line);
     final mayDateBlock = find
         .descendant(
           of: maySection,
@@ -273,7 +268,8 @@ void _registerHostOperationsClubWorkspaceTests() {
       of: maySection,
       matching: find.byWidgetPredicate(
         (widget) =>
-            widget is CatchDivider && widget.role == CatchDividerRole.fieldRow,
+            widget is CatchDivider &&
+            widget.role == CatchDividerRole.fieldSection,
       ),
     );
     expect(

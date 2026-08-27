@@ -644,7 +644,7 @@ void _registerHostOperationsTeamFailuresTests() {
             ),
           )
           .map((divider) => divider.role),
-      contains(CatchDividerRole.fieldRow),
+      contains(CatchDividerRole.fieldSection),
     );
   });
 

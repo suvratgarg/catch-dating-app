@@ -56,8 +56,26 @@ void main() {
         dividerBox.color,
         CatchDivider.colorFor(
           CatchTokens.editorialLight,
-          CatchDividerRole.fieldRow,
+          CatchDividerRole.fieldSection,
         ),
+      );
+      final sectionDividers = tester
+          .widgetList<CatchDivider>(find.byType(CatchDivider))
+          .toList(growable: false);
+      expect(sectionDividers.map((divider) => divider.role), [
+        CatchDividerRole.section,
+        CatchDividerRole.fieldSection,
+      ]);
+      expect(
+        sectionDividers
+            .map(
+              (divider) => CatchDivider.colorFor(
+                CatchTokens.editorialLight,
+                divider.role,
+              ),
+            )
+            .toSet(),
+        {CatchTokens.editorialLight.line},
       );
     },
   );
