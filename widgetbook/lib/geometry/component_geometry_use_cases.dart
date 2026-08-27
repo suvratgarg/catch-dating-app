@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
@@ -122,6 +123,49 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
                 initialValue: 'Bandra Social Run',
                 icon: CatchIcons.personOutlined,
                 focused: true,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _specimen(
+        context,
+        label: 'Diagnostic · internal header with active first field',
+        description:
+            'This intentionally keeps the header inside the outline. Tap Host to leave the first field active and inspect its shadow against the shared section clip.',
+        child: SizedBox(
+          width: _componentWidth,
+          child: CatchSection.containedFieldRows(
+            showInternalDividers: false,
+            children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(
+                  CatchFieldTokens.rowHorizontalPadding,
+                  CatchSpacing.micro14,
+                  CatchFieldTokens.rowHorizontalPadding,
+                  CatchSpacing.micro2,
+                ),
+                child: CatchKicker(
+                  label: 'Event settings',
+                  size: CatchKickerSize.fieldSection,
+                ),
+              ),
+              CatchField.choices<String>(
+                key: const ValueKey('geometry-internal-header-first-field'),
+                title: 'Host',
+                body: 'Catch Hosts',
+                icon: CatchIcons.hosted,
+                values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
+                itemLabel: (value) => value,
+                selected: const {'Catch Hosts'},
+                onSelectionChanged: _ignoreStrings,
+              ),
+              CatchField.nav(
+                title: 'Location',
+                body: 'Carter Road promenade',
+                icon: CatchIcons.pinOutlined,
+                divider: true,
+                onTap: _noop,
               ),
             ],
           ),
