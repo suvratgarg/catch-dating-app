@@ -15,6 +15,7 @@ import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -254,10 +255,31 @@ Widget _mixedSectionGeometryStudy(BuildContext context) {
     context,
     label: 'Open decision · mixed section interaction geometry',
     description:
-        'Judge the whole page, not an isolated tile. Each frame combines one contained and one divided section; the active frames also show whether the divided rule is replaced by, or competes with, the field outline.',
-    child: LayoutBuilder(
+        'Tap Host or Reminder timing in either page, then choose an option or tap the field again. Current and Proposed stay synchronized through every valid state and the complete transition animation.',
+    child: const _MixedSectionInteractionComparison(),
+  );
+}
+
+class _MixedSectionInteractionComparison extends StatefulWidget {
+  const _MixedSectionInteractionComparison();
+
+  @override
+  State<_MixedSectionInteractionComparison> createState() =>
+      _MixedSectionInteractionComparisonState();
+}
+
+class _MixedSectionInteractionComparisonState
+    extends State<_MixedSectionInteractionComparison> {
+  bool _containedOpen = false;
+  bool _dividedOpen = false;
+  Set<String> _hostSelection = const {'Catch Hosts'};
+  Set<String> _timingSelection = const {'Two hours before'};
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
       builder: (context, constraints) {
-        final comparisonWidth = constraints.maxWidth >= 720
+        final comparisonWidth = constraints.maxWidth >= 640
             ? (constraints.maxWidth - CatchSpacing.s4) / 2
             : constraints.maxWidth.clamp(0, _componentWidth).toDouble();
         return Wrap(
@@ -267,44 +289,60 @@ Widget _mixedSectionGeometryStudy(BuildContext context) {
             _mixedSectionPageSample(
               context,
               width: comparisonWidth,
-              label: 'Current · resting',
+              label: 'Current behavior',
               description:
-                  'Contained outline and divided rule share the 20 px page gutter; divided row content begins on that same edge.',
+                  'The divided row begins at the section edge, then its active outline expands 10 px into the page gutter while the top rule remains.',
               proposed: false,
-              active: false,
+              containedOpen: _containedOpen,
+              dividedOpen: _dividedOpen,
+              hostSelection: _hostSelection,
+              timingSelection: _timingSelection,
+              onContainedOpenChanged: _setContainedOpen,
+              onDividedOpenChanged: _setDividedOpen,
+              onHostSelectionChanged: _setHostSelection,
+              onTimingSelectionChanged: _setTimingSelection,
             ),
             _mixedSectionPageSample(
               context,
               width: comparisonWidth,
-              label: 'Proposed · resting',
+              label: 'Proposed system',
               description:
-                  'The divided rule still shares the 20 px page gutter; divided row content keeps a stable 10 px internal inset.',
+                  'The divided row keeps a stable internal inset; its adjacent rules fade into the active outline on the shared 20 px edge.',
               proposed: true,
-              active: false,
-            ),
-            _mixedSectionPageSample(
-              context,
-              width: comparisonWidth,
-              label: 'Current · active',
-              description:
-                  'The divided rule remains while the active outline expands to 10 px, so two unrelated boundaries compete.',
-              proposed: false,
-              active: true,
-            ),
-            _mixedSectionPageSample(
-              context,
-              width: comparisonWidth,
-              label: 'Proposed · active',
-              description:
-                  'The divided rule is consumed by the active outline. Its top and bottom edges replace the adjacent section dividers at 20 px.',
-              proposed: true,
-              active: true,
+              containedOpen: _containedOpen,
+              dividedOpen: _dividedOpen,
+              hostSelection: _hostSelection,
+              timingSelection: _timingSelection,
+              onContainedOpenChanged: _setContainedOpen,
+              onDividedOpenChanged: _setDividedOpen,
+              onHostSelectionChanged: _setHostSelection,
+              onTimingSelectionChanged: _setTimingSelection,
             ),
           ],
         );
       },
-    ),
-  );
+    );
+  }
+
+  void _setContainedOpen(bool open) {
+    if (_containedOpen == open) return;
+    setState(() => _containedOpen = open);
+  }
+
+  void _setDividedOpen(bool open) {
+    if (_dividedOpen == open) return;
+    setState(() => _dividedOpen = open);
+  }
+
+  void _setHostSelection(Set<String> selection) {
+    if (setEquals(_hostSelection, selection)) return;
+    setState(() => _hostSelection = Set<String>.unmodifiable(selection));
+  }
+
+  void _setTimingSelection(Set<String> selection) {
+    if (setEquals(_timingSelection, selection)) return;
+    setState(() => _timingSelection = Set<String>.unmodifiable(selection));
+  }
 }
 
 Widget _mixedSectionPageSample(
@@ -313,7 +351,14 @@ Widget _mixedSectionPageSample(
   required String label,
   required String description,
   required bool proposed,
-  required bool active,
+  required bool containedOpen,
+  required bool dividedOpen,
+  required Set<String> hostSelection,
+  required Set<String> timingSelection,
+  required ValueChanged<bool> onContainedOpenChanged,
+  required ValueChanged<bool> onDividedOpenChanged,
+  required ValueChanged<Set<String>> onHostSelectionChanged,
+  required ValueChanged<Set<String>> onTimingSelectionChanged,
 }) {
   final t = CatchTokens.of(context);
   return _sectionHeaderComparison(
@@ -330,15 +375,32 @@ Widget _mixedSectionPageSample(
         padding: CatchInsets.pageBody,
         gap: CatchGaps.section,
         children: [
-          _mixedContainedSection(active: active),
-          _mixedDividedSection(proposed: proposed, active: active),
+          _mixedContainedSection(
+            open: containedOpen,
+            selected: hostSelection,
+            onOpenChanged: onContainedOpenChanged,
+            onSelectionChanged: onHostSelectionChanged,
+          ),
+          _mixedDividedSection(
+            context,
+            proposed: proposed,
+            open: dividedOpen,
+            selected: timingSelection,
+            onOpenChanged: onDividedOpenChanged,
+            onSelectionChanged: onTimingSelectionChanged,
+          ),
         ],
       ),
     ),
   );
 }
 
-Widget _mixedContainedSection({required bool active}) {
+Widget _mixedContainedSection({
+  required bool open,
+  required Set<String> selected,
+  required ValueChanged<bool> onOpenChanged,
+  required ValueChanged<Set<String>> onSelectionChanged,
+}) {
   return CatchSection.containedFieldRows(
     title: 'Event settings',
     headerPlacement: CatchSectionFieldHeaderPlacement.internal,
@@ -348,9 +410,10 @@ Widget _mixedContainedSection({required bool active}) {
         icon: CatchIcons.hosted,
         values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
         itemLabel: _identityString,
-        selected: const {'Catch Hosts'},
-        onSelectionChanged: _ignoreStrings,
-        open: active,
+        selected: selected,
+        onSelectionChanged: onSelectionChanged,
+        open: open,
+        onOpenChanged: onOpenChanged,
       ),
       CatchField.nav(
         title: 'Location',
@@ -362,47 +425,82 @@ Widget _mixedContainedSection({required bool active}) {
   );
 }
 
-Widget _mixedDividedSection({required bool proposed, required bool active}) {
+Widget _mixedDividedSection(
+  BuildContext context, {
+  required bool proposed,
+  required bool open,
+  required Set<String> selected,
+  required ValueChanged<bool> onOpenChanged,
+  required ValueChanged<Set<String>> onSelectionChanged,
+}) {
+  final t = CatchTokens.of(context);
   final timingField = CatchField.choices<String>(
     title: 'Reminder timing',
     icon: CatchIcons.clock,
     values: const ['Two hours before', 'One day before', 'Off'],
     itemLabel: _identityString,
-    selected: const {'Two hours before'},
-    onSelectionChanged: _ignoreStrings,
-    open: active,
+    selected: selected,
+    onSelectionChanged: onSelectionChanged,
+    open: open,
+    onOpenChanged: onOpenChanged,
   );
   final deliveryField = CatchField.nav(
     title: 'Delivery',
     body: 'Push and email',
     icon: CatchIcons.notificationsOutlined,
-    divider: !active,
     onTap: _noop,
   );
-  return CatchSection.fieldRows(
-    title: 'Notifications',
-    first: true,
-    showTopDivider: !(proposed && active),
-    showInternalDividers: false,
-    children: [
-      if (proposed) ...[
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CatchFieldTokens.dividedRowBleed,
-          ),
-          child: timingField,
+  final topLine = CatchDivider.colorFor(t, CatchDividerRole.section);
+  final internalLine = CatchDivider.colorFor(t, CatchDividerRole.fieldSection);
+  final dividerTarget = proposed && open ? 0.0 : 1.0;
+  final dividerIndent =
+      CatchFieldTokens.textLaneInset +
+      (proposed ? CatchFieldTokens.dividedRowBleed : 0.0);
+  return TweenAnimationBuilder<double>(
+    duration: CatchFieldTokens.standard,
+    curve: CatchFieldTokens.curve,
+    tween: Tween<double>(end: dividerTarget),
+    builder: (context, dividerOpacity, _) {
+      final topDividerColor = topLine.withValues(
+        alpha: topLine.a * dividerOpacity,
+      );
+      final internalDividerColor = internalLine.withValues(
+        alpha: internalLine.a * dividerOpacity,
+      );
+      return CatchSection.fieldRows(
+        title: 'Notifications',
+        first: true,
+        dividerColor: topDividerColor,
+        showInternalDividers: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (proposed)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchFieldTokens.dividedRowBleed,
+                ),
+                child: timingField,
+              )
+            else
+              timingField,
+            CatchDivider.fieldSection(
+              indent: dividerIndent,
+              color: internalDividerColor,
+            ),
+            if (proposed)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchFieldTokens.dividedRowBleed,
+                ),
+                child: deliveryField,
+              )
+            else
+              deliveryField,
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CatchFieldTokens.dividedRowBleed,
-          ),
-          child: deliveryField,
-        ),
-      ] else ...[
-        timingField,
-        deliveryField,
-      ],
-    ],
+      );
+    },
   );
 }
 
