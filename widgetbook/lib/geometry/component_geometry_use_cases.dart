@@ -132,7 +132,7 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
         context,
         label: 'Before / after · contained active field',
         description:
-            'Current production chrome is shown beside the proposed geometry. The proposal gives the header a stable separator and leaves the section as the only perimeter owner; the open field keeps its tint and content without a child border or shadow.',
+            'Current production chrome is shown beside the proposed geometry. The proposal underlines the header title and leaves the section as the only perimeter owner; the open field keeps its tint and content without a child border or shadow.',
         child: LayoutBuilder(
           builder: (context, constraints) {
             final comparisonWidth = constraints.maxWidth >= 720
@@ -147,7 +147,7 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
                   width: comparisonWidth,
                   label: 'Before · current',
                   description:
-                      'The open field paints a second border and clipped shadow; the header has no stable boundary.',
+                      'The open field paints a second border and clipped shadow; the header title is unmarked.',
                   child: const _CurrentContainedActiveSection(),
                 ),
                 _sectionHeaderComparison(
@@ -155,7 +155,7 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
                   width: comparisonWidth,
                   label: 'After · proposed',
                   description:
-                      'The header owns its separator. The open field adds only a rectangular active surface.',
+                      'The title receives its own short underline. The open field adds only a rectangular active surface.',
                   child: _proposedContainedActiveSection(context),
                 ),
               ],
@@ -830,19 +830,33 @@ Widget _proposedContainedActiveSection(BuildContext context) {
   return CatchSection.containedFieldRows(
     showInternalDividers: false,
     children: [
-      const Padding(
+      Padding(
         padding: EdgeInsets.fromLTRB(
           CatchFieldTokens.rowHorizontalPadding,
           CatchSpacing.micro14,
           CatchFieldTokens.rowHorizontalPadding,
           CatchSpacing.micro2,
         ),
-        child: CatchKicker(
-          label: 'Event settings',
-          size: CatchKickerSize.fieldSection,
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: IntrinsicWidth(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const CatchKicker(
+                  label: 'Event settings',
+                  size: CatchKickerSize.fieldSection,
+                ),
+                const SizedBox(height: CatchSpacing.micro3),
+                ColoredBox(
+                  color: t.ink,
+                  child: const SizedBox(height: CatchStroke.underline),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-      const CatchDivider.section(),
       ColoredBox(
         color: CatchFieldTokens.activeSurface(t),
         child: Column(
