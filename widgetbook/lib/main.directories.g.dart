@@ -4773,6 +4773,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             builder: _widgetbook_workspace_geometry_component_geometry_use_cases
                 .fieldAndSectionGeometryMatrix,
           ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Responsive page contexts · decision lab',
+            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+                .responsivePageContextMatrix,
+          ),
         ],
       ),
       _widgetbook.WidgetbookComponent(

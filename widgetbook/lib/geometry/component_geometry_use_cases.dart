@@ -1,3 +1,8 @@
+import 'package:catch_dating_app/core/presentation/app_shell.dart'
+    show AppShellSideNavigation;
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -6,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -162,6 +168,83 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
             );
           },
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Responsive page contexts · decision lab',
+  type: CatchSection,
+  path: '[Geometry system]',
+)
+Widget responsivePageContextMatrix(BuildContext context) {
+  return _geometryPage(
+    context,
+    title: 'Responsive page contexts · decision lab',
+    contractIds: const [
+      'catch.screen_body',
+      'catch.section_stack',
+      'catch.section',
+      'catch.top_bar',
+      'catch.tab_bar',
+    ],
+    principles: const [
+      'The shell chooses bottom, rail, or sidebar navigation from the full viewport width.',
+      'The page chooses centered or multi-column composition from its remaining local width.',
+      'Whole sections move between columns; field geometry remains unchanged.',
+      'Split-screen widths return to one column without a tablet-only override.',
+    ],
+    children: [
+      _responsivePageContextSpecimen(
+        context,
+        label: 'Compact phone · centered single column',
+        description:
+            '390 × 640. A floating bottom bar publishes its obstruction while the form remains one readable column.',
+        viewportWidth: _compactPhoneViewportWidth,
+        viewportHeight: _compactViewportHeight,
+        platform: TargetPlatform.iOS,
+        composition: _ResponsiveSectionComposition.centered,
+      ),
+      _responsivePageContextSpecimen(
+        context,
+        label: 'Tablet portrait · centered single column',
+        description:
+            '720 × 640. The shell moves navigation to a rail; the settings form stays centered and capped at the production content width.',
+        viewportWidth: _tabletPortraitViewportWidth,
+        viewportHeight: _compactViewportHeight,
+        platform: TargetPlatform.android,
+        composition: _ResponsiveSectionComposition.centered,
+      ),
+      _responsivePageContextSpecimen(
+        context,
+        label: 'Tablet workspace · explicit two-column sections',
+        description:
+            '820 × 660. Independent sections may form two columns, but no individual field section is split.',
+        viewportWidth: _tabletWorkspaceViewportWidth,
+        viewportHeight: _tabletViewportHeight,
+        platform: TargetPlatform.android,
+        composition: _ResponsiveSectionComposition.adaptiveTwoColumn,
+      ),
+      _responsivePageContextSpecimen(
+        context,
+        label: 'Expanded viewport · sidebar and two-column sections',
+        description:
+            '1180 × 700. The shell owns the wider sidebar while the page lays out two bounded section columns in the remaining space.',
+        viewportWidth: _expandedViewportWidth,
+        viewportHeight: _expandedViewportHeight,
+        platform: TargetPlatform.android,
+        composition: _ResponsiveSectionComposition.adaptiveTwoColumn,
+      ),
+      _responsivePageContextSpecimen(
+        context,
+        label: 'Narrow split screen · automatic one-column fallback',
+        description:
+            '540 × 640. The same two-column page intent collapses at compact local width and returns navigation to the bottom edge.',
+        viewportWidth: _splitScreenViewportWidth,
+        viewportHeight: _compactViewportHeight,
+        platform: TargetPlatform.iOS,
+        composition: _ResponsiveSectionComposition.adaptiveTwoColumn,
       ),
     ],
   );
@@ -640,6 +723,250 @@ Widget modalGeometryMatrix(BuildContext context) {
   );
 }
 
+enum _ResponsiveSectionComposition { centered, adaptiveTwoColumn }
+
+Widget _responsivePageContextSpecimen(
+  BuildContext context, {
+  required String label,
+  required String description,
+  required double viewportWidth,
+  required double viewportHeight,
+  required TargetPlatform platform,
+  required _ResponsiveSectionComposition composition,
+}) {
+  return _specimen(
+    context,
+    label: label,
+    description: description,
+    child: _scaledReviewViewport(
+      context,
+      viewportWidth: viewportWidth,
+      viewportHeight: viewportHeight,
+      child: Theme(
+        data: Theme.of(context).copyWith(platform: platform),
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            size: Size(viewportWidth, viewportHeight),
+            padding: platform == TargetPlatform.iOS
+                ? const EdgeInsets.only(bottom: CatchSpacing.s5)
+                : EdgeInsets.zero,
+            viewPadding: platform == TargetPlatform.iOS
+                ? const EdgeInsets.only(bottom: CatchSpacing.s5)
+                : EdgeInsets.zero,
+            viewInsets: EdgeInsets.zero,
+          ),
+          child: _responsiveGeometryShell(composition: composition),
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _scaledReviewViewport(
+  BuildContext context, {
+  required double viewportWidth,
+  required double viewportHeight,
+  required Widget child,
+}) {
+  final t = CatchTokens.of(context);
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final scale = constraints.maxWidth < viewportWidth
+          ? constraints.maxWidth / viewportWidth
+          : 1.0;
+      return SizedBox(
+        width: double.infinity,
+        height: viewportHeight * scale,
+        child: FittedBox(
+          fit: BoxFit.contain,
+          alignment: AlignmentDirectional.topCenter,
+          child: SizedBox(
+            width: viewportWidth,
+            height: viewportHeight,
+            child: CatchSurface(
+              tone: CatchSurfaceTone.raised,
+              borderColor: t.line,
+              clipBehavior: Clip.antiAlias,
+              child: child,
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Widget _responsiveGeometryShell({
+  required _ResponsiveSectionComposition composition,
+}) {
+  return CatchAdaptiveTabScaffold(
+    activeIndex: 1,
+    navigationBar: CatchTabBar<int>(
+      items: _responsiveNavigationItems,
+      active: 1,
+      onChanged: _ignoreInt,
+    ),
+    mediumSideNavigation: AppShellSideNavigation(
+      active: 1,
+      items: _responsiveNavigationItems,
+      onChanged: _ignoreInt,
+    ),
+    expandedSideNavigation: AppShellSideNavigation(
+      active: 1,
+      items: _responsiveNavigationItems,
+      onChanged: _ignoreInt,
+      expanded: true,
+      title: 'Catch Hosts',
+    ),
+    body: Builder(
+      builder: (context) => CatchFieldVisibilityScope(
+        bottomObstruction: AppShellActiveTab.bottomOverlayInsetOf(context),
+        child: CatchRouteScaffold(
+          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+            title: 'Event settings',
+            leadingType: CatchTopBarLeading.none,
+            divider: scrolledUnder,
+          ),
+          body: CatchScreenBody(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ResponsiveBuilder(
+                  compact: _buildResponsiveSingleColumn,
+                  medium:
+                      composition ==
+                          _ResponsiveSectionComposition.adaptiveTwoColumn
+                      ? _buildResponsiveTwoColumns
+                      : _buildResponsiveSingleColumn,
+                  expanded:
+                      composition ==
+                          _ResponsiveSectionComposition.adaptiveTwoColumn
+                      ? _buildResponsiveTwoColumns
+                      : _buildResponsiveSingleColumn,
+                ),
+                const CatchScrollTerminalPadding(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _buildResponsiveSingleColumn(BuildContext context) {
+  return Align(
+    alignment: AlignmentDirectional.topCenter,
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: CatchLayout.maxContentWidth),
+      child: CatchSectionStack(
+        padding: EdgeInsets.zero,
+        gap: CatchGaps.section,
+        children: [
+          _responsiveEventSettingsSection(),
+          _responsiveNotificationSection(),
+          _responsivePrivacySection(),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildResponsiveTwoColumns(BuildContext context) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Expanded(
+        child: CatchSectionStack(
+          padding: EdgeInsets.zero,
+          gap: CatchGaps.section,
+          children: [
+            _responsiveEventSettingsSection(),
+            _responsivePrivacySection(),
+          ],
+        ),
+      ),
+      const SizedBox(width: CatchGaps.section),
+      Expanded(
+        child: CatchSectionStack(
+          padding: EdgeInsets.zero,
+          gap: CatchGaps.section,
+          children: [_responsiveNotificationSection()],
+        ),
+      ),
+    ],
+  );
+}
+
+Widget _responsiveEventSettingsSection() {
+  var selected = const {'Catch Hosts'};
+  return CatchSection.containedFieldRows(
+    title: 'Event settings',
+    headerPlacement: CatchSectionFieldHeaderPlacement.internal,
+    children: [
+      StatefulBuilder(
+        builder: (context, setState) => CatchField.choices<String>(
+          title: 'Host',
+          icon: CatchIcons.hosted,
+          values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
+          itemLabel: _identityString,
+          selected: selected,
+          onSelectionChanged: (next) => setState(() => selected = next),
+        ),
+      ),
+      CatchField.nav(
+        title: 'Location',
+        body: 'Carter Road promenade',
+        icon: CatchIcons.pinOutlined,
+        onTap: _noop,
+      ),
+    ],
+  );
+}
+
+Widget _responsiveNotificationSection() {
+  return CatchSection.fieldRows(
+    title: 'Notifications',
+    first: true,
+    children: [
+      CatchField.toggle(
+        title: 'Allow reminders',
+        body: 'Push and email',
+        icon: CatchIcons.notificationsOutlined,
+        value: true,
+        onChanged: _ignoreBool,
+      ),
+      CatchField.nav(
+        title: 'Reminder timing',
+        body: 'Two hours before',
+        icon: CatchIcons.clock,
+        onTap: _noop,
+      ),
+    ],
+  );
+}
+
+Widget _responsivePrivacySection() {
+  return CatchSection.containedFieldRows(
+    title: 'Guest visibility',
+    children: [
+      CatchField.toggle(
+        title: 'Show guest list',
+        body: 'Visible after joining',
+        icon: CatchIcons.groupsOutlined,
+        value: true,
+        onChanged: _ignoreBool,
+      ),
+      CatchField.nav(
+        title: 'Contact policy',
+        body: 'Hosts only',
+        icon: CatchIcons.lockOutlineRounded,
+        onTap: _noop,
+      ),
+    ],
+  );
+}
+
 enum _ActiveFieldTreatment { currentRingAndLift, tintedTile, sectionBand }
 
 class _ActiveFieldTreatmentOption extends StatefulWidget {
@@ -1019,6 +1346,14 @@ Widget _topBarSpecimen(
 const _reviewWidth = 960.0;
 const _componentWidth = 420.0;
 const _phoneWidth = 390.0;
+const _compactPhoneViewportWidth = 390.0;
+const _splitScreenViewportWidth = 540.0;
+const _tabletPortraitViewportWidth = 720.0;
+const _tabletWorkspaceViewportWidth = 820.0;
+const _expandedViewportWidth = 1180.0;
+const _compactViewportHeight = 640.0;
+const _tabletViewportHeight = 660.0;
+const _expandedViewportHeight = 700.0;
 
 final _navigationItems = <CatchTabBarItem<String>>[
   CatchTabBarItem(
@@ -1048,11 +1383,41 @@ final _navigationItems = <CatchTabBarItem<String>>[
   ),
 ];
 
+final _responsiveNavigationItems = <CatchTabBarItem<int>>[
+  CatchTabBarItem(
+    id: 0,
+    icon: CatchIcons.homeOutlined,
+    activeIcon: CatchIcons.homeRounded,
+    label: 'Home',
+  ),
+  CatchTabBarItem(
+    id: 1,
+    icon: CatchIcons.settingsOutlined,
+    activeIcon: CatchIcons.settingsOutlined,
+    label: 'Settings',
+  ),
+  CatchTabBarItem(
+    id: 2,
+    icon: CatchIcons.chatBubbleOutlineRounded,
+    activeIcon: CatchIcons.chatBubbleRounded,
+    label: 'Chats',
+    badgeCount: 3,
+  ),
+  CatchTabBarItem(
+    id: 3,
+    icon: CatchIcons.personOutlined,
+    activeIcon: CatchIcons.personRounded,
+    label: 'You',
+  ),
+];
+
 void _noop() {}
 
 void _ignoreBool(bool _) {}
 
 void _ignoreString(String _) {}
+
+void _ignoreInt(int _) {}
 
 void _ignoreStrings(Set<String> _) {}
 
