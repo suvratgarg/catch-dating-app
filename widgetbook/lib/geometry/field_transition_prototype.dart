@@ -214,7 +214,7 @@ class _FieldTransitionPrototypePageState
               ),
               const SizedBox(height: CatchSpacing.s5),
               Text(
-                'The divider remains section-owned and stationary. One opaque interaction surface passes directly from pressed tint to active tint, so the line stays visually consumed throughout the handoff.',
+                'No edge is suppressed. The contained field meets the section on the same one-hairline coordinate, while the divided field meets its adjacent dividers on the rounded tile boundary throughout the handoff.',
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ],
@@ -261,8 +261,14 @@ class _TransitionVariant extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    // `line2` is intentionally translucent. Resolve it once against the
+    // section surface so the section perimeter and the contained field's
+    // coincident side strokes paint the same opaque pixel. Painting either
+    // primitive first can then never darken the selected segment.
+    final containedPerimeterColor = Color.alphaBlend(t.line2, t.surface);
     final prototypeField = _UnifiedInteractionField(
       contained: contained,
+      containedPerimeterColor: containedPerimeterColor,
       timeline: timeline,
       onToggle: onToggle,
     );
@@ -285,7 +291,7 @@ class _TransitionVariant extends StatelessWidget {
         const SizedBox(height: CatchSpacing.s1),
         Text(
           contained
-              ? 'The section owns the rounded perimeter; the field surface remains rectangular inside its clip.'
+              ? 'The section and field share one perimeter coordinate; the field remains rectangular inside the section clip.'
               : 'The field owns one rounded surface that covers the adjacent section dividers while engaged.',
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
@@ -293,6 +299,7 @@ class _TransitionVariant extends StatelessWidget {
         if (contained)
           CatchSection.containedFieldRows(
             title: 'Event settings',
+            borderColor: containedPerimeterColor,
             headerPlacement: CatchSectionFieldHeaderPlacement.internal,
             children: fields,
           )
@@ -310,11 +317,13 @@ class _TransitionVariant extends StatelessWidget {
 class _UnifiedInteractionField extends StatefulWidget {
   const _UnifiedInteractionField({
     required this.contained,
+    required this.containedPerimeterColor,
     required this.timeline,
     required this.onToggle,
   });
 
   final bool contained;
+  final Color containedPerimeterColor;
   final Animation<double> timeline;
   final VoidCallback onToggle;
 
@@ -385,15 +394,25 @@ class _UnifiedInteractionFieldState extends State<_UnifiedInteractionField> {
       activeAmount,
     )!;
     final borderAmount = widget.contained ? activeAmount : engagedAmount;
-    final borderColor = Color.lerp(Colors.transparent, t.line, borderAmount)!;
+    final rowBoundaryColor = Color.lerp(
+      Colors.transparent,
+      t.line,
+      borderAmount,
+    )!;
+    final containedSideColor = Color.lerp(
+      Colors.transparent,
+      widget.containedPerimeterColor,
+      borderAmount,
+    )!;
     final shadows = BoxShadow.lerpList(
       CatchElevation.none,
       CatchElevation.fieldActive(Theme.of(context).brightness),
       shadowAmount,
     );
-    final overlayBleed = widget.contained
-        ? CatchStroke.hairline
-        : CatchFieldTokens.dividedRowBleed;
+    final interactionShape = CatchFieldGeometryScope.interactionShapeOf(
+      context,
+    );
+    final overlayBleed = CatchFieldGeometryScope.interactionBleedOf(context);
     final active = engagedAmount > 0.04;
 
     final header = CatchFieldRow.standard(
@@ -465,11 +484,46 @@ class _UnifiedInteractionFieldState extends State<_UnifiedInteractionField> {
                     ),
                     decoration: BoxDecoration(
                       color: engagedAmount > 0.001 ? interactionColor : null,
-                      borderRadius: widget.contained
+                      borderRadius:
+                          interactionShape ==
+                              CatchFieldInteractionShape.sectionClipped
                           ? BorderRadius.zero
                           : BorderRadius.circular(CatchFieldTokens.tileRadius),
                       border: borderAmount > 0.001
-                          ? Border.all(color: borderColor)
+                          ? interactionShape ==
+                                    CatchFieldInteractionShape.sectionClipped
+                                // Every edge remains painted. The horizontal
+                                // sides use the field-divider role; the
+                                // vertical sides are the exact continuation of
+                                // the section perimeter. Both use the same
+                                // one-hairline inside alignment as their owner.
+                                ? Border(
+                                    top: BorderSide(
+                                      color: rowBoundaryColor,
+                                      width: CatchStroke.hairline,
+                                      strokeAlign: BorderSide.strokeAlignInside,
+                                    ),
+                                    right: BorderSide(
+                                      color: containedSideColor,
+                                      width: CatchStroke.hairline,
+                                      strokeAlign: BorderSide.strokeAlignInside,
+                                    ),
+                                    bottom: BorderSide(
+                                      color: rowBoundaryColor,
+                                      width: CatchStroke.hairline,
+                                      strokeAlign: BorderSide.strokeAlignInside,
+                                    ),
+                                    left: BorderSide(
+                                      color: containedSideColor,
+                                      width: CatchStroke.hairline,
+                                      strokeAlign: BorderSide.strokeAlignInside,
+                                    ),
+                                  )
+                                : Border.all(
+                                    color: rowBoundaryColor,
+                                    width: CatchStroke.hairline,
+                                    strokeAlign: BorderSide.strokeAlignInside,
+                                  )
                           : null,
                       boxShadow: shadowAmount > 0.001
                           ? shadows
