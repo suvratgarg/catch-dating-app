@@ -7,6 +7,7 @@ import {fileURLToPath} from "node:url";
 const TASK_ID = /^[a-z0-9][a-z0-9._-]{2,79}$/u;
 const SHA_40 = /^[0-9a-f]{40}$/u;
 const DAY_MS = 24 * 60 * 60 * 1000;
+const NEW_TASK_BASE_REF = "refs/remotes/origin/main";
 
 export class TaskUsageError extends Error {}
 
@@ -25,7 +26,8 @@ The guard stores one disposable scope claim under Git's common directory for
 each active worktree. Claims are removed on successful finish. Explicit
 abandonment removes a clean worktree's claim and keeps a local record of who
 abandoned it and why. The guard never installs dependencies, runs checks,
-pushes branches, removes worktrees, or deletes stale state.`;
+pushes branches, removes worktrees, or deletes stale state. Start is for new
+tasks and requires --base-sha to match the locally fetched origin/main exactly.`;
 }
 
 export function executeTaskCommand({
@@ -91,6 +93,21 @@ export function startTask({repository, options, now = () => new Date(), runner =
   ], runner).trim().toLowerCase();
   if (resolvedBase !== baseSha) {
     throw new TaskUsageError(`--base-sha did not resolve exactly: ${baseSha}`);
+  }
+  const mainResult = runner({
+    cwd: repository.primaryRoot,
+    args: ["rev-parse", "--verify", `${NEW_TASK_BASE_REF}^{commit}`],
+  });
+  if (mainResult.status !== 0) {
+    throw new TaskUsageError(
+      "origin/main is unavailable. Fetch origin main before starting a new task.",
+    );
+  }
+  const mainSha = mainResult.stdout.trim().toLowerCase();
+  if (baseSha !== mainSha) {
+    throw new TaskUsageError(
+      `New task base ${baseSha} must match origin/main ${mainSha}. Fetch origin main and use its exact SHA; continue existing branch work in its existing worktree.`,
+    );
   }
   const claimedPaths = normalizeClaimedPaths(options.paths);
   if (claimedPaths.length === 0) {

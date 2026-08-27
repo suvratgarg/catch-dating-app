@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.0.4
-updated: 2026-08-07
+version: 3.0.5
+updated: 2026-08-27
 owner: agent_operating_model
 status: active
 ---
@@ -49,15 +49,19 @@ have been removed. Put recurring protection in the owning test or scanner.
 ## Starting Loop
 
 1. Run `git status --short --branch` and preserve unrelated changes.
-2. Read `AGENTS.md`, then only the owner documents for the changed surface.
-3. For a broad change, inspect the impact plan:
+2. For a new task, fetch `origin/main`, resolve its exact commit, and create the
+   task worktree from that commit through `worktree_guard.mjs start`. Ambient
+   checkout HEAD is never a new-task base. Continue a non-main branch only in
+   its existing worktree when the user explicitly asks to continue that work.
+3. Read `AGENTS.md`, then only the owner documents for the changed surface.
+4. For a broad change, inspect the impact plan:
 
    ```sh
    node tool/harness.mjs explain --paths <path[,path...]> --json
    node tool/harness.mjs plan --base <base-ref> --head HEAD --json
    ```
 
-4. When additional orientation is useful, print optional context guidance:
+5. When additional orientation is useful, print optional context guidance:
 
    ```sh
    node tool/agent/context_pack.mjs --task <label> --paths <path[,path...]>
@@ -65,7 +69,7 @@ have been removed. Put recurring protection in the owning test or scanner.
 
    This command writes nothing. Its output is advice, not permission or a
    completion condition.
-5. State the intended outcome, included and excluded paths, relevant owner
+6. State the intended outcome, included and excluded paths, relevant owner
    docs, focused checks, and acceptance criteria before a broad edit.
 
 ## Enforcement Integrity
@@ -202,8 +206,8 @@ The command runs root `npm ci`, Functions `npm ci`, and `flutter pub get` in
 that worktree. Keep these installs local to the worktree; do not symlink
 another checkout's `node_modules` or invent `NODE_PATH` overrides.
 
-The worktree guard is optional. Use it when several local tasks need an
-overlap check or when safe closeout is easy to forget:
+Use the worktree guard to create every new task worktree. It also provides the
+overlap and closeout checks needed when several local tasks are active:
 
 ```sh
 node tool/git/worktree_guard.mjs start \
@@ -217,9 +221,12 @@ node tool/git/worktree_guard.mjs finish --worktree <path> \
 node tool/git/worktree_guard.mjs stale --stale-days 7
 ```
 
-`start` creates a normal branch and worktree at the exact supplied commit and
-records a disposable local claimed-path set. It refuses overlap with another
-active local claim. `doctor` reports registration, branch, dirty-state, and
+Fetch `origin/main` immediately before resolving `--base-sha`. `start` rejects
+any other base, then creates a normal branch and worktree at that exact commit
+and records a disposable local claimed-path set. Continue explicitly requested
+non-main work in its existing worktree rather than creating a new task from an
+ambient branch. It refuses overlap with another active local claim. `doctor`
+reports registration, branch, dirty-state, and
 out-of-scope problems. `finish` removes only the local claim after the branch
 is clean and any unique commits are pushed. `stale` reports candidates and
 never deletes anything. When a task is deliberately superseded and pushing its
@@ -228,9 +235,9 @@ worktree is clean. It requires a reason, records `--by` or the local Git
 identity in a disposable file under Git's common directory, and leaves the
 branch and worktree untouched.
 
-The guard does not install dependencies, run checks, push, merge, remove a
-worktree, or authorize commands. A contributor can use ordinary Git directly
-when local claims are unnecessary.
+The guard does not fetch, install dependencies, run checks, push, merge, remove
+a worktree, or authorize commands. Ordinary Git remains appropriate inside an
+existing task worktree; new task creation goes through the guard.
 
 ### Delegation Flow
 

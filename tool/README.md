@@ -738,9 +738,12 @@ become malformed untracked paths in the current checkout.
 node tool/agent/context_pack.mjs --task <label> --paths <path[,path...]>
 ```
 
-Third, `tool/git/worktree_guard.mjs` is a thin optional wrapper around ordinary
-Git worktrees. `start` creates from an exact commit and rejects overlap with
-another active local claimed-path set. `doctor` reports dirty and out-of-scope
+Third, `tool/git/worktree_guard.mjs` is the thin creation and safety wrapper for
+new task worktrees. After an explicit `git fetch origin main`, `start` requires
+the exact fetched `origin/main` commit and rejects overlap with another active
+local claimed-path set. Continue explicitly requested non-main work in its
+existing worktree instead of using an ambient branch as a new base. `doctor`
+reports dirty and out-of-scope
 work. `finish` refuses to drop the local claim while unique work is uncommitted
 or unpushed. `finish --abandon --reason <why>` releases a deliberately
 superseded claim only when its worktree is clean, retaining an attributable
@@ -757,9 +760,9 @@ node tool/git/worktree_guard.mjs finish --worktree <path> \
 node tool/git/worktree_guard.mjs stale --stale-days 7
 ```
 
-The guard does not install dependencies, execute checks, push, merge, remove
-worktrees, or authorize commands. Its local claims are disposable; Git branches
-and commits remain authoritative.
+The guard does not fetch, install dependencies, execute checks, push, merge,
+remove worktrees, or authorize commands. Its local claims are disposable; Git
+branches and commits remain authoritative.
 
 A newly created worktree contains tracked files only. Give it independent root
 npm, Functions npm, and Flutter dependencies before building:

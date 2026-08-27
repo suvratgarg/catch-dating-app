@@ -52,6 +52,29 @@ test("start requires an exact SHA and a direct repository-owned target", (contex
   assert.deepEqual(claimFiles(fixture.root), []);
 });
 
+test("start refuses an exact commit that is not the fetched origin/main", (context) => {
+  const fixture = createRepository(context);
+  fs.appendFileSync(path.join(fixture.root, "outside.txt"), "local branch work\n");
+  commitAll(fixture.root, "local branch work");
+  const nonMainSha = gitText(fixture.root, ["rev-parse", "HEAD"]);
+  assert.notEqual(nonMainSha, fixture.baseSha);
+
+  assert.throws(
+    () => guard(fixture.root, [
+      "start",
+      "--task-id", "non-main-base",
+      "--base-sha", nonMainSha,
+      "--paths", "owned",
+    ]),
+    (error) => error instanceof TaskUsageError && /must match origin\/main/u.test(error.message),
+  );
+  assert.equal(
+    fs.existsSync(path.join(fixture.root, ".claude", "worktrees", "non-main-base")),
+    false,
+  );
+  assert.deepEqual(claimFiles(fixture.root), []);
+});
+
 test("start creates a full exact-base worktree and never pushes or sets an upstream", (context) => {
   const fixture = createRepository(context);
   const gitCalls = [];
