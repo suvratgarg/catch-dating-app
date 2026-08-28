@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.45
-updated: 2026-08-07
+version: 0.1.46
+updated: 2026-08-29
 owner: product_design_parity
 status: active
 ---
@@ -17,6 +17,7 @@ checks in one durable matrix.
 
 | File | Purpose |
 |---|---|
+| `host_shell_route_ui_audit.md` | Extensible route-by-checklist audit matrix for the Host shell destinations, with source-backed findings and reproducible compact, medium, expanded, and 200% text-scale captures. Add a destination by appending one column. |
 | `claude_widgetbook_inventory.md` | Persistent inventory comparison between the Claude Design export, local Widgetbook, local component contracts, and foundation token/style sources. |
 | `comprehensive_todo.md` | Canonical execution checklist for remaining design-parity work across sources of truth, state contracts, Widgetbook, captures, pixel comparison, composition, tokens, features, drift prevention, and pass cadence. |
 | `composition_migration_spec.md` | Layered implementation spec for migrating screens into controller-owned state composition, registered sections, registered components, and platform-neutral design tokens/contracts. |
