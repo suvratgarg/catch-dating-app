@@ -1907,6 +1907,8 @@
         "code": "catch_use_named_catch_field_constructor",
         "codes": [
           "catch_field_requires_section_context",
+          "catch_field_geometry_is_section_owned",
+          "catch_field_divider_is_section_owned",
           "catch_no_tokens_prop_drilling"
         ],
         "vehicle": "plugin",
@@ -1930,7 +1932,7 @@
       "name": "CatchField",
       "status": "active",
       "kind": "composite",
-      "summary": "Unified handoff field primitive with one canonical single-line empty Add state across direct inputs and addable disclosures, stable native-input identity, root-owned inactive/error/active label color resolution, one caption-reserve 18.9 px value-line trailing lane, exactly one visible saving indicator, shared section-edge overlay geometry, a dedicated natural-height content row, one-gesture press-to-focus transfer, native cursor placement, height-neutral clear targets, full-row animated disclosure drawers, wrapping and per-item-accent choices, helper and badge metadata, bounded steppers, exact toggles, async status, direct and explicit-save text editing, select triggers, and add actions.",
+      "summary": "Unified semantic field primitive for read, navigation, toggle, input, disclosure, choice, select, stepper, and action rows. CatchField owns content, state, accessibility, and input behavior; its enclosing CatchSection or CatchFieldLanes owns sibling dividers, gutters, containment, perimeter, and responsive interaction geometry.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -2400,13 +2402,6 @@
           },
           {
             "name": "readOnly",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "divider",
             "type": "bool",
             "required": false,
             "default": false,
@@ -3019,7 +3014,7 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical information-grouping primitive for divided field rows, exact contained field-row surfaces with external group headers and shared child-edge geometry, generic contained sections with internal card titles, and plain titled content groups. Call sites use named constructors so header, divider, focus, and surface ownership stay explicit.",
+      "summary": "Canonical information-grouping primitive for divided and outlined field groups, generic contained modules, and plain content groups. Field sections own header placement, sibling rules, clipping, perimeter, responsive interaction geometry, and section rhythm; named constructors keep those responsibilities structural instead of caller-styled.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -3046,6 +3041,9 @@
             "lead",
             "first",
             "dividerColor",
+            "dividerIndent",
+            "dividerRole",
+            "internalDividerRole",
             "titleColor",
             "bodyGap",
             "showInternalDividers",
@@ -3060,12 +3058,7 @@
             "lead",
             "first",
             "footer",
-            "dividerColor",
-            "dividerInset",
-            "dividerRole",
-            "titleColor",
-            "bodyGap",
-            "showInternalDividers",
+            "interaction",
             "children",
             "child"
           ],
@@ -3074,13 +3067,9 @@
             "count",
             "trailing",
             "footer",
-            "backgroundColor",
-            "borderColor",
-            "titleColor",
-            "dividerInset",
-            "showInternalDividers",
             "focused",
             "hasError",
+            "headerPlacement",
             "children",
             "child"
           ],
@@ -3092,6 +3081,11 @@
             "titleColor",
             "bodyGap",
             "padding",
+            "backgroundColor",
+            "borderColor",
+            "tone",
+            "elevation",
+            "boxShadow",
             "showInternalDividers",
             "focused",
             "hasError",
@@ -3189,16 +3183,64 @@
             ]
           },
           {
+            "name": "interaction",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchDividedFieldInteraction?",
+            "notes": "Optional section-level override for divided field rows. Omission inherits the responsive page policy; individual fields cannot choose their own geometry.",
+            "values": [
+              "fullBleed",
+              "roundedTile"
+            ]
+          },
+          {
+            "name": "headerPlacement",
+            "type": "enum",
+            "required": false,
+            "default": "outside",
+            "dartType": "CatchSectionHeaderPlacement",
+            "notes": "Contained field-row header placement. Inside headers share the outline and own an inset end-to-end boundary rule; outside headers sit above the perimeter.",
+            "values": [
+              "outside",
+              "inside"
+            ]
+          },
+          {
             "name": "dividerColor",
             "type": "color",
             "required": false,
             "dartType": "Color?"
           },
           {
-            "name": "dividerInset",
+            "name": "dividerIndent",
             "type": "number",
             "required": false,
-            "dartType": "double?"
+            "default": 0,
+            "dartType": "double"
+          },
+          {
+            "name": "dividerRole",
+            "type": "enum",
+            "required": false,
+            "default": "section",
+            "dartType": "CatchDividerRole",
+            "values": [
+              "section",
+              "fieldSection",
+              "fieldRow"
+            ]
+          },
+          {
+            "name": "internalDividerRole",
+            "type": "enum",
+            "required": false,
+            "default": "fieldRow",
+            "dartType": "CatchDividerRole",
+            "values": [
+              "section",
+              "fieldSection",
+              "fieldRow"
+            ]
           },
           {
             "name": "titleColor",
@@ -3218,6 +3260,50 @@
             "type": "object",
             "required": false,
             "dartType": "EdgeInsetsGeometry?"
+          },
+          {
+            "name": "backgroundColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "borderColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "default": "surface",
+            "dartType": "CatchSurfaceTone",
+            "values": [
+              "surface",
+              "raised",
+              "primarySoft",
+              "transparent"
+            ]
+          },
+          {
+            "name": "elevation",
+            "type": "enum",
+            "required": false,
+            "default": "card",
+            "dartType": "CatchSurfaceElevation",
+            "values": [
+              "none",
+              "card",
+              "raised",
+              "overlay"
+            ]
+          },
+          {
+            "name": "boxShadow",
+            "type": "list",
+            "required": false,
+            "dartType": "List<BoxShadow>?"
           },
           {
             "name": "showInternalDividers",
@@ -3250,7 +3336,11 @@
           "contained-section",
           "plain-section",
           "divided-field-rows",
+          "divided-field-rows-full-bleed",
+          "divided-field-rows-rounded-tile",
+          "divided-field-rows-full-bleed-keyboard-focus",
           "contained-field-rows-external-header",
+          "contained-field-rows-internal-header",
           "contained-field-rows-child-active",
           "contained-field-rows-explicit-focused",
           "field-list",
@@ -3475,10 +3565,11 @@
         ],
         "notes": [
           "Use divided sections for top-level information groups when nested rounded rectangles would add visual clutter.",
-          "Use containedFieldRows for the handoff field surface: it owns a clipped 14 px radius, neutral line border, explicit section-focus/error border, inset internal rules, and no generic elevation. Descendant field focus remains child-owned; the section publishes a one-hairline active-overlay overlap so child chrome and the outer perimeter share identical left/right geometry, then paints the section edge last. Its optional title, right-aligned count, and trailing slot form an external kicker row aligned 16 px from the group edge with an 8 px gap before the outline, so the perimeter begins with the first field row. Its optional footer stays inside the border with 2 px / 16 px / 12 px padding. Divided fieldRows footers render outside the rows with 8 px top padding and the field-caption style. Headerless prompt cards begin directly with their first field row. Use contained for non-field carded content that needs one bounded surface and an internal title.",
+          "Use containedFieldRows for outlined field groups. It owns one clipped 14 px perimeter, neutral line border, explicit section-focus/error border, inset sibling rules, and no generic elevation. Descendant active rows are rectangular bands whose vertical edges share the section perimeter coordinates, so child chrome and the outline read as one unit. Headers default outside the outline; headerPlacement.inside moves the same section-owned kicker into the group and adds its inset end-to-end boundary rule. The footer remains inside the perimeter. Use contained for non-field carded content.",
           "Use plain sections for compact titled blocks without a container or divider.",
-          "The section owns the outer grouping and internal dividers. Header boundaries and separators between sibling fields use the same full line token and one-pixel stroke; the header boundary spans the section while sibling-field rules begin at the derived text lane, so inset alone communicates hierarchy. Active fields may cover those rules with their 10 px bleed. Direct CatchField children derive a zero or text-lane divider inset from their leading icons; adapter-wrapped rows pass dividerInset explicitly. Fields own information content and interaction mode.",
-          "Divided and contained field-row headers accept title, count, and trailing content. Contained field-row headers sit outside the outline; generic contained content-card titles remain inside. Contained footers use 2 px top padding; divided footers use 8 px. Field-section kickers use the exact 11 px, 600-weight, 1.43 px tracking treatment.",
+          "Field sections own the outer grouping and every sibling separator. Header boundaries and field rules share the same line token and hairline stroke; sibling rules begin at the section-derived text lane. CatchField never paints a sibling divider or accepts gutter, radius, bleed, or perimeter arguments.",
+          "Divided field rows inherit a responsive interaction policy: compact single-column pages default to a rectangular full-bleed tint reaching the nearest page interaction plane, while split panes default to an inset rounded perimeter. A complete section may override this with interaction; an individual field may not. Both treatments replace adjacent divider visibility during the transition, and full-bleed keyboard focus uses one 2 px inset perimeter.",
+          "Divided and contained field-row headers accept title, count, and trailing content. Field-section kickers always use the section-owned uppercase IBM Plex Mono treatment. Contained header placement is outside by default and may be inside; generic contained content-card titles remain inside by construction.",
           "Section headers, section labels, day headers, vertical sections, and horizontal rails are public members of this grouping family, not separate section systems."
         ]
       },

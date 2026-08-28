@@ -284,17 +284,25 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
 - `CatchSection.containedFieldRows` treats its title, count, and trailing action
   as an external label by default, so the outline begins with the first field.
   When that header belongs to the bounded field group itself, opt into
-  `CatchSectionFieldHeaderPlacement.internal`; the header moves inside the
+  `CatchSectionHeaderPlacement.inside`; the header moves inside the
   outline and owns the same padded section rule used by uncontained field
   sections. Omit the label when the page or step title already supplies the
   same context. `CatchSection.contained` keeps its sentence-case title inside
   only when the bounded surface is itself one actionable content module.
-- `CatchField` owns one contextual interaction silhouette for both pointer-down
-  and active/open states. Standalone and divided fields paint a complete
-  rounded tint plus hairline outline; divided overlays reclaim their adjacent
-  divider bleed. Contained field rows paint rectangular internal bands and
-  inherit external corners from the section's single group clip. Callers never
-  select radii or redraw this chrome.
+- `CatchSection.fieldRows` owns one interaction policy for all of its fields.
+  Compact single-column pages default to a rectangular full-bleed tint that
+  reaches the page interaction plane; split panes default to an inset rounded
+  perimeter. A complete section may choose the other semantic policy, but an
+  individual field cannot select radii, gutter, bleed, dividers, or perimeter.
+  `CatchSection.containedFieldRows` keeps rectangular active bands inside one
+  section-owned clip, with their vertical edges aligned to the single outline.
+  Pointer-down, open, active, and keyboard-focus states use the same selected
+  policy, and their transition replaces adjacent divider visibility instead of
+  painting a second line across it.
+- `CatchFieldLanes.divided` is the headerless sibling-row owner. It supplies the
+  canonical gutter, derived separators, and inherited interaction policy. Use
+  `.single` only for one ungrouped field and `.custom` for content that is not a
+  field list; feature code does not configure lane gutters or field dividers.
 - A typed form section owns one text-commit model for all of its sibling rows.
   Explicit confirmation with Cancel and Done is the default for new
   `CatchFormRowList` sections. An existing surface may opt the complete section
@@ -305,6 +313,13 @@ The API boundary is the first enforcement layer: duplicate placement variants
 are deleted rather than kept as aliases. Component contracts, Widgetbook
 states, and the section/top-bar scanners provide the review and regression
 layers.
+
+The reviewed Flutter library surface is `package:catch_dating_app/catch_ui.dart`.
+It exports semantic tokens, fields, sections, page composition, responsive
+policies, and typed form orchestration while excluding renderer scopes and
+focus-surface implementation members. Analyzer diagnostics reject feature-level
+construction of those internal geometry objects and reject field-owned sibling
+dividers or lane-gutter overrides that still type-check.
 
 #### Living component geometry review
 

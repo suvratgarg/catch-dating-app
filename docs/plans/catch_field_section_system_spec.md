@@ -1,6 +1,6 @@
 # CatchField / CatchSection System Review & Hardening Spec (for Codex)
 
-Status: living review · phases A-E implemented · Phase F geometry-library pass in progress 2026-08-28
+Status: living review · phases A-F implemented 2026-08-28
 Scope: `lib/core/widgets/catch_field.dart`, `lib/core/widgets/catch_section_layout.dart`, `lib/core/forms/` (new, Phase D), `test/core/`, `widgetbook/`, `docs/design_language.md`, `docs/widget_catalog.md`
 Companions: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md) ("edit spec"), [`host_club_insights_spec.md`](host_club_insights_spec.md) ("insights spec") — coordination points in §11, including ONE superseded line in the edit spec (§8.2 here).
 Origin: 2026-07-17 owner + Claude system review. Every number below was
@@ -39,7 +39,7 @@ The current source has 713 `CatchField.*` references and 289
 production `CatchFormRowList<P>` composition sites. `CatchField.input` exposes
 53 named parameters and the shared private `CatchSection` constructor carries
 31. Those numbers do not mean every caller sees every option: `CatchField`
-already redirects its public named constructors into sealed private per-mode
+already redirects its public named constructors into closed private per-mode
 configs, so illegal cross-mode combinations are mostly unrepresentable. The
 remaining pressure is ownership and migration, not a need for one more generic
 bag-of-options constructor.
@@ -79,26 +79,21 @@ unused visual pass-throughs; its constructor now exposes semantic section
 content and orchestration only, while `CatchSection.fieldRows` owns divider,
 rhythm, color, and position defaults.
 
-The next structural refactor should happen only after the open visual decisions
-are settled: replace `CatchSection`'s 31-field internal state matrix with sealed
-private configs for divided field groups, outlined field groups, generic
-contained modules, and plain content. Keep the public constructors stable for
-that internal pass. A later owner-reviewed migration may then remove
-feature-facing color/gap/padding knobs, replace `child`/`children` duality with
-typed content boundaries, and decide whether generic `contained` deserves a
-name separate from field sections. Do not introduce a parallel public section
-facade or compatibility aliases in the meantime.
+Phase F replaced `CatchSection`'s 31-field internal state matrix with closed
+variant-typed configs for divided field groups, outlined field groups, generic
+contained modules, and plain content. It also removed feature-facing geometry
+knobs from field-section constructors without introducing a parallel facade or
+compatibility aliases. `child`/`children` duality and the naming of generic
+`contained` remain explicitly separate API questions; neither blocks geometry
+ownership or export of the reviewed surface.
 
 ### 0.2 2026-08-28 owner-authorized geometry-library pass
 
-The visual decisions that previously blocked the structural pass are now
-closed. The current source contains 558 production `CatchField.*` calls and
-249 production `CatchSection.*` calls. Only a small tail still reaches below
-the semantic boundary: one production `CatchFieldLanes` gutter override, four
-headerless `fieldRows` groups that suppress their top rule, two custom-content
-groups that suppress field dividers, two explicit field-divider insets, and
-two fields that paint their own divider. Those are migration defects, not
-reasons to keep low-level geometry public.
+The visual decisions that previously blocked the structural pass are closed.
+The pre-migration source contained 558 production `CatchField.*` calls and 249
+production `CatchSection.*` calls. Its small tail of lane-gutter overrides,
+top-rule exceptions, field-section divider overrides, and field-owned dividers
+was treated as migration debt rather than retained as public API.
 
 Phase F treats the Flutter primitives as a library that could be exported. It
 does not preserve a knob merely because an old caller once needed it.
@@ -137,13 +132,14 @@ does not preserve a knob merely because an old caller once needed it.
   `CatchDividedFieldInteraction` override. Omission inherits the page policy.
 - Page-body primitives publish the exact horizontal interaction-plane outset
   they own. Fields never inspect screen size or subtract `screenPx` directly.
-- `CatchSection` stores one sealed private config per constructor. The shared
+- `CatchSection` stores one closed variant-typed const record per constructor.
+  This preserves const construction and stable widget identity while the shared
   widget no longer carries one 31-property matrix containing illegal or
   meaningless combinations.
 - `CatchFieldGeometryScope`, its gutter enum, its paint-shape enum, and
   `CatchSectionFocusSurface` are implementation members. They remain public
-  only where Dart library boundaries require it, are annotated internal, and
-  are excluded from the export barrel.
+  only where Dart library boundaries require it, are excluded from the export
+  barrel, and are protected from feature construction by analyzer diagnostics.
 - `lib/catch_ui.dart` is the reviewed public barrel for the stable theme,
   field, section, page, and form-orchestration vocabulary. Extraction into a
   standalone package remains mechanical rather than requiring another API
@@ -154,8 +150,8 @@ does not preserve a knob merely because an old caller once needed it.
 - Field-row sections own rule color, inset, role, header gap, and internal
   divider presence. Remove those caller parameters from `fieldRows` and
   `containedFieldRows`.
-- A headerless group with no top section boundary is `CatchFieldLanes`, not a
-  `CatchSection.fieldRows(showTopDivider: false)` exception.
+- A headerless group with no top section boundary is
+  `CatchFieldLanes.divided`, not a configurable field-section exception.
 - A titled custom-content group is `CatchSection.divided`, not a field section
   with `showInternalDividers: false`.
 - Individual fields do not own sibling dividers. Remove the remaining
@@ -192,14 +188,14 @@ parameters; the plugin targets misuse that still type-checks.
 - No Figma release gate. Widgetbook and Flutter behavior tests are the editable
   authority; Figma synchronization remains advisory.
 
-#### Phase F completion criteria
+#### Phase F completion record
 
 1. Production divided and contained fields render the ratified pressed, active,
    focus, divider-yield, and animation geometry without Widgetbook hand-rolled
    replicas.
 2. Widgetbook decision pages compose the production primitives directly and
    contain no custom interaction painter for accepted behavior.
-3. Section configuration is sealed by variant and the feature-level geometry
+3. Section configuration is closed by variant and the feature-level geometry
    override census is zero.
 4. The public barrel exports only semantic contracts; implementation members
    are lint-protected.
@@ -207,12 +203,10 @@ parameters; the plugin targets misuse that still type-checks.
    contracts, Widgetbook analyze/build, Catch UI lint gates, derived harness
    checks, and `git diff --check` pass.
 
-Current sizes (2026-08-28): the stable `catch_field.dart` entry point is
-**913 lines** and each extracted part remains below 850 lines. The private
-constructor still centralizes the mode matrix, while rendering and state
-behavior are separated by responsibility. `catch_section_layout.dart` is
-1,364 lines, which is why its internal configuration split is the next bounded
-structural pass after the open visual decisions are settled.
+The implementation preserves `CatchField`'s closed per-mode configuration,
+stores each `CatchSection` variant in a private const record, and keeps renderer
+behavior separated into bounded part files. The source-backed checks in item 5
+are the completion evidence; changing file length alone is not a design goal.
 
 ## 1. Usage census (2026-07-17)
 

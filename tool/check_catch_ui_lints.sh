@@ -202,6 +202,23 @@ class CatchUiLintProbe extends StatelessWidget {
         ),
         const CatchSectionList(children: [SizedBox.shrink()]),
         const CatchField.read(title: 'Outside section'),
+        const CatchFieldGeometryScope(
+          gutterOwnership: CatchFieldGutterOwnership.container,
+          child: SizedBox.shrink(),
+        ),
+        const CatchSectionFocusSurface(
+          padding: EdgeInsets.zero,
+          focused: false,
+          hasError: false,
+          child: SizedBox.shrink(),
+        ),
+        const CatchFieldLanes.single(
+          gutterOwnership: CatchFieldGutterOwnership.container,
+          child: CatchField.read(title: 'Feature-owned gutter'),
+        ),
+        const CatchSection.fieldRows(
+          children: [CatchField.read(title: 'Field divider', divider: true)],
+        ),
         const Center(child: Text('Failed to load')),
         Scaffold(
           bottomNavigationBar: const NavigationBar(destinations: []),
@@ -362,6 +379,14 @@ expect_code_count \
   "seeded violation corpus" \
   "catch_field_requires_section_context" \
   1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_field_geometry_is_section_owned" \
+  2
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_field_divider_is_section_owned" \
+  2
 expect_code_count \
   "seeded violation corpus" \
   "catch_section_list_requires_empty_policy" \

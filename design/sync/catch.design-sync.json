@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-08-27",
+  "updated": "2026-08-28",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "59ce4906e2b244cdc5d96096874ae8cc98a7ef7561af02d498ccc247bd757720",
+  "sourceDigest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "59ce4906e2b244cdc5d96096874ae8cc98a7ef7561af02d498ccc247bd757720",
-    "contractDigest": "59ce4906e2b244cdc5d96096874ae8cc98a7ef7561af02d498ccc247bd757720"
+    "digest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56",
+    "contractDigest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "cb98c9bbdc1395c9afbf4db4b35ed5dfa3126bf3c7e2d8840396178a445efa4b",
+    "handoffRequestDigest": "8f0cb9431a53a8b3e76f0d35f2ea886b357d5abf3258436d6d26e191f124284a",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -822,7 +822,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "4c0fde75e84dd083158eac4deafbb45dd152b5adea11f4dd38c81e0adce86ba0"
+      "contractDigest": "95495e9411931f48ec0f1d6b7bc58a323eb39374014cf751c94b4292b817e0b7"
     },
     {
       "contractId": "catch.section",
@@ -845,8 +845,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 10,
-      "figmaExpectedPropertyDigest": "5b61b0272e49f07635efd905b8c62eae190afa976d7cd14fbad580dc6586ea91",
+      "figmaExpectedPropertyCount": 16,
+      "figmaExpectedPropertyDigest": "216ff1e2c2a8773c73e3ee13731c5e0b60278e23db7c014751e894735c59a9e3",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -854,7 +854,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "2c34c09354524b78f02c3a537d03679ce79e051c3e4708d8eec4f5f7e6b09543"
+      "contractDigest": "3f92ffc3b25d73ecf85515f4c80918629b0a3e043de932242a87d0e6edbd190c"
     },
     {
       "contractId": "catch.skeleton",
