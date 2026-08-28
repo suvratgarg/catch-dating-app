@@ -2528,6 +2528,8 @@ abstract final class CatchLayout {
   static const double tabRailHeight = 48.0;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;
+  static const double topBarLargeTextActionReserve =
+      topBarHeight + CatchSpacing.s2;
   static const double hostEventManageTopBarHeight =
       topBarLargeHeight + CatchSpacing.s4;
   static const double hostRosterDrawerMaxWidth = 440.0;

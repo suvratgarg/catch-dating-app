@@ -349,7 +349,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
           lineHeight(CatchTextStyles.supporting(context));
     }
     if (largeText && hasActions) {
-      textHeight += CatchSpacing.s2 + CatchLayout.topBarHeight;
+      textHeight += CatchLayout.topBarLargeTextActionReserve;
     }
 
     final baseline = hasEyebrow || hasSubtitle || titleMaxLines > 1
