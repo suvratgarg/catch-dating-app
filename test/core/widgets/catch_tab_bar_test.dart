@@ -221,6 +221,18 @@ void main() {
       );
       expect(rect.height, CatchLayout.tabBarExtent);
     }
+    expect(
+      find.byKey(const ValueKey('catch_tab_bar.label.Events')),
+      findsNothing,
+    );
+    expect(
+      tester.getSize(find.byKey(const ValueKey('catch_tab_bar.indicator'))),
+      const Size.square(CatchLayout.tabBarCompactItemExtent),
+    );
+    final eventsSemantics = tester.getSemantics(
+      find.byKey(const ValueKey<Object>('catch_tab_bar.destination.events')),
+    );
+    expect(eventsSemantics.label, 'Events');
     expect(tester.takeException(), isNull);
   });
 }

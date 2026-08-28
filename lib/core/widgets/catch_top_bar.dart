@@ -256,6 +256,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       hasEyebrow: eyebrow?.isNotEmpty ?? false,
       hasSubtitle: subtitle?.isNotEmpty ?? false,
       titleMaxLines: titleMaxLines,
+      hasActions: actions.isNotEmpty,
     ),
     key: key,
     title: title,
@@ -326,8 +327,10 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     bool hasEyebrow = false,
     bool hasSubtitle = false,
     int titleMaxLines = 1,
+    bool hasActions = false,
   }) {
     final textScaler = MediaQuery.textScalerOf(context);
+    final largeText = textScaler.scale(1) >= 1.6;
     final resolvedPadding = CatchInsets.screenTitleBlock.resolve(
       Directionality.of(context),
     );
@@ -344,6 +347,9 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       textHeight +=
           CatchGaps.headerTitleToSubtitle +
           lineHeight(CatchTextStyles.supporting(context));
+    }
+    if (largeText && hasActions) {
+      textHeight += CatchSpacing.s2 + CatchLayout.topBarHeight;
     }
 
     final baseline = hasEyebrow || hasSubtitle || titleMaxLines > 1
@@ -367,18 +373,20 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
     return CatchTopBar(
       titleWidget: CatchScreenHeaderTitle(
         title: title,
         eyebrow: eyebrow,
         subtitle: subtitle,
+        actions: largeText ? actions : const <Widget>[],
         titleMaxLines: titleMaxLines,
         rowCrossAxisAlignment: rowCrossAxisAlignment,
       ),
       large: false,
       leading: leading,
       leadingType: leadingType,
-      actions: actions,
+      actions: largeText ? const <Widget>[] : actions,
       backgroundColor: backgroundColor,
       surface: surface,
       border: border,

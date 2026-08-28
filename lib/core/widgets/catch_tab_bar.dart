@@ -89,6 +89,12 @@ class _CatchTabBarState<T> extends State<CatchTabBar<T>> {
   Widget build(BuildContext context) {
     final isFloating = CatchTabBar.floatsFor(context);
     final textScale = MediaQuery.textScalerOf(context).scale(1);
+    // Compact bottom navigation cannot guarantee both 48 px targets and
+    // readable labels once the user's text scale reaches the large-text
+    // layout. Keep every destination visible and preserve its semantic label;
+    // the selected pill becomes icon-only until a side-navigation breakpoint
+    // provides enough horizontal room for labels again.
+    final compactDestinations = textScale >= 1.6;
     final t = CatchTokens.of(context);
     final disabledAnimations = MediaQuery.maybeOf(context)?.disableAnimations;
     final duration = disabledAnimations == true
@@ -112,6 +118,7 @@ class _CatchTabBarState<T> extends State<CatchTabBar<T>> {
                   width: constraints.maxWidth,
                   items: widget.items,
                   activeIndex: activeIndex,
+                  compact: compactDestinations,
                 );
                 final primaryRect = geometry.indicatorRectFor(
                   visualIndex,
@@ -203,6 +210,7 @@ class _CatchTabBarState<T> extends State<CatchTabBar<T>> {
                             selected: index == visualIndex,
                             semanticSelected: index == activeIndex,
                             showSelectedLabel:
+                                !compactDestinations &&
                                 index == activeIndex &&
                                 visualIndex == activeIndex,
                             ownsIndicator: false,
@@ -444,6 +452,7 @@ class _CatchTabBarGeometry {
     required double width,
     required List<CatchTabBarItem<T>> items,
     required int activeIndex,
+    bool compact = false,
   }) {
     final textDirection = Directionality.of(context);
     if (items.isEmpty || !width.isFinite || width <= 0) {
@@ -457,7 +466,7 @@ class _CatchTabBarGeometry {
 
     final count = items.length;
     final minimumExtent = CatchLayout.tabBarMinimumTapExtent;
-    if (width < minimumExtent * count) {
+    if (compact || width < minimumExtent * count) {
       final itemWidth = width / count;
       return _CatchTabBarGeometry(
         width: width,

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
@@ -99,6 +100,38 @@ void main() {
       tester.getSize(find.byType(CatchTopBar)).height,
       greaterThan(CatchLayout.topBarHeight),
     );
+  });
+
+  testWidgets('CatchScreenTopBar reflows actions below its large-text title', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrapScreenTopBar(
+        title: 'Customers',
+        textScale: 2,
+        actions: [
+          CatchButton(
+            key: const ValueKey('add-customer'),
+            label: 'Add customer',
+            onPressed: () {},
+          ),
+        ],
+        search: const CatchTopBarSearch(
+          placeholder: 'Search customers',
+          tooltip: 'Search customers',
+        ),
+      ),
+    );
+
+    final title = tester.widget<Text>(find.text('Customers'));
+    expect(title.overflow, TextOverflow.ellipsis);
+    expect(
+      tester.getTopLeft(find.text('Customers')).dy,
+      lessThan(
+        tester.getTopLeft(find.byKey(const ValueKey('add-customer'))).dy,
+      ),
+    );
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('CatchScreenHeaderTitle supports reviewed two-line titles', (
@@ -604,6 +637,8 @@ Widget _wrapScreenTopBar({
   required String title,
   String? subtitle,
   double? textScale,
+  List<Widget> actions = const <Widget>[],
+  CatchTopBarSearch? search,
 }) {
   Widget home = Builder(
     builder: (context) => Scaffold(
@@ -611,6 +646,8 @@ Widget _wrapScreenTopBar({
         context: context,
         title: title,
         subtitle: subtitle,
+        actions: actions,
+        search: search,
       ),
       body: const SizedBox.shrink(),
     ),
