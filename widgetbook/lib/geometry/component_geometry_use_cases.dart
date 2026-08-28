@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -1384,6 +1385,15 @@ class _HostEventModalSectionComparison extends StatelessWidget {
                 state: _hostEventEntryComparisonState,
               ),
             ),
+            _HostEventModalSpecimen(
+              width: width,
+              label: 'Refined · one contained choice set',
+              description:
+                  'One perimeter binds every mutually exclusive starting path. Internal headers preserve Continue and Start new without fragmenting the collection.',
+              child: _RefinedHostEventEntrySheet(
+                state: _hostEventEntryComparisonState,
+              ),
+            ),
           ],
         );
       },
@@ -1461,7 +1471,7 @@ class _ProposedHostEventEntrySheet extends StatelessWidget {
               interaction: CatchDividedFieldInteraction.roundedTile,
               children: [
                 for (final intent in state.continueIntents)
-                  _ProposedHostEventEntryRow(intent: intent, state: state),
+                  _HostEventEntryPrototypeRow(intent: intent, state: state),
               ],
             ),
           CatchSection.fieldRows(
@@ -1470,7 +1480,7 @@ class _ProposedHostEventEntrySheet extends StatelessWidget {
             interaction: CatchDividedFieldInteraction.roundedTile,
             children: [
               for (final intent in state.startIntents)
-                _ProposedHostEventEntryRow(intent: intent, state: state),
+                _HostEventEntryPrototypeRow(intent: intent, state: state),
             ],
           ),
         ],
@@ -1479,8 +1489,94 @@ class _ProposedHostEventEntrySheet extends StatelessWidget {
   }
 }
 
-class _ProposedHostEventEntryRow extends StatelessWidget {
-  const _ProposedHostEventEntryRow({required this.intent, required this.state});
+class _RefinedHostEventEntrySheet extends StatelessWidget {
+  const _RefinedHostEventEntrySheet({required this.state});
+
+  final HostEventEntryState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchBottomSheetScaffold(
+      grabber: true,
+      title: context.l10n.hostsHostEventsListLabelNewEvent,
+      subtitle:
+          context.l10n.hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart,
+      child: CatchSection.containedFieldRows(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (state.continueIntents.isNotEmpty) ...[
+              _ContainedChoiceSubsectionHeader(
+                label: context
+                    .l10n
+                    .hostsHostEventEntrySheetSectionContinueExisting,
+              ),
+              CatchFieldLanes.divided(
+                children: [
+                  for (final intent in state.continueIntents)
+                    _HostEventEntryPrototypeRow(intent: intent, state: state),
+                ],
+              ),
+            ],
+            _ContainedChoiceSubsectionHeader(
+              label: context.l10n.hostsHostEventEntrySheetSectionStartNew,
+            ),
+            CatchFieldLanes.divided(
+              children: [
+                for (final intent in state.startIntents)
+                  _HostEventEntryPrototypeRow(intent: intent, state: state),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Review-only candidate for a future multi-subsection contained-field API.
+///
+/// Geometry, typography, and rules come from production primitives. Keep this
+/// composition local to Widgetbook until the multi-subsection contract is
+/// approved and can be promoted into CatchSection itself.
+class _ContainedChoiceSubsectionHeader extends StatelessWidget {
+  const _ContainedChoiceSubsectionHeader({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CatchFieldTokens.rowHorizontalPadding,
+        CatchFieldTokens.rowVerticalPadding,
+        CatchFieldTokens.rowHorizontalPadding,
+        0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchKicker(
+            label: label,
+            color: t.ink2,
+            size: CatchKickerSize.fieldSection,
+          ),
+          const SizedBox(height: CatchFieldTokens.sectionRuleGap),
+          const CatchDivider.section(),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostEventEntryPrototypeRow extends StatelessWidget {
+  const _HostEventEntryPrototypeRow({
+    required this.intent,
+    required this.state,
+  });
 
   final HostEventEntryIntent intent;
   final HostEventEntryState state;
