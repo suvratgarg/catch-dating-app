@@ -1512,7 +1512,7 @@ class _RefinedHostEventEntrySheet extends StatelessWidget {
                     .l10n
                     .hostsHostEventEntrySheetSectionContinueExisting,
               ),
-              CatchFieldLanes.divided(
+              _ContainedChoiceRows(
                 children: [
                   for (final intent in state.continueIntents)
                     _HostEventEntryPrototypeRow(intent: intent, state: state),
@@ -1522,7 +1522,7 @@ class _RefinedHostEventEntrySheet extends StatelessWidget {
             _ContainedChoiceSubsectionHeader(
               label: context.l10n.hostsHostEventEntrySheetSectionStartNew,
             ),
-            CatchFieldLanes.divided(
+            _ContainedChoiceRows(
               children: [
                 for (final intent in state.startIntents)
                   _HostEventEntryPrototypeRow(intent: intent, state: state),
@@ -1531,6 +1531,46 @@ class _RefinedHostEventEntrySheet extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Field-owned content gutters inside one section-owned clip.
+///
+/// CatchField keeps its normal row padding and full-width press surface. The
+/// overlapping dividers derive their text-lane inset from the same tokens as
+/// the production contained-field renderer, so changing icon or gutter tokens
+/// moves content and rules together.
+class _ContainedChoiceRows extends StatelessWidget {
+  const _ContainedChoiceRows({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var index = 0; index < children.length; index++)
+          if (index == children.length - 1)
+            children[index]
+          else
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Positioned(
+                  bottom: -CatchStroke.hairline,
+                  left:
+                      CatchFieldTokens.rowHorizontalPadding +
+                      CatchLayout.fieldRowTextLaneInset,
+                  right: CatchFieldTokens.rowHorizontalPadding,
+                  child: CatchDivider(role: CatchDividerRole.fieldSection),
+                ),
+                children[index],
+              ],
+            ),
+      ],
     );
   }
 }
