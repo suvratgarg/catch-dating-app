@@ -30,6 +30,7 @@ enum CatchTopBarLeading { auto, back, close, none }
 @immutable
 class CatchTopBarSearch {
   const CatchTopBarSearch({
+    this.fieldKey,
     required this.placeholder,
     required this.tooltip,
     this.value = '',
@@ -51,6 +52,8 @@ class CatchTopBarSearch {
     this.mutedForegroundColor,
   });
 
+  /// Stable identity for the rendered [CatchSearchField].
+  final Key? fieldKey;
   final String value;
   final CatchContractFieldConstraints? contract;
   final String? contractExemption;
@@ -671,6 +674,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
     if (!_searchEnabled) return null;
     final search = widget.search!;
     return CatchSearchField.expanding(
+      key: search.fieldKey,
       expanded: _searchOpenEffective,
       maxWidth: maxWidth,
       value: search.value,

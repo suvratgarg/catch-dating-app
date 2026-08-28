@@ -1,0 +1,589 @@
+part of 'host_customers_screen.dart';
+
+class HostCustomerDirectorySortControl extends StatelessWidget {
+  const HostCustomerDirectorySortControl({
+    super.key,
+    required this.sort,
+    required this.onSortChanged,
+  });
+
+  final HostCustomerSort sort;
+  final ValueChanged<HostCustomerSort> onSortChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final sortControl = CatchAdaptiveSelectionControl<HostCustomerSort>(
+      buttonKey: const ValueKey('host-customers-sort'),
+      title: context.l10n.hostCustomersSort,
+      subtitle: context.l10n.hostCustomersSortSheetSubtitle,
+      tooltip: context.l10n.hostCustomersSort,
+      value: sort,
+      items: [
+        for (final option in HostCustomerSort.values)
+          CatchSelectionMenuItem(
+            value: option,
+            label: _customerSortLabel(context, option),
+          ),
+      ],
+      triggerLabel: (selected) =>
+          context.l10n.hostCustomersSortControl(label: selected.label),
+      onSelected: onSortChanged,
+    );
+
+    return Align(alignment: AlignmentDirectional.centerEnd, child: sortControl);
+  }
+}
+
+class HostCustomersNoOrganizer extends StatelessWidget {
+  const HostCustomersNoOrganizer({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: SafeArea(
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: CatchScreenHeaderTitle.block(
+              title: context.l10n.hostNavigationCustomers,
+            ),
+          ),
+          CatchSliverEmptyState(
+            icon: CatchIcons.groupsOutlined,
+            title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
+            message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+            action: CatchButton(
+              label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+              onPressed: () =>
+                  context.pushNamed(Routes.hostCreateClubScreen.name),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+class HostCustomerFilterSummary extends StatelessWidget {
+  const HostCustomerFilterSummary({
+    super.key,
+    required this.filter,
+    this.manualTag,
+    required this.count,
+    required this.countCoverage,
+    required this.campaignBlocker,
+    required this.onOpenFilters,
+    required this.onMessage,
+    this.onClear,
+  });
+
+  final HostCustomerFilter filter;
+  final HostCustomerManualTag? manualTag;
+  final int count;
+  final HostCustomerMatchCountCoverage countCoverage;
+  final String? campaignBlocker;
+  final VoidCallback onOpenFilters;
+  final VoidCallback? onMessage;
+  final VoidCallback? onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    final countLabel = _customerPeopleCountLabel(context, count, countCoverage);
+    final header = context.l10n.hostCustomersFilterSummary(
+      label: manualTag?.label ?? _customerFilterLabel(context, filter),
+      countLabel: countLabel,
+    );
+    return CatchSurface(
+      radius: CatchRadius.md,
+      padding: CatchInsets.tileContentCompact,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: CatchSpacing.s3,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              Text(header, style: CatchTextStyles.labelL(context)),
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: CatchSpacing.s1,
+                children: [
+                  if (onClear case final clear?)
+                    CatchButton(
+                      label: context.l10n.hostCustomersClearFilter,
+                      variant: CatchButtonVariant.ghost,
+                      size: CatchButtonSize.sm,
+                      onPressed: clear,
+                    ),
+                  CatchButton(
+                    label: context.l10n.hostCustomersFilters,
+                    icon: Icon(CatchIcons.tuneRounded),
+                    variant: CatchButtonVariant.secondary,
+                    size: CatchButtonSize.sm,
+                    onPressed: onOpenFilters,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          if (manualTag == null) ...[
+            gapH12,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: CatchSpacing.s3,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                if (campaignBlocker case final String blocker)
+                  Text(
+                    hostCampaignBlockerLabel(context, blocker),
+                    style: CatchTextStyles.supporting(
+                      context,
+                      color: CatchTokens.of(context).warning,
+                    ),
+                  ),
+                CatchButton(
+                  key: const ValueKey('host-customers-message-segment'),
+                  label: countCoverage == HostCustomerMatchCountCoverage.exact
+                      ? context.l10n.hostCustomersMessageThese(count: count)
+                      : context.l10n.hostCustomersMessageTheseAtLeast(
+                          count: count,
+                        ),
+                  size: CatchButtonSize.sm,
+                  onPressed: onMessage,
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class HostCustomerFilterSheet extends StatelessWidget {
+  const HostCustomerFilterSheet({
+    super.key,
+    required this.selectedFilter,
+    required this.selectedManualTag,
+    required this.manualTagVocabulary,
+    required this.selectedCount,
+    required this.smsReadiness,
+  });
+
+  final HostCustomerFilter selectedFilter;
+  final HostCustomerManualTag? selectedManualTag;
+  final List<HostCustomerManualTag> manualTagVocabulary;
+  final HostCustomerSegmentCount selectedCount;
+  final HostCrmChannelReadiness? smsReadiness;
+
+  @override
+  Widget build(BuildContext context) {
+    final groups = hostCustomerFilterGroupsForSmsReadiness(smsReadiness);
+    final maxHeight =
+        MediaQuery.sizeOf(context).height * CatchLayout.sheetMaxHeightFraction;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: CatchBottomSheetScaffold(
+        title: context.l10n.hostCustomersFilterSheetTitle,
+        subtitle: context.l10n.hostCustomersFilterSheetSubtitle,
+        child: Flexible(
+          child: ListView(
+            key: const ValueKey('host-customer-filter-scroll'),
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            children: [
+              CatchSectionList(
+                emptyStateOmitted: true,
+                children: [
+                  for (final entry in groups.entries)
+                    CatchSection.divided(
+                      title: _customerFilterGroupLabel(context, entry.key),
+                      child: Wrap(
+                        spacing: CatchSpacing.s2,
+                        runSpacing: CatchSpacing.s2,
+                        children: [
+                          for (final filter in entry.value)
+                            _HostCustomerFilterChip(
+                              filter: filter,
+                              selected:
+                                  selectedManualTag == null &&
+                                  selectedFilter == filter,
+                              selectedCount: selectedCount,
+                            ),
+                        ],
+                      ),
+                    ),
+                  if (manualTagVocabulary.isNotEmpty)
+                    CatchSection.divided(
+                      title: context.l10n.hostCustomersFilterGroupYourTags,
+                      child: Wrap(
+                        spacing: CatchSpacing.s2,
+                        runSpacing: CatchSpacing.s2,
+                        children: [
+                          for (final tag in manualTagVocabulary)
+                            _HostCustomerManualTagChip(
+                              tag: tag,
+                              selected: selectedManualTag?.tagId == tag.tagId,
+                              selectedCount: selectedCount,
+                            ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HostCustomerFilterChip extends StatelessWidget {
+  const _HostCustomerFilterChip({
+    required this.filter,
+    required this.selected,
+    required this.selectedCount,
+  });
+
+  final HostCustomerFilter filter;
+  final bool selected;
+  final HostCustomerSegmentCount selectedCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final filterLabel = _customerFilterLabel(context, filter);
+    return CatchChip.selectable(
+      key: ValueKey('host-customer-filter-${filter.name}'),
+      label: selected
+          ? context.l10n.hostCustomersFilterOption(
+              label: filterLabel,
+              countLabel: _customerPeopleCountLabel(
+                context,
+                selectedCount.count,
+                selectedCount.coverage,
+              ),
+            )
+          : filterLabel,
+      selected: selected,
+      contractExemption: 'Customer filters map to reviewed CRM segments.',
+      onChanged: (_) => Navigator.of(
+        context,
+      ).pop(HostCustomerFilterSelection.computed(filter)),
+    );
+  }
+}
+
+class _HostCustomerManualTagChip extends StatelessWidget {
+  const _HostCustomerManualTagChip({
+    required this.tag,
+    required this.selected,
+    required this.selectedCount,
+  });
+
+  final HostCustomerManualTag tag;
+  final bool selected;
+  final HostCustomerSegmentCount selectedCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchChip.selectable(
+      key: ValueKey('host-customer-manual-tag-${tag.tagId}'),
+      label: selected
+          ? context.l10n.hostCustomersFilterOption(
+              label: tag.label,
+              countLabel: _customerPeopleCountLabel(
+                context,
+                selectedCount.count,
+                selectedCount.coverage,
+              ),
+            )
+          : tag.label,
+      leading: Icon(CatchIcons.editNoteOutlined),
+      selected: selected,
+      accent: CatchTokens.of(context).ink2,
+      contractExemption: 'Manual tags are organizer-owned CRM vocabulary.',
+      onChanged: (_) =>
+          Navigator.of(context).pop(HostCustomerFilterSelection.manual(tag)),
+    );
+  }
+}
+
+class HostCustomersDirectory extends StatelessWidget {
+  const HostCustomersDirectory({
+    super.key,
+    required this.state,
+    required this.hasActiveQuery,
+    required this.onCustomerSelected,
+    required this.onLoadMore,
+    required this.onRefreshCoverage,
+  });
+
+  final HostCustomersDirectoryState state;
+  final bool hasActiveQuery;
+  final ValueChanged<HostCustomerDirectoryContact> onCustomerSelected;
+  final VoidCallback? onLoadMore;
+  final VoidCallback onRefreshCoverage;
+
+  @override
+  Widget build(BuildContext context) {
+    final contacts = state.contacts;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (state.sourceCoverage != HostCustomerDirectoryCoverage.exact) ...[
+          CatchSurface.message(
+            title: context.l10n.hostsHostAudienceCoveragePartial,
+            message: context.l10n.hostsHostAudienceCoveragePartialBody,
+            messageIcon: CatchIcons.infoOutlineRounded,
+            messageTone: CatchSurfaceMessageTone.warning,
+          ),
+          gapH8,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: CatchButton(
+              key: const ValueKey('host-customers-refresh-coverage'),
+              label: context.l10n.hostCustomersCoverageRefresh,
+              variant: CatchButtonVariant.secondary,
+              size: CatchButtonSize.sm,
+              onPressed: onRefreshCoverage,
+            ),
+          ),
+          gapH12,
+        ],
+        if (contacts.isEmpty)
+          CatchEmptyState(
+            icon: CatchIcons.peopleOutlineRounded,
+            title: hasActiveQuery
+                ? context.l10n.hostCustomersNoResults
+                : context.l10n.hostCustomersEmpty,
+            message: hasActiveQuery ? null : context.l10n.hostCustomersIntro,
+            layout: CatchEmptyStateLayout.inline,
+          )
+        else
+          CatchSection.containedFieldRows(
+            key: const ValueKey('host-customers-directory-list'),
+            children: [
+              for (final contact in contacts)
+                HostCustomerRow(
+                  contact: contact,
+                  divider: false,
+                  onTap: () => onCustomerSelected(contact),
+                ),
+            ],
+          ),
+        if (onLoadMore != null) ...[
+          gapH12,
+          CatchButton(
+            label: context.l10n.hostCustomersLoadMore,
+            variant: CatchButtonVariant.secondary,
+            size: CatchButtonSize.sm,
+            isLoading: state.loadingMore,
+            onPressed: state.loadingMore ? null : onLoadMore,
+          ),
+        ],
+        if (state.loadMoreError != null) ...[
+          gapH8,
+          CatchErrorState.fromError(
+            state.loadMoreError!,
+            context: AppErrorContext.club,
+            mode: CatchErrorStateMode.compact,
+            onRetry: onLoadMore,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class HostCustomersSummary extends StatelessWidget {
+  const HostCustomersSummary({
+    super.key,
+    required this.summary,
+    required this.onRetry,
+  });
+
+  final AsyncValue<HostCrmSummary> summary;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) => CatchAsyncValueView<HostCrmSummary>(
+    value: summary,
+    onRetry: onRetry,
+    initialLoadTimeout: null,
+    loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
+    errorBuilder: (_, error, _) => CatchErrorState.fromError(
+      error,
+      context: AppErrorContext.customers,
+      mode: CatchErrorStateMode.compact,
+      onRetry: onRetry,
+    ),
+    builder: (context, value) {
+      final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+      String countLabel(int count) => value.truncated ? '$count+' : '$count';
+      return CatchSurface(
+        padding: CatchInsets.cardContent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (usesLargeText)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CatchStatColumn(
+                    value: countLabel(value.contactCount),
+                    label: context.l10n.hostsHostAudienceContacts,
+                    monoValue: true,
+                  ),
+                  gapH16,
+                  CatchStatColumn(
+                    value: countLabel(value.pastAttendeeCount),
+                    label: context.l10n.hostsHostAudienceAttended,
+                    monoValue: true,
+                  ),
+                  gapH16,
+                  CatchStatColumn(
+                    value: countLabel(value.repeatAttendeeCount),
+                    label: context.l10n.hostsHostAudienceRepeat,
+                    monoValue: true,
+                  ),
+                ],
+              )
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: CatchStatColumn(
+                      value: countLabel(value.contactCount),
+                      label: context.l10n.hostsHostAudienceContacts,
+                      monoValue: true,
+                    ),
+                  ),
+                  Expanded(
+                    child: CatchStatColumn(
+                      value: countLabel(value.pastAttendeeCount),
+                      label: context.l10n.hostsHostAudienceAttended,
+                      monoValue: true,
+                    ),
+                  ),
+                  Expanded(
+                    child: CatchStatColumn(
+                      value: countLabel(value.repeatAttendeeCount),
+                      label: context.l10n.hostsHostAudienceRepeat,
+                      monoValue: true,
+                    ),
+                  ),
+                ],
+              ),
+            gapH16,
+            const CatchDivider.section(),
+            gapH12,
+            CatchMetaRow(
+              icon: CatchIcons.tabChats,
+              label: context.l10n.hostCustomersWhatsappReadyCount(
+                count: value.whatsappOptInCount,
+              ),
+              maxLines: 2,
+            ),
+            gapH8,
+            CatchMetaRow(
+              icon: CatchIcons.infoOutlineRounded,
+              label: context.l10n.hostCustomersSourceSummary(
+                importedCount: value.importedContactCount,
+                linkedCount: value.linkedAccountCount,
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+String _customerFilterLabel(
+  BuildContext context,
+  HostCustomerFilter filter,
+) => switch (filter) {
+  HostCustomerFilter.all => context.l10n.hostsHostAudienceAll,
+  HostCustomerFilter.newToOrganizer => context.l10n.hostsHostAudienceSegmentNew,
+  HostCustomerFilter.firstTime =>
+    context.l10n.hostsHostAudienceSegmentFirstTime,
+  HostCustomerFilter.repeat => context.l10n.hostsHostAudienceSegmentRepeat,
+  HostCustomerFilter.regular => context.l10n.hostsHostAudienceSegmentRegular,
+  HostCustomerFilter.atRisk => context.l10n.hostCustomersFilterAtRisk,
+  HostCustomerFilter.reliable => context.l10n.hostsHostAudienceSegmentReliable,
+  HostCustomerFilter.needsConfirmation =>
+    context.l10n.hostsHostAudienceSegmentNeedsConfirmation,
+  HostCustomerFilter.advocate => context.l10n.hostsHostAudienceSegmentAdvocate,
+  HostCustomerFilter.highImpactAdvocate =>
+    context.l10n.hostsHostAudienceSegmentHighImpact,
+  HostCustomerFilter.whatsappReachable =>
+    context.l10n.hostsHostAudienceSegmentWhatsapp,
+  HostCustomerFilter.smsReachable => context.l10n.hostsHostAudienceSegmentSms,
+};
+
+String _customerSortLabel(BuildContext context, HostCustomerSort sort) =>
+    switch (sort) {
+      HostCustomerSort.lastSeen => context.l10n.hostCustomersSortLastSeen,
+      HostCustomerSort.mostAttended =>
+        context.l10n.hostCustomersSortMostAttended,
+      HostCustomerSort.name => context.l10n.hostCustomersSortName,
+    };
+
+String _customerFilterGroupLabel(
+  BuildContext context,
+  HostCustomerFilterGroup group,
+) => switch (group) {
+  HostCustomerFilterGroup.attendance =>
+    context.l10n.hostCustomersFilterGroupAttendance,
+  HostCustomerFilterGroup.reliability =>
+    context.l10n.hostCustomersFilterGroupReliability,
+  HostCustomerFilterGroup.advocacy =>
+    context.l10n.hostCustomersFilterGroupAdvocacy,
+  HostCustomerFilterGroup.reachable =>
+    context.l10n.hostCustomersFilterGroupReachable,
+};
+
+String _customerPeopleCountLabel(
+  BuildContext context,
+  int count,
+  HostCustomerMatchCountCoverage coverage,
+) => switch (coverage) {
+  HostCustomerMatchCountCoverage.exact => context.l10n.hostCustomersPeopleCount(
+    count: count,
+  ),
+  HostCustomerMatchCountCoverage.atLeast =>
+    context.l10n.hostCustomersPeopleCountAtLeast(count: count),
+};
+
+String? _optionalTrimmed(String value) {
+  final trimmed = value.trim();
+  return trimmed.isEmpty ? null : trimmed;
+}
+
+String? _optionalManualPhone(String value) {
+  final trimmed = _optionalTrimmed(value);
+  return trimmed?.replaceAll(RegExp(r'[()\s-]+'), '');
+}
+
+String? _optionalNormalizedEmail(String value) =>
+    _optionalTrimmed(value)?.toLowerCase();
+
+String? _manualPhoneError(BuildContext context, String? value) {
+  final phone = _optionalManualPhone(value ?? '');
+  if (phone == null) return null;
+  return RegExp(r'^\+[1-9][0-9]{7,14}$').hasMatch(phone)
+      ? null
+      : context.l10n.hostCustomersPhoneInvalid;
+}
+
+String? _manualEmailError(BuildContext context, String? value) {
+  final email = _optionalNormalizedEmail(value ?? '');
+  if (email == null) return null;
+  return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)
+      ? null
+      : context.l10n.hostCustomersEmailInvalid;
+}

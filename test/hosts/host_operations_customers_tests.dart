@@ -202,11 +202,13 @@ void _registerHostOperationsCustomersTests() {
 
     final searchFinder = find.byKey(const ValueKey('host-customers-search'));
     final search = tester.widget<CatchSearchField>(searchFinder);
-    expect(search.mode, CatchSearchFieldMode.expanded);
+    expect(search.mode, CatchSearchFieldMode.expanding);
     expect(search.placeholder, 'Search by name');
     expect(find.text('SMS reachable'), findsNothing);
     expect(requests.last.search, isNull);
 
+    await tester.tap(searchFinder);
+    await pumpFeatureUi(tester);
     await tester.enterText(
       find.descendant(of: searchFinder, matching: find.byType(TextField)),
       '  ananya  ',
@@ -472,6 +474,8 @@ void _registerHostOperationsCustomersTests() {
     expect(trailingIcon(CatchIcons.close), findsNothing);
     expect(trailingIcon(CatchIcons.clearCircle), findsNothing);
 
+    await tester.tap(search);
+    await pumpFeatureUi(tester);
     await tester.enterText(
       find.descendant(of: search, matching: find.byType(TextField)),
       'Ananya',
@@ -535,7 +539,10 @@ void _registerHostOperationsCustomersTests() {
       greaterThanOrEqualTo(intrinsicTitle.width - 0.5),
     );
     expect(
-      find.descendant(of: header, matching: find.byType(CatchIconAction)),
+      find.descendant(
+        of: find.byType(CatchTopBar),
+        matching: find.byType(CatchIconAction),
+      ),
       findsOneWidget,
     );
     expect(find.byTooltip('Add customer'), findsOneWidget);
