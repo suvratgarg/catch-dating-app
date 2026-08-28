@@ -18,7 +18,6 @@ sealed class _CatchFieldConfig extends CatchField {
     Color? iconColor,
     Widget? leading,
     double? leadingExtent,
-    bool divider = false,
     bool enabled = true,
     CatchFieldStatus status = CatchFieldStatus.idle,
   }) : super._shared(
@@ -34,7 +33,6 @@ sealed class _CatchFieldConfig extends CatchField {
          iconColor: iconColor,
          leading: leading,
          leadingExtent: leadingExtent,
-         divider: divider,
          enabled: enabled,
          status: status,
        );
@@ -59,7 +57,6 @@ final class _RowConfig extends _CatchFieldConfig {
     this.placeholder,
     this.valid = false,
     CatchFieldStatus status = CatchFieldStatus.idle,
-    bool divider = false,
   }) : contentRow = false,
        inlineMetadata = null,
        showChevron = null,
@@ -93,7 +90,6 @@ final class _RowConfig extends _CatchFieldConfig {
          leading: leading,
          leadingExtent: leadingExtent,
          status: status,
-         divider: divider,
        );
 
   const _RowConfig.content({
@@ -116,7 +112,6 @@ final class _RowConfig extends _CatchFieldConfig {
     this.isOptional = false,
     this.valid = false,
     CatchFieldStatus status = CatchFieldStatus.idle,
-    bool divider = false,
   }) : contentRow = true,
        inlineMetadata = null,
        placeholder = null,
@@ -148,7 +143,6 @@ final class _RowConfig extends _CatchFieldConfig {
          leading: leading,
          leadingExtent: leadingExtent,
          status: status,
-         divider: divider,
        );
 
   const _RowConfig.nav({
@@ -173,7 +167,6 @@ final class _RowConfig extends _CatchFieldConfig {
     this.errorText,
     this.valid = false,
     CatchFieldStatus status = CatchFieldStatus.idle,
-    bool divider = false,
   }) : contentRow = false,
        inlineMetadata = null,
        isOptional = false,
@@ -203,7 +196,6 @@ final class _RowConfig extends _CatchFieldConfig {
          leading: leading,
          leadingExtent: leadingExtent,
          status: status,
-         divider: divider,
        );
 
   const _RowConfig.sortable({
@@ -213,7 +205,6 @@ final class _RowConfig extends _CatchFieldConfig {
     required Widget reorderHandle,
     required this.onTap,
     this.showChevron = true,
-    bool divider = true,
   }) : titleMaxLines = 1,
        bodyMaxLines = 1,
        contentRow = false,
@@ -233,7 +224,6 @@ final class _RowConfig extends _CatchFieldConfig {
          emphasis: CatchFieldEmphasis.title,
          leading: reorderHandle,
          leadingExtent: CatchSpacing.s11,
-         divider: divider,
        );
 
   const _RowConfig.action({
@@ -257,7 +247,6 @@ final class _RowConfig extends _CatchFieldConfig {
     this.errorText,
     this.valid = false,
     CatchFieldStatus status = CatchFieldStatus.idle,
-    bool divider = false,
   }) : contentRow = false,
        inlineMetadata = null,
        showChevron = null,
@@ -288,7 +277,6 @@ final class _RowConfig extends _CatchFieldConfig {
          leading: leading,
          leadingExtent: leadingExtent,
          status: status,
-         divider: divider,
        );
 
   const _RowConfig.add({
@@ -349,7 +337,6 @@ final class _ToggleConfig extends _CatchFieldConfig {
     this.badgeLabel,
     this.badgeTone,
     CatchFieldStatus status = CatchFieldStatus.idle,
-    bool divider = false,
   }) : onToggleChanged = onChanged,
        super(
          key: key,
@@ -361,7 +348,6 @@ final class _ToggleConfig extends _CatchFieldConfig {
          icon: icon,
          iconColor: iconColor,
          status: status,
-         divider: divider,
        );
 
   final bool value;
@@ -426,7 +412,6 @@ final class _EditConfig extends _CatchFieldConfig {
     Widget? action,
     this.error,
     this.errorText,
-    bool divider = false,
     this.onTap,
   }) : explicitSave = false,
        open = null,
@@ -453,7 +438,6 @@ final class _EditConfig extends _CatchFieldConfig {
          variant: variant,
          icon: icon,
          iconColor: iconColor,
-         divider: divider,
          enabled: enabled,
          status: status,
        );
@@ -489,7 +473,6 @@ final class _EditConfig extends _CatchFieldConfig {
     Color? iconColor,
     CatchFieldTone tone = CatchFieldTone.normal,
     this.error,
-    bool divider = false,
     this.onChanged,
     this.onSubmitted,
     this.onBlur,
@@ -531,7 +514,6 @@ final class _EditConfig extends _CatchFieldConfig {
          icon: icon,
          iconColor: iconColor,
          enabled: enabled,
-         divider: divider,
          status: status,
        );
 
@@ -651,7 +633,6 @@ final class _ControlConfig extends _CatchFieldConfig {
     this.emptyValueText,
     this.error,
     this.errorText,
-    bool divider = false,
   }) : super(
          key: key,
          title: title,
@@ -661,7 +642,6 @@ final class _ControlConfig extends _CatchFieldConfig {
          tone: tone,
          icon: icon,
          iconColor: iconColor,
-         divider: divider,
          enabled: enabled,
          status: status,
        );

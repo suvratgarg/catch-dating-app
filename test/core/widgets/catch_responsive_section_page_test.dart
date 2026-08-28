@@ -118,6 +118,116 @@ void main() {
     expect(secondary.top, greaterThan(primary.bottom));
   });
 
+  testWidgets(
+    'centered full-bleed fields reach the viewport beyond the capped lane',
+    (tester) async {
+      final previousHighlightStrategy = FocusManager.instance.highlightStrategy;
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.alwaysTraditional;
+      addTearDown(
+        () =>
+            FocusManager.instance.highlightStrategy = previousHighlightStrategy,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: SizedBox(
+              width: 780,
+              height: 640,
+              child: CatchResponsiveSectionPage(
+                sections: [
+                  CatchResponsiveSectionItem(
+                    child: CatchSection.fieldRows(
+                      first: true,
+                      children: [
+                        CatchField.nav(title: 'Reminder timing', onTap: _noop),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final scope = FocusScope.of(tester.element(find.byType(Scaffold)));
+      expect(scope.nextFocus(), isTrue);
+      await tester.pump();
+
+      final overlay = tester.getRect(
+        find.byKey(const ValueKey<String>('catch-field-active-overlay')),
+      );
+      expect(overlay.left, 0);
+      expect(overlay.right, 780);
+    },
+  );
+
+  testWidgets('split-pane full bleed is bounded by its owning lane', (
+    tester,
+  ) async {
+    final previousHighlightStrategy = FocusManager.instance.highlightStrategy;
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy = previousHighlightStrategy,
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: SizedBox(
+            width: 780,
+            height: 640,
+            child: CatchResponsiveSectionPage(
+              composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+              fieldInteractionPolicy: CatchResponsiveFieldInteractionPolicy(
+                splitPane: CatchDividedFieldInteraction.fullBleed,
+              ),
+              sections: [
+                CatchResponsiveSectionItem(
+                  child: CatchSection.fieldRows(
+                    first: true,
+                    children: [CatchField.nav(title: 'Primary', onTap: _noop)],
+                  ),
+                ),
+                CatchResponsiveSectionItem(
+                  lane: CatchResponsiveSectionLane.secondary,
+                  child: CatchSection.fieldRows(
+                    first: true,
+                    children: [
+                      CatchField.nav(title: 'Secondary', onTap: _noop),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final scope = FocusScope.of(tester.element(find.byType(Scaffold)));
+    expect(scope.nextFocus(), isTrue);
+    await tester.pump();
+
+    final overlay = tester.getRect(
+      find.byKey(const ValueKey<String>('catch-field-active-overlay')).first,
+    );
+    expect(overlay.left, CatchSpacing.screenPx);
+    expect(
+      overlay.right,
+      closeTo(
+        CatchSpacing.screenPx +
+            (780 - (2 * CatchSpacing.screenPx) - CatchGaps.section) / 2,
+        0.1,
+      ),
+    );
+  });
+
   testWidgets('responsive page publishes and clears floating shell geometry', (
     tester,
   ) async {
@@ -180,6 +290,8 @@ void main() {
     );
   });
 }
+
+void _noop() {}
 
 Widget _layoutSubject({
   required double width,

@@ -61,18 +61,19 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
     return CatchSectionList(
       emptyStateOmitted: true,
       children: [
-        CatchFieldLanes.single(
-          gutterOwnership: CatchFieldGutterOwnership.container,
-          child: CatchField.toggle(
-            title: title,
-            contract: CatchContractConstraints
-                .createClubCallablePayloadHostDefaultsEventSuccessEnabled,
-            body: subtitle,
-            bodyMaxLines: 5,
-            value: normalized.enabled,
-            onChanged: (value) =>
-                onChanged((current) => current.copyWith(enabled: value)),
-          ),
+        CatchFieldLanes.divided(
+          children: [
+            CatchField.toggle(
+              title: title,
+              contract: CatchContractConstraints
+                  .createClubCallablePayloadHostDefaultsEventSuccessEnabled,
+              body: subtitle,
+              bodyMaxLines: 5,
+              value: normalized.enabled,
+              onChanged: (value) =>
+                  onChanged((current) => current.copyWith(enabled: value)),
+            ),
+          ],
         ),
         if (normalized.enabled)
           EventSuccessSetupBody(

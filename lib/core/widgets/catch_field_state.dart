@@ -701,21 +701,7 @@ class _CatchFieldState extends State<CatchField>
   Widget _buildConfiguredRow(BuildContext context) {
     final t = CatchTokens.of(context);
     final rowStack = Stack(
-      children: [
-        if (widget.divider)
-          Positioned(
-            top: 0,
-            left:
-                _rowPadding.left +
-                (_hasLeadingSlot ? _leadingTextLaneInset : 0),
-            right: _rowPadding.right,
-            child: ColoredBox(
-              color: CatchDivider.colorFor(t, CatchDividerRole.fieldRow),
-              child: const SizedBox(height: CatchStroke.hairline),
-            ),
-          ),
-        widget.add ? _buildAdd(t) : _buildRow(t),
-      ],
+      children: [widget.add ? _buildAdd(t) : _buildRow(t)],
     );
     if (!_isEdit && !_hasControl) return rowStack;
     return Shortcuts(

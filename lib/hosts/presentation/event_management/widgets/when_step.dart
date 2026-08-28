@@ -2,7 +2,6 @@ import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -43,9 +42,7 @@ class WhenStep extends StatelessWidget {
       child: ListView(
         padding: CatchInsets.formStepBodyWithBottomActions,
         children: [
-          CatchSection.fieldRows(
-            first: true,
-            showTopDivider: false,
+          CatchFieldLanes.divided(
             children: [
               FormField<String>(
                 validator: (_) => dateController.text.isEmpty

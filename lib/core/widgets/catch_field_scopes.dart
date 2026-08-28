@@ -60,7 +60,6 @@ class CatchResponsiveFieldInteractionPolicy {
 /// complete group, so each descendant paints a rectangular internal band.
 /// [fullBleedBand] means a divided section paints one rectangular band to the
 /// nearest page- or lane-owned interaction plane.
-@internal
 enum CatchFieldInteractionShape { roundedTile, sectionClipped, fullBleedBand }
 
 /// Internal page/lane paint extent published by semantic body primitives.
@@ -68,7 +67,6 @@ enum CatchFieldInteractionShape { roundedTile, sectionClipped, fullBleedBand }
 /// The resolved values are the horizontal distance from padded content to the
 /// interaction plane. Nested page-body primitives accumulate their insets, so
 /// a field never reads viewport size or subtracts `screenPx` itself.
-@internal
 class CatchFieldInteractionPlaneScope extends InheritedWidget {
   const CatchFieldInteractionPlaneScope({
     super.key,
@@ -90,7 +88,6 @@ class CatchFieldInteractionPlaneScope extends InheritedWidget {
 }
 
 /// Internal responsive policy scope published by section-page composition.
-@internal
 class CatchDividedFieldInteractionScope extends InheritedWidget {
   const CatchDividedFieldInteractionScope({
     super.key,
@@ -129,7 +126,6 @@ class CatchDividedFieldInteractionScope extends InheritedWidget {
 /// Contained field sections use one hairline of outset so the child ring and
 /// outer perimeter occupy the same coordinate instead of painting adjacent
 /// vertical strokes. Full-bleed sections inherit their page/lane outsets.
-@internal
 class CatchFieldGeometryScope extends InheritedWidget {
   const CatchFieldGeometryScope({
     super.key,

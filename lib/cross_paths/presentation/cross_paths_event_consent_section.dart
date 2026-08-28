@@ -10,14 +10,10 @@ class CrossPathsEventConsentSection extends StatelessWidget {
     super.key,
     required this.state,
     required this.onChanged,
-    this.headingColor,
-    this.dividerColor,
   });
 
   final CrossPathsEventConsentSectionState state;
   final ValueChanged<bool>? onChanged;
-  final Color? headingColor;
-  final Color? dividerColor;
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +21,6 @@ class CrossPathsEventConsentSection extends StatelessWidget {
 
     return CatchSection.fieldRows(
       title: context.l10n.crossPathsEventConsentSectionTitleCrossPaths,
-      titleColor: headingColor,
-      dividerColor: dividerColor,
       children: [
         CatchField.toggle(
           key: const ValueKey('cross_paths.event_consent.toggle'),

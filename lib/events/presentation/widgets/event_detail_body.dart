@@ -181,8 +181,6 @@ class EventDetailBody extends StatelessWidget {
             CrossPathsEventConsentSection(
               state: crossPathsConsentState,
               onChanged: onCrossPathsConsentChanged,
-              headingColor: style.headingColor,
-              dividerColor: style.dividerColor,
             ),
             EventDetailHostsSection(
               event: event,

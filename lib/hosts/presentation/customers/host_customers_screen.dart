@@ -1511,31 +1511,28 @@ class HostCustomerRevenueCard extends StatelessWidget {
             style: CatchTextStyles.supporting(context),
           )
         else
-          CatchFieldLanes.single(
-            child: Column(
-              children: [
-                for (final (index, amount) in revenue.amounts.indexed)
-                  CatchField.read(
-                    title: NumberFormat.simpleCurrency(
-                      name: amount.currency,
-                    ).format(amount.amountMinor / 100),
-                    body: [
-                      context.l10n.hostCustomersDetailRevenueFacts(
-                        count: amount.factCount,
+          CatchFieldLanes.divided(
+            children: [
+              for (final amount in revenue.amounts)
+                CatchField.read(
+                  title: NumberFormat.simpleCurrency(
+                    name: amount.currency,
+                  ).format(amount.amountMinor / 100),
+                  body: [
+                    context.l10n.hostCustomersDetailRevenueFacts(
+                      count: amount.factCount,
+                    ),
+                    ...amount.sources.map(
+                      (source) => _customerRevenueSourceSummary(
+                        context,
+                        source,
+                        amount.currency,
                       ),
-                      ...amount.sources.map(
-                        (source) => _customerRevenueSourceSummary(
-                          context,
-                          source,
-                          amount.currency,
-                        ),
-                      ),
-                    ].join(' · '),
-                    valueText: amount.currency,
-                    divider: index < revenue.amounts.length - 1,
-                  ),
-              ],
-            ),
+                    ),
+                  ].join(' · '),
+                  valueText: amount.currency,
+                ),
+            ],
           ),
         if (revenue.coverage == HostCustomerRevenueCoverage.partial) ...[
           gapH12,
@@ -1568,40 +1565,37 @@ class HostCustomerAttendanceHistory extends StatelessWidget {
               context.l10n.hostCustomersNoAttendance,
               style: CatchTextStyles.supporting(context),
             )
-          : CatchFieldLanes.single(
-              child: Column(
-                children: [
-                  for (final (index, event) in events.indexed)
-                    CatchField.nav(
-                      title: event.displayName,
-                      body: [
-                        if (event.eventStartAt != null)
-                          AppTimeFormatters.shortDate(event.eventStartAt!),
-                        _customerEventOriginLabel(context, event.eventOrigin),
-                        if (event.eventOrigin ==
-                                HostCustomerEventOrigin.externalCompanion &&
-                            event.eventProvider != null)
-                          _customerEventProviderLabel(
-                            context,
-                            event.eventProvider!,
-                          ),
-                        for (final revenue in event.revenues)
-                          _customerEventRevenueLabel(context, revenue),
-                      ].join(' · '),
-                      valueText: event.checkedIn
-                          ? context.l10n.hostCustomersCheckedIn
-                          : event.status,
-                      divider: index < events.length - 1,
-                      onTap: () => context.pushNamed(
-                        Routes.hostAppEventDetailScreen.name,
-                        pathParameters: {
-                          'clubId': customer.organizerId,
-                          'eventId': event.eventId,
-                        },
-                      ),
+          : CatchFieldLanes.divided(
+              children: [
+                for (final event in events)
+                  CatchField.nav(
+                    title: event.displayName,
+                    body: [
+                      if (event.eventStartAt != null)
+                        AppTimeFormatters.shortDate(event.eventStartAt!),
+                      _customerEventOriginLabel(context, event.eventOrigin),
+                      if (event.eventOrigin ==
+                              HostCustomerEventOrigin.externalCompanion &&
+                          event.eventProvider != null)
+                        _customerEventProviderLabel(
+                          context,
+                          event.eventProvider!,
+                        ),
+                      for (final revenue in event.revenues)
+                        _customerEventRevenueLabel(context, revenue),
+                    ].join(' · '),
+                    valueText: event.checkedIn
+                        ? context.l10n.hostCustomersCheckedIn
+                        : event.status,
+                    onTap: () => context.pushNamed(
+                      Routes.hostAppEventDetailScreen.name,
+                      pathParameters: {
+                        'clubId': customer.organizerId,
+                        'eventId': event.eventId,
+                      },
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
     );
   }

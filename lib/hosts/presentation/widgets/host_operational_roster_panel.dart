@@ -743,9 +743,7 @@ class _HostOperationalRosterPanelState
               onPressed: () => Navigator.of(context).pop(),
             ),
             child: SingleChildScrollView(
-              child: CatchSection.fieldRows(
-                first: true,
-                showTopDivider: false,
+              child: CatchFieldLanes.divided(
                 children: [
                   for (final error in result.errors)
                     CatchField.read(

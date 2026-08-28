@@ -241,12 +241,6 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(juneField.title, past.title);
     expect(juneField.body, contains('attended'));
     expect(juneField.leading, isA<HostEventLifecycleDateBlock>());
-    expect(
-      tester
-          .widgetList<CatchField>(mayFieldFinder)
-          .every((field) => !field.divider),
-      isTrue,
-    );
     final mayDividers = tester
         .widgetList<CatchDivider>(
           find.descendant(of: maySection, matching: find.byType(CatchDivider)),

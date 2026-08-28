@@ -138,30 +138,27 @@ class HostCustomerSendHistory extends StatelessWidget {
             style: CatchTextStyles.supporting(context),
           )
         else if (customer.sends.isNotEmpty)
-          CatchFieldLanes.single(
-            child: Column(
-              children: [
-                for (final (index, send) in customer.sends.indexed)
-                  CatchField.read(
-                    key: ValueKey(
-                      'host-customer-${send.kind.name}-send-${send.campaignId}',
-                    ),
-                    title: send.name,
-                    body: AppTimeFormatters.shortDate(
-                      send.sentAt ?? send.createdAt,
-                    ),
-                    valueText: [
-                      send.kind == HostCustomerSendKind.announcement
-                          ? context.l10n.hostSendsAnnouncementType
-                          : context.l10n.hostSendsCampaignType,
-                      context.l10n.hostCustomersSendStatus(
-                        status: send.deliveryStatus.name,
-                      ),
-                    ].join(' · '),
-                    divider: index < customer.sends.length - 1,
+          CatchFieldLanes.divided(
+            children: [
+              for (final send in customer.sends)
+                CatchField.read(
+                  key: ValueKey(
+                    'host-customer-${send.kind.name}-send-${send.campaignId}',
                   ),
-              ],
-            ),
+                  title: send.name,
+                  body: AppTimeFormatters.shortDate(
+                    send.sentAt ?? send.createdAt,
+                  ),
+                  valueText: [
+                    send.kind == HostCustomerSendKind.announcement
+                        ? context.l10n.hostSendsAnnouncementType
+                        : context.l10n.hostSendsCampaignType,
+                    context.l10n.hostCustomersSendStatus(
+                      status: send.deliveryStatus.name,
+                    ),
+                  ].join(' · '),
+                ),
+            ],
           ),
         if (customer.sendsCoverage ==
             HostCustomerHistoryCoverage.unavailable) ...[

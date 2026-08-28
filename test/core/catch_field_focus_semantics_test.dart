@@ -3,6 +3,7 @@ import 'dart:ui' show SemanticsAction;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -320,6 +321,61 @@ void main() {
 
     await activeGesture.up();
     await tester.pump();
+  });
+
+  testWidgets('full-bleed keyboard focus paints one inset perimeter', (
+    tester,
+  ) async {
+    final previousHighlightStrategy = FocusManager.instance.highlightStrategy;
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy = previousHighlightStrategy,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: SizedBox(
+            width: 390,
+            child: CatchScreenBody(
+              scrollable: false,
+              pt: 0,
+              pb: 0,
+              child: CatchSection.fieldRows(
+                first: true,
+                children: [
+                  CatchField.nav(title: 'Reminder timing', onTap: () {}),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final scope = FocusScope.of(tester.element(find.byType(Scaffold)));
+    expect(scope.nextFocus(), isTrue);
+    await tester.pump();
+
+    final overlayFinder = find.byKey(
+      const ValueKey<String>('catch-field-active-overlay'),
+    );
+    final overlay = tester.widget<AnimatedContainer>(overlayFinder);
+    final decoration = overlay.decoration! as BoxDecoration;
+    final overlayRect = tester.getRect(overlayFinder);
+
+    expect(
+      decoration.border,
+      Border.all(
+        color: CatchTokens.editorialLight.ink2,
+        width: CatchStroke.focusRing,
+      ),
+    );
+    expect(decoration.borderRadius, BorderRadius.zero);
+    expect(decoration.boxShadow, isEmpty);
+    expect(overlayRect.left, 0);
+    expect(overlayRect.right, 390);
   });
 
   testWidgets(

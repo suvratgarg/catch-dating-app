@@ -625,16 +625,6 @@ void _registerHostOperationsTeamFailuresTests() {
       of: find.text('ORGANIZERS YOU HOST'),
       matching: find.byType(CatchSection),
     );
-    final clubFields = find.descendant(
-      of: clubsSection,
-      matching: find.byType(CatchField),
-    );
-    expect(
-      tester
-          .widgetList<CatchField>(clubFields)
-          .every((field) => !field.divider),
-      isTrue,
-    );
     expect(
       tester
           .widgetList<CatchDivider>(

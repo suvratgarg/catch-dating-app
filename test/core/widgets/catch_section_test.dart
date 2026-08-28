@@ -303,35 +303,6 @@ void main() {
   });
 
   testWidgets(
-    'CatchSection can omit only the leading rule for the first form group',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          const SizedBox(
-            width: 360,
-            child: CatchSection.fieldRows(
-              first: true,
-              showTopDivider: false,
-              children: [
-                CatchField.read(title: 'First'),
-                CatchField.read(title: 'Second'),
-              ],
-            ),
-          ),
-        ),
-      );
-
-      final dividerPositions = tester
-          .widgetList<Positioned>(find.byType(Positioned))
-          .where((positioned) => positioned.child is CatchDivider)
-          .toList(growable: false);
-
-      expect(dividerPositions, hasLength(1));
-      expect(dividerPositions.single.bottom, -CatchStroke.hairline);
-    },
-  );
-
-  testWidgets(
     'CatchSection field rows preserve text-lane dividers for adapter children',
     (tester) async {
       await tester.pumpWidget(
@@ -1188,28 +1159,6 @@ void main() {
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
     expect(surface.borderColor, CatchTokens.editorialLight.danger);
     expect(surface.boxShadow, isNull);
-  });
-
-  testWidgets('CatchSection can suppress only its internal row dividers', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        const SizedBox(
-          width: 360,
-          child: CatchSection.containedFieldRows(
-            showInternalDividers: false,
-            children: [
-              CatchField.read(title: 'First', body: 'A'),
-              CatchField.read(title: 'Second', body: 'B'),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    expect(find.byType(CatchDivider), findsNothing);
-    expect(find.byType(CatchField), findsNWidgets(2));
   });
 }
 

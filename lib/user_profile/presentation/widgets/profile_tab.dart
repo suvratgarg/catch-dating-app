@@ -248,7 +248,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
               );
             },
           ),
-          CatchSection.fieldRows(
+          CatchSection.divided(
             title: context.l10n.userProfileProfileTabTitlePrompts,
             count: context.l10n
                 .userProfileProfileTabVisiblecopyCompletedpromptcountOfMaxprofilepromptanswersAnswered(
@@ -280,7 +280,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ),
           CatchSection.fieldRows(
             title: context.l10n.userProfileProfileTabTitleRunning,
-            dividerInset: CatchFieldRow.textLaneInset,
             children: [
               for (final row in editState.runningRows)
                 ProfileFieldRow(
@@ -294,7 +293,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ),
           CatchSection.fieldRows(
             title: context.l10n.userProfileProfileTabTitleLifestyle,
-            dividerInset: CatchFieldRow.textLaneInset,
             children: [
               for (final row in editState.lifestyleRows)
                 ProfileFieldRow(
