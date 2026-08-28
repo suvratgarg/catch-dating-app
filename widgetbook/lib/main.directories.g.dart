@@ -4776,14 +4776,14 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .fieldAndSectionGeometryMatrix,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Production interaction transitions',
+            builder: _widgetbook_workspace_geometry_field_transition_prototype
+                .fieldTransitionPrototype,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Responsive page contexts',
             builder: _widgetbook_workspace_geometry_component_geometry_use_cases
                 .responsivePageContextMatrix,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Unified interaction transition prototype',
-            builder: _widgetbook_workspace_geometry_field_transition_prototype
-                .fieldTransitionPrototype,
           ),
         ],
       ),

@@ -39,7 +39,7 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
       'The outermost containing primitive owns the perimeter.',
       'Sibling rows share internal hairlines instead of stacked borders.',
       'Internal field-group headers own a padded section rule inside the perimeter.',
-      'Fields own interaction state: rounded in divided or standalone contexts, rectangular only inside a section-owned group clip.',
+      'Sections choose interaction policy: full bleed for compact divided groups, rounded tiles when explicitly requested, and rectangular bands inside a section-owned clip.',
     ],
     children: [
       _specimen(
@@ -244,7 +244,7 @@ Widget _keyboardFocusTreatmentStudy(BuildContext context) {
     context,
     label: 'Confirmed · full-bleed keyboard focus indicator',
     description:
-        'Keyboard focus keeps the accepted full-bleed tint and field alignment, then adds a 2 px inset perimeter inside the interaction-plane edge. Both adjacent divider lines yield to the perimeter.',
+        'Press Tab until Reminder timing is focused. The production field keeps the accepted full-bleed tint and adds a 2 px inset perimeter inside the interaction-plane edge.',
     child: LayoutBuilder(
       builder: (context, constraints) {
         final comparisonWidth = constraints.maxWidth
@@ -285,68 +285,25 @@ Widget _keyboardFocusTreatmentSample(
           CatchSection.fieldRows(
             title: 'Notifications',
             first: true,
-            dividerColor: Colors.transparent,
-            showInternalDividers: false,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _fullBleedFocusedRow(context),
-                const CatchDivider.fieldSection(color: Colors.transparent),
-                CatchField.nav(
-                  title: 'Delivery',
-                  body: 'Push and email',
-                  icon: CatchIcons.notificationsOutlined,
-                  onTap: _noop,
-                ),
-              ],
-            ),
+            interaction: CatchDividedFieldInteraction.fullBleed,
+            children: [
+              CatchField.nav(
+                title: 'Reminder timing',
+                body: 'Two hours before',
+                icon: CatchIcons.clock,
+                onTap: _noop,
+              ),
+              CatchField.nav(
+                title: 'Delivery',
+                body: 'Push and email',
+                icon: CatchIcons.notificationsOutlined,
+                onTap: _noop,
+              ),
+            ],
           ),
         ],
       ),
     ),
-  );
-}
-
-Widget _fullBleedFocusedRow(BuildContext context) {
-  final t = CatchTokens.of(context);
-  final focusColor = t.ink.withValues(alpha: 0.78);
-  return Stack(
-    fit: StackFit.passthrough,
-    clipBehavior: Clip.none,
-    children: [
-      PositionedDirectional(
-        start: -CatchSpacing.screenPx,
-        end: -CatchSpacing.screenPx,
-        top: 0,
-        bottom: 0,
-        child: IgnorePointer(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: CatchFieldTokens.activeSurface(t),
-              border: Border.all(
-                color: focusColor,
-                width: CatchStroke.focusRing,
-              ),
-            ),
-          ),
-        ),
-      ),
-      CatchFieldGeometryScope(
-        gutterOwnership: CatchFieldGutterOwnership.container,
-        interactionOutsets: EdgeInsets.zero,
-        interactionShape: CatchFieldInteractionShape.sectionClipped,
-        child: CatchField.read(
-          title: 'Reminder timing',
-          body: 'Two hours before',
-          icon: CatchIcons.clock,
-          action: Icon(
-            CatchIcons.expandMoreRounded,
-            size: CatchFieldTokens.disclosureGlyphExtent,
-            color: t.ink2,
-          ),
-        ),
-      ),
-    ],
   );
 }
 
@@ -474,7 +431,6 @@ Widget _mixedSectionPageSample(
             onSelectionChanged: onHostSelectionChanged,
           ),
           _mixedDividedSection(
-            context,
             treatment: treatment,
             open: dividedOpen,
             selected: timingSelection,
@@ -517,199 +473,38 @@ Widget _mixedContainedSection({
   );
 }
 
-Widget _mixedDividedSection(
-  BuildContext context, {
+Widget _mixedDividedSection({
   required _MixedDividedTreatment treatment,
   required bool open,
   required Set<String> selected,
   required ValueChanged<bool> onOpenChanged,
   required ValueChanged<Set<String>> onSelectionChanged,
 }) {
-  final t = CatchTokens.of(context);
   final fullWidthBand = treatment == _MixedDividedTreatment.fullWidthBand;
-  final timingField = fullWidthBand
-      ? _MixedDividedViewportBandField(
-          open: open,
-          selected: selected,
-          onOpenChanged: onOpenChanged,
-          onSelectionChanged: onSelectionChanged,
-        )
-      : CatchField.choices<String>(
-          title: 'Reminder timing',
-          icon: CatchIcons.clock,
-          values: const ['Two hours before', 'One day before', 'Off'],
-          itemLabel: _identityString,
-          selected: selected,
-          onSelectionChanged: onSelectionChanged,
-          open: open,
-          onOpenChanged: onOpenChanged,
-        );
+  final timingField = CatchField.choices<String>(
+    title: 'Reminder timing',
+    icon: CatchIcons.clock,
+    values: const ['Two hours before', 'One day before', 'Off'],
+    itemLabel: _identityString,
+    selected: selected,
+    onSelectionChanged: onSelectionChanged,
+    open: open,
+    onOpenChanged: onOpenChanged,
+  );
   final deliveryField = CatchField.nav(
     title: 'Delivery',
     body: 'Push and email',
     icon: CatchIcons.notificationsOutlined,
     onTap: _noop,
   );
-  final topLine = CatchDivider.colorFor(t, CatchDividerRole.section);
-  final internalLine = CatchDivider.colorFor(t, CatchDividerRole.fieldSection);
-  final dividerTarget = fullWidthBand && open ? 0.0 : 1.0;
-  const dividerIndent = CatchFieldTokens.textLaneInset;
-  return TweenAnimationBuilder<double>(
-    duration: CatchFieldTokens.standard,
-    curve: CatchFieldTokens.curve,
-    tween: Tween<double>(end: dividerTarget),
-    builder: (context, dividerOpacity, _) {
-      final topDividerColor = topLine.withValues(
-        alpha: topLine.a * dividerOpacity,
-      );
-      final internalDividerColor = internalLine.withValues(
-        alpha: internalLine.a * dividerOpacity,
-      );
-      return CatchSection.fieldRows(
-        title: 'Notifications',
-        first: true,
-        dividerColor: topDividerColor,
-        showInternalDividers: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            timingField,
-            CatchDivider.fieldSection(
-              indent: dividerIndent,
-              color: internalDividerColor,
-            ),
-            deliveryField,
-          ],
-        ),
-      );
-    },
+  return CatchSection.fieldRows(
+    title: 'Notifications',
+    first: true,
+    interaction: fullWidthBand
+        ? CatchDividedFieldInteraction.fullBleed
+        : CatchDividedFieldInteraction.roundedTile,
+    children: [timingField, deliveryField],
   );
-}
-
-class _MixedDividedViewportBandField extends StatefulWidget {
-  const _MixedDividedViewportBandField({
-    required this.open,
-    required this.selected,
-    required this.onOpenChanged,
-    required this.onSelectionChanged,
-  });
-
-  final bool open;
-  final Set<String> selected;
-  final ValueChanged<bool> onOpenChanged;
-  final ValueChanged<Set<String>> onSelectionChanged;
-
-  @override
-  State<_MixedDividedViewportBandField> createState() =>
-      _MixedDividedViewportBandFieldState();
-}
-
-class _MixedDividedViewportBandFieldState
-    extends State<_MixedDividedViewportBandField> {
-  bool _pressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final bandColor = _pressed
-        ? CatchFieldTokens.pressedSurface(t)
-        : widget.open
-        ? CatchFieldTokens.activeSurface(t)
-        : Colors.transparent;
-    final bandDuration = _pressed
-        ? CatchFieldTokens.pressIn
-        : widget.open
-        ? CatchFieldTokens.standard
-        : CatchFieldTokens.pressOut;
-
-    return Stack(
-      fit: StackFit.passthrough,
-      clipBehavior: Clip.none,
-      children: [
-        PositionedDirectional(
-          start: -CatchSpacing.screenPx,
-          end: -CatchSpacing.screenPx,
-          top: 0,
-          bottom: 0,
-          child: IgnorePointer(
-            child: AnimatedContainer(
-              duration: bandDuration,
-              curve: CatchFieldTokens.curve,
-              color: bandColor,
-            ),
-          ),
-        ),
-        CatchFieldGeometryScope(
-          gutterOwnership: CatchFieldGutterOwnership.container,
-          interactionOutsets: EdgeInsets.zero,
-          interactionShape: CatchFieldInteractionShape.sectionClipped,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Semantics(
-                button: true,
-                expanded: widget.open,
-                child: Listener(
-                  behavior: HitTestBehavior.opaque,
-                  onPointerDown: (_) => _setPressed(true),
-                  onPointerUp: (_) => _setPressed(false),
-                  onPointerCancel: (_) => _setPressed(false),
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => widget.onOpenChanged(!widget.open),
-                    child: CatchField.read(
-                      title: 'Reminder timing',
-                      body: widget.selected.isEmpty
-                          ? 'Off'
-                          : widget.selected.first,
-                      icon: CatchIcons.clock,
-                      action: Icon(
-                        widget.open
-                            ? CatchIcons.expandLessRounded
-                            : CatchIcons.expandMoreRounded,
-                        size: CatchFieldTokens.disclosureGlyphExtent,
-                        color: t.ink2,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              AnimatedSize(
-                duration: CatchFieldTokens.standard,
-                curve: CatchFieldTokens.curve,
-                alignment: Alignment.topCenter,
-                child: widget.open
-                    ? Padding(
-                        padding: const EdgeInsetsDirectional.only(
-                          start: CatchFieldTokens.textLaneInset,
-                          end: CatchFieldTokens.rowHorizontalPadding,
-                          bottom: CatchFieldTokens.rowVerticalPadding,
-                        ),
-                        child: CatchFieldChoiceControl<String>(
-                          values: const [
-                            'Two hours before',
-                            'One day before',
-                            'Off',
-                          ],
-                          itemLabel: _identityString,
-                          selected: widget.selected,
-                          multi: false,
-                          onSelectionChanged: widget.onSelectionChanged,
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _setPressed(bool pressed) {
-    if (_pressed == pressed) return;
-    setState(() => _pressed = pressed);
-  }
 }
 
 @widgetbook.UseCase(

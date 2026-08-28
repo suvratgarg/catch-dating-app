@@ -1,656 +1,165 @@
-import 'dart:async';
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-/// Widgetbook-only interaction study for the proposed unified field surface.
+/// Interactive production transition reference.
 ///
-/// This deliberately does not change [CatchField]. It is the review boundary
-/// for approving the complete press -> active -> closing transition before the
-/// same state resolver is moved into the production primitive.
+/// This page intentionally owns no interaction painter or animation timeline.
+/// Every frame comes from CatchField/CatchSection, so a regression here is the
+/// same regression users receive in the app.
 @widgetbook.UseCase(
-  name: 'Unified interaction transition prototype',
+  name: 'Production interaction transitions',
   type: CatchSection,
   path: '[Geometry system]',
 )
 Widget fieldTransitionPrototype(BuildContext context) {
-  return const _FieldTransitionPrototypePage();
+  return const _ProductionInteractionTransitionPage();
 }
 
-class _FieldTransitionPrototypePage extends StatefulWidget {
-  const _FieldTransitionPrototypePage();
+class _ProductionInteractionTransitionPage extends StatefulWidget {
+  const _ProductionInteractionTransitionPage();
 
   @override
-  State<_FieldTransitionPrototypePage> createState() =>
-      _FieldTransitionPrototypePageState();
+  State<_ProductionInteractionTransitionPage> createState() =>
+      _ProductionInteractionTransitionPageState();
 }
 
-class _FieldTransitionPrototypePageState
-    extends State<_FieldTransitionPrototypePage>
-    with SingleTickerProviderStateMixin {
-  static const _playbackDuration = Duration(milliseconds: 700);
-  static const _replayLeadIn = Duration(milliseconds: 120);
-
-  late final AnimationController _timeline;
-  int _replayRun = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _timeline = AnimationController(vsync: this, duration: _playbackDuration);
-  }
-
-  @override
-  void dispose() {
-    _timeline.dispose();
-    super.dispose();
-  }
-
-  Future<void> _replay({required bool opening}) async {
-    final run = ++_replayRun;
-    _timeline.stop();
-    _timeline.value = opening ? 0 : 1;
-    await Future<void>.delayed(_replayLeadIn);
-    if (!mounted || run != _replayRun) return;
-    await _timeline.animateTo(
-      opening ? 1 : 0,
-      duration: _playbackDuration,
-      curve: Curves.linear,
-    );
-  }
-
-  Future<void> _animateTo(double target) async {
-    _replayRun++;
-    final distance = (target - _timeline.value).abs();
-    if (distance == 0) return;
-    final duration = Duration(
-      milliseconds: math.max(
-        140,
-        (_playbackDuration.inMilliseconds * distance).round(),
-      ),
-    );
-    await _timeline.animateTo(target, duration: duration, curve: Curves.linear);
-  }
-
-  void _setProgress(double progress) {
-    _replayRun++;
-    _timeline.stop();
-    _timeline.value = progress.clamp(0, 1).toDouble();
-  }
-
-  void _toggleFromField() {
-    unawaited(_animateTo(_timeline.value >= 0.5 ? 0 : 1));
-  }
+class _ProductionInteractionTransitionPageState
+    extends State<_ProductionInteractionTransitionPage> {
+  bool _containedOpen = false;
+  bool _dividedOpen = false;
+  Set<String> _containedSelection = const {'Catch Hosts'};
+  Set<String> _dividedSelection = const {'Two hours before'};
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return SingleChildScrollView(
-      padding: CatchInsets.pageBody,
-      child: Align(
-        alignment: AlignmentDirectional.topCenter,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 960),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Unified field transition',
-                style: CatchTextStyles.headline(context, color: t.ink),
-              ),
-              const SizedBox(height: CatchSpacing.s2),
-              Text(
-                'Prototype only — production CatchField is unchanged. Replay at normal speed, drag the timeline to inspect any frame, or jump to a named geometry state.',
-                style: CatchTextStyles.proseM(context, color: t.ink2),
-              ),
-              const SizedBox(height: CatchSpacing.s4),
-              Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  CatchButton(
-                    label: 'Replay opening',
-                    size: CatchButtonSize.sm,
-                    variant: CatchButtonVariant.secondary,
-                    onPressed: () => unawaited(_replay(opening: true)),
-                  ),
-                  CatchButton(
-                    label: 'Replay closing',
-                    size: CatchButtonSize.sm,
-                    variant: CatchButtonVariant.ghost,
-                    onPressed: () => unawaited(_replay(opening: false)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: CatchSpacing.s4),
-              AnimatedBuilder(
-                animation: _timeline,
-                builder: (context, _) {
-                  final progress = _timeline.value;
-                  final nearest = _TransitionStop.nearest(progress);
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+    return CatchScreenBody(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Production field transitions',
+            style: CatchTextStyles.headline(context, color: t.ink),
+          ),
+          const SizedBox(height: CatchSpacing.s2),
+          Text(
+            'Press, hold, release, select, and close each real field. There is no prototype timeline: the two samples execute the production motion and geometry directly.',
+            style: CatchTextStyles.proseM(context, color: t.ink2),
+          ),
+          const SizedBox(height: CatchSpacing.s6),
+          CatchResponsiveSectionLayout(
+            composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+            sections: [
+              CatchResponsiveSectionItem(
+                child: _labelledSection(
+                  context,
+                  title: 'Contained section',
+                  description:
+                      'One rounded section perimeter clips rectangular active bands.',
+                  section: CatchSection.containedFieldRows(
+                    title: 'Event settings',
+                    headerPlacement: CatchSectionHeaderPlacement.inside,
                     children: [
-                      Text(
-                        'Timeline · ${nearest.label} · ${(progress * 100).round()}%',
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
-                      ),
-                      SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: t.ink,
-                          inactiveTrackColor: t.line,
-                          thumbColor: t.ink,
-                          overlayColor: t.ink.withValues(alpha: 0.08),
-                          trackHeight: CatchStroke.hairline,
-                        ),
-                        child: Semantics(
-                          label: 'Field transition timeline',
-                          value:
-                              '${nearest.label}, ${(progress * 100).round()}%',
-                          child: Slider(
-                            value: progress,
-                            divisions: 100,
-                            onChanged: _setProgress,
-                          ),
-                        ),
-                      ),
-                      Wrap(
-                        spacing: CatchSpacing.s2,
-                        runSpacing: CatchSpacing.s2,
-                        children: [
-                          for (final stop in _TransitionStop.values)
-                            CatchChip.selectable(
-                              label: stop.label,
-                              selected: (progress - stop.progress).abs() < 0.01,
-                              onChanged: (_) => _setProgress(stop.progress),
-                            ),
+                      CatchField.choices<String>(
+                        title: 'Host',
+                        icon: CatchIcons.hosted,
+                        values: const [
+                          'Catch Hosts',
+                          'Sunday Social',
+                          'Bandra Runs',
                         ],
+                        itemLabel: _identity,
+                        selected: _containedSelection,
+                        onSelectionChanged: (selection) => setState(
+                          () =>
+                              _containedSelection = Set.unmodifiable(selection),
+                        ),
+                        open: _containedOpen,
+                        onOpenChanged: (open) =>
+                            setState(() => _containedOpen = open),
+                      ),
+                      CatchField.nav(
+                        title: 'Location',
+                        body: 'Carter Road promenade',
+                        icon: CatchIcons.pinOutlined,
+                        onTap: _noop,
                       ),
                     ],
-                  );
-                },
-              ),
-              const SizedBox(height: CatchSpacing.s6),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final itemWidth = constraints.maxWidth >= 900
-                      ? (constraints.maxWidth - CatchSpacing.s5) / 2
-                      : constraints.maxWidth;
-                  return Wrap(
-                    spacing: CatchSpacing.s5,
-                    runSpacing: CatchSpacing.s6,
-                    children: [
-                      SizedBox(
-                        width: itemWidth,
-                        child: _TransitionVariant(
-                          contained: true,
-                          timeline: _timeline,
-                          onToggle: _toggleFromField,
-                        ),
-                      ),
-                      SizedBox(
-                        width: itemWidth,
-                        child: _TransitionVariant(
-                          contained: false,
-                          timeline: _timeline,
-                          onToggle: _toggleFromField,
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: CatchSpacing.s5),
-              Text(
-                'No edge is suppressed. The contained field meets the section on the same one-hairline coordinate, while the divided field meets its adjacent dividers on the rounded tile boundary throughout the handoff.',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-enum _TransitionStop {
-  resting('Resting', 0),
-  pressed('Pressed', 0.24),
-  handoff('Handoff', 0.52),
-  selected('Selected', 1);
-
-  const _TransitionStop(this.label, this.progress);
-
-  final String label;
-  final double progress;
-
-  static _TransitionStop nearest(double progress) {
-    return values.reduce(
-      (best, candidate) =>
-          (candidate.progress - progress).abs() <
-              (best.progress - progress).abs()
-          ? candidate
-          : best,
-    );
-  }
-}
-
-class _TransitionVariant extends StatelessWidget {
-  const _TransitionVariant({
-    required this.contained,
-    required this.timeline,
-    required this.onToggle,
-  });
-
-  final bool contained;
-  final Animation<double> timeline;
-  final VoidCallback onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    // `line2` is intentionally translucent. Resolve it once against the
-    // section surface so the section perimeter and the contained field's
-    // coincident side strokes paint the same opaque pixel. Painting either
-    // primitive first can then never darken the selected segment.
-    final containedPerimeterColor = Color.alphaBlend(t.line2, t.surface);
-    final prototypeField = _UnifiedInteractionField(
-      contained: contained,
-      containedPerimeterColor: containedPerimeterColor,
-      timeline: timeline,
-      onToggle: onToggle,
-    );
-    final fields = [
-      prototypeField,
-      _PrototypeStaticField(
-        title: 'Location',
-        body: 'Carter Road promenade',
-        icon: CatchIcons.pinOutlined,
-      ),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          contained ? 'Contained section' : 'Divided section',
-          style: CatchTextStyles.labelL(context, color: t.ink),
-        ),
-        const SizedBox(height: CatchSpacing.s1),
-        Text(
-          contained
-              ? 'The section and field share one perimeter coordinate; the field remains rectangular inside the section clip.'
-              : 'The field owns one rounded surface that covers the adjacent section dividers while engaged.',
-          style: CatchTextStyles.supporting(context, color: t.ink2),
-        ),
-        const SizedBox(height: CatchSpacing.s3),
-        if (contained)
-          CatchSection.containedFieldRows(
-            title: 'Event settings',
-            borderColor: containedPerimeterColor,
-            headerPlacement: CatchSectionHeaderPlacement.inside,
-            children: fields,
-          )
-        else
-          CatchSection.fieldRows(
-            title: 'Event settings',
-            first: true,
-            children: fields,
-          ),
-      ],
-    );
-  }
-}
-
-class _UnifiedInteractionField extends StatefulWidget {
-  const _UnifiedInteractionField({
-    required this.contained,
-    required this.containedPerimeterColor,
-    required this.timeline,
-    required this.onToggle,
-  });
-
-  final bool contained;
-  final Color containedPerimeterColor;
-  final Animation<double> timeline;
-  final VoidCallback onToggle;
-
-  @override
-  State<_UnifiedInteractionField> createState() =>
-      _UnifiedInteractionFieldState();
-}
-
-class _UnifiedInteractionFieldState extends State<_UnifiedInteractionField> {
-  Set<String> _selected = const {'Catch Hosts'};
-
-  double _interval(double value, double start, double end) {
-    return ((value - start) / (end - start)).clamp(0, 1).toDouble();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: widget.timeline,
-      builder: (context, _) => _buildAtProgress(
-        context,
-        widget.timeline.value.clamp(0, 1).toDouble(),
-      ),
-    );
-  }
-
-  Widget _buildAtProgress(BuildContext context, double progress) {
-    final t = CatchTokens.of(context);
-    final containerOwnsGutter =
-        CatchFieldGeometryScope.gutterOwnershipOf(context) ==
-        CatchFieldGutterOwnership.container;
-    final pressIn = Curves.easeOutCubic.transform(
-      _interval(progress, 0, _TransitionStop.pressed.progress),
-    );
-    final pressOut =
-        1 -
-        Curves.easeInOutCubic.transform(
-          _interval(progress, _TransitionStop.handoff.progress, 0.86),
-        );
-    final pressedAmount = math.min(pressIn, pressOut);
-    final activeAmount = CatchFieldTokens.curve.transform(
-      _interval(progress, 0.44, 1),
-    );
-    final reveal = CatchMotion.standardCurve.transform(
-      _interval(progress, _TransitionStop.handoff.progress, 1),
-    );
-    final shadowAmount = CatchFieldTokens.curve.transform(
-      _interval(progress, 0.68, 1),
-    );
-    final engagedAmount = math.max(pressedAmount, activeAmount);
-    final rowHorizontalPadding = containerOwnsGutter
-        ? 0.0
-        : CatchFieldTokens.rowHorizontalPadding;
-    final rowPadding = EdgeInsets.fromLTRB(
-      rowHorizontalPadding,
-      CatchFieldTokens.rowVerticalPadding,
-      rowHorizontalPadding,
-      CatchFieldTokens.rowVerticalPadding * (1 - reveal),
-    );
-    final pressedColor = Color.lerp(
-      Colors.transparent,
-      CatchFieldTokens.pressedSurface(t),
-      pressedAmount,
-    )!;
-    final interactionColor = Color.lerp(
-      pressedColor,
-      CatchFieldTokens.activeSurface(t),
-      activeAmount,
-    )!;
-    final borderAmount = widget.contained ? activeAmount : engagedAmount;
-    final rowBoundaryColor = Color.lerp(
-      Colors.transparent,
-      t.line,
-      borderAmount,
-    )!;
-    final containedSideColor = Color.lerp(
-      Colors.transparent,
-      widget.containedPerimeterColor,
-      borderAmount,
-    )!;
-    final shadows = BoxShadow.lerpList(
-      CatchElevation.none,
-      CatchElevation.fieldActive(Theme.of(context).brightness),
-      shadowAmount,
-    );
-    final interactionShape = CatchFieldGeometryScope.interactionShapeOf(
-      context,
-    );
-    final overlayOutsets = CatchFieldGeometryScope.interactionOutsetsOf(
-      context,
-    );
-    final active = engagedAmount > 0.04;
-
-    final header = CatchFieldRow.standard(
-      padding: rowPadding,
-      leading: Icon(
-        CatchIcons.hosted,
-        size: CatchFieldRow.leadingSlotIconSize,
-        color: Color.lerp(t.ink2, t.ink, engagedAmount),
-      ),
-      trailing: CatchFieldTrailing.custom(
-        child: Transform.rotate(
-          angle: math.pi * reveal,
-          child: Icon(
-            CatchIcons.expandMoreRounded,
-            size: CatchFieldTokens.disclosureGlyphExtent,
-          ),
-        ),
-      ),
-      content: _PrototypeFieldCopy(
-        title: 'Host',
-        body: 'Catch Hosts',
-        active: active,
-      ),
-    );
-    final choices = Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        for (final value in const [
-          'Catch Hosts',
-          'Sunday Social',
-          'Bandra Runs',
-        ])
-          CatchChip.selectable(
-            label: value,
-            selected: _selected.contains(value),
-            onChanged: (selected) {
-              setState(() {
-                _selected = selected ? {value} : <String>{};
-              });
-            },
-          ),
-      ],
-    );
-
-    return Semantics(
-      button: true,
-      expanded: reveal >= 0.5,
-      onTap: widget.onToggle,
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: widget.onToggle,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned(
-                left: -overlayOutsets.left,
-                right: -overlayOutsets.right,
-                top: -CatchStroke.hairline,
-                bottom: -CatchStroke.hairline,
-                child: IgnorePointer(
-                  child: DecoratedBox(
-                    key: ValueKey(
-                      widget.contained
-                          ? 'prototype-contained-interaction-surface'
-                          : 'prototype-divided-interaction-surface',
-                    ),
-                    decoration: BoxDecoration(
-                      color: engagedAmount > 0.001 ? interactionColor : null,
-                      borderRadius:
-                          interactionShape ==
-                              CatchFieldInteractionShape.sectionClipped
-                          ? BorderRadius.zero
-                          : BorderRadius.circular(CatchFieldTokens.tileRadius),
-                      border: borderAmount > 0.001
-                          ? interactionShape ==
-                                    CatchFieldInteractionShape.sectionClipped
-                                // Every edge remains painted. The horizontal
-                                // sides use the field-divider role; the
-                                // vertical sides are the exact continuation of
-                                // the section perimeter. Both use the same
-                                // one-hairline inside alignment as their owner.
-                                ? Border(
-                                    top: BorderSide(
-                                      color: rowBoundaryColor,
-                                      width: CatchStroke.hairline,
-                                      strokeAlign: BorderSide.strokeAlignInside,
-                                    ),
-                                    right: BorderSide(
-                                      color: containedSideColor,
-                                      width: CatchStroke.hairline,
-                                      strokeAlign: BorderSide.strokeAlignInside,
-                                    ),
-                                    bottom: BorderSide(
-                                      color: rowBoundaryColor,
-                                      width: CatchStroke.hairline,
-                                      strokeAlign: BorderSide.strokeAlignInside,
-                                    ),
-                                    left: BorderSide(
-                                      color: containedSideColor,
-                                      width: CatchStroke.hairline,
-                                      strokeAlign: BorderSide.strokeAlignInside,
-                                    ),
-                                  )
-                                : Border.all(
-                                    color: rowBoundaryColor,
-                                    width: CatchStroke.hairline,
-                                    strokeAlign: BorderSide.strokeAlignInside,
-                                  )
-                          : null,
-                      boxShadow: shadowAmount > 0.001
-                          ? shadows
-                          : CatchElevation.none,
-                    ),
                   ),
                 ),
               ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  header,
-                  ExcludeSemantics(
-                    excluding: reveal < 0.5,
-                    child: IgnorePointer(
-                      ignoring: reveal < 0.98,
-                      child: ClipRect(
-                        child: Opacity(
-                          opacity: reveal,
-                          child: Align(
-                            alignment: Alignment.topCenter,
-                            heightFactor: reveal,
-                            child: Transform.translate(
-                              offset: Offset(0, CatchSpacing.s2 * (1 - reveal)),
-                              child: Padding(
-                                padding: EdgeInsetsDirectional.only(
-                                  start:
-                                      rowPadding.left +
-                                      CatchFieldRow.textLaneInset,
-                                  end: rowPadding.right,
-                                  top: CatchFieldTokens.controlTopGap,
-                                  bottom: CatchFieldTokens.rowVerticalPadding,
-                                ),
-                                child: choices,
-                              ),
-                            ),
-                          ),
+              CatchResponsiveSectionItem(
+                lane: CatchResponsiveSectionLane.secondary,
+                child: _labelledSection(
+                  context,
+                  title: 'Divided section',
+                  description:
+                      'Compact pages use a full-bleed band; split panes automatically choose the bounded rounded tile.',
+                  section: CatchSection.fieldRows(
+                    title: 'Notifications',
+                    first: true,
+                    children: [
+                      CatchField.choices<String>(
+                        title: 'Reminder timing',
+                        icon: CatchIcons.clock,
+                        values: const [
+                          'Two hours before',
+                          'One day before',
+                          'Off',
+                        ],
+                        itemLabel: _identity,
+                        selected: _dividedSelection,
+                        onSelectionChanged: (selection) => setState(
+                          () => _dividedSelection = Set.unmodifiable(selection),
                         ),
+                        open: _dividedOpen,
+                        onOpenChanged: (open) =>
+                            setState(() => _dividedOpen = open),
                       ),
-                    ),
+                      CatchField.nav(
+                        title: 'Delivery',
+                        body: 'Push and email',
+                        icon: CatchIcons.notificationsOutlined,
+                        onTap: _noop,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
 }
 
-class _PrototypeStaticField extends StatelessWidget {
-  const _PrototypeStaticField({
-    required this.title,
-    required this.body,
-    required this.icon,
-  });
-
-  final String title;
-  final String body;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final containerOwnsGutter =
-        CatchFieldGeometryScope.gutterOwnershipOf(context) ==
-        CatchFieldGutterOwnership.container;
-    return CatchFieldRow.standard(
-      padding: EdgeInsets.symmetric(
-        horizontal: containerOwnsGutter
-            ? 0
-            : CatchFieldTokens.rowHorizontalPadding,
-        vertical: CatchFieldTokens.rowVerticalPadding,
+Widget _labelledSection(
+  BuildContext context, {
+  required String title,
+  required String description,
+  required Widget section,
+}) {
+  final t = CatchTokens.of(context);
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(title, style: CatchTextStyles.labelL(context, color: t.ink)),
+      const SizedBox(height: CatchSpacing.s1),
+      Text(
+        description,
+        style: CatchTextStyles.supporting(context, color: t.ink2),
       ),
-      leading: Icon(
-        icon,
-        size: CatchFieldRow.leadingSlotIconSize,
-        color: t.ink2,
-      ),
-      trailing: CatchFieldTrailing.fixedChevron(),
-      content: _PrototypeFieldCopy(title: title, body: body, active: false),
-    );
-  }
+      const SizedBox(height: CatchSpacing.s3),
+      section,
+    ],
+  );
 }
 
-class _PrototypeFieldCopy extends StatelessWidget {
-  const _PrototypeFieldCopy({
-    required this.title,
-    required this.body,
-    required this.active,
-  });
-
-  final String title;
-  final String body;
-  final bool active;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          title,
-          style:
-              CatchTextStyles.fieldLabel(
-                context,
-                color: active ? t.ink : t.ink3,
-              ).copyWith(
-                fontSize: CatchFieldTokens.captionFontSize,
-                fontWeight: FontWeight.w500,
-                height: CatchFieldTokens.supportLineHeight,
-              ),
-        ),
-        Text(
-          body,
-          style: CatchTextStyles.fieldRowTitle(context, color: t.ink).copyWith(
-            fontSize: CatchFieldTokens.valueFontSize,
-            fontWeight: FontWeight.w700,
-            height: CatchFieldTokens.valueLineHeight,
-          ),
-        ),
-      ],
-    );
-  }
-}
+String _identity(String value) => value;
+void _noop() {}

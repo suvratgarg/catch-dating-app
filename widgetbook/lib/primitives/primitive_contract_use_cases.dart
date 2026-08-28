@@ -3138,7 +3138,11 @@ Widget catchSectionContractStates(BuildContext context) {
       'contained-section',
       'plain-section',
       'divided-field-rows',
+      'divided-field-rows-full-bleed',
+      'divided-field-rows-rounded-tile',
+      'divided-field-rows-full-bleed-keyboard-focus',
       'contained-field-rows-external-header',
+      'contained-field-rows-internal-header',
       'contained-field-rows-child-active',
       'contained-field-rows-explicit-focused',
       'field-list',
@@ -3292,6 +3296,75 @@ Widget catchSectionContractStates(BuildContext context) {
                 showClearButton: true,
               ),
             ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'divided-field-rows-full-bleed',
+        description:
+            'The section-wide compact default reaches the nearest page interaction plane.',
+        child: _FieldWidth(
+          child: CatchScreenBody(
+            scrollable: false,
+            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
+            child: CatchSection.fieldRows(
+              title: 'Notifications',
+              interaction: CatchDividedFieldInteraction.fullBleed,
+              children: [
+                CatchField.nav(
+                  title: 'Reminder timing',
+                  body: 'Two hours before',
+                  icon: CatchIcons.clock,
+                  onTap: _noop,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'divided-field-rows-rounded-tile',
+        description:
+            'The retained section-level alternative uses one inset perimeter.',
+        child: _FieldWidth(
+          child: CatchScreenBody(
+            scrollable: false,
+            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
+            child: CatchSection.fieldRows(
+              title: 'Notifications',
+              interaction: CatchDividedFieldInteraction.roundedTile,
+              children: [
+                CatchField.nav(
+                  title: 'Reminder timing',
+                  body: 'Two hours before',
+                  icon: CatchIcons.clock,
+                  onTap: _noop,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'divided-field-rows-full-bleed-keyboard-focus',
+        description:
+            'Keyboard focus adds the approved 2 px inset perimeter to the same full-bleed plane.',
+        child: _FieldWidth(
+          child: CatchScreenBody(
+            scrollable: false,
+            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
+            child: CatchSection.fieldRows(
+              title: 'Profile',
+              interaction: CatchDividedFieldInteraction.fullBleed,
+              children: [
+                CatchField.input(
+                  title: 'Public name',
+                  initialValue: 'Suvrat',
+                  icon: CatchIcons.personOutlined,
+                  autofocus: true,
+                ),
+              ],
+            ),
           ),
         ),
       ),
