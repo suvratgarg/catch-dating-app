@@ -458,7 +458,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
     expect(
       find.descendant(
-        of: find.byType(CatchScreenHeaderTitle),
+        of: find.byType(CatchScreenTopBar),
         matching: find.byKey(
           const ValueKey<String>('host-customers-add-customer'),
         ),
