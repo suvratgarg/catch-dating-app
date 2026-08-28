@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -64,23 +66,40 @@ class CatchBottomSheetScaffold extends StatelessWidget {
   final CatchBadgeTone badgeTone;
   final Widget? trailing;
   final bool grabber;
+
+  /// Lets a larger keyboard inset replace the device bottom obstruction.
   final bool keyboardSafe;
+
+  /// Requested content insets.
+  ///
+  /// Top and horizontal values are applied as supplied. Bottom may request more
+  /// space, but cannot remove the scaffold-owned terminal safe region.
   final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final bottomInset = keyboardSafe
-        ? MediaQuery.of(context).viewInsets.bottom
+    final mediaQuery = MediaQuery.maybeOf(context);
+    final viewPaddingBottom = mediaQuery?.viewPadding.bottom ?? 0.0;
+    final keyboardInsetBottom = keyboardSafe
+        ? mediaQuery?.viewInsets.bottom ?? 0.0
         : 0.0;
-    final effectivePadding =
-        padding ??
-        EdgeInsets.fromLTRB(
+    final obstructionBottom = math.max(viewPaddingBottom, keyboardInsetBottom);
+    final minimumBottomPadding = math.max(
+      CatchLayout.sheetBottomPadding,
+      obstructionBottom + CatchLayout.sheetBottomSafeAreaGap,
+    );
+    final requestedPadding =
+        padding?.resolve(Directionality.of(context)) ??
+        const EdgeInsets.fromLTRB(
           CatchLayout.sheetHorizontalPadding,
           CatchLayout.sheetTopPadding,
           CatchLayout.sheetHorizontalPadding,
-          bottomInset + CatchLayout.sheetBottomPadding,
+          CatchLayout.sheetBottomPadding,
         );
+    final effectivePadding = requestedPadding.copyWith(
+      bottom: math.max(requestedPadding.bottom, minimumBottomPadding),
+    );
     final right = _hasText(badge)
         ? CatchBadge.functional(label: badge!, tone: badgeTone)
         : trailing;
@@ -98,6 +117,7 @@ class CatchBottomSheetScaffold extends StatelessWidget {
         boxShadow: CatchElevation.overlay,
       ),
       child: Padding(
+        key: const ValueKey<String>('catch-bottom-sheet-content-padding'),
         padding: effectivePadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,

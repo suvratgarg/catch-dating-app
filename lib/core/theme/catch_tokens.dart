@@ -2421,6 +2421,9 @@ abstract final class CatchLayout {
   static const double sheetTopPadding = CatchSpacing.micro10;
   static const double sheetHorizontalPadding = 22.0;
   static const double sheetBottomPadding = 26.0;
+
+  /// Visual breathing room retained above any physical or keyboard obstruction.
+  static const double sheetBottomSafeAreaGap = CatchSpacing.s4;
   static const double sheetTopRadius = 26.0;
   static const double sheetBottomRadius = 30.0;
   static const double sheetGrabberBottomMargin = CatchSpacing.s4;

@@ -1417,6 +1417,7 @@ class _HostEventModalSpecimen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final mediaQuery = MediaQuery.of(context);
 
     return SizedBox(
       width: width,
@@ -1438,7 +1439,12 @@ class _HostEventModalSpecimen extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.only(top: CatchSpacing.s5),
-              child: child,
+              child: MediaQuery(
+                data: mediaQuery.copyWith(
+                  viewPadding: mediaQuery.viewPadding.copyWith(bottom: 34),
+                ),
+                child: child,
+              ),
             ),
           ),
         ],
