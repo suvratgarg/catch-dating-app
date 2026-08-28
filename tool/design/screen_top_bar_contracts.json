@@ -47,8 +47,8 @@
       "branchKey": "keys.hostCustomers",
       "routeName": "Routes.hostCustomersScreen.name",
       "surfaces": [
-        {"path": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "_HostCustomersScreenState", "owner": "CatchScreenHeaderTitle.block"},
-        {"path": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomersNoOrganizer", "owner": "CatchScreenHeaderTitle.block"}
+        {"path": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "_HostCustomersScreenState", "owner": "CatchScreenTopBar"},
+        {"path": "lib/hosts/presentation/customers/host_customers_directory.dart", "symbol": "HostCustomersNoOrganizer", "owner": "CatchScreenHeaderTitle.block"}
       ]
     },
     {
@@ -88,7 +88,7 @@
       "expression": "CatchTopBar.identity",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "back"
+      "leading": "backUnlessEmbedded"
     },
     {
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
@@ -255,12 +255,19 @@
       "leading": "back"
     },
     {
+      "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar",
+      "leading": "none"
+    },
+    {
       "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
       "role": "screen",
       "expression": "CatchScreenTopBar",
       "owner": "CatchScreenTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "back"
+      "leading": "backUnlessEmbedded"
     },
     {
       "path": "lib/hosts/presentation/applications/host_applications_screen.dart",

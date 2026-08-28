@@ -42,7 +42,12 @@ const rolePolicies = new Map([
   ],
 ]);
 const validRoles = new Set([...rolePolicies.keys(), "workspace"]);
-const validLeadingPolicies = new Set(["auto", "back", "none"]);
+const validLeadingPolicies = new Set([
+  "auto",
+  "back",
+  "backUnlessEmbedded",
+  "none",
+]);
 const validSurfacePolicies = new Set(["CatchRouteScaffold"]);
 const canonicalWorkspaceOwners = new Set([
   "CatchTopBar",
@@ -517,6 +522,22 @@ function checkContract({root, contract, appBars, findings}) {
         message:
           "This pushed route requires an explicit back affordance; use " +
           "leadingType: CatchTopBarLeading.back (or showBackButton: true).",
+      });
+    }
+  }
+  if (contract.leading === "backUnlessEmbedded") {
+    const conditionalBackPattern =
+      /\bleadingType\s*:\s*[\w.]*embedded\s*\?\s*CatchTopBarLeading\.none\s*:\s*CatchTopBarLeading\.back\b/u;
+    const appBarsWithoutConditionalBack = appBars.filter(
+      (appBar) => !conditionalBackPattern.test(appBar.value),
+    );
+    if (appBarsWithoutConditionalBack.length > 0) {
+      findings.push({
+        code: "missing-embedded-back-navigation-policy",
+        path: contract.path,
+        message:
+          "This route must expose Back when pushed and suppress duplicate " +
+          "route chrome only when embedded in a master-detail workspace.",
       });
     }
   }

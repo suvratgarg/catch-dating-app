@@ -430,6 +430,29 @@ test("accepts an explicit back action on a pushed compact route", () => {
   assert.deepEqual(result.findings, []);
 });
 
+test("accepts back navigation that is suppressed only when embedded", () => {
+  const root = fixtureRoot({
+    source: `CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        title: 'Customer',
+        leadingType: widget.embedded
+            ? CatchTopBarLeading.none
+            : CatchTopBarLeading.back,
+      ),
+      body: ListView(),
+    );`,
+    contract: compactContract({
+      leading: "backUnlessEmbedded",
+      surface: "CatchRouteScaffold",
+    }),
+    includeRootContracts: false,
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.deepEqual(result.findings, []);
+});
+
 test("flags a shell-covering editor pushed on a branch navigator", () => {
   const root = fixtureRoot({
     source: `
