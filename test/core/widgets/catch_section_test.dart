@@ -12,6 +12,94 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets(
+    'semantic page body gives divided field interaction the full paint plane',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: SizedBox(
+              width: 390,
+              child: CatchScreenBody(
+                scrollable: false,
+                pt: 0,
+                pb: 0,
+                child: CatchSection.fieldRows(
+                  first: true,
+                  title: 'Notifications',
+                  children: [CatchField.nav(title: 'Delivery', onTap: _noop)],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final fieldRect = tester.getRect(find.byType(CatchField));
+      final overlayFinder = find.byKey(CatchField.pressOverlayKey);
+      final overlayRect = tester.getRect(overlayFinder);
+      expect(fieldRect.left, CatchSpacing.screenPx);
+      expect(fieldRect.right, 390 - CatchSpacing.screenPx);
+      expect(overlayRect.left, 0);
+      expect(overlayRect.right, 390);
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(CatchField)),
+      );
+      await tester.pump();
+      final decoration =
+          tester.widget<AnimatedContainer>(overlayFinder).decoration!
+              as BoxDecoration;
+      expect(decoration.borderRadius, BorderRadius.zero);
+      expect(decoration.border, isNull);
+      expect(
+        decoration.color,
+        CatchFieldTokens.pressedSurface(CatchTokens.editorialLight),
+      );
+      await gesture.up();
+    },
+  );
+
+  testWidgets(
+    'divided section can explicitly retain rounded tile interaction',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: SizedBox(
+              width: 390,
+              child: CatchScreenBody(
+                scrollable: false,
+                pt: 0,
+                pb: 0,
+                child: CatchSection.fieldRows(
+                  first: true,
+                  interaction: CatchDividedFieldInteraction.roundedTile,
+                  children: [CatchField.nav(title: 'Delivery', onTap: _noop)],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final fieldRect = tester.getRect(find.byType(CatchField));
+      final overlayRect = tester.getRect(
+        find.byKey(CatchField.pressOverlayKey),
+      );
+      expect(
+        overlayRect.left,
+        fieldRect.left - CatchFieldTokens.dividedRowBleed,
+      );
+      expect(
+        overlayRect.right,
+        fieldRect.right + CatchFieldTokens.dividedRowBleed,
+      );
+    },
+  );
+
+  testWidgets(
     'CatchSection.fieldRows renders rows flush with lane-aligned dividers',
     (tester) async {
       await tester.pumpWidget(
@@ -628,7 +716,7 @@ void main() {
               title: 'Event settings',
               count: '2 fields',
               trailing: Text('Ready'),
-              headerPlacement: CatchSectionFieldHeaderPlacement.internal,
+              headerPlacement: CatchSectionHeaderPlacement.inside,
               children: [CatchField.read(title: 'Host', body: 'Catch Hosts')],
             ),
           ),
@@ -1124,6 +1212,8 @@ void main() {
     expect(find.byType(CatchField), findsNWidgets(2));
   });
 }
+
+void _noop() {}
 
 Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
   return MaterialApp(

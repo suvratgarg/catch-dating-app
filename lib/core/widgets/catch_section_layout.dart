@@ -11,16 +11,47 @@ import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show
         CatchField,
+        CatchDividedFieldInteraction,
+        CatchDividedFieldInteractionScope,
         CatchFieldGeometryScope,
         CatchFieldGutterOwnership,
+        CatchFieldInteractionPlaneScope,
         CatchFieldInteractionShape,
-        CatchFieldVisibilityScope;
+        CatchFieldVisibilityScope,
+        CatchResponsiveFieldInteractionPolicy;
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 export 'package:catch_dating_app/core/widgets/catch_divider.dart';
+
+Widget _withCatchFieldInteractionPlane(
+  BuildContext context, {
+  required EdgeInsetsGeometry padding,
+  required Widget child,
+}) {
+  final resolved = padding.resolve(Directionality.of(context));
+  final inherited = CatchFieldInteractionPlaneScope.outsetsOf(context);
+  Widget result = CatchFieldInteractionPlaneScope(
+    outsets: EdgeInsets.only(
+      left: inherited.left + resolved.left,
+      right: inherited.right + resolved.right,
+    ),
+    child: child,
+  );
+  // Semantic page-body primitives establish the compact-page default. A
+  // responsive section layout nested below may replace it for a split pane.
+  // Bare component tests and standalone fields intentionally receive no
+  // implicit viewport policy and therefore stay bounded rounded tiles.
+  if (CatchDividedFieldInteractionScope.maybeOf(context) == null) {
+    result = CatchDividedFieldInteractionScope(
+      interaction: CatchDividedFieldInteraction.fullBleed,
+      child: result,
+    );
+  }
+  return result;
+}
 
 /// Standard page body padding wrapper for non-sliver content.
 ///
@@ -38,7 +69,14 @@ class CatchPageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: padding, child: child);
+    return Padding(
+      padding: padding,
+      child: _withCatchFieldInteractionPlane(
+        context,
+        padding: padding,
+        child: child,
+      ),
+    );
   }
 }
 
@@ -77,9 +115,14 @@ class CatchScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectivePadding = _effectivePadding();
     final paddedChild = Padding(
-      padding: _effectivePadding(),
-      child: SizedBox(width: double.infinity, child: child),
+      padding: effectivePadding,
+      child: _withCatchFieldInteractionPlane(
+        context,
+        padding: effectivePadding,
+        child: SizedBox(width: double.infinity, child: child),
+      ),
     );
 
     if (!scrollable) return paddedChild;
@@ -132,7 +175,14 @@ class CatchFormStepBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: padding, child: child);
+    return Padding(
+      padding: padding,
+      child: _withCatchFieldInteractionPlane(
+        context,
+        padding: padding,
+        child: child,
+      ),
+    );
   }
 }
 
@@ -149,7 +199,14 @@ class CatchSliverPageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverPadding(padding: padding, sliver: sliver);
+    return SliverPadding(
+      padding: padding,
+      sliver: _withCatchFieldInteractionPlane(
+        context,
+        padding: padding,
+        child: sliver,
+      ),
+    );
   }
 }
 
@@ -266,10 +323,14 @@ class CatchSectionStack extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: padding,
-      child: CatchSectionList(
-        emptyStateOmitted: true,
-        gap: gap,
-        children: children,
+      child: _withCatchFieldInteractionPlane(
+        context,
+        padding: padding,
+        child: CatchSectionList(
+          emptyStateOmitted: true,
+          gap: gap,
+          children: children,
+        ),
       ),
     );
   }
@@ -314,6 +375,7 @@ class CatchResponsiveSectionLayout extends StatelessWidget {
     this.maxSingleColumnWidth = CatchLayout.maxContentWidth,
     this.sectionGap = CatchGaps.section,
     this.columnGap = CatchGaps.section,
+    this.fieldInteractionPolicy = const CatchResponsiveFieldInteractionPolicy(),
   }) : assert(breakpoint >= 0),
        assert(maxSingleColumnWidth > 0),
        assert(sectionGap >= 0),
@@ -325,6 +387,7 @@ class CatchResponsiveSectionLayout extends StatelessWidget {
   final double maxSingleColumnWidth;
   final double sectionGap;
   final double columnGap;
+  final CatchResponsiveFieldInteractionPolicy fieldInteractionPolicy;
 
   @override
   Widget build(BuildContext context) {
@@ -342,14 +405,17 @@ class CatchResponsiveSectionLayout extends StatelessWidget {
   }
 
   Widget _buildSingleColumn() {
-    return Align(
-      alignment: AlignmentDirectional.topCenter,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxSingleColumnWidth),
-        child: CatchSectionStack(
-          padding: EdgeInsets.zero,
-          gap: sectionGap,
-          children: [for (final section in sections) section.child],
+    return CatchDividedFieldInteractionScope(
+      interaction: fieldInteractionPolicy.singleColumn,
+      child: Align(
+        alignment: AlignmentDirectional.topCenter,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxSingleColumnWidth),
+          child: CatchSectionStack(
+            padding: EdgeInsets.zero,
+            gap: sectionGap,
+            children: [for (final section in sections) section.child],
+          ),
         ),
       ),
     );
@@ -368,25 +434,28 @@ class CatchResponsiveSectionLayout extends StatelessWidget {
 
     if (primary.isEmpty || secondary.isEmpty) return _buildSingleColumn();
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: CatchSectionStack(
-            padding: EdgeInsets.zero,
-            gap: sectionGap,
-            children: primary,
+    return CatchDividedFieldInteractionScope(
+      interaction: fieldInteractionPolicy.splitPane,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: CatchSectionStack(
+              padding: EdgeInsets.zero,
+              gap: sectionGap,
+              children: primary,
+            ),
           ),
-        ),
-        SizedBox(width: columnGap),
-        Expanded(
-          child: CatchSectionStack(
-            padding: EdgeInsets.zero,
-            gap: sectionGap,
-            children: secondary,
+          SizedBox(width: columnGap),
+          Expanded(
+            child: CatchSectionStack(
+              padding: EdgeInsets.zero,
+              gap: sectionGap,
+              children: secondary,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -412,6 +481,7 @@ class CatchResponsiveSectionPage extends StatelessWidget {
     this.sectionGap = CatchGaps.section,
     this.columnGap = CatchGaps.section,
     this.terminalExtra = CatchSpacing.screenPb,
+    this.fieldInteractionPolicy = const CatchResponsiveFieldInteractionPolicy(),
   }) : assert(terminalExtra >= 0);
 
   final List<CatchResponsiveSectionItem> sections;
@@ -425,6 +495,7 @@ class CatchResponsiveSectionPage extends StatelessWidget {
   final double sectionGap;
   final double columnGap;
   final double terminalExtra;
+  final CatchResponsiveFieldInteractionPolicy fieldInteractionPolicy;
 
   @override
   Widget build(BuildContext context) {
@@ -447,6 +518,7 @@ class CatchResponsiveSectionPage extends StatelessWidget {
               maxSingleColumnWidth: maxSingleColumnWidth,
               sectionGap: sectionGap,
               columnGap: columnGap,
+              fieldInteractionPolicy: fieldInteractionPolicy,
             ),
             CatchScrollTerminalPadding(extra: terminalExtra),
           ],
@@ -456,7 +528,7 @@ class CatchResponsiveSectionPage extends StatelessWidget {
   }
 }
 
-enum CatchSectionFieldHeaderPlacement { external, internal }
+enum CatchSectionHeaderPlacement { outside, inside }
 
 enum _CatchSectionVariant { divided, contained, plain }
 
@@ -493,7 +565,8 @@ class CatchSection extends StatelessWidget {
     this.focused = false,
     this.hasError = false,
     this._fieldRows = false,
-    this.fieldHeaderPlacement = CatchSectionFieldHeaderPlacement.external,
+    this.fieldHeaderPlacement = CatchSectionHeaderPlacement.outside,
+    this.dividedFieldInteraction,
     this.children,
     this.child,
   }) : assert(
@@ -558,6 +631,7 @@ class CatchSection extends StatelessWidget {
     double bodyGap = CatchFieldTokens.sectionRuleGap,
     bool showInternalDividers = true,
     bool showTopDivider = true,
+    CatchDividedFieldInteraction? interaction,
     List<Widget>? children,
     Widget? child,
   }) : this._(
@@ -577,6 +651,7 @@ class CatchSection extends StatelessWidget {
          bodyGap: bodyGap,
          showInternalDividers: showInternalDividers,
          showTopDivider: showTopDivider,
+         dividedFieldInteraction: interaction,
          footer: footer,
          fieldRows: true,
          children: children,
@@ -586,9 +661,9 @@ class CatchSection extends StatelessWidget {
   /// Contained FieldSection variant from the form-field handoff. Unlike the
   /// generic card constructor, this surface clips field rows, owns a 1px
   /// line/ink focus border, and never adds generic card elevation. Its optional
-  /// title, count, and trailing action form an external group header by
+  /// title, count, and trailing action form an outside group header by
   /// default, so the outline begins with the first row. Set [headerPlacement]
-  /// to [CatchSectionFieldHeaderPlacement.internal] when the label belongs to
+  /// to [CatchSectionHeaderPlacement.inside] when the label belongs to
   /// the bounded field group itself; that mode places the header inside the
   /// outline and gives it the same padded section rule as [fieldRows].
   const CatchSection.containedFieldRows({
@@ -604,8 +679,8 @@ class CatchSection extends StatelessWidget {
     bool showInternalDividers = true,
     bool focused = false,
     bool hasError = false,
-    CatchSectionFieldHeaderPlacement headerPlacement =
-        CatchSectionFieldHeaderPlacement.external,
+    CatchSectionHeaderPlacement headerPlacement =
+        CatchSectionHeaderPlacement.outside,
     List<Widget>? children,
     Widget? child,
   }) : this._(
@@ -726,7 +801,8 @@ class CatchSection extends StatelessWidget {
   final bool focused;
   final bool hasError;
   final bool _fieldRows;
-  final CatchSectionFieldHeaderPlacement fieldHeaderPlacement;
+  final CatchSectionHeaderPlacement fieldHeaderPlacement;
+  final CatchDividedFieldInteraction? dividedFieldInteraction;
   final List<Widget>? children;
   final Widget? child;
 
@@ -807,6 +883,14 @@ class CatchSection extends StatelessWidget {
             ),
           CatchFieldGeometryScope(
             gutterOwnership: CatchFieldGutterOwnership.container,
+            interactionShape:
+                (dividedFieldInteraction ??
+                        CatchDividedFieldInteractionScope.interactionOf(
+                          context,
+                        )) ==
+                    CatchDividedFieldInteraction.fullBleed
+                ? CatchFieldInteractionShape.fullBleedBand
+                : CatchFieldInteractionShape.roundedTile,
             child: _body(context, t),
           ),
         ],
@@ -872,7 +956,7 @@ class CatchSection extends StatelessWidget {
     final hasInternalFieldHeader =
         _fieldRows &&
         hasHeader &&
-        fieldHeaderPlacement == CatchSectionFieldHeaderPlacement.internal;
+        fieldHeaderPlacement == CatchSectionHeaderPlacement.inside;
     final content = _fieldRows
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1195,7 +1279,6 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
         // both primitives paint on one coordinate instead of producing two
         // adjacent vertical strokes. Keep this contract here so direct users
         // of CatchSectionFocusSurface cannot bypass it.
-        interactionBleed: CatchStroke.hairline,
         // This surface owns one rounded clip for the complete row group.
         // Descendant press, focus, edit, and disclosure chrome therefore stays
         // rectangular and receives only the external corners it touches.

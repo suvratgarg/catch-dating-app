@@ -74,7 +74,7 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
           width: _componentWidth,
           child: CatchSection.containedFieldRows(
             title: 'Event settings',
-            headerPlacement: CatchSectionFieldHeaderPlacement.internal,
+            headerPlacement: CatchSectionHeaderPlacement.inside,
             children: [
               CatchField.read(
                 title: 'Host',
@@ -333,7 +333,7 @@ Widget _fullBleedFocusedRow(BuildContext context) {
       ),
       CatchFieldGeometryScope(
         gutterOwnership: CatchFieldGutterOwnership.container,
-        interactionBleed: 0,
+        interactionOutsets: EdgeInsets.zero,
         interactionShape: CatchFieldInteractionShape.sectionClipped,
         child: CatchField.read(
           title: 'Reminder timing',
@@ -495,7 +495,7 @@ Widget _mixedContainedSection({
 }) {
   return CatchSection.containedFieldRows(
     title: 'Event settings',
-    headerPlacement: CatchSectionFieldHeaderPlacement.internal,
+    headerPlacement: CatchSectionHeaderPlacement.inside,
     children: [
       CatchField.choices<String>(
         title: 'Host',
@@ -641,7 +641,7 @@ class _MixedDividedViewportBandFieldState
         ),
         CatchFieldGeometryScope(
           gutterOwnership: CatchFieldGutterOwnership.container,
-          interactionBleed: 0,
+          interactionOutsets: EdgeInsets.zero,
           interactionShape: CatchFieldInteractionShape.sectionClipped,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1303,7 +1303,7 @@ Widget _responsiveEventSettingsSection() {
   var selected = const {'Catch Hosts'};
   return CatchSection.containedFieldRows(
     title: 'Event settings',
-    headerPlacement: CatchSectionFieldHeaderPlacement.internal,
+    headerPlacement: CatchSectionHeaderPlacement.inside,
     children: [
       StatefulBuilder(
         builder: (context, setState) => CatchField.choices<String>(
@@ -1461,7 +1461,7 @@ Widget _canonicalInteractionSection({
   if (contained) {
     return CatchSection.containedFieldRows(
       title: 'Event settings',
-      headerPlacement: CatchSectionFieldHeaderPlacement.internal,
+      headerPlacement: CatchSectionHeaderPlacement.inside,
       children: fields,
     );
   }

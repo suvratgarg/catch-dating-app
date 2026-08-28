@@ -131,12 +131,21 @@ extension _CatchFieldRowModes on _CatchFieldState {
       context,
     );
     final interactionBorderRadius = switch (interactionShape) {
-      CatchFieldInteractionShape.rounded => BorderRadius.circular(
+      CatchFieldInteractionShape.roundedTile => BorderRadius.circular(
         CatchFieldTokens.tileRadius,
       ),
-      CatchFieldInteractionShape.sectionClipped => BorderRadius.zero,
+      CatchFieldInteractionShape.sectionClipped ||
+      CatchFieldInteractionShape.fullBleedBand => BorderRadius.zero,
     };
     final interactionBorder = Border.all(color: t.line);
+    final fullBleedFocusBorder = Border.all(
+      color: t.ink2,
+      width: CatchStroke.focusRing,
+    );
+    final fullBleedFocused =
+        interactionShape == CatchFieldInteractionShape.fullBleedBand &&
+        _rowFocused &&
+        !_pressed;
     final activeDecoration = BoxDecoration(
       color: _active && !_pressed
           ? CatchFieldTokens.activeSurface(t)
@@ -144,8 +153,15 @@ extension _CatchFieldRowModes on _CatchFieldState {
       borderRadius: interactionBorderRadius,
       // The active and pressed layers hand one stroke between them. This
       // prevents their animated decorations from ever stacking two outlines.
-      border: _active && !_pressed ? interactionBorder : null,
-      boxShadow: _active
+      border: fullBleedFocused
+          ? fullBleedFocusBorder
+          : _active &&
+                !_pressed &&
+                interactionShape != CatchFieldInteractionShape.fullBleedBand
+          ? interactionBorder
+          : null,
+      boxShadow:
+          _active && interactionShape == CatchFieldInteractionShape.roundedTile
           ? CatchElevation.fieldActive(Theme.of(context).brightness)
           : CatchElevation.none,
     );
@@ -156,11 +172,14 @@ extension _CatchFieldRowModes on _CatchFieldState {
       // A contained row inherits the section perimeter and stays a tint-only
       // internal band. A rounded row temporarily owns the one shared stroke
       // while pressed, whether or not it was already active.
-      border: _pressed && interactionShape == CatchFieldInteractionShape.rounded
+      border:
+          _pressed && interactionShape == CatchFieldInteractionShape.roundedTile
           ? interactionBorder
           : null,
     );
-    final overlayBleed = CatchFieldGeometryScope.interactionBleedOf(context);
+    final overlayOutsets = CatchFieldGeometryScope.interactionOutsetsOf(
+      context,
+    );
     final mouseCursor = canInteract
         ? _isEdit
               ? SystemMouseCursors.text
@@ -266,9 +285,9 @@ extension _CatchFieldRowModes on _CatchFieldState {
       fit: StackFit.passthrough,
       clipBehavior: Clip.none,
       children: [
-        PositionedDirectional(
-          start: -overlayBleed,
-          end: -overlayBleed,
+        Positioned(
+          left: -overlayOutsets.left,
+          right: -overlayOutsets.right,
           top: -CatchStroke.hairline,
           bottom: -CatchStroke.hairline,
           child: IgnorePointer(

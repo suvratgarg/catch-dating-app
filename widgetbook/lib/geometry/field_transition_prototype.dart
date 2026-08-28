@@ -300,7 +300,7 @@ class _TransitionVariant extends StatelessWidget {
           CatchSection.containedFieldRows(
             title: 'Event settings',
             borderColor: containedPerimeterColor,
-            headerPlacement: CatchSectionFieldHeaderPlacement.internal,
+            headerPlacement: CatchSectionHeaderPlacement.inside,
             children: fields,
           )
         else
@@ -412,7 +412,9 @@ class _UnifiedInteractionFieldState extends State<_UnifiedInteractionField> {
     final interactionShape = CatchFieldGeometryScope.interactionShapeOf(
       context,
     );
-    final overlayBleed = CatchFieldGeometryScope.interactionBleedOf(context);
+    final overlayOutsets = CatchFieldGeometryScope.interactionOutsetsOf(
+      context,
+    );
     final active = engagedAmount > 0.04;
 
     final header = CatchFieldRow.standard(
@@ -470,9 +472,9 @@ class _UnifiedInteractionFieldState extends State<_UnifiedInteractionField> {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              PositionedDirectional(
-                start: -overlayBleed,
-                end: -overlayBleed,
+              Positioned(
+                left: -overlayOutsets.left,
+                right: -overlayOutsets.right,
                 top: -CatchStroke.hairline,
                 bottom: -CatchStroke.hairline,
                 child: IgnorePointer(

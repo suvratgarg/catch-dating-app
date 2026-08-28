@@ -63,10 +63,10 @@ class CatchFieldLanes extends StatelessWidget {
     final inheritedGeometry = CatchFieldGeometryScope.maybeOf(context);
     return CatchFieldGeometryScope(
       gutterOwnership: gutterOverride,
-      interactionBleed: inheritedGeometry?.interactionBleed,
+      interactionOutsets: inheritedGeometry?.interactionOutsets,
       interactionShape:
           inheritedGeometry?.interactionShape ??
-          CatchFieldInteractionShape.rounded,
+          CatchFieldInteractionShape.roundedTile,
       child: content,
     );
   }

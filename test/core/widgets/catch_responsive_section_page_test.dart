@@ -55,6 +55,50 @@ void main() {
     },
   );
 
+  testWidgets('responsive layout selects interaction policy by composition', (
+    tester,
+  ) async {
+    Widget subject(double width) => MaterialApp(
+      theme: AppTheme.light,
+      home: Scaffold(
+        body: Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: width,
+            child: CatchResponsiveSectionLayout(
+              composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+              sections: [
+                CatchResponsiveSectionItem(
+                  child: Builder(
+                    builder: (context) => Text(
+                      'primary:${CatchDividedFieldInteractionScope.interactionOf(context).name}',
+                    ),
+                  ),
+                ),
+                CatchResponsiveSectionItem(
+                  lane: CatchResponsiveSectionLane.secondary,
+                  child: Builder(
+                    builder: (context) => Text(
+                      'secondary:${CatchDividedFieldInteractionScope.interactionOf(context).name}',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(subject(659));
+    expect(find.text('primary:fullBleed'), findsOneWidget);
+    expect(find.text('secondary:fullBleed'), findsOneWidget);
+
+    await tester.pumpWidget(subject(660));
+    expect(find.text('primary:roundedTile'), findsOneWidget);
+    expect(find.text('secondary:roundedTile'), findsOneWidget);
+  });
+
   testWidgets('centered composition remains one capped lane on wide pages', (
     tester,
   ) async {

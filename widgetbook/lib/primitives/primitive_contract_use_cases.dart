@@ -3331,7 +3331,7 @@ Widget catchSectionContractStates(BuildContext context) {
             title: 'Event settings',
             count: '2 fields',
             trailing: Icon(CatchIcons.infoOutlineRounded),
-            headerPlacement: CatchSectionFieldHeaderPlacement.internal,
+            headerPlacement: CatchSectionHeaderPlacement.inside,
             children: [
               CatchField.read(
                 title: 'Host',
