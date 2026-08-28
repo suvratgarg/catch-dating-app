@@ -129,6 +129,8 @@ import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
+import 'package:catch_dating_app/hosts/domain/host_form.dart';
+import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_draft_controller.dart';
@@ -146,9 +148,13 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart'
@@ -2670,7 +2676,10 @@ class _AppRoleCaptureState extends State<_AppRoleCapture> {
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    AppConfig.configureEntrypointRole(widget.role);
+    return widget.child;
+  }
 }
 
 class _HostRoutedShellCapture extends StatefulWidget {
@@ -2705,8 +2714,9 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
           branches: [
             _branch('/host/events', 0),
             _branch('/host/customers', 1),
-            _branch('/host/inbox', 2),
-            _branch('/host/organizer', 3),
+            _branch('/host/forms', 2),
+            _branch('/host/inbox', 3),
+            _branch('/host/organizer', 4),
           ],
         ),
       ],
@@ -2735,6 +2745,7 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
 
   @override
   Widget build(BuildContext context) {
+    AppConfig.configureEntrypointRole(AppRole.host);
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: Theme.of(context),
@@ -2811,8 +2822,18 @@ List<Object> _hostOperationsProviderOverrides({
     for (final club in hosted) club.id: club,
     for (final club in owned) club.id: club,
   };
+  final timelineEventsByOrganizer = <String, List<Event>>{
+    for (final clubId in eventClubIds)
+      clubId: switch (clubEvents[clubId]) {
+        AsyncData<List<Event>>(:final value) => value,
+        _ => HostOperationsFixtures.eventsByClub[clubId] ?? const <Event>[],
+      },
+  };
 
   return [
+    hostEventsTimelineControllerProvider.overrideWith2(
+      (_) => _CaptureHostEventsTimelineController(timelineEventsByOrganizer),
+    ),
     uidProvider.overrideWithValue(AsyncData<String?>(uid)),
     watchUserProfileProvider.overrideWith(
       (ref) => Stream.value(HostOperationsFixtures.owner),
@@ -2848,6 +2869,10 @@ List<Object> _hostOperationsProviderOverrides({
       const _CaptureNoopHostPaymentAccountActions(),
     ),
     hostAnalyticsRepositoryProvider.overrideWithValue(analyticsRepository),
+    for (final clubId in eventClubIds)
+      clubEventDraftsProvider(
+        clubId: clubId,
+      ).overrideWithValue(const AsyncData<List<EventDraft>>([])),
     for (final club in clubsById.values)
       clubDetailViewModelProvider(club.id).overrideWithValue(
         AsyncData<ClubDetailViewModel?>(
@@ -2879,6 +2904,32 @@ List<Object> _hostOperationsProviderOverrides({
           ),
         ),
   ];
+}
+
+class _CaptureHostEventsTimelineController
+    extends HostEventsTimelineController {
+  _CaptureHostEventsTimelineController(this.eventsByOrganizer);
+
+  final Map<String, List<Event>> eventsByOrganizer;
+
+  @override
+  Future<HostEventsTimelineData> build(
+    HostEventsTimelineRequest request,
+  ) async {
+    final events = eventsByOrganizer[request.organizerId] ?? const <Event>[];
+    return HostEventsTimelineData(
+      activeEvents: events
+          .where((event) => event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+      pastEvents: events
+          .where((event) => !event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+      activeCursor: null,
+      pastCursor: null,
+      hasMoreActive: false,
+      hasMorePast: false,
+    );
+  }
 }
 
 Widget _hostPayoutCardCapture() {
@@ -4801,6 +4852,79 @@ List<Object> _hostCustomersProviderOverrides() {
   ];
 }
 
+class _CaptureHostFormsDirectoryController
+    extends HostFormsDirectoryController {
+  @override
+  Future<HostFormsDirectoryState> build(HostFormListRequest request) async {
+    return HostFormsDirectoryState(
+      forms: _hostFormsAuditForms,
+      nextCursor: null,
+    );
+  }
+}
+
+class _CaptureHostFormResponsesController extends HostFormResponsesController {
+  @override
+  Future<HostFormResponsesState> build(
+    HostFormResponseListRequest request,
+  ) async {
+    return const HostFormResponsesState(responses: [], nextCursor: null);
+  }
+}
+
+final List<HostFormSummary> _hostFormsAuditForms = [
+  _hostFormsAuditSummary(
+    id: 'guest-preferences',
+    title: 'Guest preferences',
+    status: HostFormLifecycleStatus.published,
+    submittedResponseCount: 48,
+  ),
+  _hostFormsAuditSummary(
+    id: 'event-waiver',
+    title: 'Event waiver',
+    status: HostFormLifecycleStatus.paused,
+    submittedResponseCount: 126,
+  ),
+  _hostFormsAuditSummary(
+    id: 'host-application',
+    title: 'Volunteer host application',
+    status: HostFormLifecycleStatus.draft,
+    submittedResponseCount: 0,
+  ),
+];
+
+HostFormSummary _hostFormsAuditSummary({
+  required String id,
+  required String title,
+  required HostFormLifecycleStatus status,
+  required int submittedResponseCount,
+}) {
+  final organizerId = HostOperationsFixtures.primaryClub.id;
+  return HostFormSummary(
+    organizerId: organizerId,
+    formId: id,
+    title: title,
+    description: null,
+    purpose: HostFormPurpose.application,
+    status: status,
+    templateId: null,
+    publicFormId: 'public-$id',
+    defaultTargetKind: HostFormTargetKind.organizer,
+    defaultTargetId: organizerId,
+    activeVersionId: 'version-$id',
+    draftRevision: 1,
+    publishedVersion: 1,
+    submittedResponseCount: submittedResponseCount,
+    updatedAt: DateTime(2026, 8, 28, 18, 30),
+    publishedAt: status == HostFormLifecycleStatus.draft
+        ? null
+        : DateTime(2026, 8, 20, 19),
+    lastResponseAt: submittedResponseCount == 0
+        ? null
+        : DateTime(2026, 8, 28, 17, 45),
+  );
+}
+
 HostAudienceContactDetail _hostCustomerMemoryDetail() {
   final organizerId = HostOperationsFixtures.primaryClub.id;
   return HostAudienceContactDetail(
@@ -6366,23 +6490,19 @@ UploadedPhoto _hostClubDetailPhoto(String id, int position) {
 }
 
 final _hostMediaReviewClub = HostOperationsFixtures.dinnerClub.copyWith(
-  imageUrl: 'assets/branding/catch_host_splash_mark_light.png',
-  profileImageUrl: 'assets/branding/catch_hosts_logo.png',
+  imageUrl: _clubHeroPortraitAssetPath,
+  profileImageUrl: _profilePortraitAssetPath,
   clubPhotos: [
-    _hostMediaReviewPhoto(
-      'host-media-cover',
-      0,
-      'assets/branding/catch_host_splash_mark_light.png',
-    ),
+    _hostMediaReviewPhoto('host-media-cover', 0, _clubHeroPortraitAssetPath),
     _hostMediaReviewPhoto(
       'host-media-gallery-one',
       1,
-      'assets/branding/catch_hosts_logo.png',
+      _profilePortraitAssetPath,
     ),
     _hostMediaReviewPhoto(
       'host-media-gallery-two',
       2,
-      'assets/branding/catch_icon_square.png',
+      _clubHeroPortraitAssetPath,
     ),
   ],
 );
@@ -9332,6 +9452,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_clubs_management',
     routeIds: const <String>['hostOrganizerScreen'],
     device: CaptureDevice.claudePhone390,
+    precache: _hostMediaCaptureImages,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ..._hostOperationsProviderOverrides(
@@ -9341,7 +9462,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) => const _HostRoutedShellCapture(
       initialLocation: '/host/organizer',
-      activeIndex: 3,
+      activeIndex: 4,
       child: HostClubsScreen(initialClubId: 'design-host-table-club'),
     ),
   ),
@@ -14310,6 +14431,35 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'host_forms_populated',
+    routeIds: const <String>['hostFormsScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      uidProvider.overrideWithValue(
+        const AsyncData<String?>(HostOperationsFixtures.hostUid),
+      ),
+      hostOperableClubsProvider(
+        HostOperationsFixtures.hostUid,
+      ).overrideWithValue(
+        AsyncData<List<Club>>([HostOperationsFixtures.primaryClub]),
+      ),
+      hostFormsDirectoryControllerProvider.overrideWith2(
+        (_) => _CaptureHostFormsDirectoryController(),
+      ),
+      hostFormResponsesControllerProvider.overrideWith2(
+        (_) => _CaptureHostFormResponsesController(),
+      ),
+    ],
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation: '/host/forms',
+      activeIndex: 2,
+      child: HostFormsScreen(
+        initialOrganizerId: HostOperationsFixtures.primaryClub.id,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'host_customer_detail_memory',
     routeIds: const <String>['hostCustomerDetailScreen'],
     device: CaptureDevice.claudePhone390,
@@ -14345,7 +14495,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) => _HostRoutedShellCapture(
       initialLocation: '/host/inbox',
-      activeIndex: 2,
+      activeIndex: 3,
       child: HostInboxScreen(
         initialScope: const HostInboxScope.event(
           HostInboxSurfaceFixtures.eventId,
@@ -14366,7 +14516,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) => _HostRoutedShellCapture(
       initialLocation: '/host/inbox',
-      activeIndex: 2,
+      activeIndex: 3,
       child: HostInboxScreen(
         initialScope: const HostInboxScope.event(
           HostInboxSurfaceFixtures.eventId,

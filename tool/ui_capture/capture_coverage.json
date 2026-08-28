@@ -656,9 +656,12 @@
     },
     {
       "routeId": "hostFormsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The standalone Forms library and response inbox are implemented; populated, empty, loading, pagination, accessibility, and theme captures remain planned."
+      "captureIds": [
+        "host_forms_populated"
+      ],
+      "reason": "The production Forms library has a deterministic populated full-shell capture; empty, loading, pagination, response-inbox, accessibility, and theme states remain future coverage."
     },
     {
       "routeId": "hostFormTemplatesScreen",
