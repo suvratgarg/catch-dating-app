@@ -1,6 +1,6 @@
 ---
 doc_id: host_shell_route_ui_audit
-version: 1.0.0
+version: 1.1.0
 updated: 2026-08-29
 owner: design_parity_review
 status: active
@@ -13,11 +13,10 @@ Host shell routes. Checklist items are rows; audited pages are columns. To add
 a route, add one page column, its evidence block, and any new findings. Do not
 fork the checklist for a new page.
 
-The first pass audits source `06fa4297c8c0` on
-`codex/component-geometry-system-simplify-20260828`, based on and zero commits
-behind `origin/main` at `3fd7d84fdc24`. The audit branch contains the approved
-geometry-system work that has not yet been merged to `origin/main`; this report
-must not be read as a production-deployment receipt.
+This closure pass audits the implementation on
+`codex/component-geometry-system-simplify-20260828`. The branch contains the
+approved geometry-system work that has not yet been merged to `origin/main`;
+this report must not be read as a production-deployment receipt.
 
 ## Verdicts
 
@@ -37,107 +36,92 @@ intentional: the matrix should remain scannable as page columns are appended.
 | Checklist | Events | Customers | Forms | Messages | Organizer |
 |---|---|---|---|---|---|
 | **SHELL-01 · One production route body inside the shared Host shell** | ✅ `/host/events` | ✅ `/host/customers` | ✅ `/host/forms` | ✅ `/host/inbox` | ✅ `/host/organizer` |
-| **SHELL-02 · Correct destination order, selection, and organizer identity** | ◐ `HSA-003` | ◐ `HSA-003` | ◐ `HSA-003` | ◐ `HSA-003` | ◐ `HSA-003` |
-| **HEADER-01 · Page owns one title/top-bar hierarchy** | ✅ scroll title + Create | ✅ scroll title + actions | ✅ tabbed scaffold | ◐ shared header reads global role, `HSA-006` | ✅ tabbed scaffold |
+| **SHELL-02 · Correct destination order, selection, and organizer identity** | ✅ shared five-destination contract | ✅ shared five-destination contract | ✅ shared five-destination contract | ✅ shared five-destination contract | ✅ identity remains route-owned |
+| **HEADER-01 · Page owns one title/top-bar hierarchy** | ✅ scroll title + Create | ✅ top-bar title, search, and actions | ✅ tabbed scaffold | ✅ explicit Host browse presentation | ✅ tabbed scaffold |
 | **SCROLL-01 · Exactly one page scroll owner with terminal shell clearance** | ✅ sliver root + terminal padding | ✅ sliver root + terminal padding | ✅ one controller per tab | ✅ sliver root + terminal padding | ✅ one controller per tab |
-| **RESP-01 · Compact, medium, and expanded composition is intentional** | ✅ coherent single workspace | ◐ no wide-pane strategy, `HSA-005` | ✅ bounded content lane | ◐ no master-detail strategy, `HSA-005` | ✅ bounded editor workspace |
+| **RESP-01 · Compact, medium, and expanded composition is intentional** | ✅ coherent single workspace | ✅ expanded index/detail workspace | ✅ bounded content lane | ✅ expanded inbox/detail; campaigns stay single-lane | ✅ bounded editor workspace |
 | **GUTTER-01 · Page gutters and content-width constraints have one owner** | ✅ page/sliver owns lanes | ✅ page/sliver owns lanes | ✅ tabbed page constrains width | ✅ page/sliver owns lanes | ✅ tabbed page constrains width |
 | **SECTION-01 · Contained/divided/plain treatment follows semantic role** | ✅ operational modules earn surfaces | ✅ summary/action/list frames earn surfaces | ✅ flat divided directory | ✅ flat context rails + thread rows | ✅ field sections use canonical variants |
 | **SECTION-02 · Containment depth stays at one visible border** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **SECTION-03 · Headers, kickers, counts, and dividers share one geometry** | ✅ | ✅ | ✅ | ✅ | ❌ media header collapses at 200%, `HSA-002` |
+| **SECTION-03 · Headers, kickers, counts, and dividers share one geometry** | ✅ | ✅ | ✅ | ✅ | ✅ populated headers reflow their trailing action |
 | **FIELD-01 · Rows/fields own capability geometry; parent owns list frame** | ✅ lifecycle rows | ✅ contained customer rows | ✅ divided rows | ✅ thread rows | ✅ canonical `CatchField` lanes |
 | **RHYTHM-01 · Vertical spacing distinguishes hierarchy without card soup** | ✅ | ✅ borders have distinct jobs | ✅ | ✅ | ✅ |
 | **ACTION-01 · One clear primary action per hierarchy level** | ◐ Create, run, and urgent review are distinct but visually loud | ◐ header, sort, filter, and campaign actions compete | ✅ | ✅ | ✅ |
-| **SEARCH-01 · Search/filter/menu placement matches its scope** | ⏺ | ❌ whole-view search is body-owned, `HSA-004` | ✅ top-bar search + body lifecycle filter | ✅ top-bar search + workspace rails | ⏺ |
+| **SEARCH-01 · Search/filter/menu placement matches its scope** | ⏺ | ✅ top-bar search + body sort/filter | ✅ top-bar search + body lifecycle filter | ✅ top-bar search + workspace rails | ⏺ |
 | **STATE-01 · Loading, empty, error, offline, and retry preserve the same shell** | ✅ source-backed | ✅ source-backed | ✅ source-backed | ✅ source-backed | ✅ source-backed |
 | **MOTION-01 · Focus, selection, tab, and route transitions are coherent** | ◌ | ◌ | ◐ tab/menu tests exist; motion not visually audited | ◐ workspace transitions source-only | ◐ tabs/editor reveal source-only |
-| **A11Y-01 · 200% text scale reflows without clipping or overflow** | ❌ 7.2 px overflow, `HSA-001` | ◐ awkward stat/nav compression, `HSA-003` | ◐ title/status rail truncate | ◐ nav/context labels truncate, `HSA-003` | ❌ title/media header collapse, `HSA-002/003` |
+| **A11Y-01 · 200% text scale reflows without clipping or overflow** | ✅ spotlight stacks and wraps | ✅ full title; header actions reflow | ✅ full title; scrollable lifecycle rail | ✅ full title; semantic icon-only dock | ✅ title and populated headers reflow |
 | **A11Y-02 · Labels, targets, and light/dark contrast remain legible** | ◐ shared primitives; visual check only | ◐ shared primitives; visual check only | ◐ shared primitives; visual check only | ◐ shared primitives; visual check only | ◐ shared primitives; visual check only |
-| **ARCH-01 · Component boundaries expose ownership instead of a screen monolith** | ✅ feature split into focused parts | ❌ 1,855-line mixed surface, `HSA-007` | ◐ 633-line route + row actions | ◐ 874-line route + workspaces; `HSA-006` | ✅ route/scaffold/edit modules split |
-| **GOV-01 · Widgetbook/capture/catalog use production widgets and current routes** | ◐ capture fixed; manifest stale, `HSA-008` | ◐ capture fixed; manifest stale, `HSA-008` | ◐ production capture added; manifest stale, `HSA-008` | ◐ index/role fixed; manifest stale, `HSA-008` | ◐ index fixed; manifest stale, `HSA-008` |
+| **ARCH-01 · Component boundaries expose ownership instead of a screen monolith** | ✅ feature split into focused parts | ✅ route, directory, sheets, and detail cards split | ◐ 633-line route + row actions | ✅ explicit browse role + page-owned workspace | ✅ route/scaffold/edit modules split |
+| **GOV-01 · Widgetbook/capture/catalog use production widgets and current routes** | ✅ executable shell coverage | ✅ executable shell coverage | ✅ executable shell coverage | ✅ executable shell coverage | ✅ executable shell coverage |
 
 ## Findings
 
-### HSA-001 · Events spotlight overflows at 200% text — high
+All eight confirmed findings are resolved. The matrix retains `◐` and `◌` for
+questions that were not defects in this pass, such as automated contrast and
+end-to-end motion; they are not silently promoted to passes.
 
-The deterministic `host_home_events_list` capture fails with a 7.2 px
-horizontal `RenderFlex` overflow in
-`HostEventOperationalSpotlight` (`host_events_overview.dart`, the stats/action
-row around line 180). The title and venue also compete for the same horizontal
-lane. The component needs a large-text layout branch that stacks the metadata
-and lets the stats/action group wrap or switch to a vertical arrangement.
+### HSA-001 · Events spotlight overflows at 200% text — resolved
 
-This is a production-widget defect, not a capture approximation.
+`HostEventOperationalSpotlight` now stacks event metadata and wraps its
+metrics/action group at large text. The 200% production-widget capture
+completes without overflow.
 
-### HSA-002 · Organizer media header does not reflow at 200% text — high
+### HSA-002 · Organizer media header does not reflow at 200% text — resolved
 
-At 200% text, the `MEDIA` kicker is reduced to `M…` while the count and
-`Manage images` action retain the row. The default-scale layout is good, but
-the section-header primitive/call site needs a reflow contract: title/count on
-one line and the trailing action below, or a wrap layout with the kicker given
-non-negotiable width. The top title also truncates, but the destructive loss is
-the section label.
+The populated `CatchSection` header contract now moves trailing actions below
+the title/count lane at large text. The Organizer title also supports its
+reviewed two-line form, so neither the page nor section identity is destroyed.
 
-### HSA-003 · The five-destination shell needs a large-label policy — medium
+### HSA-003 · The five-destination shell needs a large-label policy — resolved
 
-The 96 px medium rail truncates `Messaging`, and selected labels become
-truncated at 200% text on the compact bottom bar. This is a shell-level issue,
-so it repeats in every page column. The shell should explicitly choose one of
-these policies by breakpoint/text scale: icon-only rail with full semantics,
-a wider rail, or the expanded sidebar sooner. Do not solve it in individual
-pages.
+Medium navigation widens and uses horizontal labelled destinations. Compact
+bottom navigation uses equal 48 px icon-only destinations at large text while
+preserving each full semantic label; labels return in rail/sidebar layouts.
 
-### HSA-004 · Customers uses a different whole-view search grammar — medium
+### HSA-004 · Customers uses a different whole-view search grammar — resolved
 
-Customers renders `CatchSearchField.expanded` inside the page body, while
-Forms and Messages use the top-bar search contract for the active view.
-Customers' sort and filter are correctly body-owned, but the search scope is
-the whole directory. Either move it to `CatchTopBarSearch` for consistency or
-document a deliberate `persistentDirectorySearch` variant and use it wherever
-that behavior is intended. The current difference has no expressed semantic
-reason in the API.
+Directory-wide search now uses the typed `CatchTopBarSearch` contract. Sort and
+filters remain body-owned because their scope is the current result set.
 
-### HSA-005 · Wide Customers and Messages have no pane-composition rule — medium decision
+### HSA-005 · Wide Customers and Messages have no pane-composition rule — resolved
 
-Both pages adapt chrome at medium/expanded widths, but their content remains a
-single list lane. At 1024 px, selecting a customer or thread still navigates
-away instead of using the space for a persistent detail pane. This is not a
-compact-layout defect; it is an unresolved wide-workspace policy. Recommended
-default: introduce master-detail only at the expanded breakpoint, keep medium
-as a rail plus single task, and let the page layout own the pane split.
+The shared `CatchMasterDetailLayout` gives Customers and the Messaging inbox a
+URL-backed expanded index/detail workspace. Compact and medium widths retain
+single-task navigation. Messaging campaigns remain intentionally single-lane.
 
-### HSA-006 · Messaging header behavior depends on global app role — medium
+### HSA-006 · Messaging header behavior depends on global app role — resolved
 
-`HostInboxScreen` composes `ChatsBrowseHeader`, and that shared header reads
-`AppConfig.appRole` to choose host title/search copy. The hidden dependency is
-why a capture lifecycle reset could render the consumer title `Chats` inside
-the Host shell. Pass the presentation/title/search contract explicitly from
-the host route (or add a typed host constructor); production widgets should not
-derive visible hierarchy from mutable global test state.
+`ChatsBrowsePresentation` is now required. Host and consumer callers state the
+presentation explicitly, and a regression test proves global role mutation
+cannot alter an explicitly consumer header.
 
-### HSA-007 · Customers mixes too many composition layers in one file — medium
+### HSA-007 · Customers mixes too many composition layers in one file — resolved
 
-`host_customers_screen.dart` is 1,855 lines and owns the route, directory
-toolbar, filter summary/sheet, add-customer sheet, identity card, conversation
-card, attendance, revenue, and history components. The visible nesting is
-mostly correct, but the source boundary obscures ownership. Split by route,
-directory, filters, add sheet, and customer-detail sections without changing
-their public primitives.
+Route orchestration, directory composition, editor sheets, and detail cards
+now live in focused part files. The page remains the owner of selection and
+responsive pane composition without changing its public route API.
 
-### HSA-008 · Host coverage metadata and capture routing drifted from production — high governance
+### HSA-008 · Host coverage metadata and capture routing drifted — resolved
 
-The production shell has Events, Customers, Forms, Messaging, and Organizer.
-Before this audit, `_HostRoutedShellCapture` still had four branches, Messaging
-and Organizer used obsolete indices, Forms had no full-shell capture, Events
-read the live repository instead of deterministic timeline data, and the
-light/dark cycle could reset the role. Those capture defects are corrected in
-this working branch.
+The manifest is now the compact `catch.host-shell-coverage/v2` contract. The
+registered `design:host-shell-coverage` check derives the five ordered shell
+destinations from production source, cross-checks routes and canonical
+captures, validates production source paths, and rejects the legacy Host home
+route as a primary destination. Its tests include a vacuity guard.
 
-`design/source_packs/host-v2/host-coverage-manifest.json` still calls itself
-authoritative while describing four tabs (`Today / Events / Inbox /
-Organizer`) and omitting the current Customers/Forms shell destinations. It
-needs a deliberate full refresh; a partial date or count edit would preserve a
-false claim of authority.
+## Finding closure and enforcement
+
+| Finding | Status | Regression evidence |
+|---|---|---|
+| `HSA-001` | ✅ Resolved | Events production-widget test + 200% capture |
+| `HSA-002` | ✅ Resolved | populated section-header reflow test + Organizer 200% capture |
+| `HSA-003` | ✅ Resolved | shell breakpoint tests + large-text tab-bar semantics test |
+| `HSA-004` | ✅ Resolved | Customers top-bar search behavior test |
+| `HSA-005` | ✅ Resolved | expanded Customers/Messaging tests + tablet captures |
+| `HSA-006` | ✅ Resolved | explicit browse-presentation tests |
+| `HSA-007` | ✅ Resolved | focused source boundaries + analyzer |
+| `HSA-008` | ✅ Resolved | registered coverage check + three checker tests |
 
 ## Page evidence
 
@@ -148,7 +132,7 @@ as source authority.
 
 | Page | Route | Production widget | Capture ID | Primary source |
 |---|---|---|---|---|
-| Events | `/host/events` | `HostOperationsHomeScreen` | `host_home_events_list` | `lib/hosts/presentation/host_operations/host_events_list.dart` |
+| Events | `/host/events` | `HostOperationsHomeScreen` | `host_home_events_list` | `lib/hosts/presentation/host_operations/host_operations_home_screen.dart` |
 | Customers | `/host/customers` | `HostCustomersScreen` | `host_customers_populated` | `lib/hosts/presentation/customers/host_customers_screen.dart` |
 | Forms | `/host/forms` | `HostFormsScreen` | `host_forms_populated` | `lib/hosts/presentation/forms/host_forms_screen.dart` |
 | Messages | `/host/inbox` | `HostInboxScreen` | `host_inbox_queries` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` |
@@ -179,9 +163,8 @@ node tool/ui_capture/run_captures.mjs \
   --output-dir artifacts/ui-captures/host-shell-audit/text-scale-2
 ```
 
-The first three runs pass. The 200% run intentionally remains red until
-`HSA-001` is fixed; it records the confirmed Events overflow while still
-writing the five page images.
+All four runs pass. The 200% run is also visually reviewed because a successful
+Flutter render alone does not detect destructive ellipsis or weak reflow.
 
 ## Visual baseline
 

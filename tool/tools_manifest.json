@@ -4389,6 +4389,36 @@
       }
     },
     {
+      "id": "design:host-shell-coverage",
+      "category": "design",
+      "path": "tool/design/check_host_shell_coverage.mjs",
+      "impactPaths": [
+        "tool/design/check_host_shell_coverage.test.mjs",
+        "design/source_packs/host-v2/host-coverage-manifest.json",
+        "docs/design_parity/host_shell_route_ui_audit.md",
+        "lib/core/presentation/host_app_shell.dart",
+        "tool/ui_capture/route_inventory.json",
+        "tool/ui_capture/capture_coverage.json"
+      ],
+      "command": "node tool/design/check_host_shell_coverage.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks the five ordered Host shell destinations against runtime routes, production sources, and canonical UI capture ownership.",
+      "checks": [
+        "node --check tool/design/check_host_shell_coverage.mjs",
+        "node --test tool/design/check_host_shell_coverage.test.mjs",
+        "node tool/design/check_host_shell_coverage.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_host_shell_coverage.test.mjs",
+        "contains": [
+          "rejects a retired primary route and missing canonical capture"
+        ]
+      }
+    },
+    {
       "id": "ui-capture:coverage",
       "category": "ui-capture",
       "path": "tool/ui_capture/check_capture_coverage.mjs",
