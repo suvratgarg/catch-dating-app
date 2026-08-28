@@ -2520,6 +2520,7 @@ abstract final class CatchLayout {
       (tabBarCompactItemExtent - tabBarIconBoxExtent) / 2;
   static const double appShellNavigationIdentityExtent = CatchSpacing.s7;
   static const double appShellRailWidth = 96.0;
+  static const double appShellLargeTextRailWidth = 168.0;
   static const double appShellSidebarWidth = 240.0;
   static const double appShellRailItemMinHeight = 64.0;
   static const double appShellSidebarItemMinHeight = 48.0;
@@ -2541,6 +2542,14 @@ abstract final class CatchLayout {
 
   static double tabBarReservedBottomInset(double bottomSafeArea) =>
       tabBarExtent + tabBarFloatingBottomInset + bottomSafeArea;
+
+  static double tabBarFloatingHorizontalInsetFor(double textScale) =>
+      textScale >= 1.6 ? 0 : tabBarFloatingHorizontalInset;
+
+  static double tabBarContentHorizontalPaddingFor(double textScale) =>
+      textScale >= 1.6
+      ? CatchSpacing.s1
+      : tabBarFloatingContentHorizontalPadding;
 
   static double tabBarSelectedExtentFor({
     required double availableWidth,

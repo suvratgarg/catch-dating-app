@@ -88,6 +88,7 @@ class _CatchTabBarState<T> extends State<CatchTabBar<T>> {
   @override
   Widget build(BuildContext context) {
     final isFloating = CatchTabBar.floatsFor(context);
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
     final t = CatchTokens.of(context);
     final disabledAnimations = MediaQuery.maybeOf(context)?.disableAnimations;
     final duration = disabledAnimations == true
@@ -99,7 +100,7 @@ class _CatchTabBarState<T> extends State<CatchTabBar<T>> {
     final navigation = Padding(
       padding: EdgeInsets.symmetric(
         horizontal: isFloating
-            ? CatchLayout.tabBarFloatingContentHorizontalPadding
+            ? CatchLayout.tabBarContentHorizontalPaddingFor(textScale)
             : CatchLayout.tabBarHorizontalPadding,
       ),
       child: widget.items.isEmpty
@@ -249,12 +250,14 @@ class _CatchTabBarState<T> extends State<CatchTabBar<T>> {
 
     final floatingChromeRadius = BorderRadius.circular(CatchRadius.pill);
 
+    final floatingHorizontalInset =
+        CatchLayout.tabBarFloatingHorizontalInsetFor(textScale);
     return SafeArea(
       top: false,
-      minimum: const EdgeInsets.fromLTRB(
-        CatchLayout.tabBarFloatingHorizontalInset,
+      minimum: EdgeInsets.fromLTRB(
+        floatingHorizontalInset,
         0,
-        CatchLayout.tabBarFloatingHorizontalInset,
+        floatingHorizontalInset,
         CatchLayout.tabBarFloatingBottomInset,
       ),
       child: Align(

@@ -140,49 +140,69 @@ class CatchScreenHeaderTitle extends StatelessWidget {
     final t = CatchTokens.of(context);
     final hasEyebrow = eyebrow != null && eyebrow!.isNotEmpty;
     final hasSubtitle = subtitle != null && subtitle!.isNotEmpty;
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
 
-    Widget child = Row(
-      crossAxisAlignment: rowCrossAxisAlignment,
+    final titleStack = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (leading != null) ...[leading!, gapW12],
-        Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (hasEyebrow) ...[
-                Text(
-                  eyebrow!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.kicker(context, color: t.ink3),
-                ),
-                gapH2,
-              ],
-              Text(
-                title,
-                maxLines: titleMaxLines,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.headline(context, color: t.ink),
-              ),
-              if (hasSubtitle) ...[
-                const SizedBox(height: CatchGaps.headerTitleToSubtitle),
-                Text(
-                  subtitle!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ],
-            ],
+        if (hasEyebrow) ...[
+          Text(
+            eyebrow!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.kicker(context, color: t.ink3),
           ),
+          gapH2,
+        ],
+        Text(
+          title,
+          maxLines: titleMaxLines,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.headline(context, color: t.ink),
         ),
-        if (actions.isNotEmpty) ...[
-          gapW12,
-          CatchTopBarActionGroup(actions: actions),
+        if (hasSubtitle) ...[
+          const SizedBox(height: CatchGaps.headerTitleToSubtitle),
+          Text(
+            subtitle!,
+            maxLines: largeText ? 2 : 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
         ],
       ],
     );
+    final titleRow = Row(
+      crossAxisAlignment: rowCrossAxisAlignment,
+      children: [
+        if (leading != null) ...[leading!, gapW12],
+        Expanded(child: titleStack),
+      ],
+    );
+    Widget child = largeText && actions.isNotEmpty
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              titleRow,
+              gapH8,
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: CatchTopBarActionGroup(actions: actions),
+              ),
+            ],
+          )
+        : Row(
+            crossAxisAlignment: rowCrossAxisAlignment,
+            children: [
+              if (leading != null) ...[leading!, gapW12],
+              Expanded(child: titleStack),
+              if (actions.isNotEmpty) ...[
+                gapW12,
+                CatchTopBarActionGroup(actions: actions),
+              ],
+            ],
+          );
 
     final resolvedPadding = padding;
     if (resolvedPadding != null) {

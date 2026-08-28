@@ -89,6 +89,46 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Section live'), findsOneWidget);
   });
 
+  testWidgets('Host Events spotlight reflows at 200 percent text', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(393, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final now = DateTime(2026, 6, 15, 12);
+    final club = buildClub(id: 'large-text-club', ownerUserId: _hostUid);
+    final event = buildEvent(
+      id: 'large-text-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 15, 17),
+      waitlistedCount: 23,
+    );
+
+    await _pumpHostScreen(
+      tester,
+      MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+        child: HostOperationsHomeScreen(now: now),
+      ),
+      overrides: [
+        ..._hostClubOverrides(
+          owned: [club],
+          timelineEventsByOrganizer: {
+            club.id: [event],
+          },
+        ),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(AsyncData<List<Event>>([event])),
+      ],
+    );
+
+    expect(find.text('STARTS IN 5H'), findsOneWidget);
+    expect(find.text('Set up & run'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   registerHostEventEntryTests();
 
   testWidgets('Host events centers its canonical empty-state primitive', (

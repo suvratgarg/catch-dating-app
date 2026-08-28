@@ -1439,7 +1439,57 @@ Widget _buildCatchSectionKicker(
       ],
     ],
   );
-  return hasText ? Semantics(header: true, child: header) : header;
+  final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+  final responsiveHeader = largeText && trailing != null
+      ? Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                if (hasText)
+                  Expanded(
+                    child: CatchKicker(
+                      label: displayText,
+                      color: color,
+                      size: size,
+                    ),
+                  )
+                else
+                  const Spacer(),
+                if (hasCount) ...[
+                  if (hasText)
+                    const SizedBox(width: CatchFieldTokens.sectionHeaderGap),
+                  Flexible(
+                    child: Text(
+                      displayCount,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                      style: CatchTextStyles.sectionCount(
+                        context,
+                        color: t.ink3,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: CatchSpacing.s2),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: DefaultTextStyle.merge(
+                style: CatchTextStyles.sectionCount(context, color: t.ink3),
+                child: trailing,
+              ),
+            ),
+          ],
+        )
+      : header;
+  return hasText
+      ? Semantics(header: true, child: responsiveHeader)
+      : responsiveHeader;
 }
 
 /// Sliver-native detail body wrapper with Catch's detail-screen page insets.

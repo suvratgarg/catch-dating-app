@@ -736,6 +736,32 @@ void main() {
   );
 
   testWidgets(
+    'CatchSection reflows a populated header instead of truncating at large text',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 360,
+            child: CatchSection.containedFieldRows(
+              title: 'Media library',
+              count: '3 photos',
+              trailing: Text('Manage images'),
+              headerPlacement: CatchSectionHeaderPlacement.inside,
+              children: [CatchField.read(title: 'Cover', body: 'Hero image')],
+            ),
+          ),
+          textScale: 2,
+        ),
+      );
+
+      final titleRect = tester.getRect(find.text('MEDIA LIBRARY'));
+      final actionRect = tester.getRect(find.text('Manage images'));
+      expect(actionRect.top, greaterThan(titleRect.bottom));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'contained row press states use one group clip for every row position',
     (tester) async {
       Future<void> pumpRows(int count) {
