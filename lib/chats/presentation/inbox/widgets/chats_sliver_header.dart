@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chats_search_header_controller.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
@@ -9,6 +8,12 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 const double _hostInboxFilterHeight = CatchLayout.tabRailHeight;
+
+/// Copy and interaction role for the shared chats browse header.
+///
+/// Route adapters must choose this explicitly so a reusable widget never
+/// changes presentation because of process-global application configuration.
+enum ChatsBrowsePresentation { consumer, host }
 
 double chatsBrowseHeaderHeight({
   required BuildContext context,
@@ -24,6 +29,7 @@ double chatsBrowseHeaderHeight({
 class ChatsBrowseHeader extends StatefulWidget {
   const ChatsBrowseHeader({
     super.key,
+    required this.presentation,
     required this.showSearchAction,
     required this.searchValue,
     required this.onSearchChanged,
@@ -33,6 +39,7 @@ class ChatsBrowseHeader extends StatefulWidget {
     this.showHostSubtitle = true,
   });
 
+  final ChatsBrowsePresentation presentation;
   final bool showSearchAction;
   final String searchValue;
   final ValueChanged<String>? onSearchChanged;
@@ -57,7 +64,7 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final isHostApp = AppConfig.appRole.isHost;
+    final isHostApp = widget.presentation == ChatsBrowsePresentation.host;
     final hasHeaderSubtitle = isHostApp && widget.showHostSubtitle;
     final query = widget.searchValue;
     final searchActive = _searchController.isSearchActive(query);

@@ -180,6 +180,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
           slivers: [
             SliverToBoxAdapter(
               child: ChatsBrowseHeader(
+                presentation: ChatsBrowsePresentation.host,
                 showSearchAction: showSearch,
                 searchValue: isInbox ? query : '',
                 onSearchChanged: isInbox
