@@ -15,6 +15,11 @@ import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_entry_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -504,6 +509,34 @@ Widget _mixedDividedSection({
         ? CatchDividedFieldInteraction.fullBleed
         : CatchDividedFieldInteraction.roundedTile,
     children: [timingField, deliveryField],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Create event modal · section comparison',
+  type: CatchSection,
+  path: '[Geometry system]',
+)
+Widget createEventModalSectionComparison(BuildContext context) {
+  return _geometryPage(
+    context,
+    title: 'Create event modal',
+    contractIds: const ['catch.bottom_sheet', 'catch.section', 'catch.field'],
+    principles: const [
+      'Current: each choice group introduces a second outlined perimeter inside the modal surface.',
+      'Proposed: the modal owns the outer plane, while section typography and hairlines organize its choices.',
+      'The proposed rows retain the inset rounded interaction perimeter; only the resting section geometry changes.',
+      'Contained sections remain available when a modal contains a genuine nested object rather than a flat choice group.',
+    ],
+    children: [
+      _specimen(
+        context,
+        label: 'Current vs proposed',
+        description:
+            'Both sides use the production bottom-sheet, section, and field primitives with the same event-entry state and copy. The proposed rows remain interactive for press-feedback review.',
+        child: const _HostEventModalSectionComparison(),
+      ),
+    ],
   );
 }
 
@@ -1315,6 +1348,203 @@ List<Widget> _eventSettingRows() => [
     onChanged: _ignoreBool,
   ),
 ];
+
+class _HostEventModalSectionComparison extends StatelessWidget {
+  const _HostEventModalSectionComparison();
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth >= 880
+            ? (constraints.maxWidth - CatchSpacing.s4) / 2
+            : constraints.maxWidth.clamp(0, _componentWidth).toDouble();
+
+        return Wrap(
+          spacing: CatchSpacing.s4,
+          runSpacing: CatchSpacing.s6,
+          children: [
+            _HostEventModalSpecimen(
+              width: width,
+              label: 'Current · contained groups',
+              description:
+                  'The production implementation today. It is static here so choosing an action cannot close the comparison.',
+              child: IgnorePointer(
+                child: HostEventEntrySheet(
+                  state: _hostEventEntryComparisonState,
+                ),
+              ),
+            ),
+            _HostEventModalSpecimen(
+              width: width,
+              label: 'Proposed · divided groups',
+              description:
+                  'The sheet remains the only outer surface. Section labels and shared hairlines establish the hierarchy.',
+              child: _ProposedHostEventEntrySheet(
+                state: _hostEventEntryComparisonState,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _HostEventModalSpecimen extends StatelessWidget {
+  const _HostEventModalSpecimen({
+    required this.width,
+    required this.label,
+    required this.description,
+    required this.child,
+  });
+
+  final double width;
+  final String label;
+  final String description;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return SizedBox(
+      width: width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(label, style: CatchTextStyles.labelL(context, color: t.ink)),
+          const SizedBox(height: CatchSpacing.s1),
+          Text(
+            description,
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+          const SizedBox(height: CatchSpacing.s3),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: t.bg,
+              border: Border.all(color: t.line),
+              borderRadius: BorderRadius.circular(CatchRadius.lg),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: CatchSpacing.s5),
+              child: child,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProposedHostEventEntrySheet extends StatelessWidget {
+  const _ProposedHostEventEntrySheet({required this.state});
+
+  final HostEventEntryState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchBottomSheetScaffold(
+      grabber: true,
+      title: context.l10n.hostsHostEventsListLabelNewEvent,
+      subtitle:
+          context.l10n.hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (state.continueIntents.isNotEmpty)
+            CatchSection.fieldRows(
+              title:
+                  context.l10n.hostsHostEventEntrySheetSectionContinueExisting,
+              first: true,
+              interaction: CatchDividedFieldInteraction.roundedTile,
+              children: [
+                for (final intent in state.continueIntents)
+                  _ProposedHostEventEntryRow(intent: intent, state: state),
+              ],
+            ),
+          CatchSection.fieldRows(
+            title: context.l10n.hostsHostEventEntrySheetSectionStartNew,
+            first: state.continueIntents.isEmpty,
+            interaction: CatchDividedFieldInteraction.roundedTile,
+            children: [
+              for (final intent in state.startIntents)
+                _ProposedHostEventEntryRow(intent: intent, state: state),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProposedHostEventEntryRow extends StatelessWidget {
+  const _ProposedHostEventEntryRow({required this.intent, required this.state});
+
+  final HostEventEntryIntent intent;
+  final HostEventEntryState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchFieldLanes.single(
+      child: CatchField.action(
+        key: ValueKey<String>('proposed-host-event-entry-${intent.name}'),
+        title: _title(context),
+        body: _body(context),
+        icon: _icon,
+        emphasis: CatchFieldEmphasis.title,
+        onTap: _noop,
+      ),
+    );
+  }
+
+  String _title(BuildContext context) => switch (intent) {
+    HostEventEntryIntent.resumeDraft =>
+      context.l10n.hostsHostEventEntrySheetTitleContinueDraft,
+    HostEventEntryIntent.repeatLastEvent =>
+      context.l10n.hostsHostEventEntrySheetTitleRepeatLastEvent,
+    HostEventEntryIntent.dressRehearsal =>
+      context.l10n.hostEventRehearsalEntryTitle,
+    HostEventEntryIntent.createWithCatchBookings =>
+      context.l10n.hostsHostEventEntrySheetTitleSellTicketsWithCatch,
+    HostEventEntryIntent.createFromGuestList =>
+      context.l10n.hostsHostEventsListLabelUseGuestList,
+  };
+
+  String _body(BuildContext context) => switch (intent) {
+    HostEventEntryIntent.resumeDraft when state.hasMultipleDrafts =>
+      context.l10n.hostsHostEventEntrySheetBodySavedDraftCount(
+        count: state.drafts.length,
+      ),
+    HostEventEntryIntent.resumeDraft => state.mostRecentDraft?.summary ?? '',
+    HostEventEntryIntent.repeatLastEvent =>
+      context.l10n.hostsHostEventEntrySheetBodyReuseEventSetup(
+        eventTitle: state.repeatSource?.title ?? '',
+      ),
+    HostEventEntryIntent.dressRehearsal =>
+      context.l10n.hostEventRehearsalEntryBody,
+    HostEventEntryIntent.createWithCatchBookings =>
+      context.l10n.hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments,
+    HostEventEntryIntent.createFromGuestList =>
+      context.l10n.hostsHostEventEntrySheetBodyImportCsvOrXlsx,
+  };
+
+  IconData get _icon => switch (intent) {
+    HostEventEntryIntent.resumeDraft => CatchIcons.editNoteRounded,
+    HostEventEntryIntent.repeatLastEvent => CatchIcons.refresh,
+    HostEventEntryIntent.dressRehearsal => CatchIcons.scienceOutlined,
+    HostEventEntryIntent.createWithCatchBookings =>
+      CatchIcons.confirmationNumberOutlined,
+    HostEventEntryIntent.createFromGuestList => CatchIcons.cloudUploadOutlined,
+  };
+}
+
+final _hostEventEntryComparisonState = HostEventEntryState.resolve(
+  organizerId: HostOperationsFixtures.primaryClub.id,
+  drafts: [HostOperationsFixtures.eventDraft],
+  repeatSource: HostOperationsFixtures.upcomingEvent,
+);
 
 Widget _geometryPage(
   BuildContext context, {
