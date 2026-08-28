@@ -123,6 +123,38 @@ void main() {
     expect(find.text('Asha Guest'), findsNothing);
   });
 
+  testWidgets('expanded inbox reserves a stable conversation detail pane', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final preview = _preview(
+      uid: 'expanded-guest',
+      name: 'Expanded Guest',
+      eventIds: const [],
+    );
+
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: [preview],
+        participations: const [],
+        now: now,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.byKey(const ValueKey('catch-master-detail-divider')),
+      findsOneWidget,
+    );
+    expect(find.text('Select a conversation'), findsOneWidget);
+    expect(find.text('Expanded Guest'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('keeps broadcast card when roster exists without threads', (
     tester,
   ) async {

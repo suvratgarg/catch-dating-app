@@ -38,11 +38,13 @@ class HostCustomerDetailScreen extends ConsumerStatefulWidget {
     required this.organizerId,
     required this.contactId,
     this.initialDisplayName,
+    this.embedded = false,
   });
 
   final String organizerId;
   final String contactId;
   final String? initialDisplayName;
+  final bool embedded;
 
   @override
   ConsumerState<HostCustomerDetailScreen> createState() =>
@@ -72,7 +74,9 @@ class _HostCustomerDetailScreenState
       topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
         context: context,
         title: displayName,
-        leadingType: CatchTopBarLeading.back,
+        leadingType: widget.embedded
+            ? CatchTopBarLeading.none
+            : CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
       body: SafeArea(

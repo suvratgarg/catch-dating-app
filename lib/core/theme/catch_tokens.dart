@@ -2522,6 +2522,7 @@ abstract final class CatchLayout {
   static const double appShellRailWidth = 96.0;
   static const double appShellLargeTextRailWidth = 168.0;
   static const double appShellSidebarWidth = 240.0;
+  static const double masterDetailIndexPaneWidth = 360.0;
   static const double appShellRailItemMinHeight = 64.0;
   static const double appShellSidebarItemMinHeight = 48.0;
   static const double tabRailHeight = 48.0;

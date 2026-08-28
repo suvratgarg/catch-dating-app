@@ -126,6 +126,7 @@ HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
         ? null
         : requestedSearch,
     initialOrganizerId: initialOrganizerId,
+    initialThreadId: uri.queryParameters['threadId'],
   );
 }
 
@@ -858,6 +859,12 @@ StatefulShellRoute _hostShellRoute(
             name: Routes.hostCustomersScreen.name,
             builder: (context, state) => HostCustomersScreen(
               initialOrganizerId: state.uri.queryParameters['organizerId'],
+              initialContactId: state.uri.queryParameters['contactId'],
+              initialContactDisplayName: switch (state.extra) {
+                HostCustomerDetailRouteArguments(:final displayName) =>
+                  displayName,
+                _ => null,
+              },
             ),
             routes: [
               GoRoute(

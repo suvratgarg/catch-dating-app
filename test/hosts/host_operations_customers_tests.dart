@@ -221,6 +221,57 @@ void _registerHostOperationsCustomersTests() {
     expect(requests.last.search, 'ananya');
   });
 
+  testWidgets(
+    'expanded customer workspace keeps directory and detail together',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1200, 900);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      final club = buildClub(id: 'organizer-1', ownerUserId: _hostUid);
+
+      await _pumpHostScreen(
+        tester,
+        const HostCustomersScreen(
+          initialOrganizerId: 'organizer-1',
+          initialContactId: 'contact-1',
+          initialContactDisplayName: 'Ananya Rao',
+        ),
+        overrides: [
+          ..._hostClubOverrides(owned: [club]),
+          hostCustomersDirectoryControllerProvider.overrideWith2(
+            (_) => _FixedHostCustomersDirectoryController(
+              [],
+              _customerDirectoryState(),
+            ),
+          ),
+          hostAudienceContactDetailProvider(
+            'organizer-1',
+            'contact-1',
+          ).overrideWithValue(AsyncData(_customerDetail())),
+        ],
+      );
+
+      expect(
+        find.byKey(const ValueKey('catch-master-detail-divider')),
+        findsOneWidget,
+      );
+      expect(find.byType(HostCustomersDirectory), findsOneWidget);
+      final detail = tester.widget<HostCustomerDetailScreen>(
+        find.byType(HostCustomerDetailScreen),
+      );
+      expect(detail.embedded, isTrue);
+      final detailTopBar = tester.widget<CatchScreenTopBar>(
+        find.descendant(
+          of: find.byType(HostCustomerDetailScreen),
+          matching: find.byType(CatchScreenTopBar),
+        ),
+      );
+      expect(detailTopBar.leadingType, CatchTopBarLeading.none);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('customer filter sheet scrolls without loading every count', (
     tester,
   ) async {

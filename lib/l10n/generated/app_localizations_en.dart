@@ -16272,4 +16272,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$itineraryCount itinerary steps · $routePointCount route points · $positionCount synthetic live positions';
   }
+
+  @override
+  String get hostCustomersSelectCustomerTitle => 'Select a customer';
+
+  @override
+  String get hostCustomersSelectCustomerBody =>
+      'Choose someone from the directory to keep their details beside the list.';
+
+  @override
+  String get hostInboxSelectConversationTitle => 'Select a conversation';
+
+  @override
+  String get hostInboxSelectConversationBody =>
+      'Choose a thread to keep the conversation beside your inbox.';
 }

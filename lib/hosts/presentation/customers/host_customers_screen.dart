@@ -20,6 +20,7 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -31,6 +32,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
@@ -52,9 +54,16 @@ part 'host_customers_directory.dart';
 enum _HostCustomersHeaderAction { applications, reviewDuplicates, export }
 
 class HostCustomersScreen extends ConsumerStatefulWidget {
-  const HostCustomersScreen({super.key, this.initialOrganizerId});
+  const HostCustomersScreen({
+    super.key,
+    this.initialOrganizerId,
+    this.initialContactId,
+    this.initialContactDisplayName,
+  });
 
   final String? initialOrganizerId;
+  final String? initialContactId;
+  final String? initialContactDisplayName;
 
   @override
   ConsumerState<HostCustomersScreen> createState() =>
@@ -69,6 +78,27 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   HostCustomerSort _sort = HostCustomerSort.lastSeen;
   bool _exporting = false;
   bool _searchExpanded = false;
+  String? _selectedContactId;
+  String? _selectedContactDisplayName;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedContactId = widget.initialContactId;
+    _selectedContactDisplayName = widget.initialContactDisplayName;
+  }
+
+  @override
+  void didUpdateWidget(covariant HostCustomersScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialContactId != widget.initialContactId) {
+      _selectedContactId = widget.initialContactId;
+      if (widget.initialContactDisplayName != null ||
+          oldWidget.initialContactId != widget.initialContactId) {
+        _selectedContactDisplayName = widget.initialContactDisplayName;
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -139,9 +169,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     );
     final activeSegment = hostAudienceSegmentForCustomerFilter(effectiveFilter);
     final t = CatchTokens.of(context);
-    final compactHeader = ScreenSize.fromWidth(
-      MediaQuery.sizeOf(context).width,
-    ).isCompact;
+    final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
+    final compactHeader = screenSize.isCompact;
 
     final headerActions = [
       if (compactHeader)
@@ -218,121 +247,137 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           textInputAction: TextInputAction.search,
         ),
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: CatchInsets.pageHorizontal,
-              sliver: SliverList.list(
-                children: [
-                  HostCustomersSummary(
-                    summary: summary,
-                    onRetry: () =>
-                        ref.invalidate(hostCrmSummaryProvider(selectedClub.id)),
-                  ),
-                  gapH16,
-                  HostCustomerDirectorySortControl(
-                    sort: _sort,
-                    onSortChanged: (sort) => setState(() => _sort = sort),
-                  ),
-                  gapH16,
-                  CatchAsyncValueView<HostCustomersDirectoryState>(
-                    value: directory,
-                    onRetry: () => ref.invalidate(
-                      hostCustomersDirectoryControllerProvider(request),
+      body: CatchMasterDetailLayout(
+        expanded: screenSize.isExpanded,
+        master: SafeArea(
+          top: false,
+          bottom: false,
+          child: CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: CatchInsets.pageHorizontal,
+                sliver: SliverList.list(
+                  children: [
+                    HostCustomersSummary(
+                      summary: summary,
+                      onRetry: () => ref.invalidate(
+                        hostCrmSummaryProvider(selectedClub.id),
+                      ),
                     ),
-                    initialLoadTimeout: null,
-                    loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
-                    errorBuilder: (_, error, _) => CatchErrorState.fromError(
-                      error,
-                      context: AppErrorContext.customers,
-                      mode: CatchErrorStateMode.compact,
+                    gapH16,
+                    HostCustomerDirectorySortControl(
+                      sort: _sort,
+                      onSortChanged: (sort) => setState(() => _sort = sort),
+                    ),
+                    gapH16,
+                    CatchAsyncValueView<HostCustomersDirectoryState>(
+                      value: directory,
                       onRetry: () => ref.invalidate(
                         hostCustomersDirectoryControllerProvider(request),
                       ),
-                    ),
-                    builder: (context, state) {
-                      final campaignBridgeBlocker = hostCampaignBridgeBlocker(
-                        segment: activeSegment,
-                        smsReadiness: summaryState.value?.smsReadiness,
-                        messagingSetup: messagingSetupState.value,
-                        audienceCoverageComplete:
-                            state.sourceCoverage ==
-                            HostCustomerDirectoryCoverage.exact,
-                      );
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          HostCustomerFilterSummary(
-                            filter: effectiveFilter,
-                            manualTag: _manualTag,
-                            count: state.matchCount,
-                            countCoverage: state.matchCountCoverage,
-                            campaignBlocker: campaignBridgeBlocker,
-                            onMessage:
-                                campaignBridgeBlocker == null &&
-                                    activeSegment != null
-                                ? () => _messageCustomers(
-                                    selectedClub,
-                                    activeSegment,
-                                  )
-                                : null,
-                            onOpenFilters: () => _openFilters(
-                              effectiveFilter,
-                              _manualTag,
-                              state,
-                              summaryState.value?.smsReadiness,
+                      initialLoadTimeout: null,
+                      loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
+                      errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                        error,
+                        context: AppErrorContext.customers,
+                        mode: CatchErrorStateMode.compact,
+                        onRetry: () => ref.invalidate(
+                          hostCustomersDirectoryControllerProvider(request),
+                        ),
+                      ),
+                      builder: (context, state) {
+                        final campaignBridgeBlocker = hostCampaignBridgeBlocker(
+                          segment: activeSegment,
+                          smsReadiness: summaryState.value?.smsReadiness,
+                          messagingSetup: messagingSetupState.value,
+                          audienceCoverageComplete:
+                              state.sourceCoverage ==
+                              HostCustomerDirectoryCoverage.exact,
+                        );
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            HostCustomerFilterSummary(
+                              filter: effectiveFilter,
+                              manualTag: _manualTag,
+                              count: state.matchCount,
+                              countCoverage: state.matchCountCoverage,
+                              campaignBlocker: campaignBridgeBlocker,
+                              onMessage:
+                                  campaignBridgeBlocker == null &&
+                                      activeSegment != null
+                                  ? () => _messageCustomers(
+                                      selectedClub,
+                                      activeSegment,
+                                    )
+                                  : null,
+                              onOpenFilters: () => _openFilters(
+                                effectiveFilter,
+                                _manualTag,
+                                state,
+                                summaryState.value?.smsReadiness,
+                              ),
+                              onClear:
+                                  effectiveFilter == HostCustomerFilter.all &&
+                                      _manualTag == null
+                                  ? null
+                                  : () => setState(() {
+                                      _filter = HostCustomerFilter.all;
+                                      _manualTag = null;
+                                    }),
                             ),
-                            onClear:
-                                effectiveFilter == HostCustomerFilter.all &&
-                                    _manualTag == null
-                                ? null
-                                : () => setState(() {
-                                    _filter = HostCustomerFilter.all;
-                                    _manualTag = null;
-                                  }),
-                          ),
-                          gapH16,
-                          HostCustomersDirectory(
-                            state: state,
-                            hasActiveQuery:
-                                _search != null ||
-                                effectiveFilter != HostCustomerFilter.all ||
-                                _manualTag != null,
-                            onCustomerSelected: (contact) =>
-                                _openCustomer(selectedClub, contact),
-                            onLoadMore: state.canLoadMore
-                                ? () => ref
-                                      .read(
-                                        hostCustomersDirectoryControllerProvider(
-                                          request,
-                                        ).notifier,
-                                      )
-                                      .loadMore()
-                                : null,
-                            onRefreshCoverage: () {
-                              ref.invalidate(
-                                hostCrmSummaryProvider(selectedClub.id),
-                              );
-                              ref.invalidate(
-                                hostCustomersDirectoryControllerProvider(
-                                  request,
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                  const CatchScrollTerminalPadding(),
-                ],
+                            gapH16,
+                            HostCustomersDirectory(
+                              state: state,
+                              hasActiveQuery:
+                                  _search != null ||
+                                  effectiveFilter != HostCustomerFilter.all ||
+                                  _manualTag != null,
+                              onCustomerSelected: (contact) =>
+                                  _openCustomer(selectedClub, contact),
+                              onLoadMore: state.canLoadMore
+                                  ? () => ref
+                                        .read(
+                                          hostCustomersDirectoryControllerProvider(
+                                            request,
+                                          ).notifier,
+                                        )
+                                        .loadMore()
+                                  : null,
+                              onRefreshCoverage: () {
+                                ref.invalidate(
+                                  hostCrmSummaryProvider(selectedClub.id),
+                                );
+                                ref.invalidate(
+                                  hostCustomersDirectoryControllerProvider(
+                                    request,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    const CatchScrollTerminalPadding(),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        detail: _selectedContactId == null
+            ? CatchEmptyState(
+                icon: CatchIcons.personSearchOutlined,
+                title: context.l10n.hostCustomersSelectCustomerTitle,
+                message: context.l10n.hostCustomersSelectCustomerBody,
+              )
+            : HostCustomerDetailScreen(
+                organizerId: selectedClub.id,
+                contactId: _selectedContactId!,
+                initialDisplayName: _selectedContactDisplayName,
+                embedded: true,
+              ),
       ),
     );
   }
@@ -497,6 +542,18 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     String contactId, {
     required String displayName,
   }) {
+    if (ScreenSize.fromWidth(MediaQuery.sizeOf(context).width).isExpanded) {
+      setState(() {
+        _selectedContactId = contactId;
+        _selectedContactDisplayName = displayName;
+      });
+      context.goNamed(
+        Routes.hostCustomersScreen.name,
+        queryParameters: {'organizerId': club.id, 'contactId': contactId},
+        extra: HostCustomerDetailRouteArguments(displayName: displayName),
+      );
+      return;
+    }
     context.pushNamed(
       Routes.hostCustomerDetailScreen.name,
       pathParameters: {'contactId': contactId},
