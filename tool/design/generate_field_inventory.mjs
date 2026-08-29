@@ -115,6 +115,7 @@ const sectionSlotByParameter = Object.freeze({
   trailing: "trailing",
   count: "count",
   footer: "footer",
+  groups: "groups",
   children: "children",
   child: "child",
 });
@@ -125,6 +126,7 @@ const sectionSlotOrder = Object.freeze([
   "trailing",
   "count",
   "footer",
+  "groups",
   "children",
   "child",
 ]);

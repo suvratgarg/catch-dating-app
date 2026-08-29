@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-08-27",
+  "updated": "2026-08-29",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -63,6 +63,7 @@
         "divided",
         "fieldRows",
         "containedFieldRows",
+        "containedFieldGroups",
         "contained",
         "plain"
       ],
@@ -72,6 +73,7 @@
         "trailing",
         "count",
         "footer",
+        "groups",
         "children",
         "child"
       ],
@@ -3006,6 +3008,12 @@
             "children",
             "child"
           ],
+          "CatchSection.containedFieldGroups": [
+            "groups",
+            "footer",
+            "focused",
+            "hasError"
+          ],
           "CatchSection.contained": [
             "title",
             "subtitle",
@@ -3258,6 +3266,13 @@
             "dartType": "List<Widget>?"
           },
           {
+            "name": "groups",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchSectionFieldGroup>?",
+            "notes": "Semantic labelled row groups for one contained collection. CatchSection owns their headers, rules, clip, and active geometry."
+          },
+          {
             "name": "child",
             "type": "widget",
             "required": false,
@@ -3274,6 +3289,7 @@
           "divided-field-rows-full-bleed-keyboard-focus",
           "contained-field-rows-external-header",
           "contained-field-rows-internal-header",
+          "contained-field-groups",
           "contained-field-rows-child-active",
           "contained-field-rows-explicit-focused",
           "field-list",
@@ -3304,6 +3320,14 @@
               "catch.surface"
             ],
             "notes": "Use child for custom section bodies that are already internally composed."
+          },
+          {
+            "name": "groups",
+            "kind": "section-field-group-list",
+            "allowedComponents": [
+              "catch.field"
+            ],
+            "notes": "Use CatchSectionFieldGroup descriptors when one contained choice collection needs labelled internal groups without nested per-group outlines."
           }
         ],
         "tokens": [
@@ -3322,6 +3346,7 @@
           "CatchSurface.card",
           "CatchField",
           "CatchFieldTokens",
+          "CatchSectionFieldGroup",
           "CatchDividerRole.fieldSection",
           "CatchDividerRole.fieldRow",
           "CatchKicker",
@@ -3498,7 +3523,7 @@
         ],
         "notes": [
           "Use divided sections for top-level information groups when nested rounded rectangles would add visual clutter.",
-          "Use containedFieldRows for outlined field groups. It owns one clipped 14 px perimeter, neutral line border, explicit section-focus/error border, inset sibling rules, and no generic elevation. Descendant active rows are rectangular bands whose vertical edges share the section perimeter coordinates, so child chrome and the outline read as one unit. Headers default outside the outline; headerPlacement.inside moves the same section-owned kicker into the group and adds its inset end-to-end boundary rule. The footer remains inside the perimeter. Use contained for non-field carded content.",
+          "Use containedFieldRows for one outlined field group. It owns one clipped 14 px perimeter, neutral line border, explicit section-focus/error border, inset sibling rules, and no generic elevation. Descendant active rows are rectangular bands whose vertical edges share the section perimeter coordinates, so child chrome and the outline read as one unit. Headers default outside the outline; headerPlacement.inside moves the same section-owned kicker into the group and adds its inset end-to-end boundary rule. Use containedFieldGroups when one outlined collection contains labelled internal choice groups; CatchSectionFieldGroup supplies semantics while CatchSection owns every internal kicker, rule, clip, and active band. The footer remains inside the perimeter. Use contained for non-field carded content.",
           "Use plain sections for compact titled blocks without a container or divider.",
           "Field sections own the outer grouping and every sibling separator. Header boundaries and field rules share the same line token and hairline stroke; sibling rules begin at the section-derived text lane. CatchField never paints a sibling divider or accepts gutter, radius, bleed, or perimeter arguments.",
           "Divided field rows inherit a responsive interaction policy: compact single-column pages default to a rectangular full-bleed tint reaching the nearest page interaction plane, while split panes default to an inset rounded perimeter. A complete section may override this with interaction; an individual field may not. Both treatments replace adjacent divider visibility during the transition, and full-bleed keyboard focus uses one 2 px inset perimeter.",
@@ -3526,6 +3551,7 @@
           "CatchSection.divided",
           "CatchSection.fieldRows",
           "CatchSection.containedFieldRows",
+          "CatchSection.containedFieldGroups",
           "CatchSection.contained",
           "CatchSection.plain"
         ]

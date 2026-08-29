@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:24970efda9c8c07f4256fcc72227f304b8b1a3ca0175175848e15835bc6d8bd2",
-  "resolvedDigest": "sha256:da56e3e287e62004f81cf67810899e2b9d2697e3a15d6acddcaf63979a8a2dfd",
+  "resolvedDigest": "sha256:d015bd4d254830954a96823022545952062c66af6f220e8b60322dffcb1ac934",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
@@ -4367,6 +4367,7 @@
                 "CatchSection.divided",
                 "CatchSection.fieldRows",
                 "CatchSection.containedFieldRows",
+                "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
                 "CatchSection.plain"
               ]

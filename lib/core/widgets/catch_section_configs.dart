@@ -40,6 +40,7 @@ typedef _DividedFieldRowsSectionConfig = ({
 
 typedef _ContainedFieldRowsSectionConfig = ({
   _SectionCommonConfig common,
+  List<CatchSectionFieldGroup>? groups,
   Widget? footer,
   bool focused,
   bool hasError,

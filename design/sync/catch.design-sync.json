@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-08-28",
+  "updated": "2026-08-29",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56",
+  "sourceDigest": "f42c20022438a52cb9bb7d2f0e473601a3f58aeabc846f77e3fc0e57c733d5ec",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56",
-    "contractDigest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56"
+    "digest": "f42c20022438a52cb9bb7d2f0e473601a3f58aeabc846f77e3fc0e57c733d5ec",
+    "contractDigest": "f42c20022438a52cb9bb7d2f0e473601a3f58aeabc846f77e3fc0e57c733d5ec"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "8f0cb9431a53a8b3e76f0d35f2ea886b357d5abf3258436d6d26e191f124284a",
+    "handoffRequestDigest": "422a800a98e7b1c4ef33859d3a875e8d865ceae51f49f61e707cc47410d1ef14",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -846,7 +846,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 16,
-      "figmaExpectedPropertyDigest": "216ff1e2c2a8773c73e3ee13731c5e0b60278e23db7c014751e894735c59a9e3",
+      "figmaExpectedPropertyDigest": "9a1c264bc684f6dcedff6f65ee7144e51bb92b87ceb33f61f7518a61dbd4b219",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -854,7 +854,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "3f92ffc3b25d73ecf85515f4c80918629b0a3e043de932242a87d0e6edbd190c"
+      "contractDigest": "129bf9e4a92539f4f2bda426850c0f1923b13207eff2bc428630ae57c55b4a5a"
     },
     {
       "contractId": "catch.skeleton",

@@ -26,12 +26,10 @@ class HostEventEntrySheet extends StatelessWidget {
       title: context.l10n.hostsHostEventsListLabelNewEvent,
       subtitle:
           context.l10n.hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (state.continueIntents.isNotEmpty) ...[
-            CatchSection.containedFieldRows(
+      child: CatchSection.containedFieldGroups(
+        groups: [
+          if (state.continueIntents.isNotEmpty)
+            CatchSectionFieldGroup(
               title:
                   context.l10n.hostsHostEventEntrySheetSectionContinueExisting,
               children: [
@@ -43,9 +41,7 @@ class HostEventEntrySheet extends StatelessWidget {
                   ),
               ],
             ),
-            gapH16,
-          ],
-          CatchSection.containedFieldRows(
+          CatchSectionFieldGroup(
             title: context.l10n.hostsHostEventEntrySheetSectionStartNew,
             children: [
               for (final intent in state.startIntents)
