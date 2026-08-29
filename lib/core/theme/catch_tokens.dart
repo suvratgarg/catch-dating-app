@@ -1794,11 +1794,154 @@ abstract final class CatchOpacity {
 /// Stroke widths that are part of reusable component geometry.
 abstract final class CatchStroke {
   static const double hairline = 1.0;
+  static const double emphasis = 1.5;
+  static const double progressIndicator = 2.0;
+  static const double avatarRing = 2.0;
+
+  /// Typographic underline compatibility alias. Border emphasis should use
+  /// [CatchBorderRole.selected], [CatchBorderRole.danger], or
+  /// [CatchBorderRole.warning] instead of selecting this width directly.
   static const double underline = 1.5;
   static const double focusRing = 2.0;
   static const double selection = 3.0;
   static const double passProgress = 2.6;
-  static const double clubMemberSeal = 2.0;
+  @Deprecated('Use avatarRing')
+  static const double clubMemberSeal = avatarRing;
+}
+
+/// Semantic reasons a line exists. A role resolves both its theme-aware color
+/// and its stroke width so callers cannot independently drift either value.
+enum CatchBorderRole {
+  separator,
+  boundary,
+  control,
+  selected,
+  focus,
+  danger,
+  warning,
+}
+
+/// Complete visual states for interactive boundaries.
+///
+/// Hover and press deliberately retain the resting border; their feedback is
+/// fill-only, which prevents a pointer interaction from shifting geometry.
+enum CatchInteractiveBorderState {
+  resting,
+  hovered,
+  pressed,
+  selected,
+  focused,
+  disabled,
+  error,
+}
+
+@immutable
+class CatchBorderSpec {
+  const CatchBorderSpec({
+    required this.role,
+    required this.color,
+    required this.width,
+  });
+
+  final CatchBorderRole role;
+  final Color color;
+  final double width;
+
+  BorderSide get side => BorderSide(color: color, width: width);
+  Border get all => Border.fromBorderSide(side);
+
+  CatchBorderSpec copyWith({Color? color}) =>
+      CatchBorderSpec(role: role, color: color ?? this.color, width: width);
+}
+
+/// Theme-aware border resolver for separators, surfaces, and interactions.
+abstract final class CatchBorder {
+  static CatchBorderSpec resolve(
+    CatchTokens tokens,
+    CatchBorderRole role, {
+    Color? color,
+  }) {
+    final resolved = switch (role) {
+      CatchBorderRole.separator => CatchBorderSpec(
+        role: role,
+        color: tokens.line,
+        width: CatchStroke.hairline,
+      ),
+      CatchBorderRole.boundary => CatchBorderSpec(
+        role: role,
+        color: tokens.line2,
+        width: CatchStroke.hairline,
+      ),
+      CatchBorderRole.control => CatchBorderSpec(
+        role: role,
+        color: _controlColor(tokens),
+        width: CatchStroke.hairline,
+      ),
+      CatchBorderRole.selected => CatchBorderSpec(
+        role: role,
+        color: tokens.primary,
+        width: CatchStroke.emphasis,
+      ),
+      CatchBorderRole.focus => CatchBorderSpec(
+        role: role,
+        color: tokens.primary,
+        width: CatchStroke.focusRing,
+      ),
+      CatchBorderRole.danger => CatchBorderSpec(
+        role: role,
+        color: tokens.danger,
+        width: CatchStroke.emphasis,
+      ),
+      CatchBorderRole.warning => CatchBorderSpec(
+        role: role,
+        color: tokens.warning,
+        width: CatchStroke.emphasis,
+      ),
+    };
+    return color == null ? resolved : resolved.copyWith(color: color);
+  }
+
+  static CatchBorderSpec interactive(
+    CatchTokens tokens,
+    CatchInteractiveBorderState state, {
+    Color? selectedColor,
+  }) {
+    return switch (state) {
+      CatchInteractiveBorderState.error => resolve(
+        tokens,
+        CatchBorderRole.danger,
+      ),
+      CatchInteractiveBorderState.focused => resolve(
+        tokens,
+        CatchBorderRole.focus,
+      ),
+      CatchInteractiveBorderState.selected => resolve(
+        tokens,
+        CatchBorderRole.selected,
+        color: selectedColor,
+      ),
+      CatchInteractiveBorderState.disabled => resolve(
+        tokens,
+        CatchBorderRole.boundary,
+      ),
+      CatchInteractiveBorderState.resting ||
+      CatchInteractiveBorderState.hovered ||
+      CatchInteractiveBorderState.pressed => resolve(
+        tokens,
+        CatchBorderRole.control,
+      ),
+    };
+  }
+
+  static Color _controlColor(CatchTokens tokens) {
+    final isDark =
+        ThemeData.estimateBrightnessForColor(tokens.bg) == Brightness.dark;
+    if (isDark) return tokens.ink3;
+    // Light ink3 is just below the 3:1 non-text contrast floor on the app
+    // background. Pull it ten percent toward ink so resting interactive
+    // boundaries clear that floor on both bg and surface.
+    return Color.lerp(tokens.ink3, tokens.ink, 0.10)!;
+  }
 }
 
 // ── Motion ───────────────────────────────────────────────────────────────────
@@ -2273,7 +2416,7 @@ abstract final class CatchLayout {
   static const double chatListAvatarExtent = CatchSpacing.s11;
   static const double chatListTextGap = CatchSpacing.s3;
   static const double chatInputInnerPadding =
-      CatchSpacing.s2 - CatchStroke.underline;
+      CatchSpacing.s2 - CatchStroke.emphasis;
 
   /// Left inset for the chat-row hairline divider so it starts past the avatar
   /// and aligns with the text column. Kept in terms of the avatar extent + the

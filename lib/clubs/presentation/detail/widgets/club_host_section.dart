@@ -121,7 +121,7 @@ class ClubHostRow extends StatelessWidget {
           name: host.displayName,
           imageUrl: host.avatarUrl,
           size: CatchSpacing.s10,
-          borderWidth: 2,
+          borderWidth: CatchStroke.avatarRing,
           borderColor: borderColor,
         ),
         gapW12,

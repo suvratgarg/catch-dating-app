@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "5cad92652fd530dd88805c8ea7957612b9aaab419cad454d8983cc2a71b03870",
+  "sourceDigest": "6d00a95cd418a0621bfb3b4f0f2337283948007b6994b8ea0e9419cbbbaf1e45",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "5cad92652fd530dd88805c8ea7957612b9aaab419cad454d8983cc2a71b03870",
-    "contractDigest": "5cad92652fd530dd88805c8ea7957612b9aaab419cad454d8983cc2a71b03870"
+    "digest": "6d00a95cd418a0621bfb3b4f0f2337283948007b6994b8ea0e9419cbbbaf1e45",
+    "contractDigest": "6d00a95cd418a0621bfb3b4f0f2337283948007b6994b8ea0e9419cbbbaf1e45"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "ed358ccf3d99fff7567bf23feeae59a18c92820afc803e1337e89baee846714b",
+    "handoffRequestDigest": "7eb293c0c4c2b81f445483b7c6063ba82efcbf2ff6df5acf38a889d12ad0290d",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -573,7 +573,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 7,
-      "figmaExpectedPropertyDigest": "32506ed60be9f29199598ab31072971b0cf1bf736b69ac16463d061b6415b27b",
+      "figmaExpectedPropertyDigest": "aa403589fa38bf92db2672a3b4b8f89225ddf0accbb657c5a16a3d4a08736a02",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -581,7 +581,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Button",
       "claudeAllowed": true,
-      "contractDigest": "da728bc0c5504431333c12f619727226c51404ebd4a861b7282af32d62ee39b6"
+      "contractDigest": "e0cb037a10ccba475350288f4f9fd253fe9fa39d7f4fb707f016f07d7303e71b"
     },
     {
       "contractId": "catch.chip",
@@ -605,7 +605,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 7,
-      "figmaExpectedPropertyDigest": "a7892a4213d1fb4e5888957b96c3a2871b8f36b445af271a38e348e204cc9c09",
+      "figmaExpectedPropertyDigest": "397bba94b69271403af76b31aa623002785df9c200edd612c2d7a3bfb7a0a935",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -613,7 +613,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Chip",
       "claudeAllowed": true,
-      "contractDigest": "de11451e5d0cb7a13c3f0ab451117ae4b188467982c0019eb0d5638a6081149e"
+      "contractDigest": "8e9a40cacb3e216fe12957adfe7c2c79f3375b22644d26eaecdeb6992feed61f"
     },
     {
       "contractId": "catch.empty_state",
@@ -677,7 +677,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ErrorState",
       "claudeAllowed": true,
-      "contractDigest": "ac7e811a3a564b26764db76fb3cca9c926c6e345564b651c1cfb98b896df72ca"
+      "contractDigest": "8415f06128c3fd4c253ef6f4c83ecd1b1d2edccb4cf81a779bfdf74aa7be3fbe"
     },
     {
       "contractId": "catch.error_banner",
@@ -943,7 +943,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 4,
-      "figmaExpectedPropertyDigest": "c9a4654f117c77c0ea0f4b625cdff98fc0f9fdd65f131db110f663ba521d9912",
+      "figmaExpectedPropertyDigest": "4c047e361cac745fb6e9d2be9335be04812efc3fcc2806416f8327f77accecfa",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -951,7 +951,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "AsyncValue",
       "claudeAllowed": true,
-      "contractDigest": "eb1e26934fdbeb68385da62b87b25c20acdc8eb60fddeb9db55b089d9ca8fc5d"
+      "contractDigest": "cfdf9446f5bb48dadc2ba6388c2f02924e8cab1ec2c05be7a7af0e62ded8c7db"
     },
     {
       "contractId": "catch.startup_loading_screen",
@@ -1135,7 +1135,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "9a37fc35f067d3d124a0f518bace4ff9a9db352bf4bfc1007df0cd0e413e8244",
+      "figmaExpectedPropertyDigest": "c9d91ee96bb869be0f963cbeb9fd184e6fc6425335d66ed4d56040003a0d0bf6",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1143,7 +1143,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "IconButton",
       "claudeAllowed": true,
-      "contractDigest": "924ec3cd5f8f228c2966959cea8e3e7836f60600a2518d59820f5515da9b0197"
+      "contractDigest": "225900adc80c2605230bffa18ea6e43eb0c4044bf17cf7fda64e1f02c21167fe"
     },
     {
       "contractId": "catch.menu",
@@ -1295,7 +1295,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 4,
-      "figmaExpectedPropertyDigest": "fab9c952c3fce1c057eb5cd182a74d1a12bbcbdbc67b6c3e45adf8b97d31a86e",
+      "figmaExpectedPropertyDigest": "92d7638739969bc141c5bba15e238179a61802ddd6469c41f76dc1a832f4cc6a",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1303,7 +1303,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "OptionCard",
       "claudeAllowed": true,
-      "contractDigest": "f7ef25f486ab20c15bcd2baf3eafd344f6506f1df217c9686e34e51eba19a87d"
+      "contractDigest": "c462a6c70c79ca18e42db8e8bda2fd62ae42df032c32ea8813ead079649154f6"
     },
     {
       "contractId": "catch.surface",
@@ -1326,8 +1326,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 7,
-      "figmaExpectedPropertyDigest": "ae961fb4608e68d60f65bb19a0eb007506496d0ad6ab37212778353bb8972ce5",
+      "figmaExpectedPropertyCount": 8,
+      "figmaExpectedPropertyDigest": "1b7f99874a48204e98ccd5a0aab0afaa548a9edf0c68dc927108afa6a6227e3d",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1335,7 +1335,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Surface",
       "claudeAllowed": true,
-      "contractDigest": "9f1cddd920614d428689d6a4afe980c3682065a8d0815fda693f4429dae9bf42"
+      "contractDigest": "40e0a57bc31923bc543eea4f7daf74e3d5de3f99ae184c7320113e18113b9983"
     },
     {
       "contractId": "catch.top_bar",
@@ -2095,7 +2095,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 5,
-      "figmaExpectedPropertyDigest": "3f9196848d7c05972ffeceb72659771a15ccb4d7aa59a06d30f3903ac0680001",
+      "figmaExpectedPropertyDigest": "e24c0c1abdb93fc7cfd963f8d76dbf7a63591b188e02caacdb9b7f34cc45bc25",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2103,7 +2103,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "CountPill",
       "claudeAllowed": true,
-      "contractDigest": "c18f4ab889f7cb4c7c36a458e5846037165234cfd26ab6a81bf370b88e49500a"
+      "contractDigest": "cb0d10e6296b770511183335a507240b33d98f950aa046f44e97fe21249ab864"
     },
     {
       "contractId": "catch.page_dots",

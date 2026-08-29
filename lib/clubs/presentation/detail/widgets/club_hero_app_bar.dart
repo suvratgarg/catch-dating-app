@@ -437,8 +437,11 @@ class ClubHeroModule extends StatelessWidget {
               child: CatchSurface(
                 key: const ValueKey('club-detail-hero-frame'),
                 backgroundColor: t.surface,
-                borderColor: t.surface,
-                borderWidth: 2,
+                borderSpec: CatchBorder.resolve(
+                  t,
+                  CatchBorderRole.boundary,
+                  color: t.surface,
+                ),
                 clipBehavior: Clip.hardEdge,
                 child: SizedBox(
                   height: mediaHeight,

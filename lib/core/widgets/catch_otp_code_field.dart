@@ -136,10 +136,15 @@ class CatchCodeInputCell extends StatelessWidget {
       decoration: BoxDecoration(
         color: tokens.surface,
         borderRadius: BorderRadius.circular(CatchRadius.interactiveTile),
-        border: Border.all(
-          color: isActive ? tokens.ink : tokens.line2,
-          width: isActive ? 1.5 : 1,
-        ),
+        border:
+            (isActive
+                    ? CatchBorder.resolve(
+                        tokens,
+                        CatchBorderRole.selected,
+                        color: tokens.ink,
+                      )
+                    : CatchBorder.resolve(tokens, CatchBorderRole.boundary))
+                .all,
       ),
       child: digit.isNotEmpty
           ? Text(digit, style: digitStyle)

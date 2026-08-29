@@ -349,7 +349,14 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
         width: width,
         height: widget.collapsedExtent,
         borderRadius: radius,
-        borderColor: widget.borderColor ?? t.line2,
+        borderSpec: _focusNode.hasFocus
+            ? CatchBorder.resolve(t, CatchBorderRole.focus)
+            : CatchBorder.interactive(
+                t,
+                widget.enabled
+                    ? CatchInteractiveBorderState.resting
+                    : CatchInteractiveBorderState.disabled,
+              ).copyWith(color: widget.borderColor),
         backgroundColor: widget.backgroundColor ?? t.surface,
         padding: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,

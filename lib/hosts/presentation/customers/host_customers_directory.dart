@@ -16,56 +16,7 @@ class HostCustomerDirectoryControls extends StatelessWidget {
   Widget build(BuildContext context) => ComponentResponsiveBuilder(
     breakpoint:
         ComponentBreakpoints.hostCustomerDirectoryControlsCompactBreakpoint,
-    compact: (_) => _HostCustomerDirectoryControlRow(
-      sort: sort,
-      onSortChanged: onSortChanged,
-      onOpenFilters: onOpenFilters,
-      compact: true,
-    ),
-    expanded: (_) => _HostCustomerDirectoryControlRow(
-      sort: sort,
-      onSortChanged: onSortChanged,
-      onOpenFilters: onOpenFilters,
-      compact: false,
-    ),
-  );
-}
-
-class _HostCustomerDirectoryControlRow extends StatelessWidget {
-  const _HostCustomerDirectoryControlRow({
-    required this.sort,
-    required this.onSortChanged,
-    required this.onOpenFilters,
-    required this.compact,
-  });
-
-  final HostCustomerSort sort;
-  final ValueChanged<HostCustomerSort> onSortChanged;
-  final VoidCallback? onOpenFilters;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final sortControl = CatchAdaptiveSelectionControl<HostCustomerSort>(
-      buttonKey: const ValueKey('host-customers-sort'),
-      title: context.l10n.hostCustomersSort,
-      subtitle: context.l10n.hostCustomersSortSheetSubtitle,
-      tooltip: context.l10n.hostCustomersSort,
-      value: sort,
-      items: [
-        for (final option in HostCustomerSort.values)
-          CatchSelectionMenuItem(
-            value: option,
-            label: _customerSortLabel(context, option),
-          ),
-      ],
-      triggerLabel: (selected) => compact
-          ? selected.label
-          : context.l10n.hostCustomersSortControl(label: selected.label),
-      onSelected: onSortChanged,
-    );
-
-    return Wrap(
+    compact: (context) => Wrap(
       alignment: WrapAlignment.end,
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: CatchSpacing.s2,
@@ -74,15 +25,62 @@ class _HostCustomerDirectoryControlRow extends StatelessWidget {
         CatchButton(
           key: const ValueKey('host-customers-filters'),
           label: context.l10n.hostCustomersFilters,
-          icon: compact ? null : Icon(CatchIcons.tuneRounded),
           variant: CatchButtonVariant.secondary,
           size: CatchButtonSize.sm,
           onPressed: onOpenFilters,
         ),
-        sortControl,
+        CatchAdaptiveSelectionControl<HostCustomerSort>(
+          buttonKey: const ValueKey('host-customers-sort'),
+          title: context.l10n.hostCustomersSort,
+          subtitle: context.l10n.hostCustomersSortSheetSubtitle,
+          tooltip: context.l10n.hostCustomersSort,
+          value: sort,
+          items: [
+            for (final option in HostCustomerSort.values)
+              CatchSelectionMenuItem(
+                value: option,
+                label: _customerSortLabel(context, option),
+              ),
+          ],
+          triggerLabel: (selected) => selected.label,
+          onSelected: onSortChanged,
+        ),
       ],
-    );
-  }
+    ),
+    expanded: (context) => Wrap(
+      alignment: WrapAlignment.end,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: [
+        CatchButton(
+          key: const ValueKey('host-customers-filters'),
+          label: context.l10n.hostCustomersFilters,
+          icon: Icon(CatchIcons.tuneRounded),
+          variant: CatchButtonVariant.secondary,
+          size: CatchButtonSize.sm,
+          onPressed: onOpenFilters,
+        ),
+        CatchAdaptiveSelectionControl<HostCustomerSort>(
+          buttonKey: const ValueKey('host-customers-sort'),
+          title: context.l10n.hostCustomersSort,
+          subtitle: context.l10n.hostCustomersSortSheetSubtitle,
+          tooltip: context.l10n.hostCustomersSort,
+          value: sort,
+          items: [
+            for (final option in HostCustomerSort.values)
+              CatchSelectionMenuItem(
+                value: option,
+                label: _customerSortLabel(context, option),
+              ),
+          ],
+          triggerLabel: (selected) =>
+              context.l10n.hostCustomersSortControl(label: selected.label),
+          onSelected: onSortChanged,
+        ),
+      ],
+    ),
+  );
 }
 
 class HostCustomersNoOrganizer extends StatelessWidget {
@@ -458,7 +456,6 @@ class HostCustomersSummary extends StatelessWidget {
       onRetry: onRetry,
     ),
     builder: (context, value) {
-      final t = CatchTokens.of(context);
       final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
       String countLabel(int count) => value.truncated ? '$count+' : '$count';
       final stats = <({String label, String value})>[
@@ -481,7 +478,7 @@ class HostCustomersSummary extends StatelessWidget {
             tone: CatchSurfaceTone.transparent,
             radius: CatchRadius.md,
             padding: CatchInsets.cardContent,
-            borderColor: t.line,
+            borderRole: CatchBorderRole.boundary,
             child: CatchStatColumn(
               value: stat.value,
               label: stat.label,

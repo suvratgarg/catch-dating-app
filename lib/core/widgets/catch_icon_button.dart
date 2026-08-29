@@ -22,7 +22,7 @@ enum CatchIconButtonVariant { bordered, float, plain }
 /// // Solid custom variant.
 /// CatchIconButton(background: t.ink, child: Icon(CatchIcons.tune, color: t.surface))
 /// ```
-class CatchIconButton extends StatelessWidget {
+class CatchIconButton extends StatefulWidget {
   const CatchIconButton({
     super.key,
     required this.child,
@@ -165,9 +165,24 @@ class CatchIconButton extends StatelessWidget {
   final int? _count;
 
   @override
+  State<CatchIconButton> createState() => _CatchIconButtonState();
+}
+
+class _CatchIconButtonState extends State<CatchIconButton> {
+  bool _focused = false;
+
+  @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final radius = borderRadius ?? CatchRadius.pill;
+    final onTap = widget.onTap;
+    final variant = widget.variant;
+    final active = widget.active;
+    final accent = widget.accent;
+    final background = widget.background;
+    final borderColor = widget.borderColor;
+    final disabled = widget.disabled;
+    final size = widget.size;
+    final radius = widget.borderRadius ?? CatchRadius.pill;
     final palette = _IconBtnPalette.from(
       tokens: t,
       variant: variant,
@@ -177,7 +192,29 @@ class CatchIconButton extends StatelessWidget {
       borderColor: borderColor,
     );
     final enabled = onTap != null && !disabled;
-    final filled = fill ?? active;
+    final filled = widget.fill ?? active;
+    final border = _focused
+        ? CatchBorder.resolve(t, CatchBorderRole.focus)
+        : active
+        ? CatchBorder.resolve(
+            t,
+            CatchBorderRole.selected,
+            color: borderColor ?? accent,
+          )
+        : variant == CatchIconButtonVariant.bordered
+        ? CatchBorder.interactive(
+            t,
+            disabled
+                ? CatchInteractiveBorderState.disabled
+                : CatchInteractiveBorderState.resting,
+          ).copyWith(color: borderColor)
+        : palette.borderColor == null
+        ? null
+        : CatchBorder.resolve(
+            t,
+            CatchBorderRole.boundary,
+            color: palette.borderColor,
+          );
     final iconTheme = IconThemeData(
       color: palette.foreground,
       size: (size * CatchLayout.iconButtonGlyphScale).roundToDouble(),
@@ -191,28 +228,32 @@ class CatchIconButton extends StatelessWidget {
         height: size,
         backgroundColor: palette.background,
         radius: radius,
-        borderColor: palette.borderColor,
-        boxShadow: palette.shadow,
+        borderSpec: border,
+        boxShadow: _focused ? CatchElevation.focusRing(t) : palette.shadow,
         padding: EdgeInsets.zero,
         onTap: enabled ? onTap : null,
+        onFocusChange: (focused) {
+          if (_focused != focused) setState(() => _focused = focused);
+        },
         child: Center(
-          child: IconTheme.merge(data: iconTheme, child: child),
+          child: IconTheme.merge(data: iconTheme, child: widget.child),
         ),
       ),
     );
-    final countedButton = _count == null
+    final count = widget._count;
+    final countedButton = count == null
         ? button
         : SizedBox.square(
             dimension: size,
-            child: CatchCountBadge(count: _count, child: button),
+            child: CatchCountBadge(count: count, child: button),
           );
-    final message = tooltip;
+    final message = widget.tooltip;
     if (message == null || message.isEmpty) return countedButton;
     return Semantics(
       button: true,
       enabled: enabled,
       label: message,
-      liveRegion: liveRegion,
+      liveRegion: widget.liveRegion,
       child: Tooltip(
         message: message,
         excludeFromSemantics: true,

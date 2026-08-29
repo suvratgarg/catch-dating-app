@@ -269,6 +269,12 @@ void _registerHostOperationsCustomersTests() {
       surfaces.every((surface) => surface.radius == CatchRadius.md),
       isTrue,
     );
+    expect(
+      surfaces.every(
+        (surface) => surface.borderRole == CatchBorderRole.boundary,
+      ),
+      isTrue,
+    );
 
     final surfaceRects = <Rect>[
       for (var index = 0; index < 3; index++)

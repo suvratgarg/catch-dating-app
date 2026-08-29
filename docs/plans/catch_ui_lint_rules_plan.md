@@ -1,7 +1,7 @@
 ---
 doc_id: catch-ui-lint-rules-plan
-version: 0.5.2
-updated: 2026-08-11
+version: 0.5.3
+updated: 2026-08-29
 owner: ui_elevation_initiative
 dri: TBD
 status: remaining_work
@@ -52,6 +52,10 @@ unimplemented or still-weak lint/governance work.
   rejects new `CatchBreakpoints` / `CatchZIndex` namespaces for the current app
   shape.
 - Color/text/font drift count is currently `0` via `tool/check_catch_ui_lint_drift.sh`.
+- Raw UI stroke drift is also `0`: `catch_no_raw_stroke_width` covers all
+  handwritten app code, including 1 px literals, custom primitive
+  `borderWidth`/`strokeWidth` arguments, and shared widgets. Zero remains the
+  explicit no-border value; decorative `CustomPainter` artwork is excluded.
 - `tool/check_catch_ui_lint_drift.sh --all --json <path>` emits a reusable JSON
   count artifact for drift snapshots, including analyzer completion status.
 - P0 alignment gaps from the deleted P0 spec are closed: no retired sandbox
@@ -95,8 +99,8 @@ Implement only after the current scanner/lint policy is stable.
 
 - Group A value rules: raw stroke and any shadow/opacity/icon/motion refinements that
   need resolved symbol identity beyond the migrated parsed-AST checks.
-  - Raw stroke now has advisory analyzer coverage via `catch_no_raw_stroke_width`;
-    keep strict zero-gate migration separate until the count is intentionally worked.
+  - Raw stroke has repository-wide analyzer coverage via
+    `catch_no_raw_stroke_width` and is part of the strict zero gate.
 - Group B primitive bypass: preferred Catch image primitive and calibrated
   card/surface refinements beyond `catch_no_raw_surface_shell`.
 - Group C component proliferation: private widget complexity and max build nesting depth.

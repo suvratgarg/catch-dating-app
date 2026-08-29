@@ -608,6 +608,7 @@
           "default",
           "pressed",
           "hovered",
+          "focused",
           "disabled",
           "loading",
           "full-width",
@@ -638,6 +639,8 @@
           "theme.light.color.line2"
         ],
         "dartRoles": [
+          "CatchBorder.interactive",
+          "CatchBorderRole.focus",
           "CatchMotion.fast",
           "CatchOpacity.controlOverlayPressed",
           "CatchOpacity.controlOverlayHover",
@@ -913,6 +916,7 @@
           "selectable-resting",
           "selectable-selected",
           "selectable-disabled",
+          "selectable-focused",
           "selectable-accented",
           "selectable-with-leading",
           "removable",
@@ -941,6 +945,9 @@
           "theme.light.color.primarySoft"
         ],
         "dartRoles": [
+          "CatchBorder.interactive",
+          "CatchBorderRole.selected",
+          "CatchBorderRole.focus",
           "CatchTextStyles.labelL",
           "CatchTextStyles.fieldRowTitle",
           "CatchIcon.sm",
@@ -5146,6 +5153,7 @@
         "states": [
           "default",
           "active",
+          "focused",
           "disabled",
           "bordered",
           "float",
@@ -5166,6 +5174,9 @@
           "theme.light.color.line2"
         ],
         "dartRoles": [
+          "CatchBorder.interactive",
+          "CatchBorderRole.selected",
+          "CatchBorderRole.focus",
           "CatchLayout.iconButtonSize",
           "CatchLayout.iconButtonNavSize",
           "CatchLayout.iconButtonGlyphScale",
@@ -5751,8 +5762,11 @@
           "CatchControlSize",
           "CatchControlShape",
           "CatchControlTone",
+          "CatchBorder.interactive",
+          "CatchBorderRole.focus",
+          "CatchBorderRole.danger",
           "CatchElevation.focusRing",
-          "CatchStroke.underline"
+          "CatchStroke.hairline"
         ],
         "goldens": [],
         "accessibility": {
@@ -6021,6 +6035,7 @@
         "states": [
           "default",
           "selected",
+          "focused",
           "disabled-by-null-action"
         ],
         "slots": [],
@@ -6035,7 +6050,9 @@
         ],
         "dartRoles": [
           "CatchSurface",
-          "CatchStroke.underline",
+          "CatchBorder.interactive",
+          "CatchBorderRole.selected",
+          "CatchBorderRole.focus",
           "CatchInsets.tileContentCompact",
           "CatchTextStyles.labelL",
           "CatchTextStyles.bodyS",
@@ -6085,7 +6102,8 @@
         "enforcement": {
           "code": "catch_no_raw_surface_shell",
           "codes": [
-            "catch_no_nested_rounded_rectangles"
+            "catch_no_nested_rounded_rectangles",
+            "catch_no_raw_stroke_width"
           ],
           "vehicle": "plugin",
           "replaces": [
@@ -6180,6 +6198,33 @@
             "dartType": "VoidCallback?"
           },
           {
+            "name": "onFocusChange",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<bool>?"
+          },
+          {
+            "name": "borderRole",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchBorderRole?",
+            "values": [
+              "separator",
+              "boundary",
+              "control",
+              "selected",
+              "focus",
+              "danger",
+              "warning"
+            ]
+          },
+          {
+            "name": "borderSpec",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchBorderSpec?"
+          },
+          {
             "name": "role",
             "type": "enum",
             "required": false,
@@ -6219,6 +6264,8 @@
           "primary-soft",
           "transparent",
           "tappable",
+          "semantic-border",
+          "focused",
           "elevated",
           "card",
           "tinted",
@@ -6243,6 +6290,9 @@
           "theme.light.color.primary"
         ],
         "dartRoles": [
+          "CatchBorder",
+          "CatchBorderRole",
+          "CatchBorderSpec",
           "CatchElevation.none",
           "CatchElevation.card",
           "CatchElevation.raised",
@@ -6301,6 +6351,7 @@
         ],
         "notes": [
           "CatchSurface is the only low-level surface primitive. Use CatchSurface.card, CatchSurface.tinted, and CatchSurface.message for surface chrome; use CatchSection.contained for section-card content chrome.",
+          "Choose borderRole for ordinary semantic lines and borderSpec only for a role with a justified color override; raw borderColor and borderWidth are deprecated migration shims.",
           "Do not hand-roll Container/DecoratedBox cards in feature UI; request a Surface mode if this contract is missing a state.",
           "InlineMessageSurface is a member of catch.surface message grammar and should not become a separate surface family."
         ]
@@ -10265,6 +10316,7 @@
           "label-with-icon",
           "label-with-value",
           "with-count",
+          "focused",
           "semantic-label",
           "text-scale-truncation"
         ],
@@ -10281,6 +10333,8 @@
           "theme.light.color.surface"
         ],
         "dartRoles": [
+          "CatchBorderRole.control",
+          "CatchBorderRole.focus",
           "CatchTextStyles.monoLabel",
           "CatchLayout.countPillIconSize",
           "CatchIconButton.defaultSize",

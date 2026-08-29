@@ -104,6 +104,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -164,7 +165,9 @@ class CatchUiLintProbe extends StatelessWidget {
           visual: eventActivityVisual(ActivityKind.running),
         ),
         Image.asset('assets/branding/catch_icon.png'),
-        const CircularProgressIndicator(strokeWidth: 2),
+        const CircularProgressIndicator(strokeWidth: 1),
+        const CatchLoadingIndicator(strokeWidth: 1),
+        const Divider(thickness: 1),
         const ColoredBox(color: Color(0xFFFF0000), child: SizedBox.shrink()),
         const ColoredBox(
           color: Color.fromARGB(255, 255, 0, 0),
@@ -240,7 +243,7 @@ class CatchUiLintProbe extends StatelessWidget {
         ),
         Container(
           decoration: BoxDecoration(
-            border: Border.all(width: 2),
+            border: Border.all(width: 1),
             borderRadius: BorderRadius.circular(12),
             boxShadow: const [
               BoxShadow(color: Colors.black, blurRadius: 12),
@@ -252,6 +255,18 @@ class CatchUiLintProbe extends StatelessWidget {
           child: CatchSurface(
             child: SizedBox.shrink(),
           ),
+        ),
+        const CatchSurface(
+          borderWidth: 1,
+          child: SizedBox.shrink(),
+        ),
+        const CatchSurface(
+          borderSpec: CatchBorderSpec(
+            role: CatchBorderRole.boundary,
+            color: Colors.transparent,
+            width: 1,
+          ),
+          child: SizedBox.shrink(),
         ),
         const CatchSection(
           child: CatchField.read(title: 'Name'),
@@ -331,7 +346,7 @@ expect_code_count "seeded violation corpus" "catch_no_raw_shadow" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_motion" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_breakpoint" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_surface_shell" 1
-expect_code_count "seeded violation corpus" "catch_no_raw_stroke_width" 2
+expect_code_count "seeded violation corpus" "catch_no_raw_stroke_width" 6
 expect_code_count "seeded violation corpus" "catch_no_raw_asset_path" 1
 expect_code_count \
   "seeded violation corpus" \

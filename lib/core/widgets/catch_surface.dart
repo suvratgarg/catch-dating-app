@@ -25,6 +25,8 @@ class CatchSurface extends StatelessWidget {
     this.height,
     this.radius = CatchRadius.lg,
     this.borderRadius,
+    this.borderRole,
+    this.borderSpec,
     this.borderColor,
     this.borderWidth = 1,
     this.backgroundColor,
@@ -32,8 +34,10 @@ class CatchSurface extends StatelessWidget {
     this.boxShadow,
     this.clipBehavior = Clip.none,
     this.onTap,
+    this.onFocusChange,
     this.duration = CatchMotion.fast,
-  }) : title = null,
+  }) : assert(borderRole == null || borderSpec == null),
+       title = null,
        message = null,
        messageIcon = null,
        messageTone = CatchSurfaceMessageTone.primary;
@@ -45,12 +49,16 @@ class CatchSurface extends StatelessWidget {
     this.margin,
     this.width,
     this.height,
+    this.borderRole,
+    this.borderSpec,
     this.borderColor,
     this.boxShadow,
     this.tone = CatchSurfaceTone.surface,
     this.onTap,
+    this.onFocusChange,
     this.duration = CatchMotion.fast,
-  }) : role = CatchSurfaceRole.card,
+  }) : assert(borderRole == null || borderSpec == null),
+       role = CatchSurfaceRole.card,
        elevation = CatchSurfaceElevation.card,
        radius = CatchRadius.md,
        borderRadius = null,
@@ -80,12 +88,15 @@ class CatchSurface extends StatelessWidget {
        elevation = CatchSurfaceElevation.none,
        width = null,
        height = null,
+       borderRole = null,
+       borderSpec = null,
        borderColor = null,
        borderWidth = 0,
        gradient = null,
        boxShadow = null,
        clipBehavior = Clip.none,
        onTap = null,
+       onFocusChange = null,
        title = null,
        message = null,
        messageIcon = null,
@@ -108,13 +119,16 @@ class CatchSurface extends StatelessWidget {
        elevation = CatchSurfaceElevation.none,
        radius = CatchRadius.md,
        borderRadius = null,
+       borderRole = null,
+       borderSpec = null,
        borderColor = null,
        borderWidth = 1,
        backgroundColor = null,
        gradient = null,
        boxShadow = null,
        clipBehavior = Clip.none,
-       onTap = null;
+       onTap = null,
+       onFocusChange = null;
 
   final Widget? child;
   final CatchSurfaceRole role;
@@ -126,13 +140,27 @@ class CatchSurface extends StatelessWidget {
   final double? height;
   final double radius;
   final BorderRadius? borderRadius;
+
+  /// Semantic border role for standard surface containment.
+  final CatchBorderRole? borderRole;
+
+  /// Resolved semantic border for stateful or custom-pigment containment.
+  final CatchBorderSpec? borderSpec;
+
+  /// Legacy escape hatch. Product surfaces should use [borderRole] or
+  /// [borderSpec] so color and width cannot drift independently.
+  @Deprecated('Use borderRole or borderSpec')
   final Color? borderColor;
+
+  /// Legacy escape hatch paired with [borderColor].
+  @Deprecated('Use borderRole or borderSpec')
   final double borderWidth;
   final Color? backgroundColor;
   final Gradient? gradient;
   final List<BoxShadow>? boxShadow;
   final Clip clipBehavior;
   final VoidCallback? onTap;
+  final ValueChanged<bool>? onFocusChange;
   final Duration duration;
   final String? title;
   final String? message;
@@ -151,15 +179,21 @@ class CatchSurface extends StatelessWidget {
     }
 
     final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(radius);
-    final foreground = Padding(
-      padding: padding ?? EdgeInsets.zero,
-      child: child!,
-    );
-    final borderDecoration = borderColor == null || borderWidth <= 0
+    final semanticBorder =
+        borderSpec ??
+        (borderRole == null ? null : CatchBorder.resolve(t, borderRole!));
+    final effectiveBorderColor = semanticBorder?.color ?? borderColor;
+    final effectiveBorderWidth = semanticBorder?.width ?? borderWidth;
+    final content = Padding(padding: padding ?? EdgeInsets.zero, child: child!);
+    final borderDecoration =
+        effectiveBorderColor == null || effectiveBorderWidth <= 0
         ? null
         : BoxDecoration(
             borderRadius: effectiveBorderRadius,
-            border: Border.all(color: borderColor!, width: borderWidth),
+            border: Border.all(
+              color: effectiveBorderColor,
+              width: effectiveBorderWidth,
+            ),
           );
     final decorated = AnimatedContainer(
       duration: effectiveDuration,
@@ -176,13 +210,14 @@ class CatchSurface extends StatelessWidget {
       ),
       foregroundDecoration: borderDecoration,
       child: onTap == null
-          ? foreground
+          ? content
           : Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: onTap,
+                onFocusChange: onFocusChange,
                 borderRadius: effectiveBorderRadius,
-                child: foreground,
+                child: content,
               ),
             ),
     );
@@ -214,7 +249,7 @@ class CatchSurface extends StatelessWidget {
               toneColor.withValues(alpha: CatchOpacity.calloutFill),
               t.surface,
             ),
-      borderColor: isNeutral ? t.line : null,
+      borderRole: isNeutral ? CatchBorderRole.boundary : null,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

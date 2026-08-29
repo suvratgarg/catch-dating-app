@@ -1,7 +1,7 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-08-19",
+  "updated": "2026-08-29",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for a future screen contract, or explicitly excluded from baseline design parity.",
   "routes": [
@@ -239,6 +239,13 @@
       "status": "contracted",
       "priority": "P1",
       "reason": "Covered by screen.host.customers as the canonical organizer customer directory workspace.",
+      "screenId": "screen.host.customers"
+    },
+    {
+      "routeId": "hostAddCustomerScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.customers as the full-page name-plus-endpoint customer creation route with optional first-note memory.",
       "screenId": "screen.host.customers"
     },
     {

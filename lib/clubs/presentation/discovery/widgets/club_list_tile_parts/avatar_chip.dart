@@ -33,8 +33,9 @@ class AvatarChip extends StatelessWidget {
                 width: _avatarChipTileSize,
                 height: _avatarChipTileSize,
                 radius: CatchRadius.pill,
-                borderColor: showLiveBadge ? t.primary : t.line2,
-                borderWidth: showLiveBadge ? 2 : 1,
+                borderSpec: showLiveBadge
+                    ? CatchBorder.resolve(t, CatchBorderRole.selected)
+                    : CatchBorder.resolve(t, CatchBorderRole.boundary),
                 padding: CatchInsets.iconChipContentTight,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(CatchRadius.pill),

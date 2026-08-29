@@ -14,7 +14,7 @@ export 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 /// counterpart to `Chip` / `SelectChip` — for mutually-exclusive choices that
 /// each need a sentence (admission presets, cancellation policy). Stack in a
 /// column.
-class CatchOptionCard extends StatelessWidget {
+class CatchOptionCard extends StatefulWidget {
   const CatchOptionCard({
     super.key,
     required this.title,
@@ -35,28 +35,47 @@ class CatchOptionCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
+  State<CatchOptionCard> createState() => _CatchOptionCardState();
+}
+
+class _CatchOptionCardState extends State<CatchOptionCard> {
+  bool _focused = false;
+
+  @override
+  void didUpdateWidget(CatchOptionCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.onTap == null) _focused = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final allowedContractValues = contract?.enumValues;
+    final allowedContractValues = widget.contract?.enumValues;
     assert(
-      contract == null ||
-          contractValue == null ||
+      widget.contract == null ||
+          widget.contractValue == null ||
           allowedContractValues == null ||
-          allowedContractValues.contains(contractValue),
+          allowedContractValues.contains(widget.contractValue),
       'CatchOptionCard value must be allowed by its contract.',
     );
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      onTap: onTap,
+      onTap: widget.onTap,
+      onFocusChange: (focused) {
+        if (_focused != focused) setState(() => _focused = focused);
+      },
       tone: CatchSurfaceTone.transparent,
-      backgroundColor: selected
+      backgroundColor: widget.selected
           ? Color.alphaBlend(
               t.ink.withValues(alpha: CatchOpacity.controlOverlayHover),
               t.surface,
             )
           : t.surface,
-      borderColor: selected ? t.ink : t.line2,
-      borderWidth: CatchStroke.underline,
+      borderSpec: _focused
+          ? CatchBorder.resolve(t, CatchBorderRole.focus)
+          : widget.selected
+          ? CatchBorder.resolve(t, CatchBorderRole.selected)
+          : CatchBorder.interactive(t, CatchInteractiveBorderState.resting),
       radius: CatchRadius.md,
       padding: CatchInsets.tileContentCompact,
       child: Row(
@@ -65,9 +84,9 @@ class CatchOptionCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: CatchStroke.hairline),
             child: Icon(
-              selected ? CatchIcons.checkCircle : CatchIcons.circle,
+              widget.selected ? CatchIcons.checkCircle : CatchIcons.circle,
               size: CatchIcon.lg,
-              color: selected ? t.ink : t.ink3,
+              color: widget.selected ? t.ink : t.ink3,
             ),
           ),
           const SizedBox(width: CatchSpacing.s3),
@@ -75,11 +94,12 @@ class CatchOptionCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: CatchTextStyles.labelL(context)),
-                if (description != null && description!.isNotEmpty) ...[
+                Text(widget.title, style: CatchTextStyles.labelL(context)),
+                if (widget.description != null &&
+                    widget.description!.isNotEmpty) ...[
                   const SizedBox(height: CatchSpacing.micro3),
                   Text(
-                    description!,
+                    widget.description!,
                     style: CatchTextStyles.supporting(context),
                   ),
                 ],

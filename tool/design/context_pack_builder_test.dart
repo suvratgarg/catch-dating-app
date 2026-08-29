@@ -676,7 +676,11 @@ $activityCards
     ).allMatches(body)) {
       final name = match.group(1)!;
       final expression = match.group(2)!.trim();
-      constants[name] = _resolveDoubleExpression(expression, scopedRefs);
+      constants[name] = _resolveDoubleExpression(
+        expression,
+        scopedRefs,
+        localClassName: className,
+      );
     }
     return constants;
   }
@@ -697,10 +701,16 @@ $activityCards
 
   double _resolveDoubleExpression(
     String expression,
-    Map<String, Map<String, double>> refs,
-  ) {
+    Map<String, Map<String, double>> refs, {
+    required String localClassName,
+  }) {
     final literal = double.tryParse(expression);
     if (literal != null) return literal;
+    final localReference = RegExp(r'^\w+$').firstMatch(expression);
+    if (localReference != null) {
+      final value = refs[localClassName]?[expression];
+      if (value != null) return value;
+    }
     final reference = RegExp(r'^(\w+)\.(\w+)$').firstMatch(expression);
     if (reference != null) {
       final className = reference.group(1)!;

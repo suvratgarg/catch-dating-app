@@ -776,7 +776,9 @@ Constant dimensions are allowed only for:
 - icon sizes through `CatchIcon.{sm,md,lg}`;
 - hairlines/dividers (`1` px) and `0`;
 - spacing gaps through `CatchSpacing` or `gapH*`/`gapW*`;
-- radii, border widths, and stroke widths through named tokens;
+- radii through named tokens, and UI boundaries through semantic
+  `CatchBorderRole` resolution; repeated progress/art strokes use named
+  `CatchStroke` roles;
 - genuinely fixed art such as logo canvases, QR codes, or platform-spec
   graphics, with `sizing:allow`.
 
@@ -951,8 +953,11 @@ The current lint scope is all handwritten `lib/**` Dart except
 `lib/core/theme/**`, generated code, and schema-generated contracts. Theme files
 are the source of raw token definitions; feature/shared widget code consumes
 named `CatchSpacing`, `CatchLayout`, `CatchGaps`, `CatchInsets`, `CatchRadius`,
-`CatchStroke`, and Catch control primitives instead of local raw layout numbers
-or Material/Cupertino controls.
+`CatchBorder`, `CatchStroke`, and Catch control primitives instead of local raw
+layout numbers or Material/Cupertino controls. `catch_no_raw_stroke_width`
+covers all handwritten app code, including shared widgets and 1 px literals;
+zero remains the explicit no-border value, while decorative `CustomPainter`
+artwork is outside this UI-boundary diagnostic.
 
 Implemented diagnostics include raw spacing, token arithmetic, section-list
 composition, semantic inset preference, event-detail photo thumbnail preference,

@@ -368,7 +368,7 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
                         size: CatchSpacing.s16,
                         name: profile.displayName,
                         imageUrl: profile.avatarUrl,
-                        borderWidth: 2,
+                        borderWidth: CatchStroke.avatarRing,
                         borderColor: t.primarySoft,
                       ),
                       gapH16,
