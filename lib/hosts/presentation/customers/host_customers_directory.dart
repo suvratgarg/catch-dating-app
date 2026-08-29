@@ -458,89 +458,83 @@ class HostCustomersSummary extends StatelessWidget {
       onRetry: onRetry,
     ),
     builder: (context, value) {
+      final t = CatchTokens.of(context);
       final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
       String countLabel(int count) => value.truncated ? '$count+' : '$count';
-      return CatchSurface(
-        padding: CatchInsets.cardContent,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (usesLargeText)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  CatchStatColumn(
-                    value: countLabel(value.contactCount),
-                    label: context.l10n.hostsHostAudienceContacts,
-                    monoValue: true,
-                  ),
-                  gapH16,
-                  CatchStatColumn(
-                    value: countLabel(value.pastAttendeeCount),
-                    label: context.l10n.hostsHostAudienceAttended,
-                    monoValue: true,
-                  ),
-                  gapH16,
-                  CatchStatColumn(
-                    value: countLabel(value.repeatAttendeeCount),
-                    label: context.l10n.hostsHostAudienceRepeat,
-                    monoValue: true,
-                  ),
+      final stats = <({String label, String value})>[
+        (
+          value: countLabel(value.contactCount),
+          label: context.l10n.hostsHostAudienceContacts,
+        ),
+        (
+          value: countLabel(value.pastAttendeeCount),
+          label: context.l10n.hostsHostAudienceAttended,
+        ),
+        (
+          value: countLabel(value.repeatAttendeeCount),
+          label: context.l10n.hostsHostAudienceRepeat,
+        ),
+      ];
+      final statTiles = <Widget>[
+        for (final stat in stats)
+          CatchSurface(
+            tone: CatchSurfaceTone.transparent,
+            radius: CatchRadius.md,
+            padding: CatchInsets.cardContent,
+            borderColor: t.line,
+            child: CatchStatColumn(
+              value: stat.value,
+              label: stat.label,
+              monoValue: true,
+            ),
+          ),
+      ];
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (usesLargeText)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var index = 0; index < statTiles.length; index++) ...[
+                  if (index > 0) gapH8,
+                  statTiles[index],
                 ],
-              )
-            else
-              Row(
-                children: [
-                  Expanded(
-                    child: CatchStatColumn(
-                      value: countLabel(value.contactCount),
-                      label: context.l10n.hostsHostAudienceContacts,
-                      monoValue: true,
-                    ),
-                  ),
-                  Expanded(
-                    child: CatchStatColumn(
-                      value: countLabel(value.pastAttendeeCount),
-                      label: context.l10n.hostsHostAudienceAttended,
-                      monoValue: true,
-                    ),
-                  ),
-                  Expanded(
-                    child: CatchStatColumn(
-                      value: countLabel(value.repeatAttendeeCount),
-                      label: context.l10n.hostsHostAudienceRepeat,
-                      monoValue: true,
-                    ),
-                  ),
+              ],
+            )
+          else
+            Row(
+              children: [
+                for (var index = 0; index < statTiles.length; index++) ...[
+                  if (index > 0) gapW8,
+                  Expanded(child: statTiles[index]),
                 ],
-              ),
+              ],
+            ),
+          gapH20,
+          CatchMetaRow(
+            icon: CatchIcons.tabChats,
+            label: context.l10n.hostCustomersWhatsappReadyCount(
+              count: value.whatsappOptInCount,
+            ),
+            maxLines: 2,
+          ),
+          gapH8,
+          CatchMetaRow(
+            icon: CatchIcons.infoOutlineRounded,
+            label: context.l10n.hostCustomersSourceSummary(
+              importedCount: value.importedContactCount,
+              linkedCount: value.linkedAccountCount,
+            ),
+            maxLines: 3,
+          ),
+          if (directorySummary case final summary?) ...[
             gapH16,
             const CatchDivider.section(),
             gapH12,
-            CatchMetaRow(
-              icon: CatchIcons.tabChats,
-              label: context.l10n.hostCustomersWhatsappReadyCount(
-                count: value.whatsappOptInCount,
-              ),
-              maxLines: 2,
-            ),
-            gapH8,
-            CatchMetaRow(
-              icon: CatchIcons.infoOutlineRounded,
-              label: context.l10n.hostCustomersSourceSummary(
-                importedCount: value.importedContactCount,
-                linkedCount: value.linkedAccountCount,
-              ),
-              maxLines: 3,
-            ),
-            if (directorySummary case final summary?) ...[
-              gapH16,
-              const CatchDivider.section(),
-              gapH12,
-              summary,
-            ],
+            summary,
           ],
-        ),
+        ],
       );
     },
   );
