@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -160,9 +159,11 @@ class CatchErrorBody extends StatelessWidget {
 
     if (mode == CatchErrorStateMode.inline ||
         mode == CatchErrorStateMode.compact) {
-      return CatchSurface(
+      // Error content inherits containment from its section. A state change
+      // must not introduce a second card, fill, or outline around the same
+      // content module.
+      return Padding(
         padding: EdgeInsets.all(isCompact ? CatchSpacing.s4 : CatchSpacing.s5),
-        borderColor: t.line,
         child: content,
       );
     }

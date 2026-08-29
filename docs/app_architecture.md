@@ -1076,7 +1076,9 @@ The error primitive family separates visual content, placement adapters, and
 delivery channels:
 
 - `CatchErrorState` owns app-facing branded error content through one resolved
-  descriptor and one shared body renderer.
+  descriptor and one shared, cardless body renderer. Full-screen, inline, and
+  compact modes never invent a new fill or outline; they inherit containment
+  from the route or section that owns the failed content.
 - `CatchErrorScaffold`, `CatchSliverErrorState`, and `CatchInlineErrorState`
   are placement adapters for root, sliver, and section errors. Every adapter
   supports the same primary retry and optional secondary-action contract.
