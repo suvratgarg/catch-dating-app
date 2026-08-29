@@ -691,6 +691,7 @@ class _RehearsalBand extends StatelessWidget {
       ),
       size: CatchButtonSize.sm,
       accentColor: t.danger,
+      fullWidth: largeText,
       onPressed: onOpenClock,
     );
     final tools = CatchIconButton.icon(
@@ -732,13 +733,9 @@ class _RehearsalBand extends StatelessWidget {
                 ],
               ),
               gapH4,
-              Row(
-                children: [
-                  Expanded(child: descriptor),
-                  gapW8,
-                  clock,
-                ],
-              ),
+              descriptor,
+              gapH8,
+              clock,
             ],
           )
         : Row(
