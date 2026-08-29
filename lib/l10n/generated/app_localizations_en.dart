@@ -13691,6 +13691,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get hostCustomersOpenMessaging => 'Open messaging';
+
+  @override
   String get hostCustomersFilterSheetTitle => 'Filter customers';
 
   @override

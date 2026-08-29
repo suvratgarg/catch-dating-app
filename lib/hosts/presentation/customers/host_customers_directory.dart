@@ -1,14 +1,48 @@
 part of 'host_customers_screen.dart';
 
-class HostCustomerDirectorySortControl extends StatelessWidget {
-  const HostCustomerDirectorySortControl({
+class HostCustomerDirectoryControls extends StatelessWidget {
+  const HostCustomerDirectoryControls({
     super.key,
     required this.sort,
     required this.onSortChanged,
+    required this.onOpenFilters,
   });
 
   final HostCustomerSort sort;
   final ValueChanged<HostCustomerSort> onSortChanged;
+  final VoidCallback? onOpenFilters;
+
+  @override
+  Widget build(BuildContext context) => ComponentResponsiveBuilder(
+    breakpoint:
+        ComponentBreakpoints.hostCustomerDirectoryControlsCompactBreakpoint,
+    compact: (_) => _HostCustomerDirectoryControlRow(
+      sort: sort,
+      onSortChanged: onSortChanged,
+      onOpenFilters: onOpenFilters,
+      compact: true,
+    ),
+    expanded: (_) => _HostCustomerDirectoryControlRow(
+      sort: sort,
+      onSortChanged: onSortChanged,
+      onOpenFilters: onOpenFilters,
+      compact: false,
+    ),
+  );
+}
+
+class _HostCustomerDirectoryControlRow extends StatelessWidget {
+  const _HostCustomerDirectoryControlRow({
+    required this.sort,
+    required this.onSortChanged,
+    required this.onOpenFilters,
+    required this.compact,
+  });
+
+  final HostCustomerSort sort;
+  final ValueChanged<HostCustomerSort> onSortChanged;
+  final VoidCallback? onOpenFilters;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +59,29 @@ class HostCustomerDirectorySortControl extends StatelessWidget {
             label: _customerSortLabel(context, option),
           ),
       ],
-      triggerLabel: (selected) =>
-          context.l10n.hostCustomersSortControl(label: selected.label),
+      triggerLabel: (selected) => compact
+          ? selected.label
+          : context.l10n.hostCustomersSortControl(label: selected.label),
       onSelected: onSortChanged,
     );
 
-    return Align(alignment: AlignmentDirectional.centerEnd, child: sortControl);
+    return Wrap(
+      alignment: WrapAlignment.end,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: [
+        CatchButton(
+          key: const ValueKey('host-customers-filters'),
+          label: context.l10n.hostCustomersFilters,
+          icon: compact ? null : Icon(CatchIcons.tuneRounded),
+          variant: CatchButtonVariant.secondary,
+          size: CatchButtonSize.sm,
+          onPressed: onOpenFilters,
+        ),
+        sortControl,
+      ],
+    );
   }
 }
 
@@ -71,8 +122,8 @@ class HostCustomerFilterSummary extends StatelessWidget {
     required this.count,
     required this.countCoverage,
     required this.campaignBlocker,
-    required this.onOpenFilters,
     required this.onMessage,
+    required this.onOpenMessaging,
     this.onClear,
   });
 
@@ -81,8 +132,8 @@ class HostCustomerFilterSummary extends StatelessWidget {
   final int count;
   final HostCustomerMatchCountCoverage countCoverage;
   final String? campaignBlocker;
-  final VoidCallback onOpenFilters;
   final VoidCallback? onMessage;
+  final VoidCallback onOpenMessaging;
   final VoidCallback? onClear;
 
   @override
@@ -92,70 +143,56 @@ class HostCustomerFilterSummary extends StatelessWidget {
       label: manualTag?.label ?? _customerFilterLabel(context, filter),
       countLabel: countLabel,
     );
-    return CatchSurface(
-      radius: CatchRadius.md,
-      padding: CatchInsets.tileContentCompact,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: CatchSpacing.s3,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              Text(header, style: CatchTextStyles.labelL(context)),
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: CatchSpacing.s1,
-                children: [
-                  if (onClear case final clear?)
-                    CatchButton(
-                      label: context.l10n.hostCustomersClearFilter,
-                      variant: CatchButtonVariant.ghost,
-                      size: CatchButtonSize.sm,
-                      onPressed: clear,
-                    ),
-                  CatchButton(
-                    label: context.l10n.hostCustomersFilters,
-                    icon: Icon(CatchIcons.tuneRounded),
-                    variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
-                    onPressed: onOpenFilters,
-                  ),
-                ],
-              ),
-            ],
-          ),
-          gapH12,
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: CatchSpacing.s3,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              if (campaignBlocker case final String blocker)
-                Text(
-                  hostCampaignBlockerLabel(context, blocker),
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).warning,
-                  ),
-                ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: CatchSpacing.s3,
+          runSpacing: CatchSpacing.s1,
+          children: [
+            Text(header, style: CatchTextStyles.labelL(context)),
+            if (onClear case final clear?)
               CatchButton(
-                key: const ValueKey('host-customers-message-segment'),
-                label: countCoverage == HostCustomerMatchCountCoverage.exact
-                    ? context.l10n.hostCustomersMessageThese(count: count)
-                    : context.l10n.hostCustomersMessageTheseAtLeast(
-                        count: count,
-                      ),
+                label: context.l10n.hostCustomersClearFilter,
+                variant: CatchButtonVariant.ghost,
                 size: CatchButtonSize.sm,
-                onPressed: onMessage,
+                onPressed: clear,
               ),
-            ],
-          ),
-        ],
-      ),
+          ],
+        ),
+        gapH12,
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: CatchSpacing.s3,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            if (campaignBlocker case final String blocker)
+              Text(
+                hostCampaignBlockerLabel(context, blocker),
+                style: CatchTextStyles.supporting(
+                  context,
+                  color: CatchTokens.of(context).warning,
+                ),
+              ),
+            CatchButton(
+              key: const ValueKey('host-customers-messaging-action'),
+              label: onMessage == null
+                  ? context.l10n.hostCustomersOpenMessaging
+                  : countCoverage == HostCustomerMatchCountCoverage.exact
+                  ? context.l10n.hostCustomersMessageThese(count: count)
+                  : context.l10n.hostCustomersMessageTheseAtLeast(count: count),
+              variant: onMessage == null
+                  ? CatchButtonVariant.secondary
+                  : CatchButtonVariant.primary,
+              size: CatchButtonSize.sm,
+              onPressed: onMessage ?? onOpenMessaging,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -401,10 +438,12 @@ class HostCustomersSummary extends StatelessWidget {
     super.key,
     required this.summary,
     required this.onRetry,
+    this.directorySummary,
   });
 
   final AsyncValue<HostCrmSummary> summary;
   final VoidCallback onRetry;
+  final Widget? directorySummary;
 
   @override
   Widget build(BuildContext context) => CatchAsyncValueView<HostCrmSummary>(
@@ -494,6 +533,12 @@ class HostCustomersSummary extends StatelessWidget {
               ),
               maxLines: 3,
             ),
+            if (directorySummary case final summary?) ...[
+              gapH16,
+              const CatchDivider.section(),
+              gapH12,
+              summary,
+            ],
           ],
         ),
       );

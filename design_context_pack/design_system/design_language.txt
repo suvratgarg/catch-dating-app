@@ -255,7 +255,12 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchBottomDock` is a required-child utility plane for chat inputs and
   compact action strips, not a second CTA family.
 - Top-bar action grouping routes through `CatchTopBarActionGroup`; callers do
-  not compose parallel header rows.
+  not compose parallel header rows. A primary root-screen action uses
+  `CatchTopBarPrimaryAction`, which owns the compact 40 px bordered icon and
+  wider labelled-button variants. Semantic text, icon-only, and overflow
+  actions use `CatchTopBarTextAction`, `CatchIconAction`, and
+  `CatchTopBarMenuAction`. Do not pass a body-style `CatchButton` directly into
+  any top-bar `actions` slot.
 - Screen hierarchy follows one control per level. Shell destinations express
   product-level navigation; pinned `CatchTabRail` / `CatchTabbedScreenScaffold`
   tabs switch peer views within one destination. A small fixed set of terse,

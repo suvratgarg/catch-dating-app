@@ -520,7 +520,7 @@ void _registerHostOperationsCustomersTests() {
     expect(find.byType(CatchScreenHeaderTitle), findsOneWidget);
   });
 
-  testWidgets('customer controls separate sorting, commands, and status', (
+  testWidgets('customer overview groups status and directory controls', (
     tester,
   ) async {
     final club = buildClub(id: 'header-club', ownerUserId: _hostUid);
@@ -555,9 +555,33 @@ void _registerHostOperationsCustomersTests() {
       find.text('0 imported or added by your team · 0 linked Catch accounts'),
       findsOneWidget,
     );
-    expect(find.text('Sort: Last seen'), findsOneWidget);
+    final activeView = find.byType(HostCustomerFilterSummary);
+    expect(find.ancestor(of: activeView, matching: summary), findsOneWidget);
+    expect(find.text('All · 0 people'), findsOneWidget);
+    expect(find.text('Message these 0'), findsNothing);
+    final messagingAction = tester.widget<CatchButton>(
+      find.byKey(const ValueKey('host-customers-messaging-action')),
+    );
+    expect(messagingAction.label, 'Open messaging');
+    expect(messagingAction.onPressed, isNotNull);
+
+    final controls = find.byType(HostCustomerDirectoryControls);
+    expect(
+      find.descendant(of: controls, matching: find.text('Filters')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: controls, matching: find.text('Sort: Last seen')),
+      findsOneWidget,
+    );
     expect(find.byTooltip('More customer actions'), findsOneWidget);
     expect(find.byTooltip('Export this audience'), findsNothing);
+
+    await tester.tap(find.text('Filters'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostCustomerFilterSheet), findsOneWidget);
+    Navigator.of(tester.element(find.byType(HostCustomerFilterSheet))).pop();
+    await pumpFeatureUi(tester);
 
     await tester.tap(find.text('Sort: Last seen'));
     await pumpFeatureUi(tester);
@@ -601,14 +625,51 @@ void _registerHostOperationsCustomersTests() {
       ],
     );
 
-    await tester.tap(find.text('Sort: Last seen'));
+    final filtersRect = tester.getRect(
+      find.byKey(const ValueKey('host-customers-filters')),
+    );
+    final sortRect = tester.getRect(
+      find.byKey(const ValueKey('host-customers-sort')),
+    );
+    expect(
+      filtersRect.center.dy,
+      closeTo(sortRect.center.dy, 0.5),
+      reason: 'Filters $filtersRect and Sort $sortRect must share one row.',
+    );
+
+    expect(find.text('Last seen'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('host-customers-sort')));
     await pumpFeatureUi(tester);
     expect(find.byType(CatchSelectionSheet<HostCustomerSort>), findsOneWidget);
 
     await tester.tap(find.text('Most attended'));
     await pumpFeatureUi(tester);
-    expect(find.text('Sort: Most attended'), findsOneWidget);
+    expect(find.text('Most attended'), findsOneWidget);
     expect(requests.last.sort, HostCustomerSort.mostAttended);
+  });
+
+  testWidgets('all customers opens a truthful WhatsApp-ready campaign', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'messaging-club', ownerUserId: _hostUid);
+    await _pumpHostScreen(
+      tester,
+      const HostCustomersScreen(),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        hostCustomersDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostCustomersDirectoryController(
+            [],
+            _emptyCustomerDirectoryState(),
+          ),
+        ),
+      ],
+    );
+
+    await tester.tap(find.text('Open messaging'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Messaging campaigns whatsapp_reachable'), findsOneWidget);
   });
 
   testWidgets('customer search shows clear only while input is non-empty', (
