@@ -3311,6 +3311,36 @@ abstract class AppLocalizations {
   /// **'Select start time'**
   String get hostsWhenStepPlaceholderSelectStartTime;
 
+  /// Title for organizer-owned reusable venues in Create Event.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved places'**
+  String get hostsWhereStepSavedPlacesTitle;
+
+  /// Explains reusable organizer venues.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a team-saved place to fill the location, or save the current place for next time.'**
+  String get hostsWhereStepSavedPlacesSubtitle;
+
+  /// Selected-state label for a saved venue.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get hostsWhereStepSavedPlaceSelected;
+
+  /// Action that saves the current event location as a reusable venue.
+  ///
+  /// In en, this message translates to:
+  /// **'Save current place'**
+  String get hostsWhereStepSaveCurrentPlace;
+
+  /// Action that updates the selected reusable venue.
+  ///
+  /// In en, this message translates to:
+  /// **'Update saved place'**
+  String get hostsWhereStepUpdateSavedPlace;
+
   /// Product copy used by lib/hosts/presentation/event_management/widgets/where_step.dart (title).
   ///
   /// In en, this message translates to:

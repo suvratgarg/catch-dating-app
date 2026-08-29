@@ -689,6 +689,12 @@ const schemaSpecs = [
       "organizerEventSuccessLayoutDocument.ts",
   },
   {
+    name: "OrganizerEventVenueDocument",
+    source: "firestore/organizer_event_venues.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerEventVenueDocument.ts",
+  },
+  {
     name: "EventSuccessAssignmentDraftDocument",
     source: "firestore/event_success_assignment_drafts.schema.json",
     typeOutput:
@@ -1764,6 +1770,21 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "upsertEventSuccessLayoutCallablePayload.ts",
+  },
+  {
+    name: "UpsertOrganizerEventVenueCallablePayload",
+    source: "callables/upsert_organizer_event_venue_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertOrganizerEventVenueCallablePayload.ts",
+  },
+  {
+    name: "UpsertOrganizerEventVenueCallableResponse",
+    source:
+      "callable_responses/upsert_organizer_event_venue_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertOrganizerEventVenueCallableResponse.ts",
   },
   {
     name: "UpsertEventSuccessLayoutCallableResponse",

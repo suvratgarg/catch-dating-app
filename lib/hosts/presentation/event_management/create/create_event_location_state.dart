@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
+import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 
 class CreateEventLocationState {
@@ -6,11 +7,13 @@ class CreateEventLocationState {
     this.startingPoint,
     this.meetingLocationAddress,
     this.meetingLocationPlaceId,
+    this.sourceVenueId,
   });
 
   final LocationCoordinate? startingPoint;
   final String? meetingLocationAddress;
   final String? meetingLocationPlaceId;
+  final String? sourceVenueId;
 
   bool get hasStartingPoint => startingPoint != null;
 
@@ -39,6 +42,26 @@ class CreateEventLocationState {
     );
   }
 
+  CreateEventSavedVenueSelectionResult selectVenue(
+    OrganizerEventVenue venue, {
+    required String currentCapacityText,
+  }) => CreateEventSavedVenueSelectionResult(
+    state: CreateEventLocationState(
+      startingPoint: LocationCoordinate(
+        venue.meetingLocation.latitude,
+        venue.meetingLocation.longitude,
+      ),
+      meetingLocationAddress: venue.meetingLocation.address,
+      meetingLocationPlaceId: venue.meetingLocation.placeId,
+      sourceVenueId: venue.venueId,
+    ),
+    meetingPointText: venue.meetingLocation.name,
+    locationDetailsText: venue.meetingLocation.notes ?? '',
+    suggestedCapacityText: currentCapacityText.trim().isEmpty
+        ? venue.defaultEventCapacity?.toString()
+        : null,
+  );
+
   EventMeetingLocation? meetingLocation({
     required String? meetingPoint,
     required String? notes,
@@ -65,6 +88,20 @@ class CreateEventLocationSelectionResult {
 
   final CreateEventLocationState state;
   final String? meetingPointText;
+}
+
+class CreateEventSavedVenueSelectionResult {
+  const CreateEventSavedVenueSelectionResult({
+    required this.state,
+    required this.meetingPointText,
+    required this.locationDetailsText,
+    required this.suggestedCapacityText,
+  });
+
+  final CreateEventLocationState state;
+  final String meetingPointText;
+  final String locationDetailsText;
+  final String? suggestedCapacityText;
 }
 
 String? _trimmedTextOrNull(String? text) {

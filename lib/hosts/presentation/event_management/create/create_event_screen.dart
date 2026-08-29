@@ -25,6 +25,7 @@ import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
@@ -408,6 +409,20 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     }
   }
 
+  void _selectVenue(OrganizerEventVenue venue) {
+    final selection = _locationState.selectVenue(
+      venue,
+      currentCapacityText: _capacityController.text,
+    );
+    setState(() {
+      _locationState = selection.state;
+      _meetingPointController.text = selection.meetingPointText;
+      _locationDetailsController.text = selection.locationDetailsText;
+      final capacity = selection.suggestedCapacityText;
+      if (capacity != null) _capacityController.text = capacity;
+    });
+  }
+
   Future<EventMeetingLocation?> _pickItineraryLocation(
     EventMeetingLocation? current,
   ) async {
@@ -652,6 +667,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             startTime: startTime,
             endTime: endTime,
             meetingLocation: meetingLocation,
+            sourceVenueId: _locationState.sourceVenueId,
             itinerary: _itinerary,
             eventFormat: _selectedEventFormat,
             distanceKm: _distanceKmForSelectedActivity(),
@@ -914,6 +930,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         locationDetails: _trimmedTextOrNull(_locationDetailsController),
         meetingLocationAddress: _locationState.meetingLocationAddress,
         meetingLocationPlaceId: _locationState.meetingLocationPlaceId,
+        sourceVenueId: _locationState.sourceVenueId,
         startingPointLat: _locationState.startingPoint?.latitude,
         startingPointLng: _locationState.startingPoint?.longitude,
         selectedDateMillis: _selectedDate?.millisecondsSinceEpoch,
@@ -1405,13 +1422,21 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                             ),
                             WhereStep(
                               formKey: _whereFormKey,
+                              organizerId: widget.club.id,
                               autovalidateMode: autovalidateMode,
                               meetingPointController: _meetingPointController,
                               locationDetailsController:
                                   _locationDetailsController,
                               startingPoint: _locationState.startingPoint,
                               onMeetingPointChanged: (_) => setState(() {}),
+                              onLocationDetailsChanged: (_) => setState(() {}),
                               onPickLocation: _pickLocation,
+                              currentMeetingLocation: _currentMeetingLocation,
+                              selectedVenueId: _locationState.sourceVenueId,
+                              onVenueSelected: _selectVenue,
+                              currentCapacity: int.tryParse(
+                                _capacityController.text.trim(),
+                              ),
                             ),
                             WhenStep(
                               formKey: _whenFormKey,

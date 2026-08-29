@@ -16,6 +16,10 @@ export interface EventDocument {
   name?: string;
   clubId: string;
   organizerId?: string;
+  /**
+   * Optional organizer venue used to prefill this event. Meeting location and capacity remain event-local snapshots.
+   */
+  sourceVenueId?: string | null;
   eventOrigin?: EventOrigin;
   runtimeAccess?: EventRuntimeAccess;
   /**

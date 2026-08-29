@@ -3811,6 +3811,41 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.when_step"
   },
+  "hostsWhereStepSavedPlacesTitle": "Saved places",
+  "@hostsWhereStepSavedPlacesTitle": {
+    "description": "Title for organizer-owned reusable venues in Create Event.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.where_step"
+  },
+  "hostsWhereStepSavedPlacesSubtitle": "Choose a team-saved place to fill the location, or save the current place for next time.",
+  "@hostsWhereStepSavedPlacesSubtitle": {
+    "description": "Explains reusable organizer venues.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.where_step"
+  },
+  "hostsWhereStepSavedPlaceSelected": "Selected",
+  "@hostsWhereStepSavedPlaceSelected": {
+    "description": "Selected-state label for a saved venue.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.where_step"
+  },
+  "hostsWhereStepSaveCurrentPlace": "Save current place",
+  "@hostsWhereStepSaveCurrentPlace": {
+    "description": "Action that saves the current event location as a reusable venue.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.where_step"
+  },
+  "hostsWhereStepUpdateSavedPlace": "Update saved place",
+  "@hostsWhereStepUpdateSavedPlace": {
+    "description": "Action that updates the selected reusable venue.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.where_step"
+  },
   "hostsWhereStepTitleLocationName": "Location name",
   "@hostsWhereStepTitleLocationName": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/where_step.dart (title).",

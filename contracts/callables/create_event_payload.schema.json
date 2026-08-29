@@ -26,6 +26,11 @@
     "organizerId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },
+    "sourceVenueId": {
+      "description": "Optional organizer venue provenance. The event still stores an independent meeting-location snapshot.",
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
     "clubId": {
       "description": "Deprecated compatibility alias for organizerId.",
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"

@@ -24,11 +24,13 @@ import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/organizer_event_venue_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -60,6 +62,7 @@ import 'host_control_room_test_helpers.dart';
 
 part 'host_create_event_lifecycle_tests.dart';
 part 'host_create_event_format_tests.dart';
+part 'host_create_event_saved_venue_tests.dart';
 part 'host_create_event_interaction_test_helpers.dart';
 part 'host_create_event_wizard_flow_tests.dart';
 
@@ -70,6 +73,7 @@ void main() {
     });
 
     _registerCreateEventWizardFlowTests();
+    _registerCreateEventSavedVenueTests();
 
     testWidgets(
       'basics disclosures start collapsed, share one accordion, and color activity chips',
@@ -611,109 +615,6 @@ void main() {
         expect(find.text('Event policy'), findsOneWidget);
       },
     );
-
-    testWidgets('picks a map location and handles back navigation', (
-      tester,
-    ) async {
-      final now = DateTime(2099, 1, 2, 9, 30);
-      await _pumpCreateEventFlow(tester, now: () => now);
-      await _openCreateEventFlow(tester);
-
-      await _fillBasicsStep(tester);
-      await _tapPrimaryButton(tester, 'Next');
-      await _pumpTestAnimation(tester);
-
-      await tester.tap(find.byKey(CreateEventFormKeys.mapPicker));
-      await _pumpTestAnimation(tester);
-
-      final googleMap = tester.widget<gmaps.GoogleMap>(
-        find.byType(gmaps.GoogleMap),
-      );
-      const selectedPoint = LocationCoordinate(19.12345, 72.98765);
-      googleMap.onTap?.call(
-        gmaps.LatLng(selectedPoint.latitude, selectedPoint.longitude),
-      );
-      await tester.pump();
-      await tester.tap(find.widgetWithText(CatchButton, 'Confirm location'));
-      await _pumpTestAnimation(tester);
-
-      expect(find.text('Pinned location'), findsOneWidget);
-
-      await tester.tap(find.text('Previous'));
-      await _pumpTestAnimation(tester);
-      expect(find.text('Event basics'), findsOneWidget);
-
-      // The global close action offers a save-on-exit decision from any step.
-      await tester.tap(find.byTooltip('Close'));
-      await _pumpTestAnimation(tester);
-      expect(find.text('Keep editing'), findsOneWidget);
-      await tester.tap(_dialogAction('Save draft & exit'));
-      await _pumpTestAnimation(tester);
-      expect(find.text('Open'), findsOneWidget);
-
-      final draftRepository = EventDraftRepository(ErrorLogger());
-      final drafts = await draftRepository.loadDrafts(
-        clubId: 'club-1',
-        userId: 'runner-1',
-      );
-      expect(drafts.single.id, now.millisecondsSinceEpoch.toString());
-      expect(drafts.single.savedAt, now);
-    });
-
-    testWidgets('fills the location name from a Google place selection', (
-      tester,
-    ) async {
-      await _pumpCreateEventFlow(
-        tester,
-        overrides: [
-          placesRepositoryProvider.overrideWithValue(
-            const _FakePlacesRepository(
-              suggestions: [
-                PlaceAutocompleteSuggestion(
-                  placeId: 'cubbon-park',
-                  description: 'Cubbon Park, Bengaluru, Karnataka',
-                  mainText: 'Cubbon Park',
-                  secondaryText: 'Bengaluru, Karnataka',
-                ),
-              ],
-              placeDetails: PlaceDetails(
-                placeId: 'cubbon-park',
-                displayName: 'Cubbon Park',
-                formattedAddress: 'Cubbon Park, Bengaluru, Karnataka',
-                location: LocationCoordinate(12.9763, 77.5929),
-              ),
-            ),
-          ),
-        ],
-      );
-      await _openCreateEventFlow(tester);
-
-      await _fillBasicsStep(tester);
-      await _tapPrimaryButton(tester, 'Next');
-      await _pumpTestAnimation(tester);
-
-      await tester.tap(find.byKey(CreateEventFormKeys.mapPicker));
-      await _pumpTestAnimation(tester);
-      await tester.enterText(
-        find.widgetWithText(TextField, 'Search for a meeting point'),
-        'Cubbon',
-      );
-      await pumpFeatureUiFor(tester, const Duration(milliseconds: 350));
-      await tester.pump();
-      await tester.tap(find.text('Cubbon Park'));
-      await tester.pump();
-      await tester.tap(find.widgetWithText(CatchButton, 'Confirm location'));
-      await _pumpTestAnimation(tester);
-
-      expect(find.text('Cubbon Park'), findsWidgets);
-      final nameField = tester.widget<TextField>(
-        find.descendant(
-          of: find.byKey(CreateEventFormKeys.meetingPoint),
-          matching: find.byType(TextField),
-        ),
-      );
-      expect(nameField.controller?.text, 'Cubbon Park');
-    });
 
     testWidgets('restored past schedule draft shows validation error', (
       tester,
@@ -1341,6 +1242,7 @@ Future<void> _pumpCreateEventFlow(
   EventDraft? initialDraft,
   CreateEventPrefill? initialPrefill,
   HostRosterImportPlan? initialRosterImportPlan,
+  List<OrganizerEventVenue> savedVenues = const [],
   int initialStep = 0,
 }) async {
   final club = clubOverride ?? buildClub();
@@ -1389,6 +1291,9 @@ Future<void> _pumpCreateEventFlow(
     ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+        watchOrganizerEventVenuesProvider(
+          club.id,
+        ).overrideWith((ref) => Stream.value(savedVenues)),
         ...overrides,
       ],
       child: MaterialApp.router(

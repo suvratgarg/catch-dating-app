@@ -91,6 +91,7 @@ class CreateEventDraftRestoreState {
         ),
         meetingLocationAddress: draft.meetingLocationAddress,
         meetingLocationPlaceId: draft.meetingLocationPlaceId,
+        sourceVenueId: draft.sourceVenueId,
       ),
       selectedDate: selectedDate,
       selectedStartTime: selectedStartTime,

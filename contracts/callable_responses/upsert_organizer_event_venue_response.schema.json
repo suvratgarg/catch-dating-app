@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/upsert_organizer_event_venue_response.schema.json",
+  "title": "UpsertOrganizerEventVenueCallableResponse",
+  "description": "Canonical reusable venue returned after an organizer venue upsert.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["venue"],
+  "properties": {
+    "venue": {
+      "$ref": "../shared/organizer_event_venue.schema.json#/definitions/venue"
+    }
+  }
+}

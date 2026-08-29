@@ -8,10 +8,12 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/organizer_event_venue_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_service.dart';
@@ -38,9 +40,28 @@ class PickedEventPhoto {
 @riverpod
 class CreateEventController extends _$CreateEventController {
   static final submitMutation = Mutation<Event>();
+  static final saveVenueMutation = Mutation<OrganizerEventVenue>();
 
   @override
   void build() {}
+
+  Future<OrganizerEventVenue> saveVenue({
+    required String organizerId,
+    required EventMeetingLocation meetingLocation,
+    String? venueId,
+    int? defaultEventCapacity,
+  }) async {
+    requireSignedInUid(ref, action: 'save a reusable event venue');
+    return ref
+        .read(organizerEventVenueRepositoryProvider)
+        .upsert(
+          organizerId: organizerId,
+          venueId: venueId,
+          label: meetingLocation.name,
+          meetingLocation: meetingLocation.toJson(),
+          defaultEventCapacity: defaultEventCapacity,
+        );
+  }
 
   Future<HostRosterTable?> pickRosterFile({
     ExternalBookingProvider? providerHint,
@@ -104,6 +125,7 @@ class CreateEventController extends _$CreateEventController {
     required DateTime startTime,
     required DateTime endTime,
     required EventMeetingLocation meetingLocation,
+    String? sourceVenueId,
     required EventFormatSnapshot eventFormat,
     required double distanceKm,
     required PaceLevel pace,
@@ -186,6 +208,7 @@ class CreateEventController extends _$CreateEventController {
       endTime: endTime,
       meetingPoint: normalizedMeetingLocation.name,
       meetingLocation: normalizedMeetingLocation,
+      sourceVenueId: sourceVenueId,
       startingPointLat: normalizedMeetingLocation.latitude,
       startingPointLng: normalizedMeetingLocation.longitude,
       locationDetails: normalizedMeetingLocation.notes,

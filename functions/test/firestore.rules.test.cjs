@@ -541,6 +541,28 @@ function organizerEventSuccessLayout(overrides = {}) {
   };
 }
 
+function organizerEventVenue(overrides = {}) {
+  const updatedAt = Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z"));
+  return {
+    organizerId: "organizer-1",
+    venueId: "venue-1",
+    label: "Bandstand steps",
+    meetingLocation: {
+      name: "Bandstand steps",
+      address: "Bandra West, Mumbai",
+      placeId: "place-1",
+      latitude: 19.046,
+      longitude: 72.819,
+      notes: "Meet by the sea-facing gate.",
+    },
+    defaultEventCapacity: 24,
+    status: "active",
+    createdAt: updatedAt,
+    updatedAt,
+    ...overrides,
+  };
+}
+
 function eventSuccessPreference(overrides = {}) {
   return {
     eventId: "event-1",
@@ -905,6 +927,44 @@ describe("firestore.rules", () => {
         "organizerEventSuccessLayouts",
         "organizer-1_layout-2",
       ), organizerEventSuccessLayout({layoutId: "layout-2"})));
+    });
+
+    it("limits saved event venues to organizer managers", async () => {
+      await seed(["organizers", "organizer-1"], {
+        ownerUserId: "owner-1",
+        hostUserId: "owner-1",
+        hostUserIds: ["owner-1", "manager-1"],
+      });
+      await seed(
+        ["organizerEventVenues", "organizer-1_venue-1"],
+        organizerEventVenue(),
+      );
+
+      const managerDb = authedDb("manager-1");
+      await assertSucceeds(getDoc(doc(
+        managerDb,
+        "organizerEventVenues",
+        "organizer-1_venue-1",
+      )));
+      await assertSucceeds(getDocs(query(
+        collection(managerDb, "organizerEventVenues"),
+        where("organizerId", "==", "organizer-1"),
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("runner-1"),
+        "organizerEventVenues",
+        "organizer-1_venue-1",
+      )));
+      await assertFails(updateDoc(doc(
+        managerDb,
+        "organizerEventVenues",
+        "organizer-1_venue-1",
+      ), {label: "Client edit"}));
+      await assertFails(setDoc(doc(
+        managerDb,
+        "organizerEventVenues",
+        "organizer-1_venue-2",
+      ), organizerEventVenue({venueId: "venue-2"})));
     });
 
     it("keeps contact notes and manual-tag vocabularies callable-only", async () => {

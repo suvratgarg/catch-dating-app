@@ -82,6 +82,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   synthetic: json['synthetic'] as bool? ?? false,
   seedPrefix: json['seedPrefix'] as String?,
   clubId: _readOrganizerId(json, 'organizerId') as String,
+  sourceVenueId: json['sourceVenueId'] as String?,
   name: json['name'] as String? ?? '',
   startTime: const TimestampConverter().fromJson(json['startTime']),
   endTime: const TimestampConverter().fromJson(json['endTime']),
@@ -170,6 +171,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
 
 Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'organizerId': instance.clubId,
+  'sourceVenueId': ?instance.sourceVenueId,
   'name': instance.name,
   'startTime': const TimestampConverter().toJson(instance.startTime),
   'endTime': const TimestampConverter().toJson(instance.endTime),

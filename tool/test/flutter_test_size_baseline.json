@@ -21,7 +21,7 @@
     },
     {
       "path": "test/hosts/host_create_event_screen_test.dart",
-      "maxLines": 1591
+      "maxLines": 1496
     },
     {
       "path": "test/onboarding/onboarding_widgets_test.dart",

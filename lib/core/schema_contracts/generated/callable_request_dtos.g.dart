@@ -209,6 +209,7 @@ export 'callables/update_organizer_form_draft_callable_request.g.dart';
 export 'callables/update_user_profile_patch.g.dart';
 export 'callables/upsert_event_success_layout_callable_request.g.dart';
 export 'callables/upsert_organizer_campaign_callable_request.g.dart';
+export 'callables/upsert_organizer_event_venue_callable_request.g.dart';
 export 'callables/user_analytics_query_callable_request.g.dart';
 export 'callables/validate_organizer_form_draft_callable_request.g.dart';
 export 'callables/verify_razorpay_payment_callable_request.g.dart';

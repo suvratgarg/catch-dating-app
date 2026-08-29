@@ -8754,6 +8754,12 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['deny', 'hostApproval', 'autoCreate'],
   );
 
+  static const createEventCallablePayloadSourceVenueId = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.sourceVenueId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const createEventCallablePayloadStartingPointLat = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.startingPointLat',
     required: true,
@@ -13892,6 +13898,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentSourceVenueId = CatchContractFieldConstraints(
+    path: 'eventDocument.sourceVenueId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
   );
 
   static const eventDocumentStartingPointLat = CatchContractFieldConstraints(
@@ -40357,6 +40369,114 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerEventVenueDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventVenueDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEventVenueDocumentDefaultEventCapacity = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.defaultEventCapacity',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const organizerEventVenueDocumentLabel = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventVenueDocumentMeetingLocationAddress = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.meetingLocation.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventVenueDocumentMeetingLocationLatitude = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.meetingLocation.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const organizerEventVenueDocumentMeetingLocationLongitude = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.meetingLocation.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const organizerEventVenueDocumentMeetingLocationName = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.meetingLocation.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventVenueDocumentMeetingLocationNotes = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.meetingLocation.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventVenueDocumentMeetingLocationPlaceId = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.meetingLocation.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventVenueDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerEventVenueDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'archived'],
+  );
+
+  static const organizerEventVenueDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerEventVenueDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerEventVenueDocumentVenueId = CatchContractFieldConstraints(
+    path: 'organizerEventVenueDocument.venueId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const organizerFollowCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'organizerFollowCallablePayload.organizerId',
     maxLength: 180,
@@ -55707,6 +55827,164 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['object'],
   );
 
+  static const upsertOrganizerEventVenueCallablePayloadDefaultEventCapacity = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallablePayload.defaultEventCapacity',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const upsertOrganizerEventVenueCallablePayloadLabel = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallablePayload.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallablePayloadMeetingLocationAddress = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallablePayload.meetingLocation.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallablePayloadMeetingLocationLatitude = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallablePayload.meetingLocation.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const upsertOrganizerEventVenueCallablePayloadMeetingLocationLongitude = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallablePayload.meetingLocation.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const upsertOrganizerEventVenueCallablePayloadMeetingLocationName = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallablePayload.meetingLocation.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallablePayloadMeetingLocationNotes = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallablePayload.meetingLocation.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallablePayloadMeetingLocationPlaceId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallablePayload.meetingLocation.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallablePayloadStatus = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallablePayload.status',
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'archived'],
+  );
+
+  static const upsertOrganizerEventVenueCallablePayloadVenueId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallablePayload.venueId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const upsertOrganizerEventVenueCallableResponseVenueDefaultEventCapacity = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallableResponse.venue.defaultEventCapacity',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const upsertOrganizerEventVenueCallableResponseVenueLabel = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallableResponse.venue.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallableResponseVenueMeetingLocationAddress = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallableResponseVenueMeetingLocationLatitude = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const upsertOrganizerEventVenueCallableResponseVenueMeetingLocationLongitude = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const upsertOrganizerEventVenueCallableResponseVenueMeetingLocationName = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallableResponseVenueMeetingLocationNotes = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallableResponseVenueMeetingLocationPlaceId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallableResponseVenueOrganizerId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallableResponse.venue.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerEventVenueCallableResponseVenueStatus = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallableResponse.venue.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'archived'],
+  );
+
+  static const upsertOrganizerEventVenueCallableResponseVenueVenueId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerEventVenueCallableResponse.venue.venueId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
   static const userAnalyticsCallableResponseCoachingTipRefs = CatchContractFieldConstraints(
     path: 'userAnalyticsCallableResponse.coachingTipRefs',
     required: true,
@@ -59639,6 +59917,7 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.priceInPaise': createEventCallablePayloadPriceInPaise,
     'createEventCallablePayload.privateAccess.inviteCode': createEventCallablePayloadPrivateAccessInviteCode,
     'createEventCallablePayload.runtimeWalkInPolicy': createEventCallablePayloadRuntimeWalkInPolicy,
+    'createEventCallablePayload.sourceVenueId': createEventCallablePayloadSourceVenueId,
     'createEventCallablePayload.startingPointLat': createEventCallablePayloadStartingPointLat,
     'createEventCallablePayload.startingPointLng': createEventCallablePayloadStartingPointLng,
     'createEventCallablePayload.startTimeMillis': createEventCallablePayloadStartTimeMillis,
@@ -60348,6 +60627,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.runtimeAccess.walkInPolicy': eventDocumentRuntimeAccessWalkInPolicy,
     'eventDocument.scenario': eventDocumentScenario,
     'eventDocument.seedPrefix': eventDocumentSeedPrefix,
+    'eventDocument.sourceVenueId': eventDocumentSourceVenueId,
     'eventDocument.startingPointLat': eventDocumentStartingPointLat,
     'eventDocument.startingPointLng': eventDocumentStartingPointLng,
     'eventDocument.startTime._nanoseconds': eventDocumentStartTimeNanoseconds,
@@ -63983,6 +64263,21 @@ abstract final class CatchContractConstraints {
     'organizerEventSuccessLayoutDocument.units.items.shape': organizerEventSuccessLayoutDocumentUnitsItemsShape,
     'organizerEventSuccessLayoutDocument.updatedAt._nanoseconds': organizerEventSuccessLayoutDocumentUpdatedAtNanoseconds,
     'organizerEventSuccessLayoutDocument.updatedAt._seconds': organizerEventSuccessLayoutDocumentUpdatedAtSeconds,
+    'organizerEventVenueDocument.createdAt._nanoseconds': organizerEventVenueDocumentCreatedAtNanoseconds,
+    'organizerEventVenueDocument.createdAt._seconds': organizerEventVenueDocumentCreatedAtSeconds,
+    'organizerEventVenueDocument.defaultEventCapacity': organizerEventVenueDocumentDefaultEventCapacity,
+    'organizerEventVenueDocument.label': organizerEventVenueDocumentLabel,
+    'organizerEventVenueDocument.meetingLocation.address': organizerEventVenueDocumentMeetingLocationAddress,
+    'organizerEventVenueDocument.meetingLocation.latitude': organizerEventVenueDocumentMeetingLocationLatitude,
+    'organizerEventVenueDocument.meetingLocation.longitude': organizerEventVenueDocumentMeetingLocationLongitude,
+    'organizerEventVenueDocument.meetingLocation.name': organizerEventVenueDocumentMeetingLocationName,
+    'organizerEventVenueDocument.meetingLocation.notes': organizerEventVenueDocumentMeetingLocationNotes,
+    'organizerEventVenueDocument.meetingLocation.placeId': organizerEventVenueDocumentMeetingLocationPlaceId,
+    'organizerEventVenueDocument.organizerId': organizerEventVenueDocumentOrganizerId,
+    'organizerEventVenueDocument.status': organizerEventVenueDocumentStatus,
+    'organizerEventVenueDocument.updatedAt._nanoseconds': organizerEventVenueDocumentUpdatedAtNanoseconds,
+    'organizerEventVenueDocument.updatedAt._seconds': organizerEventVenueDocumentUpdatedAtSeconds,
+    'organizerEventVenueDocument.venueId': organizerEventVenueDocumentVenueId,
     'organizerFollowCallablePayload.organizerId': organizerFollowCallablePayloadOrganizerId,
     'organizerFollowDocument.followedAt._nanoseconds': organizerFollowDocumentFollowedAtNanoseconds,
     'organizerFollowDocument.followedAt._seconds': organizerFollowDocumentFollowedAtSeconds,
@@ -66109,6 +66404,28 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerCampaignCallablePayload.segmentIds.items': upsertOrganizerCampaignCallablePayloadSegmentIdsItems,
     'upsertOrganizerCampaignCallablePayload.templateId': upsertOrganizerCampaignCallablePayloadTemplateId,
     'upsertOrganizerCampaignCallablePayload.templateVariables': upsertOrganizerCampaignCallablePayloadTemplateVariables,
+    'upsertOrganizerEventVenueCallablePayload.defaultEventCapacity': upsertOrganizerEventVenueCallablePayloadDefaultEventCapacity,
+    'upsertOrganizerEventVenueCallablePayload.label': upsertOrganizerEventVenueCallablePayloadLabel,
+    'upsertOrganizerEventVenueCallablePayload.meetingLocation.address': upsertOrganizerEventVenueCallablePayloadMeetingLocationAddress,
+    'upsertOrganizerEventVenueCallablePayload.meetingLocation.latitude': upsertOrganizerEventVenueCallablePayloadMeetingLocationLatitude,
+    'upsertOrganizerEventVenueCallablePayload.meetingLocation.longitude': upsertOrganizerEventVenueCallablePayloadMeetingLocationLongitude,
+    'upsertOrganizerEventVenueCallablePayload.meetingLocation.name': upsertOrganizerEventVenueCallablePayloadMeetingLocationName,
+    'upsertOrganizerEventVenueCallablePayload.meetingLocation.notes': upsertOrganizerEventVenueCallablePayloadMeetingLocationNotes,
+    'upsertOrganizerEventVenueCallablePayload.meetingLocation.placeId': upsertOrganizerEventVenueCallablePayloadMeetingLocationPlaceId,
+    'upsertOrganizerEventVenueCallablePayload.organizerId': upsertOrganizerEventVenueCallablePayloadOrganizerId,
+    'upsertOrganizerEventVenueCallablePayload.status': upsertOrganizerEventVenueCallablePayloadStatus,
+    'upsertOrganizerEventVenueCallablePayload.venueId': upsertOrganizerEventVenueCallablePayloadVenueId,
+    'upsertOrganizerEventVenueCallableResponse.venue.defaultEventCapacity': upsertOrganizerEventVenueCallableResponseVenueDefaultEventCapacity,
+    'upsertOrganizerEventVenueCallableResponse.venue.label': upsertOrganizerEventVenueCallableResponseVenueLabel,
+    'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.address': upsertOrganizerEventVenueCallableResponseVenueMeetingLocationAddress,
+    'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.latitude': upsertOrganizerEventVenueCallableResponseVenueMeetingLocationLatitude,
+    'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.longitude': upsertOrganizerEventVenueCallableResponseVenueMeetingLocationLongitude,
+    'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.name': upsertOrganizerEventVenueCallableResponseVenueMeetingLocationName,
+    'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.notes': upsertOrganizerEventVenueCallableResponseVenueMeetingLocationNotes,
+    'upsertOrganizerEventVenueCallableResponse.venue.meetingLocation.placeId': upsertOrganizerEventVenueCallableResponseVenueMeetingLocationPlaceId,
+    'upsertOrganizerEventVenueCallableResponse.venue.organizerId': upsertOrganizerEventVenueCallableResponseVenueOrganizerId,
+    'upsertOrganizerEventVenueCallableResponse.venue.status': upsertOrganizerEventVenueCallableResponseVenueStatus,
+    'upsertOrganizerEventVenueCallableResponse.venue.venueId': upsertOrganizerEventVenueCallableResponseVenueVenueId,
     'userAnalyticsCallableResponse.coachingTipRefs': userAnalyticsCallableResponseCoachingTipRefs,
     'userAnalyticsCallableResponse.coachingTipRefs.items.copyKey': userAnalyticsCallableResponseCoachingTipRefsItemsCopyKey,
     'userAnalyticsCallableResponse.coachingTipRefs.items.id': userAnalyticsCallableResponseCoachingTipRefsItemsId,

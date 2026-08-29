@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/organizer_event_venue.schema.json",
+  "title": "Organizer event venue shared definitions",
+  "definitions": {
+    "status": {
+      "type": "string",
+      "enum": ["active", "archived"]
+    },
+    "venue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "venueId",
+        "label",
+        "meetingLocation",
+        "status"
+      ],
+      "properties": {
+        "organizerId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "venueId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "meetingLocation": {
+          "$ref": "event_common.schema.json#/definitions/eventMeetingLocation"
+        },
+        "defaultEventCapacity": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "status": {
+          "$ref": "#/definitions/status"
+        }
+      }
+    }
+  }
+}
