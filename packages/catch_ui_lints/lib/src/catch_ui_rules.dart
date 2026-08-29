@@ -453,6 +453,18 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     severity: DiagnosticSeverity.INFO,
   );
 
+  static const fieldGeometryIsSectionOwned = LintCode(
+    'catch_field_geometry_is_section_owned',
+    'Field paint scopes and focus surfaces are design-system internals. Choose a CatchSection/CatchFieldLanes variant or a responsive interaction policy.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const fieldDividerIsSectionOwned = LintCode(
+    'catch_field_divider_is_section_owned',
+    'Sibling dividers and lane gutters belong to CatchSection or CatchFieldLanes, not an individual field or feature override.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
   static const sectionListRequiresEmptyPolicy = LintCode(
     'catch_section_list_requires_empty_policy',
     'CatchSectionList must declare emptyBuilder or the explicit emptyStateOmitted opt-out.',
@@ -539,6 +551,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     topBarRequiresActionGroup,
     shellOwnsTabScaffold,
     fieldRequiresSectionContext,
+    fieldGeometryIsSectionOwned,
+    fieldDividerIsSectionOwned,
     sectionListRequiresEmptyPolicy,
     asyncRequiresStateSurface,
     asyncRequiresRetry,
@@ -775,6 +789,23 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         isFeaturePresentationPath &&
         !_hasFieldCompositionAncestor(node)) {
       _reportAtNode(node, CatchUiLayoutRules.fieldRequiresSectionContext);
+    }
+
+    if (isFeaturePresentationPath &&
+        const {
+          'CatchDividedFieldInteractionScope',
+          'CatchFieldGeometryScope',
+          'CatchFieldInteractionPlaneScope',
+          'CatchSectionFocusSurface',
+        }.contains(typeName)) {
+      _reportAtNode(node, CatchUiLayoutRules.fieldGeometryIsSectionOwned);
+    }
+
+    if (isFeaturePresentationPath &&
+        ((typeName == 'CatchField' && _hasNamedArgument(node, 'divider')) ||
+            (typeName == 'CatchFieldLanes' &&
+                _hasNamedArgument(node, 'gutterOwnership')))) {
+      _reportAtNode(node, CatchUiLayoutRules.fieldDividerIsSectionOwned);
     }
 
     if (typeName == 'CatchSection' &&

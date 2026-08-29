@@ -23109,5 +23109,13 @@
   "hostEventRehearsalMovementTitle": "Movement simulation",
   "@hostEventRehearsalMovementTitle": {"description": "Rehearsal movement snapshot title.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation.widgets.event_rehearsal_setup_section"},
   "hostEventRehearsalMovementSummary": "{itineraryCount} itinerary steps · {routePointCount} route points · {positionCount} synthetic live positions",
-  "@hostEventRehearsalMovementSummary": {"description": "Rehearsal movement snapshot summary.", "placeholders": {"itineraryCount": {"type": "int"}, "routePointCount": {"type": "int"}, "positionCount": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation.widgets.event_rehearsal_setup_section"}
+  "@hostEventRehearsalMovementSummary": {"description": "Rehearsal movement snapshot summary.", "placeholders": {"itineraryCount": {"type": "int"}, "routePointCount": {"type": "int"}, "positionCount": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation.widgets.event_rehearsal_setup_section"},
+  "hostCustomersSelectCustomerTitle": "Select a customer",
+  "@hostCustomersSelectCustomerTitle": {"description": "Expanded customer workspace empty-detail title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostCustomersSelectCustomerBody": "Choose someone from the directory to keep their details beside the list.",
+  "@hostCustomersSelectCustomerBody": {"description": "Expanded customer workspace empty-detail guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostInboxSelectConversationTitle": "Select a conversation",
+  "@hostInboxSelectConversationTitle": {"description": "Expanded messaging workspace empty-detail title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "hostInboxSelectConversationBody": "Choose a thread to keep the conversation beside your inbox.",
+  "@hostInboxSelectConversationBody": {"description": "Expanded messaging workspace empty-detail guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"}
 }

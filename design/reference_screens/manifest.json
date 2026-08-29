@@ -1359,7 +1359,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Host Edit Event prefilled event Claude template reference for advisory comparison against edit_hosted_event light captures rendered on the design-phone device. After the 2026-07-16 CatchField/CatchSection migration, a fresh capture computes within thresholds at mismatch 8.84%, meanDelta 11.09, maxDelta 240, masked 160248 using the repository comparator algorithm. The canonical comparison command is currently blocked before diffing by unrelated host-v2 source-pack hash drift for host-coverage-manifest.json."
+      "notes": "Canonical Host Edit Event prefilled event Claude template reference for advisory comparison against edit_hosted_event light captures rendered on the design-phone device. After the 2026-07-16 CatchField/CatchSection migration, a fresh capture computes within thresholds at mismatch 8.84%, meanDelta 11.09, maxDelta 240, masked 160248 using the repository comparator algorithm. The Host v2 source-pack checksum was refreshed with the current shell-coverage manifest on 2026-08-29."
     },
     {
       "id": "screen.start.welcome.landed_direct",

@@ -248,7 +248,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
               );
             },
           ),
-          CatchSection.fieldRows(
+          CatchSection.divided(
             title: context.l10n.userProfileProfileTabTitlePrompts,
             count: context.l10n
                 .userProfileProfileTabVisiblecopyCompletedpromptcountOfMaxprofilepromptanswersAnswered(
@@ -270,7 +270,9 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ),
           CatchFormRowList<UpdateUserProfilePatch>(
             title: context.l10n.userProfileProfileTabTitleAboutYou,
-            dividerInset: CatchFieldRow.textLaneInset,
+            // Preserve the existing Consumer interaction until its product
+            // migration to explicit confirmation is reviewed separately.
+            textCommitMode: CatchFormTextCommitMode.onBlur,
             rows: editState.aboutSectionRows,
             accordion: _fieldAccordion,
             savePatch: _saveAboutPatch,
@@ -278,7 +280,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ),
           CatchSection.fieldRows(
             title: context.l10n.userProfileProfileTabTitleRunning,
-            dividerInset: CatchFieldRow.textLaneInset,
             children: [
               for (final row in editState.runningRows)
                 ProfileFieldRow(
@@ -292,7 +293,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ),
           CatchSection.fieldRows(
             title: context.l10n.userProfileProfileTabTitleLifestyle,
-            dividerInset: CatchFieldRow.textLaneInset,
             children: [
               for (final row in editState.lifestyleRows)
                 ProfileFieldRow(

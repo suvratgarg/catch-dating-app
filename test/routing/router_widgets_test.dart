@@ -156,7 +156,7 @@ void main() {
   test('host inbox route restores the campaigns composer segment', () {
     final screen = app_router.hostInboxScreenForUri(
       Uri.parse(
-        '/host/inbox?workspace=campaigns&compose=1&segment=lapsed_regular&search=asha',
+        '/host/inbox?workspace=campaigns&compose=1&segment=lapsed_regular&search=asha&threadId=match-2',
       ),
       initialOrganizerId: 'organizer-2',
     );
@@ -165,6 +165,7 @@ void main() {
     expect(screen.initialCampaignSegments, {HostAudienceSegment.lapsedRegular});
     expect(screen.initialCampaignSearch, 'asha');
     expect(screen.initialOrganizerId, 'organizer-2');
+    expect(screen.initialThreadId, 'match-2');
   });
 
   test('host inbox route ignores a segment outside compose mode', () {

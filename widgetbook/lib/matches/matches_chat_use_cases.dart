@@ -559,6 +559,7 @@ Widget chatsBrowseHeaderStates(BuildContext context) {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       ChatsBrowseHeader(
+                        presentation: ChatsBrowsePresentation.host,
                         showSearchAction: true,
                         searchValue: '',
                         onSearchChanged: (_) {},
@@ -2007,6 +2008,7 @@ class _HostUnreadOnlyInbox extends StatelessWidget {
                 hasHeaderSubtitle: true,
               ),
               bottom: ChatsBrowseHeader(
+                presentation: ChatsBrowsePresentation.host,
                 showSearchAction: true,
                 searchValue: '',
                 onSearchChanged: null,

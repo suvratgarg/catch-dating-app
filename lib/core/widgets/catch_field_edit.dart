@@ -802,13 +802,15 @@ extension _CatchFieldEdit on _CatchFieldState {
   }
 
   EdgeInsets get _rowPadding {
-    final flush = CatchFieldInsetScope.flushOf(context);
+    final containerOwnsGutter =
+        CatchFieldGeometryScope.gutterOwnershipOf(context) ==
+        CatchFieldGutterOwnership.container;
     if (_compactTextEntry) {
-      return flush
+      return containerOwnsGutter
           ? EdgeInsets.zero
           : const EdgeInsets.symmetric(horizontal: CatchSpacing.s1);
     }
-    if (flush) {
+    if (containerOwnsGutter) {
       return const EdgeInsets.symmetric(
         vertical: CatchFieldTokens.rowVerticalPadding,
       );

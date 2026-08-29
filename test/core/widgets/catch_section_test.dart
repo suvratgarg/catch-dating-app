@@ -12,6 +12,94 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets(
+    'semantic page body gives divided field interaction the full paint plane',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: SizedBox(
+              width: 390,
+              child: CatchScreenBody(
+                scrollable: false,
+                pt: 0,
+                pb: 0,
+                child: CatchSection.fieldRows(
+                  first: true,
+                  title: 'Notifications',
+                  children: [CatchField.nav(title: 'Delivery', onTap: _noop)],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final fieldRect = tester.getRect(find.byType(CatchField));
+      final overlayFinder = find.byKey(CatchField.pressOverlayKey);
+      final overlayRect = tester.getRect(overlayFinder);
+      expect(fieldRect.left, CatchSpacing.screenPx);
+      expect(fieldRect.right, 390 - CatchSpacing.screenPx);
+      expect(overlayRect.left, 0);
+      expect(overlayRect.right, 390);
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(CatchField)),
+      );
+      await tester.pump();
+      final decoration =
+          tester.widget<AnimatedContainer>(overlayFinder).decoration!
+              as BoxDecoration;
+      expect(decoration.borderRadius, BorderRadius.zero);
+      expect(decoration.border, isNull);
+      expect(
+        decoration.color,
+        CatchFieldTokens.pressedSurface(CatchTokens.editorialLight),
+      );
+      await gesture.up();
+    },
+  );
+
+  testWidgets(
+    'divided section can explicitly retain rounded tile interaction',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: SizedBox(
+              width: 390,
+              child: CatchScreenBody(
+                scrollable: false,
+                pt: 0,
+                pb: 0,
+                child: CatchSection.fieldRows(
+                  first: true,
+                  interaction: CatchDividedFieldInteraction.roundedTile,
+                  children: [CatchField.nav(title: 'Delivery', onTap: _noop)],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final fieldRect = tester.getRect(find.byType(CatchField));
+      final overlayRect = tester.getRect(
+        find.byKey(CatchField.pressOverlayKey),
+      );
+      expect(
+        overlayRect.left,
+        fieldRect.left - CatchFieldTokens.dividedRowBleed,
+      );
+      expect(
+        overlayRect.right,
+        fieldRect.right + CatchFieldTokens.dividedRowBleed,
+      );
+    },
+  );
+
+  testWidgets(
     'CatchSection.fieldRows renders rows flush with lane-aligned dividers',
     (tester) async {
       await tester.pumpWidget(
@@ -56,8 +144,26 @@ void main() {
         dividerBox.color,
         CatchDivider.colorFor(
           CatchTokens.editorialLight,
-          CatchDividerRole.fieldRow,
+          CatchDividerRole.fieldSection,
         ),
+      );
+      final sectionDividers = tester
+          .widgetList<CatchDivider>(find.byType(CatchDivider))
+          .toList(growable: false);
+      expect(sectionDividers.map((divider) => divider.role), [
+        CatchDividerRole.section,
+        CatchDividerRole.fieldSection,
+      ]);
+      expect(
+        sectionDividers
+            .map(
+              (divider) => CatchDivider.colorFor(
+                CatchTokens.editorialLight,
+                divider.role,
+              ),
+            )
+            .toSet(),
+        {CatchTokens.editorialLight.line},
       );
     },
   );
@@ -195,35 +301,6 @@ void main() {
     expect(ruleRect.left, sectionRect.left);
     expect(ruleRect.right, sectionRect.right);
   });
-
-  testWidgets(
-    'CatchSection can omit only the leading rule for the first form group',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          const SizedBox(
-            width: 360,
-            child: CatchSection.fieldRows(
-              first: true,
-              showTopDivider: false,
-              children: [
-                CatchField.read(title: 'First'),
-                CatchField.read(title: 'Second'),
-              ],
-            ),
-          ),
-        ),
-      );
-
-      final dividerPositions = tester
-          .widgetList<Positioned>(find.byType(Positioned))
-          .where((positioned) => positioned.child is CatchDivider)
-          .toList(growable: false);
-
-      expect(dividerPositions, hasLength(1));
-      expect(dividerPositions.single.bottom, -CatchStroke.hairline);
-    },
-  );
 
   testWidgets(
     'CatchSection field rows preserve text-lane dividers for adapter children',
@@ -450,13 +527,20 @@ void main() {
     expect(find.text('28%'), findsOneWidget);
     expect(find.text('Section body'), findsOneWidget);
     expect(find.text('PROFILE STRENGTH'), findsNothing);
+    expect(
+      find.ancestor(
+        of: find.text('Profile strength'),
+        matching: find.byType(CatchSurface),
+      ),
+      findsOneWidget,
+    );
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
     expect(surface.role, CatchSurfaceRole.card);
     expect(surface.elevation, CatchSurfaceElevation.card);
   });
 
   testWidgets(
-    'CatchSection contained field rows keep header and footer inside the card',
+    'CatchSection contained field rows place the header outside the outline',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
@@ -484,6 +568,21 @@ void main() {
       final title = tester.widget<Text>(find.text('WHERE'));
       final countRect = tester.getRect(find.text('2 OF 4'));
       final trailingRect = tester.getRect(find.text('Ready'));
+      final headerRect = tester.getRect(
+        find
+            .ancestor(
+              of: find.text('WHERE'),
+              matching: find.byWidgetPredicate(
+                (widget) =>
+                    widget is Padding &&
+                    widget.padding ==
+                        const EdgeInsets.symmetric(
+                          horizontal: CatchFieldTokens.rowHorizontalPadding,
+                        ),
+              ),
+            )
+            .first,
+      );
       final fieldRect = tester.getRect(find.byType(CatchField));
       final footerRect = tester.getRect(
         find.text('Attendees see this on event cards.'),
@@ -498,17 +597,18 @@ void main() {
       );
       expect(
         titleRect.left - surfaceRect.left,
-        CatchStroke.hairline + CatchFieldTokens.rowHorizontalPadding,
-      );
-      expect(
-        titleRect.top - surfaceRect.top,
-        CatchStroke.hairline + CatchFieldTokens.sectionHeaderTopPadding,
+        CatchFieldTokens.rowHorizontalPadding,
       );
       expect(countRect.right, lessThan(trailingRect.left));
       expect(
         surfaceRect.right - trailingRect.right,
-        CatchStroke.hairline + CatchFieldTokens.rowHorizontalPadding,
+        CatchFieldTokens.rowHorizontalPadding,
       );
+      expect(
+        surfaceRect.top - headerRect.bottom,
+        closeTo(CatchSpacing.s2, 0.001),
+      );
+      expect(fieldRect.top, surfaceRect.top + CatchStroke.hairline);
       expect(
         surfaceRect.bottom - footerRect.bottom,
         CatchStroke.hairline + CatchFieldTokens.rowVerticalPadding,
@@ -516,6 +616,27 @@ void main() {
       expect(
         footerRect.top - fieldRect.bottom,
         closeTo(CatchFieldTokens.containedSectionFooterTopPadding, 0.001),
+      );
+      expect(
+        find.ancestor(
+          of: find.text('WHERE'),
+          matching: find.byType(AnimatedContainer),
+        ),
+        findsNothing,
+      );
+      expect(
+        find.ancestor(
+          of: find.text('2 OF 4'),
+          matching: find.byType(AnimatedContainer),
+        ),
+        findsNothing,
+      );
+      expect(
+        find.ancestor(
+          of: find.text('Ready'),
+          matching: find.byType(AnimatedContainer),
+        ),
+        findsNothing,
       );
       expect(
         find.ancestor(
@@ -552,6 +673,91 @@ void main() {
       final fieldRect = tester.getRect(find.byType(CatchField));
 
       expect(fieldRect.top, surfaceRect.top + CatchStroke.hairline);
+    },
+  );
+
+  testWidgets(
+    'CatchSection internal contained field header owns an inset section rule',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 360,
+            child: CatchSection.containedFieldRows(
+              title: 'Event settings',
+              count: '2 fields',
+              trailing: Text('Ready'),
+              headerPlacement: CatchSectionHeaderPlacement.inside,
+              children: [CatchField.read(title: 'Host', body: 'Catch Hosts')],
+            ),
+          ),
+        ),
+      );
+
+      final surfaceFinder = find
+          .descendant(
+            of: find.byType(CatchSectionFocusSurface),
+            matching: find.byType(AnimatedContainer),
+          )
+          .first;
+      final surfaceRect = tester.getRect(surfaceFinder);
+      final titleRect = tester.getRect(find.text('EVENT SETTINGS'));
+      final fieldRect = tester.getRect(find.byType(CatchField));
+      final dividerFinder = find.descendant(
+        of: surfaceFinder,
+        matching: find.byType(CatchDivider),
+      );
+
+      expect(dividerFinder, findsOneWidget);
+      expect(
+        find.ancestor(
+          of: find.text('EVENT SETTINGS'),
+          matching: find.byType(AnimatedContainer),
+        ),
+        findsOneWidget,
+      );
+      final divider = tester.widget<CatchDivider>(dividerFinder);
+      final dividerRect = tester.getRect(dividerFinder);
+      expect(divider.role, CatchDividerRole.section);
+      expect(
+        dividerRect.left - surfaceRect.left,
+        CatchStroke.hairline + CatchFieldTokens.rowHorizontalPadding,
+      );
+      expect(
+        surfaceRect.right - dividerRect.right,
+        CatchStroke.hairline + CatchFieldTokens.rowHorizontalPadding,
+      );
+      expect(
+        dividerRect.top - titleRect.bottom,
+        closeTo(CatchFieldTokens.sectionRuleGap, 0.001),
+      );
+      expect(fieldRect.top, dividerRect.bottom);
+    },
+  );
+
+  testWidgets(
+    'CatchSection reflows a populated header instead of truncating at large text',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 360,
+            child: CatchSection.containedFieldRows(
+              title: 'Media library',
+              count: '3 photos',
+              trailing: Text('Manage images'),
+              headerPlacement: CatchSectionHeaderPlacement.inside,
+              children: [CatchField.read(title: 'Cover', body: 'Hero image')],
+            ),
+          ),
+          textScale: 2,
+        ),
+      );
+
+      final titleRect = tester.getRect(find.text('MEDIA LIBRARY'));
+      final actionRect = tester.getRect(find.text('Manage images'));
+      expect(actionRect.top, greaterThan(titleRect.bottom));
+      expect(tester.takeException(), isNull);
     },
   );
 
@@ -975,34 +1181,13 @@ void main() {
         ),
       ),
     );
-
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
     expect(surface.borderColor, CatchTokens.editorialLight.danger);
     expect(surface.boxShadow, isNull);
   });
-
-  testWidgets('CatchSection can suppress only its internal row dividers', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        const SizedBox(
-          width: 360,
-          child: CatchSection.containedFieldRows(
-            showInternalDividers: false,
-            children: [
-              CatchField.read(title: 'First', body: 'A'),
-              CatchField.read(title: 'Second', body: 'B'),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    expect(find.byType(CatchDivider), findsNothing);
-    expect(find.byType(CatchField), findsNWidgets(2));
-  });
 }
+
+void _noop() {}
 
 Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
   return MaterialApp(

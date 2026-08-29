@@ -422,16 +422,15 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
           CatchSection.fieldRows(
             title: context.l10n.hostsHostAnalyticsTitleCoach,
             children: [
-              for (final recommendation in coachRecommendations.indexed)
-                switch (recommendation.$2.kind) {
+              for (final recommendation in coachRecommendations)
+                switch (recommendation.kind) {
                   HostAnalyticsCoachRecommendationKind.attendance =>
                     CatchField.nav(
                       key: const ValueKey('host-analytics-coach-attendance'),
                       title: context.l10n.hostsHostAnalyticsCoachAttendance,
                       titleMaxLines: 3,
-                      divider: recommendation.$1 > 0,
                       onTap: () =>
-                          widget.onOpenEventReport(recommendation.$2.eventId!),
+                          widget.onOpenEventReport(recommendation.eventId!),
                     ),
                   HostAnalyticsCoachRecommendationKind.checkoutDropoff =>
                     CatchField.nav(
@@ -441,7 +440,6 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                       title:
                           context.l10n.hostsHostAnalyticsCoachCheckoutDropoff,
                       titleMaxLines: 3,
-                      divider: recommendation.$1 > 0,
                       onTap: widget.onOpenEventDefaults,
                     ),
                   HostAnalyticsCoachRecommendationKind.demandCapacity =>
@@ -450,12 +448,11 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                         'host-analytics-coach-demand-capacity',
                       ),
                       title: context.l10n.hostsHostAnalyticsCoachDemandCapacity(
-                        event: recommendation.$2.eventTitle!,
+                        event: recommendation.eventTitle!,
                       ),
                       titleMaxLines: 3,
-                      divider: recommendation.$1 > 0,
                       onTap: () =>
-                          widget.onOpenEventReport(recommendation.$2.eventId!),
+                          widget.onOpenEventReport(recommendation.eventId!),
                     ),
                   HostAnalyticsCoachRecommendationKind.noRepeatAttendees =>
                     CatchField.read(
@@ -465,7 +462,6 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                       title:
                           context.l10n.hostsHostAnalyticsCoachNoRepeatAttendees,
                       titleMaxLines: 3,
-                      divider: recommendation.$1 > 0,
                     ),
                 },
             ],
@@ -738,16 +734,14 @@ class HostAnalyticsEventList extends StatelessWidget {
             ),
           )
         else
-          for (final indexed in events.take(5).indexed)
+          for (final event in events.take(5))
             HostAnalyticsEventTile(
-              event: indexed.$2,
-              divider: indexed.$1 > 0,
-              onTap: () => onOpenEventReport(indexed.$2.eventId),
+              event: event,
+              onTap: () => onOpenEventReport(event.eventId),
             ),
         CatchField.nav(
           title: context.l10n.hostsHostAnalyticsLabelAllEvents,
           icon: CatchIcons.calendarMonthOutlined,
-          divider: events.isNotEmpty,
           onTap: onOpenAllEvents,
         ),
       ],
@@ -759,12 +753,10 @@ class HostAnalyticsEventTile extends StatelessWidget {
   const HostAnalyticsEventTile({
     super.key,
     required this.event,
-    required this.divider,
     required this.onTap,
   });
 
   final HostAnalyticsEventRow event;
-  final bool divider;
   final VoidCallback onTap;
 
   @override
@@ -792,7 +784,6 @@ class HostAnalyticsEventTile extends StatelessWidget {
         title: event.title,
         body: '$dateAndStatus\n$attendance',
         icon: CatchIcons.eventOutlined,
-        divider: divider,
         onTap: onTap,
         showChevron: false,
         valueText: EventFormatters.priceInPaise(

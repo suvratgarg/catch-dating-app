@@ -108,7 +108,7 @@ jobs:
         run: bash tool/check_catch_ui_lint_drift.sh --code catch_no_token_arithmetic --label token-arithmetic
 
       - name: Catch UI field and section warning gate
-        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_use_named_catch_field_constructor|catch_use_named_catch_section_constructor' --label field-section-anatomy
+        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_use_named_catch_field_constructor|catch_use_named_catch_section_constructor|catch_field_geometry_is_section_owned|catch_field_divider_is_section_owned' --label field-section-anatomy
 
       - name: Catch UI event-thumbnail warning gate
         run: bash tool/check_catch_ui_lint_drift.sh --code catch_event_detail_prefers_photo_thumbnail --label event-thumbnail

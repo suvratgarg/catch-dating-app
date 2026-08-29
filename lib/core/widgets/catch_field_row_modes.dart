@@ -127,20 +127,59 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final action = rowAction;
     final canInteract = action != null;
     if (!canInteract && !_active && !_hasControl) return row;
-    final grouped = CatchFieldInsetScope.groupedOf(context);
+    final interactionShape = CatchFieldGeometryScope.interactionShapeOf(
+      context,
+    );
+    final interactionBorderRadius = switch (interactionShape) {
+      CatchFieldInteractionShape.roundedTile => BorderRadius.circular(
+        CatchFieldTokens.tileRadius,
+      ),
+      CatchFieldInteractionShape.sectionClipped ||
+      CatchFieldInteractionShape.fullBleedBand => BorderRadius.zero,
+    };
+    final interactionBorder = Border.all(color: t.line);
+    final fullBleedFocusBorder = Border.all(
+      color: t.ink2,
+      width: CatchStroke.focusRing,
+    );
+    final fullBleedFocused =
+        interactionShape == CatchFieldInteractionShape.fullBleedBand &&
+        _rowFocused &&
+        !_pressed;
     final activeDecoration = BoxDecoration(
       color: _active && !_pressed
           ? CatchFieldTokens.activeSurface(t)
           : Colors.transparent,
-      borderRadius: grouped
-          ? BorderRadius.zero
-          : BorderRadius.circular(CatchFieldTokens.tileRadius),
-      border: _active ? Border.all(color: t.line) : null,
-      boxShadow: _active
+      borderRadius: interactionBorderRadius,
+      // The active and pressed layers hand one stroke between them. This
+      // prevents their animated decorations from ever stacking two outlines.
+      border: fullBleedFocused
+          ? fullBleedFocusBorder
+          : _active &&
+                !_pressed &&
+                interactionShape != CatchFieldInteractionShape.fullBleedBand
+          ? interactionBorder
+          : null,
+      boxShadow:
+          _active && interactionShape == CatchFieldInteractionShape.roundedTile
           ? CatchElevation.fieldActive(Theme.of(context).brightness)
           : CatchElevation.none,
     );
-    final overlayBleed = CatchFieldInsetScope.activeOverlayBleedOf(context);
+    final pressDecoration = BoxDecoration(
+      color: _pressed ? CatchFieldTokens.pressedSurface(t) : Colors.transparent,
+      borderRadius: interactionBorderRadius,
+      // A divided or standalone row owns its complete pressed silhouette.
+      // A contained row inherits the section perimeter and stays a tint-only
+      // internal band. A rounded row temporarily owns the one shared stroke
+      // while pressed, whether or not it was already active.
+      border:
+          _pressed && interactionShape == CatchFieldInteractionShape.roundedTile
+          ? interactionBorder
+          : null,
+    );
+    final overlayOutsets = CatchFieldGeometryScope.interactionOutsetsOf(
+      context,
+    );
     final mouseCursor = canInteract
         ? _isEdit
               ? SystemMouseCursors.text
@@ -246,9 +285,9 @@ extension _CatchFieldRowModes on _CatchFieldState {
       fit: StackFit.passthrough,
       clipBehavior: Clip.none,
       children: [
-        PositionedDirectional(
-          start: -overlayBleed,
-          end: -overlayBleed,
+        Positioned(
+          left: -overlayOutsets.left,
+          right: -overlayOutsets.right,
           top: -CatchStroke.hairline,
           bottom: -CatchStroke.hairline,
           child: IgnorePointer(
@@ -265,12 +304,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
                         : CatchFieldTokens.pressOut,
                   ),
                   curve: CatchFieldTokens.curve,
-                  decoration: BoxDecoration(
-                    color: _pressed
-                        ? CatchFieldTokens.pressedSurface(t)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.zero,
-                  ),
+                  decoration: pressDecoration,
                 ),
                 AnimatedContainer(
                   key: const ValueKey('catch-field-active-overlay'),

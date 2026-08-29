@@ -1,6 +1,6 @@
 # CatchField / CatchSection System Review & Hardening Spec (for Codex)
 
-Status: phases A-E implemented · Phase D prototype awaiting owner API review · stretch goals not started · 2026-07-17
+Status: living review · phases A-F implemented 2026-08-28
 Scope: `lib/core/widgets/catch_field.dart`, `lib/core/widgets/catch_section_layout.dart`, `lib/core/forms/` (new, Phase D), `test/core/`, `widgetbook/`, `docs/design_language.md`, `docs/widget_catalog.md`
 Companions: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md) ("edit spec"), [`host_club_insights_spec.md`](host_club_insights_spec.md) ("insights spec") — coordination points in §11, including ONE superseded line in the edit spec (§8.2 here).
 Origin: 2026-07-17 owner + Claude system review. Every number below was
@@ -32,10 +32,181 @@ same Dart library, split across bounded `part` files: `CatchFieldRow`,
 first/lead` slots and divider-role control, plus `CatchSectionList` /
 `CatchSectionStack` rhythm wrappers.
 
-Implemented sizes (2026-07-17): the stable `catch_field.dart` entry point is
-**999 lines**; each extracted part is below 850 lines. The private constructor
-still centralizes the mode matrix, while rendering and state behavior are
-separated by responsibility. `catch_section_layout.dart` remains 1,074 lines.
+### 0.1 2026-08-28 greenfield API assessment
+
+The current source has 713 `CatchField.*` references and 289
+`CatchSection.*` references across `lib/` and `test/`, but only three
+production `CatchFormRowList<P>` composition sites. `CatchField.input` exposes
+53 named parameters and the shared private `CatchSection` constructor carries
+31. Those numbers do not mean every caller sees every option: `CatchField`
+already redirects its public named constructors into closed private per-mode
+configs, so illegal cross-mode combinations are mostly unrepresentable. The
+remaining pressure is ownership and migration, not a need for one more generic
+bag-of-options constructor.
+
+If the system were written from scratch, it would keep the existing named-mode
+facade but enforce five layers:
+
+1. **Page composition** owns screen gutter, readable-width clamp, complete
+   section placement, bottom-navigation obstruction, and responsive lanes.
+   `CatchResponsiveSectionPage` is this owner; fields never inspect viewport
+   classes.
+2. **Field-section composition** owns divided versus outlined containment,
+   header placement, group clipping, perimeter, row dividers, and section
+   rhythm. Fields inherit this through semantic geometry scope rather than
+   receiving radius, bleed, or position flags.
+3. **Field mode** is selected structurally (`read`, `content`, `nav`, `toggle`,
+   `input`, `inputActions`, `control`, typed choices, option cards, stepper,
+   select, add). Each constructor accepts only that capability's data and
+   callbacks. Typography, lanes, affordances, and interaction chrome are not
+   caller options.
+4. **Form orchestration** owns accordion state, typed patch conversion,
+   validation, async feedback, and one commit model for the complete form
+   section. Explicit Cancel/Done confirmation is the default for new text-form
+   sections. Existing blur-save behavior is a section-level compatibility
+   policy, never a repeated per-row boolean.
+5. **Internal render/state objects** may be split by responsibility, but their
+   public identity remains the field or section primitive so keyed state and
+   contract inventory stay stable.
+
+The first implementation from this review moves text commit behavior from
+`CatchFormTextRow` to `CatchFormRowList.textCommitMode`. Host Club Identity and
+Contact inherit the explicit default and delete six repeated arguments.
+Consumer Profile About You keeps its current behavior with one
+`CatchFormTextCommitMode.onBlur` list override, so the API improves without a
+silent product migration or a call-site sweep. The mapper also drops nine
+unused visual pass-throughs; its constructor now exposes semantic section
+content and orchestration only, while `CatchSection.fieldRows` owns divider,
+rhythm, color, and position defaults.
+
+Phase F replaced `CatchSection`'s 31-field internal state matrix with closed
+variant-typed configs for divided field groups, outlined field groups, generic
+contained modules, and plain content. It also removed feature-facing geometry
+knobs from field-section constructors without introducing a parallel facade or
+compatibility aliases. `child`/`children` duality and the naming of generic
+`contained` remain explicitly separate API questions; neither blocks geometry
+ownership or export of the reviewed surface.
+
+### 0.2 2026-08-28 owner-authorized geometry-library pass
+
+The visual decisions that previously blocked the structural pass are closed.
+The pre-migration source contained 558 production `CatchField.*` calls and 249
+production `CatchSection.*` calls. Its small tail of lane-gutter overrides,
+top-rule exceptions, field-section divider overrides, and field-owned dividers
+was treated as migration debt rather than retained as public API.
+
+Phase F treats the Flutter primitives as a library that could be exported. It
+does not preserve a knob merely because an old caller once needed it.
+
+#### Ratified interaction contract
+
+1. Divided field sections default to one full-bleed tint band. The band is
+   rectangular, reaches the nearest page or lane interaction plane, and makes
+   both adjacent divider rules yield while it is pressed, focused, or open.
+2. A divided field section may explicitly choose the existing rounded-tile
+   treatment. The choice belongs to the complete section, never an individual
+   field.
+3. Contained field sections keep one section-owned rounded clip and perimeter.
+   Descendant active rows are rectangular bands whose vertical edges share the
+   section perimeter coordinates; fields do not paint a second local rounded
+   rectangle.
+4. Full-bleed keyboard focus uses the approved 2 px inset perimeter. It is one
+   continuous interaction-plane ring, and it replaces rather than stacks with
+   adjacent dividers.
+5. Responsive defaults are policy-driven by layout context. Single-column
+   pages default to full bleed. Split-pane layouts default to rounded tiles for
+   now, while the policy remains one replaceable page-level value so the owner
+   can revise the wide treatment without migrating sections.
+6. Contained field headers use one typed placement vocabulary: `outside` or
+   `inside`. An inside header owns the same inset end-to-end rule as a divided
+   field-section header. Typography remains section-owned uppercase IBM Plex
+   Mono through `CatchKicker`; callers cannot supply header fonts, tracking,
+   padding, or rule geometry.
+
+#### Target public architecture
+
+- `CatchResponsiveFieldInteractionPolicy` chooses the divided interaction for
+  single-column and split-pane contexts. `CatchResponsiveSectionPage` and
+  `CatchResponsiveSectionLayout` publish it.
+- `CatchSection.fieldRows` accepts an optional semantic
+  `CatchDividedFieldInteraction` override. Omission inherits the page policy.
+- Page-body primitives publish the exact horizontal interaction-plane outset
+  they own. Fields never inspect screen size or subtract `screenPx` directly.
+- `CatchSection` stores one closed variant-typed const record per constructor.
+  This preserves const construction and stable widget identity while the shared
+  widget no longer carries one 31-property matrix containing illegal or
+  meaningless combinations.
+- `CatchFieldGeometryScope`, its gutter enum, its paint-shape enum, and
+  `CatchSectionFocusSurface` are implementation members. They remain public
+  only where Dart library boundaries require it, are excluded from the export
+  barrel, and are protected from feature construction by analyzer diagnostics.
+- `lib/catch_ui.dart` is the reviewed public barrel for the stable theme,
+  field, section, page, and form-orchestration vocabulary. Extraction into a
+  standalone package remains mechanical rather than requiring another API
+  design.
+
+#### API removals and migration rules
+
+- Field-row sections own rule color, inset, role, header gap, and internal
+  divider presence. Remove those caller parameters from `fieldRows` and
+  `containedFieldRows`.
+- A headerless group with no top section boundary is
+  `CatchFieldLanes.divided`, not a configurable field-section exception.
+- A titled custom-content group is `CatchSection.divided`, not a field section
+  with `showInternalDividers: false`.
+- Individual fields do not own sibling dividers. Remove the remaining
+  `divider:` call sites and let their containing section or lane draw them.
+- Keep the named `CatchField` mode facade. Its sealed per-mode configs already
+  make illegal cross-mode combinations unrepresentable. Replacing Flutter's
+  text-input parameters with one generic options bag would shorten a signature
+  without reducing concepts and is explicitly excluded.
+- No compatibility aliases or deprecated duplicate constructors are added.
+
+#### Enforcement to ship with the library
+
+Extend `packages/catch_ui_lints` with focused diagnostics that:
+
+1. reject feature-level construction of field geometry scopes and section
+   focus surfaces;
+2. reject field-owned sibling dividers and explicit lane gutter ownership in
+   feature code;
+3. keep `CatchField` inside a section/lane/form boundary (existing rule);
+4. require named field/section constructors (existing rules).
+
+Every new diagnostic needs an analyzer probe, focused mutation/contract test,
+generated enforcement-table refresh where applicable, and zero-diagnostic
+verification. Compiler errors remain the enforcement for removed constructor
+parameters; the plugin targets misuse that still type-checks.
+
+#### Phase F exclusions
+
+- No persistence, validation, form-save, or domain-policy changes.
+- No Consumer `onBlur` to explicit-confirmation migration; the list-level
+  compatibility override remains the only exception.
+- No redesign of generic editorial `divided`, `contained`, or `plain` section
+  content. Their theme flexibility is separate from field-section geometry.
+- No Figma release gate. Widgetbook and Flutter behavior tests are the editable
+  authority; Figma synchronization remains advisory.
+
+#### Phase F completion record
+
+1. Production divided and contained fields render the ratified pressed, active,
+   focus, divider-yield, and animation geometry without Widgetbook hand-rolled
+   replicas.
+2. Widgetbook decision pages compose the production primitives directly and
+   contain no custom interaction painter for accepted behavior.
+3. Section configuration is closed by variant and the feature-level geometry
+   override census is zero.
+4. The public barrel exports only semantic contracts; implementation members
+   are lint-protected.
+5. Focused field/section/responsive tests, analyzer-plugin probes, design
+   contracts, Widgetbook analyze/build, Catch UI lint gates, derived harness
+   checks, and `git diff --check` pass.
+
+The implementation preserves `CatchField`'s closed per-mode configuration,
+stores each `CatchSection` variant in a private const record, and keeps renderer
+behavior separated into bounded part files. The source-backed checks in item 5
+are the completion evidence; changing file length alone is not a design goal.
 
 ## 1. Usage census (2026-07-17)
 
@@ -185,9 +356,9 @@ Non-goals:
 - No visual redesign of either primitive; pixel output is expected
   UNCHANGED by Phases A–B (and by C except where new slots are adopted).
 - No new row system, no per-feature primitive buckets (repo non-negotiable).
-- No changes to `packages/catch_ui_lints` (editing the analyzer plugin
-  crashes local `dart analyze` — repo memory; any enforcement idea ships as
-  a `.mjs` check or stays doctrine).
+- Analyzer-plugin work is limited to the focused Phase F misuse diagnostics
+  above. It must pass the existing isolated probe command before workspace
+  analysis; a plugin failure is not worked around with a duplicate scanner.
 - No public deprecation dance — this is an app repo with no external
   consumers; dead API is deleted, not deprecated.
 - Phase D migrates surfaces incrementally; it does NOT block or rewrite the

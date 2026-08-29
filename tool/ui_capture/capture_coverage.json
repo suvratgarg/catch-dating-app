@@ -634,7 +634,7 @@
         "host_home_reduced_motion",
         "host_home_light_dark"
       ],
-      "reason": "The Host Today route is captured through the real four-branch Host shell, plus owner/co-host switcher selection, long selected-club/menu labels, signed-out access, club loading/error/offline, empty clubs, nested event loading/error/offline, co-host empty events, text scale 2.0, reduced motion, and paired light/dark output."
+      "reason": "The retired Host home identity redirects to Events. Its historical capture set remains useful regression coverage for owner/co-host switching, long selected-organizer labels, signed-out access, loading/error/offline, empty organizers/events, text scale 2.0, reduced motion, and paired light/dark output; it is not a persistent shell destination."
     },
     {
       "routeId": "hostEventsScreen",
@@ -643,7 +643,7 @@
       "captureIds": [
         "host_home_events_list"
       ],
-      "reason": "The first-class Host Events branch is captured through the real four-branch Host shell and compared against the pinned full-shell Events source reference."
+      "reason": "The first-class Host Events branch is captured through the real five-destination Host shell and compared against the pinned full-shell Events source reference."
     },
     {
       "routeId": "hostCustomersScreen",
@@ -656,9 +656,12 @@
     },
     {
       "routeId": "hostFormsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The standalone Forms library and response inbox are implemented; populated, empty, loading, pagination, accessibility, and theme captures remain planned."
+      "captureIds": [
+        "host_forms_populated"
+      ],
+      "reason": "The production Forms library has a deterministic populated full-shell capture; empty, loading, pagination, response-inbox, accessibility, and theme states remain future coverage."
     },
     {
       "routeId": "hostFormTemplatesScreen",
@@ -738,7 +741,7 @@
         "host_clubs_management",
         "host_organizer_media_summary"
       ],
-      "reason": "The first-class Host Organizer branch is captured through the real four-branch Host shell and compared against the pinned full-shell Organizer source reference; a deterministic focused capture proves the role-sized media summary with real local image bytes."
+      "reason": "The first-class Host Organizer branch is captured through the real five-destination Host shell and compared against the pinned full-shell Organizer source reference; a deterministic focused capture proves the role-sized media summary with real local image bytes."
     },
     {
       "routeId": "hostOrganizerMessagingScreen",

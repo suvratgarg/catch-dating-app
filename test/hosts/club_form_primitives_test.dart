@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('club details groups about and contact in field sections', (
+  testWidgets('club details uses description lanes and one contact section', (
     tester,
   ) async {
     final description = TextEditingController();
@@ -43,7 +43,8 @@ void main() {
     );
 
     expect(find.byType(CatchSectionList), findsOneWidget);
-    expect(find.byType(CatchSection), findsNWidgets(2));
+    expect(find.byType(CatchFieldLanes), findsOneWidget);
+    expect(find.byType(CatchSection), findsOneWidget);
     expect(find.byType(CatchField), findsNWidgets(4));
   });
 

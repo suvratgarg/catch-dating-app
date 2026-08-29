@@ -211,7 +211,7 @@ void main() {
   ) async {
     await _pumpTabBar(tester, textScaler: const TextScaler.linear(2));
 
-    for (final id in ['events', 'customers', 'inbox', 'organizer']) {
+    for (final id in ['events', 'customers', 'forms', 'inbox', 'organizer']) {
       final rect = tester.getRect(
         find.byKey(ValueKey<Object>('catch_tab_bar.destination.$id')),
       );
@@ -221,6 +221,18 @@ void main() {
       );
       expect(rect.height, CatchLayout.tabBarExtent);
     }
+    expect(
+      find.byKey(const ValueKey('catch_tab_bar.label.Events')),
+      findsNothing,
+    );
+    expect(
+      tester.getSize(find.byKey(const ValueKey('catch_tab_bar.indicator'))),
+      const Size.square(CatchLayout.tabBarCompactItemExtent),
+    );
+    final eventsSemantics = tester.getSemantics(
+      find.byKey(const ValueKey<Object>('catch_tab_bar.destination.events')),
+    );
+    expect(eventsSemantics.label, 'Events');
     expect(tester.takeException(), isNull);
   });
 }
@@ -264,6 +276,12 @@ Future<void> _pumpTabBar(
                   icon: Icons.groups_outlined,
                   activeIcon: Icons.groups,
                   label: 'Customers',
+                ),
+                const CatchTabBarItem(
+                  id: 'forms',
+                  icon: Icons.description_outlined,
+                  activeIcon: Icons.description,
+                  label: 'Forms',
                 ),
                 const CatchTabBarItem(
                   id: 'inbox',

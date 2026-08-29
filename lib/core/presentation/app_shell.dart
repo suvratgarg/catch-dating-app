@@ -305,6 +305,8 @@ class AppShellSideNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+    final horizontalDestinations = expanded || largeText;
     return DecoratedBox(
       key: ValueKey(
         expanded ? 'app_shell.navigation.sidebar' : 'app_shell.navigation.rail',
@@ -318,6 +320,8 @@ class AppShellSideNavigation extends StatelessWidget {
         child: SizedBox(
           width: expanded
               ? CatchLayout.appShellSidebarWidth
+              : largeText
+              ? CatchLayout.appShellLargeTextRailWidth
               : CatchLayout.appShellRailWidth,
           child: Material(
             color: Colors.transparent,
@@ -354,7 +358,7 @@ class AppShellSideNavigation extends StatelessWidget {
                       AppShellSideNavigationButton(
                         item: item,
                         selected: item.id == active,
-                        expanded: expanded,
+                        expanded: horizontalDestinations,
                         onTap: () => onChanged(item.id),
                       ),
                       if (item != items.last)

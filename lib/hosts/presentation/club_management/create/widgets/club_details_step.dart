@@ -35,27 +35,27 @@ class ClubDetailsStep extends StatelessWidget {
           emptyStateOmitted: true,
           gap: 0,
           children: [
-            CatchSection.fieldRows(
-              first: true,
-              showTopDivider: false,
-              child: CatchField.input(
-                title: context.l10n.hostsClubDetailsStepTitleDescription,
-                contract: CatchContractConstraints
-                    .createClubCallablePayloadDescription,
-                controller: descriptionController,
-                icon: CatchIcons.editNoteOutlined,
-                maxLines: 4,
-                textCapitalization: TextCapitalization.sentences,
-                textInputAction: TextInputAction.newline,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return context
-                        .l10n
-                        .hostsClubDetailsStepVisiblecopyPleaseAddADescription;
-                  }
-                  return null;
-                },
-              ),
+            CatchFieldLanes.divided(
+              children: [
+                CatchField.input(
+                  title: context.l10n.hostsClubDetailsStepTitleDescription,
+                  contract: CatchContractConstraints
+                      .createClubCallablePayloadDescription,
+                  controller: descriptionController,
+                  icon: CatchIcons.editNoteOutlined,
+                  maxLines: 4,
+                  textCapitalization: TextCapitalization.sentences,
+                  textInputAction: TextInputAction.newline,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return context
+                          .l10n
+                          .hostsClubDetailsStepVisiblecopyPleaseAddADescription;
+                    }
+                    return null;
+                  },
+                ),
+              ],
             ),
             CreateClubContactFields(
               instagramController: instagramController,

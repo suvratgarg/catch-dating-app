@@ -52,6 +52,9 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
           slivers: [
             ...CatchSliverHeader(
               title: ChatsBrowseHeader(
+                presentation: isHostApp
+                    ? ChatsBrowsePresentation.host
+                    : ChatsBrowsePresentation.consumer,
                 showSearchAction: screenState.showSearchAction,
                 searchValue: searchValue,
                 onSearchChanged: ref

@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-08-26",
+  "updated": "2026-08-28",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "39ca4a5c0410b3d3cf9456763f7dc1f50fb8f9bd467d89baad589f3d9c58adb8",
+  "sourceDigest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "39ca4a5c0410b3d3cf9456763f7dc1f50fb8f9bd467d89baad589f3d9c58adb8",
-    "contractDigest": "39ca4a5c0410b3d3cf9456763f7dc1f50fb8f9bd467d89baad589f3d9c58adb8"
+    "digest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56",
+    "contractDigest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "96fba376a945bc989c546f92951e851e9ad4dc8488566fd2e5c93afbb75dd50d",
+    "handoffRequestDigest": "8f0cb9431a53a8b3e76f0d35f2ea886b357d5abf3258436d6d26e191f124284a",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 71,
-    "publicClassCount": 208,
+    "publicClassCount": 210,
     "conceptCount": 65,
-    "memberCount": 125,
-    "membersPerConcept": 1.92,
+    "memberCount": 127,
+    "membersPerConcept": 1.95,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 65,
-      "member": 125,
+      "member": 127,
       "screen": 15
     },
     "collisionCount": 33,
@@ -220,7 +220,7 @@
           "CatchFieldDisclosureDrawer",
           "CatchFieldExplicitSaveControl",
           "CatchFieldFocusOutline",
-          "CatchFieldInsetScope",
+          "CatchFieldGeometryScope",
           "CatchFieldOptionCardControl",
           "CatchFieldRepeatButton",
           "CatchFieldRow",
@@ -323,6 +323,7 @@
         "symbols": [
           "CatchFormStepBody",
           "CatchPageBody",
+          "CatchResponsiveSectionPage",
           "CatchScreenBody",
           "CatchSliverPageBody"
         ]
@@ -344,6 +345,7 @@
         "key": "catch.section_stack",
         "symbols": [
           "CatchDetailSliverSectionList",
+          "CatchResponsiveSectionLayout",
           "CatchSectionList",
           "CatchSectionStack"
         ]
@@ -820,7 +822,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "ecdd03e211003b0d0ec37aabee78c27c635ad118a25f6c0f9d9678d5321ee0e0"
+      "contractDigest": "95495e9411931f48ec0f1d6b7bc58a323eb39374014cf751c94b4292b817e0b7"
     },
     {
       "contractId": "catch.section",
@@ -843,8 +845,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 10,
-      "figmaExpectedPropertyDigest": "34315197327264807dbabbb252a604ddcc2af522b1357b13ae7023ae34d85e4f",
+      "figmaExpectedPropertyCount": 16,
+      "figmaExpectedPropertyDigest": "216ff1e2c2a8773c73e3ee13731c5e0b60278e23db7c014751e894735c59a9e3",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -852,7 +854,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "dfe5a9b091faa65c35d1d58b01325eadc5d1ea7b4917f8635e74d568ab2323a4"
+      "contractDigest": "3f92ffc3b25d73ecf85515f4c80918629b0a3e043de932242a87d0e6edbd190c"
     },
     {
       "contractId": "catch.skeleton",
@@ -1460,7 +1462,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ScreenBody",
       "claudeAllowed": true,
-      "contractDigest": "84a9db94eb59fcee83ff6f055c167329f57b42bc3d094024405f8d555c4d6599"
+      "contractDigest": "135e6092ad0ae5779d3af4b3032347b786f953ea6bc2a599cb24c53b428f8d89"
     },
     {
       "contractId": "catch.section_stack",
@@ -1492,7 +1494,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "SectionStack",
       "claudeAllowed": true,
-      "contractDigest": "e01f4a08d549d25bed92cdcdf1cac9afe1ef73477a4381d2af325c42130d893d"
+      "contractDigest": "fe0829e23cc3558b830f1599e236b4e8bb78987b3decc4604ceb0f90f643c452"
     },
     {
       "contractId": "catch.roster_tiles",

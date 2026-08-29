@@ -63,11 +63,11 @@ enum CatchFieldStatus { idle, saving, saved }
 /// );
 /// ```
 abstract class CatchField extends StatefulWidget {
-  /// Rectangular pressed band used by interactive field rows.
+  /// Stable key for the contextual pressed surface used by field rows.
   ///
-  /// A surrounding [CatchSection.containedFieldRows] owns any rounded group
-  /// corners. Its separate active overlay follows the same rule: rectangular
-  /// inside a contained row group, locally rounded only when standalone.
+  /// The enclosing section or lane supplies the interaction shape. Divided
+  /// fields may reach a page/lane plane or use an inset rounded perimeter;
+  /// contained rows remain rectangular bands inside one section-owned clip.
   static const pressOverlayKey = ValueKey<String>('catch-field-press-overlay');
 
   const CatchField._shared({
@@ -83,7 +83,6 @@ abstract class CatchField extends StatefulWidget {
     this.iconColor,
     this.leading,
     this.leadingExtent,
-    this.divider = false,
     this.enabled = true,
     this.status = CatchFieldStatus.idle,
   });
@@ -106,7 +105,6 @@ abstract class CatchField extends StatefulWidget {
     String? placeholder,
     bool valid,
     CatchFieldStatus status,
-    bool divider,
   }) = _RowConfig.read;
 
   /// A natural-height title plus supporting-copy row.
@@ -135,7 +133,6 @@ abstract class CatchField extends StatefulWidget {
     bool isOptional,
     bool valid,
     CatchFieldStatus status,
-    bool divider,
   }) = _RowConfig.content;
 
   const factory CatchField.nav({
@@ -160,7 +157,6 @@ abstract class CatchField extends StatefulWidget {
     String? errorText,
     bool valid,
     CatchFieldStatus status,
-    bool divider,
   }) = _RowConfig.nav;
 
   /// A compact, reorderable navigation row with one inline metadata sentence.
@@ -175,7 +171,6 @@ abstract class CatchField extends StatefulWidget {
     required Widget reorderHandle,
     required VoidCallback? onTap,
     bool showChevron,
-    bool divider,
   }) = _RowConfig.sortable;
 
   /// A tappable field-shaped row whose action does not navigate or edit the
@@ -201,7 +196,6 @@ abstract class CatchField extends StatefulWidget {
     String? errorText,
     bool valid,
     CatchFieldStatus status,
-    bool divider,
   }) = _RowConfig.action;
 
   const factory CatchField.toggle({
@@ -222,7 +216,6 @@ abstract class CatchField extends StatefulWidget {
     String? badgeLabel,
     CatchBadgeTone? badgeTone,
     CatchFieldStatus status,
-    bool divider,
   }) = _ToggleConfig.toggle;
 
   const factory CatchField.input({
@@ -276,7 +269,6 @@ abstract class CatchField extends StatefulWidget {
     Widget? action,
     String? error,
     String? errorText,
-    bool divider,
     VoidCallback? onTap,
   }) = _EditConfig.input;
 
@@ -312,7 +304,6 @@ abstract class CatchField extends StatefulWidget {
     String? emptyValueText,
     String? error,
     String? errorText,
-    bool divider,
   }) = _ControlConfig.control;
 
   /// Canonical disclosure field for a wrapping set of single- or multi-select
@@ -348,7 +339,6 @@ abstract class CatchField extends StatefulWidget {
     String? emptyValueText,
     String? error,
     String? errorText,
-    bool divider = false,
   }) {
     final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
       contract,
@@ -394,7 +384,6 @@ abstract class CatchField extends StatefulWidget {
       emptyValueText: emptyValueText,
       error: error,
       errorText: errorText,
-      divider: divider,
     );
   }
 
@@ -427,7 +416,6 @@ abstract class CatchField extends StatefulWidget {
     CatchFieldTone tone = CatchFieldTone.normal,
     String? error,
     String? errorText,
-    bool divider = false,
   }) {
     final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
       contract,
@@ -472,7 +460,6 @@ abstract class CatchField extends StatefulWidget {
       tone: tone,
       error: error,
       errorText: errorText,
-      divider: divider,
     );
   }
 
@@ -508,7 +495,6 @@ abstract class CatchField extends StatefulWidget {
     String? emptyValueText,
     String? error,
     String? errorText,
-    bool divider = false,
   }) {
     assert(
       step == null || step > 0,
@@ -559,7 +545,6 @@ abstract class CatchField extends StatefulWidget {
       emptyValueText: emptyValueText,
       error: error,
       errorText: errorText,
-      divider: divider,
     );
   }
 
@@ -598,7 +583,6 @@ abstract class CatchField extends StatefulWidget {
     Color? iconColor,
     CatchFieldTone tone,
     String? error,
-    bool divider,
     ValueChanged<String>? onChanged,
     ValueChanged<String>? onSubmitted,
     ValueChanged<String>? onBlur,
@@ -722,7 +706,6 @@ abstract class CatchField extends StatefulWidget {
   /// Horizontal extent of caller-owned [leading] content. Sections use this
   /// to align dividers to the actual text lane instead of assuming icon size.
   final double? leadingExtent;
-  final bool divider;
   final bool enabled;
   final CatchFieldStatus status;
 

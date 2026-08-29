@@ -134,41 +134,7 @@ class HostEventOperationalSpotlight extends StatelessWidget {
             ),
           ),
           gapH14,
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  context.l10n.hostsHostTodayTextEventdaylabelTime(
-                    eventDayLabel: _eventDayLabel(event),
-                    time: EventFormatters.time(event.startTime),
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.editorialWhite.withValues(
-                      alpha: CatchOpacity.onDarkMuted,
-                    ),
-                  ),
-                ),
-              ),
-              gapW12,
-              Expanded(
-                child: Text(
-                  event.locationName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.right,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.editorialWhite.withValues(
-                      alpha: CatchOpacity.onDarkMuted,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          _HostEventSpotlightMetadata(event: event),
           gapH16,
           Divider(
             height: CatchStroke.hairline,
@@ -177,8 +143,10 @@ class HostEventOperationalSpotlight extends StatelessWidget {
             ),
           ),
           gapH14,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.end,
+            spacing: CatchSpacing.s5,
+            runSpacing: CatchSpacing.s3,
             children: [
               HostEventOperationalMetric(
                 value: context.l10n.hostsHostTodayVisiblecopySignedupcount(
@@ -186,14 +154,12 @@ class HostEventOperationalSpotlight extends StatelessWidget {
                 ),
                 label: context.l10n.hostsHostTodayLabelGoing,
               ),
-              gapW20,
               HostEventOperationalMetric(
                 value: context.l10n.hostsHostTodayVisiblecopyWaitlistcount(
                   waitlistCount: event.waitlistCount,
                 ),
                 label: context.l10n.hostsHostTodayLabelWaiting,
               ),
-              gapW20,
               HostEventOperationalMetric(
                 value: context.l10n.hostsHostTodayVisiblecopyTaskcount(
                   taskCount: taskCount,
@@ -201,7 +167,6 @@ class HostEventOperationalSpotlight extends StatelessWidget {
                 label: context.l10n.hostsHostTodayLabelNeedsYou,
                 valueColor: activity.accent,
               ),
-              const Spacer(),
             ],
           ),
           gapH20,
@@ -217,6 +182,52 @@ class HostEventOperationalSpotlight extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _HostEventSpotlightMetadata extends StatelessWidget {
+  const _HostEventSpotlightMetadata({required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+    final metadataStyle = CatchTextStyles.supporting(
+      context,
+      color: CatchTokens.editorialWhite.withValues(
+        alpha: CatchOpacity.onDarkMuted,
+      ),
+    );
+    final time = Text(
+      context.l10n.hostsHostTodayTextEventdaylabelTime(
+        eventDayLabel: _eventDayLabel(event),
+        time: EventFormatters.time(event.startTime),
+      ),
+      maxLines: largeText ? 2 : 1,
+      overflow: TextOverflow.ellipsis,
+      style: metadataStyle,
+    );
+    final location = Text(
+      event.locationName,
+      maxLines: largeText ? 2 : 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: largeText ? TextAlign.start : TextAlign.right,
+      style: metadataStyle,
+    );
+    if (largeText) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [time, gapH4, location],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: time),
+        gapW12,
+        Expanded(child: location),
+      ],
     );
   }
 }

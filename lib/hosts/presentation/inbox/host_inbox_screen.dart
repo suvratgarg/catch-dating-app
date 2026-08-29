@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/chats/chats.dart' show ChatScreen;
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
@@ -12,6 +13,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/responsive/breakpoints.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -23,6 +25,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -56,6 +59,7 @@ class HostInboxScreen extends ConsumerStatefulWidget {
     this.initialCampaignSegments = const {},
     this.initialCampaignSearch,
     this.initialOrganizerId,
+    this.initialThreadId,
     this.broadcastEnabled,
     this.syncSelectionToRoute = true,
     this.now,
@@ -67,6 +71,7 @@ class HostInboxScreen extends ConsumerStatefulWidget {
   final Set<HostAudienceSegment> initialCampaignSegments;
   final String? initialCampaignSearch;
   final String? initialOrganizerId;
+  final String? initialThreadId;
   final bool? broadcastEnabled;
   final bool syncSelectionToRoute;
   final DateTime? now;
@@ -80,6 +85,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
   late HostInboxAudienceSegment _segment;
   late HostMessagingWorkspace _workspace;
   bool _campaignBusy = false;
+  String? _selectedThreadId;
 
   @override
   void initState() {
@@ -87,6 +93,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     _requestedScope = widget.initialScope;
     _segment = widget.initialSegment;
     _workspace = widget.initialWorkspace;
+    _selectedThreadId = widget.initialThreadId;
   }
 
   @override
@@ -101,6 +108,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     }
     if (oldWidget.initialWorkspace != widget.initialWorkspace) {
       _workspace = widget.initialWorkspace;
+    }
+    if (oldWidget.initialThreadId != widget.initialThreadId) {
+      _selectedThreadId = widget.initialThreadId;
     }
   }
 
@@ -171,34 +181,46 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
           ].where((preview) => preview.match.clubId == selectedClub.id).length;
     final showSearch =
         isInbox && (selectedThreadCount > 0 || query.trim().isNotEmpty);
+    final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
 
     return Scaffold(
       backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: ChatsBrowseHeader(
-                showSearchAction: showSearch,
-                searchValue: isInbox ? query : '',
-                onSearchChanged: isInbox
-                    ? ref.read(chatSearchQueryProvider.notifier).setQuery
-                    : null,
-                hostFilter: null,
-                hostUnreadCount: 0,
-                onHostFilterChanged: null,
-                showHostSubtitle: false,
+      body: CatchMasterDetailLayout(
+        expanded: screenSize.isExpanded && isInbox,
+        master: SafeArea(
+          bottom: false,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: ChatsBrowseHeader(
+                  presentation: ChatsBrowsePresentation.host,
+                  showSearchAction: showSearch,
+                  searchValue: isInbox ? query : '',
+                  onSearchChanged: isInbox
+                      ? ref.read(chatSearchQueryProvider.notifier).setQuery
+                      : null,
+                  hostFilter: null,
+                  hostUnreadCount: 0,
+                  onHostFilterChanged: null,
+                  showHostSubtitle: false,
+                ),
               ),
-            ),
-            HostMessagingWorkspaceRail(
-              selected: _workspace,
-              onChanged: _campaignBusy ? null : _selectWorkspace,
-            ),
-            workspaceSliver,
-            const CatchSliverTerminalPadding(),
-          ],
+              HostMessagingWorkspaceRail(
+                selected: _workspace,
+                onChanged: _campaignBusy ? null : _selectWorkspace,
+              ),
+              workspaceSliver,
+              const CatchSliverTerminalPadding(),
+            ],
+          ),
         ),
+        detail: _selectedThreadId == null
+            ? CatchEmptyState(
+                icon: CatchIcons.chatBubbleOutlineRounded,
+                title: context.l10n.hostInboxSelectConversationTitle,
+                message: context.l10n.hostInboxSelectConversationBody,
+              )
+            : ChatScreen(matchId: _selectedThreadId!, embedded: true),
       ),
     );
   }
@@ -208,7 +230,10 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     if (workspace == HostMessagingWorkspace.campaigns) {
       ref.read(chatSearchQueryProvider.notifier).clear();
     }
-    setState(() => _workspace = workspace);
+    setState(() {
+      _workspace = workspace;
+      _selectedThreadId = null;
+    });
   }
 
   void _setCampaignBusy(bool value) {
@@ -232,21 +257,50 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     setState(() {
       _requestedScope = scope;
       _segment = HostInboxAudienceSegment.booked;
+      _selectedThreadId = null;
     });
     if (!widget.syncSelectionToRoute) return;
     context.goNamed(
       Routes.hostInboxScreen.name,
-      queryParameters: scope.isGeneral
-          ? const {'scope': 'general'}
-          : {'eventId': scope.eventId!},
+      queryParameters: _routeQuery(scope: scope),
     );
   }
 
   void _openThread(ChatThreadPreview preview) {
+    if (ScreenSize.fromWidth(MediaQuery.sizeOf(context).width).isExpanded) {
+      setState(() => _selectedThreadId = preview.matchId);
+      if (widget.syncSelectionToRoute) {
+        context.goNamed(
+          Routes.hostInboxScreen.name,
+          queryParameters: _routeQuery(
+            organizerId: preview.match.clubId,
+            threadId: preview.matchId,
+          ),
+        );
+      }
+      return;
+    }
     context.goNamed(
       Routes.hostChatScreen.name,
       pathParameters: {'matchId': preview.matchId},
     );
+  }
+
+  Map<String, String> _routeQuery({
+    HostInboxScope? scope,
+    String? organizerId,
+    String? threadId,
+  }) {
+    final effectiveScope = scope ?? _requestedScope;
+    return {
+      if (_workspace != HostMessagingWorkspace.inbox)
+        'workspace': _workspace.name,
+      if (effectiveScope?.isGeneral == true) 'scope': 'general',
+      'eventId': ?effectiveScope?.eventId,
+      if (organizerId != null && organizerId.isNotEmpty)
+        'organizerId': organizerId,
+      if (threadId != null && threadId.isNotEmpty) 'threadId': threadId,
+    };
   }
 
   void _openBroadcast(HostInboxViewModel workspace) {

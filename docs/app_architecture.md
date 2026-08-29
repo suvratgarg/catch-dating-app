@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.14.0
-updated: 2026-08-20
+version: 1.14.2
+updated: 2026-08-28
 owner: app_architecture
 status: active
 ---
@@ -604,6 +604,19 @@ the lifecycle list.
 6. Compact child routes may continue above the root navigator. Master-detail
    routes must later preserve selected ids in the branch/URL so resizing,
    browser back/forward, deep links, and window restoration remain truthful.
+
+**Section-page composition**
+
+Section-based non-sliver routes use `CatchResponsiveSectionPage` instead of
+rebuilding screen gutters, a content clamp, field visibility, and terminal
+shell clearance independently. The route explicitly chooses either a centered
+reading lane or `adaptiveTwoColumn`; there is no automatic rule that turns
+every wide form into two columns. Adaptive composition measures the page's
+remaining local width after rail/sidebar chrome and screen gutters. At the
+named 660 px component threshold, complete `CatchSection` blocks move into
+their declared primary or secondary lane; below it, including narrow split
+windows, the original list order returns in one capped column. The layout never
+splits a section or teaches `CatchField` about the viewport.
 
 **Workspace geometry and input**
 
@@ -3303,6 +3316,21 @@ wiring, pending/error presentation, and one `Future<bool> Function(P)` save
 delegate. Product-specific controls use `CatchFormCustomRow<P>` and the
 provided scope instead of adding feature policy to core.
 
+Text commit behavior is a form-section policy, not descriptor styling.
+`CatchFormRowList<P>` defaults to `CatchFormTextCommitMode.explicit`, which
+renders the canonical staged editor and Cancel/Done actions for every text row.
+An existing section may select `CatchFormTextCommitMode.onBlur` as one explicit
+compatibility decision while its product behavior is migrated. Do not add a
+per-row boolean: sibling rows in one form section must not drift between commit
+models.
+
+The mapper accepts semantic section content (`title`, `count`, `trailing`, and
+`footer`) but does not forward colors, divider roles/insets, gaps, lead/first
+position, or internal-divider switches. `CatchSection.fieldRows` owns those
+visual defaults and infers its field divider alignment. If a form genuinely
+needs a different section role, add a reviewed semantic composition rather
+than reopening raw styling parameters on the descriptor mapper.
+
 The consumer Profile About You section remains the descriptor reference
 prototype. Host Club Identity and Contact are the first promoted descriptor
 adopter: both sections use typed `UpdateClubPatch` descriptors and one save
@@ -3320,7 +3348,7 @@ contract drift.
 ```dart
 CatchFormRowList<UpdateUserProfilePatch>(
   title: context.l10n.userProfileProfileTabTitleAboutYou,
-  dividerInset: CatchFieldRow.textLaneInset,
+  textCommitMode: CatchFormTextCommitMode.onBlur,
   rows: editState.aboutSectionRows,
   accordion: _fieldAccordion,
   savePatch: _saveAboutPatch,

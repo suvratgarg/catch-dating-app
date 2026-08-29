@@ -134,6 +134,8 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       errorContext: AppErrorContext.auth,
       child: CatchTabbedScreenScaffold(
         title: selectedClub.name,
+        titleMaxLines: 2,
+        rowCrossAxisAlignment: CrossAxisAlignment.start,
         actions: [signOutAction],
         tabRail: CatchTabControllerRail<HostClubTab>(
           controller: _tabController,

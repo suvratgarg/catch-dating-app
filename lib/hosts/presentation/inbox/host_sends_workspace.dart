@@ -605,14 +605,15 @@ class _HostSendsHistoryPage extends StatelessWidget {
       title: context.l10n.hostMessagingWorkspaceSends,
       child: Column(
         children: [
-          for (final (index, send) in sends.indexed)
-            CatchRowPressSurface(
-              onTap: busy ? null : () => onOpen(send),
-              child: _HostSendRow(
-                send: send,
-                divider: index < sends.length - 1 || nextCursor != null,
-              ),
-            ),
+          CatchFieldLanes.divided(
+            children: [
+              for (final send in sends)
+                CatchRowPressSurface(
+                  onTap: busy ? null : () => onOpen(send),
+                  child: _HostSendRow(send: send),
+                ),
+            ],
+          ),
           if (nextCursor != null)
             Padding(
               padding: CatchInsets.fieldSectionChildTop,
@@ -632,10 +633,9 @@ class _HostSendsHistoryPage extends StatelessWidget {
 }
 
 class _HostSendRow extends StatelessWidget {
-  const _HostSendRow({required this.send, required this.divider});
+  const _HostSendRow({required this.send});
 
   final HostSendSummary send;
-  final bool divider;
 
   @override
   Widget build(BuildContext context) => CatchFieldLanes.single(
@@ -649,7 +649,6 @@ class _HostSendRow extends StatelessWidget {
           AppTimeFormatters.shortDate(campaign.activityAt),
         ].join(' · '),
         valueText: campaign.status,
-        divider: divider,
       ),
       HostAnnouncementSendSummary announcement => CatchField.read(
         key: ValueKey('host-send-announcement-${announcement.broadcastId}'),
@@ -662,7 +661,6 @@ class _HostSendRow extends StatelessWidget {
         valueText: announcement.partialFailure
             ? context.l10n.hostSendsPartial
             : announcement.audience,
-        divider: divider,
       ),
       HostFollowerUpdateSendSummary update => CatchField.read(
         key: ValueKey('host-send-follower-update-${update.postId}'),
@@ -678,7 +676,6 @@ class _HostSendRow extends StatelessWidget {
         valueText: context.l10n.hostSendsFollowerDeliveryStatus(
           status: update.deliveryStatus,
         ),
-        divider: divider,
       ),
     },
   );

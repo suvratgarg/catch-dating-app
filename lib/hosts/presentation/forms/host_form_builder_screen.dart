@@ -646,7 +646,6 @@ class _PublishedFormCommandCenter extends ConsumerWidget {
               valueText: AppTimeFormatters.compactRelativeTime(
                 latestResponse.submittedAt,
               ),
-              divider: true,
               onTap: onReviewResponses,
             ),
           ),

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -323,32 +324,42 @@ void main() {
   for (final scenario in const [
     (
       width: 599.0,
+      textScale: 1.0,
       chromeKey: 'catch_tab_bar.anchored_chrome',
       sideNavigation: false,
       sidebar: false,
     ),
     (
       width: 600.0,
+      textScale: 1.0,
       chromeKey: 'app_shell.navigation.rail',
       sideNavigation: true,
       sidebar: false,
     ),
     (
       width: 839.0,
+      textScale: 1.0,
       chromeKey: 'app_shell.navigation.rail',
       sideNavigation: true,
       sidebar: false,
     ),
     (
       width: 840.0,
+      textScale: 1.0,
       chromeKey: 'app_shell.navigation.sidebar',
       sideNavigation: true,
       sidebar: true,
     ),
+    (
+      width: 700.0,
+      textScale: 2.0,
+      chromeKey: 'app_shell.navigation.rail',
+      sideNavigation: true,
+      sidebar: false,
+    ),
   ]) {
-    testWidgets('Host shell selects chrome at ${scenario.width}px', (
-      tester,
-    ) async {
+    testWidgets('Host shell selects chrome at ${scenario.width}px and '
+        '${scenario.textScale}x text', (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = Size(scenario.width, 900);
       addTearDown(tester.view.resetDevicePixelRatio);
@@ -393,6 +404,12 @@ void main() {
           child: MaterialApp.router(
             theme: AppTheme.light,
             routerConfig: router,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(scenario.textScale)),
+              child: child!,
+            ),
           ),
         ),
       );
@@ -422,6 +439,14 @@ void main() {
       expect(navigationBar.items!.last.onLongPress, isNull);
       expect(navigationBar.items!.last.semanticValue, _organizer.name);
       if (scenario.sideNavigation) {
+        expect(
+          tester.getSize(find.byKey(ValueKey(scenario.chromeKey))).width,
+          scenario.sidebar
+              ? CatchLayout.appShellSidebarWidth
+              : scenario.textScale >= 1.6
+              ? CatchLayout.appShellLargeTextRailWidth
+              : CatchLayout.appShellRailWidth,
+        );
         final expectedLabels = [
           'Events',
           'Customers',

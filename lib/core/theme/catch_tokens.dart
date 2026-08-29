@@ -1930,8 +1930,6 @@ abstract final class CatchFieldTokens {
 
   static const double tileRadius = CatchRadius.interactiveTile;
   static const double sectionRadius = CatchRadius.md;
-  static const double sectionHeaderTopPadding = CatchSpacing.micro14;
-  static const double sectionHeaderBottomPadding = CatchSpacing.micro2;
   static const double sectionHeaderGap = CatchSpacing.s3;
   static const double sectionRuleGap = CatchSpacing.s2;
   static const double containedSectionFooterTopPadding = CatchSpacing.micro2;
@@ -2423,6 +2421,9 @@ abstract final class CatchLayout {
   static const double sheetTopPadding = CatchSpacing.micro10;
   static const double sheetHorizontalPadding = 22.0;
   static const double sheetBottomPadding = 26.0;
+
+  /// Visual breathing room retained above any physical or keyboard obstruction.
+  static const double sheetBottomSafeAreaGap = CatchSpacing.s4;
   static const double sheetTopRadius = 26.0;
   static const double sheetBottomRadius = 30.0;
   static const double sheetGrabberBottomMargin = CatchSpacing.s4;
@@ -2519,12 +2520,16 @@ abstract final class CatchLayout {
       (tabBarCompactItemExtent - tabBarIconBoxExtent) / 2;
   static const double appShellNavigationIdentityExtent = CatchSpacing.s7;
   static const double appShellRailWidth = 96.0;
+  static const double appShellLargeTextRailWidth = 168.0;
   static const double appShellSidebarWidth = 240.0;
+  static const double masterDetailIndexPaneWidth = 360.0;
   static const double appShellRailItemMinHeight = 64.0;
   static const double appShellSidebarItemMinHeight = 48.0;
   static const double tabRailHeight = 48.0;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;
+  static const double topBarLargeTextActionReserve =
+      topBarHeight + CatchSpacing.s2;
   static const double hostEventManageTopBarHeight =
       topBarLargeHeight + CatchSpacing.s4;
   static const double hostRosterDrawerMaxWidth = 440.0;
@@ -2540,6 +2545,14 @@ abstract final class CatchLayout {
 
   static double tabBarReservedBottomInset(double bottomSafeArea) =>
       tabBarExtent + tabBarFloatingBottomInset + bottomSafeArea;
+
+  static double tabBarFloatingHorizontalInsetFor(double textScale) =>
+      textScale >= 1.6 ? 0 : tabBarFloatingHorizontalInset;
+
+  static double tabBarContentHorizontalPaddingFor(double textScale) =>
+      textScale >= 1.6
+      ? CatchSpacing.s1
+      : tabBarFloatingContentHorizontalPadding;
 
   static double tabBarSelectedExtentFor({
     required double availableWidth,

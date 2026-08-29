@@ -2091,7 +2091,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'disclosure-active-pressed',
         description:
-            'The open card holds active chrome. Press and hold its row to inspect the contact outline before release.',
+            'The standalone open field holds rounded active chrome. Press and hold its row to verify that pointer-down retains one rounded outline before release.',
         child: const _ChoiceFieldDemo(initiallyOpen: true),
       ),
       fieldState(
@@ -3138,7 +3138,11 @@ Widget catchSectionContractStates(BuildContext context) {
       'contained-section',
       'plain-section',
       'divided-field-rows',
-      'header-footer-metrics',
+      'divided-field-rows-full-bleed',
+      'divided-field-rows-rounded-tile',
+      'divided-field-rows-full-bleed-keyboard-focus',
+      'contained-field-rows-external-header',
+      'contained-field-rows-internal-header',
       'contained-field-rows-child-active',
       'contained-field-rows-explicit-focused',
       'field-list',
@@ -3296,7 +3300,76 @@ Widget catchSectionContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'header-footer-metrics',
+        label: 'divided-field-rows-full-bleed',
+        description:
+            'The section-wide compact default reaches the nearest page interaction plane.',
+        child: _FieldWidth(
+          child: CatchScreenBody(
+            scrollable: false,
+            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
+            child: CatchSection.fieldRows(
+              title: 'Notifications',
+              interaction: CatchDividedFieldInteraction.fullBleed,
+              children: [
+                CatchField.nav(
+                  title: 'Reminder timing',
+                  body: 'Two hours before',
+                  icon: CatchIcons.clock,
+                  onTap: _noop,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'divided-field-rows-rounded-tile',
+        description:
+            'The retained section-level alternative uses one inset perimeter.',
+        child: _FieldWidth(
+          child: CatchScreenBody(
+            scrollable: false,
+            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
+            child: CatchSection.fieldRows(
+              title: 'Notifications',
+              interaction: CatchDividedFieldInteraction.roundedTile,
+              children: [
+                CatchField.nav(
+                  title: 'Reminder timing',
+                  body: 'Two hours before',
+                  icon: CatchIcons.clock,
+                  onTap: _noop,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'divided-field-rows-full-bleed-keyboard-focus',
+        description:
+            'Keyboard focus adds the approved 2 px inset perimeter to the same full-bleed plane.',
+        child: _FieldWidth(
+          child: CatchScreenBody(
+            scrollable: false,
+            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
+            child: CatchSection.fieldRows(
+              title: 'Profile',
+              interaction: CatchDividedFieldInteraction.fullBleed,
+              children: [
+                CatchField.input(
+                  title: 'Public name',
+                  initialValue: 'Suvrat',
+                  icon: CatchIcons.personOutlined,
+                  autofocus: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'contained-field-rows-external-header',
         child: _FieldWidth(
           child: CatchSectionList(
             emptyStateOmitted: true,
@@ -3319,6 +3392,30 @@ Widget catchSectionContractStates(BuildContext context) {
                 children: const [
                   CatchField.read(title: 'Height', body: '168 cm'),
                 ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'contained-field-rows-internal-header',
+        child: _FieldWidth(
+          child: CatchSection.containedFieldRows(
+            title: 'Event settings',
+            count: '2 fields',
+            trailing: Icon(CatchIcons.infoOutlineRounded),
+            headerPlacement: CatchSectionHeaderPlacement.inside,
+            children: [
+              CatchField.read(
+                title: 'Host',
+                body: 'Catch Hosts',
+                icon: CatchIcons.hosted,
+              ),
+              CatchField.nav(
+                title: 'Location',
+                body: 'Carter Road promenade',
+                icon: CatchIcons.pinOutlined,
+                onTap: _noop,
               ),
             ],
           ),

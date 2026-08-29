@@ -42,11 +42,13 @@ class ChatScreen extends ConsumerStatefulWidget {
     required this.matchId,
     this.otherProfile,
     this.initialDraftText,
+    this.embedded = false,
   });
 
   final String matchId;
   final PublicProfile? otherProfile;
   final String? initialDraftText;
+  final bool embedded;
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
@@ -297,7 +299,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           onIdentityTap: chatState.profileNavigationEnabled
               ? () => _openOtherProfile(chatState)
               : null,
-          leadingType: CatchTopBarLeading.back,
+          leadingType: widget.embedded
+              ? CatchTopBarLeading.none
+              : CatchTopBarLeading.back,
           divider: scrolledUnder,
           actions: [
             if (availableThreadActions.isNotEmpty)

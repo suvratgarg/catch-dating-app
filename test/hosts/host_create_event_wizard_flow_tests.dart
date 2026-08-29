@@ -12,35 +12,37 @@ void _registerCreateEventWizardFlowTests() {
     expect(find.text('Previous'), findsOneWidget);
   });
 
-  testWidgets(
-    'uses dockless actions and separates media content from its rule',
-    (tester) async {
-      await _pumpCreateEventFlow(tester);
-      await _openCreateEventFlow(tester);
+  testWidgets('uses dockless actions and a flat divided media section', (
+    tester,
+  ) async {
+    await _pumpCreateEventFlow(tester);
+    await _openCreateEventFlow(tester);
 
-      expect(find.byType(CatchBottomActionOverlay), findsOneWidget);
-      expect(
-        find.byKey(const ValueKey('catch_bottom_action_overlay.actions')),
-        findsOneWidget,
-      );
+    expect(find.byType(CatchBottomActionOverlay), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('catch_bottom_action_overlay.actions')),
+      findsOneWidget,
+    );
 
-      final organizerFinder = find.byKey(
-        const ValueKey('create_event.inherited_organizer_logo'),
-      );
-      final mediaSection = find.ancestor(
-        of: organizerFinder,
-        matching: find.byType(CatchSection),
-      );
-      final ruleRect = tester.getRect(
-        find.descendant(of: mediaSection, matching: find.byType(CatchDivider)),
-      );
-      final organizerRect = tester.getRect(organizerFinder);
-      expect(
-        organizerRect.top - ruleRect.bottom,
-        closeTo(CatchSpacing.s3, 0.001),
-      );
-    },
-  );
+    final organizerFinder = find.byKey(
+      const ValueKey('create_event.inherited_organizer_logo'),
+    );
+    final mediaSection = find.ancestor(
+      of: organizerFinder,
+      matching: find.byType(CatchSection),
+    );
+    expect(mediaSection, findsOneWidget);
+    expect(
+      find.descendant(of: mediaSection, matching: find.byType(CatchDivider)),
+      findsNothing,
+    );
+    final titleRect = tester.getRect(find.text('EVENT COVER & GALLERY'));
+    final organizerRect = tester.getRect(organizerFinder);
+    expect(
+      organizerRect.top - titleRect.bottom,
+      greaterThanOrEqualTo(CatchSpacing.s3),
+    );
+  });
 
   testWidgets(
     'external guest-list creation preserves the mapped source and removes Catch payment policy',

@@ -674,7 +674,6 @@ class EventSuccessAccountabilityCard extends StatelessWidget {
                             );
                           },
                     isLoading: isResolving,
-                    divider: indexed.$1 > 0,
                   ),
               ],
             ),

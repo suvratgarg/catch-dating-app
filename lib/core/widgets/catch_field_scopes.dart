@@ -28,53 +28,147 @@ class CatchFieldVisibilityScope extends InheritedWidget {
       revealPadding != oldWidget.revealPadding;
 }
 
-/// Ambient contract for who owns a field row's horizontal gutter and active
-/// edge geometry.
+/// Owner of the horizontal content gutter around a field row.
+enum CatchFieldGutterOwnership { field, container }
+
+/// Section-level interaction treatment for divided field groups.
+///
+/// A page publishes its responsive default. One complete divided field
+/// section may override that policy, but an individual field cannot.
+enum CatchDividedFieldInteraction { fullBleed, roundedTile }
+
+/// Responsive defaults for divided field-section interaction.
+///
+/// This policy is based on the local page composition rather than the device
+/// operating system. A wide viewport with one readable lane can therefore use
+/// a different policy from a true split-pane composition.
+@immutable
+class CatchResponsiveFieldInteractionPolicy {
+  const CatchResponsiveFieldInteractionPolicy({
+    this.singleColumn = CatchDividedFieldInteraction.fullBleed,
+    this.splitPane = CatchDividedFieldInteraction.roundedTile,
+  });
+
+  final CatchDividedFieldInteraction singleColumn;
+  final CatchDividedFieldInteraction splitPane;
+}
+
+/// Owner of the external corners around field interaction chrome.
+///
+/// [roundedTile] means the field paints its own complete rounded silhouette.
+/// [sectionClipped] means an ancestor section owns one rounded clip for the
+/// complete group, so each descendant paints a rectangular internal band.
+/// [fullBleedBand] means a divided section paints one rectangular band to the
+/// nearest page- or lane-owned interaction plane.
+enum CatchFieldInteractionShape { roundedTile, sectionClipped, fullBleedBand }
+
+/// Internal page/lane paint extent published by semantic body primitives.
+///
+/// The resolved values are the horizontal distance from padded content to the
+/// interaction plane. Nested page-body primitives accumulate their insets, so
+/// a field never reads viewport size or subtracts `screenPx` itself.
+class CatchFieldInteractionPlaneScope extends InheritedWidget {
+  const CatchFieldInteractionPlaneScope({
+    super.key,
+    required this.outsets,
+    required super.child,
+  });
+
+  final EdgeInsets outsets;
+
+  static EdgeInsets outsetsOf(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<CatchFieldInteractionPlaneScope>()
+          ?.outsets ??
+      EdgeInsets.zero;
+
+  @override
+  bool updateShouldNotify(CatchFieldInteractionPlaneScope oldWidget) =>
+      outsets != oldWidget.outsets;
+}
+
+/// Internal responsive policy scope published by section-page composition.
+class CatchDividedFieldInteractionScope extends InheritedWidget {
+  const CatchDividedFieldInteractionScope({
+    super.key,
+    required this.interaction,
+    required super.child,
+  });
+
+  final CatchDividedFieldInteraction interaction;
+
+  static CatchDividedFieldInteractionScope? maybeOf(
+    BuildContext context,
+  ) => context
+      .dependOnInheritedWidgetOfExactType<CatchDividedFieldInteractionScope>();
+
+  static CatchDividedFieldInteraction interactionOf(BuildContext context) =>
+      maybeOf(context)?.interaction ?? CatchDividedFieldInteraction.roundedTile;
+
+  @override
+  bool updateShouldNotify(CatchDividedFieldInteractionScope oldWidget) =>
+      interaction != oldWidget.interaction;
+}
+
+/// Ambient contract for field-row content and interaction geometry.
 ///
 /// By default a [CatchField] row insets itself horizontally so it can sit
 /// directly on a background or inside an unpadded surface. A container that
 /// owns the horizontal gutter itself (e.g. [CatchSection.divided]) publishes
-/// `flush: true`, and every field row below it drops its own horizontal
-/// inset so content, trailing affordances, and container-drawn dividers all
-/// share the container's edges.
+/// [CatchFieldGutterOwnership.container], and every field row below it drops
+/// its own horizontal inset so content, trailing affordances, and
+/// container-drawn dividers all share the container's edges.
 ///
-/// [activeOverlayBleed] is independent from the content inset. It lets a
-/// containing section publish how far active row chrome must overlap its edge.
-/// [grouped] declares that an ancestor owns one rounded clip for the whole row
-/// group, so pressed and active descendants stay rectangular and inherit only
-/// the external corners they actually touch. Contained FieldSections use one
-/// hairline so the child ring and outer perimeter occupy the same geometry
-/// instead of painting adjacent vertical strokes. When omitted, flush rows
-/// retain their divided-section tile bleed.
-class CatchFieldInsetScope extends InheritedWidget {
-  const CatchFieldInsetScope({
+/// [interactionOutsets] is independent from the content gutter. It lets a
+/// containing section publish the exact horizontal paint extent for pressed,
+/// active, and focus chrome. [interactionShape] declares whether the field owns
+/// a tile, inherits one section clip, or reaches a page interaction plane.
+/// Contained field sections use one hairline of outset so the child ring and
+/// outer perimeter occupy the same coordinate instead of painting adjacent
+/// vertical strokes. Full-bleed sections inherit their page/lane outsets.
+class CatchFieldGeometryScope extends InheritedWidget {
+  const CatchFieldGeometryScope({
     super.key,
-    required this.flush,
-    this.activeOverlayBleed,
-    this.grouped = false,
+    required this.gutterOwnership,
+    this.interactionOutsets,
+    this.interactionShape = CatchFieldInteractionShape.roundedTile,
     required super.child,
-  }) : assert(activeOverlayBleed == null || activeOverlayBleed >= 0);
+  });
 
-  final bool flush;
-  final double? activeOverlayBleed;
-  final bool grouped;
+  final CatchFieldGutterOwnership gutterOwnership;
+  final EdgeInsets? interactionOutsets;
+  final CatchFieldInteractionShape interactionShape;
 
-  static CatchFieldInsetScope? _of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<CatchFieldInsetScope>();
+  static CatchFieldGeometryScope? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<CatchFieldGeometryScope>();
 
-  static bool flushOf(BuildContext context) => _of(context)?.flush ?? false;
+  static CatchFieldGutterOwnership gutterOwnershipOf(BuildContext context) =>
+      maybeOf(context)?.gutterOwnership ?? CatchFieldGutterOwnership.field;
 
-  static bool groupedOf(BuildContext context) => _of(context)?.grouped ?? false;
+  static CatchFieldInteractionShape interactionShapeOf(BuildContext context) =>
+      maybeOf(context)?.interactionShape ??
+      CatchFieldInteractionShape.roundedTile;
 
-  static double activeOverlayBleedOf(BuildContext context) {
-    final scope = _of(context);
-    return scope?.activeOverlayBleed ??
-        (scope?.flush == true ? CatchFieldTokens.dividedRowBleed : 0.0);
+  static EdgeInsets interactionOutsetsOf(BuildContext context) {
+    final scope = maybeOf(context);
+    final explicitOutsets = scope?.interactionOutsets;
+    if (explicitOutsets != null) return explicitOutsets;
+    return switch (scope?.interactionShape) {
+      CatchFieldInteractionShape.fullBleedBand =>
+        CatchFieldInteractionPlaneScope.outsetsOf(context),
+      CatchFieldInteractionShape.sectionClipped => const EdgeInsets.symmetric(
+        horizontal: CatchStroke.hairline,
+      ),
+      CatchFieldInteractionShape.roundedTile => const EdgeInsets.symmetric(
+        horizontal: CatchFieldTokens.dividedRowBleed,
+      ),
+      null => EdgeInsets.zero,
+    };
   }
 
   @override
-  bool updateShouldNotify(CatchFieldInsetScope oldWidget) =>
-      flush != oldWidget.flush ||
-      activeOverlayBleed != oldWidget.activeOverlayBleed ||
-      grouped != oldWidget.grouped;
+  bool updateShouldNotify(CatchFieldGeometryScope oldWidget) =>
+      gutterOwnership != oldWidget.gutterOwnership ||
+      interactionOutsets != oldWidget.interactionOutsets ||
+      interactionShape != oldWidget.interactionShape;
 }

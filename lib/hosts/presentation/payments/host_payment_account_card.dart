@@ -155,7 +155,6 @@ class HostPaymentAccountCard extends StatelessWidget {
                         .hostsHostPaymentAccountCardTitleDefaultCurrency,
                     valueText: currency.toUpperCase(),
                     icon: CatchIcons.paymentsOutlined,
-                    divider: true,
                   ),
                 ],
               ),

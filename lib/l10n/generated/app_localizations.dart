@@ -25752,6 +25752,30 @@ abstract class AppLocalizations {
     required int routePointCount,
     required int positionCount,
   });
+
+  /// Expanded customer workspace empty-detail title.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a customer'**
+  String get hostCustomersSelectCustomerTitle;
+
+  /// Expanded customer workspace empty-detail guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose someone from the directory to keep their details beside the list.'**
+  String get hostCustomersSelectCustomerBody;
+
+  /// Expanded messaging workspace empty-detail title.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a conversation'**
+  String get hostInboxSelectConversationTitle;
+
+  /// Expanded messaging workspace empty-detail guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a thread to keep the conversation beside your inbox.'**
+  String get hostInboxSelectConversationBody;
 }
 
 class _AppLocalizationsDelegate

@@ -9,33 +9,21 @@ part of 'catch_field.dart';
 /// This keeps field gutter and divider ownership visible in the widget tree
 /// without introducing another surface.
 class CatchFieldLanes extends StatelessWidget {
-  const CatchFieldLanes.single({super.key, required this.child, this.flush})
-    : children = const [],
-      dividerIndent = CatchLayout.fieldRowTextLaneInset;
+  const CatchFieldLanes.single({super.key, required this.child})
+    : children = const [];
 
   /// Declares field-lane ownership around a specialized layout whose spacing
   /// is intentionally not a simple divided row list (for example, a phone
   /// field paired with a country-code control).
-  const CatchFieldLanes.custom({super.key, required this.child, this.flush})
-    : children = const [],
-      dividerIndent = CatchLayout.fieldRowTextLaneInset;
+  const CatchFieldLanes.custom({super.key, required this.child})
+    : children = const [];
 
-  const CatchFieldLanes.divided({
-    super.key,
-    required this.children,
-    this.flush = true,
-    this.dividerIndent = CatchLayout.fieldRowTextLaneInset,
-  }) : assert(children.length > 1),
-       child = null;
+  const CatchFieldLanes.divided({super.key, required this.children})
+    : assert(children.length > 0),
+      child = null;
 
   final List<Widget> children;
   final Widget? child;
-
-  /// Overrides ambient field gutter ownership when non-null. Single/custom
-  /// boundaries preserve the surrounding section by default; divided lanes
-  /// own their gutter by default.
-  final bool? flush;
-  final double dividerIndent;
 
   @override
   Widget build(BuildContext context) {
@@ -47,20 +35,22 @@ class CatchFieldLanes extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               for (var index = 0; index < rowChildren.length; index++) ...[
-                if (index > 0) CatchDivider.fieldRow(indent: dividerIndent),
+                if (index > 0) const CatchDivider.fieldRow(),
                 rowChildren[index],
               ],
             ],
           );
-    final flushOverride = flush;
-    if (flushOverride == null) return content;
-    final grouped = CatchFieldInsetScope.groupedOf(context);
-    return CatchFieldInsetScope(
-      flush: flushOverride,
-      activeOverlayBleed: grouped
-          ? CatchFieldInsetScope.activeOverlayBleedOf(context)
-          : null,
-      grouped: grouped,
+    if (rowChildren.isEmpty) return content;
+    final inheritedGeometry = CatchFieldGeometryScope.maybeOf(context);
+    return CatchFieldGeometryScope(
+      gutterOwnership: CatchFieldGutterOwnership.container,
+      interactionOutsets: inheritedGeometry?.interactionOutsets,
+      interactionShape:
+          inheritedGeometry?.interactionShape ??
+          (CatchDividedFieldInteractionScope.interactionOf(context) ==
+                  CatchDividedFieldInteraction.fullBleed
+              ? CatchFieldInteractionShape.fullBleedBand
+              : CatchFieldInteractionShape.roundedTile),
       child: content,
     );
   }

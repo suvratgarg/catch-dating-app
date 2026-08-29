@@ -1,7 +1,7 @@
 ---
 doc_id: agent_entrypoint
-version: 3.0.0
-updated: 2026-08-07
+version: 3.1.0
+updated: 2026-08-27
 owner: agent_operating_model
 status: active
 ---
@@ -15,8 +15,13 @@ tests and scanners prove correctness, and CI stores run evidence.
 ## Starting Loop
 
 1. Run `git status --short` and preserve unrelated work.
-2. Read the owner document for the changed surface.
-3. For broad work, inspect a read-only impact plan. Add the optional context
+2. For every new task, fetch `origin/main` and create its branch/worktree from
+   that exact commit through `node tool/git/worktree_guard.mjs start`. Never
+   use the ambient checkout HEAD as a new-task base. Existing non-main work may
+   be continued only in its existing worktree when the user explicitly asks
+   to continue it.
+3. Read the owner document for the changed surface.
+4. For broad work, inspect a read-only impact plan. Add the optional context
    guidance when owner-doc or check routing would help:
 
    ```sh
@@ -26,10 +31,11 @@ tests and scanners prove correctness, and CI stores run evidence.
 
    Both commands are read-only with respect to the repository. The context
    guidance prints to stdout and is never a prerequisite for editing.
-4. Run the focused checks selected by the changed surface. Use
+5. Run the focused checks selected by the changed surface. Use
    `node tool/run.mjs check <id...>` when a registered check exists.
-5. Use a separate Git worktree for concurrent changes. When overlap protection
-   is useful, use `node tool/git/worktree_guard.mjs start|doctor|finish|stale`.
+6. Use a separate Git worktree for concurrent changes. New task worktrees use
+   `node tool/git/worktree_guard.mjs start`; use `doctor|finish|stale` for
+   inspection and closeout.
    The parent reviews and integrates each result; Git, PR, and CI output are
    the evidence.
 

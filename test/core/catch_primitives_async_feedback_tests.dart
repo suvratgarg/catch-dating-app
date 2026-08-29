@@ -727,6 +727,109 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
   });
 
   testWidgets(
+    'CatchBottomSheetScaffold reserves device inset plus terminal gap',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const MediaQuery(
+            data: MediaQueryData(viewPadding: EdgeInsets.only(bottom: 34)),
+            child: CatchBottomSheetScaffold(
+              grabber: false,
+              child: Text('Sheet body'),
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        _bottomSheetContentPadding(tester),
+        const EdgeInsets.fromLTRB(
+          CatchLayout.sheetHorizontalPadding,
+          CatchLayout.sheetTopPadding,
+          CatchLayout.sheetHorizontalPadding,
+          34 + CatchLayout.sheetBottomSafeAreaGap,
+        ),
+      );
+    },
+  );
+
+  testWidgets(
+    'CatchBottomSheetScaffold keeps the visual minimum without an inset',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const MediaQuery(
+            data: MediaQueryData(),
+            child: CatchBottomSheetScaffold(
+              grabber: false,
+              child: Text('Sheet body'),
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        _bottomSheetContentPadding(tester).bottom,
+        CatchLayout.sheetBottomPadding,
+      );
+    },
+  );
+
+  testWidgets(
+    'CatchBottomSheetScaffold uses keyboard obstruction when requested',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const MediaQuery(
+            data: MediaQueryData(
+              viewPadding: EdgeInsets.only(bottom: 34),
+              viewInsets: EdgeInsets.only(bottom: 300),
+            ),
+            child: CatchBottomSheetScaffold(
+              grabber: false,
+              keyboardSafe: true,
+              child: Text('Sheet body'),
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        _bottomSheetContentPadding(tester).bottom,
+        300 + CatchLayout.sheetBottomSafeAreaGap,
+      );
+    },
+  );
+
+  testWidgets(
+    'CatchBottomSheetScaffold enforces terminal space with custom padding',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const MediaQuery(
+            data: MediaQueryData(viewPadding: EdgeInsets.only(bottom: 34)),
+            child: CatchBottomSheetScaffold(
+              grabber: false,
+              padding: EdgeInsetsDirectional.fromSTEB(12, 8, 20, 0),
+              child: Text('Sheet body'),
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        _bottomSheetContentPadding(tester),
+        const EdgeInsets.fromLTRB(
+          12,
+          8,
+          20,
+          34 + CatchLayout.sheetBottomSafeAreaGap,
+        ),
+      );
+    },
+  );
+
+  testWidgets(
     'CatchSurface disables chrome animation when reduced motion is on',
     (tester) async {
       await tester.pumpWidget(
@@ -825,4 +928,15 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.text('Developer details'), findsOneWidget);
     expect(find.text('debug exception details'), findsOneWidget);
   });
+}
+
+EdgeInsets _bottomSheetContentPadding(WidgetTester tester) {
+  return tester
+          .widget<Padding>(
+            find.byKey(
+              const ValueKey<String>('catch-bottom-sheet-content-padding'),
+            ),
+          )
+          .padding
+      as EdgeInsets;
 }

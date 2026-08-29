@@ -33,6 +33,17 @@ Current ownership clarifications:
 Generated `*.g.dart`, `*.freezed.dart`, and Riverpod outputs live next to their
 source files and should not be hand-edited.
 
+## Reusable UI library surface
+
+Import `package:catch_dating_app/catch_ui.dart` when consuming the reviewed
+Catch design-system API. The barrel exports semantic tokens, fields, sections,
+page and responsive composition, typed form descriptors, and supported family
+members. Renderer scopes, gutter ownership, interaction-plane plumbing, and
+contained focus surfaces remain implementation details even when Dart library
+boundaries require a public symbol in their defining file. The Catch UI analyzer
+plugin rejects feature-level construction of those internals and rejects
+field-owned sibling dividers or explicit lane-gutter overrides.
+
 ## Feature READMEs
 
 These feature-level docs carry local source-of-truth notes that used to live in

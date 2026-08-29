@@ -358,6 +358,33 @@ void main() {
   });
 
   testWidgets(
+    'chat browse header presentation is independent of global app role',
+    (tester) async {
+      AppConfig.configureEntrypointRole(AppRole.host);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: ChatsBrowseHeader(
+              presentation: ChatsBrowsePresentation.consumer,
+              showSearchAction: false,
+              searchValue: '',
+              onSearchChanged: null,
+              hostFilter: null,
+              hostUnreadCount: 0,
+              onHostFilterChanged: null,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Chats'), findsOneWidget);
+      expect(find.text('Messaging'), findsNothing);
+    },
+  );
+
+  testWidgets(
     'chat root header search expands in scroll content and is editable',
     (tester) async {
       final container = ProviderContainer();
@@ -381,6 +408,7 @@ void main() {
                           hasHeaderSubtitle: false,
                         ),
                         bottom: ChatsBrowseHeader(
+                          presentation: ChatsBrowsePresentation.consumer,
                           showSearchAction: true,
                           searchValue: ref.watch(chatSearchQueryProvider),
                           onSearchChanged: ref

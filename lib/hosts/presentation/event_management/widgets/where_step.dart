@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -35,9 +34,7 @@ class WhereStep extends StatelessWidget {
       child: ListView(
         padding: CatchInsets.formStepBodyWithBottomActions,
         children: [
-          CatchSection.fieldRows(
-            first: true,
-            showTopDivider: false,
+          CatchFieldLanes.divided(
             children: [
               FormField<LocationCoordinate>(
                 key: ValueKey(startingPoint),

@@ -29,7 +29,7 @@ class CreateEventPhotoPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.fieldRows(
+    return CatchSection.divided(
       title: context.l10n.hostsCreateEventPhotoPickerTitleCoverAndGallery,
       count: context.l10n.coreCatchFormFieldLabelTextOptional,
       first: true,

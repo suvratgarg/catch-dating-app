@@ -1697,7 +1697,6 @@ Widget _hostAnalyticsPreviewFor(String focus) {
     ),
     'HostAnalyticsEventTile' => HostAnalyticsEventTile(
       event: report.topEvents.first,
-      divider: false,
       onTap: () {},
     ),
     'HostAnalyticsReportView' => HostAnalyticsReportView(

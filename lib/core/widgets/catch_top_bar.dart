@@ -30,6 +30,7 @@ enum CatchTopBarLeading { auto, back, close, none }
 @immutable
 class CatchTopBarSearch {
   const CatchTopBarSearch({
+    this.fieldKey,
     required this.placeholder,
     required this.tooltip,
     this.value = '',
@@ -51,6 +52,8 @@ class CatchTopBarSearch {
     this.mutedForegroundColor,
   });
 
+  /// Stable identity for the rendered [CatchSearchField].
+  final Key? fieldKey;
   final String value;
   final CatchContractFieldConstraints? contract;
   final String? contractExemption;
@@ -140,49 +143,69 @@ class CatchScreenHeaderTitle extends StatelessWidget {
     final t = CatchTokens.of(context);
     final hasEyebrow = eyebrow != null && eyebrow!.isNotEmpty;
     final hasSubtitle = subtitle != null && subtitle!.isNotEmpty;
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
 
-    Widget child = Row(
-      crossAxisAlignment: rowCrossAxisAlignment,
+    final titleStack = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (leading != null) ...[leading!, gapW12],
-        Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (hasEyebrow) ...[
-                Text(
-                  eyebrow!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.kicker(context, color: t.ink3),
-                ),
-                gapH2,
-              ],
-              Text(
-                title,
-                maxLines: titleMaxLines,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.headline(context, color: t.ink),
-              ),
-              if (hasSubtitle) ...[
-                const SizedBox(height: CatchGaps.headerTitleToSubtitle),
-                Text(
-                  subtitle!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ],
-            ],
+        if (hasEyebrow) ...[
+          Text(
+            eyebrow!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.kicker(context, color: t.ink3),
           ),
+          gapH2,
+        ],
+        Text(
+          title,
+          maxLines: titleMaxLines,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.headline(context, color: t.ink),
         ),
-        if (actions.isNotEmpty) ...[
-          gapW12,
-          CatchTopBarActionGroup(actions: actions),
+        if (hasSubtitle) ...[
+          const SizedBox(height: CatchGaps.headerTitleToSubtitle),
+          Text(
+            subtitle!,
+            maxLines: largeText ? 2 : 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
         ],
       ],
     );
+    final titleRow = Row(
+      crossAxisAlignment: rowCrossAxisAlignment,
+      children: [
+        if (leading != null) ...[leading!, gapW12],
+        Expanded(child: titleStack),
+      ],
+    );
+    Widget child = largeText && actions.isNotEmpty
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              titleRow,
+              gapH8,
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: CatchTopBarActionGroup(actions: actions),
+              ),
+            ],
+          )
+        : Row(
+            crossAxisAlignment: rowCrossAxisAlignment,
+            children: [
+              if (leading != null) ...[leading!, gapW12],
+              Expanded(child: titleStack),
+              if (actions.isNotEmpty) ...[
+                gapW12,
+                CatchTopBarActionGroup(actions: actions),
+              ],
+            ],
+          );
 
     final resolvedPadding = padding;
     if (resolvedPadding != null) {
@@ -233,6 +256,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       hasEyebrow: eyebrow?.isNotEmpty ?? false,
       hasSubtitle: subtitle?.isNotEmpty ?? false,
       titleMaxLines: titleMaxLines,
+      hasActions: actions.isNotEmpty,
     ),
     key: key,
     title: title,
@@ -303,8 +327,10 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     bool hasEyebrow = false,
     bool hasSubtitle = false,
     int titleMaxLines = 1,
+    bool hasActions = false,
   }) {
     final textScaler = MediaQuery.textScalerOf(context);
+    final largeText = textScaler.scale(1) >= 1.6;
     final resolvedPadding = CatchInsets.screenTitleBlock.resolve(
       Directionality.of(context),
     );
@@ -321,6 +347,9 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       textHeight +=
           CatchGaps.headerTitleToSubtitle +
           lineHeight(CatchTextStyles.supporting(context));
+    }
+    if (largeText && hasActions) {
+      textHeight += CatchLayout.topBarLargeTextActionReserve;
     }
 
     final baseline = hasEyebrow || hasSubtitle || titleMaxLines > 1
@@ -344,18 +373,20 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
     return CatchTopBar(
       titleWidget: CatchScreenHeaderTitle(
         title: title,
         eyebrow: eyebrow,
         subtitle: subtitle,
+        actions: largeText ? actions : const <Widget>[],
         titleMaxLines: titleMaxLines,
         rowCrossAxisAlignment: rowCrossAxisAlignment,
       ),
       large: false,
       leading: leading,
       leadingType: leadingType,
-      actions: actions,
+      actions: largeText ? const <Widget>[] : actions,
       backgroundColor: backgroundColor,
       surface: surface,
       border: border,
@@ -651,6 +682,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
     if (!_searchEnabled) return null;
     final search = widget.search!;
     return CatchSearchField.expanding(
+      key: search.fieldKey,
       expanded: _searchOpenEffective,
       maxWidth: maxWidth,
       value: search.value,

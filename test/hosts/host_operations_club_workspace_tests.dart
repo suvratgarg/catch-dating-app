@@ -89,6 +89,46 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Section live'), findsOneWidget);
   });
 
+  testWidgets('Host Events spotlight reflows at 200 percent text', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(393, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final now = DateTime(2026, 6, 15, 12);
+    final club = buildClub(id: 'large-text-club', ownerUserId: _hostUid);
+    final event = buildEvent(
+      id: 'large-text-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 15, 17),
+      waitlistedCount: 23,
+    );
+
+    await _pumpHostScreen(
+      tester,
+      MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+        child: HostOperationsHomeScreen(now: now),
+      ),
+      overrides: [
+        ..._hostClubOverrides(
+          owned: [club],
+          timelineEventsByOrganizer: {
+            club.id: [event],
+          },
+        ),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(AsyncData<List<Event>>([event])),
+      ],
+    );
+
+    expect(find.text('STARTS IN 5H'), findsOneWidget);
+    expect(find.text('Set up & run'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   registerHostEventEntryTests();
 
   testWidgets('Host events centers its canonical empty-state primitive', (
@@ -241,12 +281,6 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(juneField.title, past.title);
     expect(juneField.body, contains('attended'));
     expect(juneField.leading, isA<HostEventLifecycleDateBlock>());
-    expect(
-      tester
-          .widgetList<CatchField>(mayFieldFinder)
-          .every((field) => !field.divider),
-      isTrue,
-    );
     final mayDividers = tester
         .widgetList<CatchDivider>(
           find.descendant(of: maySection, matching: find.byType(CatchDivider)),
@@ -254,15 +288,10 @@ void _registerHostOperationsClubWorkspaceTests() {
         .toList();
     expect(mayDividers.map((divider) => divider.role), [
       CatchDividerRole.section,
-      CatchDividerRole.fieldRow,
+      CatchDividerRole.fieldSection,
     ]);
     final tokens = CatchTokens.of(tester.element(maySection));
-    expect(
-      CatchDivider.colorFor(tokens, mayDividers.last.role),
-      tokens.line.withValues(
-        alpha: tokens.line.a * CatchOpacity.fieldRowDivider,
-      ),
-    );
+    expect(CatchDivider.colorFor(tokens, mayDividers.last.role), tokens.line);
     final mayDateBlock = find
         .descendant(
           of: maySection,
@@ -273,7 +302,8 @@ void _registerHostOperationsClubWorkspaceTests() {
       of: maySection,
       matching: find.byWidgetPredicate(
         (widget) =>
-            widget is CatchDivider && widget.role == CatchDividerRole.fieldRow,
+            widget is CatchDivider &&
+            widget.role == CatchDividerRole.fieldSection,
       ),
     );
     expect(
@@ -428,7 +458,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
     expect(
       find.descendant(
-        of: find.byType(CatchScreenHeaderTitle),
+        of: find.byType(CatchScreenTopBar),
         matching: find.byKey(
           const ValueKey<String>('host-customers-add-customer'),
         ),
