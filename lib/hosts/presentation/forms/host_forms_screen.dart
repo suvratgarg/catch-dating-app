@@ -151,11 +151,10 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       title: context.l10n.hostNavigationForms,
       actions: activeSearchIsForms
           ? [
-              CatchButton(
+              CatchTopBarPrimaryAction(
                 key: const ValueKey('host-forms-create'),
                 label: context.l10n.hostFormsCreate,
-                icon: Icon(CatchIcons.add, size: CatchIcon.sm),
-                size: CatchButtonSize.sm,
+                icon: CatchIcons.add,
                 onPressed: () => _openTemplates(selectedClub.id),
               ),
             ]

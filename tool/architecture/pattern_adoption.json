@@ -330,6 +330,26 @@
           "status": "aligned"
         },
         {
+          "path": "lib/events/presentation/calendar/calendar_screen.dart",
+          "role": "Calendar root-like route uses CatchScreenTopBar and the semantic CatchTopBarTextAction for Today",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+          "role": "Host Events root shell delegates title ownership to CatchScreenHeaderTitle while its club section supplies the adaptive primary create action",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
+          "role": "Host Customers root screen uses CatchScreenTopBar with the adaptive primary add action and canonical overflow menu action",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/forms/host_forms_screen.dart",
+          "role": "Host Forms root screen uses CatchTabbedScreenScaffold with the adaptive primary create action on the Forms view",
+          "status": "aligned"
+        },
+        {
           "path": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
           "role": "Dashboard header review state now mounts CatchScreenHeaderTitle instead of a one-off DashboardHeaderContent wrapper",
           "status": "aligned"
@@ -352,7 +372,7 @@
           "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeaderTitle."
         }
       ],
-      "requiredBackPropagation": "When root-screen header typography, padding, action slots, or search composition changes, inspect every adopter above and keep Settings/Activity aligned with the five main tab surfaces. Compact/detail CatchTopBar(title: ...) screens remain outside this pattern unless product promotes them to root-like destinations.",
+      "requiredBackPropagation": "When root-screen header typography, padding, action slots, or search composition changes, inspect every adopter above and keep consumer and Host root destinations aligned. Compact/detail CatchTopBar(title: ...) screens remain outside this pattern unless product promotes them to root-like destinations.",
       "requiredChecks": [
         "flutter test test/core/catch_top_bar_test.dart",
         "flutter test test/explore/explore_widgets_test.dart --plain-name 'Explore header'",

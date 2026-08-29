@@ -170,24 +170,13 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     final activeSegment = hostAudienceSegmentForCustomerFilter(effectiveFilter);
     final t = CatchTokens.of(context);
     final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
-    final compactHeader = screenSize.isCompact;
-
     final headerActions = [
-      if (compactHeader)
-        CatchIconAction(
-          key: const ValueKey<String>('host-customers-add-customer'),
-          icon: CatchIcons.personAddAlt1Rounded,
-          tooltip: context.l10n.hostCustomersAdd,
-          onPressed: () => _addCustomer(selectedClub, request),
-        )
-      else
-        CatchButton(
-          key: const ValueKey<String>('host-customers-add-customer'),
-          label: context.l10n.hostCustomersAdd,
-          icon: Icon(CatchIcons.personAddAlt1Rounded, size: CatchIcon.sm),
-          size: CatchButtonSize.sm,
-          onPressed: () => _addCustomer(selectedClub, request),
-        ),
+      CatchTopBarPrimaryAction(
+        key: const ValueKey<String>('host-customers-add-customer'),
+        label: context.l10n.hostCustomersAdd,
+        icon: CatchIcons.personAddAlt1Rounded,
+        onPressed: () => _addCustomer(selectedClub, request),
+      ),
       CatchTopBarMenuAction<_HostCustomersHeaderAction>(
         tooltip: context.l10n.hostCustomersMoreActions,
         items: _hostCustomersHeaderActions(

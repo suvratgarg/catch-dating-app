@@ -6525,6 +6525,7 @@
           "CatchTextStyles.appBarSubtitle",
           "CatchCollapsedSliverTitle",
           "CatchTopBarIconAction",
+          "CatchTopBarPrimaryAction",
           "CatchTopBarMenuAction",
           "CatchTopBarTextAction",
           "CatchTopBarTabBar"
@@ -6627,6 +6628,25 @@
             }
           },
           {
+            "id": "catch.top_bar.primary_action",
+            "symbol": "CatchTopBarPrimaryAction",
+            "file": "lib/core/widgets/catch_top_bar.dart",
+            "summary": "Adaptive primary top-bar action that renders a canonical bordered icon target on compact phones and a labelled small button on wider viewports.",
+            "states": [
+              "compact",
+              "medium",
+              "expanded",
+              "disabled"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
+          },
+          {
             "id": "catch.top_bar.tab_bar",
             "symbol": "CatchTopBarTabBar",
             "summary": "PreferredSize tab segment used as CatchTopBar bottom chrome.",
@@ -6678,11 +6698,13 @@
       },
       "handoff": {
         "allowedChildren": [
+          "catch.button",
           "catch.icon_button"
         ],
         "notes": [
           "Use this primitive for route chrome before creating local AppBar variants.",
           "Use CatchScreenHeaderTitle or CatchScreenTopBar for root screen headers that need the main tab Archivo title voice.",
+          "Use CatchTopBarPrimaryAction when a root-screen primary action must compact from a labelled button to the canonical icon target; never pass CatchButton directly to an actions slot.",
           "Large mode is implied by a non-empty kicker unless explicitly overridden.",
           "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",
           "Top-bar root header helpers, action wrappers, and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets."

@@ -4970,7 +4970,7 @@
       "command": "node tool/design/check_screen_top_bar_contracts.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Gates every Flutter Scaffold app bar, required pushed-route back affordance, raw navigation-bar implementation, shell-covering editor presentation, and feature-owned header against an exact reviewed screen-chrome role.",
+      "description": "Gates every Flutter Scaffold app bar, required pushed-route back affordance, raw navigation-bar implementation, shell-covering editor presentation, feature-owned header, and canonical top-bar action family against an exact reviewed screen-chrome role.",
       "checks": [
         "node --check tool/design/check_screen_top_bar_contracts.mjs",
         "node --test tool/design/check_screen_top_bar_contracts.test.mjs",
@@ -4990,7 +4990,9 @@
           "flags a pushed compact route that suppresses its required back action",
           "flags a shell-covering editor pushed on a branch navigator",
           "flags an unregistered body-owned manual screen header",
-          "flags raw sliver chrome until a durable hero exception is registered"
+          "flags raw sliver chrome until a durable hero exception is registered",
+          "flags a direct pill action in canonical top-bar actions",
+          "flags a direct pill hidden behind a local top-bar action list"
         ]
       }
     },
