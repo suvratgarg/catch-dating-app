@@ -126,6 +126,7 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
     this.initialSpatialSelectionUid,
     this.operationalRosterSummary,
     this.onOpenGuests,
+    this.guestsWorkspaceSemanticLabel,
     this.fixtureActions,
     this.referenceNow,
     this.exclusionAlertThreshold = defaultEventSuccessExclusionAlertThreshold,
@@ -139,6 +140,7 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
   final String? initialSpatialSelectionUid;
   final EventSuccessOperationalRosterSummary? operationalRosterSummary;
   final VoidCallback? onOpenGuests;
+  final String? guestsWorkspaceSemanticLabel;
   final EventSuccessHostFixtureActions? fixtureActions;
   final DateTime? referenceNow;
   final Duration exclusionAlertThreshold;
@@ -478,6 +480,7 @@ class _EventSuccessHostSectionState
       initialSpatialSelectionUid: widget.initialSpatialSelectionUid,
       operationalRosterSummary: operationalRosterSummary,
       onOpenGuests: onOpenGuests,
+      guestsWorkspaceSemanticLabel: widget.guestsWorkspaceSemanticLabel,
       setupActionState: EventSuccessSetupActionState.resolve(
         ensurePending: ensureMutation.isPending,
         savePending: saveSetupMutation.isPending,
@@ -1222,6 +1225,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.initialSpatialSelectionUid,
     this.operationalRosterSummary,
     this.onOpenGuests,
+    this.guestsWorkspaceSemanticLabel,
     this.setupActionState = const EventSuccessSetupActionState(),
     this.onSaveSetup,
     this.liveActionState = const EventSuccessLiveActionState(),
@@ -1295,6 +1299,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final String? initialSpatialSelectionUid;
   final EventSuccessOperationalRosterSummary? operationalRosterSummary;
   final VoidCallback? onOpenGuests;
+  final String? guestsWorkspaceSemanticLabel;
   final EventSuccessSetupActionState setupActionState;
   final Future<void> Function(EventSuccessSetupSaveRequest request)?
   onSaveSetup;
@@ -1492,6 +1497,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
                 ),
                 child: EventSuccessLiveWorkspacePicker(
                   selected: _liveWorkspace,
+                  guestsSemanticLabel: widget.guestsWorkspaceSemanticLabel,
                   onChanged: (workspace) {
                     if (workspace == EventSuccessLiveWorkspace.guests) {
                       widget.onOpenGuests?.call();

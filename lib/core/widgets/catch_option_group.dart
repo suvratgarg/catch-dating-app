@@ -14,6 +14,7 @@ class CatchOption<T> {
     required this.value,
     required this.label,
     this.icon,
+    this.semanticLabel,
     this.enabled = true,
     this.disabledReason,
   }) : assert(enabled || disabledReason != null);
@@ -21,6 +22,7 @@ class CatchOption<T> {
   final T value;
   final String label;
   final IconData? icon;
+  final String? semanticLabel;
   final bool enabled;
   final String? disabledReason;
 }
@@ -330,6 +332,8 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
       enabled: option.enabled,
       hint: option.disabledReason,
       selected: selected,
+      label: option.semanticLabel,
+      excludeSemantics: option.semanticLabel != null,
       child: Material(
         color: Colors.transparent,
         child: InkWell(

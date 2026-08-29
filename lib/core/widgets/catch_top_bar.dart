@@ -427,6 +427,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.kicker,
     this.large,
     this.titleWidget,
+    this.titleWidgetIncludesSupplementalText = false,
     this.leading,
     this.leadingType = CatchTopBarLeading.auto,
     this.leadingActionVariant = CatchIconButtonVariant.bordered,
@@ -480,6 +481,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
        kicker = null,
        large = false,
        titleWidget = null,
+       titleWidgetIncludesSupplementalText = false,
        search = null;
 
   final String? title;
@@ -487,6 +489,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   final String? kicker;
   final bool? large;
   final Widget? titleWidget;
+  final bool titleWidgetIncludesSupplementalText;
   final String? identityName;
   final String? identityPhotoUrl;
   final VoidCallback? onIdentityTap;
@@ -630,10 +633,17 @@ class _CatchTopBarState extends State<CatchTopBar> {
     final t = CatchTokens.of(context);
     final hasKicker = widget.kicker != null && widget.kicker!.isNotEmpty;
     final hasSubtitle = widget.subtitle != null && widget.subtitle!.isNotEmpty;
+    final titleWidgetOwnsSupplementalText =
+        widget.titleWidget != null &&
+        widget.titleWidgetIncludesSupplementalText;
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final collapseSupplementalText = widget.isLarge && textScale >= 1.4;
-    final showKicker = hasKicker && !collapseSupplementalText;
-    final showSubtitle = hasSubtitle && textScale < 1.4;
+    final showKicker =
+        hasKicker &&
+        !titleWidgetOwnsSupplementalText &&
+        !collapseSupplementalText;
+    final showSubtitle =
+        hasSubtitle && !titleWidgetOwnsSupplementalText && textScale < 1.4;
     final hiddenTextLabel =
         widget.title != null &&
             ((hasKicker && !showKicker) || (hasSubtitle && !showSubtitle))

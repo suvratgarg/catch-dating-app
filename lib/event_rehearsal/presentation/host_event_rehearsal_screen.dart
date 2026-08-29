@@ -788,26 +788,39 @@ class _RehearsalCoachDock extends StatelessWidget {
     final t = CatchTokens.of(context);
     final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     if (collapsed) {
+      final coachIdentity = Row(
+        children: [
+          Icon(CatchIcons.scienceOutlined, color: t.danger),
+          gapW8,
+          Expanded(
+            child: Text(
+              context.l10n.hostEventRehearsalCoachCollapsed,
+              style: CatchTextStyles.labelM(context),
+            ),
+          ),
+        ],
+      );
+      final showCoach = CatchButton(
+        label: context.l10n.hostEventRehearsalCoachShow,
+        size: CatchButtonSize.sm,
+        variant: CatchButtonVariant.secondary,
+        fullWidth: largeText,
+        onPressed: onToggle,
+      );
       return CatchBottomDock(
         padding: CatchInsets.rosterRowContent,
-        child: Row(
-          children: [
-            Icon(CatchIcons.scienceOutlined, color: t.danger),
-            gapW8,
-            Expanded(
-              child: Text(
-                context.l10n.hostEventRehearsalCoachCollapsed,
-                style: CatchTextStyles.labelM(context),
+        child: largeText
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [coachIdentity, gapH8, showCoach],
+              )
+            : Row(
+                children: [
+                  Expanded(child: coachIdentity),
+                  showCoach,
+                ],
               ),
-            ),
-            CatchButton(
-              label: context.l10n.hostEventRehearsalCoachShow,
-              size: CatchButtonSize.sm,
-              variant: CatchButtonVariant.secondary,
-              onPressed: onToggle,
-            ),
-          ],
-        ),
       );
     }
 

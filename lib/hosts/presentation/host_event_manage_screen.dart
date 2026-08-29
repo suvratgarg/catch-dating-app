@@ -146,6 +146,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       watchEventParticipationRosterProvider(event.id),
     );
     final roster = catchAsyncStateFromAsyncValue(rosterAsync).value;
+    final bookedCount = hostManageBookedCount(event, roster);
     final operationalAttendees =
         screenState.phase == HostEventWorkspacePhase.runtime
         ? catchAsyncStateFromAsyncValue(
@@ -364,6 +365,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           compactLiveControls: true,
           operationalRosterSummary: operationalRosterSummary,
           onOpenGuests: () => _setRosterOpen(true, screenState.phase),
+          guestsWorkspaceSemanticLabel: context.l10n
+              .hostsHostEventRosterDrawerOpen(count: bookedCount),
           fixtureActions: widget.eventSuccessFixtureActions,
         ),
       ],
@@ -460,6 +463,12 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       child: CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           large: false,
+          title: screenState.eventTitle,
+          subtitle: _hostEventManageLifecycleLabel(
+            context,
+            event: event,
+            phase: screenState.phase,
+          ),
           height: MediaQuery.textScalerOf(context).scale(1) >= 1.4
               ? CatchScreenTopBar.heightFor(
                   context: context,
@@ -478,6 +487,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             ),
             title: screenState.eventTitle,
           ),
+          titleWidgetIncludesSupplementalText: true,
           leading: CatchIconAction(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             icon: CatchIcons.arrowBackIosNewRounded,
@@ -487,7 +497,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
         body: HostEventRosterDrawer(
           open: _rosterOpen,
-          bookedCount: hostManageBookedCount(event, roster),
+          bookedCount: bookedCount,
           showHandle: screenState.phase != HostEventWorkspacePhase.runtime,
           onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
           body: workspaceBody,
