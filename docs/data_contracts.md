@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.35.0
-updated: 2026-08-20
+version: 1.36.0
+updated: 2026-08-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -772,6 +772,25 @@ unchecked box does not grant permission and cannot revoke a prior grant;
 withdrawal belongs to the future self-service/STOP callable. Host imports and
 manual roster entry never create channel permission.
 
+Each non-unknown channel preference carries a permission receipt sufficient to
+explain the decision without reading private response content: source kind,
+nullable source event/form/response ids as applicable, terms version, consent
+copy hash, grant timestamp, and nullable revocation timestamp/source. A legacy
+row without complete evidence remains explicitly incomplete or unknown; a
+backfill must never infer or promote permission from a phone number, contact
+source, roster membership, form answer not bound to the reviewed consent copy,
+or prior send.
+
+`organizerContactOrigins/{originId}` is the immutable multi-source provenance
+ledger for organizer CRM contacts. Each deterministic row records organizer,
+current contact, origin contact, source kind, source entity kind/id, nullable
+form/event/response ids, actor class and bounded actor uid where appropriate,
+observed time, and creation time without copying raw response or message bodies.
+Merges may move the current contact id while retaining the origin contact id;
+unmerge uses receipt-named origin facts and never guesses later ownership.
+`organizerContacts.primarySource` remains a compatibility summary during the
+additive migration and is not a complete history.
+
 Every canonical `eventAttendees` write projects into an organizer-scoped
 contact plus one event fact edge. A contact is operational memory for one
 organizer, not a Consumer profile. An imported normalized phone/email creates
@@ -829,8 +848,9 @@ The directory accepts `lastSeen`, `mostAttended`, or `name`; every opaque cursor
 is versioned and bound to its query plan, filters, and ordering. Filtered sorts
 are computed over a bounded complete candidate set rather than sorting one
 already-paginated page, and an over-limit candidate set fails explicitly.
-`createOrganizerContact` may add a contact name, optional organizer-entered
-phone/email evidence, an optional first private note, and its zero-history
+`createOrganizerContact` requires a contact name plus at least one
+organizer-entered phone/email evidence value, may add an optional first private
+note, and creates its zero-history
 trait. Organizer-entered endpoints remain `proposed`, organizer-scoped evidence:
 they create no attendee, verified identity, UID, Consumer profile, opt-in, or
 messaging grant. Only unlinked contacts whose primary source is `hostManual`
@@ -857,6 +877,34 @@ new notes append, edits use optimistic revisions, contact detail returns the
 newest bounded window, and exports never include note content. Existing contact
 documents may omit `manualTagIds` and read as an empty assignment, so neither
 feature requires a backfill.
+
+`organizerSavedAudiences/{audienceId}` owns reusable Customers-authored CRM
+audiences. A definition is a server-validated expression over the reviewed
+computed-segment, organizer-tag, attendance, recency, and named-intent reach
+predicate vocabulary; arbitrary collection paths and raw Firestore queries are
+forbidden. Preview returns exact coverage or an explicit incomplete/over-limit
+failure. Event-scoped Booked/Prospective audiences remain event authority and
+are referenced directly by event-announcement sends rather than copied into a
+CRM audience. Campaign approval freezes resolved recipient ids and revisions;
+the saved definition may continue changing without rewriting an approved send.
+
+`organizerManualSendTasks/{taskId}` is the server-only durable external-handoff
+queue. One task represents one organizer, contact, originating send, intent,
+route, permission/capability snapshot, idempotency key, endpoint snapshot/hash,
+bounded prefill content with TTL, and progress state. Its only progress states
+are `queued`, `handoffOpened`, `hostMarkedSent`, `skipped`, `cancelled`,
+`superseded`, and `expired`; it has no delivered/read state. Opening an external
+application records only `handoffOpened`. Existing tasks never auto-dispatch
+after a capability change: an explicit host re-plan rechecks current permission
+and may supersede remaining tasks with new managed-delivery recipients.
+
+`organizerContactActivity` is a callable-composed bounded cursor projection,
+not a client-readable master collection. It joins sanitized origin, form or
+application, attendance, note, permission, send/reply and merge facts for one
+active organizer contact. Each row has a typed kind, stable source id,
+occurred-at time, safe display payload, and coverage metadata. It never copies
+private Consumer profile, compatibility, safety, wingman, raw provider receipt,
+or unrelated organizer content.
 
 Contact detail also reads the bounded newest campaign-recipient window from
 `organizerCampaignRecipients` and joins safe campaign labels and delivery

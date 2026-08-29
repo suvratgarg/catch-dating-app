@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.14.2
-updated: 2026-08-28
+version: 1.15.0
+updated: 2026-08-29
 owner: app_architecture
 status: active
 ---
@@ -2071,6 +2071,26 @@ Rules:
   owns the Inbox and Campaigns workspaces, including sender setup and campaign
   lifecycle. Organizer must not mount a second Audience workspace, and
   event-manage widgets must not read restricted CRM collections directly.
+- A CRM contact, identity link, communication permission, communication route,
+  saved audience, send attempt, and delivery receipt are different authorities.
+  No screen or repository model may collapse one into another. A linked Catch
+  account does not grant organizer marketing permission; a phone number does
+  not prove identity; opening an external app does not prove a send.
+- Contacts may be created by approved server workflows for Catch bookings,
+  verified web registration, provider sync, host import, Host Forms conversion,
+  or manager-entered Customers data. Every writer must append deterministic
+  organizer-scoped provenance. Contact creation never creates a Consumer
+  profile, verified identity, attendee row, or communication grant. Manual
+  creation requires a display name and at least one proposed phone or email;
+  name-only records are not durable CRM contacts.
+- Participant-controlled communication preferences are the sole marketing
+  permission authority. Forms may ask for permission and preserve the exact
+  receipt; unchecked input, imports, roster writes, manager entry, tags,
+  applications, and merges never grant or revoke permission by inference.
+- Customers owns durable reusable CRM audiences. Event announcement workflows
+  own event-scoped audiences such as Booked and Prospective. Messaging consumes
+  either a saved audience id or an event-scoped audience reference and must not
+  grow a second audience-builder or reinterpret CRM predicates locally.
 - CRM categories are server facts. Flutter may label fixed segment ids but must
   not infer “valuable customer” from ticket price, private feedback, gender,
   compatibility, wingman, dating or safety data.
@@ -2151,11 +2171,11 @@ The Host Messaging contract is:
 - every workspace follows `hostOrganizerSelectionProvider`; Inbox events,
   inquiry previews, WhatsApp sender setup, and campaigns must all resolve from
   the same selected organizer;
-- Inbox and Sends are first-class local workspaces. Inbox owns personal
-  inquiries and event broadcasts; Sends owns the route picker, mixed outbound
-  history, route-specific follower-update composition and cross-event organizer
-  WhatsApp campaign lifecycle; sender setup stays on the dedicated organizer
-  messaging route;
+- Inbox and Sends are first-class local workspaces. Inbox owns inbound personal
+  inquiries and reply-capable conversations. Sends owns outbound intent
+  selection, event-announcement composition, mixed outbound history,
+  follower-update composition and organizer campaign lifecycle; sender setup
+  stays on the dedicated organizer messaging route;
 - an explicit selected Event or explicit General scope; General is never an
   event-id sentinel;
 - personal two-party contacted-host inquiry threads, separated by event;
@@ -2172,13 +2192,14 @@ The Host Messaging contract is:
 filtering, scope, classification, roster/thread separation, search, lifecycle,
 and row-status policy. `HostInboxScreen` owns selected-organizer provider reads,
 workspace composition, typed route effects, and sheets;
-`HostInboxBroadcastController` owns the event-broadcast mutation and
+`HostInboxBroadcastController` owns the event-broadcast mutation even when its
+composer is mounted by Sends, and
 `HostAudienceController` owns campaign mutations. `HostClubPostController`
 owns follower-update submission while the shared route-specific composer owns
 only pending/error presentation and closes after callable acceptance.
 
 `communicationRouteCatalog` is the canonical provider-free capability model
-for communication choices. Transport alone is never sufficient routing or
+for communication routes. Transport alone is never sufficient routing or
 authorization input. Every route keeps a stable id and adapter key plus its
 sender identity, delivery mode, consent scope, observability, final-send
 ownership, audience/eligibility scope, reply support and scheduling support.
@@ -2191,12 +2212,24 @@ The current route set is personal WhatsApp handoff, organizer WhatsApp
 campaign, Catch-owned WhatsApp, Catch chat, Catch event announcement and
 organizer follower update. A future market transport extends this registry and
 implements its adapter; it must not add provider conditionals to route-neutral
-widgets or weaken an existing consent boundary. `HostSendsWorkspaceSliver`
-groups every catalog route by recipient surface (`In Catch` or `WhatsApp`),
-renders its readiness state, route-specific follower composer and mixed
-Campaign/Announcement/Follower update history. A widget contract requires one
-picker row for every catalog id, so adding a market route cannot silently omit
-its Host affordance. Route-specific controllers retain mutation ownership.
+widgets or weaken an existing consent boundary. The registry is not itself a
+user-facing channel picker. Hosts select a communication intent such as
+individual conversation, saved-audience campaign, event announcement, or
+follower update. Consequence-labelled alternatives may appear only when two
+eligible routes materially differ in sender identity, recipient scope, final
+send ownership, replies, scheduling, or observability. Provider names and API
+policy stay in setup and diagnostic surfaces. Route-specific controllers retain
+mutation ownership.
+
+`resolveOrganizerCommunicationPlan` is the server-authoritative planner above
+the route catalog. Its inputs are organizer, contact or audience reference,
+communication intent, current capability snapshot, and server time. Its output
+partitions recipients into managed delivery, external handoff, and unavailable
+outcomes with stable route ids and explicit reasons. Dispatch rechecks every
+permission, suppression, sender, template, service-window, event, endpoint, and
+provider-health condition. Flutter consumes the projection and never recreates
+the policy from individual flags. A compact reach label is a presentation of a
+named plan at one moment, not a persisted property of a person.
 
 Every server-managed Host outbound free-text boundary calls
 `assertOutboundContentAllowed` before persistence or provider handoff. This
@@ -2210,12 +2243,37 @@ External handoff is intentionally a weak-observability route:
 `ExternalLinks.openWhatsappHandoff` may report only whether the device accepted
 the native WhatsApp scheme or its `wa.me` fallback. The Host edits the
 prefilled copy and presses Send in WhatsApp, so Catch must not create a delivery
-receipt, campaign record or reply thread from that launch. An explicit
+receipt or reply thread from that launch. A durable manual-send task may record
+only `queued`, `handoffOpened`, an explicit `hostMarkedSent`, `skipped`,
+`cancelled`, `superseded`, or `expired`. A later provider-capability change must
+not silently dispatch or complete an existing task; the host must explicitly
+request a re-plan, and the server must recheck permission before superseding the
+manual work. An explicit
 organizer WhatsApp opt-out or admin suppression keeps the route visible with
 the exact blocker but removes its action even though it is not a campaign
 route.
 Conversely, provider-backed routes are unavailable until their sender,
 template, permission and provider health gates pass.
+
+Host Forms remains a general intake system. `HostFormPurpose` is useful internal
+classification, but list and publish-review copy must describe actual
+consequences: whether a response can create or update a CRM contact, which
+identity evidence it requests, whether participant permission is requested,
+and which review queue receives the result. Form automations may create or
+propose CRM, tag, application, attendee, team-notification, webhook, and
+campaign-draft work. They must not silently dispatch participant or customer
+outreach. Applications and form responses remain Forms-owned work queues;
+Customers may link to a person's application history but does not own the
+application queue.
+
+Customer detail is the organizer CRM hub. Identity, editable organizer-owned
+contact facts, provenance, permission explanation, current communication plan,
+and primary actions remain above the fold. A bounded server-composed activity
+timeline then joins permitted form/application, attendance, note, permission,
+send/reply, origin, and merge events newest-first. It excludes private Consumer
+profile, compatibility, safety, wingman, and unrelated organizer data. Section
+cards may remain for identity and memory; the timeline is an activity lens, not
+a replacement for every structured field.
 
 ### Installable App Target Contract
 
