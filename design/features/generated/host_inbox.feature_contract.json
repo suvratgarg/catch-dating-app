@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:85ea497ac8c15ebf568bc39110ee86bf31afe16fe127d58d6e1f1c914b3a03ba",
-  "resolvedDigest": "sha256:3f6c8f69c2fc9e5604e7936e377a2227745c5bc03a9d516ebd31e98c9534f47a",
+  "resolvedDigest": "sha256:073657619cc51b628f8eb974b6a1b080435a53c3d00c6778fae306fb2711843f",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Messaging",
@@ -4276,6 +4276,7 @@
                 "CatchSection.divided",
                 "CatchSection.fieldRows",
                 "CatchSection.containedFieldRows",
+                "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
                 "CatchSection.plain"
               ]

@@ -60,6 +60,21 @@ void registerHostEventEntryTests() {
     expect(find.text('Use guest list'), findsOneWidget);
     expect(find.text('Continue draft'), findsNothing);
     expect(find.text('Repeat last event'), findsNothing);
+    final eventEntrySheet = find.byKey(
+      const ValueKey<String>('host-event-entry-sheet'),
+    );
+    expect(
+      find.descendant(of: eventEntrySheet, matching: find.byType(CatchSection)),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: eventEntrySheet,
+        matching: find.byType(CatchSectionFocusSurface),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('START NEW'), findsOneWidget);
     await tester.tapAt(const Offset(10, 10));
     await pumpFeatureUi(tester);
     expect(find.text('View club'), findsNothing);
@@ -113,6 +128,22 @@ void registerHostEventEntryTests() {
     await pumpFeatureUi(tester);
     expect(find.text('Continue draft'), findsOneWidget);
     expect(find.text('Quiz night'), findsOneWidget);
+    final eventEntrySheet = find.byKey(
+      const ValueKey<String>('host-event-entry-sheet'),
+    );
+    expect(
+      find.descendant(of: eventEntrySheet, matching: find.byType(CatchSection)),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: eventEntrySheet,
+        matching: find.byType(CatchSectionFocusSurface),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('CONTINUE'), findsOneWidget);
+    expect(find.text('START NEW'), findsOneWidget);
 
     await tester.tap(find.text('Continue draft'));
     await pumpFeatureUi(tester);

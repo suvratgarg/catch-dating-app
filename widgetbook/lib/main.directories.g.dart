@@ -4771,7 +4771,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'CatchSection',
         useCases: [
           _widgetbook.WidgetbookUseCase(
-            name: 'Create event modal · section comparison',
+            name: 'Create event modal · production',
             builder: _widgetbook_workspace_geometry_component_geometry_use_cases
                 .createEventModalSectionComparison,
           ),

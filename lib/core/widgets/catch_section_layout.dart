@@ -558,6 +558,26 @@ enum CatchSectionHeaderPlacement { outside, inside }
 
 enum _CatchSectionVariant { divided, contained, plain }
 
+/// One labelled field-row group inside a shared contained section perimeter.
+///
+/// Use through [CatchSection.containedFieldGroups] when several related choice
+/// groups form one collection. The section owns each group header, boundary,
+/// sibling divider, clip, and active-state geometry; callers provide only the
+/// semantic label, optional metadata, rows, and row callbacks.
+class CatchSectionFieldGroup {
+  const CatchSectionFieldGroup({
+    required this.title,
+    required this.children,
+    this.count,
+    this.trailing,
+  }) : assert(title.length > 0);
+
+  final String title;
+  final List<Widget> children;
+  final Object? count;
+  final Widget? trailing;
+}
+
 /// Design-system `Section`: the canonical primitive for grouping information.
 ///
 /// Screens that adopt the handoff composition should place these inside
@@ -678,10 +698,45 @@ class CatchSection extends StatelessWidget {
            children: children,
            child: child,
          ),
+         groups: null,
          footer: footer,
          focused: focused,
          hasError: hasError,
          headerPlacement: headerPlacement,
+       ),
+       _containedConfig = null,
+       _plainConfig = null;
+
+  /// One outlined collection containing one or more labelled field groups.
+  ///
+  /// This is the grouped sibling of [containedFieldRows]. It preserves one
+  /// section-owned perimeter while giving each internal group its own kicker
+  /// and inset boundary. It is intended for one collection of mutually related
+  /// actions or choices, not for nesting independent cards inside a card.
+  const CatchSection.containedFieldGroups({
+    super.key,
+    required List<CatchSectionFieldGroup> groups,
+    Widget? footer,
+    bool focused = false,
+    bool hasError = false,
+  }) : _dividedConfig = null,
+       _fieldRowsConfig = null,
+       _containedFieldRowsConfig = (
+         common: (
+           title: null,
+           subtitle: null,
+           trailing: null,
+           count: null,
+           titleColor: null,
+           bodyGap: CatchSpacing.s2,
+           children: null,
+           child: null,
+         ),
+         groups: groups,
+         footer: footer,
+         focused: focused,
+         hasError: hasError,
+         headerPlacement: CatchSectionHeaderPlacement.inside,
        ),
        _containedConfig = null,
        _plainConfig = null;
@@ -840,11 +895,19 @@ class CatchSection extends StatelessWidget {
   CatchSectionHeaderPlacement get fieldHeaderPlacement =>
       _containedFieldRowsConfig?.headerPlacement ??
       CatchSectionHeaderPlacement.outside;
+  List<CatchSectionFieldGroup>? get fieldGroups =>
+      _containedFieldRowsConfig?.groups;
   CatchDividedFieldInteraction? get dividedFieldInteraction =>
       _fieldRowsConfig?.interaction;
 
   @override
   Widget build(BuildContext context) {
+    assert(
+      fieldGroups == null ||
+          (fieldGroups!.isNotEmpty &&
+              fieldGroups!.every((group) => group.children.isNotEmpty)),
+      'containedFieldGroups requires at least one non-empty field group.',
+    );
     final section = switch (_variant) {
       _CatchSectionVariant.divided => _buildDivided(context),
       _CatchSectionVariant.contained => _buildContained(context),
@@ -993,6 +1056,7 @@ class CatchSection extends StatelessWidget {
         _fieldRows &&
         hasHeader &&
         fieldHeaderPlacement == CatchSectionHeaderPlacement.inside;
+    final containedGroups = fieldGroups;
     final content = _fieldRows
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1022,7 +1086,10 @@ class CatchSection extends StatelessWidget {
                     ],
                   ),
                 ),
-              _body(context, t),
+              if (containedGroups != null)
+                _buildContainedFieldGroups(context, t, containedGroups)
+              else
+                _body(context, t),
               if (sectionFooter != null)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
@@ -1183,7 +1250,76 @@ class CatchSection extends StatelessWidget {
 
     final sectionChildren = children ?? const <Widget>[];
     if (sectionChildren.isEmpty) return const SizedBox.shrink();
-    final effectiveDividerIndent = _fieldRows && dividerIndent == null
+
+    if (_fieldRows) {
+      return _buildFieldRows(sectionChildren);
+    }
+    final effectiveDividerIndent = dividerIndent ?? 0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < sectionChildren.length; i++)
+          if (i == 0 || !showInternalDividers)
+            sectionChildren[i]
+          else
+            Stack(
+              children: [
+                sectionChildren[i],
+                Positioned(
+                  top: 0,
+                  left: effectiveDividerIndent,
+                  right: 0,
+                  child: CatchDivider(role: internalDividerRole),
+                ),
+              ],
+            ),
+      ],
+    );
+  }
+
+  Widget _buildContainedFieldGroups(
+    BuildContext context,
+    CatchTokens t,
+    List<CatchSectionFieldGroup> groups,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (final group in groups) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              CatchFieldTokens.rowHorizontalPadding,
+              CatchFieldTokens.rowVerticalPadding,
+              CatchFieldTokens.rowHorizontalPadding,
+              0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildCatchSectionKicker(
+                  context,
+                  text: group.title.trim(),
+                  count: group.count?.toString().trim(),
+                  trailing: group.trailing,
+                  color: t.ink2,
+                  size: CatchKickerSize.fieldSection,
+                ),
+                const SizedBox(height: CatchFieldTokens.sectionRuleGap),
+                const CatchDivider.section(),
+              ],
+            ),
+          ),
+          _buildFieldRows(group.children),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildFieldRows(List<Widget> sectionChildren) {
+    final effectiveDividerIndent = dividerIndent == null
         ? _automaticFieldDividerInset(sectionChildren)
         : dividerIndent ?? 0;
 
@@ -1191,41 +1327,24 @@ class CatchSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (_fieldRows)
-          for (var i = 0; i < sectionChildren.length; i++)
-            if (!showInternalDividers || i == sectionChildren.length - 1)
-              sectionChildren[i]
-            else
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Positioned(
-                    bottom: -CatchStroke.hairline,
-                    left: effectiveDividerIndent,
-                    right: _variant == _CatchSectionVariant.contained
-                        ? CatchFieldTokens.rowHorizontalPadding
-                        : 0,
-                    child: CatchDivider(role: internalDividerRole),
-                  ),
-                  sectionChildren[i],
-                ],
-              )
-        else
-          for (var i = 0; i < sectionChildren.length; i++)
-            if (i == 0 || !showInternalDividers)
-              sectionChildren[i]
-            else
-              Stack(
-                children: [
-                  sectionChildren[i],
-                  Positioned(
-                    top: 0,
-                    left: effectiveDividerIndent,
-                    right: 0,
-                    child: CatchDivider(role: internalDividerRole),
-                  ),
-                ],
-              ),
+        for (var i = 0; i < sectionChildren.length; i++)
+          if (!showInternalDividers || i == sectionChildren.length - 1)
+            sectionChildren[i]
+          else
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(
+                  bottom: -CatchStroke.hairline,
+                  left: effectiveDividerIndent,
+                  right: _variant == _CatchSectionVariant.contained
+                      ? CatchFieldTokens.rowHorizontalPadding
+                      : 0,
+                  child: CatchDivider(role: internalDividerRole),
+                ),
+                sectionChildren[i],
+              ],
+            ),
       ],
     );
   }

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:bfed475ac25dc07e694db31463094024ab59429fa05a43ed9eb224c6860c82ae",
-  "resolvedDigest": "sha256:406c27ca904a199cd56673aad1872cd2553f55f7274c5623a4f4c9710cb57bb9",
+  "resolvedDigest": "sha256:6da241c2669ea5491035e8718ae74b93ef8ce17ef79355f99feb150260d94853",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -1228,6 +1228,7 @@
                 "CatchSection.divided",
                 "CatchSection.fieldRows",
                 "CatchSection.containedFieldRows",
+                "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
                 "CatchSection.plain"
               ]
