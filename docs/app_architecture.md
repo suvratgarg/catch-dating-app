@@ -3359,6 +3359,16 @@ roles, and explicit leading/action slots. Sliver screens pass
 screens use `CatchScreenTopBar(...)`, which wraps `CatchTopBar` while preserving
 search, leading, action, safe-area, and padding configuration.
 
+Top-bar action slots accept only the top-bar action family. Use
+`CatchTopBarPrimaryAction` for a primary root-screen action: it renders the
+canonical 40 px bordered icon target on compact phones and preserves the
+labelled small button on medium and expanded layouts. Use `CatchIconAction`,
+`CatchTopBarTextAction`, or `CatchTopBarMenuAction` for icon-only, semantic text,
+or overflow behavior. A direct `CatchButton` is page/body CTA chrome and is
+rejected by `CatchTopBarActionGroup` in debug builds. The
+`design:screen-top-bar-contracts` gate also rejects direct pills in inline
+action lists and simple local action-list variables.
+
 Do not use bare `CatchTopBar(title: ...)` for these root headers. That compact
 route-title path intentionally remains available for detail, edit, lab, and
 utility screens where the title is functional navigation chrome rather than the

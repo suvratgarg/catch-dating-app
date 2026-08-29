@@ -27,6 +27,9 @@ const canonicalRootOwners = new Set([
   "CatchScreenTopBar",
   "CatchTabbedScreenScaffold",
 ]);
+const topBarActionOwnerPattern =
+  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchTabbedScreenScaffold|CatchTopBar(?:\.identity)?)\s*\(/gu;
+const directPillActionPattern = /\bCatchButton\s*\(/u;
 const rootTitleStylePattern = /\bCatchTextStyles\.headline[A-Za-z]*\s*\(/gu;
 const rootTextScaleOverridePattern =
   /\b(?:TextScaler\.|textScaler\s*:)/gu;
@@ -175,6 +178,7 @@ export function checkScreenTopBarContracts({
     checkCanonicalScreenGeometry({root, manifest, findings});
   }
   checkRoutePresentations({root, routePresentations, findings});
+  checkTopBarActionFamilies({root, findings});
 
   return summarize(
     contracts,
@@ -186,6 +190,96 @@ export function checkScreenTopBarContracts({
     manualHeaders,
     trackedRootHeaders,
   );
+}
+
+function checkTopBarActionFamilies({root, findings}) {
+  const libRoot = path.join(root, "lib");
+  if (!fs.existsSync(libRoot)) return;
+
+  for (const absolutePath of walkDartFiles(libRoot)) {
+    const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
+    const source = maskDartCommentsAndStrings(
+      fs.readFileSync(absolutePath, "utf8"),
+    );
+    for (const match of source.matchAll(topBarActionOwnerPattern)) {
+      const callStart = match.index ?? 0;
+      const openParen = callStart + match[0].lastIndexOf("(");
+      const call = readBalanced(source, openParen, "(", ")");
+      const actions = readNamedArgument(call, "actions");
+      if (actions == null) continue;
+
+      const inspectedActions = resolveActionExpression({
+        source,
+        expression: actions,
+        beforeIndex: callStart,
+      });
+      if (!directPillActionPattern.test(inspectedActions)) continue;
+
+      findings.push({
+        code: "top-bar-direct-pill-action",
+        path: relativePath,
+        line: lineNumberAt(source, callStart),
+        message:
+          `${match[1]} receives CatchButton as a direct top-bar action. ` +
+          "Use CatchTopBarPrimaryAction, CatchIconAction, " +
+          "CatchTopBarTextAction, or CatchTopBarMenuAction so top-bar " +
+          "geometry and compact behavior stay canonical.",
+      });
+    }
+    topBarActionOwnerPattern.lastIndex = 0;
+  }
+}
+
+function readNamedArgument(call, name) {
+  const argumentsSource = call.slice(1, -1);
+  for (const argument of splitTopLevelArguments(argumentsSource)) {
+    const match = new RegExp(`^\\s*${escapeRegExp(name)}\\s*:`, "u").exec(
+      argument,
+    );
+    if (match != null) return argument.slice(match[0].length).trim();
+  }
+  return null;
+}
+
+function resolveActionExpression({source, expression, beforeIndex}) {
+  const identifier = /^([_$A-Za-z][\w$]*)$/u.exec(expression)?.[1];
+  if (identifier == null) return expression;
+
+  const declarationPattern = new RegExp(
+    `\\b(?:final|const|var)(?:\\s+List\\s*<[^;=]+>)?\\s+` +
+      `${escapeRegExp(identifier)}\\s*=`,
+    "gu",
+  );
+  let nearest = null;
+  for (const match of source.slice(0, beforeIndex).matchAll(declarationPattern)) {
+    nearest = match;
+  }
+  if (nearest == null) return expression;
+
+  const valueStart = (nearest.index ?? 0) + nearest[0].length;
+  return readUntilTopLevelSemicolon(source, valueStart);
+}
+
+function readUntilTopLevelSemicolon(source, start) {
+  const depths = {round: 0, square: 0, curly: 0};
+  for (let index = start; index < source.length; index += 1) {
+    const char = source[index];
+    if (char === "(") depths.round += 1;
+    if (char === ")") depths.round -= 1;
+    if (char === "[") depths.square += 1;
+    if (char === "]") depths.square -= 1;
+    if (char === "{") depths.curly += 1;
+    if (char === "}") depths.curly -= 1;
+    if (
+      char === ";" &&
+      depths.round === 0 &&
+      depths.square === 0 &&
+      depths.curly === 0
+    ) {
+      return source.slice(start, index);
+    }
+  }
+  return source.slice(start);
 }
 
 function collectAppBars(root) {

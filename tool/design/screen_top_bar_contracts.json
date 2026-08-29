@@ -40,7 +40,8 @@
       "branchKey": "keys.hostEvents",
       "routeName": "Routes.hostEventsScreen.name",
       "surfaces": [
-        {"path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart", "symbol": "_HostEventsScaffoldState", "owner": "CatchScreenHeaderTitle.block"}
+        {"path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart", "symbol": "_HostEventsScaffoldState", "owner": "CatchScreenHeaderTitle.block"},
+        {"path": "lib/hosts/presentation/host_operations/host_events_list.dart", "symbol": "HostEventsClubSection", "owner": "CatchScreenHeaderTitle.block"}
       ]
     },
     {

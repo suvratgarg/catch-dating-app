@@ -126,6 +126,15 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.text('STARTS IN 5H'), findsOneWidget);
     expect(find.text('Set up & run'), findsOneWidget);
+    final createAction = find.byKey(
+      const ValueKey<String>('host-events-create-event'),
+    );
+    expect(createAction, findsOneWidget);
+    expect(
+      find.descendant(of: createAction, matching: find.byType(CatchIconAction)),
+      findsOneWidget,
+    );
+    expect(find.byTooltip('Create event'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

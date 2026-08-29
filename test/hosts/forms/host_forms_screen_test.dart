@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
@@ -64,6 +65,7 @@ void main() {
       expect(find.text('Forms'), findsWidgets);
       expect(find.text('Responses'), findsOneWidget);
       expect(find.byKey(const ValueKey('host-forms-create')), findsOneWidget);
+      expect(find.byType(CatchTopBarPrimaryAction), findsOneWidget);
       expect(find.byType(CatchSearchField), findsOneWidget);
       expect(
         tester.widget<CatchTabbedScreenScaffold>(scaffold).search?.placeholder,
