@@ -364,8 +364,10 @@ void main() {
         BorderRadius.circular(CatchRadius.pill),
       );
       expect(find.byType(CupertinoTabBar), findsNothing);
-      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Home'), findsNothing);
       expect(find.text('Explore'), findsNothing);
+      expect(find.bySemanticsLabel('Home'), findsOneWidget);
+      expect(find.bySemanticsLabel('Explore'), findsOneWidget);
       expect(find.bySemanticsLabel('Catches'), findsNothing);
       expect(find.bySemanticsLabel(RegExp('Chats')), findsOneWidget);
       expect(find.bySemanticsLabel('You'), findsOneWidget);
@@ -377,7 +379,7 @@ void main() {
     }
   });
 
-  testWidgets('large-text selected tab label stays inside its pill', (
+  testWidgets('large-text navigation stays icon-only inside floating chrome', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -414,14 +416,24 @@ void main() {
       ),
     );
 
-    final label = find.text('Customers');
-    final labelRect = tester.getRect(label);
-    final clipRect = tester.getRect(
-      find.ancestor(of: label, matching: find.byType(ClipRect)).first,
-    );
+    for (final label in const [
+      'Events',
+      'Customers',
+      'Messaging',
+      'Organizer',
+    ]) {
+      expect(find.text(label), findsNothing);
+      expect(find.bySemanticsLabel(label), findsOneWidget);
+    }
 
-    expect(labelRect.left, greaterThanOrEqualTo(clipRect.left - 0.5));
-    expect(labelRect.right, lessThanOrEqualTo(clipRect.right + 0.5));
+    final indicatorRect = tester.getRect(
+      find.byKey(const ValueKey('catch_tab_bar.indicator')),
+    );
+    final chromeRect = tester.getRect(
+      find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+    );
+    expect(indicatorRect.left, greaterThanOrEqualTo(chromeRect.left));
+    expect(indicatorRect.right, lessThanOrEqualTo(chromeRect.right));
   });
 
   testWidgets('iOS floating navigation keeps selected end tab close to edge', (
