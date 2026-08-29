@@ -1181,7 +1181,6 @@ void main() {
         ),
       ),
     );
-
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
     expect(surface.borderColor, CatchTokens.editorialLight.danger);
     expect(surface.boxShadow, isNull);

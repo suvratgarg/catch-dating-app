@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/chats/chats.dart' show ChatScreen;
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
