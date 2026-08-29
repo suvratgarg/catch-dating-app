@@ -797,6 +797,14 @@ Widget hostCustomersStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'full-page add customer',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            child: HostAddCustomerScreen(organizerId: organizerId),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'linked customer detail',
         child: _DeviceFrame(
           child: _HostShellScope(
@@ -869,11 +877,11 @@ Widget hostCustomerDirectoryRowStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(
-  name: 'Manual add state',
-  type: HostAddCustomerSheet,
+  name: 'Full-page add state',
+  type: HostAddCustomerScreen,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
-Widget hostAddCustomerSheetStates(BuildContext context) =>
+Widget hostAddCustomerScreenStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(

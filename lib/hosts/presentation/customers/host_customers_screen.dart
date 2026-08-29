@@ -15,16 +15,19 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
@@ -50,7 +53,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 part 'host_customer_detail_cards.dart';
-part 'host_customer_editor_sheets.dart';
+part 'host_customer_editor.dart';
 part 'host_customers_directory.dart';
 
 enum _HostCustomersHeaderAction { applications, reviewDuplicates, export }
@@ -481,9 +484,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     Club club,
     HostCustomersDirectoryRequest request,
   ) async {
-    final created = await showCatchBottomSheet<HostCreatedCustomer>(
-      context: context,
-      builder: (context) => HostAddCustomerSheet(organizerId: club.id),
+    final created = await context.pushNamed<HostCreatedCustomer>(
+      Routes.hostAddCustomerScreen.name,
+      queryParameters: {'organizerId': club.id},
     );
     if (!mounted || created == null) return;
     ref.invalidate(hostCrmSummaryProvider(club.id));

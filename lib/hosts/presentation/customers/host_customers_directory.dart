@@ -605,32 +605,3 @@ String _customerPeopleCountLabel(
   HostCustomerMatchCountCoverage.atLeast =>
     context.l10n.hostCustomersPeopleCountAtLeast(count: count),
 };
-
-String? _optionalTrimmed(String value) {
-  final trimmed = value.trim();
-  return trimmed.isEmpty ? null : trimmed;
-}
-
-String? _optionalManualPhone(String value) {
-  final trimmed = _optionalTrimmed(value);
-  return trimmed?.replaceAll(RegExp(r'[()\s-]+'), '');
-}
-
-String? _optionalNormalizedEmail(String value) =>
-    _optionalTrimmed(value)?.toLowerCase();
-
-String? _manualPhoneError(BuildContext context, String? value) {
-  final phone = _optionalManualPhone(value ?? '');
-  if (phone == null) return null;
-  return RegExp(r'^\+[1-9][0-9]{7,14}$').hasMatch(phone)
-      ? null
-      : context.l10n.hostCustomersPhoneInvalid;
-}
-
-String? _manualEmailError(BuildContext context, String? value) {
-  final email = _optionalNormalizedEmail(value ?? '');
-  if (email == null) return null;
-  return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)
-      ? null
-      : context.l10n.hostCustomersEmailInvalid;
-}

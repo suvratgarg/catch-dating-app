@@ -868,6 +868,14 @@ StatefulShellRoute _hostShellRoute(
             ),
             routes: [
               GoRoute(
+                path: 'new',
+                name: Routes.hostAddCustomerScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostAddCustomerScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                ),
+              ),
+              GoRoute(
                 path: 'applications',
                 name: Routes.hostApplicationsScreen.name,
                 parentNavigatorKey: keys.root,

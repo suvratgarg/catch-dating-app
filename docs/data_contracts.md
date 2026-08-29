@@ -829,12 +829,15 @@ The directory accepts `lastSeen`, `mostAttended`, or `name`; every opaque cursor
 is versioned and bound to its query plan, filters, and ordering. Filtered sorts
 are computed over a bounded complete candidate set rather than sorting one
 already-paginated page, and an over-limit candidate set fails explicitly.
-`createOrganizerContact` may add a contact name, optional organizer-entered
-phone/email evidence, an optional first private note, and its zero-history
-trait. Organizer-entered endpoints remain `proposed`, organizer-scoped evidence:
+`createOrganizerContact` requires a contact name plus at least one
+organizer-entered phone or email endpoint; it may also add an optional first
+private note and its zero-history trait. Organizer-entered endpoints remain
+`proposed`, organizer-scoped evidence:
 they create no attendee, verified identity, UID, Consumer profile, opt-in, or
 messaging grant. Only unlinked contacts whose primary source is `hostManual`
-may later edit or clear those endpoints. Customer detail unifies event-scoped
+may later edit those endpoints but cannot remove its last endpoint. Legacy and
+system-derived name-only records remain readable and can still rename without
+being forced through a migration. Customer detail unifies event-scoped
 revenue from completed, non-refunded Catch payments, financially complete
 provider orders, organizer-imported amounts, and explicit organizer estimates.
 Every amount retains its source; reported and estimated values are never

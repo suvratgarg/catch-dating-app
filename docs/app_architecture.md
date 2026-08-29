@@ -2074,6 +2074,12 @@ Rules:
 - CRM categories are server facts. Flutter may label fixed segment ids but must
   not infer “valuable customer” from ticket price, private feedback, gender,
   compatibility, wingman, dating or safety data.
+- Manual customer creation is a route-level form and requires an
+  organizer-visible name plus at least one phone or email endpoint. Create and
+  inline edit share identity-field semantics; organizer-entered endpoints remain
+  unverified and never grant identity or messaging permission. Existing
+  name-only legacy contacts remain readable, but a manual contact that already
+  has an endpoint cannot lose its last endpoint during edit.
 - `HostProviderRepository` consumes the server capability catalog. UI renders
   `available`, `configurationRequired`, `exportOnly`, `sampleRequired` and
   `partnerAccessRequired` honestly. A provider name on `EventOrigin` never

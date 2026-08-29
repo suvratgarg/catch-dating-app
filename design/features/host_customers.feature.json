@@ -22,6 +22,7 @@
         "previewSources": ["widgetbook/lib/hosts/host_operations_use_cases.dart"],
         "actionOwners": [
           {"id": "customers_screen", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomersScreen"},
+          {"id": "customer_create", "language": "dart", "file": "lib/hosts/presentation/customers/host_customer_editor.dart", "symbol": "HostAddCustomerScreen"},
           {"id": "customers_directory", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersDirectoryController"},
           {"id": "customers_mutations", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersController"},
           {"id": "customer_detail", "language": "dart", "file": "lib/hosts/presentation/customers/host_customer_detail_screen.dart", "symbol": "HostCustomerDetailScreen"},
@@ -200,12 +201,12 @@
           "owner": "customers_mutations",
           "codeValue": "createCustomer",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "organizerId", "submitAttemptId"],
+          "scopeKeys": ["viewerUid", "organizerId", "displayName", "identityEndpoint", "submitAttemptId"],
           "outcomes": [
             {"kind": "surface_state", "stateIds": ["manual_add_pending", "customers_populated"]},
             {"kind": "side_effect", "id": "host_customers.organizer_contact_created"}
           ],
-          "description": "Creates an organizer CRM contact with a required name, optional unverified phone/email evidence, and an optional private note without creating a Catch identity or granting messaging permission."
+          "description": "Creates an organizer CRM contact from the full-page route with a required name, at least one unverified phone or email endpoint, and an optional private note without creating a Catch identity or granting messaging permission."
         },
         {
           "id": "open_customer",
@@ -400,7 +401,7 @@
           "reason": "Backend conflict and receipt-reversal policy is tested; focused rendered dialog and pending-state tests remain follow-up evidence."
         },
         {
-          "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_paginating", "manual_add_pending", "customer_export_pending", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_revenue_partial", "customer_revenue_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
+          "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_paginating", "customer_export_pending", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_revenue_partial", "customer_revenue_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
           "evidence": ["tests"],
           "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
           "reason": "Controller policy, repository mapping, and route tests cover the initial seam; deterministic rendered state tests remain follow-up evidence for the customer directory."
@@ -412,7 +413,7 @@
           "reason": "The editable handoff and URL launcher contract have focused rendered tests; a deterministic Widgetbook variant remains follow-up evidence."
         },
         {
-          "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_filtered_empty", "customers_paginating", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_note_editing", "customer_tags_editing", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
+          "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_filtered_empty", "customers_paginating", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_note_editing", "customer_tags_editing", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_unavailable", "offline", "text_scale_2", "reduced_motion", "light_dark"],
           "evidence": ["previews"],
           "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
           "reason": "The initial Widgetbook gallery covers the populated directory and linked exact-revenue detail; remaining recovery, identity, coverage, accessibility, and theme variants are explicit preview debt."

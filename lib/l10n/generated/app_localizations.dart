@@ -21070,28 +21070,34 @@ abstract class AppLocalizations {
   /// **'Checked in'**
   String get hostCustomersCheckedIn;
 
-  /// Adds an organizer CRM contact with optional contact details and a private note.
+  /// Adds an organizer CRM contact with a name, at least one contact method, and an optional private note.
   ///
   /// In en, this message translates to:
   /// **'Add customer'**
   String get hostCustomersAdd;
 
-  /// Manual CRM contact sheet title.
+  /// Full-page manual CRM contact route title.
   ///
   /// In en, this message translates to:
   /// **'Add a customer'**
   String get hostCustomersAddTitle;
 
-  /// Manual CRM contact name field.
+  /// Organizer-owned customer display name used by create and edit states.
   ///
   /// In en, this message translates to:
-  /// **'Customer name'**
+  /// **'Name shown to your team'**
   String get hostCustomersName;
+
+  /// Manual customer creation guidance for the organizer-owned display name.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the name your team will recognize.'**
+  String get hostCustomersNameHelp;
 
   /// Manual CRM identity boundary.
   ///
   /// In en, this message translates to:
-  /// **'Add the details you know. Phone and email stay unverified and never grant messaging permission.'**
+  /// **'Add a name and at least one way to reach this customer. Phone and email stay unverified and never grant messaging permission.'**
   String get hostCustomersAddHelp;
 
   /// Required manual customer name validation.
@@ -21099,6 +21105,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter the customer’s name.'**
   String get hostCustomersNameRequired;
+
+  /// Manual customer create and edit validation requiring a durable contact method.
+  ///
+  /// In en, this message translates to:
+  /// **'Add or keep at least one mobile number or email address.'**
+  String get hostCustomersContactMethodRequired;
 
   /// Organizer-owned customer phone field.
   ///
@@ -21135,6 +21147,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Private note'**
   String get hostCustomersInitialNote;
+
+  /// Privacy guidance for the optional note on manual customer creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Private notes are visible only to this organizer’s management team.'**
+  String get hostCustomersInitialNoteHelp;
 
   /// Boundary between organizer-owned contact details and a linked Catch profile.
   ///

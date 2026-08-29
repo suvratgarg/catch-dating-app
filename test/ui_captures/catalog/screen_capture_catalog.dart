@@ -14778,6 +14778,17 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => const ChatsListScreen(),
   ),
   ScreenCaptureEntry(
+    id: 'host_customer_add',
+    routeIds: const <String>['hostAddCustomerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _hostShellCaptureOverrides(
+      HostOperationsFixtures.hostUid,
+    ),
+    builder: (context) => HostAddCustomerScreen(
+      organizerId: HostOperationsFixtures.primaryClub.id,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'host_customers_populated',
     routeIds: const <String>['hostCustomersScreen'],
     device: CaptureDevice.claudePhone390,

@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-29",
-  "sourceDigest": "sha256:914145c839b5228341ee63cd2de1bb5730cc80272aa12b3b304ed3c8d627b175",
-  "resolvedDigest": "sha256:d015bd4d254830954a96823022545952062c66af6f220e8b60322dffcb1ac934",
+  "sourceDigest": "sha256:f27de595c23decf3e5cb8dede12f6baf3c2f9f410c3ddc229fecd39ba3d38ab7",
+  "resolvedDigest": "sha256:fabb8daf18d1186ffe8ef364cb7ad1f6affb2422ec56a45b98e954e7d6725f41",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
@@ -18,10 +18,10 @@
     "scenarios": 41,
     "actionCases": 41,
     "actions": 23,
-    "captures": 2,
+    "captures": 3,
     "previews": 1,
     "testFiles": 8,
-    "evidenceExceptions": 52
+    "evidenceExceptions": 50
   },
   "surfaces": [
     {
@@ -47,6 +47,12 @@
             "language": "dart",
             "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
             "symbol": "HostCustomersScreen"
+          },
+          {
+            "id": "customer_create",
+            "language": "dart",
+            "file": "lib/hosts/presentation/customers/host_customer_editor.dart",
+            "symbol": "HostAddCustomerScreen"
           },
           {
             "id": "customers_directory",
@@ -215,10 +221,10 @@
         "scenarios": 41,
         "actionCases": 41,
         "actions": 23,
-        "captures": 2,
+        "captures": 3,
         "previews": 1,
         "testFiles": 8,
-        "evidenceExceptions": 52
+        "evidenceExceptions": 50
       },
       "dimensions": {
         "load": {
@@ -586,6 +592,8 @@
           "scopeKeys": [
             "viewerUid",
             "organizerId",
+            "displayName",
+            "identityEndpoint",
             "submitAttemptId"
           ],
           "outcomes": [
@@ -601,7 +609,7 @@
               "id": "host_customers.organizer_contact_created"
             }
           ],
-          "description": "Creates an organizer CRM contact with a required name, optional unverified phone/email evidence, and an optional private note without creating a Catch identity or granting messaging permission.",
+          "description": "Creates an organizer CRM contact from the full-page route with a required name, at least one unverified phone or email endpoint, and an optional private note without creating a Catch identity or granting messaging permission.",
           "implementationStatus": "implemented"
         },
         {
@@ -951,7 +959,6 @@
             "customers_error",
             "customers_empty",
             "customers_paginating",
-            "manual_add_pending",
             "customer_export_pending",
             "customer_manage_pending",
             "customer_detail_loading",
@@ -991,7 +998,6 @@
             "customer_filter_manual_tag",
             "customer_campaign_bridge_ready",
             "customer_campaign_bridge_blocked",
-            "manual_add_pending",
             "customer_export_pending",
             "customer_manage",
             "customer_manage_pending",
@@ -1985,7 +1991,7 @@
           "id": "manual_add_pending",
           "stateId": "manual_add_pending",
           "kind": "mutation",
-          "status": "implemented",
+          "status": "captured",
           "dimensions": {
             "load": "ready",
             "directory": "populated",
@@ -2003,9 +2009,15 @@
             "theme": "standard"
           },
           "evidence": {
-            "captureIds": [],
-            "previewIds": [],
-            "tests": []
+            "captureIds": [
+              "host_customer_add"
+            ],
+            "previewIds": [
+              "hostCustomersStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart"
+            ]
           },
           "actionCases": [
             {
@@ -4300,6 +4312,11 @@
               "id": "hostCustomersScreen",
               "path": "/host/customers",
               "role": "primary"
+            },
+            {
+              "id": "hostAddCustomerScreen",
+              "path": "/host/customers/new",
+              "role": "host"
             },
             {
               "id": "hostCustomerDetailScreen",
