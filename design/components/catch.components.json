@@ -1240,7 +1240,7 @@
       "name": "CatchErrorState",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical branded app-facing error surface family for full-screen, inline, compact, scaffold, sliver, and icon-only placements.",
+      "summary": "Canonical cardless app-facing recovery-content family for full-screen, inline, compact, scaffold, sliver, and icon-only placements.",
       "dart": {
         "symbol": "CatchErrorState",
         "file": "lib/core/widgets/catch_error_state.dart",
@@ -1344,12 +1344,9 @@
           "space.s3",
           "space.s4",
           "space.s5",
-          "radius.lg",
           "theme.light.color.bg",
-          "theme.light.color.surface",
           "theme.light.color.ink",
           "theme.light.color.ink2",
-          "theme.light.color.line",
           "theme.light.color.primarySoft",
           "theme.light.color.danger"
         ],
@@ -1357,7 +1354,6 @@
           "CatchErrorStateMode",
           "CatchErrorIcon",
           "CatchButton",
-          "CatchSurface",
           "CatchTextStyles.titleL",
           "CatchTextStyles.sectionTitle",
           "CatchTextStyles.bodyLead",
@@ -1423,7 +1419,7 @@
           {
             "id": "catch.error_state.inline",
             "symbol": "CatchInlineErrorState",
-            "summary": "Inline section/card placement adapter for retryable failures when the rest of the screen remains usable.",
+            "summary": "Cardless inline section placement adapter for retryable failures when the rest of the screen remains usable.",
             "states": [
               "inline",
               "compact",
@@ -1480,7 +1476,7 @@
             "id": "catch.error_state.error_body",
             "symbol": "CatchErrorBody",
             "file": "lib/core/widgets/catch_error_state.dart",
-            "summary": "Direct branded error-body renderer used by error placement adapters.",
+            "summary": "Direct cardless branded error-body renderer used by error placement adapters; parent sections own containment.",
             "states": [
               "full-screen",
               "inline",
@@ -1512,11 +1508,11 @@
       },
       "handoff": {
         "allowedChildren": [
-          "catch.button",
-          "catch.surface"
+          "catch.button"
         ],
         "notes": [
           "Use this family for app-facing data-load failures with mapped copy and retry callbacks.",
+          "Recovery content is cardless; inherit any justified fill or outline from the owning route or section.",
           "Use scaffold and sliver members for placement only; do not create separate error visual systems.",
           "Keep framework crash surfaces separate in CatchFrameworkErrorView, but compose the shared error icon medallion."
         ]

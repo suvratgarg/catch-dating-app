@@ -30,6 +30,29 @@ void _registerCatchPrimitivesSearchMenuTests() {
     expect(retryCount, 1);
   });
 
+  testWidgets('inline and compact error states never add a nested surface', (
+    tester,
+  ) async {
+    Future<void> pumpMode(CatchErrorStateMode mode) => tester.pumpWidget(
+      _wrap(
+        CatchErrorState(
+          title: 'Customers unavailable',
+          message: 'Please try again.',
+          mode: mode,
+          onRetry: () {},
+        ),
+      ),
+    );
+
+    await pumpMode(CatchErrorStateMode.inline);
+    expect(find.byType(CatchSurface), findsNothing);
+    expect(find.byType(CatchErrorBody), findsOneWidget);
+
+    await pumpMode(CatchErrorStateMode.compact);
+    expect(find.byType(CatchSurface), findsNothing);
+    expect(find.byType(CatchErrorBody), findsOneWidget);
+  });
+
   testWidgets('CatchErrorState honors an explicit recovery callback', (
     tester,
   ) async {

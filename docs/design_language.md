@@ -286,6 +286,9 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   scanner-visible debt. Loading, empty, and error children inherit their
   section's divided, contained, or plain surface decision; state changes do not
   introduce a second border or switch a peer module to a different variant.
+  `CatchErrorBody` is therefore cardless in full-screen, inline, and compact
+  modes; its placement adapter supplies spacing while the parent owns any
+  justified containment.
 - `CatchSection.containedFieldRows` treats its title, count, and trailing action
   as an external label by default, so the outline begins with the first field.
   When that header belongs to the bounded field group itself, opt into
