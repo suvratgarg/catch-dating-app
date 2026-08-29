@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/data/initial_load_policy.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -17,8 +18,8 @@ typedef CatchAsyncValueLoadingBuilder = Widget Function(BuildContext context);
 typedef CatchAsyncValueErrorBuilder =
     Widget Function(BuildContext context, Object error, StackTrace stackTrace);
 
-/// Generic widget that handles the three states of an [AsyncValue]:
-/// loading, error, and data.
+/// Generic widget that exhaustively resolves the overlapping loading, retry,
+/// refresh, error, and data states of an [AsyncValue].
 ///
 /// Usage:
 /// ```dart
@@ -84,7 +85,7 @@ class _CatchAsyncValueViewState<T> extends State<CatchAsyncValueView<T>> {
   }
 
   void _syncDeadline() {
-    if (!_isInitialLoading(widget.value)) {
+    if (!_isBlockingLoading(widget.value)) {
       _deadline?.cancel();
       _deadline = null;
       _timedOut = false;
@@ -94,7 +95,7 @@ class _CatchAsyncValueViewState<T> extends State<CatchAsyncValueView<T>> {
       return;
     }
     _deadline = Timer(widget.initialLoadTimeout!, () {
-      if (!mounted || !_isInitialLoading(widget.value)) return;
+      if (!mounted || !_isBlockingLoading(widget.value)) return;
       setState(() => _timedOut = true);
     });
   }
@@ -110,18 +111,6 @@ class _CatchAsyncValueViewState<T> extends State<CatchAsyncValueView<T>> {
   @override
   Widget build(BuildContext context) {
     final value = widget.value;
-    if (value.hasError && !widget.skipError) {
-      return widget.errorBuilder?.call(
-            context,
-            value.error!,
-            value.stackTrace ?? StackTrace.current,
-          ) ??
-          CatchErrorState.fromError(
-            value.error!,
-            context: widget.errorContext,
-            onRetry: widget.onRetry == null ? null : _retry,
-          );
-    }
     if (_timedOut) {
       return CatchErrorState.fromError(
         _initialLoadTimeoutException,
@@ -129,21 +118,30 @@ class _CatchAsyncValueViewState<T> extends State<CatchAsyncValueView<T>> {
         onRetry: widget.onRetry == null ? null : _retry,
       );
     }
-    return value.when(
+    return switch (catchAsyncRenderBranchFromAsyncValue(
+      value,
       skipLoadingOnReload: widget.skipLoadingOnReload,
       skipLoadingOnRefresh: widget.skipLoadingOnRefresh,
       skipError: widget.skipError,
-      data: (value) => widget.builder(context, value),
-      loading: () =>
-          widget.loadingBuilder?.call(context) ?? const CatchLoadingIndicator(),
-      error: (e, st) =>
-          widget.errorBuilder?.call(context, e, st) ??
-          CatchErrorState.fromError(
-            e,
-            context: widget.errorContext,
-            onRetry: widget.onRetry == null ? null : _retry,
-          ),
-    );
+    )) {
+      CatchAsyncRenderBranch.data => widget.builder(
+        context,
+        value.requireValue,
+      ),
+      CatchAsyncRenderBranch.loading =>
+        widget.loadingBuilder?.call(context) ?? const CatchLoadingIndicator(),
+      CatchAsyncRenderBranch.error =>
+        widget.errorBuilder?.call(
+              context,
+              value.error!,
+              value.stackTrace ?? StackTrace.current,
+            ) ??
+            CatchErrorState.fromError(
+              value.error!,
+              context: widget.errorContext,
+              onRetry: widget.onRetry == null ? null : _retry,
+            ),
+    };
   }
 }
 
@@ -208,7 +206,7 @@ class _CatchAsyncValueSliverState<T> extends State<CatchAsyncValueSliver<T>> {
   }
 
   void _syncDeadline() {
-    if (!_isInitialLoading(widget.value)) {
+    if (!_isBlockingLoading(widget.value)) {
       _deadline?.cancel();
       _deadline = null;
       _timedOut = false;
@@ -218,7 +216,7 @@ class _CatchAsyncValueSliverState<T> extends State<CatchAsyncValueSliver<T>> {
       return;
     }
     _deadline = Timer(widget.initialLoadTimeout!, () {
-      if (!mounted || !_isInitialLoading(widget.value)) return;
+      if (!mounted || !_isBlockingLoading(widget.value)) return;
       setState(() => _timedOut = true);
     });
   }
@@ -247,13 +245,6 @@ class _CatchAsyncValueSliverState<T> extends State<CatchAsyncValueSliver<T>> {
   @override
   Widget build(BuildContext context) {
     final value = widget.value;
-    if (value.hasError && !widget.skipError) {
-      return _errorSliver(
-        context,
-        value.error!,
-        value.stackTrace ?? StackTrace.current,
-      );
-    }
     if (_timedOut) {
       return _errorSliver(
         context,
@@ -261,12 +252,17 @@ class _CatchAsyncValueSliverState<T> extends State<CatchAsyncValueSliver<T>> {
         StackTrace.current,
       );
     }
-    return value.when(
+    return switch (catchAsyncRenderBranchFromAsyncValue(
+      value,
       skipLoadingOnReload: widget.skipLoadingOnReload,
       skipLoadingOnRefresh: widget.skipLoadingOnRefresh,
       skipError: widget.skipError,
-      data: (value) => widget.builder(context, value),
-      loading: () {
+    )) {
+      CatchAsyncRenderBranch.data => widget.builder(
+        context,
+        value.requireValue,
+      ),
+      CatchAsyncRenderBranch.loading => () {
         final customSliver = widget.sliverLoadingBuilder?.call(context);
         if (customSliver != null) return customSliver;
         return SliverToBoxAdapter(
@@ -274,14 +270,18 @@ class _CatchAsyncValueSliverState<T> extends State<CatchAsyncValueSliver<T>> {
               widget.loadingBuilder?.call(context) ??
               const CatchLoadingIndicator(),
         );
-      },
-      error: (e, st) => _errorSliver(context, e, st),
-    );
+      }(),
+      CatchAsyncRenderBranch.error => _errorSliver(
+        context,
+        value.error!,
+        value.stackTrace ?? StackTrace.current,
+      ),
+    };
   }
 }
 
-bool _isInitialLoading(AsyncValue<Object?> value) =>
-    value.isLoading && !value.hasValue && !value.hasError;
+bool _isBlockingLoading(AsyncValue<Object?> value) =>
+    value.isLoading && !value.hasValue;
 
 const _initialLoadTimeoutException = NetworkException(
   'timeout',

@@ -3929,7 +3929,7 @@
       "name": "CatchAsyncValueView",
       "status": "active",
       "kind": "pattern",
-      "summary": "AsyncValue data, loading, and error boundary with branded defaults for box and sliver layouts.",
+      "summary": "Exhaustive AsyncValue transition boundary with branded defaults for box and sliver layouts.",
       "dart": {
         "symbol": "CatchAsyncValueView",
         "file": "lib/core/widgets/catch_async_value_view.dart",
@@ -4009,8 +4009,11 @@
         ],
         "states": [
           "data",
-          "loading",
-          "error",
+          "initial-loading",
+          "retrying",
+          "refreshing",
+          "stale-data-with-error",
+          "terminal-error",
           "skip-loading-on-refresh",
           "custom-builders"
         ],
@@ -4080,6 +4083,7 @@
         ],
         "notes": [
           "This concept owns async data-state switching, not a loading visual system.",
+          "A retry without credible data renders loading and never replays its previous error.",
           "Use the sliver member only inside sliver-native scroll layouts."
         ]
       },

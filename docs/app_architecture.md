@@ -189,9 +189,10 @@ providers, or call `ref.watch/read/listen`; provider-owned composition belongs
 in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
 When a route edge translates Riverpod `AsyncValue` into `CatchAsyncState`, it
 must use `catchAsyncStateFromAsyncValue` from
-`lib/core/presentation/catch_async_value_adapter.dart`. That adapter gives a
-known error precedence over refresh loading, then preserves credible data, and
-uses loading only when neither exists.
+`lib/core/presentation/catch_async_value_adapter.dart`. That adapter preserves
+the exhaustive presentation phase: initial loading, retrying, data,
+refreshing data, stale data with an error, or terminal error. A loading retry
+without credible data always renders loading, never its previous error.
 
 Allowed exceptions:
 
@@ -1023,8 +1024,9 @@ remain appropriate for genuinely repeated collections whose item count and
 row data do not exist yet; they are not substitutes for a known screen body.
 
 Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
-user-visible resolution. When the deadline expires, the skeleton becomes a
-branded timeout state. Every presentation call site must supply `onRetry`; the
+user-visible resolution and to blocking retries that have no credible data.
+When the deadline expires, the skeleton becomes a branded timeout state. Every
+presentation call site must supply `onRetry`; the
 `catch_async_requires_retry` analyzer diagnostic enforces that contract. The
 deadline is a presentation/provider-boundary policy only: never apply an idle
 timeout to a long-lived Firestore stream after its first value.
@@ -3490,10 +3492,13 @@ instead of reading repositories or recomputing product policy. In this exhibit,
 `CalendarEventSummary` owns the merged event list.
 
 Riverpod translation remains at that route edge. Use
-`catchAsyncStateFromAsyncValue` rather than `AsyncValue.when`: refresh-time
-`AsyncError` can also report `isLoading`, so the shared adapter intentionally
-selects error, then available data, then loading. `CatchAsyncState` itself stays
-provider-free.
+`catchAsyncStateFromAsyncValue` rather than ad hoc `AsyncValue` flag checks:
+Riverpod snapshots may legitimately report overlapping loading, error, data,
+refresh, reload, and retry signals. The shared adapter retains those signals as
+one exhaustive `CatchAsyncPhase`; the renderer then selects exactly one visible
+branch. Retrying without credible data selects loading, terminal failure
+selects error, and stale data remains available under an explicit error policy.
+`CatchAsyncState` itself stays provider-free.
 
 Host presentation code must not branch directly on `isLoading`, `hasError`,
 `hasValue`, `asData`, or `valueOrNull` from a watched `AsyncValue`. The
@@ -3501,8 +3506,9 @@ Host presentation code must not branch directly on `isLoading`, `hasError`,
 edge throughout `lib/hosts/presentation/`. Convert the snapshot once, then let
 a feature-owned display state decide whether the result is a full-screen load,
 empty success, missing resource, primary failure, or optional enrichment. This
-keeps Riverpod refresh semantics out of widgets and prevents a refresh-time
-error from being mislabeled as loading or successful absence.
+keeps Riverpod transition semantics out of feature widgets and prevents a
+previous error from flashing during a retry or a refresh-time error from being
+mislabeled as successful absence.
 
 This is a narrow state-boundary exhibit. The first full route/controller
 migration still needs its own reference exhibit before a broad rollout.

@@ -257,6 +257,52 @@ void _registerCatchPrimitivesSearchMenuTests() {
     expect(find.text('Loading custom state'), findsOneWidget);
   });
 
+  testWidgets(
+    'CatchAsyncValueView never replays a previous error while retrying',
+    (tester) async {
+      final failure = StateError('previous failure');
+      // Riverpod exposes combined retry states to consumers but keeps this
+      // constructor helper package-internal.
+      // ignore: invalid_use_of_internal_member
+      final retrying = const AsyncLoading<int>().copyWithPrevious(
+        AsyncError<int>(failure, StackTrace.empty),
+      );
+
+      await tester.pumpWidget(
+        _wrap(
+          CatchAsyncValueView<int>(
+            value: retrying,
+            initialLoadTimeout: null,
+            builder: (context, value) => Text('Customer count: $value'),
+            loadingBuilder: (context) => const Text('Loading customers'),
+            errorBuilder: (context, error, stackTrace) =>
+                Text('Customers unavailable: $error'),
+          ),
+        ),
+      );
+
+      expect(find.text('Loading customers'), findsOneWidget);
+      expect(find.textContaining('Customers unavailable'), findsNothing);
+
+      await tester.pumpWidget(
+        _wrap(
+          CatchAsyncValueView<int>(
+            value: const AsyncData<int>(2),
+            initialLoadTimeout: null,
+            builder: (context, value) => Text('Customer count: $value'),
+            loadingBuilder: (context) => const Text('Loading customers'),
+            errorBuilder: (context, error, stackTrace) =>
+                Text('Customers unavailable: $error'),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Customer count: 2'), findsOneWidget);
+      expect(find.textContaining('Customers unavailable'), findsNothing);
+    },
+  );
+
   testWidgets('CatchAsyncValueView replaces an expired skeleton with retry', (
     tester,
   ) async {
