@@ -20591,11 +20591,76 @@ abstract class AppLocalizations {
   /// **'Host confirmed'**
   String get eventSuccessRoomMapConfirmed;
 
-  /// People count for a map unit.
+  /// Compact confirmed placement legend.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 person} other{{count} people}}'**
-  String eventSuccessRoomMapPeopleCount({required int count});
+  /// **'Confirmed'**
+  String get eventSuccessRoomMapConfirmedShort;
+
+  /// Open capacity-position legend.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get eventSuccessRoomMapOpen;
+
+  /// Unavailable destination legend.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get eventSuccessRoomMapUnavailable;
+
+  /// Placement requiring Host attention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get eventSuccessRoomMapNeedsAttention;
+
+  /// Available unit semantics status.
+  ///
+  /// In en, this message translates to:
+  /// **'Available destination'**
+  String get eventSuccessRoomMapAvailable;
+
+  /// Selected unit semantics status.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected destination'**
+  String get eventSuccessRoomMapSelectedDestination;
+
+  /// Accessible room-unit occupancy and destination state.
+  ///
+  /// In en, this message translates to:
+  /// **'{unitLabel}, {occupied} of {capacity} occupied, {status}'**
+  String eventSuccessRoomMapUnitSemantics({
+    required String unitLabel,
+    required int occupied,
+    required int capacity,
+    required String status,
+  });
+
+  /// Attendee has no current room unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Not placed'**
+  String get eventSuccessRoomMapNotPlaced;
+
+  /// Selected attendee current room unit.
+  ///
+  /// In en, this message translates to:
+  /// **'At {unitLabel}'**
+  String eventSuccessRoomMapCurrentPosition({required String unitLabel});
+
+  /// Compact disabled move action before destination selection.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose destination'**
+  String get eventSuccessRoomMapChooseDestinationShort;
+
+  /// Confirms moving the selected attendee to a room unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to {unitLabel}'**
+  String eventSuccessRoomMapMoveToUnit({required String unitLabel});
 
   /// Tap placement instruction.
   ///
@@ -20603,17 +20668,17 @@ abstract class AppLocalizations {
   /// **'Select an attendee, then choose a destination.'**
   String get eventSuccessRoomMapSelectAttendee;
 
-  /// Temporary spatial constraint scope.
+  /// Compact temporary placement scope.
   ///
   /// In en, this message translates to:
-  /// **'This round only'**
-  String get eventSuccessRoomMapScopeThisRound;
+  /// **'This round'**
+  String get eventSuccessRoomMapScopeThisRoundShort;
 
-  /// Durable spatial constraint scope.
+  /// Compact durable placement scope.
   ///
   /// In en, this message translates to:
-  /// **'Pinned until released'**
-  String get eventSuccessRoomMapScopePinned;
+  /// **'Pinned'**
+  String get eventSuccessRoomMapScopePinnedShort;
 
   /// Invalid destination capacity reason.
   ///
@@ -24604,6 +24669,189 @@ abstract class AppLocalizations {
   /// **'Practice mode · No real guests, messages, payments, matches, or event records are changed'**
   String get hostEventRehearsalPracticeBanner;
 
+  /// Canonical Host Manage route subtitle while rehearsing.
+  ///
+  /// In en, this message translates to:
+  /// **'Host · Manage'**
+  String get hostEventRehearsalManageSubtitle;
+
+  /// Persistent rehearsal mode badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearsal'**
+  String get hostEventRehearsalBadge;
+
+  /// Rehearsal data identity shown beside the mode badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Synthetic guests'**
+  String get hostEventRehearsalSyntheticGuests;
+
+  /// Synthetic guest subtitle in the canonical Host runtime.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice guest'**
+  String get hostEventRehearsalPracticeGuest;
+
+  /// Synthetic late-arrival subtitle in the canonical Host runtime.
+  ///
+  /// In en, this message translates to:
+  /// **'Late arrival · Practice guest'**
+  String get hostEventRehearsalLatePracticeGuest;
+
+  /// Compact virtual-clock control in the rehearsal band.
+  ///
+  /// In en, this message translates to:
+  /// **'Virtual {time}'**
+  String hostEventRehearsalClockPill({required String time});
+
+  /// Opens advanced rehearsal controls without replacing the real runtime.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice tools'**
+  String get hostEventRehearsalPracticeTools;
+
+  /// Explains the advanced rehearsal tool sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Control synthetic guests, the companion phone, faults, time, and deterministic replays.'**
+  String get hostEventRehearsalPracticeToolsBody;
+
+  /// Explains virtual run controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Change only the simulated clock and rehearsal lifecycle.'**
+  String get hostEventRehearsalRunSheetBody;
+
+  /// Coach task progress in the rehearsal dock.
+  ///
+  /// In en, this message translates to:
+  /// **'Task {current} of {total}'**
+  String hostEventRehearsalCoachProgress({
+    required int current,
+    required int total,
+  });
+
+  /// Explains why the current practice task matters.
+  ///
+  /// In en, this message translates to:
+  /// **'Why?'**
+  String get hostEventRehearsalCoachWhy;
+
+  /// Collapses the rehearsal Coach without completing the task.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get hostEventRehearsalCoachGotIt;
+
+  /// Collapsed rehearsal Coach message.
+  ///
+  /// In en, this message translates to:
+  /// **'Coach is ready when you need the next practice task.'**
+  String get hostEventRehearsalCoachCollapsed;
+
+  /// Expands the rehearsal Coach.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Coach'**
+  String get hostEventRehearsalCoachShow;
+
+  /// Coach task for a synthetic late arrival.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve {name}\'\'s late arrival'**
+  String hostEventRehearsalCoachResolveLate({required String name});
+
+  /// Coach task for placing a synthetic guest in the live room map.
+  ///
+  /// In en, this message translates to:
+  /// **'Place {name} in the current round'**
+  String hostEventRehearsalCoachPlaceGuest({required String name});
+
+  /// Explains that the rehearsal placement task uses the canonical live Room control.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the same Room control you will use on event day.'**
+  String get hostEventRehearsalCoachPlaceGuestBody;
+
+  /// Coach task for a synthetic help request.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve {name}\'\'s help request'**
+  String hostEventRehearsalCoachResolveHelp({required String name});
+
+  /// Reinforces that Coach points to production runtime controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the same control you will use on event day.'**
+  String get hostEventRehearsalCoachSameControl;
+
+  /// Coach task before a rehearsal begins.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the virtual event'**
+  String get hostEventRehearsalCoachStart;
+
+  /// Guidance for beginning a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the virtual clock to start, then operate the real Host runtime.'**
+  String get hostEventRehearsalCoachStartBody;
+
+  /// Coach task for a paused rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume the virtual event'**
+  String get hostEventRehearsalCoachResume;
+
+  /// Default Coach task during a running rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Run the current Host step'**
+  String get hostEventRehearsalCoachAdvance;
+
+  /// Coach task after a rehearsal completes.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your rehearsal'**
+  String get hostEventRehearsalCoachComplete;
+
+  /// Coach guidance after rehearsal completion.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Practice tools to replay, fork, or export the deterministic run.'**
+  String get hostEventRehearsalCoachCompleteBody;
+
+  /// Title for the rehearsal Coach explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Why this task?'**
+  String get hostEventRehearsalCoachWhyTitle;
+
+  /// Explains Coach truth and completion semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'The Coach highlights a real Host control, but synthetic state proves the outcome. Dismissing guidance never completes a task.'**
+  String get hostEventRehearsalCoachWhyBody;
+
+  /// Confirms leaving an active rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave rehearsal?'**
+  String get hostEventRehearsalLeaveTitle;
+
+  /// Explains rehearsal persistence when leaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Your practice session stays available until it expires.'**
+  String get hostEventRehearsalLeaveBody;
+
+  /// Leaves an active rehearsal after confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave rehearsal'**
+  String get hostEventRehearsalLeaveAction;
+
   /// Rehearsal creation guidance.
   ///
   /// In en, this message translates to:
@@ -25776,6 +26024,147 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a thread to keep the conversation beside your inbox.'**
   String get hostInboxSelectConversationBody;
+
+  /// Room setup loading-state title.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading room layouts'**
+  String get eventSuccessRoomSetupLoadingTitle;
+
+  /// Room setup loading-state body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your reusable layouts will appear here.'**
+  String get eventSuccessRoomSetupLoadingBody;
+
+  /// Current live moment workspace label.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get eventSuccessLiveWorkspaceNow;
+
+  /// Guest drawer action in the live workspace picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests'**
+  String get eventSuccessLiveWorkspaceGuests;
+
+  /// Room map workspace label.
+  ///
+  /// In en, this message translates to:
+  /// **'Room'**
+  String get eventSuccessLiveWorkspaceRoom;
+
+  /// Room layout resource name used in retry copy.
+  ///
+  /// In en, this message translates to:
+  /// **'room layout'**
+  String get eventSuccessHostResourceRoomLayout;
+
+  /// Whole-group room workspace title.
+  ///
+  /// In en, this message translates to:
+  /// **'One shared room'**
+  String get eventSuccessRoomWorkspaceWholeGroupTitle;
+
+  /// Whole-group room workspace explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'This format runs as one group, so it does not need assigned tables or zones.'**
+  String get eventSuccessRoomWorkspaceWholeGroupBody;
+
+  /// Missing room layout runtime title.
+  ///
+  /// In en, this message translates to:
+  /// **'Room layout not configured'**
+  String get eventSuccessRoomWorkspaceUnconfiguredTitle;
+
+  /// Missing room layout runtime guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose or create a room layout in Preparation before the event starts. Live controls remain available in Now.'**
+  String get eventSuccessRoomWorkspaceUnconfiguredBody;
+
+  /// Room map loading title.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening the room map'**
+  String get eventSuccessRoomWorkspaceLoadingTitle;
+
+  /// Room map loading body.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading placements and room geometry.'**
+  String get eventSuccessRoomWorkspaceLoadingBody;
+
+  /// Empty room placement title.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for placements'**
+  String get eventSuccessRoomWorkspaceWaitingTitle;
+
+  /// Empty room placement guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved room is ready. Placements appear here after the event guide generates groups or rotations.'**
+  String get eventSuccessRoomWorkspaceWaitingBody;
+
+  /// Configured room unit and seat summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{units} · {seats} seats'**
+  String eventSuccessRoomWorkspaceCapacitySummary({
+    required String units,
+    required int seats,
+  });
+
+  /// Round or rectangular table count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 table} other{{count} tables}}'**
+  String eventSuccessRoomWorkspaceTableCount({required int count});
+
+  /// Row layout unit count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 row} other{{count} rows}}'**
+  String eventSuccessRoomWorkspaceRowCount({required int count});
+
+  /// Court layout unit count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 court} other{{count} courts}}'**
+  String eventSuccessRoomWorkspaceCourtCount({required int count});
+
+  /// Zone layout unit count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 zone} other{{count} zones}}'**
+  String eventSuccessRoomWorkspaceZoneCount({required int count});
+
+  /// Mixed room-layout unit count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 area} other{{count} areas}}'**
+  String eventSuccessRoomWorkspaceAreaCount({required int count});
+
+  /// Placed attendee count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Placed'**
+  String get eventSuccessRoomWorkspacePlaced;
+
+  /// Unconfirmed placement count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Unconfirmed'**
+  String get eventSuccessRoomWorkspaceUnconfirmed;
+
+  /// Room placement attention count label.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get eventSuccessRoomWorkspaceNeedsAttention;
 }
 
 class _AppLocalizationsDelegate

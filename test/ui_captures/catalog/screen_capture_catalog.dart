@@ -75,11 +75,15 @@ import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.d
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks/modules.dart';
@@ -6603,6 +6607,148 @@ final _hostLiveReferencePlan =
       status: EventSuccessPlanStatus.live,
       frozenAt: _captureNow,
     );
+final _hostLiveRoomReferenceEvent = _hostLiveReferenceEvent.copyWith(
+  eventFormat: EventFormatSnapshot.custom(
+    label: 'Singles table mixer',
+    interactionModel: EventInteractionModel.pairedRotations,
+  ),
+);
+final _hostLiveRoomReferenceLayout = EventSuccessLayout(
+  layoutId: 'host-live-room-six-rounds',
+  label: 'Six round tables',
+  units: [
+    for (var index = 0; index < 6; index += 1)
+      EventSuccessLayoutUnit(
+        id: 'round-${index + 1}',
+        label: 'Table ${index + 1}',
+        shape: EventSuccessLayoutShape.round,
+        capacity: 4,
+        gridX: index % 2,
+        gridY: index ~/ 2,
+        order: index + 1,
+      ),
+  ],
+);
+final _hostLiveRoomReferencePlan =
+    EventSuccessPlan.defaultForEvent(
+      _hostLiveRoomReferenceEvent,
+      now: _captureNow,
+    ).copyWith(
+      activeStepIndex: 1,
+      status: EventSuccessPlanStatus.live,
+      frozenAt: _captureNow,
+      layoutId: _hostLiveRoomReferenceLayout.layoutId,
+    );
+const _hostLiveRoomAssignmentUnitIds = <String>[
+  'round-1',
+  'round-1',
+  'round-1',
+  'round-1',
+  'round-2',
+  'round-2',
+  'round-2',
+  'round-2',
+  'round-3',
+  'round-3',
+  'round-3',
+  'round-3',
+  'round-4',
+  'round-4',
+  'round-4',
+  'round-5',
+  'round-5',
+  'round-5',
+  'round-6',
+  'round-6',
+];
+const _hostLiveRoomUnconfirmedIndexes = <int>{0, 8, 15};
+final _hostLiveRoomAssignments = <EventSuccessAssignment>[
+  for (final indexed in _hostLiveReferenceProfiles.take(20).indexed)
+    EventSuccessAssignment(
+      id: '${_hostLiveRoomReferenceEvent.id}_micro_pods_${indexed.$2.uid}',
+      eventId: _hostLiveRoomReferenceEvent.id,
+      clubId: _hostLiveRoomReferenceEvent.clubId,
+      uid: indexed.$2.uid,
+      moduleId: EventSuccessModuleCatalog.microPods.id,
+      label:
+          'Table ${(_hostLiveRoomAssignmentUnitIds[indexed.$1].split('-').last)}',
+      displayTitle: indexed.$2.name,
+      displaySubtitle: indexed.$1 == 0 ? 'Late arrival' : null,
+      peerUids: indexed.$1 == 0
+          ? const []
+          : [
+              _hostLiveReferenceProfiles[indexed.$1 == 19 ? 1 : indexed.$1 + 1]
+                  .uid,
+            ],
+      unitKind: 'pods',
+      unitIndex: indexed.$1,
+      unitLabel:
+          'Table ${_hostLiveRoomAssignmentUnitIds[indexed.$1].split('-').last}',
+      layoutUnitId: _hostLiveRoomAssignmentUnitIds[indexed.$1],
+      confirmedLayoutUnitId:
+          _hostLiveRoomUnconfirmedIndexes.contains(indexed.$1)
+          ? null
+          : _hostLiveRoomAssignmentUnitIds[indexed.$1],
+      source: 'capture_room_runtime_v1',
+      createdAt: _hostLiveRoomReferenceEvent.startTime,
+      updatedAt: _hostLiveRoomReferenceEvent.startTime,
+    ),
+];
+final _hostLiveRoomRoster = EventParticipationRoster(
+  bookedIds: [for (final profile in _hostLiveReferenceProfiles) profile.uid],
+  checkedInIds: [
+    for (final profile in _hostLiveReferenceProfiles.take(20)) profile.uid,
+  ],
+  waitlistedIds: const [],
+  checkedInAtByUid: {
+    for (final profile in _hostLiveReferenceProfiles.take(20))
+      profile.uid: _hostLiveRoomReferenceEvent.startTime,
+  },
+);
+final _hostLiveRoomFixtureActions = EventSuccessHostFixtureActions(
+  initialSpatialSelectionUid: _hostLiveReferenceProfiles.first.uid,
+  onPreviewSpatial: (_) async => const [
+    EventSuccessSpatialDestination(
+      unitId: 'round-1',
+      valid: false,
+      reason: EventSuccessSpatialDestinationReason.declaredConstraint,
+      recommendedScope: null,
+    ),
+    EventSuccessSpatialDestination(
+      unitId: 'round-2',
+      valid: false,
+      reason: EventSuccessSpatialDestinationReason.capacity,
+      recommendedScope: null,
+    ),
+    EventSuccessSpatialDestination(
+      unitId: 'round-3',
+      valid: false,
+      reason: EventSuccessSpatialDestinationReason.capacity,
+      recommendedScope: null,
+    ),
+    EventSuccessSpatialDestination(
+      unitId: 'round-4',
+      valid: true,
+      reason: null,
+      recommendedScope: EventSuccessSpatialScope.thisRound,
+    ),
+    EventSuccessSpatialDestination(
+      unitId: 'round-5',
+      valid: true,
+      reason: null,
+      recommendedScope: EventSuccessSpatialScope.pinned,
+    ),
+    EventSuccessSpatialDestination(
+      unitId: 'round-6',
+      valid: true,
+      reason: null,
+      recommendedScope: EventSuccessSpatialScope.thisRound,
+    ),
+  ],
+  onReassignSpatial: (_, _, _) async {},
+  onConfirmSpatial: (_) async {},
+  onReleaseSpatial: (_) async {},
+);
 final _hostLiveWindowPlan =
     EventSuccessPlan.defaultForEvent(
       _hostLiveWindowEvent,
@@ -8165,6 +8311,115 @@ class _LaunchAccessSubmitPendingCaptureState
 
   @override
   Widget build(BuildContext context) => widget.child;
+}
+
+EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
+  const names = <String>[
+    'Jordan Ellis',
+    'Sofia Martinez',
+    'Ethan Brooks',
+    'Aisha Williams',
+    'Daniel Kim',
+    'Priya Nair',
+    'Noah Wilson',
+    'Zara Khan',
+    'Lucas Chen',
+    'Emma Davis',
+    'Arjun Mehta',
+    'Olivia Moore',
+    'Liam Brown',
+    'Ananya Rao',
+    'Mateo Garcia',
+    'Isla Taylor',
+    'Kabir Singh',
+    'Ava Johnson',
+    'Leo Martin',
+    'Mia Thompson',
+    'Maya Shah',
+    'Aarav Patel',
+    'Nina Clark',
+    'Sam Rivera',
+  ];
+  final virtualNow = DateTime(2026, 8, 21, 19, 42);
+  return EventRehearsalBootstrap(
+    session: EventRehearsalSession(
+      id: 'capture-rehearsal',
+      organizerId: 'capture-club',
+      sourceEventId: 'capture-source-event',
+      scenario: EventRehearsalScenario.lateAndNoShow,
+      seed: 42,
+      actorCount: names.length,
+      actionCount: 3,
+      status: EventRehearsalStatus.running,
+      setup: const EventRehearsalSetup(
+        title: 'Sunday Morning Singles Mixer',
+        locationName: 'Courtyard Room',
+        durationMinutes: 120,
+        hostGoal: 'Learn the real Host runtime before event day',
+        attendeePrompt: 'Meet someone new at your table',
+        modules: [
+          EventRehearsalModule.arrival,
+          EventRehearsalModule.firstHello,
+          EventRehearsalModule.pods,
+          EventRehearsalModule.rotations,
+          EventRehearsalModule.conversationCues,
+          EventRehearsalModule.reveal,
+        ],
+      ),
+      setupRevision: 2,
+      runtimeRevision: 4,
+      activeStepIndex: 1,
+      virtualNow: virtualNow,
+      fault: EventRehearsalFault.none,
+      expiresAt: virtualNow.add(const Duration(hours: 20)),
+    ),
+    actors: [
+      for (final indexed in names.indexed)
+        EventRehearsalActor(
+          actorId: 'capture-actor-${indexed.$1 + 1}',
+          displayName: indexed.$2,
+          persona: indexed.$1 == 20 ? 'placementPractice' : 'socialRegular',
+          status: switch (indexed.$1) {
+            <= 20 => EventRehearsalActorStatus.present,
+            21 || 22 => EventRehearsalActorStatus.expected,
+            _ => EventRehearsalActorStatus.noShow,
+          },
+          guestMoment: EventRehearsalGuestMoment.assignment,
+          optedOut: false,
+          keepApartActorIds: const [],
+          helpRequested: false,
+          promptCompleted: indexed.$1 < 16,
+          layoutUnitId: switch (indexed.$1) {
+            12 => 'table-6',
+            15 => 'table-5',
+            19 => 'table-6',
+            20 => 'table-1',
+            < 23 => 'table-${(indexed.$1 ~/ 4) + 1}',
+            _ => null,
+          },
+          confirmedLayoutUnitId: indexed.$1 < 20
+              ? switch (indexed.$1) {
+                  12 => 'table-6',
+                  15 => 'table-5',
+                  19 => 'table-6',
+                  _ => 'table-${(indexed.$1 ~/ 4) + 1}',
+                }
+              : null,
+        ),
+    ],
+    actions: [
+      EventRehearsalActionRecord(
+        clientActionId: 'capture-action-1',
+        actorId: 'capture-actor-21',
+        kind: 'behavior',
+        name: 'placementAssigned',
+        runtimeRevision: 4,
+        virtualNow: virtualNow,
+      ),
+    ],
+    guestUrl: 'https://catchdates.com/rehearse/capture-companion',
+    canUseInternalFaults: true,
+  );
 }
 
 final screenCaptureCatalog = <ScreenCaptureEntry>[
@@ -11942,6 +12197,41 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'host_event_rehearsal_runtime_room',
+    routeIds: const <String>['hostEventRehearsalScreen'],
+    device: CaptureDevice.iphone17Pro,
+    disableAnimations: true,
+    providerOverrides: [
+      eventRehearsalProvider('capture-rehearsal').overrideWith(
+        (ref) => Stream.value(_eventRehearsalRuntimeCaptureBootstrap()),
+      ),
+    ],
+    builder: (context) => const HostEventRehearsalScreen(
+      clubId: 'capture-club',
+      sessionId: 'capture-rehearsal',
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_event_rehearsal_practice_tools',
+    routeIds: const <String>['hostEventRehearsalScreen'],
+    device: CaptureDevice.iphone17Pro,
+    disableAnimations: true,
+    includeOverlays: true,
+    providerOverrides: [
+      eventRehearsalProvider('capture-rehearsal').overrideWith(
+        (ref) => Stream.value(_eventRehearsalRuntimeCaptureBootstrap()),
+      ),
+    ],
+    builder: (context) => const HostEventRehearsalScreen(
+      clubId: 'capture-club',
+      sessionId: 'capture-rehearsal',
+    ),
+    drive: (tester) async {
+      await tester.tap(find.byIcon(CatchIcons.more));
+      await pumpFeatureUi(tester);
+    },
+  ),
+  ScreenCaptureEntry(
     id: 'host_manage_route_loading',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -12694,6 +12984,79 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         const Duration(minutes: 30),
       ),
     ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_live_room_workspace',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: [
+      uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => Stream.value(_captureViewer),
+      ),
+      watchEventProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveRoomReferenceEvent)),
+      eventParticipationRepositoryProvider.overrideWithValue(
+        _hostLiveReferenceParticipationRepository,
+      ),
+      watchEventAttendeesProvider(_hostLiveRoomReferenceEvent.id).overrideWith(
+        (ref) => Stream.value(_hostLiveReferenceOperationalAttendees),
+      ),
+      publicProfileRepositoryProvider.overrideWithValue(
+        _hostLiveReferencePublicProfileRepository,
+      ),
+      watchEventSuccessPlanProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveRoomReferencePlan)),
+      watchEventSuccessScorecardProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(null)),
+      eventSuccessSpatialLayoutProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) async => _hostLiveRoomReferenceLayout),
+      watchEventParticipationRosterProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveRoomRoster)),
+      watchEventSuccessAssignmentsProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveRoomAssignments)),
+      watchEventSuccessRotationAssignmentsProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(const <EventSuccessAssignment>[])),
+      watchEventSuccessPreferencesProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(const <EventSuccessPreference>[])),
+      watchEventSuccessWingmanRequestsProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWith(
+        (ref) => Stream.value(const <EventSuccessWingmanRequest>[]),
+      ),
+      attendanceSheetViewModelProvider(
+        _hostLiveRoomReferenceEvent.id,
+      ).overrideWithValue(AsyncData(_hostAttendanceViewModel)),
+      attendeeProfilesProvider(
+        _hostProfileIds,
+      ).overrideWith((ref) async => _hostProfileRows),
+    ],
+    builder: (context) => HostEventManageScreen(
+      club: _hostLiveReferenceClub,
+      event: _hostLiveRoomReferenceEvent,
+      onBackToSuccess: () {},
+      initialSection: HostEventManageSection.live,
+      eventSuccessFixtureActions: _hostLiveRoomFixtureActions,
+      referenceNow: _hostLiveRoomReferenceEvent.startTime.add(
+        const Duration(minutes: 55),
+      ),
+    ),
+    drive: (tester) async {
+      await tester.tap(find.text('Room'));
+      await pumpFeatureUi(tester);
+      await tester.tap(
+        find.byKey(const ValueKey<String>('event_success.room.unit.round-4')),
+      );
+      await pumpFeatureUi(tester);
+    },
   ),
   ScreenCaptureEntry(
     id: 'host_post_event_report',

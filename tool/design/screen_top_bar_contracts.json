@@ -111,11 +111,12 @@
     },
     {
       "path": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
-      "role": "compact",
+      "role": "workspace",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "back"
+      "leading": "back",
+      "reason": "The rehearsal runtime owns a responsive operational workspace header."
     },
     {
       "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
@@ -162,10 +163,11 @@
     },
     {
       "path": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "role": "compact",
+      "role": "workspace",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
-      "surface": "CatchRouteScaffold"
+      "surface": "CatchRouteScaffold",
+      "reason": "Host Event Manage spans responsive setup, live, and recap workspaces."
     },
     {
       "path": "lib/hosts/presentation/host_event_operator_screen.dart",

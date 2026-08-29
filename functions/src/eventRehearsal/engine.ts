@@ -4,6 +4,8 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 import {ControlEventRehearsalCallablePayload} from
   "../shared/generated/controlEventRehearsalCallablePayload";
+import {ControlEventRehearsalSpatialCallablePayload} from
+  "../shared/generated/controlEventRehearsalSpatialCallablePayload";
 import {InjectEventRehearsalBehaviorCallablePayload} from
   "../shared/generated/injectEventRehearsalBehaviorCallablePayload";
 import {SubmitEventRehearsalGuestActionCallablePayload} from
@@ -41,6 +43,7 @@ type Behavior = NonNullable<
   InjectEventRehearsalBehaviorCallablePayload["behavior"]
 >;
 type ControlAction = ControlEventRehearsalCallablePayload["action"];
+type SpatialAction = ControlEventRehearsalSpatialCallablePayload["action"];
 type GuestAction = SubmitEventRehearsalGuestActionCallablePayload["action"];
 
 export interface RehearsalControlResult {
@@ -140,6 +143,8 @@ export function buildRehearsalActors(
       keepApartActorIds: [],
       helpRequested: false,
       promptCompleted: false,
+      layoutUnitId: `table-${Math.floor(index / 4) + 1}`,
+      confirmedLayoutUnitId: null,
       lastActionAt: null,
       createdAt: now,
       updatedAt: now,
@@ -224,6 +229,7 @@ export function applyRehearsalBehavior(
   case "arrive":
     patch.status = "present";
     patch.guestMoment = "checkIn";
+    patch.confirmedLayoutUnitId = actor.layoutUnitId;
     break;
   case "arriveLate":
     patch.status = "late";
@@ -237,6 +243,7 @@ export function applyRehearsalBehavior(
     break;
   case "return":
     patch.status = "returned";
+    patch.confirmedLayoutUnitId = actor.layoutUnitId;
     break;
   case "walkIn":
     patch.status = "walkIn";
@@ -248,6 +255,7 @@ export function applyRehearsalBehavior(
     break;
   case "resolveClaim":
     patch.status = "present";
+    patch.confirmedLayoutUnitId = actor.layoutUnitId;
     break;
   case "optOut":
     patch.optedOut = true;
@@ -268,6 +276,43 @@ export function applyRehearsalBehavior(
     break;
   }
   return {...actor, ...patch, lastActionAt: now, updatedAt: now};
+}
+
+/** Applies a bounded Room move without escaping the synthetic actor domain. */
+export function applyRehearsalSpatialAction(
+  actor: EventRehearsalActorDocument,
+  action: SpatialAction,
+  destinationUnitId: string | null,
+  scope: ControlEventRehearsalSpatialCallablePayload["scope"],
+  tableCount: number,
+  now: FirebaseFirestore.Timestamp
+): EventRehearsalActorDocument {
+  const validUnitIds = new Set(
+    Array.from({length: tableCount}, (_, index) => `table-${index + 1}`)
+  );
+  if (action === "reassign") {
+    if (!destinationUnitId || !validUnitIds.has(destinationUnitId)) {
+      throw new Error("Choose a valid rehearsal table.");
+    }
+    if (!scope) throw new Error("Choose how long this placement should last.");
+    return {
+      ...actor,
+      layoutUnitId: destinationUnitId,
+      confirmedLayoutUnitId: scope === "pinned" ? destinationUnitId : null,
+      lastActionAt: now,
+      updatedAt: now,
+    };
+  }
+  if (!actor.layoutUnitId || !validUnitIds.has(actor.layoutUnitId)) {
+    throw new Error("Place this practice guest before changing confirmation.");
+  }
+  return {
+    ...actor,
+    confirmedLayoutUnitId: action === "confirmPosition" ?
+      actor.layoutUnitId : null,
+    lastActionAt: now,
+    updatedAt: now,
+  };
 }
 
 /** Advances guest presentation without overriding attendance exceptions. */

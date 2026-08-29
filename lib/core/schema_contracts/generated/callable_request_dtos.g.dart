@@ -59,6 +59,7 @@ export 'callables/complete_event_success_first_hello_mission_callable_request.g.
 export 'callables/complete_organizer_whatsapp_connection_callable_request.g.dart';
 export 'callables/connect_organizer_luma_provider_callable_request.g.dart';
 export 'callables/control_event_rehearsal_callable_request.g.dart';
+export 'callables/control_event_rehearsal_spatial_callable_request.g.dart';
 export 'callables/convert_organizer_form_response_callable_request.g.dart';
 export 'callables/create_club_callable_request.g.dart';
 export 'callables/create_club_post_callable_request.g.dart';

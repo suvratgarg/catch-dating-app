@@ -15,6 +15,9 @@ class LiveTab extends StatelessWidget {
     required this.plan,
     required this.planIsPersisted,
     required this.spatialLayout,
+    required this.spatialLayoutState,
+    required this.showRoomWorkspace,
+    this.initialSpatialSelectionUid,
     required this.roster,
     required this.assignments,
     required this.assignmentParticipantProfiles,
@@ -65,12 +68,16 @@ class LiveTab extends StatelessWidget {
     required this.exclusionAlertThreshold,
     this.exclusionReferenceNow,
     required this.embedded,
+    this.referenceNow,
   });
 
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
   final EventSuccessLayout? spatialLayout;
+  final EventSuccessSpatialLayoutState spatialLayoutState;
+  final bool showRoomWorkspace;
+  final String? initialSpatialSelectionUid;
   final EventParticipationRoster roster;
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> assignmentParticipantProfiles;
@@ -135,11 +142,14 @@ class LiveTab extends StatelessWidget {
   final Duration exclusionAlertThreshold;
   final DateTime? exclusionReferenceNow;
   final bool embedded;
+  final DateTime? referenceNow;
 
   @override
   Widget build(BuildContext context) {
     if (!planIsPersisted) {
-      final isPreEvent = event.startTime.isAfter(DateTime.now());
+      final isPreEvent = event.startTime.isAfter(
+        referenceNow ?? DateTime.now(),
+      );
       final body = EventSuccessHostTabBody(
         embedded: embedded,
         children: [
@@ -172,7 +182,7 @@ class LiveTab extends StatelessWidget {
     final runtime = EventSuccessRuntime(
       plan: plan,
       event: event,
-      now: DateTime.now(),
+      now: referenceNow ?? DateTime.now(),
     );
     final eventSuccessProfile = EventSuccessActivityProfile.forFormat(
       event.eventFormat,
@@ -384,7 +394,7 @@ class LiveTab extends StatelessWidget {
       trackingStartedAt: event.startTime,
       trackingStartedAtByUid: roster.checkedInAtByUid,
       trackingEndedAt: event.endTime,
-      now: exclusionReferenceNow ?? DateTime.now(),
+      now: exclusionReferenceNow ?? referenceNow ?? DateTime.now(),
       alertThreshold: exclusionAlertThreshold,
     );
     Widget? spatialMapCard() =>
@@ -394,6 +404,7 @@ class LiveTab extends StatelessWidget {
             layout: spatialLayout!,
             assignments: spatialAssignments,
             profiles: spatialProfiles,
+            activityKind: event.activityKind,
             exclusionAlertUids: exclusionSnapshot.alertEntries
                 .map((entry) => entry.uid)
                 .toSet(),
@@ -401,7 +412,92 @@ class LiveTab extends StatelessWidget {
             onReassign: onReassignSpatial,
             onConfirmPosition: onConfirmSpatial,
             onReleasePinned: onReleaseSpatial,
+            initialSelectedUid:
+                initialSpatialSelectionUid ??
+                fixtureActions?.initialSpatialSelectionUid,
           );
+
+    if (showRoomWorkspace) {
+      final effectiveSpatialLayoutState =
+          spatialLayoutState.status ==
+                  EventSuccessSpatialLayoutStatus.notApplicable &&
+              plan.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup
+          ? spatialLayout == null
+                ? const EventSuccessSpatialLayoutState.unconfigured()
+                : EventSuccessSpatialLayoutState.ready(spatialLayout!)
+          : spatialLayoutState;
+      final roomBody = switch (effectiveSpatialLayoutState.status) {
+        EventSuccessSpatialLayoutStatus.notApplicable => CatchSurface.message(
+          messageIcon: CatchIcons.gridViewRounded,
+          title: context.l10n.eventSuccessRoomWorkspaceWholeGroupTitle,
+          message: context.l10n.eventSuccessRoomWorkspaceWholeGroupBody,
+        ),
+        EventSuccessSpatialLayoutStatus.unconfigured => CatchSurface.message(
+          messageIcon: CatchIcons.gridViewRounded,
+          messageTone: CatchSurfaceMessageTone.warning,
+          title: context.l10n.eventSuccessRoomWorkspaceUnconfiguredTitle,
+          message: context.l10n.eventSuccessRoomWorkspaceUnconfiguredBody,
+        ),
+        EventSuccessSpatialLayoutStatus.loading => CatchSurface.message(
+          messageIcon: CatchIcons.syncRounded,
+          title: context.l10n.eventSuccessRoomWorkspaceLoadingTitle,
+          message: context.l10n.eventSuccessRoomWorkspaceLoadingBody,
+        ),
+        EventSuccessSpatialLayoutStatus.error => EventSuccessHostResourceError(
+          failure: EventSuccessHostResourceFailure(
+            retryIntent: EventSuccessHostRetryIntent.spatialLayout,
+            error: effectiveSpatialLayoutState.error!,
+          ),
+          onRetry: onRetryResource == null
+              ? null
+              : () =>
+                    onRetryResource!(EventSuccessHostRetryIntent.spatialLayout),
+        ),
+        EventSuccessSpatialLayoutStatus.ready => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _EventSuccessRoomWorkspaceSummary(
+              layout: effectiveSpatialLayoutState.layout!,
+              assignments: spatialAssignments,
+              attentionCount: exclusionSnapshot.alertEntries.length,
+            ),
+            gapH16,
+            EventSuccessRoomMap(
+              layout: effectiveSpatialLayoutState.layout!,
+              assignments: spatialAssignments,
+              profiles: spatialProfiles,
+              activityKind: event.activityKind,
+              exclusionAlertUids: exclusionSnapshot.alertEntries
+                  .map((entry) => entry.uid)
+                  .toSet(),
+              onPreview: onPreviewSpatial,
+              onReassign: onReassignSpatial,
+              onConfirmPosition: onConfirmSpatial,
+              onReleasePinned: onReleaseSpatial,
+              initialSelectedUid:
+                  initialSpatialSelectionUid ??
+                  fixtureActions?.initialSpatialSelectionUid,
+              showHeader: false,
+            ),
+            if (spatialAssignments.isEmpty) ...[
+              gapH16,
+              CatchSurface.message(
+                messageIcon: CatchIcons.groupsOutlined,
+                title: context.l10n.eventSuccessRoomWorkspaceWaitingTitle,
+                message: context.l10n.eventSuccessRoomWorkspaceWaitingBody,
+              ),
+            ],
+          ],
+        ),
+      };
+      return ColoredBox(
+        color: CatchTokens.of(context).bg,
+        child: SingleChildScrollView(
+          padding: CatchInsets.pageBody,
+          child: roomBody,
+        ),
+      );
+    }
 
     final outcomeUsesStandings =
         eventSuccessProfile.unitOutcome == EventSuccessUnitOutcome.score ||
@@ -580,6 +676,123 @@ class LiveTab extends StatelessWidget {
       ],
     );
   }
+}
+
+class _EventSuccessRoomWorkspaceSummary extends StatelessWidget {
+  const _EventSuccessRoomWorkspaceSummary({
+    required this.layout,
+    required this.assignments,
+    required this.attentionCount,
+  });
+
+  final EventSuccessLayout layout;
+  final List<EventSuccessAssignment> assignments;
+  final int attentionCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final placedCount = assignments
+        .where((assignment) => assignment.layoutUnitId != null)
+        .length;
+    final confirmedCount = assignments
+        .where((assignment) => assignment.confirmedLayoutUnitId != null)
+        .length;
+    final unconfirmedCount = math.max(0, placedCount - confirmedCount);
+    final seatCount = layout.units.fold<int>(
+      0,
+      (total, unit) => total + unit.capacity,
+    );
+    final t = CatchTokens.of(context);
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    final metrics = [
+      CatchStatColumn(
+        value: '$placedCount',
+        label: context.l10n.eventSuccessRoomWorkspacePlaced,
+        center: !largeText,
+      ),
+      CatchStatColumn(
+        value: '$unconfirmedCount',
+        label: context.l10n.eventSuccessRoomWorkspaceUnconfirmed,
+        center: !largeText,
+        highlight: unconfirmedCount > 0,
+      ),
+      CatchStatColumn(
+        value: '$attentionCount',
+        label: context.l10n.eventSuccessRoomWorkspaceNeedsAttention,
+        center: !largeText,
+        highlight: attentionCount > 0,
+      ),
+    ];
+    return CatchSurface(
+      padding: CatchInsets.content,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            context.l10n.eventSuccessRoomWorkspaceCapacitySummary(
+              units: _eventSuccessRoomUnitCountLabel(context, layout),
+              seats: seatCount,
+            ),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+          gapH16,
+          if (largeText)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final indexed in metrics.indexed) ...[
+                  indexed.$2,
+                  if (indexed.$1 != metrics.length - 1) ...[
+                    gapH8,
+                    Divider(color: t.line),
+                    gapH8,
+                  ],
+                ],
+              ],
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final indexed in metrics.indexed) ...[
+                  Expanded(child: indexed.$2),
+                  if (indexed.$1 != metrics.length - 1)
+                    VerticalDivider(color: t.line, width: CatchSpacing.s3),
+                ],
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+String _eventSuccessRoomUnitCountLabel(
+  BuildContext context,
+  EventSuccessLayout layout,
+) {
+  final count = layout.units.length;
+  final shapes = layout.units.map((unit) => unit.shape).toSet();
+  if (shapes.every(
+    (shape) =>
+        shape == EventSuccessLayoutShape.round ||
+        shape == EventSuccessLayoutShape.rect,
+  )) {
+    return context.l10n.eventSuccessRoomWorkspaceTableCount(count: count);
+  }
+  if (shapes.length == 1) {
+    return switch (shapes.single) {
+      EventSuccessLayoutShape.row =>
+        context.l10n.eventSuccessRoomWorkspaceRowCount(count: count),
+      EventSuccessLayoutShape.court =>
+        context.l10n.eventSuccessRoomWorkspaceCourtCount(count: count),
+      EventSuccessLayoutShape.zone =>
+        context.l10n.eventSuccessRoomWorkspaceZoneCount(count: count),
+      EventSuccessLayoutShape.round || EventSuccessLayoutShape.rect =>
+        context.l10n.eventSuccessRoomWorkspaceTableCount(count: count),
+    };
+  }
+  return context.l10n.eventSuccessRoomWorkspaceAreaCount(count: count);
 }
 
 enum _EventSuccessAccountabilitySelection { unresolved, returned, departed }
@@ -1041,6 +1254,32 @@ class LiveNowConsole extends StatelessWidget {
     );
 
     if (compactCopy) {
+      final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+      if (largeText) {
+        return ColoredBox(
+          color: t.surface,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                controlRoomBody(showVenue: true),
+                CatchBottomAction(
+                  label: primaryLabel,
+                  onPressed: primaryAction,
+                  isLoading: isPrimaryLoading,
+                  buttonAccentColor: accent,
+                  buttonKey: ValueKey(
+                    context
+                        .l10n
+                        .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
+                  ),
+                  leadingContent: previousAction,
+                ),
+              ],
+            ),
+          ),
+        );
+      }
       return ColoredBox(
         color: t.surface,
         child: Column(

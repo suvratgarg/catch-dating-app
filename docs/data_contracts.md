@@ -56,7 +56,7 @@ server-only collections:
 | Collection | Purpose | Limits and authority |
 |---|---|---|
 | `eventRehearsals/{sessionId}` | Frozen source snapshot, editable pre-start setup, scenario/seed, virtual clock, lifecycle and revisions | Organizer manager reads through Host callables only; 24-hour expiry; at most five active sessions per owner |
-| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, status, guest moment, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no UID, phone, email, booking, payment, match, chat, or production attendee id |
+| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, status, guest moment, Room placement/confirmation, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no UID, phone, email, booking, payment, match, chat, or production attendee id |
 | `eventRehearsalActions/{sessionId_actionKey}` | Idempotent Host/guest controls and deterministic replay history | At most 500 actions; a stable hash of session plus client action id deduplicates delivery |
 | `eventRehearsalGuestViews/{sessionId_slotId}` | One browser-instance-to-actor lease with hashed bearer token state | Created only by the public guest bootstrap callable; link rotation invalidates prior slots |
 
@@ -72,7 +72,9 @@ Host writes carry the expected setup or runtime revision. Mutating controls and
 guest actions carry a bounded client action id, exact replays return the same
 projection, and stale revisions fail closed. Setup freezes at start. Reset
 regenerates actors from the same seed and clears action count; fork creates a
-new session. The scheduled expiry handler deletes the bounded child set after
+new session. Room moves, confirmation, and pin release use the same revision
+and idempotency boundary and may target only deterministic tables owned by the
+rehearsal. The scheduled expiry handler deletes the bounded child set after
 24 hours. Advanced latency/failure/disconnect/stale/duplicate/legacy/reduced-
 motion/low-bandwidth faults require internal/admin authorization; behavioral
 scenarios remain available to an ordinary organizer manager.

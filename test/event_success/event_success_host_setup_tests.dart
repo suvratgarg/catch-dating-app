@@ -236,6 +236,7 @@ void _registerEventSuccessHostSetupTests() {
                                 .saveSetup(
                                   plan: request.plan,
                                   draft: request.draft,
+                                  layoutId: request.layoutId,
                                   attendeePrompt: request.attendeePrompt,
                                 ),
                           ),
@@ -277,6 +278,63 @@ void _registerEventSuccessHostSetupTests() {
     expect(saved.structureConfig.unitKind, EventSuccessUnitKind.pairs);
     expect(saved.structureConfig.unitSize, 2);
     expect(saved.structureConfig.rotationIntervalMinutes, 15);
+  });
+
+  testWidgets('post-creation setup persists the selected room layout', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 5000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final event = buildEvent(
+      eventFormat: EventFormatSnapshot.custom(
+        label: 'Table mixer',
+        interactionModel: EventInteractionModel.pairedRotations,
+      ),
+      bookedCount: 0,
+      checkedInCount: 0,
+      waitlistedCount: 0,
+    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+    final layout = EventSuccessLayout.parametric(
+      layoutId: 'room-a',
+      label: 'Room A',
+      shape: EventSuccessLayoutShape.round,
+      unitCount: 6,
+      unitCapacity: 4,
+      columnCount: 2,
+    );
+    EventSuccessSetupSaveRequest? captured;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostPanel(
+              event: event,
+              plan: plan,
+              planIsPersisted: true,
+              roster: EventParticipationRoster.empty(),
+              organizerLayoutsState: CatchAsyncState.data([layout]),
+              onSaveLayout: (draft) async => draft,
+              onSaveSetup: (request) async => captured = request,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('ROOM LAYOUT'), findsOneWidget);
+    await tester.tap(find.text('Room A'));
+    await tester.pump();
+    await tester.tap(find.text('Save changes'));
+    await tester.pump();
+
+    expect(captured, isNotNull);
+    expect(captured!.layoutId, 'room-a');
   });
 
   testWidgets('host live mode is unavailable until setup is saved', (

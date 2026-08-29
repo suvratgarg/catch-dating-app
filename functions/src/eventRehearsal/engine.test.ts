@@ -6,6 +6,7 @@ import {EventRehearsalDocument} from
 import {
   applyRehearsalBehavior,
   applyRehearsalGuestAction,
+  applyRehearsalSpatialAction,
   buildRehearsalActors,
   cuesBetween,
   eventRehearsalActionDocumentId,
@@ -155,4 +156,52 @@ test("duplicate client delivery resolves to one stable receipt", () => {
   assert.equal(first, retry);
   assert.notEqual(first, next);
   assert.notEqual(first, guest);
+});
+
+test("Room placement persists current-round and pinned semantics", () => {
+  const actor = buildRehearsalActors("session-1", 8, 7, now)[0];
+  assert.ok(actor);
+  assert.equal(actor.layoutUnitId, "table-1");
+  const currentRound = applyRehearsalSpatialAction(
+    actor,
+    "reassign",
+    "table-2",
+    "thisRound",
+    2,
+    now
+  );
+  assert.equal(currentRound.layoutUnitId, "table-2");
+  assert.equal(currentRound.confirmedLayoutUnitId, null);
+  const pinned = applyRehearsalSpatialAction(
+    currentRound,
+    "confirmPosition",
+    null,
+    null,
+    2,
+    now
+  );
+  assert.equal(pinned.confirmedLayoutUnitId, "table-2");
+  const released = applyRehearsalSpatialAction(
+    pinned,
+    "releasePinned",
+    null,
+    null,
+    2,
+    now
+  );
+  assert.equal(released.layoutUnitId, "table-2");
+  assert.equal(released.confirmedLayoutUnitId, null);
+});
+
+test("Room placement rejects destinations outside the rehearsal layout", () => {
+  const actor = buildRehearsalActors("session-1", 8, 7, now)[0];
+  assert.ok(actor);
+  assert.throws(() => applyRehearsalSpatialAction(
+    actor,
+    "reassign",
+    "table-3",
+    "pinned",
+    2,
+    now
+  ));
 });

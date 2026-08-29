@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-08-28",
+  "updated": "2026-08-29",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56",
+  "sourceDigest": "dda7fc08fe472731ab66065f3b95ae7a1a13f4bf8e5b9a9dbf468cd6136bb975",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56",
-    "contractDigest": "01f5e4d2b70b9d16bd6eec87e2f5d3c0ba1fac2c33b581319c83a89d609c0c56"
+    "digest": "dda7fc08fe472731ab66065f3b95ae7a1a13f4bf8e5b9a9dbf468cd6136bb975",
+    "contractDigest": "dda7fc08fe472731ab66065f3b95ae7a1a13f4bf8e5b9a9dbf468cd6136bb975"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "8f0cb9431a53a8b3e76f0d35f2ea886b357d5abf3258436d6d26e191f124284a",
+    "handoffRequestDigest": "f3c4b8ef0d63b321f2897db527175c1419810cc575d0f2e0fb5d09c261f43e1e",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1742,7 +1742,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 2,
-      "figmaExpectedPropertyDigest": "e3b78500ac13e7ffeb78a124523e7781014e95a3dff4d00da69995c03549d554",
+      "figmaExpectedPropertyDigest": "190d2e9f81559b5ab8de74557f721911b3627d71b299e500828c271e1d18469e",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1750,7 +1750,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "OptionGroup",
       "claudeAllowed": true,
-      "contractDigest": "c1e81a3d8893acb95a517aa8c490c05453f2dc7632b8a817f367b861855372be"
+      "contractDigest": "7a3bac2dd356c9beffe163d9bda205f88fd35fe67257a11419808d3e1cbd765a"
     },
     {
       "contractId": "catch.tab_rail",
@@ -1773,8 +1773,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 1,
-      "figmaExpectedPropertyDigest": "41eb632397050615c5ec194e438e45bb92021bf99f346a01cea0481cb8826b82",
+      "figmaExpectedPropertyCount": 2,
+      "figmaExpectedPropertyDigest": "4e332d501ffd80848bfb2c837f94c0bd83f5e539bbedcf83043d98529693b6a2",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1782,7 +1782,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TabRail",
       "claudeAllowed": true,
-      "contractDigest": "0984627f57e792a5cfdc3d69df5e3f4aaad4c5f276caf009141e15553a884f9f"
+      "contractDigest": "98343817d40c8df88904253751bf64eda1d5154d8df4844921b8c3cd281df24c"
     },
     {
       "contractId": "catch.search_field",

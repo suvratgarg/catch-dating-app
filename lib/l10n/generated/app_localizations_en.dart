@@ -13206,14 +13206,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventSuccessRoomMapConfirmed => 'Host confirmed';
 
   @override
-  String eventSuccessRoomMapPeopleCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count people',
-      one: '1 person',
-    );
-    return '$_temp0';
+  String get eventSuccessRoomMapConfirmedShort => 'Confirmed';
+
+  @override
+  String get eventSuccessRoomMapOpen => 'Open';
+
+  @override
+  String get eventSuccessRoomMapUnavailable => 'Unavailable';
+
+  @override
+  String get eventSuccessRoomMapNeedsAttention => 'Needs attention';
+
+  @override
+  String get eventSuccessRoomMapAvailable => 'Available destination';
+
+  @override
+  String get eventSuccessRoomMapSelectedDestination => 'Selected destination';
+
+  @override
+  String eventSuccessRoomMapUnitSemantics({
+    required String unitLabel,
+    required int occupied,
+    required int capacity,
+    required String status,
+  }) {
+    return '$unitLabel, $occupied of $capacity occupied, $status';
+  }
+
+  @override
+  String get eventSuccessRoomMapNotPlaced => 'Not placed';
+
+  @override
+  String eventSuccessRoomMapCurrentPosition({required String unitLabel}) {
+    return 'At $unitLabel';
+  }
+
+  @override
+  String get eventSuccessRoomMapChooseDestinationShort => 'Choose destination';
+
+  @override
+  String eventSuccessRoomMapMoveToUnit({required String unitLabel}) {
+    return 'Move to $unitLabel';
   }
 
   @override
@@ -13221,10 +13254,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select an attendee, then choose a destination.';
 
   @override
-  String get eventSuccessRoomMapScopeThisRound => 'This round only';
+  String get eventSuccessRoomMapScopeThisRoundShort => 'This round';
 
   @override
-  String get eventSuccessRoomMapScopePinned => 'Pinned until released';
+  String get eventSuccessRoomMapScopePinnedShort => 'Pinned';
 
   @override
   String get eventSuccessRoomMapReasonCapacity => 'This unit is at capacity.';
@@ -15619,6 +15652,119 @@ class AppLocalizationsEn extends AppLocalizations {
       'Practice mode · No real guests, messages, payments, matches, or event records are changed';
 
   @override
+  String get hostEventRehearsalManageSubtitle => 'Host · Manage';
+
+  @override
+  String get hostEventRehearsalBadge => 'Rehearsal';
+
+  @override
+  String get hostEventRehearsalSyntheticGuests => 'Synthetic guests';
+
+  @override
+  String get hostEventRehearsalPracticeGuest => 'Practice guest';
+
+  @override
+  String get hostEventRehearsalLatePracticeGuest =>
+      'Late arrival · Practice guest';
+
+  @override
+  String hostEventRehearsalClockPill({required String time}) {
+    return 'Virtual $time';
+  }
+
+  @override
+  String get hostEventRehearsalPracticeTools => 'Practice tools';
+
+  @override
+  String get hostEventRehearsalPracticeToolsBody =>
+      'Control synthetic guests, the companion phone, faults, time, and deterministic replays.';
+
+  @override
+  String get hostEventRehearsalRunSheetBody =>
+      'Change only the simulated clock and rehearsal lifecycle.';
+
+  @override
+  String hostEventRehearsalCoachProgress({
+    required int current,
+    required int total,
+  }) {
+    return 'Task $current of $total';
+  }
+
+  @override
+  String get hostEventRehearsalCoachWhy => 'Why?';
+
+  @override
+  String get hostEventRehearsalCoachGotIt => 'Got it';
+
+  @override
+  String get hostEventRehearsalCoachCollapsed =>
+      'Coach is ready when you need the next practice task.';
+
+  @override
+  String get hostEventRehearsalCoachShow => 'Show Coach';
+
+  @override
+  String hostEventRehearsalCoachResolveLate({required String name}) {
+    return 'Resolve $name\'s late arrival';
+  }
+
+  @override
+  String hostEventRehearsalCoachPlaceGuest({required String name}) {
+    return 'Place $name in the current round';
+  }
+
+  @override
+  String get hostEventRehearsalCoachPlaceGuestBody =>
+      'Use the same Room control you will use on event day.';
+
+  @override
+  String hostEventRehearsalCoachResolveHelp({required String name}) {
+    return 'Resolve $name\'s help request';
+  }
+
+  @override
+  String get hostEventRehearsalCoachSameControl =>
+      'Use the same control you will use on event day.';
+
+  @override
+  String get hostEventRehearsalCoachStart => 'Start the virtual event';
+
+  @override
+  String get hostEventRehearsalCoachStartBody =>
+      'Open the virtual clock to start, then operate the real Host runtime.';
+
+  @override
+  String get hostEventRehearsalCoachResume => 'Resume the virtual event';
+
+  @override
+  String get hostEventRehearsalCoachAdvance => 'Run the current Host step';
+
+  @override
+  String get hostEventRehearsalCoachComplete => 'Review your rehearsal';
+
+  @override
+  String get hostEventRehearsalCoachCompleteBody =>
+      'Open Practice tools to replay, fork, or export the deterministic run.';
+
+  @override
+  String get hostEventRehearsalCoachWhyTitle => 'Why this task?';
+
+  @override
+  String get hostEventRehearsalCoachWhyBody =>
+      'The Coach highlights a real Host control, but synthetic state proves the outcome. Dismissing guidance never completes a task.';
+
+  @override
+  String get hostEventRehearsalLeaveTitle => 'Leave rehearsal?';
+
+  @override
+  String get hostEventRehearsalLeaveBody =>
+      'Your practice session stays available until it expires.';
+
+  @override
+  String get hostEventRehearsalLeaveAction => 'Leave rehearsal';
+
+  @override
   String get hostEventRehearsalStartSubtitle =>
       'Choose a room to practice. You can change the rehearsal copy and playbook before starting.';
 
@@ -16286,4 +16432,124 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostInboxSelectConversationBody =>
       'Choose a thread to keep the conversation beside your inbox.';
+
+  @override
+  String get eventSuccessRoomSetupLoadingTitle => 'Loading room layouts';
+
+  @override
+  String get eventSuccessRoomSetupLoadingBody =>
+      'Your reusable layouts will appear here.';
+
+  @override
+  String get eventSuccessLiveWorkspaceNow => 'Now';
+
+  @override
+  String get eventSuccessLiveWorkspaceGuests => 'Guests';
+
+  @override
+  String get eventSuccessLiveWorkspaceRoom => 'Room';
+
+  @override
+  String get eventSuccessHostResourceRoomLayout => 'room layout';
+
+  @override
+  String get eventSuccessRoomWorkspaceWholeGroupTitle => 'One shared room';
+
+  @override
+  String get eventSuccessRoomWorkspaceWholeGroupBody =>
+      'This format runs as one group, so it does not need assigned tables or zones.';
+
+  @override
+  String get eventSuccessRoomWorkspaceUnconfiguredTitle =>
+      'Room layout not configured';
+
+  @override
+  String get eventSuccessRoomWorkspaceUnconfiguredBody =>
+      'Choose or create a room layout in Preparation before the event starts. Live controls remain available in Now.';
+
+  @override
+  String get eventSuccessRoomWorkspaceLoadingTitle => 'Opening the room map';
+
+  @override
+  String get eventSuccessRoomWorkspaceLoadingBody =>
+      'Loading placements and room geometry.';
+
+  @override
+  String get eventSuccessRoomWorkspaceWaitingTitle => 'Waiting for placements';
+
+  @override
+  String get eventSuccessRoomWorkspaceWaitingBody =>
+      'The saved room is ready. Placements appear here after the event guide generates groups or rotations.';
+
+  @override
+  String eventSuccessRoomWorkspaceCapacitySummary({
+    required String units,
+    required int seats,
+  }) {
+    return '$units · $seats seats';
+  }
+
+  @override
+  String eventSuccessRoomWorkspaceTableCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tables',
+      one: '1 table',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventSuccessRoomWorkspaceRowCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rows',
+      one: '1 row',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventSuccessRoomWorkspaceCourtCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count courts',
+      one: '1 court',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventSuccessRoomWorkspaceZoneCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count zones',
+      one: '1 zone',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventSuccessRoomWorkspaceAreaCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count areas',
+      one: '1 area',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventSuccessRoomWorkspacePlaced => 'Placed';
+
+  @override
+  String get eventSuccessRoomWorkspaceUnconfirmed => 'Unconfirmed';
+
+  @override
+  String get eventSuccessRoomWorkspaceNeedsAttention => 'Needs attention';
 }

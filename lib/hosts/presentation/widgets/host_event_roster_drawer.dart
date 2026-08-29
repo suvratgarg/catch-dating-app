@@ -9,11 +9,12 @@ import 'package:catch_dating_app/core/widgets/catch_scene_viewport.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
-/// A persistent edge affordance for the event roster.
+/// An overlay drawer for the event roster, with an optional edge affordance.
 ///
 /// The roster remains reachable without competing with the event's
 /// lifecycle-owned primary workspace. Its panel overlays rather than rebuilds
-/// the runtime, so opening it cannot reset live controls.
+/// the runtime, so opening it cannot reset live controls. A caller that owns a
+/// more contextual roster entry point can hide the edge handle.
 class HostEventRosterDrawer extends StatefulWidget {
   const HostEventRosterDrawer({
     super.key,
@@ -22,6 +23,7 @@ class HostEventRosterDrawer extends StatefulWidget {
     required this.onOpenChanged,
     required this.body,
     required this.roster,
+    this.showHandle = true,
   });
 
   final bool open;
@@ -29,6 +31,7 @@ class HostEventRosterDrawer extends StatefulWidget {
   final ValueChanged<bool> onOpenChanged;
   final Widget body;
   final Widget roster;
+  final bool showHandle;
 
   @override
   State<HostEventRosterDrawer> createState() => _HostEventRosterDrawerState();
@@ -100,27 +103,29 @@ class _HostEventRosterDrawerState extends State<HostEventRosterDrawer> {
                 ),
               ),
             ),
-            AnimatedPositionedDirectional(
-              key: const ValueKey<String>('host_event_roster_drawer.handle'),
-              duration: duration,
-              curve: CatchMotion.standardCurve,
-              top: handleTop,
-              end: widget.open ? drawerWidth : 0,
-              width: handleWidth,
-              height: CatchLayout.hostRosterDrawerHandleHeight,
-              child: HostEventRosterHandle(
-                open: widget.open,
-                bookedCount: widget.bookedCount,
-                onTap: () => widget.onOpenChanged(!widget.open),
-                onHorizontalDragEnd: (details) {
-                  final velocity = details.primaryVelocity ?? 0;
-                  if (velocity.abs() < 200) return;
-                  final isRtl = Directionality.of(context) == TextDirection.rtl;
-                  final openingSwipe = isRtl ? velocity > 0 : velocity < 0;
-                  widget.onOpenChanged(openingSwipe);
-                },
+            if (widget.showHandle)
+              AnimatedPositionedDirectional(
+                key: const ValueKey<String>('host_event_roster_drawer.handle'),
+                duration: duration,
+                curve: CatchMotion.standardCurve,
+                top: handleTop,
+                end: widget.open ? drawerWidth : 0,
+                width: handleWidth,
+                height: CatchLayout.hostRosterDrawerHandleHeight,
+                child: HostEventRosterHandle(
+                  open: widget.open,
+                  bookedCount: widget.bookedCount,
+                  onTap: () => widget.onOpenChanged(!widget.open),
+                  onHorizontalDragEnd: (details) {
+                    final velocity = details.primaryVelocity ?? 0;
+                    if (velocity.abs() < 200) return;
+                    final isRtl =
+                        Directionality.of(context) == TextDirection.rtl;
+                    final openingSwipe = isRtl ? velocity > 0 : velocity < 0;
+                    widget.onOpenChanged(openingSwipe);
+                  },
+                ),
               ),
-            ),
           ],
         );
       },

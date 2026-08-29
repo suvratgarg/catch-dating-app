@@ -468,7 +468,10 @@ the existing assignment-reveal slot switches its payload to standings.
 
 An event-success plan may select one reusable organizer layout by `layoutId`.
 The layout remains an organizer asset rather than being copied into the event.
-Its parametric specification is a bounded list of coarse integer-grid units;
+Create Event and post-creation Host Setup use the same provider-free room setup
+component to select or author this asset, and saving Host Setup persists the
+selected `layoutId` with the plan. Its parametric specification is a bounded
+list of coarse integer-grid units;
 each unit declares one of `round`, `rect`, `row`, `court`, or `zone`, plus a
 capacity and stable order. The app authoring sheet exposes unit count, capacity,
 column count, and all five shapes. It does not provide a to-scale venue editor.
@@ -972,6 +975,12 @@ wizard with a compact shared form. Durable outcomes:
   setup widget consumed by both `EventSuccessDefaultsPanel` (create-event last
   step) and the Host Manage setup tab. The two surfaces stay in sync
   automatically — no copy or behaviour drift.
+- **Room setup parity.** `EventSuccessRoomSetupSection` is the shared layout
+  selector and authoring entry used by Create Event and post-creation Host
+  Setup. Live Operations exposes Now and Room as local workspaces while Guests
+  remains the canonical overlay roster; the Room workspace renders explicit
+  whole-group, unconfigured, loading, error, waiting-for-placement, and ready
+  states instead of making the map disappear.
 - **Format-first disclosure.** The saved `EventFormatSnapshot` remains the
   event-format authority and is the first setup row. The host sees the format
   and playbook summary before detailed tools; an explicit `Customize` action

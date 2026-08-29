@@ -4798,6 +4798,8 @@ export interface EventRehearsalActorDocument {
   keepApartActorIds: string[];
   helpRequested: boolean;
   promptCompleted: boolean;
+  layoutUnitId: string | null;
+  confirmedLayoutUnitId: string | null;
   lastActionAt: FirebaseFirestore.Timestamp | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
@@ -4811,7 +4813,7 @@ export interface EventRehearsalActionDocument {
   clientActionId: string;
   actorUid: string | null;
   actorId: string | null;
-  kind: "control" | "behavior" | "guest" | "setup" | "system";
+  kind: "control" | "behavior" | "spatial" | "guest" | "setup" | "system";
   name: string;
   runtimeRevision: number;
   virtualNow: FirebaseFirestore.Timestamp;

@@ -567,6 +567,8 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
           'keepApartActorIds',
           'helpRequested',
           'promptCompleted',
+          'layoutUnitId',
+          'confirmedLayoutUnitId',
         ],
         'properties': <String, Object?>{
           'actorId': <String, Object?>{
@@ -620,6 +622,18 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
           },
           'promptCompleted': <String, Object?>{
             'type': 'boolean',
+          },
+          'layoutUnitId': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+          },
+          'confirmedLayoutUnitId': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
           },
         },
       },
@@ -1218,6 +1232,8 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
         'keepApartActorIds',
         'helpRequested',
         'promptCompleted',
+        'layoutUnitId',
+        'confirmedLayoutUnitId',
       ],
       'properties': <String, Object?>{
         'actorId': <String, Object?>{
@@ -1271,6 +1287,18 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
         },
         'promptCompleted': <String, Object?>{
           'type': 'boolean',
+        },
+        'layoutUnitId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+        },
+        'confirmedLayoutUnitId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
         },
       },
     },
