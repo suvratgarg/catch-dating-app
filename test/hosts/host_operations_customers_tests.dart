@@ -392,16 +392,18 @@ void _registerHostOperationsCustomersTests() {
   ) async {
     await _pumpHostScreen(
       tester,
-      const Scaffold(body: HostAddCustomerSheet(organizerId: 'organizer-1')),
+      const HostAddCustomerScreen(organizerId: 'organizer-1'),
     );
 
+    expect(find.byType(CatchRouteScaffold), findsOneWidget);
+    expect(find.byType(CatchBottomSheetScaffold), findsNothing);
     expect(
-      tester
-          .widget<CatchBottomSheetScaffold>(
-            find.byType(CatchBottomSheetScaffold),
-          )
-          .keyboardSafe,
-      isTrue,
+      find.byKey(const ValueKey('host-add-customer-details')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('host-add-customer-memory')),
+      findsOneWidget,
     );
     expect(
       tester
@@ -409,7 +411,7 @@ void _registerHostOperationsCustomersTests() {
             find.byKey(const ValueKey('host-add-customer-name')),
           )
           .title,
-      'Customer name',
+      'Name shown to your team',
     );
     expect(
       tester
@@ -437,6 +439,21 @@ void _registerHostOperationsCustomersTests() {
     );
     expect(
       find.textContaining('never grant messaging permission'),
+      findsOneWidget,
+    );
+
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-add-customer-name')),
+        matching: find.byType(TextField),
+      ),
+      'Name only',
+    );
+    await tester.tap(find.byKey(const ValueKey('host-add-customer-submit')));
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.text('Add or keep at least one mobile number or email address.'),
       findsOneWidget,
     );
   });
@@ -888,6 +905,7 @@ void _registerHostOperationsCustomersTests() {
       linkedAccount: false,
       identityState: HostAudienceIdentityState.unlinked,
       identityConfidence: 'unverified',
+      phoneE164: '+919876543210',
     );
     await _pumpHostScreen(
       tester,
@@ -903,7 +921,7 @@ void _registerHostOperationsCustomersTests() {
       ),
     );
 
-    expect(find.text('Add mobile number'), findsOneWidget);
+    expect(find.text('+919876543210'), findsOneWidget);
     expect(find.text('Add email'), findsOneWidget);
     expect(find.text('Added by your team · not verified by Catch'), findsOne);
     expect(
@@ -933,6 +951,29 @@ void _registerHostOperationsCustomersTests() {
       findsNothing,
     );
     expect(find.byKey(const ValueKey('catch-field-action-bar')), findsOne);
+
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-customer-edit-phone')),
+        matching: find.byType(TextField),
+      ),
+      '',
+    );
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-customer-edit-email')),
+        matching: find.byType(TextField),
+      ),
+      '',
+    );
+    await tester.tap(find.byKey(const ValueKey('catch-field-done')));
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.text('Add or keep at least one mobile number or email address.'),
+      findsOneWidget,
+    );
+    expect(savedDisplayName, isNull);
 
     await tester.enterText(
       find.descendant(

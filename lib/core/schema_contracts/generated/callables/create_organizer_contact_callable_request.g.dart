@@ -5,7 +5,7 @@
 // Typed callable request DTO emitted from callables/create_organizer_contact_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Manager-only creation of an organizer CRM contact with optional unverified contact details and an initial private note. It does not create an attendee, Consumer account, or messaging permission.
+/// Manager-only creation of an organizer CRM contact with a required name, at least one unverified phone or email endpoint, and an optional initial private note. It does not create an attendee, Consumer account, or messaging permission.
 final class CreateOrganizerContactCallableRequest {
   const CreateOrganizerContactCallableRequest({
     required this.organizerId,

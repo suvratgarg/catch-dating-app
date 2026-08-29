@@ -10,6 +10,7 @@ import {
   exactContactCountFromSummary,
   listContactsMatchCountResult,
   manualContactDetailsEditable,
+  manualContactHasIdentityEndpoint,
   resolveManualTags,
   summarizeContactRevenue,
   summarizeContactRevenueFacts,
@@ -21,6 +22,8 @@ import {
   OrganizerWhatsappMessageDocument,
   PaymentDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {validateCreateOrganizerContactCallablePayload} from
+  "../shared/generated/schemaValidators";
 
 test("customer timeline joins sources newest-first without overstating handoff",
   () => {
@@ -271,6 +274,36 @@ test("only unlinked organizer-created contacts expose endpoint editing", () => {
     primarySource: "hostManual",
     identityState: "verified",
   }), false);
+});
+
+test("manual contacts require at least one identity endpoint", () => {
+  assert.equal(manualContactHasIdentityEndpoint({
+    phoneE164: "+919876543210",
+    email: null,
+  }), true);
+  assert.equal(manualContactHasIdentityEndpoint({
+    phoneE164: null,
+    email: "customer@example.com",
+  }), true);
+  assert.equal(manualContactHasIdentityEndpoint({
+    phoneE164: null,
+    email: null,
+  }), false);
+
+  assert.equal(validateCreateOrganizerContactCallablePayload({
+    organizerId: "organizer-1",
+    displayName: "Name only",
+  }), false);
+  assert.equal(validateCreateOrganizerContactCallablePayload({
+    organizerId: "organizer-1",
+    displayName: "Phone contact",
+    phoneE164: "+919876543210",
+  }), true);
+  assert.equal(validateCreateOrganizerContactCallablePayload({
+    organizerId: "organizer-1",
+    displayName: "Email contact",
+    email: "contact@example.com",
+  }), true);
 });
 
 test("CRM CSV cells neutralize spreadsheet formulas and quote safely", () => {

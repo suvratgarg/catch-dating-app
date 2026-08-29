@@ -1570,6 +1570,17 @@ export async function mutateOrganizerContactHandler(
     const nextPhone = updatesPhone ? data.phoneE164 ?? null :
       contact.phoneE164;
     const nextEmail = updatesEmail ? data.email ?? null : contact.email;
+    if ((updatesPhone || updatesEmail) &&
+        manualContactHasIdentityEndpoint(contact) &&
+        !manualContactHasIdentityEndpoint({
+          phoneE164: nextPhone,
+          email: nextEmail,
+        })) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Keep at least one phone number or email address."
+      );
+    }
     if (updatesPhone) patch.phoneE164 = nextPhone;
     if (updatesEmail) patch.email = nextEmail;
     if (updatesPhone || updatesEmail) {
@@ -2595,6 +2606,12 @@ export function manualContactDetailsEditable(
 ): boolean {
   return contact.primarySource === "hostManual" &&
     contact.identityState === "unlinked";
+}
+
+export function manualContactHasIdentityEndpoint(
+  contact: {phoneE164: string | null; email: string | null}
+): boolean {
+  return Boolean(contact.phoneE164 || contact.email);
 }
 
 function manualContactEvidenceAttendeeId(contactId: string): string {

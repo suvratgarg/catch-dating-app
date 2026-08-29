@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "f36e67f067005cfd02afaad5219007a115fd77659cf7000a086152e063bb7620",
-    "routeContractSha256": "667c3ef34394b4239b08f8eb60531153d41e7db8ed0114064d324562e6afa6d9",
-    "goRouteCount": 67,
+    "normalizedFileSha256": "04233f9aa73711e4a09d2e58f8987f74d7b4c814cf01f0b0bd06c9bd34ffcb37",
+    "routeContractSha256": "795f981b469d0e67835de354f09427e702ddeb500f9789f2079ef2928fc5f8e1",
+    "goRouteCount": 68,
     "shellBranchCount": 9,
-    "enumRouteCount": 65,
-    "referencedRouteCount": 65,
-    "runtimeRouteCount": 65,
+    "enumRouteCount": 66,
+    "referencedRouteCount": 66,
+    "runtimeRouteCount": 66,
     "routeHelperCount": 2,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -456,6 +456,18 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostAddCustomerScreen",
+      "path": "/host/customers/new",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/customers/new",
+      "runtimeParentId": "hostCustomersScreen",
+      "runtimePathExpression": "'new'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostFormsScreen",
       "path": "/host/forms",
       "pathParameters": [],
@@ -890,6 +902,7 @@
     "exploreMapScreen",
     "exploreScreen",
     "filtersScreen",
+    "hostAddCustomerScreen",
     "hostAppAttendanceSheet",
     "hostAppEditEventScreen",
     "hostAppEventDetailScreen",

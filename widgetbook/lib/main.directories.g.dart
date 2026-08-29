@@ -7856,13 +7856,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Customers',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'HostAddCustomerSheet',
+                name: 'HostAddCustomerScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Manual add state',
+                    name: 'Full-page add state',
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostAddCustomerSheetStates,
+                            .hostAddCustomerScreenStates,
                   ),
                 ],
               ),
