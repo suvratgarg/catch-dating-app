@@ -21553,6 +21553,60 @@ abstract class AppLocalizations {
   /// **'Start Catch chat'**
   String get hostCustomersStartCatchChat;
 
+  /// Intent-aware communication options heading for one customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Ways to message'**
+  String get hostCustomersMessageOptions;
+
+  /// Loading state for the server-derived customer communication plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking what is available now…'**
+  String get hostCustomersMessageOptionsLoading;
+
+  /// Failure or unsupported state for the server-derived customer communication plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging options unavailable'**
+  String get hostCustomersMessageOptionsUnavailable;
+
+  /// Retry prompt for customer communication-plan loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Try checking again.'**
+  String get hostCustomersMessageOptionsRetry;
+
+  /// Consequence-labelled managed Catch conversation action.
+  ///
+  /// In en, this message translates to:
+  /// **'Message in Catch'**
+  String get hostCustomersMessageInCatch;
+
+  /// Explains the managed Catch conversation consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch sends and keeps the conversation here.'**
+  String get hostCustomersMessageInCatchBody;
+
+  /// Consequence-labelled external handoff action.
+  ///
+  /// In en, this message translates to:
+  /// **'You press send'**
+  String get hostCustomersMessageByHand;
+
+  /// Communication-plan blocker for missing participant permission.
+  ///
+  /// In en, this message translates to:
+  /// **'This person has not granted permission for this kind of message.'**
+  String get hostCustomersMessagePermissionRequired;
+
+  /// Communication-plan blocker for unavailable sender capability.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending setup is not available for this route yet.'**
+  String get hostCustomersMessageSenderUnavailable;
+
   /// Explicit channel and sender label for a personal-device WhatsApp handoff.
   ///
   /// In en, this message translates to:

@@ -377,6 +377,91 @@ final class HostAudienceContactDetailFamily extends $Family
   String toString() => r'hostAudienceContactDetailProvider';
 }
 
+@ProviderFor(hostCommunicationPlan)
+final hostCommunicationPlanProvider = HostCommunicationPlanFamily._();
+
+final class HostCommunicationPlanProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostCommunicationPlan>,
+          HostCommunicationPlan,
+          FutureOr<HostCommunicationPlan>
+        >
+    with
+        $FutureModifier<HostCommunicationPlan>,
+        $FutureProvider<HostCommunicationPlan> {
+  HostCommunicationPlanProvider._({
+    required HostCommunicationPlanFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostCommunicationPlanProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostCommunicationPlanHash();
+
+  @override
+  String toString() {
+    return r'hostCommunicationPlanProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostCommunicationPlan> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostCommunicationPlan> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return hostCommunicationPlan(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostCommunicationPlanProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostCommunicationPlanHash() =>
+    r'8b35c3592bdc0b71c30a32e4e97ebd757e8322a6';
+
+final class HostCommunicationPlanFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostCommunicationPlan>,
+          (String, String)
+        > {
+  HostCommunicationPlanFamily._()
+    : super(
+        retry: null,
+        name: r'hostCommunicationPlanProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostCommunicationPlanProvider call(String organizerId, String contactId) =>
+      HostCommunicationPlanProvider._(
+        argument: (organizerId, contactId),
+        from: this,
+      );
+
+  @override
+  String toString() => r'hostCommunicationPlanProvider';
+}
+
 @ProviderFor(hostMessagingSetup)
 final hostMessagingSetupProvider = HostMessagingSetupFamily._();
 

@@ -392,6 +392,8 @@ import {
   listOrganizerContactsCallableResponseSchema,
   getOrganizerContactDetailCallablePayloadSchema,
   getOrganizerContactDetailCallableResponseSchema,
+  resolveOrganizerCommunicationPlanCallablePayloadSchema,
+  resolveOrganizerCommunicationPlanCallableResponseSchema,
   mutateOrganizerContactCallablePayloadSchema,
   mutateOrganizerContactCallableResponseSchema,
   createOrganizerContactNoteCallablePayloadSchema,
@@ -914,6 +916,8 @@ export const validateCreateOrganizerContactCallableResponse = ajv.compile(create
 export const validateListOrganizerContactsCallableResponse = ajv.compile(listOrganizerContactsCallableResponseSchema);
 export const validateGetOrganizerContactDetailCallablePayload = ajv.compile(getOrganizerContactDetailCallablePayloadSchema);
 export const validateGetOrganizerContactDetailCallableResponse = ajv.compile(getOrganizerContactDetailCallableResponseSchema);
+export const validateResolveOrganizerCommunicationPlanCallablePayload = ajv.compile(resolveOrganizerCommunicationPlanCallablePayloadSchema);
+export const validateResolveOrganizerCommunicationPlanCallableResponse = ajv.compile(resolveOrganizerCommunicationPlanCallableResponseSchema);
 export const validateMutateOrganizerContactCallablePayload = ajv.compile(mutateOrganizerContactCallablePayloadSchema);
 export const validateMutateOrganizerContactCallableResponse = ajv.compile(mutateOrganizerContactCallableResponseSchema);
 export const validateCreateOrganizerContactNoteCallablePayload = ajv.compile(createOrganizerContactNoteCallablePayloadSchema);

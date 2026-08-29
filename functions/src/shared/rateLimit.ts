@@ -207,6 +207,10 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   getEventRosterInsights: {maxRequests: 60, windowMs: 60 * 1000},
   listOrganizerContacts: {maxRequests: 60, windowMs: 60 * 1000},
   getOrganizerContactDetail: {maxRequests: 60, windowMs: 60 * 1000},
+  resolveOrganizerCommunicationPlan: {
+    maxRequests: 60,
+    windowMs: 60 * 1000,
+  },
   mutateOrganizerContact: {maxRequests: 60, windowMs: 60 * 1000},
   createOrganizerContactNote: {maxRequests: 30, windowMs: 60 * 1000},
   mutateOrganizerContactNote: {maxRequests: 60, windowMs: 60 * 1000},

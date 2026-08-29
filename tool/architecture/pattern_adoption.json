@@ -1,6 +1,6 @@
 {
-  "version": "1.12.2",
-  "updated": "2026-08-28",
+  "version": "1.13.0",
+  "updated": "2026-08-29",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Defines architecture reference exhibits, adopter files, candidate status, and back-propagation obligations enforced by architecture checks.",
   "patterns": [
@@ -2035,6 +2035,79 @@
         "bash tool/check_catch_ui_lints.sh"
       ],
       "notes": "The reference slice changes live Explore, Organizer Detail, Profile Preview, Public Profile, and Catches presentation without adding a fake persistence path. Cross Paths now uses the person Polaroid only through a consent-safe server projection with adjacent event context. Host recipe persistence/editor and share-poster adoption remain explicit candidates."
+    },
+    {
+      "id": "ARCH-COMMUNICATION-PLAN-001",
+      "name": "Intent-aware communication plan",
+      "status": "reference",
+      "screenInventory": "design/screens/catch.screens.json",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-communication-plan-001-intent-aware-communication-plan",
+      "prototypeFiles": [
+        "functions/src/communications/organizerCommunicationPlan.ts",
+        "functions/src/communications/organizerCommunicationPlan.test.ts",
+        "functions/src/organizers/organizerCommunicationPlans.ts",
+        "functions/src/organizers/organizerCommunicationPlans.test.ts",
+        "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+        "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+        "test/hosts/host_crm_repository_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "functions/src/communications/organizerCommunicationPlan.ts",
+          "role": "pure server-owned individual-intent resolver for current route availability, blockers, execution ownership, and recommendation",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/organizers/organizerCommunicationPlans.ts",
+          "role": "authenticated manager boundary that reads authoritative contact and suppression facts and returns a non-mutating capability snapshot",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/data/host_crm_repository.dart",
+          "role": "typed callable parser that rejects contradictory, duplicate, incomplete, or unavailable recommended routes",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+          "role": "route-owned dependent async orchestration; communication planning starts only after customer detail loads and secondary failure does not erase primary content",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+          "role": "provider-free rendering of server-provided route consequences and blocker copy with no local capability inference",
+          "status": "aligned"
+        },
+        {
+          "path": "design/screens/catch.screens.json",
+          "role": "Customer Detail route and blocker state inventory points to the server plan rather than removed local eligibility helpers",
+          "status": "aligned"
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "ARCH-COMMUNICATION-PLAN-001-SAVED-AUDIENCE",
+          "path": "functions/src/organizers/organizerCampaigns.ts",
+          "reason": "Campaign preview and launch must consume the same intent planner after saved reusable audiences move under Customers ownership."
+        },
+        {
+          "id": "ARCH-COMMUNICATION-PLAN-001-FORM-CONSEQUENCES",
+          "path": "lib/hosts/presentation/forms",
+          "reason": "Form publication and automation summaries must explain customer-memory and outreach consequences without deriving route capability in presentation."
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When communication intents, route ids, execution ownership, blocker semantics, or underlying identity, permission, suppression, endpoint, or sender authorities change, update the request and response schemas, generated TypeScript and Dart contracts, pure resolver, callable reads and authorization, client parser, consequence copy, Customer Detail renderer, screen inventory, backend and Flutter tests, and this exhibit in one pass. Every delivery mutation must independently recheck current authority and must not trust a prior plan as authorization.",
+      "requiredChecks": [
+        "./tool/check_data_contract.sh",
+        "npm --prefix functions run lint && npm --prefix functions run build && node --test functions/lib/communications/organizerCommunicationPlan.test.js functions/lib/organizers/organizerCommunicationPlans.test.js",
+        "flutter test test/hosts/host_crm_repository_test.dart test/hosts/host_operations_screen_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/architecture/check_adopted_architecture_boundaries.mjs",
+        "bash tool/check_catch_ui_lints.sh"
+      ],
+      "notes": "The first reference intent is an individual customer conversation. Catch chat is managed delivery; personal WhatsApp is an external handoff where the host presses send. Unknown marketing permission is not rewritten as a grant, and no handoff is represented as Catch delivery."
     }
   ]
 }

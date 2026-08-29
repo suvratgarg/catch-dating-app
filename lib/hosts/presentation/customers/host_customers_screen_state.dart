@@ -234,19 +234,3 @@ class HostCustomerDirectoryContact {
   final bool whatsappOptedIn;
   final bool whatsappAdminSuppressed;
 }
-
-enum HostCustomerConversationAvailability { ready, unlinked, ambiguous }
-
-HostCustomerConversationAvailability customerConversationAvailability({
-  required bool linkedAccount,
-  required bool identityVerified,
-  required int ambiguousCandidateCount,
-}) {
-  if (ambiguousCandidateCount > 0) {
-    return HostCustomerConversationAvailability.ambiguous;
-  }
-  if (!linkedAccount || !identityVerified) {
-    return HostCustomerConversationAvailability.unlinked;
-  }
-  return HostCustomerConversationAvailability.ready;
-}

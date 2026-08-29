@@ -49644,6 +49644,138 @@ abstract final class CatchContractConstraints {
     maximum: 100,
   );
 
+  static const resolveOrganizerCommunicationPlanCallablePayloadIntent = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallablePayload.intent',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallablePayloadTargetContactId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallablePayload.target.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallablePayloadTargetKind = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallablePayload.target.kind',
+    required: true,
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseCapabilityVersion = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.capabilityVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseIntent = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.intent',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipients = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 1,
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsContactId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsOutcome = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inCatch', 'automatic', 'byHand', 'unavailable'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRecommendedRouteId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.recommendedRouteId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['personalWhatsappHandoff', 'organizerWhatsappCampaign', 'catchWhatsapp', 'catchChat', 'catchEventAnnouncement', 'organizerFollowerUpdate'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutes = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 2,
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsAvailability = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['available', 'unavailable'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsBlocker = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.blocker',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchAccountRequired', 'identityAmbiguous', 'missingPhone', 'organizerSuppressed', 'contactOptedOut', 'permissionRequired', 'senderUnavailable', 'intentUnsupported'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsExecutionMode = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.executionMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['managedDelivery', 'externalHandoff'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsRouteId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['personalWhatsappHandoff', 'organizerWhatsappCampaign', 'catchWhatsapp', 'catchChat', 'catchEventAnnouncement', 'organizerFollowerUpdate'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const respondCrossPathsInvitationCallablePayloadDecision = CatchContractFieldConstraints(
     path: 'respondCrossPathsInvitationCallablePayload.decision',
     required: true,
@@ -65349,6 +65481,24 @@ abstract final class CatchContractConstraints {
     'resolveEventSuccessLateArrivalCallableResponse.revision': resolveEventSuccessLateArrivalCallableResponseRevision,
     'resolveEventSuccessLateArrivalCallableResponse.status': resolveEventSuccessLateArrivalCallableResponseStatus,
     'resolveEventSuccessLateArrivalCallableResponse.targetRoundIndex': resolveEventSuccessLateArrivalCallableResponseTargetRoundIndex,
+    'resolveOrganizerCommunicationPlanCallablePayload.intent': resolveOrganizerCommunicationPlanCallablePayloadIntent,
+    'resolveOrganizerCommunicationPlanCallablePayload.organizerId': resolveOrganizerCommunicationPlanCallablePayloadOrganizerId,
+    'resolveOrganizerCommunicationPlanCallablePayload.target.contactId': resolveOrganizerCommunicationPlanCallablePayloadTargetContactId,
+    'resolveOrganizerCommunicationPlanCallablePayload.target.kind': resolveOrganizerCommunicationPlanCallablePayloadTargetKind,
+    'resolveOrganizerCommunicationPlanCallableResponse.capabilityVersion': resolveOrganizerCommunicationPlanCallableResponseCapabilityVersion,
+    'resolveOrganizerCommunicationPlanCallableResponse.intent': resolveOrganizerCommunicationPlanCallableResponseIntent,
+    'resolveOrganizerCommunicationPlanCallableResponse.organizerId': resolveOrganizerCommunicationPlanCallableResponseOrganizerId,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients': resolveOrganizerCommunicationPlanCallableResponseRecipients,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.contactId': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsContactId,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.displayName': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsDisplayName,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.outcome': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsOutcome,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.recommendedRouteId': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRecommendedRouteId,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutes,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.availability': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsAvailability,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.blocker': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsBlocker,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.executionMode': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsExecutionMode,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.routeId': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsRouteId,
+    'resolveOrganizerCommunicationPlanCallableResponse.resolvedAtMillis': resolveOrganizerCommunicationPlanCallableResponseResolvedAtMillis,
     'respondCrossPathsInvitationCallablePayload.decision': respondCrossPathsInvitationCallablePayloadDecision,
     'respondCrossPathsInvitationCallablePayload.invitationId': respondCrossPathsInvitationCallablePayloadInvitationId,
     'respondCrossPathsInvitationCallableResponse.conversationId': respondCrossPathsInvitationCallableResponseConversationId,

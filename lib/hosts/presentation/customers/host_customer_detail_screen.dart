@@ -25,7 +25,6 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +64,14 @@ class _HostCustomerDetailScreenState
       hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
     );
     final detailState = catchAsyncStateFromAsyncValue(detail);
+    final communicationPlan = detailState.value == null
+        ? null
+        : ref.watch(
+            hostCommunicationPlanProvider(widget.organizerId, widget.contactId),
+          );
+    final communicationPlanState = communicationPlan == null
+        ? null
+        : catchAsyncStateFromAsyncValue(communicationPlan);
     final initialDisplayName = widget.initialDisplayName?.trim();
     final displayName =
         detailState.value?.displayName ??
@@ -101,6 +108,9 @@ class _HostCustomerDetailScreenState
                 noteBody: context.l10n.hostCustomersMemoryHelp,
               ),
               currentUid: currentUid,
+              communicationPlan: null,
+              communicationPlanLoading: true,
+              communicationPlanFailed: false,
               openingConversation: false,
               updatingCustomer: false,
               onSaveDetails: _noopSaveCustomerDetails,
@@ -109,7 +119,8 @@ class _HostCustomerDetailScreenState
               onEditNote: (_) {},
               onReviewDuplicates: _noop,
               onStartConversation: _noop,
-              onOpenWhatsapp: null,
+              onOpenWhatsapp: _noop,
+              onRetryCommunicationPlan: _noop,
               onMessagingEnabledChanged: (_) {},
               onRemove: _noop,
               onUndoMerge: (_) {},
@@ -130,6 +141,9 @@ class _HostCustomerDetailScreenState
           builder: (context, customer) => HostCustomerDetailBody(
             customer: customer,
             currentUid: currentUid,
+            communicationPlan: communicationPlanState?.value,
+            communicationPlanLoading: communicationPlanState?.isLoading ?? true,
+            communicationPlanFailed: communicationPlanState?.hasError ?? false,
             openingConversation: _openingConversation,
             updatingCustomer: _updatingCustomer,
             onSaveDetails: ({required displayName, phoneE164, email}) =>
@@ -144,9 +158,8 @@ class _HostCustomerDetailScreenState
             onEditNote: (note) => _editNote(customer, note: note),
             onReviewDuplicates: _reviewDuplicates,
             onStartConversation: () => _startConversation(customer),
-            onOpenWhatsapp: customer.canUsePersonalWhatsappHandoff
-                ? () => _openWhatsapp(customer)
-                : null,
+            onOpenWhatsapp: () => _openWhatsapp(customer),
+            onRetryCommunicationPlan: _refreshCommunicationPlan,
             onMessagingEnabledChanged: (enabled) =>
                 _setMessagingEnabled(customer, enabled),
             onRemove: () => _removeCustomer(customer),
@@ -180,8 +193,15 @@ class _HostCustomerDetailScreenState
     _refreshDetail();
   }
 
-  void _refreshDetail() => ref.invalidate(
-    hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
+  void _refreshDetail() {
+    ref.invalidate(
+      hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
+    );
+    _refreshCommunicationPlan();
+  }
+
+  void _refreshCommunicationPlan() => ref.invalidate(
+    hostCommunicationPlanProvider(widget.organizerId, widget.contactId),
   );
 
   Future<void> _reviewDuplicates() async {
@@ -486,6 +506,9 @@ class HostCustomerDetailBody extends StatelessWidget {
     super.key,
     required this.customer,
     required this.currentUid,
+    required this.communicationPlan,
+    required this.communicationPlanLoading,
+    required this.communicationPlanFailed,
     required this.openingConversation,
     required this.updatingCustomer,
     required this.onSaveDetails,
@@ -495,6 +518,7 @@ class HostCustomerDetailBody extends StatelessWidget {
     required this.onReviewDuplicates,
     required this.onStartConversation,
     required this.onOpenWhatsapp,
+    required this.onRetryCommunicationPlan,
     required this.onMessagingEnabledChanged,
     required this.onRemove,
     required this.onUndoMerge,
@@ -502,6 +526,9 @@ class HostCustomerDetailBody extends StatelessWidget {
 
   final HostAudienceContactDetail customer;
   final String? currentUid;
+  final HostCommunicationPlan? communicationPlan;
+  final bool communicationPlanLoading;
+  final bool communicationPlanFailed;
   final bool openingConversation;
   final bool updatingCustomer;
   final HostCustomerDetailsSaveCallback onSaveDetails;
@@ -510,21 +537,14 @@ class HostCustomerDetailBody extends StatelessWidget {
   final ValueChanged<HostCustomerNote> onEditNote;
   final VoidCallback onReviewDuplicates;
   final VoidCallback onStartConversation;
-  final VoidCallback? onOpenWhatsapp;
+  final VoidCallback onOpenWhatsapp;
+  final VoidCallback onRetryCommunicationPlan;
   final ValueChanged<bool> onMessagingEnabledChanged;
   final VoidCallback onRemove;
   final ValueChanged<HostActiveContactMerge> onUndoMerge;
 
   @override
   Widget build(BuildContext context) {
-    final conversationReady =
-        customerConversationAvailability(
-          linkedAccount: customer.linkedAccount,
-          identityVerified:
-              customer.identityState == HostAudienceIdentityState.verified,
-          ambiguousCandidateCount: customer.ambiguousCandidateCount,
-        ) ==
-        HostCustomerConversationAvailability.ready;
     return ListView(
       padding: CatchInsets.pageBody.copyWith(bottom: 0),
       children: [
@@ -553,12 +573,16 @@ class HostCustomerDetailBody extends StatelessWidget {
               ),
             HostCustomerConversationCard(
               customer: customer,
+              communicationPlan: communicationPlan,
+              communicationPlanLoading: communicationPlanLoading,
+              communicationPlanFailed: communicationPlanFailed,
               loading: openingConversation,
               onReview: customer.ambiguousCandidateCount > 0
                   ? onReviewDuplicates
                   : null,
-              onOpen: conversationReady ? onStartConversation : null,
+              onOpen: onStartConversation,
               onOpenWhatsapp: onOpenWhatsapp,
+              onRetryCommunicationPlan: onRetryCommunicationPlan,
               onMessagingEnabledChanged: updatingCustomer
                   ? null
                   : onMessagingEnabledChanged,

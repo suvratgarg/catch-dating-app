@@ -249,6 +249,10 @@ void _registerHostOperationsCustomersTests() {
             'organizer-1',
             'contact-1',
           ).overrideWithValue(AsyncData(_customerDetail())),
+          hostCommunicationPlanProvider(
+            'organizer-1',
+            'contact-1',
+          ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
         ],
       );
 
@@ -931,8 +935,13 @@ void _registerHostOperationsCustomersTests() {
       Scaffold(
         body: HostCustomerConversationCard(
           customer: _customerDetail(),
+          communicationPlan: _individualCommunicationPlan(),
+          communicationPlanLoading: false,
+          communicationPlanFailed: false,
           loading: false,
           onOpen: () {},
+          onOpenWhatsapp: () {},
+          onRetryCommunicationPlan: () {},
           onMessagingEnabledChanged: (value) => requestedValue = value,
         ),
       ),
@@ -978,6 +987,10 @@ void _registerHostOperationsCustomersTests() {
           'organizer-1',
           'contact-1',
         ).overrideWithValue(AsyncData(detail)),
+        hostCommunicationPlanProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
       ],
     );
 
@@ -1019,17 +1032,25 @@ void _registerHostOperationsCustomersTests() {
           'organizer-1',
           'contact-1',
         ).overrideWithValue(AsyncData(_customerDetail())),
+        hostCommunicationPlanProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(
+          AsyncData(
+            _individualCommunicationPlan(whatsappHandoffAvailable: false),
+          ),
+        ),
       ],
     );
 
-    expect(find.text('WhatsApp app · You'), findsOneWidget);
+    expect(find.text('You press send'), findsOneWidget);
     expect(
       find.text('Add a valid phone number to use a personal WhatsApp handoff.'),
       findsOneWidget,
     );
     expect(
       find.byKey(const ValueKey('host-customer-open-whatsapp')),
-      findsNothing,
+      findsOneWidget,
     );
   });
 
@@ -1055,6 +1076,10 @@ void _registerHostOperationsCustomersTests() {
           'organizer-1',
           'contact-1',
         ).overrideWithValue(AsyncData(detail)),
+        hostCommunicationPlanProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
         externalUrlLauncherProvider.overrideWithValue((
           uri, {
           mode = LaunchMode.platformDefault,

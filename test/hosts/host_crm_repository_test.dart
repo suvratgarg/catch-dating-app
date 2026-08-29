@@ -79,6 +79,95 @@ void main() {
     },
   );
 
+  test(
+    'communication plan is parsed from the server without local inference',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('resolveOrganizerCommunicationPlan')
+              as _TestHttpsCallable;
+      callable.resultData = {
+        'organizerId': 'organizer-1',
+        'intent': 'individualConversation',
+        'capabilityVersion': 1,
+        'resolvedAtMillis': 1700000000000,
+        'recipients': [
+          {
+            'contactId': 'contact-1',
+            'displayName': 'Asha',
+            'outcome': 'byHand',
+            'recommendedRouteId': 'personalWhatsappHandoff',
+            'routes': [
+              {
+                'routeId': 'catchChat',
+                'executionMode': 'managedDelivery',
+                'availability': 'unavailable',
+                'blocker': 'catchAccountRequired',
+              },
+              {
+                'routeId': 'personalWhatsappHandoff',
+                'executionMode': 'externalHandoff',
+                'availability': 'available',
+                'blocker': null,
+              },
+            ],
+          },
+        ],
+      };
+      final repository = HostCrmRepository(functions);
+
+      final plan = await repository.resolveIndividualCommunicationPlan(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      );
+
+      expect(callable.calls.single, {
+        'organizerId': 'organizer-1',
+        'intent': 'individualConversation',
+        'target': {'kind': 'contact', 'contactId': 'contact-1'},
+      });
+      expect(plan.singleRecipient.outcome, HostCommunicationOutcome.byHand);
+      expect(
+        plan.singleRecipient.route(HostCommunicationRouteId.catchChat).blocker,
+        HostCommunicationRouteBlocker.catchAccountRequired,
+      );
+    },
+  );
+
+  test('communication plan parser rejects contradictory route state', () {
+    expect(
+      () => HostCommunicationPlan.fromCallableData({
+        'organizerId': 'organizer-1',
+        'intent': 'individualConversation',
+        'capabilityVersion': 1,
+        'resolvedAtMillis': 1700000000000,
+        'recipients': [
+          {
+            'contactId': 'contact-1',
+            'displayName': 'Asha',
+            'outcome': 'inCatch',
+            'recommendedRouteId': 'catchChat',
+            'routes': [
+              {
+                'routeId': 'catchChat',
+                'executionMode': 'managedDelivery',
+                'availability': 'available',
+                'blocker': 'identityAmbiguous',
+              },
+              {
+                'routeId': 'personalWhatsappHandoff',
+                'executionMode': 'externalHandoff',
+                'availability': 'available',
+                'blocker': null,
+              },
+            ],
+          },
+        ],
+      }),
+      throwsFormatException,
+    );
+  });
+
   test('non-default contact ordering remains explicit', () async {
     final functions = _TestFirebaseFunctions();
     final callable =
@@ -441,11 +530,7 @@ void main() {
             'amountMinor': 450000,
             'factCount': 3,
             'sources': [
-              {
-                'source': 'catchPayment',
-                'amountMinor': 450000,
-                'factCount': 3,
-              },
+              {'source': 'catchPayment', 'amountMinor': 450000, 'factCount': 3},
             ],
           },
         ],
@@ -491,27 +576,11 @@ void main() {
     expect(detail.contactDetailsEditable, isFalse);
     expect(detail.whatsappAdminSuppressed, isTrue);
     expect(detail.traits.whatsappStatus, HostAudiencePermissionStatus.optedIn);
-    expect(
-      detail.personalWhatsappHandoffAvailability,
-      HostPersonalWhatsappHandoffAvailability.organizerSuppressed,
-    );
-    expect(detail.canUsePersonalWhatsappHandoff, isFalse);
     expect(detail.traits.attendanceRate, 0.75);
     expect(detail.revenue.amounts.single.amountMinor, 450000);
     expect(detail.events.single.checkedIn, isTrue);
     expect(detail.activeMerges.single.sourceContactId, 'contact-2');
     expect(detail.activeMerges.single.movedFactCount, 4);
-
-    data['whatsappAdminSuppressed'] = false;
-    final optedOutTraits = Map<String, Object?>.from(data['traits']! as Map);
-    optedOutTraits['whatsappStatus'] = 'optedOut';
-    data['traits'] = optedOutTraits;
-    final optedOut = HostAudienceContactDetail.fromCallableData(data);
-    expect(
-      optedOut.personalWhatsappHandoffAvailability,
-      HostPersonalWhatsappHandoffAvailability.contactOptedOut,
-    );
-    expect(optedOut.canUsePersonalWhatsappHandoff, isFalse);
   });
 
   test('parses evidence-bearing and dismissed merge candidates', () {

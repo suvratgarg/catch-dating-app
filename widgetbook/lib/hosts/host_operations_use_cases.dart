@@ -777,6 +777,34 @@ Widget hostCustomersStates(BuildContext context) {
     sendsTruncated: false,
     revision: 3,
   );
+  final communicationPlan = HostCommunicationPlan(
+    organizerId: organizerId,
+    intent: HostCommunicationIntent.individualConversation,
+    capabilityVersion: 1,
+    resolvedAt: DateTime(2030, 6, 20),
+    recipients: const [
+      HostCommunicationRecipientPlan(
+        contactId: contactId,
+        displayName: 'Ananya Rao',
+        outcome: HostCommunicationOutcome.inCatch,
+        recommendedRouteId: HostCommunicationRouteId.catchChat,
+        routes: [
+          HostCommunicationRouteOption(
+            routeId: HostCommunicationRouteId.catchChat,
+            executionMode: HostCommunicationExecutionMode.managedDelivery,
+            availability: HostCommunicationRouteAvailability.available,
+            blocker: null,
+          ),
+          HostCommunicationRouteOption(
+            routeId: HostCommunicationRouteId.personalWhatsappHandoff,
+            executionMode: HostCommunicationExecutionMode.externalHandoff,
+            availability: HostCommunicationRouteAvailability.available,
+            blocker: null,
+          ),
+        ],
+      ),
+    ],
+  );
   return _HostCatalog(
     title: 'Host Customers',
     contractId: 'screen.host.customers',
@@ -806,6 +834,10 @@ Widget hostCustomersStates(BuildContext context) {
                   organizerId,
                   contactId,
                 ).overrideWithValue(AsyncData(detail)),
+                hostCommunicationPlanProvider(
+                  organizerId,
+                  contactId,
+                ).overrideWithValue(AsyncData(communicationPlan)),
               ],
               child: HostCustomerDetailScreen(
                 organizerId: organizerId,
@@ -821,6 +853,9 @@ Widget hostCustomersStates(BuildContext context) {
           child: HostCustomerDetailBody(
             customer: detail,
             currentUid: HostOperationsFixtures.hostUid,
+            communicationPlan: communicationPlan,
+            communicationPlanLoading: false,
+            communicationPlanFailed: false,
             openingConversation: false,
             updatingCustomer: false,
             onSaveDetails: ({required displayName, phoneE164, email}) async {},
@@ -830,6 +865,7 @@ Widget hostCustomersStates(BuildContext context) {
             onReviewDuplicates: () {},
             onStartConversation: () {},
             onOpenWhatsapp: () {},
+            onRetryCommunicationPlan: () {},
             onMessagingEnabledChanged: (_) {},
             onRemove: () {},
             onUndoMerge: (_) {},

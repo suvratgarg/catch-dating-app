@@ -2542,6 +2542,23 @@ const schemaSpecs = [
       "functions/src/shared/generated/getOrganizerContactDetailCallableResponse.ts",
   },
   {
+    name: "ResolveOrganizerCommunicationPlanCallablePayload",
+    source:
+      "callables/resolve_organizer_communication_plan_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "resolveOrganizerCommunicationPlanCallablePayload.ts",
+  },
+  {
+    name: "ResolveOrganizerCommunicationPlanCallableResponse",
+    source:
+      "callable_responses/" +
+      "resolve_organizer_communication_plan_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "resolveOrganizerCommunicationPlanCallableResponse.ts",
+  },
+  {
     name: "MutateOrganizerContactCallablePayload",
     source: "callables/mutate_organizer_contact_payload.schema.json",
     typeOutput:

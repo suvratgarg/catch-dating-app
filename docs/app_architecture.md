@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.15.0
+version: 1.15.1
 updated: 2026-08-29
 owner: app_architecture
 status: active
@@ -2620,6 +2620,63 @@ must carry an `exhibit-freshness` marker naming its tracker source and owner.
 `node tool/architecture/check_app_architecture_exhibits.mjs` checks those
 markers, verifies the tracker points back to the current doc anchor, and rejects
 known stale snippets from prior reference shapes.
+
+### Exhibit ARCH-COMMUNICATION-PLAN-001: Intent-Aware Communication Plan
+
+<!-- exhibit-freshness: ARCH-COMMUNICATION-PLAN-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+
+Reference files:
+
+- `functions/src/communications/organizerCommunicationPlan.ts`
+- `functions/src/organizers/organizerCommunicationPlans.ts`
+- `lib/hosts/data/host_crm_repository.dart`
+- `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
+- `lib/hosts/presentation/customers/host_customer_detail_cards.dart`
+
+The server resolves a named communication intent against current identity,
+permission, suppression, endpoint, and sender facts. The result is a momentary
+plan, not a durable contact property. Presentation renders route availability,
+execution ownership, and blockers from that plan; it does not reconstruct the
+decision from contact fields.
+
+The reference resolver makes execution ownership explicit:
+
+```ts
+export function resolveIndividualCommunicationPlan(
+  contact: IndividualCommunicationContactFacts
+): RecipientPlan {
+  const catchChat = catchChatRoute(contact);
+  const personalHandoff = personalHandoffRoute(contact);
+  const recommended = catchChat.availability === "available" ? catchChat :
+    personalHandoff.availability === "available" ? personalHandoff : null;
+  return {
+    contactId: contact.contactId,
+    displayName: contact.displayName,
+    outcome: recommended?.routeId === "catchChat" ? "inCatch" :
+      recommended?.routeId === "personalWhatsappHandoff" ? "byHand" :
+        "unavailable",
+    recommendedRouteId: recommended?.routeId ?? null,
+    routes: [catchChat, personalHandoff],
+  };
+}
+```
+
+The route screen starts the secondary request only after its primary customer
+resource exists, so loading, primary failure, secondary loading, secondary
+failure, and loaded states cannot masquerade as one another:
+
+```dart
+final communicationPlan = detailState.value == null
+    ? null
+    : ref.watch(
+        hostCommunicationPlanProvider(widget.organizerId, widget.contactId),
+      );
+```
+
+Every delivery mutation must recheck the authoritative facts. A previously
+resolved plan may explain the current UI, but it never authorizes a later send.
+External handoff means the host owns the final send; it must never generate a
+Catch delivery receipt until a later verified receipt workflow exists.
 
 ### Exhibit ARCH-ENTITY-MATERIAL-001: Entity Material Composition
 

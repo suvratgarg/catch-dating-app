@@ -140,6 +140,8 @@ export {
   mutateOrganizerContact,
   mutateOrganizerContactNote,
 } from "./organizers/organizerContacts";
+export {resolveOrganizerCommunicationPlan} from
+  "./organizers/organizerCommunicationPlans";
 export {
   getOrganizerApplicationDetail,
   importOrganizerApplications,

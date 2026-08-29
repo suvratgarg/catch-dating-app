@@ -130,6 +130,61 @@ HostAudienceContactDetail _customerDetail({
   revision: 1,
 );
 
+HostCommunicationPlan _individualCommunicationPlan({
+  bool catchChatAvailable = true,
+  HostCommunicationRouteBlocker? catchChatBlocker,
+  bool whatsappHandoffAvailable = true,
+  HostCommunicationRouteBlocker? whatsappHandoffBlocker,
+}) {
+  final recommendedRouteId = catchChatAvailable
+      ? HostCommunicationRouteId.catchChat
+      : whatsappHandoffAvailable
+      ? HostCommunicationRouteId.personalWhatsappHandoff
+      : null;
+  return HostCommunicationPlan(
+    organizerId: 'organizer-1',
+    intent: HostCommunicationIntent.individualConversation,
+    capabilityVersion: 1,
+    resolvedAt: DateTime(2026, 8, 29),
+    recipients: [
+      HostCommunicationRecipientPlan(
+        contactId: 'contact-1',
+        displayName: 'Ananya Rao',
+        outcome: catchChatAvailable
+            ? HostCommunicationOutcome.inCatch
+            : whatsappHandoffAvailable
+            ? HostCommunicationOutcome.byHand
+            : HostCommunicationOutcome.unavailable,
+        recommendedRouteId: recommendedRouteId,
+        routes: [
+          HostCommunicationRouteOption(
+            routeId: HostCommunicationRouteId.catchChat,
+            executionMode: HostCommunicationExecutionMode.managedDelivery,
+            availability: catchChatAvailable
+                ? HostCommunicationRouteAvailability.available
+                : HostCommunicationRouteAvailability.unavailable,
+            blocker: catchChatAvailable
+                ? null
+                : catchChatBlocker ??
+                      HostCommunicationRouteBlocker.catchAccountRequired,
+          ),
+          HostCommunicationRouteOption(
+            routeId: HostCommunicationRouteId.personalWhatsappHandoff,
+            executionMode: HostCommunicationExecutionMode.externalHandoff,
+            availability: whatsappHandoffAvailable
+                ? HostCommunicationRouteAvailability.available
+                : HostCommunicationRouteAvailability.unavailable,
+            blocker: whatsappHandoffAvailable
+                ? null
+                : whatsappHandoffBlocker ??
+                      HostCommunicationRouteBlocker.missingPhone,
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
 class _FixedHostCustomersDirectoryController
     extends HostCustomersDirectoryController {
   _FixedHostCustomersDirectoryController(this.requests, this.value);

@@ -13804,6 +13804,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersStartCatchChat => 'Start Catch chat';
 
   @override
+  String get hostCustomersMessageOptions => 'Ways to message';
+
+  @override
+  String get hostCustomersMessageOptionsLoading =>
+      'Checking what is available now…';
+
+  @override
+  String get hostCustomersMessageOptionsUnavailable =>
+      'Messaging options unavailable';
+
+  @override
+  String get hostCustomersMessageOptionsRetry => 'Try checking again.';
+
+  @override
+  String get hostCustomersMessageInCatch => 'Message in Catch';
+
+  @override
+  String get hostCustomersMessageInCatchBody =>
+      'Catch sends and keeps the conversation here.';
+
+  @override
+  String get hostCustomersMessageByHand => 'You press send';
+
+  @override
+  String get hostCustomersMessagePermissionRequired =>
+      'This person has not granted permission for this kind of message.';
+
+  @override
+  String get hostCustomersMessageSenderUnavailable =>
+      'Sending setup is not available for this route yet.';
+
+  @override
   String get hostCustomersWhatsappAppChannel => 'WhatsApp app · You';
 
   @override

@@ -293,80 +293,82 @@ class HostCustomerConversationCard extends StatelessWidget {
   const HostCustomerConversationCard({
     super.key,
     required this.customer,
+    required this.communicationPlan,
+    required this.communicationPlanLoading,
+    required this.communicationPlanFailed,
     required this.loading,
     required this.onOpen,
+    required this.onOpenWhatsapp,
+    required this.onRetryCommunicationPlan,
     required this.onMessagingEnabledChanged,
-    this.onOpenWhatsapp,
     this.onReview,
   });
 
   final HostAudienceContactDetail customer;
+  final HostCommunicationPlan? communicationPlan;
+  final bool communicationPlanLoading;
+  final bool communicationPlanFailed;
   final bool loading;
-  final VoidCallback? onOpen;
-  final VoidCallback? onOpenWhatsapp;
+  final VoidCallback onOpen;
+  final VoidCallback onOpenWhatsapp;
+  final VoidCallback onRetryCommunicationPlan;
   final VoidCallback? onReview;
   final ValueChanged<bool>? onMessagingEnabledChanged;
 
   @override
   Widget build(BuildContext context) {
-    final availability = customerConversationAvailability(
-      linkedAccount: customer.linkedAccount,
-      identityVerified:
-          customer.identityState == HostAudienceIdentityState.verified,
-      ambiguousCandidateCount: customer.ambiguousCandidateCount,
+    final recipient = communicationPlan?.singleRecipient;
+    final catchRoute = recipient?.route(HostCommunicationRouteId.catchChat);
+    final handoffRoute = recipient?.route(
+      HostCommunicationRouteId.personalWhatsappHandoff,
     );
-    final message = switch (availability) {
-      HostCustomerConversationAvailability.ready => null,
-      HostCustomerConversationAvailability.unlinked =>
-        context.l10n.hostCustomersConversationUnlinked,
-      HostCustomerConversationAvailability.ambiguous =>
-        context.l10n.hostCustomersConversationAmbiguous,
-    };
-    final whatsappAvailability = customer.personalWhatsappHandoffAvailability;
-    final whatsappMessage = switch (whatsappAvailability) {
-      HostPersonalWhatsappHandoffAvailability.ready =>
-        context.l10n.hostCustomersWhatsappHandoffDisclosure,
-      HostPersonalWhatsappHandoffAvailability.missingPhone =>
-        context.l10n.hostCustomersWhatsappMissingPhone,
-      HostPersonalWhatsappHandoffAvailability.organizerSuppressed =>
-        context.l10n.hostCustomersWhatsappOrganizerSuppressed,
-      HostPersonalWhatsappHandoffAvailability.contactOptedOut =>
-        context.l10n.hostCustomersWhatsappContactOptedOut,
-    };
     return CatchSection.containedFieldRows(
       key: const ValueKey('host-customer-messaging'),
       title: context.l10n.hostInboxTitle,
       children: [
-        CatchField.action(
-          key: const ValueKey('host-customer-new-conversation'),
-          title: context.l10n.hostCustomersStartCatchChat,
-          body: message,
-          icon: CatchIcons.tabChats,
-          onTap: loading ? null : onOpen,
-        ),
-        if (availability == HostCustomerConversationAvailability.ambiguous &&
-            onReview != null)
+        if (communicationPlanLoading)
+          CatchField.read(
+            key: const ValueKey('host-customer-message-plan-loading'),
+            title: context.l10n.hostCustomersMessageOptions,
+            body: context.l10n.hostCustomersMessageOptionsLoading,
+            icon: CatchIcons.tabChats,
+          )
+        else if (communicationPlanFailed || recipient == null)
+          CatchField.action(
+            key: const ValueKey('host-customer-message-plan-retry'),
+            title: context.l10n.hostCustomersMessageOptionsUnavailable,
+            body: context.l10n.hostCustomersMessageOptionsRetry,
+            icon: CatchIcons.refresh,
+            onTap: onRetryCommunicationPlan,
+          )
+        else ...[
+          _communicationRouteField(
+            context,
+            route: catchRoute!,
+            key: const ValueKey('host-customer-new-conversation'),
+            title: context.l10n.hostCustomersMessageInCatch,
+            availableBody: context.l10n.hostCustomersMessageInCatchBody,
+            icon: CatchIcons.tabChats,
+            loading: loading,
+            onTap: onOpen,
+          ),
+          _communicationRouteField(
+            context,
+            route: handoffRoute!,
+            key: const ValueKey('host-customer-open-whatsapp'),
+            title: context.l10n.hostCustomersMessageByHand,
+            availableBody: context.l10n.hostCustomersWhatsappHandoffDisclosure,
+            icon: CatchIcons.sendRounded,
+            loading: false,
+            onTap: onOpenWhatsapp,
+          ),
+        ],
+        if (customer.ambiguousCandidateCount > 0 && onReview != null)
           CatchField.action(
             key: const ValueKey('host-customer-review-duplicates'),
             title: context.l10n.hostCustomersReviewDuplicates,
             icon: CatchIcons.peopleOutlineRounded,
             onTap: onReview,
-          ),
-        if (whatsappAvailability ==
-            HostPersonalWhatsappHandoffAvailability.ready)
-          CatchField.action(
-            key: const ValueKey('host-customer-open-whatsapp'),
-            title: context.l10n.hostCustomersWhatsappAppChannel,
-            body: whatsappMessage,
-            icon: CatchIcons.sendRounded,
-            onTap: onOpenWhatsapp,
-          )
-        else
-          CatchField.read(
-            key: const ValueKey('host-customer-whatsapp-status'),
-            title: context.l10n.hostCustomersWhatsappAppChannel,
-            body: whatsappMessage,
-            icon: CatchIcons.sendRounded,
           ),
         CatchField.toggle(
           key: const ValueKey('host-customer-organizer-messages'),
@@ -383,6 +385,55 @@ class HostCustomerConversationCard extends StatelessWidget {
     );
   }
 }
+
+Widget _communicationRouteField(
+  BuildContext context, {
+  required HostCommunicationRouteOption route,
+  required Key key,
+  required String title,
+  required String availableBody,
+  required IconData icon,
+  required bool loading,
+  required VoidCallback onTap,
+}) {
+  if (!route.isAvailable) {
+    return CatchField.read(
+      key: key,
+      title: title,
+      body: _communicationRouteBlockerLabel(context, route.blocker),
+      icon: icon,
+    );
+  }
+  return CatchField.action(
+    key: key,
+    title: title,
+    body: availableBody,
+    icon: icon,
+    onTap: loading ? null : onTap,
+  );
+}
+
+String _communicationRouteBlockerLabel(
+  BuildContext context,
+  HostCommunicationRouteBlocker? blocker,
+) => switch (blocker) {
+  HostCommunicationRouteBlocker.catchAccountRequired =>
+    context.l10n.hostCustomersConversationUnlinked,
+  HostCommunicationRouteBlocker.identityAmbiguous =>
+    context.l10n.hostCustomersConversationAmbiguous,
+  HostCommunicationRouteBlocker.missingPhone =>
+    context.l10n.hostCustomersWhatsappMissingPhone,
+  HostCommunicationRouteBlocker.organizerSuppressed =>
+    context.l10n.hostCustomersWhatsappOrganizerSuppressed,
+  HostCommunicationRouteBlocker.contactOptedOut =>
+    context.l10n.hostCustomersWhatsappContactOptedOut,
+  HostCommunicationRouteBlocker.permissionRequired =>
+    context.l10n.hostCustomersMessagePermissionRequired,
+  HostCommunicationRouteBlocker.senderUnavailable =>
+    context.l10n.hostCustomersMessageSenderUnavailable,
+  HostCommunicationRouteBlocker.intentUnsupported ||
+  null => context.l10n.hostCustomersMessageOptionsUnavailable,
+};
 
 class HostCustomerAttendanceCard extends StatelessWidget {
   const HostCustomerAttendanceCard({super.key, required this.customer});
