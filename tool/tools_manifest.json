@@ -4400,6 +4400,12 @@
         "tool/ui_capture/route_inventory.json",
         "tool/ui_capture/capture_coverage.json"
       ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "command": "node tool/design/check_host_shell_coverage.mjs",
       "safety": "local",
       "status": "active",
