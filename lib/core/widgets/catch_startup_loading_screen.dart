@@ -94,10 +94,7 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
                                 .coreCatchStartupLoadingScreenBodyStartupLoadingIndicator,
                           ),
                           dimension: CatchLayout.startupIndicatorExtent,
-                          child: CatchLoadingIndicator(
-                            strokeWidth: 2.6,
-                            color: t.ink,
-                          ),
+                          child: CatchLoadingIndicator(color: t.ink),
                         )
                       : SizedBox.shrink(
                           key: ValueKey<String>(

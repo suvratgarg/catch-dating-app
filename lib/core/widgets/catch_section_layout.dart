@@ -1443,6 +1443,15 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
       final sectionRadius = BorderRadius.circular(
         CatchFieldTokens.sectionRadius,
       );
+      final border = widget.hasError
+          ? CatchBorder.resolve(t, CatchBorderRole.danger)
+          : widget.focused
+          ? CatchBorder.resolve(t, CatchBorderRole.focus)
+          : CatchBorder.resolve(
+              t,
+              CatchBorderRole.boundary,
+              color: widget.borderColor,
+            );
       return ClipRRect(
         key: CatchSectionFocusSurface.rowGroupClipKey,
         borderRadius: sectionRadius,
@@ -1459,13 +1468,7 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
           // internal hairlines, but neither may obscure the section-owned edge.
           foregroundDecoration: BoxDecoration(
             borderRadius: sectionRadius,
-            border: Border.all(
-              color: widget.hasError
-                  ? t.danger
-                  : widget.focused
-                  ? t.ink
-                  : widget.borderColor ?? t.line2,
-            ),
+            border: border.all,
           ),
           child: Padding(
             // A decoration border contributes its dimensions to Container's
@@ -1479,6 +1482,17 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
     }
 
     final effectiveFocused = widget.focused || _descendantFocused;
+    final border = widget.hasError
+        ? CatchBorder.resolve(t, CatchBorderRole.danger)
+        : effectiveFocused
+        ? CatchBorder.resolve(t, CatchBorderRole.focus)
+        : widget.borderColor == null
+        ? null
+        : CatchBorder.resolve(
+            t,
+            CatchBorderRole.boundary,
+            color: widget.borderColor,
+          );
     return Focus(
       canRequestFocus: false,
       skipTraversal: true,
@@ -1490,11 +1504,7 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
         tone: widget.tone,
         elevation: widget.elevation,
         backgroundColor: widget.backgroundColor,
-        borderColor: widget.hasError
-            ? t.danger
-            : effectiveFocused
-            ? t.primary
-            : widget.borderColor,
+        borderSpec: border,
         boxShadow: effectiveFocused && !widget.hasError
             ? CatchElevation.focusRing(t)
             : widget.boxShadow,

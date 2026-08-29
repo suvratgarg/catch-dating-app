@@ -58,6 +58,7 @@ class CatchButton extends StatefulWidget {
 class _CatchButtonState extends State<CatchButton> {
   bool _hovered = false;
   bool _pressed = false;
+  bool _focused = false;
 
   bool get _enabled =>
       widget.isInteractive && widget.onPressed != null && !widget.isLoading;
@@ -90,6 +91,22 @@ class _CatchButtonState extends State<CatchButton> {
       foreground: widget.foregroundColor,
       border: widget.borderColor,
     );
+    final border = _focused
+        ? CatchBorder.resolve(t, CatchBorderRole.focus)
+        : widget.variant == CatchButtonVariant.secondary
+        ? CatchBorder.interactive(
+            t,
+            _pressed
+                ? CatchInteractiveBorderState.pressed
+                : _hovered
+                ? CatchInteractiveBorderState.hovered
+                : CatchInteractiveBorderState.resting,
+          ).copyWith(color: widget.borderColor)
+        : CatchBorder.resolve(
+            t,
+            CatchBorderRole.boundary,
+            color: palette.border,
+          );
 
     final buttonContent = Stack(
       alignment: Alignment.center,
@@ -138,10 +155,8 @@ class _CatchButtonState extends State<CatchButton> {
         decoration: BoxDecoration(
           color: palette.background,
           borderRadius: BorderRadius.circular(radius),
-          border: Border.all(
-            color: palette.border,
-            width: widget.variant == CatchButtonVariant.secondary ? 1.5 : 1,
-          ),
+          border: border.all,
+          boxShadow: _focused ? CatchElevation.focusRing(t) : null,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(radius),
@@ -151,6 +166,8 @@ class _CatchButtonState extends State<CatchButton> {
                   child: InkWell(
                     onTap: _enabled ? widget.onPressed : null,
                     onHover: (hovered) => setState(() => _hovered = hovered),
+                    onFocusChange: (focused) =>
+                        setState(() => _focused = focused),
                     onHighlightChanged: (pressed) =>
                         setState(() => _pressed = pressed),
                     splashColor: palette.foreground.withValues(

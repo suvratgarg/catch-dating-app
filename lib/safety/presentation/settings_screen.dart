@@ -325,7 +325,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   _SettingsExternalLinkAction.hostApp
                               ? const SizedBox.square(
                                   dimension: CatchIcon.control,
-                                  child: CatchLoadingIndicator(strokeWidth: 2),
+                                  child: CatchLoadingIndicator(),
                                 )
                               : null,
                           onTap: operationPending ? null : _openHostApp,
@@ -541,9 +541,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     _SettingsExternalLinkAction.privacyPolicy
                                 ? const SizedBox.square(
                                     dimension: CatchIcon.control,
-                                    child: CatchLoadingIndicator(
-                                      strokeWidth: 2,
-                                    ),
+                                    child: CatchLoadingIndicator(),
                                   )
                                 : null,
                             onTap: operationPending
@@ -563,7 +561,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           action: state.mutations.deletingAccount
                               ? const SizedBox.square(
                                   dimension: CatchIcon.control,
-                                  child: CatchLoadingIndicator(strokeWidth: 2),
+                                  child: CatchLoadingIndicator(),
                                 )
                               : null,
                           onTap: operationPending
@@ -589,9 +587,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     _SettingsExternalLinkAction.helpSupport
                                 ? const SizedBox.square(
                                     dimension: CatchIcon.control,
-                                    child: CatchLoadingIndicator(
-                                      strokeWidth: 2,
-                                    ),
+                                    child: CatchLoadingIndicator(),
                                   )
                                 : null,
                             onTap: operationPending
@@ -613,9 +609,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     _SettingsExternalLinkAction.terms
                                 ? const SizedBox.square(
                                     dimension: CatchIcon.control,
-                                    child: CatchLoadingIndicator(
-                                      strokeWidth: 2,
-                                    ),
+                                    child: CatchLoadingIndicator(),
                                   )
                                 : null,
                             onTap: operationPending
@@ -642,7 +636,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           action: state.mutations.signingOut
                               ? const SizedBox.square(
                                   dimension: CatchIcon.control,
-                                  child: CatchLoadingIndicator(strokeWidth: 2),
+                                  child: CatchLoadingIndicator(),
                                 )
                               : null,
                           onTap: operationPending ? null : _signOut,

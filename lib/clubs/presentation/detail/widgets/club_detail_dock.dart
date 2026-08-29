@@ -286,7 +286,7 @@ class DockBell extends StatelessWidget {
         child: isLoading
             ? SizedBox.square(
                 dimension: CatchIcon.md,
-                child: CatchLoadingIndicator(strokeWidth: 2, color: foreground),
+                child: CatchLoadingIndicator(color: foreground),
               )
             : Icon(
                 active

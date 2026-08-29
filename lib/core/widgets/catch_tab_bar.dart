@@ -423,10 +423,10 @@ class _CatchTabBarIndicator extends StatelessWidget {
         color: color,
         shape: StadiumBorder(
           side: focused
-              ? BorderSide(
-                  color: CatchTokens.of(context).line2,
-                  width: CatchStroke.focusRing,
-                )
+              ? CatchBorder.resolve(
+                  CatchTokens.of(context),
+                  CatchBorderRole.focus,
+                ).side
               : BorderSide.none,
         ),
       ),
@@ -656,7 +656,7 @@ class _CatchTabBarButtonState<T> extends State<CatchTabBarButton<T>> {
               : Colors.transparent,
           shape: StadiumBorder(
             side: widget.ownsIndicator && _focused
-                ? BorderSide(color: t.line2, width: CatchStroke.focusRing)
+                ? CatchBorder.resolve(t, CatchBorderRole.focus).side
                 : BorderSide.none,
           ),
         ),

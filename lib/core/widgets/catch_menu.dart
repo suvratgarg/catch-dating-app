@@ -252,7 +252,6 @@ class CatchMenu<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final mediaQuery = MediaQuery.of(context);
     final viewportHeight = math.max(
       0.0,
@@ -263,7 +262,7 @@ class CatchMenu<T> extends StatelessWidget {
     return CatchSurface(
       elevation: CatchSurfaceElevation.overlay,
       radius: CatchRadius.md,
-      borderColor: t.line2,
+      borderRole: CatchBorderRole.boundary,
       padding: EdgeInsets.zero,
       width: width,
       clipBehavior: Clip.antiAlias,

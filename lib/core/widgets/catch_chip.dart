@@ -179,6 +179,7 @@ class _CatchChipState extends State<CatchChip> {
   static const double _pressedScale = 0.97;
 
   bool _pressed = false;
+  bool _focused = false;
 
   bool get _hasControlRole => switch (widget._variant) {
     _CatchChipVariant.selectable || _CatchChipVariant.removable => true,
@@ -203,7 +204,10 @@ class _CatchChipState extends State<CatchChip> {
   @override
   void didUpdateWidget(CatchChip oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!_interactive) _pressed = false;
+    if (!_interactive) {
+      _pressed = false;
+      _focused = false;
+    }
   }
 
   void _setPressed(bool value) {
@@ -309,6 +313,24 @@ class _CatchChipState extends State<CatchChip> {
     final iconGap = widget._variant == _CatchChipVariant.activity
         ? CatchLayout.activityChipIconGap
         : CatchSpacing.s2;
+    final semanticBorder = _focused
+        ? CatchBorder.resolve(t, CatchBorderRole.focus)
+        : widget._variant == _CatchChipVariant.selectable && widget._selected
+        ? CatchBorder.resolve(
+            t,
+            CatchBorderRole.selected,
+            color: widget._accent,
+          )
+        : _hasControlRole && border != Colors.transparent
+        ? CatchBorder.interactive(
+            t,
+            !widget._enabled
+                ? CatchInteractiveBorderState.disabled
+                : _pressed
+                ? CatchInteractiveBorderState.pressed
+                : CatchInteractiveBorderState.resting,
+          )
+        : CatchBorder.resolve(t, CatchBorderRole.boundary, color: border);
 
     final content = Padding(
       padding: padding,
@@ -345,33 +367,44 @@ class _CatchChipState extends State<CatchChip> {
       decoration: BoxDecoration(
         color: background,
         borderRadius: radius,
-        border: Border.all(color: border),
-        boxShadow: shadow,
+        boxShadow: _focused ? CatchElevation.focusRing(t) : shadow,
       ),
-      child: _hasControlRole
-          ? Material(
-              color: Colors.transparent,
-              child: InkWell(
-                excludeFromSemantics: true,
-                onTap: _onPressed,
-                onHighlightChanged: _setPressed,
-                borderRadius: radius,
-                hoverColor: foreground.withValues(
-                  alpha: CatchOpacity.controlOverlayHover,
+      foregroundDecoration: BoxDecoration(
+        borderRadius: radius,
+        border: semanticBorder.all,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(CatchStroke.hairline),
+        child: _hasControlRole
+            ? Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  excludeFromSemantics: true,
+                  onTap: _onPressed,
+                  onHighlightChanged: _setPressed,
+                  onFocusChange: (focused) {
+                    if (_focused != focused) {
+                      setState(() => _focused = focused);
+                    }
+                  },
+                  borderRadius: radius,
+                  hoverColor: foreground.withValues(
+                    alpha: CatchOpacity.controlOverlayHover,
+                  ),
+                  focusColor: foreground.withValues(
+                    alpha: CatchOpacity.controlOverlayHover,
+                  ),
+                  splashColor: foreground.withValues(
+                    alpha: CatchOpacity.controlOverlayPressed,
+                  ),
+                  highlightColor: foreground.withValues(
+                    alpha: CatchOpacity.controlOverlayPressed,
+                  ),
+                  child: content,
                 ),
-                focusColor: foreground.withValues(
-                  alpha: CatchOpacity.controlOverlayHover,
-                ),
-                splashColor: foreground.withValues(
-                  alpha: CatchOpacity.controlOverlayPressed,
-                ),
-                highlightColor: foreground.withValues(
-                  alpha: CatchOpacity.controlOverlayPressed,
-                ),
-                child: content,
-              ),
-            )
-          : content,
+              )
+            : content,
+      ),
     );
 
     final chip = AnimatedScale(

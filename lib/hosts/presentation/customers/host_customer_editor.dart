@@ -1,6 +1,6 @@
 part of 'host_customers_screen.dart';
 
-enum _HostCustomerIdentityFormMode { create, edit }
+enum HostCustomerIdentityInputMode { create, edit }
 
 class HostAddCustomerScreen extends ConsumerStatefulWidget {
   const HostAddCustomerScreen({super.key, required this.organizerId});
@@ -63,10 +63,10 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                 ),
               ),
               CatchResponsiveSectionItem(
-                child: _HostCustomerIdentityInputSection(
+                child: HostCustomerIdentityInputSection(
                   key: const ValueKey('host-add-customer-details'),
                   title: context.l10n.hostCustomersContactDetails,
-                  mode: _HostCustomerIdentityFormMode.create,
+                  mode: HostCustomerIdentityInputMode.create,
                   nameController: _nameController,
                   phoneController: _phoneController,
                   emailController: _emailController,
@@ -169,8 +169,8 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
   }
 }
 
-class _HostCustomerIdentityInputSection extends StatelessWidget {
-  const _HostCustomerIdentityInputSection({
+class HostCustomerIdentityInputSection extends StatelessWidget {
+  const HostCustomerIdentityInputSection({
     super.key,
     required this.title,
     required this.mode,
@@ -192,7 +192,7 @@ class _HostCustomerIdentityInputSection extends StatelessWidget {
   });
 
   final String title;
-  final _HostCustomerIdentityFormMode mode;
+  final HostCustomerIdentityInputMode mode;
   final TextEditingController nameController;
   final TextEditingController phoneController;
   final TextEditingController emailController;
@@ -211,7 +211,7 @@ class _HostCustomerIdentityInputSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final create = mode == _HostCustomerIdentityFormMode.create;
+    final create = mode == HostCustomerIdentityInputMode.create;
     return CatchSection.containedFieldRows(
       title: title,
       focused: focused,

@@ -869,6 +869,14 @@ Widget hostCustomersDirectoryStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(
+  name: 'Directory control states',
+  type: HostCustomerDirectoryControls,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerDirectoryControlsStates(BuildContext context) =>
+    hostCustomersStates(context);
+
+@widgetbook.UseCase(
   name: 'Row states',
   type: HostCustomerRow,
   path: '[P1 product surfaces]/Host operations/Customers',
@@ -882,6 +890,14 @@ Widget hostCustomerDirectoryRowStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostAddCustomerScreenStates(BuildContext context) =>
+    hostCustomersStates(context);
+
+@widgetbook.UseCase(
+  name: 'Identity input states',
+  type: HostCustomerIdentityInputSection,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerIdentityInputStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(

@@ -142,9 +142,8 @@ class _ChatComposer extends StatelessWidget {
                 shape: CatchControlShape.pill,
                 enabled: !hardDisabled,
                 focused: !hardDisabled && focusNode.hasFocus,
-                // BoxDecoration includes its border dimensions in Container
-                // padding. Subtract the stroke so the visible outer inset is
-                // exactly s2 on every edge.
+                // CatchControlShell reserves the emphasis-stroke footprint.
+                // Subtract that reserve so the visible outer inset stays s2.
                 padding: const EdgeInsets.all(
                   CatchLayout.chatInputInnerPadding,
                 ),
@@ -165,10 +164,7 @@ class _ChatComposer extends StatelessWidget {
                         child: sendingImage
                             ? SizedBox.square(
                                 dimension: CatchIcon.control,
-                                child: CatchLoadingIndicator(
-                                  strokeWidth: 2,
-                                  color: t.ink2,
-                                ),
+                                child: CatchLoadingIndicator(color: t.ink2),
                               )
                             : Icon(
                                 CatchIcons.imageOutlined,
@@ -225,10 +221,7 @@ class _ChatComposer extends StatelessWidget {
                       child: sending
                           ? SizedBox.square(
                               dimension: CatchIcon.control,
-                              child: CatchLoadingIndicator(
-                                strokeWidth: 2,
-                                color: t.primaryInk,
-                              ),
+                              child: CatchLoadingIndicator(color: t.primaryInk),
                             )
                           : Icon(
                               CatchIcons.sendRounded,

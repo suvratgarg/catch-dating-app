@@ -510,12 +510,21 @@ void _registerCatchPrimitivesControlsTests() {
       const Size.square(CatchLayout.iconButtonSize),
     );
     expect(borderedSurface.backgroundColor, tokens.surface);
-    expect(borderedSurface.borderColor, tokens.line2);
+    final restingBorder = CatchBorder.interactive(
+      tokens,
+      CatchInteractiveBorderState.resting,
+    );
+    expect(borderedSurface.borderSpec?.color, restingBorder.color);
+    expect(borderedSurface.borderSpec?.width, restingBorder.width);
     expect(activeIconTheme.data.color, CatchTokens.editorialLight.danger);
     expect(floatSurface.backgroundColor, isNot(tokens.surface));
     expect(floatSurface.boxShadow, CatchElevation.iconButtonFloat);
     expect(plainSurface.backgroundColor, Colors.transparent);
-    expect(plainSurface.borderColor, tokens.line2);
+    expect(plainSurface.borderSpec?.color, tokens.line2);
+    expect(
+      plainSurface.borderSpec?.width,
+      CatchBorder.resolve(tokens, CatchBorderRole.boundary).width,
+    );
     expect(find.byTooltip('Search events'), findsOneWidget);
 
     await tester.tap(find.byIcon(CatchIcons.search));

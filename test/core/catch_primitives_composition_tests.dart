@@ -187,20 +187,20 @@ void _registerCatchPrimitivesCompositionTests() {
 
     final chipFinder = find.byType(CatchChip);
     final tokens = CatchTokens.of(tester.element(chipFinder));
-    final decoration =
-        tester
-                .widget<AnimatedContainer>(
-                  find.descendant(
-                    of: chipFinder,
-                    matching: find.byType(AnimatedContainer),
-                  ),
-                )
-                .decoration
-            as BoxDecoration;
+    final container = tester.widget<AnimatedContainer>(
+      find.descendant(of: chipFinder, matching: find.byType(AnimatedContainer)),
+    );
+    final decoration = container.decoration as BoxDecoration;
+    final foregroundDecoration =
+        container.foregroundDecoration as BoxDecoration;
 
     expect(decoration.color, tokens.surface);
-    expect(decoration.border?.top.color, tokens.line2);
-    expect(decoration.border?.top.width, CatchStroke.hairline);
+    final restingBorder = CatchBorder.interactive(
+      tokens,
+      CatchInteractiveBorderState.resting,
+    );
+    expect(foregroundDecoration.border?.top.color, restingBorder.color);
+    expect(foregroundDecoration.border?.top.width, restingBorder.width);
     expect(find.byIcon(CatchIcons.closeRounded), findsOneWidget);
 
     await tester.tap(find.text('Easy'));

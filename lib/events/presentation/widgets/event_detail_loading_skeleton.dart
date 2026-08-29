@@ -163,13 +163,21 @@ class EventDetailTicketStubSkeleton extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (var index = 0; index < 3; index++) ...[
-                    if (index > 0) VerticalDivider(color: t.line, width: 1),
+                    if (index > 0)
+                      VerticalDivider(
+                        color: t.line,
+                        width: CatchStroke.hairline,
+                      ),
                     const Expanded(child: TicketStubCellSkeleton()),
                   ],
                 ],
               ),
             ),
-            Divider(color: t.line, height: 1, thickness: 1),
+            Divider(
+              color: t.line,
+              height: CatchStroke.hairline,
+              thickness: CatchStroke.hairline,
+            ),
           ],
         ),
       ),

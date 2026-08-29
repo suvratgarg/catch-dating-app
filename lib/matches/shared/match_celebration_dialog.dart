@@ -45,7 +45,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
         size: 108,
         name: name,
         imageUrl: photoUrl,
-        borderWidth: 3,
+        borderWidth: CatchStroke.selection,
         borderColor: t.primary,
       ),
       details: [

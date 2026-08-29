@@ -252,7 +252,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
           id: 'event-map-distance-ring',
           center: userLocation,
           radiusMeters: ringRadiusKm * 1000,
-          strokeWidth: 2,
+          strokeWidth: CatchStroke.focusRing.round(),
           strokeColor: t.ink.withValues(alpha: CatchOpacity.distanceRing),
           fillColor: Colors.transparent,
           consumeTapEvents: widget.onDistanceRingTapped != null,
@@ -262,7 +262,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
         id: 'event-map-user-location',
         center: userLocation,
         radiusMeters: 42,
-        strokeWidth: 3,
+        strokeWidth: CatchStroke.selection.round(),
         strokeColor: CatchTokens.editorialWhite.withValues(
           alpha: CatchOpacity.mapUserLocationStroke,
         ),

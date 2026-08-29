@@ -104,10 +104,10 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
     return Form(
       key: _formKey,
       child: _editing
-          ? _HostCustomerIdentityInputSection(
+          ? HostCustomerIdentityInputSection(
               key: const ValueKey('host-customer-contact-details'),
               title: context.l10n.hostCustomersContactDetails,
-              mode: _HostCustomerIdentityFormMode.edit,
+              mode: HostCustomerIdentityInputMode.edit,
               nameController: _nameController,
               phoneController: _phoneController,
               emailController: _emailController,
