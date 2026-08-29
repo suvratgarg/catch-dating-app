@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
@@ -11,8 +10,7 @@ void main() {
   test('campaign bridge fails closed while customer history is incomplete', () {
     expect(
       hostCampaignBridgeBlocker(
-        segment: HostAudienceSegment.repeatAttendee,
-        smsReadiness: HostCrmChannelReadiness.currentEventOnly,
+        hasPersistableAudience: true,
         messagingSetup: null,
         audienceCoverageComplete: false,
       ),
@@ -67,7 +65,7 @@ void main() {
     expect(find.text('Sender verification is incomplete'), findsOneWidget);
   });
 
-  testWidgets('manual tag summary never becomes a computed campaign segment', (
+  testWidgets('manual tag summary can become its own saved audience', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -90,7 +88,7 @@ void main() {
     expect(find.text('Brings friends · 4 people'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-customers-message-segment')),
-      findsNothing,
+      findsOneWidget,
     );
   });
 }

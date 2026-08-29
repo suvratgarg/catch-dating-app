@@ -44,6 +44,7 @@ Do not edit it by hand.
 | OrganizerContactOriginDocument | `firestore/organizer_contact_origins.schema.json` | `functions/src/shared/generated/organizerContactOriginDocument.ts` |
 | OrganizerContactNoteDocument | `firestore/organizer_contact_notes.schema.json` | `functions/src/shared/generated/organizerContactNoteDocument.ts` |
 | OrganizerContactTagVocabularyDocument | `firestore/organizer_contact_tag_vocabularies.schema.json` | `functions/src/shared/generated/organizerContactTagVocabularyDocument.ts` |
+| OrganizerSavedAudienceDocument | `firestore/organizer_saved_audiences.schema.json` | `functions/src/shared/generated/organizerSavedAudienceDocument.ts` |
 | OrganizerContactIdentityLinkDocument | `firestore/organizer_contact_identity_links.schema.json` | `functions/src/shared/generated/organizerContactIdentityLinkDocument.ts` |
 | OrganizerContactIdentityClaimDocument | `firestore/organizer_contact_identity_claims.schema.json` | `functions/src/shared/generated/organizerContactIdentityClaimDocument.ts` |
 | OrganizerContactEventEdgeDocument | `firestore/organizer_contact_event_edges.schema.json` | `functions/src/shared/generated/organizerContactEventEdgeDocument.ts` |
@@ -252,6 +253,13 @@ Do not edit it by hand.
 | GetEventInviteLinkTokenCallablePayload | `callables/get_event_invite_link_token_payload.schema.json` | `functions/src/shared/generated/getEventInviteLinkTokenCallablePayload.ts` |
 | RecordEventShareIntentCallablePayload | `callables/record_event_share_intent_payload.schema.json` | `functions/src/shared/generated/recordEventShareIntentCallablePayload.ts` |
 | UpsertOrganizerCampaignCallablePayload | `callables/upsert_organizer_campaign_payload.schema.json` | `functions/src/shared/generated/upsertOrganizerCampaignCallablePayload.ts` |
+| UpsertOrganizerSavedAudienceCallablePayload | `callables/upsert_organizer_saved_audience_payload.schema.json` | `functions/src/shared/generated/upsertOrganizerSavedAudienceCallablePayload.ts` |
+| ListOrganizerSavedAudiencesCallablePayload | `callables/list_organizer_saved_audiences_payload.schema.json` | `functions/src/shared/generated/listOrganizerSavedAudiencesCallablePayload.ts` |
+| PreviewOrganizerSavedAudienceCallablePayload | `callables/preview_organizer_saved_audience_payload.schema.json` | `functions/src/shared/generated/previewOrganizerSavedAudienceCallablePayload.ts` |
+| ArchiveOrganizerSavedAudienceCallablePayload | `callables/archive_organizer_saved_audience_payload.schema.json` | `functions/src/shared/generated/archiveOrganizerSavedAudienceCallablePayload.ts` |
+| OrganizerSavedAudienceCallableResponse | `callable_responses/organizer_saved_audience_response.schema.json` | `functions/src/shared/generated/organizerSavedAudienceCallableResponse.ts` |
+| ListOrganizerSavedAudiencesCallableResponse | `callable_responses/list_organizer_saved_audiences_response.schema.json` | `functions/src/shared/generated/listOrganizerSavedAudiencesCallableResponse.ts` |
+| PreviewOrganizerSavedAudienceCallableResponse | `callable_responses/preview_organizer_saved_audience_response.schema.json` | `functions/src/shared/generated/previewOrganizerSavedAudienceCallableResponse.ts` |
 | OrganizerCampaignActionCallablePayload | `callables/organizer_campaign_action_payload.schema.json` | `functions/src/shared/generated/organizerCampaignActionCallablePayload.ts` |
 | CompleteOrganizerWhatsappConnectionCallablePayload | `callables/complete_organizer_whatsapp_connection_payload.schema.json` | `functions/src/shared/generated/completeOrganizerWhatsappConnectionCallablePayload.ts` |
 | OrganizerSenderConnectionActionCallablePayload | `callables/organizer_sender_connection_action_payload.schema.json` | `functions/src/shared/generated/organizerSenderConnectionActionCallablePayload.ts` |
@@ -551,6 +559,7 @@ Do not edit it by hand.
 | `schemaOrganizerContactOriginDocumentSchema` | OrganizerContactOriginDocument | `firestore/organizer_contact_origins.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_origin_document.g.dart` |
 | `schemaOrganizerContactNoteDocumentSchema` | OrganizerContactNoteDocument | `firestore/organizer_contact_notes.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_note_document.g.dart` |
 | `schemaOrganizerContactTagVocabularyDocumentSchema` | OrganizerContactTagVocabularyDocument | `firestore/organizer_contact_tag_vocabularies.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_tag_vocabulary_document.g.dart` |
+| `schemaOrganizerSavedAudienceDocumentSchema` | OrganizerSavedAudienceDocument | `firestore/organizer_saved_audiences.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_saved_audience_document.g.dart` |
 | `schemaOrganizerContactIdentityLinkDocumentSchema` | OrganizerContactIdentityLinkDocument | `firestore/organizer_contact_identity_links.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_identity_link_document.g.dart` |
 | `schemaOrganizerContactIdentityClaimDocumentSchema` | OrganizerContactIdentityClaimDocument | `firestore/organizer_contact_identity_claims.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_identity_claim_document.g.dart` |
 | `schemaOrganizerContactEventEdgeDocumentSchema` | OrganizerContactEventEdgeDocument | `firestore/organizer_contact_event_edges.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_event_edge_document.g.dart` |
@@ -759,6 +768,13 @@ Do not edit it by hand.
 | `schemaGetEventInviteLinkTokenCallablePayloadSchema` | GetEventInviteLinkTokenCallablePayload | `callables/get_event_invite_link_token_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_invite_link_token_callable_payload.g.dart` |
 | `schemaRecordEventShareIntentCallablePayloadSchema` | RecordEventShareIntentCallablePayload | `callables/record_event_share_intent_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_event_share_intent_callable_payload.g.dart` |
 | `schemaUpsertOrganizerCampaignCallablePayloadSchema` | UpsertOrganizerCampaignCallablePayload | `callables/upsert_organizer_campaign_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/upsert_organizer_campaign_callable_payload.g.dart` |
+| `schemaUpsertOrganizerSavedAudienceCallablePayloadSchema` | UpsertOrganizerSavedAudienceCallablePayload | `callables/upsert_organizer_saved_audience_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/upsert_organizer_saved_audience_callable_payload.g.dart` |
+| `schemaListOrganizerSavedAudiencesCallablePayloadSchema` | ListOrganizerSavedAudiencesCallablePayload | `callables/list_organizer_saved_audiences_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_organizer_saved_audiences_callable_payload.g.dart` |
+| `schemaPreviewOrganizerSavedAudienceCallablePayloadSchema` | PreviewOrganizerSavedAudienceCallablePayload | `callables/preview_organizer_saved_audience_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_organizer_saved_audience_callable_payload.g.dart` |
+| `schemaArchiveOrganizerSavedAudienceCallablePayloadSchema` | ArchiveOrganizerSavedAudienceCallablePayload | `callables/archive_organizer_saved_audience_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/archive_organizer_saved_audience_callable_payload.g.dart` |
+| `schemaOrganizerSavedAudienceCallableResponseSchema` | OrganizerSavedAudienceCallableResponse | `callable_responses/organizer_saved_audience_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_saved_audience_callable_response.g.dart` |
+| `schemaListOrganizerSavedAudiencesCallableResponseSchema` | ListOrganizerSavedAudiencesCallableResponse | `callable_responses/list_organizer_saved_audiences_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_organizer_saved_audiences_callable_response.g.dart` |
+| `schemaPreviewOrganizerSavedAudienceCallableResponseSchema` | PreviewOrganizerSavedAudienceCallableResponse | `callable_responses/preview_organizer_saved_audience_response.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_organizer_saved_audience_callable_response.g.dart` |
 | `schemaOrganizerCampaignActionCallablePayloadSchema` | OrganizerCampaignActionCallablePayload | `callables/organizer_campaign_action_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_campaign_action_callable_payload.g.dart` |
 | `schemaCompleteOrganizerWhatsappConnectionCallablePayloadSchema` | CompleteOrganizerWhatsappConnectionCallablePayload | `callables/complete_organizer_whatsapp_connection_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/complete_organizer_whatsapp_connection_callable_payload.g.dart` |
 | `schemaOrganizerSenderConnectionActionCallablePayloadSchema` | OrganizerSenderConnectionActionCallablePayload | `callables/organizer_sender_connection_action_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_sender_connection_action_callable_payload.g.dart` |
@@ -1095,6 +1111,9 @@ Do not edit it by hand.
 | GetEventInviteLinkTokenCallableRequest | GetEventInviteLinkTokenCallablePayload | `callables/get_event_invite_link_token_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_invite_link_token_callable_request.g.dart` |
 | RecordEventShareIntentCallableRequest | RecordEventShareIntentCallablePayload | `callables/record_event_share_intent_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_event_share_intent_callable_request.g.dart` |
 | UpsertOrganizerCampaignCallableRequest | UpsertOrganizerCampaignCallablePayload | `callables/upsert_organizer_campaign_payload.schema.json` | `lib/core/schema_contracts/generated/callables/upsert_organizer_campaign_callable_request.g.dart` |
+| ListOrganizerSavedAudiencesCallableRequest | ListOrganizerSavedAudiencesCallablePayload | `callables/list_organizer_saved_audiences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_organizer_saved_audiences_callable_request.g.dart` |
+| PreviewOrganizerSavedAudienceCallableRequest | PreviewOrganizerSavedAudienceCallablePayload | `callables/preview_organizer_saved_audience_payload.schema.json` | `lib/core/schema_contracts/generated/callables/preview_organizer_saved_audience_callable_request.g.dart` |
+| ArchiveOrganizerSavedAudienceCallableRequest | ArchiveOrganizerSavedAudienceCallablePayload | `callables/archive_organizer_saved_audience_payload.schema.json` | `lib/core/schema_contracts/generated/callables/archive_organizer_saved_audience_callable_request.g.dart` |
 | OrganizerCampaignActionCallableRequest | OrganizerCampaignActionCallablePayload | `callables/organizer_campaign_action_payload.schema.json` | `lib/core/schema_contracts/generated/callables/organizer_campaign_action_callable_request.g.dart` |
 | CompleteOrganizerWhatsappConnectionCallableRequest | CompleteOrganizerWhatsappConnectionCallablePayload | `callables/complete_organizer_whatsapp_connection_payload.schema.json` | `lib/core/schema_contracts/generated/callables/complete_organizer_whatsapp_connection_callable_request.g.dart` |
 | OrganizerSenderConnectionActionCallableRequest | OrganizerSenderConnectionActionCallablePayload | `callables/organizer_sender_connection_action_payload.schema.json` | `lib/core/schema_contracts/generated/callables/organizer_sender_connection_action_callable_request.g.dart` |
@@ -1239,6 +1258,7 @@ Do not edit it by hand.
 | AdminUpdateClubDetailsCallablePayloadPatch | no Dart patch config |
 | AdminUpdateOrganizerDetailsCallablePayloadPatch | no Dart patch config |
 | AdminUpdateEventDetailsCallablePayloadPatch | no Dart patch config |
+| UpsertOrganizerSavedAudienceCallablePayload | cannot map field "scope" (no type) |
 | RecordEventSuccessUnitOutcomesCallablePayload | cannot map field "entries" (type=array) |
 | RefreshStripeHostPaymentAccountCallablePayload | no properties |
 | RefreshRazorpayHostPaymentAccountCallablePayload | no properties |

@@ -540,6 +540,84 @@ final class HostMessagingSetupFamily extends $Family
   String toString() => r'hostMessagingSetupProvider';
 }
 
+@ProviderFor(hostSavedAudiences)
+final hostSavedAudiencesProvider = HostSavedAudiencesFamily._();
+
+final class HostSavedAudiencesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostSavedAudiencePage>,
+          HostSavedAudiencePage,
+          FutureOr<HostSavedAudiencePage>
+        >
+    with
+        $FutureModifier<HostSavedAudiencePage>,
+        $FutureProvider<HostSavedAudiencePage> {
+  HostSavedAudiencesProvider._({
+    required HostSavedAudiencesFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostSavedAudiencesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostSavedAudiencesHash();
+
+  @override
+  String toString() {
+    return r'hostSavedAudiencesProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostSavedAudiencePage> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostSavedAudiencePage> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostSavedAudiences(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostSavedAudiencesProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostSavedAudiencesHash() =>
+    r'b469dd456cd1ac35bb072e6ad04627ea34df23bd';
+
+final class HostSavedAudiencesFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<HostSavedAudiencePage>, String> {
+  HostSavedAudiencesFamily._()
+    : super(
+        retry: null,
+        name: r'hostSavedAudiencesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostSavedAudiencesProvider call(String organizerId) =>
+      HostSavedAudiencesProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostSavedAudiencesProvider';
+}
+
 @ProviderFor(hostSends)
 final hostSendsProvider = HostSendsFamily._();
 

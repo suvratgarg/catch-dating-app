@@ -56,8 +56,7 @@ class HostInboxScreen extends ConsumerStatefulWidget {
     this.initialScope,
     this.initialSegment = HostInboxAudienceSegment.booked,
     this.initialWorkspace = HostMessagingWorkspace.inbox,
-    this.initialCampaignSegments = const {},
-    this.initialCampaignSearch,
+    this.initialSavedAudienceId,
     this.initialOrganizerId,
     this.initialThreadId,
     this.broadcastEnabled,
@@ -68,8 +67,7 @@ class HostInboxScreen extends ConsumerStatefulWidget {
   final HostInboxScope? initialScope;
   final HostInboxAudienceSegment initialSegment;
   final HostMessagingWorkspace initialWorkspace;
-  final Set<HostAudienceSegment> initialCampaignSegments;
-  final String? initialCampaignSearch;
+  final String? initialSavedAudienceId;
   final String? initialOrganizerId;
   final String? initialThreadId;
   final bool? broadcastEnabled;
@@ -162,8 +160,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             uid: uid,
             clubsState: clubsState,
             selectedClub: selectedClub,
-            initialSegments: widget.initialCampaignSegments,
-            initialSearch: widget.initialCampaignSearch,
+            initialSavedAudienceId: widget.initialSavedAudienceId,
             onRetry: _retry,
             onBusyChanged: _setCampaignBusy,
             onOpenInbox: () => _selectWorkspace(HostMessagingWorkspace.inbox),
@@ -488,8 +485,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
     required this.uid,
     required this.clubsState,
     required this.selectedClub,
-    required this.initialSegments,
-    required this.initialSearch,
+    required this.initialSavedAudienceId,
     required this.onRetry,
     required this.onBusyChanged,
     required this.onOpenInbox,
@@ -499,8 +495,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
   final String? uid;
   final CatchAsyncState<List<Club>> clubsState;
   final Club? selectedClub;
-  final Set<HostAudienceSegment> initialSegments;
-  final String? initialSearch;
+  final String? initialSavedAudienceId;
   final ValueChanged<String?> onRetry;
   final ValueChanged<bool> onBusyChanged;
   final VoidCallback onOpenInbox;
@@ -522,8 +517,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
     if (club == null) return const _HostNoOrganizerSliver();
     return HostSendsWorkspaceSliver(
       club: club,
-      initialSegments: initialSegments,
-      initialSearch: initialSearch,
+      initialSavedAudienceId: initialSavedAudienceId,
       onBusyChanged: onBusyChanged,
       onOpenInbox: onOpenInbox,
     );

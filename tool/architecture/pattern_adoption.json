@@ -1,6 +1,6 @@
 {
-  "version": "1.14.0",
-  "updated": "2026-08-29",
+  "version": "1.15.0",
+  "updated": "2026-08-30",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Defines architecture reference exhibits, adopter files, candidate status, and back-propagation obligations enforced by architecture checks.",
   "patterns": [
@@ -2108,6 +2108,81 @@
         "bash tool/check_catch_ui_lints.sh"
       ],
       "notes": "The first reference intent is an individual customer conversation. Catch chat is managed delivery; personal WhatsApp is an external handoff where the host presses send. Unknown marketing permission is not rewritten as a grant, and no handoff is represented as Catch delivery."
+    },
+    {
+      "id": "ARCH-SAVED-AUDIENCE-001",
+      "name": "Customers-owned saved audiences",
+      "status": "reference",
+      "screenInventory": "design/screens/catch.screens.json",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-saved-audience-001-customers-owned-saved-audiences",
+      "prototypeFiles": [
+        "contracts/firestore/organizer_saved_audiences.schema.json",
+        "contracts/callables/upsert_organizer_saved_audience_payload.schema.json",
+        "functions/src/organizers/organizerSavedAudiences.ts",
+        "functions/src/organizers/organizerSavedAudiences.test.ts",
+        "functions/src/organizers/organizerCampaigns.ts",
+        "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/presentation/customers/host_customers_screen.dart",
+        "lib/hosts/presentation/customers/host_customer_editor_sheets.dart",
+        "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+        "test/hosts/host_crm_repository_test.dart",
+        "test/hosts/host_campaign_composer_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "contracts/firestore/organizer_saved_audiences.schema.json",
+          "role": "versioned organizer-CRM definition contract with a closed predicate vocabulary and no event or arbitrary query expression",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/organizers/organizerSavedAudiences.ts",
+          "role": "manager-authorized canonical writer and bounded exact evaluator with explicit partial-coverage and size failures",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/organizers/organizerCampaigns.ts",
+          "role": "saved-audience id, revision and hash consumer with legacy read compatibility and frozen approval recipients",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
+          "role": "Customers-owned audience creation entry point from exact persistable directory filters",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customer_editor_sheets.dart",
+          "role": "Customers-owned naming, exact preview, archive and reusable-audience management surface",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+          "role": "Sends-owned campaign editor that selects an existing audience id and cannot author a competing filter",
+          "status": "aligned"
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "ARCH-SAVED-AUDIENCE-001-EDIT",
+          "path": "lib/hosts/presentation/customers",
+          "reason": "A later visual builder may edit compound predicates, but it must remain Customers-owned and submit only the same closed typed definition."
+        },
+        {
+          "id": "ARCH-SAVED-AUDIENCE-001-EVENT-REFERENCE",
+          "path": "functions/src/events",
+          "reason": "Event announcement sends may reference event-scoped audiences directly; they must not copy Booked or Prospective into organizer CRM definitions."
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When saved-audience scope, predicate vocabulary, canonicalization, exactness bounds, optimistic revision semantics, campaign reference fields, legacy compatibility, or ownership changes, update schemas and generated contracts, evaluator and campaign state machine, Customers and Sends composition, Firestore rules/indexes, owner docs, screen inventory, focused backend/Flutter tests, and this exhibit in one pass.",
+      "requiredChecks": [
+        "./tool/check_data_contract.sh",
+        "npm --prefix functions run lint && npm --prefix functions run build && node --test functions/lib/organizers/organizerSavedAudiences.test.js",
+        "flutter test test/hosts/host_crm_repository_test.dart test/hosts/host_campaign_composer_test.dart test/hosts/host_customer_filter_summary_test.dart test/hosts/host_inbox_screen_test.dart test/routing/router_widgets_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/architecture/check_adopted_architecture_boundaries.mjs",
+        "bash tool/check_catch_ui_lints.sh"
+      ],
+      "notes": "Reusable organizer CRM audiences are authored and managed in Customers. Preview is exact or fails; Sends selects one versioned audience reference, while campaign approval freezes recipients and dispatch rechecks current authority. Legacy segment-authored campaigns are read-only compatibility material."
     },
     {
       "id": "ARCH-CRM-AUTHORITY-001",

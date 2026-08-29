@@ -22,12 +22,14 @@
     "campaign": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "campaignId", "name", "status", "segmentIds", "templateId", "templateName", "audienceCounts", "deliveryCounts", "scheduledAtMillis", "dispatchedAtMillis", "activityAtMillis"],
+      "required": ["kind", "campaignId", "name", "status", "savedAudienceId", "savedAudienceName", "segmentIds", "templateId", "templateName", "audienceCounts", "deliveryCounts", "scheduledAtMillis", "dispatchedAtMillis", "activityAtMillis"],
       "properties": {
         "kind": {"const": "campaign"},
         "campaignId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "name": {"type": "string", "minLength": 1, "maxLength": 120},
         "status": {"$ref": "../firestore/organizer_campaigns.schema.json#/properties/status"},
+        "savedAudienceId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+        "savedAudienceName": {"type": ["string", "null"], "minLength": 1, "maxLength": 80},
         "segmentIds": {"$ref": "../firestore/organizer_campaigns.schema.json#/properties/segmentIds"},
         "templateId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "templateName": {"type": ["string", "null"], "minLength": 1, "maxLength": 120},

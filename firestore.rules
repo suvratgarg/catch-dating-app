@@ -917,6 +917,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Reusable CRM audiences are authored and resolved only through bounded,
+    // manager-authorized callables. Definitions and preview metadata are not a
+    // client-side Firestore query language.
+    match /organizerSavedAudiences/{audienceId} {
+      allow read, write: if false;
+    }
+
     match /organizerContactIdentityLinks/{identityLinkId} {
       allow read, write: if false;
     }

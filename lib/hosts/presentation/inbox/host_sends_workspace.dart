@@ -29,15 +29,13 @@ class HostSendsWorkspaceSliver extends ConsumerStatefulWidget {
   const HostSendsWorkspaceSliver({
     super.key,
     required this.club,
-    required this.initialSegments,
-    required this.initialSearch,
+    required this.initialSavedAudienceId,
     required this.onBusyChanged,
     required this.onOpenInbox,
   });
 
   final Club club;
-  final Set<HostAudienceSegment> initialSegments;
-  final String? initialSearch;
+  final String? initialSavedAudienceId;
   final ValueChanged<bool> onBusyChanged;
   final VoidCallback onOpenInbox;
 
@@ -62,9 +60,7 @@ class _HostSendsWorkspaceSliverState
   @override
   void initState() {
     super.initState();
-    _composing =
-        widget.initialSegments.isNotEmpty ||
-        (widget.initialSearch?.isNotEmpty ?? false);
+    _composing = widget.initialSavedAudienceId != null;
   }
 
   @override
@@ -100,8 +96,7 @@ class _HostSendsWorkspaceSliverState
         : _composing
         ? _HostSendsComposer(
             club: widget.club,
-            initialSegments: widget.initialSegments,
-            initialSearch: widget.initialSearch,
+            initialSavedAudienceId: widget.initialSavedAudienceId,
             onBusyChanged: _setBusy,
             onBack: _showHistory,
           )
@@ -684,15 +679,13 @@ class _HostSendRow extends StatelessWidget {
 class _HostSendsComposer extends StatelessWidget {
   const _HostSendsComposer({
     required this.club,
-    required this.initialSegments,
-    required this.initialSearch,
+    required this.initialSavedAudienceId,
     required this.onBusyChanged,
     required this.onBack,
   });
 
   final Club club;
-  final Set<HostAudienceSegment> initialSegments;
-  final String? initialSearch;
+  final String? initialSavedAudienceId;
   final ValueChanged<bool> onBusyChanged;
   final VoidCallback onBack;
 
@@ -704,8 +697,7 @@ class _HostSendsComposer extends StatelessWidget {
       gapH12,
       HostCampaignComposer(
         club: club,
-        initialSegments: initialSegments,
-        initialSearch: initialSearch,
+        initialSavedAudienceId: initialSavedAudienceId,
         onBusyChanged: onBusyChanged,
       ),
     ],

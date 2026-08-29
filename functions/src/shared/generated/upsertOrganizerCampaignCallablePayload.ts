@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Creates or revision-updates one draft WhatsApp organizer campaign.
+ * Creates or revision-updates one draft WhatsApp organizer campaign that consumes a Customers-owned saved audience id.
  */
 export interface UpsertOrganizerCampaignCallablePayload {
   organizerId: string;
@@ -12,20 +12,7 @@ export interface UpsertOrganizerCampaignCallablePayload {
   expectedRevision?: number | null;
   name: string;
   messageClass: "eventFollowUp" | "organizerUpdate" | "organizerPromotion";
-  /**
-   * @minItems 1
-   * @maxItems 5
-   */
-  segmentIds: (
-    | "first_time_attendee"
-    | "repeat_attendee"
-    | "regular"
-    | "lapsed_regular"
-    | "reliable_attendee"
-    | "advocate"
-    | "high_impact_advocate"
-    | "whatsapp_reachable"
-  )[];
+  savedAudienceId: string;
   connectionId: string;
   templateId: string;
   templateVariables: {

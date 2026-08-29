@@ -16,6 +16,8 @@ const campaign = (id: string, activityAtMillis: number): SendRow => ({
   campaignId: id,
   name: "Regulars",
   status: "completed",
+  savedAudienceId: "audience-1",
+  savedAudienceName: "Regulars",
   segmentIds: ["regular"],
   templateId: "template-1",
   templateName: "Regular invite",

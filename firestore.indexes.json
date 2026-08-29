@@ -356,6 +356,16 @@
       ]
     },
     {
+      "collectionGroup": "organizerContacts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "deletedAt", "mode": "ASCENDING"},
+        {"fieldPath": "hiddenAt", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerContactTraits",
       "queryScope": "COLLECTION",
       "fields": [
@@ -563,6 +573,16 @@
       "fields": [
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "scheduledAt", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerSavedAudiences",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
       ]
     },
     {

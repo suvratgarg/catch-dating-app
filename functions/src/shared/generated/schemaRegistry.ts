@@ -14029,6 +14029,672 @@ export const organizerContactTagVocabularyDocumentSchema: Record<string, unknown
   }
 } as const;
 
+export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_saved_audiences.schema.json",
+  "title": "OrganizerSavedAudienceDocument",
+  "description": "One reusable Customers-owned organizer CRM audience. Definitions use only the closed reviewed predicate vocabulary and never contain event-scoped or arbitrary Firestore queries.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerSavedAudiences",
+  "x-firestore-path": "organizerSavedAudiences/{audienceId}",
+  "x-document-id-field": "audienceId",
+  "x-owner": "manager-only organizer saved-audience callables",
+  "required": [
+    "organizerId",
+    "audienceId",
+    "scope",
+    "name",
+    "status",
+    "definition",
+    "definitionHash",
+    "definitionVersion",
+    "revision",
+    "createdByUid",
+    "updatedByUid",
+    "lastPreviewMatchCount",
+    "lastPreviewAt",
+    "createdAt",
+    "updatedAt",
+    "archivedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "scope": {
+      "const": "organizerCrm"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ]
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "join",
+        "predicates"
+      ],
+      "properties": {
+        "join": {
+          "type": "string",
+          "enum": [
+            "all",
+            "any"
+          ]
+        },
+        "predicates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "computedSegment"
+                  },
+                  "segmentId": {
+                    "type": "string",
+                    "enum": [
+                      "new_to_organizer",
+                      "first_time_attendee",
+                      "repeat_attendee",
+                      "regular",
+                      "lapsed_regular",
+                      "reliable_attendee",
+                      "needs_confirmation",
+                      "advocate",
+                      "high_impact_advocate",
+                      "whatsapp_reachable",
+                      "sms_reachable"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "manualTagId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "manualTag"
+                  },
+                  "manualTagId": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{32}$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "eventCount"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendanceCount"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "eventCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "days"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "lastSeenWithinDays"
+                  },
+                  "days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "intent"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "reachableForIntent"
+                  },
+                  "intent": {
+                    "const": "organizerWhatsappCampaign"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "definitionHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "definitionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "lastPreviewMatchCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "lastPreviewAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "archivedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "join",
+        "predicates"
+      ],
+      "properties": {
+        "join": {
+          "type": "string",
+          "enum": [
+            "all",
+            "any"
+          ]
+        },
+        "predicates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "computedSegment"
+                  },
+                  "segmentId": {
+                    "type": "string",
+                    "enum": [
+                      "new_to_organizer",
+                      "first_time_attendee",
+                      "repeat_attendee",
+                      "regular",
+                      "lapsed_regular",
+                      "reliable_attendee",
+                      "needs_confirmation",
+                      "advocate",
+                      "high_impact_advocate",
+                      "whatsapp_reachable",
+                      "sms_reachable"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "manualTagId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "manualTag"
+                  },
+                  "manualTagId": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{32}$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "eventCount"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendanceCount"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "eventCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "days"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "lastSeenWithinDays"
+                  },
+                  "days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "intent"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "reachableForIntent"
+                  },
+                  "intent": {
+                    "const": "organizerWhatsappCampaign"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "predicate": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "segmentId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "computedSegment"
+            },
+            "segmentId": {
+              "type": "string",
+              "enum": [
+                "new_to_organizer",
+                "first_time_attendee",
+                "repeat_attendee",
+                "regular",
+                "lapsed_regular",
+                "reliable_attendee",
+                "needs_confirmation",
+                "advocate",
+                "high_impact_advocate",
+                "whatsapp_reachable",
+                "sms_reachable"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "manualTagId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "manualTag"
+            },
+            "manualTagId": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "operator",
+            "eventCount"
+          ],
+          "properties": {
+            "kind": {
+              "const": "attendanceCount"
+            },
+            "operator": {
+              "type": "string",
+              "enum": [
+                "atLeast",
+                "atMost"
+              ]
+            },
+            "eventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "days"
+          ],
+          "properties": {
+            "kind": {
+              "const": "lastSeenWithinDays"
+            },
+            "days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3650
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "intent"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reachableForIntent"
+            },
+            "intent": {
+              "const": "organizerWhatsappCampaign"
+            }
+          }
+        }
+      ]
+    },
+    "computedSegmentPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "segmentId"
+      ],
+      "properties": {
+        "kind": {
+          "const": "computedSegment"
+        },
+        "segmentId": {
+          "type": "string",
+          "enum": [
+            "new_to_organizer",
+            "first_time_attendee",
+            "repeat_attendee",
+            "regular",
+            "lapsed_regular",
+            "reliable_attendee",
+            "needs_confirmation",
+            "advocate",
+            "high_impact_advocate",
+            "whatsapp_reachable",
+            "sms_reachable"
+          ]
+        }
+      }
+    },
+    "manualTagPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "manualTagId"
+      ],
+      "properties": {
+        "kind": {
+          "const": "manualTag"
+        },
+        "manualTagId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        }
+      }
+    },
+    "attendanceCountPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "operator",
+        "eventCount"
+      ],
+      "properties": {
+        "kind": {
+          "const": "attendanceCount"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "atLeast",
+            "atMost"
+          ]
+        },
+        "eventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        }
+      }
+    },
+    "lastSeenWithinDaysPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "days"
+      ],
+      "properties": {
+        "kind": {
+          "const": "lastSeenWithinDays"
+        },
+        "days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3650
+        }
+      }
+    },
+    "reachableForIntentPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "intent"
+      ],
+      "properties": {
+        "kind": {
+          "const": "reachableForIntent"
+        },
+        "intent": {
+          "const": "organizerWhatsappCampaign"
+        }
+      }
+    }
+  }
+} as const;
+
 export const organizerContactIdentityLinkDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_contact_identity_links.schema.json",
@@ -22928,9 +23594,9 @@ export const organizerCampaignDocumentSchema: Record<string, unknown> = {
     },
     "segmentIds": {
       "type": "array",
-      "minItems": 1,
       "maxItems": 5,
       "uniqueItems": true,
+      "description": "Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.",
       "items": {
         "type": "string",
         "enum": [
@@ -22944,6 +23610,30 @@ export const organizerCampaignDocumentSchema: Record<string, unknown> = {
           "whatsapp_reachable"
         ]
       }
+    },
+    "savedAudienceId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Customers-owned reusable audience used by every new campaign. Null or absent only on legacy segment-authored campaigns."
+    },
+    "savedAudienceRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "savedAudienceDefinitionHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
     },
     "connectionId": {
       "type": "string",
@@ -23020,7 +23710,8 @@ export const organizerCampaignDocumentSchema: Record<string, unknown> = {
         "string",
         "null"
       ],
-      "pattern": "^[a-f0-9]{64}$"
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Exact audience-state hash stored by preview and required unchanged at approval; retained as the frozen recipient snapshot hash after approval."
     },
     "contentHash": {
       "type": "string",
@@ -58556,7 +59247,7 @@ export const upsertOrganizerCampaignCallablePayloadSchema: Record<string, unknow
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/upsert_organizer_campaign_payload.schema.json",
   "title": "UpsertOrganizerCampaignCallablePayload",
-  "description": "Creates or revision-updates one draft WhatsApp organizer campaign.",
+  "description": "Creates or revision-updates one draft WhatsApp organizer campaign that consumes a Customers-owned saved audience id.",
   "x-callable-aliases": [
     "upsertOrganizerCampaign"
   ],
@@ -58567,7 +59258,7 @@ export const upsertOrganizerCampaignCallablePayloadSchema: Record<string, unknow
     "requestId",
     "name",
     "messageClass",
-    "segmentIds",
+    "savedAudienceId",
     "connectionId",
     "templateId",
     "templateVariables"
@@ -58612,24 +59303,10 @@ export const upsertOrganizerCampaignCallablePayloadSchema: Record<string, unknow
         "organizerPromotion"
       ]
     },
-    "segmentIds": {
-      "type": "array",
-      "minItems": 1,
-      "maxItems": 5,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "enum": [
-          "first_time_attendee",
-          "repeat_attendee",
-          "regular",
-          "lapsed_regular",
-          "reliable_attendee",
-          "advocate",
-          "high_impact_advocate",
-          "whatsapp_reachable"
-        ]
-      }
+    "savedAudienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     },
     "connectionId": {
       "type": "string",
@@ -58681,6 +59358,1051 @@ export const upsertOrganizerCampaignCallablePayloadSchema: Record<string, unknow
       ],
       "minimum": 0,
       "maximum": 4102444800000
+    }
+  }
+} as const;
+
+export const upsertOrganizerSavedAudienceCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_organizer_saved_audience_payload.schema.json",
+  "title": "UpsertOrganizerSavedAudienceCallablePayload",
+  "description": "Creates or revision-updates one reusable Customers-owned CRM audience.",
+  "x-callable-aliases": [
+    "upsertOrganizerSavedAudience"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "scope",
+    "name",
+    "definition"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audienceId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "scope": {
+      "const": "organizerCrm"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "join",
+        "predicates"
+      ],
+      "properties": {
+        "join": {
+          "type": "string",
+          "enum": [
+            "all",
+            "any"
+          ]
+        },
+        "predicates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "computedSegment"
+                  },
+                  "segmentId": {
+                    "type": "string",
+                    "enum": [
+                      "new_to_organizer",
+                      "first_time_attendee",
+                      "repeat_attendee",
+                      "regular",
+                      "lapsed_regular",
+                      "reliable_attendee",
+                      "needs_confirmation",
+                      "advocate",
+                      "high_impact_advocate",
+                      "whatsapp_reachable",
+                      "sms_reachable"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "manualTagId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "manualTag"
+                  },
+                  "manualTagId": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{32}$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "eventCount"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendanceCount"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "eventCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "days"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "lastSeenWithinDays"
+                  },
+                  "days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "intent"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "reachableForIntent"
+                  },
+                  "intent": {
+                    "const": "organizerWhatsappCampaign"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+} as const;
+
+export const listOrganizerSavedAudiencesCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_saved_audiences_payload.schema.json",
+  "title": "ListOrganizerSavedAudiencesCallablePayload",
+  "description": "Lists one organizer's reusable CRM audiences.",
+  "x-callable-aliases": [
+    "listOrganizerSavedAudiences"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ],
+      "default": "active"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+} as const;
+
+export const previewOrganizerSavedAudienceCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/preview_organizer_saved_audience_payload.schema.json",
+  "title": "PreviewOrganizerSavedAudienceCallablePayload",
+  "description": "Resolves an exact bounded preview for one saved CRM audience.",
+  "x-callable-aliases": [
+    "previewOrganizerSavedAudience"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "audienceId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "sampleLimit": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 25,
+      "default": 10
+    }
+  }
+} as const;
+
+export const archiveOrganizerSavedAudienceCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/archive_organizer_saved_audience_payload.schema.json",
+  "title": "ArchiveOrganizerSavedAudienceCallablePayload",
+  "description": "Archives one reusable CRM audience with optimistic revision control.",
+  "x-callable-aliases": [
+    "archiveOrganizerSavedAudience"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "audienceId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+} as const;
+
+export const organizerSavedAudienceCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_saved_audience_response.schema.json",
+  "title": "OrganizerSavedAudienceCallableResponse",
+  "description": "Sanitized reusable organizer CRM audience definition.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "audienceId",
+    "scope",
+    "name",
+    "status",
+    "definition",
+    "definitionHash",
+    "definitionVersion",
+    "revision",
+    "lastPreviewMatchCount",
+    "lastPreviewAtMillis",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "scope": {
+      "const": "organizerCrm"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ]
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "join",
+        "predicates"
+      ],
+      "properties": {
+        "join": {
+          "type": "string",
+          "enum": [
+            "all",
+            "any"
+          ]
+        },
+        "predicates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "computedSegment"
+                  },
+                  "segmentId": {
+                    "type": "string",
+                    "enum": [
+                      "new_to_organizer",
+                      "first_time_attendee",
+                      "repeat_attendee",
+                      "regular",
+                      "lapsed_regular",
+                      "reliable_attendee",
+                      "needs_confirmation",
+                      "advocate",
+                      "high_impact_advocate",
+                      "whatsapp_reachable",
+                      "sms_reachable"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "manualTagId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "manualTag"
+                  },
+                  "manualTagId": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{32}$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "eventCount"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendanceCount"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "eventCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "days"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "lastSeenWithinDays"
+                  },
+                  "days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "intent"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "reachableForIntent"
+                  },
+                  "intent": {
+                    "const": "organizerWhatsappCampaign"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "definitionHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "definitionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "lastPreviewMatchCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "lastPreviewAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+} as const;
+
+export const listOrganizerSavedAudiencesCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_saved_audiences_response.schema.json",
+  "title": "ListOrganizerSavedAudiencesCallableResponse",
+  "description": "One bounded page of reusable organizer CRM audiences.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "audiences",
+    "nextCursor"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audiences": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "title": "OrganizerSavedAudienceCallableResponse",
+        "description": "Sanitized reusable organizer CRM audience definition.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "audienceId",
+          "scope",
+          "name",
+          "status",
+          "definition",
+          "definitionHash",
+          "definitionVersion",
+          "revision",
+          "lastPreviewMatchCount",
+          "lastPreviewAtMillis",
+          "createdAtMillis",
+          "updatedAtMillis"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "audienceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "scope": {
+            "const": "organizerCrm"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "archived"
+            ]
+          },
+          "definition": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "join",
+              "predicates"
+            ],
+            "properties": {
+              "join": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "any"
+                ]
+              },
+              "predicates": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 8,
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "segmentId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "computedSegment"
+                        },
+                        "segmentId": {
+                          "type": "string",
+                          "enum": [
+                            "new_to_organizer",
+                            "first_time_attendee",
+                            "repeat_attendee",
+                            "regular",
+                            "lapsed_regular",
+                            "reliable_attendee",
+                            "needs_confirmation",
+                            "advocate",
+                            "high_impact_advocate",
+                            "whatsapp_reachable",
+                            "sms_reachable"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "manualTagId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "manualTag"
+                        },
+                        "manualTagId": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{32}$"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "operator",
+                        "eventCount"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "attendanceCount"
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "atLeast",
+                            "atMost"
+                          ]
+                        },
+                        "eventCount": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 10000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "days"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "lastSeenWithinDays"
+                        },
+                        "days": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 3650
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "intent"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "reachableForIntent"
+                        },
+                        "intent": {
+                          "const": "organizerWhatsappCampaign"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "definitionHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "definitionVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "lastPreviewMatchCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 2500
+          },
+          "lastPreviewAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+} as const;
+
+export const previewOrganizerSavedAudienceCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/preview_organizer_saved_audience_response.schema.json",
+  "title": "PreviewOrganizerSavedAudienceCallableResponse",
+  "description": "Exact saved-audience preview. Incomplete or over-limit evaluation fails instead of returning this shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "audience",
+    "coverage",
+    "matchCount",
+    "sample",
+    "evaluatedAtMillis"
+  ],
+  "properties": {
+    "audience": {
+      "title": "OrganizerSavedAudienceCallableResponse",
+      "description": "Sanitized reusable organizer CRM audience definition.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "audienceId",
+        "scope",
+        "name",
+        "status",
+        "definition",
+        "definitionHash",
+        "definitionVersion",
+        "revision",
+        "lastPreviewMatchCount",
+        "lastPreviewAtMillis",
+        "createdAtMillis",
+        "updatedAtMillis"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "audienceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "scope": {
+          "const": "organizerCrm"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "archived"
+          ]
+        },
+        "definition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "join",
+            "predicates"
+          ],
+          "properties": {
+            "join": {
+              "type": "string",
+              "enum": [
+                "all",
+                "any"
+              ]
+            },
+            "predicates": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "segmentId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "computedSegment"
+                      },
+                      "segmentId": {
+                        "type": "string",
+                        "enum": [
+                          "new_to_organizer",
+                          "first_time_attendee",
+                          "repeat_attendee",
+                          "regular",
+                          "lapsed_regular",
+                          "reliable_attendee",
+                          "needs_confirmation",
+                          "advocate",
+                          "high_impact_advocate",
+                          "whatsapp_reachable",
+                          "sms_reachable"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "manualTagId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "manualTag"
+                      },
+                      "manualTagId": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{32}$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "operator",
+                      "eventCount"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "attendanceCount"
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": [
+                          "atLeast",
+                          "atMost"
+                        ]
+                      },
+                      "eventCount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "days"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "lastSeenWithinDays"
+                      },
+                      "days": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 3650
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "intent"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "reachableForIntent"
+                      },
+                      "intent": {
+                        "const": "organizerWhatsappCampaign"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "definitionHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definitionVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "lastPreviewMatchCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "lastPreviewAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "createdAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "updatedAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "coverage": {
+      "const": "exact"
+    },
+    "matchCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "sample": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contactId",
+          "displayName"
+        ],
+        "properties": {
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        }
+      }
+    },
+    "evaluatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
     }
   }
 } as const;
@@ -58864,6 +60586,7 @@ export const organizerCampaignCallableResponseSchema: Record<string, unknown> = 
   "required": [
     "organizerId",
     "campaignId",
+    "savedAudienceId",
     "status",
     "revision",
     "audienceCounts",
@@ -58882,6 +60605,14 @@ export const organizerCampaignCallableResponseSchema: Record<string, unknown> = 
     },
     "campaignId": {
       "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "savedAudienceId": {
+      "type": [
+        "string",
+        "null"
+      ],
       "minLength": 1,
       "maxLength": 180
     },
@@ -59072,6 +60803,8 @@ export const organizerCampaignCallableResponseSchema: Record<string, unknown> = 
           "senderInactive",
           "templateMissing",
           "templateUnapproved",
+          "savedAudienceMissing",
+          "savedAudienceChanged",
           "noReachableRecipients",
           "audienceCoveragePartial",
           "audienceTooLarge",
@@ -59150,6 +60883,8 @@ export const listOrganizerCampaignsCallableResponseSchema: Record<string, unknow
               "campaignId",
               "name",
               "status",
+              "savedAudienceId",
+              "savedAudienceName",
               "segmentIds",
               "templateId",
               "templateName",
@@ -59188,11 +60923,27 @@ export const listOrganizerCampaignsCallableResponseSchema: Record<string, unknow
                   "blocked"
                 ]
               },
+              "savedAudienceId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "savedAudienceName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 80
+              },
               "segmentIds": {
                 "type": "array",
-                "minItems": 1,
                 "maxItems": 5,
                 "uniqueItems": true,
+                "description": "Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.",
                 "items": {
                   "type": "string",
                   "enum": [
@@ -59540,6 +61291,8 @@ export const listOrganizerCampaignsCallableResponseSchema: Record<string, unknow
             "campaignId",
             "name",
             "status",
+            "savedAudienceId",
+            "savedAudienceName",
             "segmentIds",
             "templateId",
             "templateName",
@@ -59578,11 +61331,27 @@ export const listOrganizerCampaignsCallableResponseSchema: Record<string, unknow
                 "blocked"
               ]
             },
+            "savedAudienceId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "savedAudienceName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80
+            },
             "segmentIds": {
               "type": "array",
-              "minItems": 1,
               "maxItems": 5,
               "uniqueItems": true,
+              "description": "Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.",
               "items": {
                 "type": "string",
                 "enum": [
@@ -59918,6 +61687,8 @@ export const listOrganizerCampaignsCallableResponseSchema: Record<string, unknow
         "campaignId",
         "name",
         "status",
+        "savedAudienceId",
+        "savedAudienceName",
         "segmentIds",
         "templateId",
         "templateName",
@@ -59956,11 +61727,27 @@ export const listOrganizerCampaignsCallableResponseSchema: Record<string, unknow
             "blocked"
           ]
         },
+        "savedAudienceId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "savedAudienceName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
+        },
         "segmentIds": {
           "type": "array",
-          "minItems": 1,
           "maxItems": 5,
           "uniqueItems": true,
+          "description": "Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.",
           "items": {
             "type": "string",
             "enum": [

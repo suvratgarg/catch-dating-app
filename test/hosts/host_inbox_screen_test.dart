@@ -7,7 +7,6 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/communications/domain/communication_route.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -546,7 +545,7 @@ void main() {
     },
   );
 
-  testWidgets('campaigns workspace restores the routed campaign segment', (
+  testWidgets('campaigns workspace restores the routed saved audience', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -556,17 +555,14 @@ void main() {
         participations: const [],
         now: now,
         initialWorkspace: HostMessagingWorkspace.campaigns,
-        initialCampaignSegments: const {HostAudienceSegment.lapsedRegular},
+        initialSavedAudienceId: 'audience-1',
       ),
     );
     await pumpFeatureUi(tester);
 
     expect(find.byType(HostMessagingWorkspaceRail), findsOneWidget);
     expect(find.byType(HostCampaignComposer), findsOneWidget);
-    final selected = tester.widget<CatchChip>(
-      find.byKey(const ValueKey('host-campaign-segment-lapsed_regular')),
-    );
-    expect(selected.selected, isTrue);
+    expect(find.text('Lapsed customers · 12 people at last preview'), findsOne);
   });
 }
 
@@ -577,7 +573,7 @@ Widget _app({
   required DateTime now,
   HostInboxScope? initialScope,
   HostMessagingWorkspace initialWorkspace = HostMessagingWorkspace.inbox,
-  Set<HostAudienceSegment> initialCampaignSegments = const {},
+  String? initialSavedAudienceId,
   List<HostSendSummary> sends = const [],
   List<HostWhatsappThreadSummary> whatsappThreads = const [],
   AsyncValue<HostWhatsappThreadPage>? whatsappThreadsValue,
@@ -627,6 +623,14 @@ Widget _app({
           coverage: HostCustomerMatchCountCoverage.exact,
         ),
       ),
+      hostSavedAudiencesProvider(club.id).overrideWithValue(
+        AsyncData(
+          HostSavedAudiencePage(
+            audiences: [_savedAudience(club.id)],
+            nextCursor: null,
+          ),
+        ),
+      ),
       if (event != null)
         watchEventParticipationsForEventProvider(
           event.id,
@@ -637,13 +641,34 @@ Widget _app({
       home: HostInboxScreen(
         initialScope: initialScope,
         initialWorkspace: initialWorkspace,
-        initialCampaignSegments: initialCampaignSegments,
+        initialSavedAudienceId: initialSavedAudienceId,
         syncSelectionToRoute: false,
         now: now,
       ),
     ),
   );
 }
+
+HostSavedAudience _savedAudience(String organizerId) => HostSavedAudience(
+  organizerId: organizerId,
+  audienceId: 'audience-1',
+  name: 'Lapsed customers',
+  status: 'active',
+  definition: const HostSavedAudienceDefinition(
+    join: HostSavedAudienceJoin.all,
+    predicates: [
+      HostSavedAudienceComputedSegment(HostAudienceSegment.lapsedRegular),
+    ],
+  ),
+  definitionHash:
+      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  definitionVersion: 1,
+  revision: 1,
+  lastPreviewMatchCount: 12,
+  lastPreviewAt: DateTime(2026, 8, 30),
+  createdAt: DateTime(2026, 8, 30),
+  updatedAt: DateTime(2026, 8, 30),
+);
 
 HostWhatsappThreadSummary _whatsappThread({
   required String threadId,

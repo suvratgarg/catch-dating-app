@@ -1654,12 +1654,267 @@ class HostWhatsappSignupResult {
   final String? businessId;
 }
 
+enum HostSavedAudienceJoin { all, any }
+
+sealed class HostSavedAudiencePredicate {
+  const HostSavedAudiencePredicate();
+
+  factory HostSavedAudiencePredicate.fromMap(Map<Object?, Object?> map) =>
+      switch (_requiredString(map, 'kind')) {
+        'computedSegment' => HostSavedAudienceComputedSegment(
+          _requiredAudienceSegment(map, 'segmentId'),
+        ),
+        'manualTag' => HostSavedAudienceManualTag(
+          _requiredString(map, 'manualTagId'),
+        ),
+        'attendanceCount' => HostSavedAudienceAttendanceCount(
+          operator: _enumByName(
+            HostSavedAudienceAttendanceOperator.values,
+            _requiredString(map, 'operator'),
+            'saved audience attendance operator',
+          ),
+          eventCount: _requiredInt(map, 'eventCount'),
+        ),
+        'lastSeenWithinDays' => HostSavedAudienceLastSeenWithinDays(
+          _requiredInt(map, 'days'),
+        ),
+        'reachableForIntent' =>
+          _requiredString(map, 'intent') == 'organizerWhatsappCampaign'
+              ? const HostSavedAudienceCampaignReachable()
+              : throw const FormatException(
+                  'Saved audience had an unsupported reach intent.',
+                ),
+        _ => throw const FormatException(
+          'Saved audience had an unsupported predicate.',
+        ),
+      };
+
+  Map<String, Object?> toJson();
+}
+
+final class HostSavedAudienceComputedSegment
+    extends HostSavedAudiencePredicate {
+  const HostSavedAudienceComputedSegment(this.segment);
+
+  final HostAudienceSegment segment;
+
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': 'computedSegment',
+    'segmentId': segment.wireValue,
+  };
+}
+
+final class HostSavedAudienceManualTag extends HostSavedAudiencePredicate {
+  const HostSavedAudienceManualTag(this.manualTagId);
+
+  final String manualTagId;
+
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': 'manualTag',
+    'manualTagId': manualTagId,
+  };
+}
+
+enum HostSavedAudienceAttendanceOperator { atLeast, atMost }
+
+final class HostSavedAudienceAttendanceCount
+    extends HostSavedAudiencePredicate {
+  const HostSavedAudienceAttendanceCount({
+    required this.operator,
+    required this.eventCount,
+  });
+
+  final HostSavedAudienceAttendanceOperator operator;
+  final int eventCount;
+
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': 'attendanceCount',
+    'operator': operator.name,
+    'eventCount': eventCount,
+  };
+}
+
+final class HostSavedAudienceLastSeenWithinDays
+    extends HostSavedAudiencePredicate {
+  const HostSavedAudienceLastSeenWithinDays(this.days);
+
+  final int days;
+
+  @override
+  Map<String, Object?> toJson() => {'kind': 'lastSeenWithinDays', 'days': days};
+}
+
+final class HostSavedAudienceCampaignReachable
+    extends HostSavedAudiencePredicate {
+  const HostSavedAudienceCampaignReachable();
+
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': 'reachableForIntent',
+    'intent': 'organizerWhatsappCampaign',
+  };
+}
+
+class HostSavedAudienceDefinition {
+  const HostSavedAudienceDefinition({
+    required this.join,
+    required this.predicates,
+  });
+
+  factory HostSavedAudienceDefinition.fromMap(Map<Object?, Object?> map) =>
+      HostSavedAudienceDefinition(
+        join: _enumByName(
+          HostSavedAudienceJoin.values,
+          _requiredString(map, 'join'),
+          'saved audience join',
+        ),
+        predicates: _mapList(
+          map['predicates'],
+          'saved audience predicates',
+        ).map(HostSavedAudiencePredicate.fromMap).toList(growable: false),
+      );
+
+  final HostSavedAudienceJoin join;
+  final List<HostSavedAudiencePredicate> predicates;
+
+  Map<String, Object?> toJson() => {
+    'join': join.name,
+    'predicates': predicates.map((value) => value.toJson()).toList(),
+  };
+}
+
+class HostSavedAudience {
+  const HostSavedAudience({
+    required this.organizerId,
+    required this.audienceId,
+    required this.name,
+    required this.status,
+    required this.definition,
+    required this.definitionHash,
+    required this.definitionVersion,
+    required this.revision,
+    required this.lastPreviewMatchCount,
+    required this.lastPreviewAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory HostSavedAudience.fromMap(Map<Object?, Object?> map) {
+    if (_requiredString(map, 'scope') != 'organizerCrm') {
+      throw const FormatException('Saved audience had an event-scoped owner.');
+    }
+    return HostSavedAudience(
+      organizerId: _requiredString(map, 'organizerId'),
+      audienceId: _requiredString(map, 'audienceId'),
+      name: _requiredString(map, 'name'),
+      status: _requiredString(map, 'status'),
+      definition: HostSavedAudienceDefinition.fromMap(
+        _requiredMap(map['definition'], 'saved audience definition'),
+      ),
+      definitionHash: _requiredString(map, 'definitionHash'),
+      definitionVersion: _requiredInt(map, 'definitionVersion'),
+      revision: _requiredInt(map, 'revision'),
+      lastPreviewMatchCount: map['lastPreviewMatchCount'] == null
+          ? null
+          : _requiredInt(map, 'lastPreviewMatchCount'),
+      lastPreviewAt: _dateTimeFromMillis(map['lastPreviewAtMillis']),
+      createdAt: _requiredDateTimeFromMillis(map, 'createdAtMillis'),
+      updatedAt: _requiredDateTimeFromMillis(map, 'updatedAtMillis'),
+    );
+  }
+
+  final String organizerId;
+  final String audienceId;
+  final String name;
+  final String status;
+  final HostSavedAudienceDefinition definition;
+  final String definitionHash;
+  final int definitionVersion;
+  final int revision;
+  final int? lastPreviewMatchCount;
+  final DateTime? lastPreviewAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+}
+
+class HostSavedAudiencePage {
+  const HostSavedAudiencePage({
+    required this.audiences,
+    required this.nextCursor,
+  });
+
+  factory HostSavedAudiencePage.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'saved audience page');
+    return HostSavedAudiencePage(
+      audiences: _mapList(
+        map['audiences'],
+        'saved audiences',
+      ).map(HostSavedAudience.fromMap).toList(growable: false),
+      nextCursor: _nullableString(map['nextCursor']),
+    );
+  }
+
+  final List<HostSavedAudience> audiences;
+  final String? nextCursor;
+}
+
+class HostSavedAudiencePreviewContact {
+  const HostSavedAudiencePreviewContact({
+    required this.contactId,
+    required this.displayName,
+  });
+
+  factory HostSavedAudiencePreviewContact.fromMap(Map<Object?, Object?> map) =>
+      HostSavedAudiencePreviewContact(
+        contactId: _requiredString(map, 'contactId'),
+        displayName: _requiredString(map, 'displayName'),
+      );
+
+  final String contactId;
+  final String displayName;
+}
+
+class HostSavedAudiencePreview {
+  const HostSavedAudiencePreview({
+    required this.audience,
+    required this.matchCount,
+    required this.sample,
+    required this.evaluatedAt,
+  });
+
+  factory HostSavedAudiencePreview.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'saved audience preview');
+    if (_requiredString(map, 'coverage') != 'exact') {
+      throw const FormatException('Saved audience preview was not exact.');
+    }
+    return HostSavedAudiencePreview(
+      audience: HostSavedAudience.fromMap(
+        _requiredMap(map['audience'], 'saved audience'),
+      ),
+      matchCount: _requiredInt(map, 'matchCount'),
+      sample: _mapList(
+        map['sample'],
+        'saved audience sample',
+      ).map(HostSavedAudiencePreviewContact.fromMap).toList(growable: false),
+      evaluatedAt: _requiredDateTimeFromMillis(map, 'evaluatedAtMillis'),
+    );
+  }
+
+  final HostSavedAudience audience;
+  final int matchCount;
+  final List<HostSavedAudiencePreviewContact> sample;
+  final DateTime evaluatedAt;
+}
+
 class HostCampaignDraft {
   const HostCampaignDraft({
     required this.requestId,
     required this.name,
     required this.messageClass,
-    required this.segments,
+    required this.savedAudienceId,
     required this.connectionId,
     required this.templateId,
     required this.templateVariables,
@@ -1673,7 +1928,7 @@ class HostCampaignDraft {
   final String requestId;
   final String name;
   final String messageClass;
-  final Set<HostAudienceSegment> segments;
+  final String savedAudienceId;
   final String connectionId;
   final String templateId;
   final Map<String, String> templateVariables;
@@ -1705,6 +1960,7 @@ class HostCampaign {
   const HostCampaign({
     required this.organizerId,
     required this.campaignId,
+    this.savedAudienceId,
     required this.status,
     required this.revision,
     required this.audienceCounts,
@@ -1721,6 +1977,7 @@ class HostCampaign {
     return HostCampaign(
       organizerId: _requiredString(map, 'organizerId'),
       campaignId: _requiredString(map, 'campaignId'),
+      savedAudienceId: _nullableString(map['savedAudienceId']),
       status: _requiredString(map, 'status'),
       revision: _requiredInt(map, 'revision'),
       audienceCounts: HostCampaignCounts.fromMap(
@@ -1741,6 +1998,7 @@ class HostCampaign {
 
   final String organizerId;
   final String campaignId;
+  final String? savedAudienceId;
   final String status;
   final int revision;
   final HostCampaignCounts audienceCounts;
@@ -1772,6 +2030,8 @@ final class HostCampaignSendSummary extends HostSendSummary {
     required this.campaignId,
     required this.name,
     required this.status,
+    this.savedAudienceId,
+    this.savedAudienceName,
     required this.segments,
     required this.templateId,
     required this.templateName,
@@ -1787,6 +2047,8 @@ final class HostCampaignSendSummary extends HostSendSummary {
         campaignId: _requiredString(map, 'campaignId'),
         name: _requiredString(map, 'name'),
         status: _requiredString(map, 'status'),
+        savedAudienceId: _nullableString(map['savedAudienceId']),
+        savedAudienceName: _nullableString(map['savedAudienceName']),
         segments: _stringList(map['segmentIds'])
             .map(HostAudienceSegment.fromWireValue)
             .whereType<HostAudienceSegment>()
@@ -1809,6 +2071,8 @@ final class HostCampaignSendSummary extends HostSendSummary {
   final String campaignId;
   final String name;
   final String status;
+  final String? savedAudienceId;
+  final String? savedAudienceName;
   final Set<HostAudienceSegment> segments;
   final String templateId;
   final String? templateName;
@@ -2313,6 +2577,77 @@ class HostCrmRepository {
     parse: HostMessagingSetup.fromCallableData,
   );
 
+  Future<HostSavedAudiencePage> listSavedAudiences(
+    String organizerId, {
+    String status = 'active',
+    String? cursor,
+    int limit = ReadLimitPolicy.directoryPage,
+  }) => _call(
+    name: 'listOrganizerSavedAudiences',
+    payload: ListOrganizerSavedAudiencesCallableRequest(
+      organizerId: organizerId,
+      status: status,
+      limit: limit > 50 ? 50 : limit,
+      cursor: cursor,
+    ).toJson(),
+    action: 'load organizer saved audiences',
+    parse: HostSavedAudiencePage.fromCallableData,
+  );
+
+  Future<HostSavedAudience> upsertSavedAudience({
+    required String organizerId,
+    required String requestId,
+    required String name,
+    required HostSavedAudienceDefinition definition,
+    String? audienceId,
+    int? expectedRevision,
+  }) => _call(
+    name: 'upsertOrganizerSavedAudience',
+    payload: {
+      'organizerId': organizerId,
+      'audienceId': ?audienceId,
+      'requestId': requestId,
+      'expectedRevision': ?expectedRevision,
+      'scope': 'organizerCrm',
+      'name': name,
+      'definition': definition.toJson(),
+    },
+    action: 'save organizer audience',
+    parse: (value) =>
+        HostSavedAudience.fromMap(_requiredMap(value, 'saved audience')),
+  );
+
+  Future<HostSavedAudiencePreview> previewSavedAudience({
+    required String organizerId,
+    required HostSavedAudience audience,
+    int sampleLimit = 10,
+  }) => _call(
+    name: 'previewOrganizerSavedAudience',
+    payload: PreviewOrganizerSavedAudienceCallableRequest(
+      organizerId: organizerId,
+      audienceId: audience.audienceId,
+      expectedRevision: audience.revision,
+      sampleLimit: sampleLimit,
+    ).toJson(),
+    action: 'preview organizer audience',
+    parse: HostSavedAudiencePreview.fromCallableData,
+  );
+
+  Future<HostSavedAudience> archiveSavedAudience({
+    required String organizerId,
+    required HostSavedAudience audience,
+  }) => _call(
+    name: 'archiveOrganizerSavedAudience',
+    payload: ArchiveOrganizerSavedAudienceCallableRequest(
+      organizerId: organizerId,
+      audienceId: audience.audienceId,
+      expectedRevision: audience.revision,
+    ).toJson(),
+    action: 'archive organizer audience',
+    parse: (value) =>
+        HostSavedAudience.fromMap(_requiredMap(value, 'saved audience')),
+  );
+
   Future<HostCampaign> upsertCampaign(
     String organizerId,
     HostCampaignDraft draft,
@@ -2325,7 +2660,7 @@ class HostCrmRepository {
       expectedRevision: draft.expectedRevision,
       name: draft.name,
       messageClass: draft.messageClass,
-      segmentIds: draft.segments.map((segment) => segment.wireValue).toList(),
+      savedAudienceId: draft.savedAudienceId,
       connectionId: draft.connectionId,
       templateId: draft.templateId,
       templateVariables: draft.templateVariables,
@@ -2484,6 +2819,10 @@ Future<HostMessagingSetup> hostMessagingSetup(Ref ref, String organizerId) =>
     ref.read(hostCrmRepositoryProvider).getMessagingSetup(organizerId);
 
 @riverpod
+Future<HostSavedAudiencePage> hostSavedAudiences(Ref ref, String organizerId) =>
+    ref.read(hostCrmRepositoryProvider).listSavedAudiences(organizerId);
+
+@riverpod
 Future<HostSendsPage> hostSends(Ref ref, String organizerId) =>
     ref.read(hostCrmRepositoryProvider).listCampaigns(organizerId);
 
@@ -2562,6 +2901,15 @@ T _enumByName<T extends Enum>(List<T> values, String name, String label) {
     if (value.name == name) return value;
   }
   throw FormatException('Response had invalid $label.');
+}
+
+HostAudienceSegment _requiredAudienceSegment(
+  Map<Object?, Object?> map,
+  String key,
+) {
+  final segment = HostAudienceSegment.fromWireValue(_requiredString(map, key));
+  if (segment != null) return segment;
+  throw const FormatException('Saved audience had an unknown CRM segment.');
 }
 
 HostCrmChannelReadiness _readiness(Object? value) => switch (value) {

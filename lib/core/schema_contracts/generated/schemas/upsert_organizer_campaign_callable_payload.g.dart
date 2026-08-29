@@ -8,7 +8,7 @@ const schemaUpsertOrganizerCampaignCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/upsert_organizer_campaign_payload.schema.json',
   'title': 'UpsertOrganizerCampaignCallablePayload',
-  'description': 'Creates or revision-updates one draft WhatsApp organizer campaign.',
+  'description': 'Creates or revision-updates one draft WhatsApp organizer campaign that consumes a Customers-owned saved audience id.',
   'x-callable-aliases': <Object?>[
     'upsertOrganizerCampaign',
   ],
@@ -19,7 +19,7 @@ const schemaUpsertOrganizerCampaignCallablePayloadSchema = <String, Object?>{
     'requestId',
     'name',
     'messageClass',
-    'segmentIds',
+    'savedAudienceId',
     'connectionId',
     'templateId',
     'templateVariables',
@@ -64,24 +64,10 @@ const schemaUpsertOrganizerCampaignCallablePayloadSchema = <String, Object?>{
         'organizerPromotion',
       ],
     },
-    'segmentIds': <String, Object?>{
-      'type': 'array',
-      'minItems': 1,
-      'maxItems': 5,
-      'uniqueItems': true,
-      'items': <String, Object?>{
-        'type': 'string',
-        'enum': <Object?>[
-          'first_time_attendee',
-          'repeat_attendee',
-          'regular',
-          'lapsed_regular',
-          'reliable_attendee',
-          'advocate',
-          'high_impact_advocate',
-          'whatsapp_reachable',
-        ],
-      },
+    'savedAudienceId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
     },
     'connectionId': <String, Object?>{
       'type': 'string',

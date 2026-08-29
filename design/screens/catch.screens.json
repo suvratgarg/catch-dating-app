@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-08-19",
+  "updated": "2026-08-30",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -14943,7 +14943,7 @@
         "mutationOwners": [
           {"file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersController"}
         ],
-        "notes": "Customers is the sole organizer CRM destination and follows the shell-selected organizer. The direct screen owns normalized search, every supported computed segment, a visually distinct organizer tag vocabulary, server cursor, id de-duplication, export and contact administration without an extra People workspace. Its counted filter summary deep-links only eligible computed segments into Messaging Campaigns. Customer detail orders identity, organizer-authored memory, system activity and controls; Catch chat and personal WhatsApp handoff are separate sender/delivery routes, notes remain out of export, and campaign delivery history leaves a typed broadcast seam for Phase 4."
+        "notes": "Customers is the sole organizer CRM destination and follows the shell-selected organizer. The direct screen owns normalized search, every supported computed segment, a visually distinct organizer tag vocabulary, server cursor, id de-duplication, export, contact administration, and reusable saved-audience definitions without an extra People workspace. An exact persistable directory filter can be named and saved before Messaging opens; search results cannot become a silently different reusable audience. Messaging selects the saved audience id and never authors a competing filter expression. Customer detail orders identity, organizer-authored memory, system activity and controls; Catch chat and personal WhatsApp handoff are separate sender/delivery routes, notes remain out of export, and campaign delivery history leaves a typed broadcast seam for Phase 4."
       },
       "designRefs": [
         {
@@ -14983,9 +14983,12 @@
         {"id": "customer_sorted_most_attended", "kind": "populated", "status": "tested", "source": "HostCustomersScreen _sort + listOrganizerContacts mostAttended", "tests": ["test/hosts/host_customers_screen_state_test.dart", "test/hosts/host_crm_repository_test.dart"], "nextAction": "Add a dedicated visual variant only if the selected menu state diverges from the populated directory capture."},
         {"id": "customer_sorted_name", "kind": "populated", "status": "tested", "source": "HostCustomersScreen _sort + listOrganizerContacts name", "tests": ["test/hosts/host_customers_screen_state_test.dart", "test/hosts/host_crm_repository_test.dart"], "nextAction": "Keep alphabetical pagination bound to the normalized searchName cursor."},
         {"id": "customer_filter_sheet", "kind": "populated", "status": "implemented", "source": "HostCustomerFilterSheet grouped counted segments", "tests": ["test/hosts/host_customers_screen_state_test.dart"], "nextAction": "Add deterministic grouped-filter-sheet capture."},
-        {"id": "customer_filter_manual_tag", "kind": "populated", "status": "tested", "source": "HostCustomerFilterSheet Your tags group + HostCustomerFilterSummary", "tests": ["test/hosts/host_customer_filter_summary_test.dart", "test/hosts/host_crm_contact_memory_test.dart"], "nextAction": "Keep organizer tags visually separate and unavailable to the computed-segment campaign bridge."},
-        {"id": "customer_campaign_bridge_ready", "kind": "populated", "status": "tested", "source": "HostCustomerFilterSummary enabled Message these N action", "tests": ["test/hosts/host_customer_filter_summary_test.dart", "test/hosts/host_campaign_segment_eligibility_test.dart"], "nextAction": "Keep the campaign-eligible segment and active-sender gate aligned with campaign blockers."},
+        {"id": "customer_filter_manual_tag", "kind": "populated", "status": "tested", "source": "HostCustomerFilterSheet Your tags group + HostCustomerFilterSummary", "tests": ["test/hosts/host_customer_filter_summary_test.dart", "test/hosts/host_crm_contact_memory_test.dart"], "nextAction": "Keep organizer tags visually separate while allowing their exact current result to become a Customers-owned saved audience."},
+        {"id": "customer_campaign_bridge_ready", "kind": "populated", "status": "tested", "source": "HostCustomerFilterSummary enabled Message these N action + HostSaveAudienceSheet", "tests": ["test/hosts/host_customer_filter_summary_test.dart", "test/hosts/host_campaign_segment_eligibility_test.dart", "test/hosts/host_crm_repository_test.dart"], "nextAction": "Keep exact coverage, non-search persistence, saved-audience preview, and active-sender gates aligned with campaign blockers."},
         {"id": "customer_campaign_bridge_blocked", "kind": "permission", "status": "tested", "source": "HostCustomerFilterSummary disabled Message these N action with blocker copy", "tests": ["test/hosts/host_customer_filter_summary_test.dart", "test/hosts/host_campaign_segment_eligibility_test.dart"], "nextAction": "Keep every disabled bridge visibly paired with its campaign blocker reason."},
+        {"id": "customer_saved_audience_manage", "kind": "populated", "status": "implemented", "source": "HostSavedAudiencesSheet exact preview and archive actions", "tests": ["test/hosts/host_crm_repository_test.dart"], "nextAction": "Add a deterministic populated management-sheet render and archive interaction test."},
+        {"id": "customer_saved_audience_empty", "kind": "empty", "status": "implemented", "source": "HostSavedAudiencesSheet CatchEmptyState", "nextAction": "Capture the Customers-owned first-audience path."},
+        {"id": "customer_saved_audience_error", "kind": "error", "status": "implemented", "source": "HostSavedAudiencesSheet CatchErrorState", "nextAction": "Add retry interaction coverage."},
         {"id": "manual_add_pending", "kind": "mutation", "status": "implemented", "source": "HostAddCustomerSheet submit lifecycle", "nextAction": "Add manual-add error and pending widget tests."},
         {"id": "customer_detail_loading", "kind": "loading", "status": "implemented", "source": "hostAudienceContactDetailProvider", "nextAction": "Add deterministic detail loading capture."},
         {"id": "customer_detail_error", "kind": "error", "status": "implemented", "source": "CatchErrorState in HostCustomerDetailScreen", "nextAction": "Add detail retry interaction test."},
@@ -15017,7 +15020,7 @@
         {"id": "light_dark", "kind": "theme", "status": "planned", "source": "Catch token primitives", "nextAction": "Capture directory and detail in light and dark themes."}
       ],
       "composition": {
-        "currentLayout": "A dedicated Host tab follows the shell-selected organizer and directly presents CRM summary, export, manual add, search, grouped counted computed-segment and organizer-tag filters, a computed-segment-to-Messaging bridge and a paginated directory. A nested route presents identity, organizer-authored memory, attendance, revenue, event history, campaign delivery state, then consent, conversation and removal controls. Campaigns live in Messaging.",
+        "currentLayout": "A dedicated Host tab follows the shell-selected organizer and directly presents CRM summary, export, manual add, search, grouped counted computed-segment and organizer-tag filters, Customers-owned saved-audience creation/management and a paginated directory. The Messaging bridge persists and exactly previews a reusable audience before opening Sends by id; free-text search results are not persistable. A nested route presents identity, organizer-authored memory, attendance, revenue, event history, campaign delivery state, then consent, conversation and removal controls. Campaign composition lives in Messaging but audience authoring does not.",
         "targetLayout": "Keep Customers as the sole CRM owner without a redundant People/Campaigns switch. Organizer remains focused on organizer configuration, insights and public preview; Messaging owns first-class communication workspaces.",
         "sections": [
           {

@@ -208,6 +208,12 @@ export {
   reviewOrganizerContactMergeCandidate,
 } from "./organizers/organizerContactMergeReview";
 export {
+  archiveOrganizerSavedAudience,
+  listOrganizerSavedAudiences,
+  previewOrganizerSavedAudience,
+  upsertOrganizerSavedAudience,
+} from "./organizers/organizerSavedAudiences";
+export {
   approveOrganizerCampaign,
   cancelOrganizerCampaign,
   getOrganizerCampaignReport,

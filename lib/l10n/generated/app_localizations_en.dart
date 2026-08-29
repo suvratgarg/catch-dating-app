@@ -12711,9 +12711,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceSegmentRegular => 'Regulars';
 
   @override
-  String get hostsHostAudienceSegmentLapsed => 'Lapsed regulars';
-
-  @override
   String get hostsHostAudienceSegmentReliable => 'Reliable attendees';
 
   @override
@@ -13570,6 +13567,62 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersClearFilter => 'Clear';
 
   @override
+  String get hostSavedAudienceSaveTitle => 'Save this audience';
+
+  @override
+  String get hostSavedAudienceSaveBody =>
+      'Name this reusable customer group. Messaging will use this saved definition and recheck eligibility before sending.';
+
+  @override
+  String get hostSavedAudienceName => 'Audience name';
+
+  @override
+  String get hostSavedAudienceSaveAndMessage => 'Save and continue to message';
+
+  @override
+  String get hostSavedAudiencesEmptyTitle =>
+      'Create an audience in Customers first';
+
+  @override
+  String get hostSavedAudiencesEmptyBody =>
+      'Apply a Customers filter, choose Message these, and save the reusable audience. Sends does not create its own customer filters.';
+
+  @override
+  String get hostSavedAudienceFieldLabel => 'Saved audience';
+
+  @override
+  String hostSavedAudienceOption({required String name, required int count}) {
+    return '$name · $count people at last preview';
+  }
+
+  @override
+  String get hostSavedAudiencesManage => 'Saved audiences';
+
+  @override
+  String get hostSavedAudiencesManageBody =>
+      'Preview an exact current count or archive a reusable audience. Archived audiences stay attached to historical sends.';
+
+  @override
+  String get hostSavedAudiencePreview => 'Refresh exact preview';
+
+  @override
+  String get hostSavedAudienceArchive => 'Archive';
+
+  @override
+  String get hostSavedAudienceNeverPreviewed => 'Not previewed yet';
+
+  @override
+  String hostSavedAudienceExactCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people in the exact preview',
+      one: '1 person in the exact preview',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get hostCustomersCoverageRefresh => 'Check again';
 
   @override
@@ -13624,12 +13677,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostCustomersPeopleCountAtLeast({required int count}) {
     return '$count+ people';
   }
-
-  @override
-  String get hostCustomersCountLoading => 'Loading count';
-
-  @override
-  String get hostCustomersCountUnavailable => 'Count unavailable';
 
   @override
   String get hostCustomersFilterAtRisk => 'At risk';
@@ -13799,9 +13846,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersEventOriginUnknown => 'Event origin unavailable';
-
-  @override
-  String get hostCustomersStartCatchChat => 'Start Catch chat';
 
   @override
   String get hostCustomersMessageOptions => 'Ways to message';

@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -19,11 +18,8 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -47,21 +43,6 @@ enum _HostInviteDestination {
   final String wireValue;
 }
 
-List<HostAudienceSegment> hostCampaignEligibleSegmentsForSmsReadiness(
-  HostCrmChannelReadiness? smsReadiness,
-) => [
-  HostAudienceSegment.firstTimeAttendee,
-  HostAudienceSegment.repeatAttendee,
-  HostAudienceSegment.regular,
-  HostAudienceSegment.lapsedRegular,
-  HostAudienceSegment.reliableAttendee,
-  HostAudienceSegment.advocate,
-  HostAudienceSegment.highImpactAdvocate,
-  HostAudienceSegment.whatsappReachable,
-  if (hostCrmSmsReachableAvailable(smsReadiness))
-    HostAudienceSegment.smsReachable,
-];
-
 abstract final class HostCampaignBlockers {
   static const providerSetupRequired = 'providerSetupRequired';
   static const senderInactive = 'senderInactive';
@@ -76,15 +57,11 @@ abstract final class HostCampaignBlockers {
 }
 
 String? hostCampaignBridgeBlocker({
-  required HostAudienceSegment? segment,
-  required HostCrmChannelReadiness? smsReadiness,
+  required bool hasPersistableAudience,
   required HostMessagingSetup? messagingSetup,
   required bool audienceCoverageComplete,
 }) {
-  if (segment == null ||
-      !hostCampaignEligibleSegmentsForSmsReadiness(
-        smsReadiness,
-      ).contains(segment)) {
+  if (!hasPersistableAudience) {
     return HostCampaignBlockers.noReachableRecipients;
   }
   if (!audienceCoverageComplete) {
@@ -103,14 +80,12 @@ class HostCampaignComposer extends ConsumerStatefulWidget {
   const HostCampaignComposer({
     super.key,
     required this.club,
-    this.initialSegments = const {HostAudienceSegment.whatsappReachable},
-    this.initialSearch,
+    this.initialSavedAudienceId,
     this.onBusyChanged,
   });
 
   final Club club;
-  final Set<HostAudienceSegment> initialSegments;
-  final String? initialSearch;
+  final String? initialSavedAudienceId;
   final ValueChanged<bool>? onBusyChanged;
 
   @override
@@ -121,7 +96,7 @@ class HostCampaignComposer extends ConsumerStatefulWidget {
 class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
   final _campaignNameController = TextEditingController();
   final Map<String, TextEditingController> _variableControllers = {};
-  late Set<HostAudienceSegment> _campaignSegments;
+  HostSavedAudience? _selectedAudience;
   _HostCampaignMessageClass _messageClass =
       _HostCampaignMessageClass.organizerPromotion;
   HostWhatsappTemplate? _selectedTemplate;
@@ -133,22 +108,15 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
   bool _busy = false;
 
   @override
-  void initState() {
-    super.initState();
-    _campaignSegments = _initialSegments();
-  }
-
-  @override
   void didUpdateWidget(covariant HostCampaignComposer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id ||
-        !setEquals(oldWidget.initialSegments, widget.initialSegments) ||
-        oldWidget.initialSearch != widget.initialSearch) {
+        oldWidget.initialSavedAudienceId != widget.initialSavedAudienceId) {
       _campaign = null;
       _scheduledAt = null;
       _scheduleError = null;
       _selectedTemplate = null;
-      _campaignSegments = _initialSegments();
+      _selectedAudience = null;
       _disposeVariableControllers();
     }
   }
@@ -163,18 +131,20 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
   @override
   Widget build(BuildContext context) {
     final messaging = ref.watch(hostMessagingSetupProvider(widget.club.id));
-    final crmSummary = ref.watch(hostCrmSummaryProvider(widget.club.id));
+    final savedAudiences = ref.watch(
+      hostSavedAudiencesProvider(widget.club.id),
+    );
     return _buildCampaignComposer(
       context,
       messaging,
-      catchAsyncStateFromAsyncValue(crmSummary),
+      catchAsyncStateFromAsyncValue(savedAudiences),
     );
   }
 
   CatchSection _buildCampaignComposer(
     BuildContext context,
     AsyncValue<HostMessagingSetup> messaging,
-    CatchAsyncState<HostCrmSummary> crmSummary,
+    CatchAsyncState<HostSavedAudiencePage> savedAudiences,
   ) => CatchSection.divided(
     title: context.l10n.hostsHostAudienceCampaign,
     child: CatchAsyncValueView<HostMessagingSetup>(
@@ -217,13 +187,34 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
             ),
           );
         }
+        if (savedAudiences.status == CatchAsyncStatus.error) {
+          return CatchErrorState.fromError(
+            savedAudiences.error!,
+            context: AppErrorContext.customers,
+            mode: CatchErrorStateMode.compact,
+            onRetry: () =>
+                ref.invalidate(hostSavedAudiencesProvider(widget.club.id)),
+          );
+        }
+        if (savedAudiences.status == CatchAsyncStatus.loading) {
+          return const CatchSkeletonRows();
+        }
+        final audiences = savedAudiences.value?.audiences ?? const [];
+        if (audiences.isEmpty) {
+          return CatchNotice(
+            notice: CatchNoticeData(
+              id: 'host.sends.saved-audience-required',
+              title: context.l10n.hostSavedAudiencesEmptyTitle,
+              message: context.l10n.hostSavedAudiencesEmptyBody,
+            ),
+          );
+        }
         final template = _selectedTemplate ?? approved.first;
-        final eligibleSegments = hostCampaignEligibleSegmentsForSmsReadiness(
-          crmSummary.value?.smsReadiness,
+        final selectedAudience = _audienceIn(
+          audiences,
+          _selectedAudience,
+          widget.initialSavedAudienceId,
         );
-        final selectedEligibleSegments = _campaignSegments
-            .where(eligibleSegments.contains)
-            .toSet();
         return CatchFieldLanes.custom(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,36 +299,16 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 style: CatchTextStyles.fieldRowTitle(context),
               ),
               gapH8,
-              Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                children: [
-                  for (final segment in eligibleSegments)
-                    CatchChip.selectable(
-                      key: ValueKey(
-                        'host-campaign-segment-${segment.wireValue}',
-                      ),
-                      label: _segmentLabelWithOptionalCount(
-                        context,
-                        segment,
-                        includeCount: selectedEligibleSegments.contains(
-                          segment,
-                        ),
-                      ),
-                      selected: selectedEligibleSegments.contains(segment),
-                      enabled: _campaign == null,
-                      contract: CatchContractConstraints
-                          .upsertOrganizerCampaignCallablePayloadSegmentIds,
-                      contractValue: segment.wireValue,
-                      onChanged: (selected) => setState(() {
-                        if (selected && _campaignSegments.length < 5) {
-                          _campaignSegments.add(segment);
-                        } else if (!selected && _campaignSegments.length > 1) {
-                          _campaignSegments.remove(segment);
-                        }
-                      }),
-                    ),
-                ],
+              CatchField.select<HostSavedAudience>(
+                title: context.l10n.hostSavedAudienceFieldLabel,
+                contract: CatchContractConstraints
+                    .upsertOrganizerCampaignCallablePayloadSavedAudienceId,
+                contractValue: (audience) => audience.audienceId,
+                values: audiences,
+                itemLabel: (audience) => _savedAudienceLabel(context, audience),
+                value: selectedAudience,
+                enabled: _campaign == null,
+                onChanged: (value) => setState(() => _selectedAudience = value),
               ),
               gapH12,
               CatchField.select<HostWhatsappTemplate>(
@@ -423,7 +394,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                       : () => _saveAndPreview(
                           connection,
                           template,
-                          eligibleSegments,
+                          selectedAudience,
                         ),
                   isLoading: _busy,
                 )
@@ -449,46 +420,11 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
     ),
   );
 
-  String _segmentLabelWithOptionalCount(
-    BuildContext context,
-    HostAudienceSegment segment, {
-    required bool includeCount,
-  }) {
-    final label = _segmentLabel(context, segment);
-    if (!includeCount) return label;
-    final count = ref.watch(
-      hostCustomerSegmentCountProvider(
-        HostCustomerSegmentCountRequest(
-          organizerId: widget.club.id,
-          search: widget.initialSearch,
-          filter: hostCustomerFilterForAudienceSegment(segment),
-        ),
-      ),
-    );
-    final countLabel = count.when(
-      data: (value) => switch (value.coverage) {
-        HostCustomerMatchCountCoverage.exact =>
-          context.l10n.hostCustomersPeopleCount(count: value.count),
-        HostCustomerMatchCountCoverage.atLeast =>
-          context.l10n.hostCustomersPeopleCountAtLeast(count: value.count),
-      },
-      loading: () => context.l10n.hostCustomersCountLoading,
-      error: (_, _) => context.l10n.hostCustomersCountUnavailable,
-    );
-    return context.l10n.hostCustomersFilterOption(
-      label: label,
-      countLabel: countLabel,
-    );
-  }
-
   Future<void> _saveAndPreview(
     HostWhatsappConnection connection,
     HostWhatsappTemplate template,
-    List<HostAudienceSegment> eligibleSegments,
+    HostSavedAudience? selectedAudience,
   ) => _run(() async {
-    final selectedSegments = _campaignSegments
-        .where(eligibleSegments.contains)
-        .toSet();
     final variables = {
       for (final entry in _variableControllers.entries)
         if (template.variableNames.contains(entry.key) &&
@@ -503,7 +439,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
       return;
     }
     if (_campaignNameController.text.trim().isEmpty ||
-        selectedSegments.isEmpty ||
+        selectedAudience == null ||
         variables.values.any((value) => value.isEmpty) ||
         (needsInvite && _selectedEvent == null)) {
       throw StateError(context.l10n.hostsHostAudienceCompleteCampaign);
@@ -516,7 +452,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
             requestId: '${DateTime.now().microsecondsSinceEpoch}-host',
             name: _campaignNameController.text.trim(),
             messageClass: _messageClass.wireValue,
-            segments: selectedSegments,
+            savedAudienceId: selectedAudience.audienceId,
             connectionId: connection.connectionId,
             templateId: template.templateId,
             templateVariables: variables,
@@ -562,10 +498,6 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
         );
     if (mounted) setState(() => _campaign = campaign);
   });
-
-  Set<HostAudienceSegment> _initialSegments() => widget.initialSegments.isEmpty
-      ? {HostAudienceSegment.whatsappReachable}
-      : {...widget.initialSegments};
 
   void _newCampaign() {
     setState(() {
@@ -777,30 +709,27 @@ class HostCampaignReport extends StatelessWidget {
   }
 }
 
-String _segmentLabel(
-  BuildContext context,
-  HostAudienceSegment value,
-) => switch (value) {
-  HostAudienceSegment.newToOrganizer =>
-    context.l10n.hostsHostAudienceSegmentNew,
-  HostAudienceSegment.firstTimeAttendee =>
-    context.l10n.hostsHostAudienceSegmentFirstTime,
-  HostAudienceSegment.repeatAttendee =>
-    context.l10n.hostsHostAudienceSegmentRepeat,
-  HostAudienceSegment.regular => context.l10n.hostsHostAudienceSegmentRegular,
-  HostAudienceSegment.lapsedRegular =>
-    context.l10n.hostsHostAudienceSegmentLapsed,
-  HostAudienceSegment.reliableAttendee =>
-    context.l10n.hostsHostAudienceSegmentReliable,
-  HostAudienceSegment.needsConfirmation =>
-    context.l10n.hostsHostAudienceSegmentNeedsConfirmation,
-  HostAudienceSegment.advocate => context.l10n.hostsHostAudienceSegmentAdvocate,
-  HostAudienceSegment.highImpactAdvocate =>
-    context.l10n.hostsHostAudienceSegmentHighImpact,
-  HostAudienceSegment.whatsappReachable =>
-    context.l10n.hostsHostAudienceSegmentWhatsapp,
-  HostAudienceSegment.smsReachable => context.l10n.hostsHostAudienceSegmentSms,
-};
+HostSavedAudience? _audienceIn(
+  List<HostSavedAudience> audiences,
+  HostSavedAudience? selected,
+  String? initialAudienceId,
+) {
+  final requestedId = selected?.audienceId ?? initialAudienceId;
+  if (requestedId != null) {
+    for (final audience in audiences) {
+      if (audience.audienceId == requestedId) return audience;
+    }
+  }
+  return audiences.isEmpty ? null : audiences.first;
+}
+
+String _savedAudienceLabel(BuildContext context, HostSavedAudience audience) =>
+    audience.lastPreviewMatchCount == null
+    ? audience.name
+    : context.l10n.hostSavedAudienceOption(
+        name: audience.name,
+        count: audience.lastPreviewMatchCount!,
+      );
 
 String _messageClassLabel(
   BuildContext context,

@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.15.2
-updated: 2026-08-29
+version: 1.16.0
+updated: 2026-08-30
 owner: app_architecture
 status: active
 ---
@@ -2677,6 +2677,46 @@ Every delivery mutation must recheck the authoritative facts. A previously
 resolved plan may explain the current UI, but it never authorizes a later send.
 External handoff means the host owns the final send; it must never generate a
 Catch delivery receipt until a later verified receipt workflow exists.
+
+### Exhibit ARCH-SAVED-AUDIENCE-001: Customers-Owned Saved Audiences
+
+<!-- exhibit-freshness: ARCH-SAVED-AUDIENCE-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+
+Reference files:
+
+- `contracts/firestore/organizer_saved_audiences.schema.json`
+- `functions/src/organizers/organizerSavedAudiences.ts`
+- `functions/src/organizers/organizerCampaigns.ts`
+- `lib/hosts/data/host_crm_repository.dart`
+- `lib/hosts/presentation/customers/host_customers_screen.dart`
+- `lib/hosts/presentation/customers/host_customer_editor_sheets.dart`
+- `lib/hosts/presentation/inbox/host_campaign_composer.dart`
+
+Customers owns reusable CRM audience definitions. Sends can select one saved
+audience id, but it cannot author a parallel filter expression. Event-scoped
+Booked or Prospective groups remain event authority and do not enter this
+organizer-CRM collection.
+
+The server accepts only a versioned, closed predicate vocabulary: reviewed
+computed segments, organizer tags, attendance count, last-seen recency, and
+reachability for a named intent. It canonicalizes the definition before hashing
+it, rejects duplicate predicates, validates tag ownership, and uses optimistic
+revisions for edits and archives. Neither arbitrary queries nor client-provided
+collection paths are executable audience definitions.
+
+Preview is an exact server computation or an explicit failure. It refuses
+partial source coverage and refuses organizers above the bounded 2,500-contact
+evaluation limit rather than returning a plausible-looking subset. The client
+labels stored counts as last-preview facts and never presents them as live.
+
+A draft campaign stores the selected audience id, revision, and definition
+hash. Preview stores an exact audience-state hash; approval refuses a changed
+hash instead of silently approving a different set. A changed or archived
+definition blocks preview or approval. Approval freezes the resolved recipient
+ids and recipient revisions; later dispatch
+still rechecks current identity, permission, suppression, sender, template, and
+content authority. Legacy segment-authored campaign documents remain readable,
+but new campaign writes cannot submit legacy segment ids.
 
 ### Exhibit ARCH-CRM-AUTHORITY-001: Provenance And Permission Authority
 

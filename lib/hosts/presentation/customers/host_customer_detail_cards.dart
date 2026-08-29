@@ -342,26 +342,42 @@ class HostCustomerConversationCard extends StatelessWidget {
             onTap: onRetryCommunicationPlan,
           )
         else ...[
-          _communicationRouteField(
-            context,
-            route: catchRoute!,
-            key: const ValueKey('host-customer-new-conversation'),
-            title: context.l10n.hostCustomersMessageInCatch,
-            availableBody: context.l10n.hostCustomersMessageInCatchBody,
-            icon: CatchIcons.tabChats,
-            loading: loading,
-            onTap: onOpen,
-          ),
-          _communicationRouteField(
-            context,
-            route: handoffRoute!,
-            key: const ValueKey('host-customer-open-whatsapp'),
-            title: context.l10n.hostCustomersMessageByHand,
-            availableBody: context.l10n.hostCustomersWhatsappHandoffDisclosure,
-            icon: CatchIcons.sendRounded,
-            loading: false,
-            onTap: onOpenWhatsapp,
-          ),
+          if (catchRoute!.isAvailable)
+            CatchField.action(
+              key: const ValueKey('host-customer-new-conversation'),
+              title: context.l10n.hostCustomersMessageInCatch,
+              body: context.l10n.hostCustomersMessageInCatchBody,
+              icon: CatchIcons.tabChats,
+              onTap: loading ? null : onOpen,
+            )
+          else
+            CatchField.read(
+              key: const ValueKey('host-customer-new-conversation'),
+              title: context.l10n.hostCustomersMessageInCatch,
+              body: _communicationRouteBlockerLabel(
+                context,
+                catchRoute.blocker,
+              ),
+              icon: CatchIcons.tabChats,
+            ),
+          if (handoffRoute!.isAvailable)
+            CatchField.action(
+              key: const ValueKey('host-customer-open-whatsapp'),
+              title: context.l10n.hostCustomersMessageByHand,
+              body: context.l10n.hostCustomersWhatsappHandoffDisclosure,
+              icon: CatchIcons.sendRounded,
+              onTap: onOpenWhatsapp,
+            )
+          else
+            CatchField.read(
+              key: const ValueKey('host-customer-open-whatsapp'),
+              title: context.l10n.hostCustomersMessageByHand,
+              body: _communicationRouteBlockerLabel(
+                context,
+                handoffRoute.blocker,
+              ),
+              icon: CatchIcons.sendRounded,
+            ),
         ],
         if (customer.ambiguousCandidateCount > 0 && onReview != null)
           CatchField.action(
@@ -384,33 +400,6 @@ class HostCustomerConversationCard extends StatelessWidget {
       ],
     );
   }
-}
-
-Widget _communicationRouteField(
-  BuildContext context, {
-  required HostCommunicationRouteOption route,
-  required Key key,
-  required String title,
-  required String availableBody,
-  required IconData icon,
-  required bool loading,
-  required VoidCallback onTap,
-}) {
-  if (!route.isAvailable) {
-    return CatchField.read(
-      key: key,
-      title: title,
-      body: _communicationRouteBlockerLabel(context, route.blocker),
-      icon: icon,
-    );
-  }
-  return CatchField.action(
-    key: key,
-    title: title,
-    body: availableBody,
-    icon: icon,
-    onTap: loading ? null : onTap,
-  );
 }
 
 String _communicationRouteBlockerLabel(

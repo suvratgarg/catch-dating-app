@@ -19826,12 +19826,6 @@ abstract class AppLocalizations {
   /// **'Regulars'**
   String get hostsHostAudienceSegmentRegular;
 
-  /// Lapsed regular segment label.
-  ///
-  /// In en, this message translates to:
-  /// **'Lapsed regulars'**
-  String get hostsHostAudienceSegmentLapsed;
-
   /// Reliable attendee segment label.
   ///
   /// In en, this message translates to:
@@ -21199,6 +21193,90 @@ abstract class AppLocalizations {
   /// **'Clear'**
   String get hostCustomersClearFilter;
 
+  /// Customers-owned saved-audience naming step title.
+  ///
+  /// In en, this message translates to:
+  /// **'Save this audience'**
+  String get hostSavedAudienceSaveTitle;
+
+  /// Explains saved-audience ownership and later eligibility checks.
+  ///
+  /// In en, this message translates to:
+  /// **'Name this reusable customer group. Messaging will use this saved definition and recheck eligibility before sending.'**
+  String get hostSavedAudienceSaveBody;
+
+  /// Reusable customer audience name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience name'**
+  String get hostSavedAudienceName;
+
+  /// Persists and exactly previews an audience before opening Messaging.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and continue to message'**
+  String get hostSavedAudienceSaveAndMessage;
+
+  /// Campaign composer empty saved-audience title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an audience in Customers first'**
+  String get hostSavedAudiencesEmptyTitle;
+
+  /// Explains that audience authoring belongs to Customers.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply a Customers filter, choose Message these, and save the reusable audience. Sends does not create its own customer filters.'**
+  String get hostSavedAudiencesEmptyBody;
+
+  /// Saved-audience picker label in campaign composition.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved audience'**
+  String get hostSavedAudienceFieldLabel;
+
+  /// Saved-audience picker option with the explicitly stale last exact preview count.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {count} people at last preview'**
+  String hostSavedAudienceOption({required String name, required int count});
+
+  /// Opens Customers-owned saved-audience management.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved audiences'**
+  String get hostSavedAudiencesManage;
+
+  /// Saved-audience management ownership and history explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview an exact current count or archive a reusable audience. Archived audiences stay attached to historical sends.'**
+  String get hostSavedAudiencesManageBody;
+
+  /// Recomputes an exact saved-audience preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh exact preview'**
+  String get hostSavedAudiencePreview;
+
+  /// Archives one reusable saved audience.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get hostSavedAudienceArchive;
+
+  /// Saved audience without an exact preview yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not previewed yet'**
+  String get hostSavedAudienceNeverPreviewed;
+
+  /// Exact saved-audience preview count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person in the exact preview} other{{count} people in the exact preview}}'**
+  String hostSavedAudienceExactCount({required int count});
+
   /// Reloads customer history coverage after an organizer import or repair.
   ///
   /// In en, this message translates to:
@@ -21273,18 +21351,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count}+ people'**
   String hostCustomersPeopleCountAtLeast({required int count});
-
-  /// Temporary customer segment count state.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading count'**
-  String get hostCustomersCountLoading;
-
-  /// Customer segment count failure state.
-  ///
-  /// In en, this message translates to:
-  /// **'Count unavailable'**
-  String get hostCustomersCountUnavailable;
 
   /// Explainable alias for the versioned lapsed-regular segment.
   ///
@@ -21546,12 +21612,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Event origin unavailable'**
   String get hostCustomersEventOriginUnknown;
-
-  /// Starts a direct Catch chat with a linked customer.
-  ///
-  /// In en, this message translates to:
-  /// **'Start Catch chat'**
-  String get hostCustomersStartCatchChat;
 
   /// Intent-aware communication options heading for one customer.
   ///

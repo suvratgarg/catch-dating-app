@@ -127,35 +127,33 @@ class HostCustomerFilterSummary extends StatelessWidget {
               ),
             ],
           ),
-          if (manualTag == null) ...[
-            gapH12,
-            Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: CatchSpacing.s3,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                if (campaignBlocker case final String blocker)
-                  Text(
-                    hostCampaignBlockerLabel(context, blocker),
-                    style: CatchTextStyles.supporting(
-                      context,
-                      color: CatchTokens.of(context).warning,
-                    ),
+          gapH12,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: CatchSpacing.s3,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              if (campaignBlocker case final String blocker)
+                Text(
+                  hostCampaignBlockerLabel(context, blocker),
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: CatchTokens.of(context).warning,
                   ),
-                CatchButton(
-                  key: const ValueKey('host-customers-message-segment'),
-                  label: countCoverage == HostCustomerMatchCountCoverage.exact
-                      ? context.l10n.hostCustomersMessageThese(count: count)
-                      : context.l10n.hostCustomersMessageTheseAtLeast(
-                          count: count,
-                        ),
-                  size: CatchButtonSize.sm,
-                  onPressed: onMessage,
                 ),
-              ],
-            ),
-          ],
+              CatchButton(
+                key: const ValueKey('host-customers-message-segment'),
+                label: countCoverage == HostCustomerMatchCountCoverage.exact
+                    ? context.l10n.hostCustomersMessageThese(count: count)
+                    : context.l10n.hostCustomersMessageTheseAtLeast(
+                        count: count,
+                      ),
+                size: CatchButtonSize.sm,
+                onPressed: onMessage,
+              ),
+            ],
+          ),
         ],
       ),
     );

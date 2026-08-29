@@ -3,32 +3,10 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('campaign segments stay inside the sender-backed segment set', () {
-    expect(
-      hostCampaignEligibleSegmentsForSmsReadiness(null),
-      isNot(contains(HostAudienceSegment.smsReachable)),
-    );
-    final unavailable = hostCampaignEligibleSegmentsForSmsReadiness(
-      HostCrmChannelReadiness.providerAndDltSetupRequired,
-    );
-
-    expect(unavailable, contains(HostAudienceSegment.whatsappReachable));
-    expect(unavailable, isNot(contains(HostAudienceSegment.newToOrganizer)));
-    expect(unavailable, isNot(contains(HostAudienceSegment.needsConfirmation)));
-    expect(unavailable, isNot(contains(HostAudienceSegment.smsReachable)));
-    expect(
-      hostCampaignEligibleSegmentsForSmsReadiness(
-        HostCrmChannelReadiness.currentEventOnly,
-      ),
-      contains(HostAudienceSegment.smsReachable),
-    );
-  });
-
-  test('campaign bridge requires an eligible segment and active sender', () {
+  test('campaign bridge requires a saved audience and active sender', () {
     expect(
       hostCampaignBridgeBlocker(
-        segment: HostAudienceSegment.lapsedRegular,
-        smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
+        hasPersistableAudience: true,
         messagingSetup: _messagingSetup(),
         audienceCoverageComplete: true,
       ),
@@ -36,8 +14,7 @@ void main() {
     );
     expect(
       hostCampaignBridgeBlocker(
-        segment: HostAudienceSegment.newToOrganizer,
-        smsReadiness: HostCrmChannelReadiness.currentEventOnly,
+        hasPersistableAudience: false,
         messagingSetup: _messagingSetup(),
         audienceCoverageComplete: true,
       ),
@@ -45,8 +22,7 @@ void main() {
     );
     expect(
       hostCampaignBridgeBlocker(
-        segment: HostAudienceSegment.lapsedRegular,
-        smsReadiness: HostCrmChannelReadiness.currentEventOnly,
+        hasPersistableAudience: true,
         messagingSetup: _messagingSetup(providerConfigured: false),
         audienceCoverageComplete: true,
       ),
@@ -54,8 +30,7 @@ void main() {
     );
     expect(
       hostCampaignBridgeBlocker(
-        segment: HostAudienceSegment.lapsedRegular,
-        smsReadiness: HostCrmChannelReadiness.currentEventOnly,
+        hasPersistableAudience: true,
         messagingSetup: _messagingSetup(connectionStatus: 'pending'),
         audienceCoverageComplete: true,
       ),

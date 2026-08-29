@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.36.1
-updated: 2026-08-29
+version: 1.37.0
+updated: 2026-08-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -894,14 +894,23 @@ documents may omit `manualTagIds` and read as an empty assignment, so neither
 feature requires a backfill.
 
 `organizerSavedAudiences/{audienceId}` owns reusable Customers-authored CRM
-audiences. A definition is a server-validated expression over the reviewed
-computed-segment, organizer-tag, attendance, recency, and named-intent reach
-predicate vocabulary; arbitrary collection paths and raw Firestore queries are
-forbidden. Preview returns exact coverage or an explicit incomplete/over-limit
-failure. Event-scoped Booked/Prospective audiences remain event authority and
+audiences. A definition contains one to eight predicates joined by `all` or
+`any` over the reviewed computed-segment, organizer-tag, attendance-count,
+last-seen recency, and named-intent reach vocabulary. Arbitrary collection
+paths and raw Firestore queries are forbidden. The server canonicalizes and
+hashes definitions, validates organizer-owned tags, and applies optimistic
+revisions. Preview returns exact coverage or an explicit incomplete/over-limit
+failure; the bounded evaluator refuses organizers above 2,500 active contacts
+instead of truncating. Event-scoped Booked/Prospective audiences remain event
+authority and
 are referenced directly by event-announcement sends rather than copied into a
 CRM audience. Campaign approval freezes resolved recipient ids and revisions;
-the saved definition may continue changing without rewriting an approved send.
+the selected saved audience id, revision, and definition hash remain on the
+campaign. A changed or archived definition blocks draft preview/approval but
+does not rewrite an already approved send. Campaign preview also persists an
+exact audience-state hash; approval requires the current resolution to match it
+before freezing recipients, so a count-preserving membership change cannot
+silently pass.
 
 `organizerManualSendTasks/{taskId}` is the server-only durable external-handoff
 queue. One task represents one organizer, contact, originating send, intent,

@@ -26,8 +26,11 @@ export interface ListOrganizerCampaignsCallableResponse {
           | "partiallyFailed"
           | "cancelled"
           | "blocked";
+        savedAudienceId: string | null;
+        savedAudienceName: string | null;
         /**
-         * @minItems 1
+         * Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.
+         *
          * @maxItems 5
          */
         segmentIds: (

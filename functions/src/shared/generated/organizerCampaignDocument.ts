@@ -23,7 +23,8 @@ export interface OrganizerCampaignDocument {
     | "blocked";
   name: string;
   /**
-   * @minItems 1
+   * Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.
+   *
    * @maxItems 5
    */
   segmentIds: (
@@ -36,6 +37,12 @@ export interface OrganizerCampaignDocument {
     | "high_impact_advocate"
     | "whatsapp_reachable"
   )[];
+  /**
+   * Customers-owned reusable audience used by every new campaign. Null or absent only on legacy segment-authored campaigns.
+   */
+  savedAudienceId?: string | null;
+  savedAudienceRevision?: number | null;
+  savedAudienceDefinitionHash?: string | null;
   connectionId: string;
   templateId: string;
   templateVariables: {
@@ -52,6 +59,9 @@ export interface OrganizerCampaignDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  /**
+   * Exact audience-state hash stored by preview and required unchanged at approval; retained as the frozen recipient snapshot hash after approval.
+   */
   recipientSnapshotHash: string | null;
   contentHash: string;
   audienceCounts: {

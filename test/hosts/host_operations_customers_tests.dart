@@ -376,6 +376,48 @@ void _registerHostOperationsCustomersTests() {
     );
   });
 
+  testWidgets('saved audience management stays in Customers', (tester) async {
+    const organizerId = 'organizer-1';
+    final audience = HostSavedAudience(
+      organizerId: organizerId,
+      audienceId: 'audience-1',
+      name: 'Regular customers',
+      status: 'active',
+      definition: const HostSavedAudienceDefinition(
+        join: HostSavedAudienceJoin.all,
+        predicates: [
+          HostSavedAudienceComputedSegment(HostAudienceSegment.regular),
+        ],
+      ),
+      definitionHash:
+          'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      definitionVersion: 1,
+      revision: 3,
+      lastPreviewMatchCount: 9,
+      lastPreviewAt: DateTime(2026, 8, 30),
+      createdAt: DateTime(2026, 8, 29),
+      updatedAt: DateTime(2026, 8, 30),
+    );
+
+    await _pumpHostScreen(
+      tester,
+      const Scaffold(body: HostSavedAudiencesSheet(organizerId: organizerId)),
+      overrides: [
+        hostSavedAudiencesProvider(organizerId).overrideWithValue(
+          AsyncData(
+            HostSavedAudiencePage(audiences: [audience], nextCursor: null),
+          ),
+        ),
+      ],
+    );
+
+    expect(find.text('Saved audiences'), findsOneWidget);
+    expect(find.text('REGULAR CUSTOMERS'), findsOneWidget);
+    expect(find.text('9 people in the exact preview'), findsOneWidget);
+    expect(find.text('Refresh exact preview'), findsOneWidget);
+    expect(find.text('Archive'), findsOneWidget);
+  });
+
   testWidgets('customer detail failure names the customer, not organizer', (
     tester,
   ) async {

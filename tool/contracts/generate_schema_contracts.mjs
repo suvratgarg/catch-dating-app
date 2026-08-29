@@ -195,6 +195,12 @@ const schemaSpecs = [
       "organizerContactTagVocabularyDocument.ts",
   },
   {
+    name: "OrganizerSavedAudienceDocument",
+    source: "firestore/organizer_saved_audiences.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerSavedAudienceDocument.ts",
+  },
+  {
     name: "OrganizerContactIdentityLinkDocument",
     source: "firestore/organizer_contact_identity_links.schema.json",
     typeOutput:
@@ -1462,6 +1468,62 @@ const schemaSpecs = [
     source: "callables/upsert_organizer_campaign_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/upsertOrganizerCampaignCallablePayload.ts",
+  },
+  {
+    name: "UpsertOrganizerSavedAudienceCallablePayload",
+    source:
+      "callables/upsert_organizer_saved_audience_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertOrganizerSavedAudienceCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerSavedAudiencesCallablePayload",
+    source:
+      "callables/list_organizer_saved_audiences_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerSavedAudiencesCallablePayload.ts",
+  },
+  {
+    name: "PreviewOrganizerSavedAudienceCallablePayload",
+    source:
+      "callables/preview_organizer_saved_audience_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "previewOrganizerSavedAudienceCallablePayload.ts",
+  },
+  {
+    name: "ArchiveOrganizerSavedAudienceCallablePayload",
+    source:
+      "callables/archive_organizer_saved_audience_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "archiveOrganizerSavedAudienceCallablePayload.ts",
+  },
+  {
+    name: "OrganizerSavedAudienceCallableResponse",
+    source:
+      "callable_responses/organizer_saved_audience_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerSavedAudienceCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerSavedAudiencesCallableResponse",
+    source:
+      "callable_responses/list_organizer_saved_audiences_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerSavedAudiencesCallableResponse.ts",
+  },
+  {
+    name: "PreviewOrganizerSavedAudienceCallableResponse",
+    source:
+      "callable_responses/preview_organizer_saved_audience_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "previewOrganizerSavedAudienceCallableResponse.ts",
   },
   {
     name: "OrganizerCampaignActionCallablePayload",

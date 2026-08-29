@@ -69,6 +69,38 @@ class HostAudienceController {
     templateVariables: templateVariables,
   );
 
+  Future<HostSavedAudience> saveAudience({
+    required String organizerId,
+    required String requestId,
+    required String name,
+    required HostSavedAudienceDefinition definition,
+    String? audienceId,
+    int? expectedRevision,
+  }) => _repository.upsertSavedAudience(
+    organizerId: organizerId,
+    requestId: requestId,
+    name: name,
+    definition: definition,
+    audienceId: audienceId,
+    expectedRevision: expectedRevision,
+  );
+
+  Future<HostSavedAudiencePreview> previewAudience({
+    required String organizerId,
+    required HostSavedAudience audience,
+  }) => _repository.previewSavedAudience(
+    organizerId: organizerId,
+    audience: audience,
+  );
+
+  Future<HostSavedAudience> archiveAudience({
+    required String organizerId,
+    required HostSavedAudience audience,
+  }) => _repository.archiveSavedAudience(
+    organizerId: organizerId,
+    audience: audience,
+  );
+
   Future<HostCampaign> saveAndPreviewCampaign({
     required String organizerId,
     required HostCampaignDraft draft,

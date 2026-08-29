@@ -1852,6 +1852,68 @@ export interface OrganizerContactTagVocabularyDocument {
 }
 
 /**
+ * One reusable Customers-owned organizer CRM audience. Definitions use only the closed reviewed predicate vocabulary and never contain event-scoped or arbitrary Firestore queries.
+ */
+export interface OrganizerSavedAudienceDocument {
+  organizerId: string;
+  audienceId: string;
+  scope: "organizerCrm";
+  name: string;
+  status: "active" | "archived";
+  definition: {
+    join: "all" | "any";
+    /**
+     * @minItems 1
+     * @maxItems 8
+     */
+    predicates: (
+      | {
+          kind: "computedSegment";
+          segmentId:
+            | "new_to_organizer"
+            | "first_time_attendee"
+            | "repeat_attendee"
+            | "regular"
+            | "lapsed_regular"
+            | "reliable_attendee"
+            | "needs_confirmation"
+            | "advocate"
+            | "high_impact_advocate"
+            | "whatsapp_reachable"
+            | "sms_reachable";
+        }
+      | {
+          kind: "manualTag";
+          manualTagId: string;
+        }
+      | {
+          kind: "attendanceCount";
+          operator: "atLeast" | "atMost";
+          eventCount: number;
+        }
+      | {
+          kind: "lastSeenWithinDays";
+          days: number;
+        }
+      | {
+          kind: "reachableForIntent";
+          intent: "organizerWhatsappCampaign";
+        }
+    )[];
+  };
+  definitionHash: string;
+  definitionVersion: number;
+  revision: number;
+  createdByUid: string;
+  updatedByUid: string;
+  lastPreviewMatchCount: number | null;
+  lastPreviewAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  archivedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
  * Server-only identity evidence edge used for keyed candidate lookup. Hashes are restricted identifiers, not anonymous data.
  */
 export interface OrganizerContactIdentityLinkDocument {
@@ -3495,7 +3557,8 @@ export interface OrganizerCampaignDocument {
     | "blocked";
   name: string;
   /**
-   * @minItems 1
+   * Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.
+   *
    * @maxItems 5
    */
   segmentIds: (
@@ -3508,6 +3571,12 @@ export interface OrganizerCampaignDocument {
     | "high_impact_advocate"
     | "whatsapp_reachable"
   )[];
+  /**
+   * Customers-owned reusable audience used by every new campaign. Null or absent only on legacy segment-authored campaigns.
+   */
+  savedAudienceId?: string | null;
+  savedAudienceRevision?: number | null;
+  savedAudienceDefinitionHash?: string | null;
   connectionId: string;
   templateId: string;
   templateVariables: {
@@ -3521,6 +3590,9 @@ export interface OrganizerCampaignDocument {
     | "externalBooking"
     | "marketingLanding";
   scheduledAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Exact audience-state hash stored by preview and required unchanged at approval; retained as the frozen recipient snapshot hash after approval.
+   */
   recipientSnapshotHash: string | null;
   contentHash: string;
   audienceCounts: {

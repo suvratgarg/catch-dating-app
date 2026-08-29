@@ -168,6 +168,55 @@ void main() {
     );
   });
 
+  test('saved audience writes only the closed Customers definition', () async {
+    final functions = _TestFirebaseFunctions();
+    final callable =
+        functions.httpsCallable('upsertOrganizerSavedAudience')
+            as _TestHttpsCallable;
+    callable.resultData = _savedAudienceData();
+    final repository = HostCrmRepository(functions);
+
+    final audience = await repository.upsertSavedAudience(
+      organizerId: 'organizer-1',
+      requestId: 'request-1234',
+      name: 'Regulars',
+      definition: const HostSavedAudienceDefinition(
+        join: HostSavedAudienceJoin.all,
+        predicates: [
+          HostSavedAudienceComputedSegment(HostAudienceSegment.regular),
+        ],
+      ),
+    );
+
+    expect(callable.calls.single, {
+      'organizerId': 'organizer-1',
+      'requestId': 'request-1234',
+      'scope': 'organizerCrm',
+      'name': 'Regulars',
+      'definition': {
+        'join': 'all',
+        'predicates': [
+          {'kind': 'computedSegment', 'segmentId': 'regular'},
+        ],
+      },
+    });
+    expect(audience.audienceId, 'audience-1');
+    expect(audience.lastPreviewMatchCount, 12);
+  });
+
+  test('saved audience preview rejects a non-exact projection', () {
+    expect(
+      () => HostSavedAudiencePreview.fromCallableData({
+        'audience': _savedAudienceData(),
+        'coverage': 'partial',
+        'matchCount': 12,
+        'sample': const <Object?>[],
+        'evaluatedAtMillis': 1700000000000,
+      }),
+      throwsFormatException,
+    );
+  });
+
   test('non-default contact ordering remains explicit', () async {
     final functions = _TestFirebaseFunctions();
     final callable =
@@ -635,6 +684,7 @@ void main() {
     final campaign = HostCampaign.fromCallableData({
       'organizerId': 'organizer-1',
       'campaignId': 'campaign-1',
+      'savedAudienceId': 'audience-1',
       'status': 'previewed',
       'revision': 2,
       'audienceCounts': {'selected': 20, 'eligible': 14, 'suppressed': 6},
@@ -671,6 +721,8 @@ void main() {
           'campaignId': 'campaign-1',
           'name': 'Regulars invite',
           'status': 'scheduled',
+          'savedAudienceId': 'audience-1',
+          'savedAudienceName': 'Regulars',
           'segmentIds': <Object?>['regular'],
           'templateId': 'template-1',
           'templateName': 'Event invite',
@@ -771,4 +823,26 @@ Map<String, Object?> _emptyAudiencePageData() => {
   'matchCountCoverage': 'exact',
   'sourceCoverage': 'exact',
   'projectionVersion': 1,
+};
+
+Map<String, Object?> _savedAudienceData() => {
+  'organizerId': 'organizer-1',
+  'audienceId': 'audience-1',
+  'scope': 'organizerCrm',
+  'name': 'Regulars',
+  'status': 'active',
+  'definition': {
+    'join': 'all',
+    'predicates': [
+      {'kind': 'computedSegment', 'segmentId': 'regular'},
+    ],
+  },
+  'definitionHash':
+      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  'definitionVersion': 1,
+  'revision': 1,
+  'lastPreviewMatchCount': 12,
+  'lastPreviewAtMillis': 1700000000000,
+  'createdAtMillis': 1700000000000,
+  'updatedAtMillis': 1700000000000,
 };

@@ -87,9 +87,9 @@ const schemaOrganizerCampaignDocumentSchema = <String, Object?>{
     },
     'segmentIds': <String, Object?>{
       'type': 'array',
-      'minItems': 1,
       'maxItems': 5,
       'uniqueItems': true,
+      'description': 'Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.',
       'items': <String, Object?>{
         'type': 'string',
         'enum': <Object?>[
@@ -103,6 +103,30 @@ const schemaOrganizerCampaignDocumentSchema = <String, Object?>{
           'whatsapp_reachable',
         ],
       },
+    },
+    'savedAudienceId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Customers-owned reusable audience used by every new campaign. Null or absent only on legacy segment-authored campaigns.',
+    },
+    'savedAudienceRevision': <String, Object?>{
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
+      'minimum': 1,
+      'maximum': 9007199254740991,
+    },
+    'savedAudienceDefinitionHash': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[a-f0-9]{64}\$',
     },
     'connectionId': <String, Object?>{
       'type': 'string',
@@ -180,6 +204,7 @@ const schemaOrganizerCampaignDocumentSchema = <String, Object?>{
         'null',
       ],
       'pattern': '^[a-f0-9]{64}\$',
+      'description': 'Exact audience-state hash stored by preview and required unchanged at approval; retained as the frozen recipient snapshot hash after approval.',
     },
     'contentHash': <String, Object?>{
       'type': 'string',

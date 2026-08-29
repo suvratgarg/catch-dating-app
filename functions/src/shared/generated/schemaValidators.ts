@@ -36,6 +36,7 @@ import {OrganizerContactDocument} from "./organizerContactDocument";
 import {OrganizerContactOriginDocument} from "./organizerContactOriginDocument";
 import {OrganizerContactNoteDocument} from "./organizerContactNoteDocument";
 import {OrganizerContactTagVocabularyDocument} from "./organizerContactTagVocabularyDocument";
+import {OrganizerSavedAudienceDocument} from "./organizerSavedAudienceDocument";
 import {OrganizerContactIdentityLinkDocument} from "./organizerContactIdentityLinkDocument";
 import {OrganizerContactIdentityClaimDocument} from "./organizerContactIdentityClaimDocument";
 import {OrganizerContactEventEdgeDocument} from "./organizerContactEventEdgeDocument";
@@ -244,6 +245,13 @@ import {ResolveEventInviteLandingCallableResponse} from "./resolveEventInviteLan
 import {GetEventInviteLinkTokenCallablePayload} from "./getEventInviteLinkTokenCallablePayload";
 import {RecordEventShareIntentCallablePayload} from "./recordEventShareIntentCallablePayload";
 import {UpsertOrganizerCampaignCallablePayload} from "./upsertOrganizerCampaignCallablePayload";
+import {UpsertOrganizerSavedAudienceCallablePayload} from "./upsertOrganizerSavedAudienceCallablePayload";
+import {ListOrganizerSavedAudiencesCallablePayload} from "./listOrganizerSavedAudiencesCallablePayload";
+import {PreviewOrganizerSavedAudienceCallablePayload} from "./previewOrganizerSavedAudienceCallablePayload";
+import {ArchiveOrganizerSavedAudienceCallablePayload} from "./archiveOrganizerSavedAudienceCallablePayload";
+import {OrganizerSavedAudienceCallableResponse} from "./organizerSavedAudienceCallableResponse";
+import {ListOrganizerSavedAudiencesCallableResponse} from "./listOrganizerSavedAudiencesCallableResponse";
+import {PreviewOrganizerSavedAudienceCallableResponse} from "./previewOrganizerSavedAudienceCallableResponse";
 import {OrganizerCampaignActionCallablePayload} from "./organizerCampaignActionCallablePayload";
 import {CompleteOrganizerWhatsappConnectionCallablePayload} from "./completeOrganizerWhatsappConnectionCallablePayload";
 import {OrganizerSenderConnectionActionCallablePayload} from "./organizerSenderConnectionActionCallablePayload";
@@ -539,6 +547,7 @@ import {
   organizerContactOriginDocumentSchema,
   organizerContactNoteDocumentSchema,
   organizerContactTagVocabularyDocumentSchema,
+  organizerSavedAudienceDocumentSchema,
   organizerContactIdentityLinkDocumentSchema,
   organizerContactIdentityClaimDocumentSchema,
   organizerContactEventEdgeDocumentSchema,
@@ -747,6 +756,13 @@ import {
   getEventInviteLinkTokenCallablePayloadSchema,
   recordEventShareIntentCallablePayloadSchema,
   upsertOrganizerCampaignCallablePayloadSchema,
+  upsertOrganizerSavedAudienceCallablePayloadSchema,
+  listOrganizerSavedAudiencesCallablePayloadSchema,
+  previewOrganizerSavedAudienceCallablePayloadSchema,
+  archiveOrganizerSavedAudienceCallablePayloadSchema,
+  organizerSavedAudienceCallableResponseSchema,
+  listOrganizerSavedAudiencesCallableResponseSchema,
+  previewOrganizerSavedAudienceCallableResponseSchema,
   organizerCampaignActionCallablePayloadSchema,
   completeOrganizerWhatsappConnectionCallablePayloadSchema,
   organizerSenderConnectionActionCallablePayloadSchema,
@@ -1092,6 +1108,8 @@ export const validateOrganizerContactNoteDocument =
   lazyValidator<OrganizerContactNoteDocument>(organizerContactNoteDocumentSchema);
 export const validateOrganizerContactTagVocabularyDocument =
   lazyValidator<OrganizerContactTagVocabularyDocument>(organizerContactTagVocabularyDocumentSchema);
+export const validateOrganizerSavedAudienceDocument =
+  lazyValidator<OrganizerSavedAudienceDocument>(organizerSavedAudienceDocumentSchema);
 export const validateOrganizerContactIdentityLinkDocument =
   lazyValidator<OrganizerContactIdentityLinkDocument>(organizerContactIdentityLinkDocumentSchema);
 export const validateOrganizerContactIdentityClaimDocument =
@@ -1508,6 +1526,20 @@ export const validateRecordEventShareIntentCallablePayload =
   lazyValidator<RecordEventShareIntentCallablePayload>(recordEventShareIntentCallablePayloadSchema);
 export const validateUpsertOrganizerCampaignCallablePayload =
   lazyValidator<UpsertOrganizerCampaignCallablePayload>(upsertOrganizerCampaignCallablePayloadSchema);
+export const validateUpsertOrganizerSavedAudienceCallablePayload =
+  lazyValidator<UpsertOrganizerSavedAudienceCallablePayload>(upsertOrganizerSavedAudienceCallablePayloadSchema);
+export const validateListOrganizerSavedAudiencesCallablePayload =
+  lazyValidator<ListOrganizerSavedAudiencesCallablePayload>(listOrganizerSavedAudiencesCallablePayloadSchema);
+export const validatePreviewOrganizerSavedAudienceCallablePayload =
+  lazyValidator<PreviewOrganizerSavedAudienceCallablePayload>(previewOrganizerSavedAudienceCallablePayloadSchema);
+export const validateArchiveOrganizerSavedAudienceCallablePayload =
+  lazyValidator<ArchiveOrganizerSavedAudienceCallablePayload>(archiveOrganizerSavedAudienceCallablePayloadSchema);
+export const validateOrganizerSavedAudienceCallableResponse =
+  lazyValidator<OrganizerSavedAudienceCallableResponse>(organizerSavedAudienceCallableResponseSchema);
+export const validateListOrganizerSavedAudiencesCallableResponse =
+  lazyValidator<ListOrganizerSavedAudiencesCallableResponse>(listOrganizerSavedAudiencesCallableResponseSchema);
+export const validatePreviewOrganizerSavedAudienceCallableResponse =
+  lazyValidator<PreviewOrganizerSavedAudienceCallableResponse>(previewOrganizerSavedAudienceCallableResponseSchema);
 export const validateOrganizerCampaignActionCallablePayload =
   lazyValidator<OrganizerCampaignActionCallablePayload>(organizerCampaignActionCallablePayloadSchema);
 export const validateCompleteOrganizerWhatsappConnectionCallablePayload =
