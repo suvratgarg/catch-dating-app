@@ -42,6 +42,7 @@ test("extracts every current facade and semantic slot", () => {
     "divided",
     "fieldRows",
     "containedFieldRows",
+    "containedFieldGroups",
     "contained",
     "plain",
   ]);
@@ -51,6 +52,7 @@ test("extracts every current facade and semantic slot", () => {
     "trailing",
     "count",
     "footer",
+    "groups",
     "children",
     "child",
   ]);

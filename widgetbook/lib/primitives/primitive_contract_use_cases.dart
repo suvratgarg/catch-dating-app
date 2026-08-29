@@ -3143,6 +3143,7 @@ Widget catchSectionContractStates(BuildContext context) {
       'divided-field-rows-full-bleed-keyboard-focus',
       'contained-field-rows-external-header',
       'contained-field-rows-internal-header',
+      'contained-field-groups',
       'contained-field-rows-child-active',
       'contained-field-rows-explicit-focused',
       'field-list',
@@ -3416,6 +3417,49 @@ Widget catchSectionContractStates(BuildContext context) {
                 body: 'Carter Road promenade',
                 icon: CatchIcons.pinOutlined,
                 onTap: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'contained-field-groups',
+        child: _FieldWidth(
+          child: CatchSection.containedFieldGroups(
+            groups: [
+              CatchSectionFieldGroup(
+                title: 'Continue',
+                children: [
+                  CatchField.action(
+                    title: 'Continue draft',
+                    body: '5km · Carter Road Jetty · 24/6',
+                    icon: CatchIcons.editNoteRounded,
+                    onTap: _noop,
+                  ),
+                  CatchField.action(
+                    title: 'Repeat last event',
+                    body: 'Reuse Monday Evening Run',
+                    icon: CatchIcons.refresh,
+                    onTap: _noop,
+                  ),
+                ],
+              ),
+              CatchSectionFieldGroup(
+                title: 'Start new',
+                children: [
+                  CatchField.action(
+                    title: 'Sell tickets with Catch',
+                    body: 'Tickets, waitlist, and payments in one place.',
+                    icon: CatchIcons.confirmationNumberOutlined,
+                    onTap: _noop,
+                  ),
+                  CatchField.action(
+                    title: 'Use guest list',
+                    body: 'Import CSV or XLSX.',
+                    icon: CatchIcons.cloudUploadOutlined,
+                    onTap: _noop,
+                  ),
+                ],
               ),
             ],
           ),

@@ -6,10 +6,10 @@ import {repoRoot} from "../lib/repo_paths.mjs";
 
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const sectionCallPattern =
-  /\bCatchSection\.(?:divided|fieldRows|contained|containedFieldRows|plain)\s*\(/gu;
+  /\bCatchSection\.(?:divided|fieldRows|contained|containedFieldRows|containedFieldGroups|plain)\s*\(/gu;
 const sectionHeaderCallPattern = /\bCatchSectionHeader\s*\(/gu;
 const adjacentSectionCallPattern =
-  /^(?:const\s+)?CatchSection\.(?:divided|fieldRows|contained|containedFieldRows|plain)\s*\(/u;
+  /^(?:const\s+)?CatchSection\.(?:divided|fieldRows|contained|containedFieldRows|containedFieldGroups|plain)\s*\(/u;
 const widgetClassPattern =
   /\bclass\s+([A-Za-z_]\w*)\s+extends\s+(?:StatelessWidget|ConsumerWidget|StatefulWidget|ConsumerStatefulWidget)\s*\{/gu;
 const headerTextPattern =
@@ -161,7 +161,7 @@ export function scanSourceForSectionHeaders({
 
     if (!info.className.endsWith("Section")) continue;
     if (
-      /\bCatchSection\.(?:divided|fieldRows|contained|containedFieldRows|plain)\s*\(/u.test(
+      /\bCatchSection\.(?:divided|fieldRows|contained|containedFieldRows|containedFieldGroups|plain)\s*\(/u.test(
         info.source,
       )
     ) {
