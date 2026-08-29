@@ -33,7 +33,7 @@ void main() {
           countCoverage: HostCustomerMatchCountCoverage.exact,
           campaignBlocker: null,
           onMessage: () => messagesStarted += 1,
-          onOpenFilters: () {},
+          onOpenMessaging: () {},
         ),
       ),
     );
@@ -46,6 +46,8 @@ void main() {
   testWidgets('filter summary qualifies counts and explains a blocked bridge', (
     tester,
   ) async {
+    var messagingOpens = 0;
+
     await tester.pumpWidget(
       _app(
         HostCustomerFilterSummary(
@@ -54,17 +56,46 @@ void main() {
           countCoverage: HostCustomerMatchCountCoverage.atLeast,
           campaignBlocker: HostCampaignBlockers.senderInactive,
           onMessage: null,
-          onOpenFilters: () {},
+          onOpenMessaging: () => messagingOpens += 1,
         ),
       ),
     );
 
     final button = tester.widget<CatchButton>(
-      find.byKey(const ValueKey('host-customers-message-segment')),
+      find.byKey(const ValueKey('host-customers-messaging-action')),
     );
-    expect(button.label, 'Message these 12+');
-    expect(button.onPressed, isNull);
+    expect(button.label, 'Open messaging');
+    expect(button.onPressed, isNotNull);
     expect(find.text('Sender verification is incomplete'), findsOneWidget);
+
+    await tester.tap(find.text('Open messaging'));
+    expect(messagingOpens, 1);
+  });
+
+  testWidgets('all customers never claims the directory is one campaign', (
+    tester,
+  ) async {
+    var messagingOpens = 0;
+
+    await tester.pumpWidget(
+      _app(
+        HostCustomerFilterSummary(
+          filter: HostCustomerFilter.all,
+          count: 2,
+          countCoverage: HostCustomerMatchCountCoverage.exact,
+          campaignBlocker: null,
+          onMessage: null,
+          onOpenMessaging: () => messagingOpens += 1,
+        ),
+      ),
+    );
+
+    expect(find.text('All · 2 people'), findsOneWidget);
+    expect(find.text('Message these 2'), findsNothing);
+    expect(find.text('Open messaging'), findsOneWidget);
+
+    await tester.tap(find.text('Open messaging'));
+    expect(messagingOpens, 1);
   });
 
   testWidgets('manual tag summary never becomes a computed campaign segment', (
@@ -82,14 +113,14 @@ void main() {
           countCoverage: HostCustomerMatchCountCoverage.exact,
           campaignBlocker: null,
           onMessage: null,
-          onOpenFilters: () {},
+          onOpenMessaging: () {},
         ),
       ),
     );
 
     expect(find.text('Brings friends · 4 people'), findsOneWidget);
     expect(
-      find.byKey(const ValueKey('host-customers-message-segment')),
+      find.byKey(const ValueKey('host-customers-messaging-action')),
       findsNothing,
     );
   });

@@ -21217,6 +21217,12 @@ abstract class AppLocalizations {
   /// **'Message these {count}+'**
   String hostCustomersMessageTheseAtLeast({required int count});
 
+  /// Opens the Messaging workspace when the current customer view cannot be used directly as a campaign audience.
+  ///
+  /// In en, this message translates to:
+  /// **'Open messaging'**
+  String get hostCustomersOpenMessaging;
+
   /// Grouped customer filter sheet title.
   ///
   /// In en, this message translates to:

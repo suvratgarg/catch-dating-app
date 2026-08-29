@@ -5320,13 +5320,13 @@
               "id": "customer_campaign_bridge_ready",
               "kind": "populated",
               "status": "tested",
-              "notes": "A selected segment is campaign-eligible, so message_filtered_customers is offered."
+              "notes": "A selected computed segment is campaign-eligible, so message_filtered_customers is offered for that exact segment."
             },
             {
               "id": "customer_campaign_bridge_blocked",
               "kind": "permission",
               "status": "tested",
-              "notes": "The selected segment is not campaign-eligible; message_filtered_customers is disabled and explained rather than hidden."
+              "notes": "The selected computed segment is not campaign-eligible; the blocker remains visible, Message these is not rendered, and an enabled Open messaging action routes to the narrower WhatsApp-ready audience instead."
             },
             {
               "id": "customer_memory_populated",

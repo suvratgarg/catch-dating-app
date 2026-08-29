@@ -7,6 +7,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/breakpoints.dart';
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -167,7 +169,23 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     final directory = ref.watch(
       hostCustomersDirectoryControllerProvider(request),
     );
-    final activeSegment = hostAudienceSegmentForCustomerFilter(effectiveFilter);
+    final directoryState = catchAsyncStateFromAsyncValue(directory).value;
+    final activeSegment = _manualTag == null
+        ? hostAudienceSegmentForCustomerFilter(effectiveFilter)
+        : null;
+    String? campaignBridgeBlocker;
+    if (directoryState != null && activeSegment != null) {
+      campaignBridgeBlocker = directoryState.matchCount == 0
+          ? HostCampaignBlockers.noReachableRecipients
+          : hostCampaignBridgeBlocker(
+              segment: activeSegment,
+              smsReadiness: summaryState.value?.smsReadiness,
+              messagingSetup: messagingSetupState.value,
+              audienceCoverageComplete:
+                  directoryState.sourceCoverage ==
+                  HostCustomerDirectoryCoverage.exact,
+            );
+    }
     final t = CatchTokens.of(context);
     final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
     final headerActions = [
@@ -252,11 +270,50 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                       onRetry: () => ref.invalidate(
                         hostCrmSummaryProvider(selectedClub.id),
                       ),
+                      directorySummary: directoryState == null
+                          ? null
+                          : HostCustomerFilterSummary(
+                              filter: effectiveFilter,
+                              manualTag: _manualTag,
+                              count: directoryState.matchCount,
+                              countCoverage: directoryState.matchCountCoverage,
+                              campaignBlocker: campaignBridgeBlocker,
+                              onMessage:
+                                  campaignBridgeBlocker == null &&
+                                      activeSegment != null
+                                  ? () => _openMessaging(
+                                      selectedClub,
+                                      segment: activeSegment,
+                                    )
+                                  : null,
+                              onOpenMessaging: () => _openMessaging(
+                                selectedClub,
+                                segment:
+                                    activeSegment ??
+                                    HostAudienceSegment.whatsappReachable,
+                              ),
+                              onClear:
+                                  effectiveFilter == HostCustomerFilter.all &&
+                                      _manualTag == null
+                                  ? null
+                                  : () => setState(() {
+                                      _filter = HostCustomerFilter.all;
+                                      _manualTag = null;
+                                    }),
+                            ),
                     ),
                     gapH16,
-                    HostCustomerDirectorySortControl(
+                    HostCustomerDirectoryControls(
                       sort: _sort,
                       onSortChanged: (sort) => setState(() => _sort = sort),
+                      onOpenFilters: directoryState == null
+                          ? null
+                          : () => _openFilters(
+                              effectiveFilter,
+                              _manualTag,
+                              directoryState,
+                              summaryState.value?.smsReadiness,
+                            ),
                     ),
                     gapH16,
                     CatchAsyncValueView<HostCustomersDirectoryState>(
@@ -275,76 +332,31 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                         ),
                       ),
                       builder: (context, state) {
-                        final campaignBridgeBlocker = hostCampaignBridgeBlocker(
-                          segment: activeSegment,
-                          smsReadiness: summaryState.value?.smsReadiness,
-                          messagingSetup: messagingSetupState.value,
-                          audienceCoverageComplete:
-                              state.sourceCoverage ==
-                              HostCustomerDirectoryCoverage.exact,
-                        );
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            HostCustomerFilterSummary(
-                              filter: effectiveFilter,
-                              manualTag: _manualTag,
-                              count: state.matchCount,
-                              countCoverage: state.matchCountCoverage,
-                              campaignBlocker: campaignBridgeBlocker,
-                              onMessage:
-                                  campaignBridgeBlocker == null &&
-                                      activeSegment != null
-                                  ? () => _messageCustomers(
-                                      selectedClub,
-                                      activeSegment,
+                        return HostCustomersDirectory(
+                          state: state,
+                          hasActiveQuery:
+                              _search != null ||
+                              effectiveFilter != HostCustomerFilter.all ||
+                              _manualTag != null,
+                          onCustomerSelected: (contact) =>
+                              _openCustomer(selectedClub, contact),
+                          onLoadMore: state.canLoadMore
+                              ? () => ref
+                                    .read(
+                                      hostCustomersDirectoryControllerProvider(
+                                        request,
+                                      ).notifier,
                                     )
-                                  : null,
-                              onOpenFilters: () => _openFilters(
-                                effectiveFilter,
-                                _manualTag,
-                                state,
-                                summaryState.value?.smsReadiness,
-                              ),
-                              onClear:
-                                  effectiveFilter == HostCustomerFilter.all &&
-                                      _manualTag == null
-                                  ? null
-                                  : () => setState(() {
-                                      _filter = HostCustomerFilter.all;
-                                      _manualTag = null;
-                                    }),
-                            ),
-                            gapH16,
-                            HostCustomersDirectory(
-                              state: state,
-                              hasActiveQuery:
-                                  _search != null ||
-                                  effectiveFilter != HostCustomerFilter.all ||
-                                  _manualTag != null,
-                              onCustomerSelected: (contact) =>
-                                  _openCustomer(selectedClub, contact),
-                              onLoadMore: state.canLoadMore
-                                  ? () => ref
-                                        .read(
-                                          hostCustomersDirectoryControllerProvider(
-                                            request,
-                                          ).notifier,
-                                        )
-                                        .loadMore()
-                                  : null,
-                              onRefreshCoverage: () {
-                                ref.invalidate(
-                                  hostCrmSummaryProvider(selectedClub.id),
-                                );
-                                ref.invalidate(
-                                  hostCustomersDirectoryControllerProvider(
-                                    request,
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                                    .loadMore()
+                              : null,
+                          onRefreshCoverage: () {
+                            ref.invalidate(
+                              hostCrmSummaryProvider(selectedClub.id),
+                            );
+                            ref.invalidate(
+                              hostCustomersDirectoryControllerProvider(request),
+                            );
+                          },
                         );
                       },
                     ),
@@ -453,7 +465,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     }
   }
 
-  void _messageCustomers(Club club, HostAudienceSegment segment) =>
+  void _openMessaging(Club club, {required HostAudienceSegment segment}) =>
       context.goNamed(
         Routes.hostInboxScreen.name,
         queryParameters: {

@@ -2,22 +2,22 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
-  "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:24970efda9c8c07f4256fcc72227f304b8b1a3ca0175175848e15835bc6d8bd2",
+  "generatedFor": "2026-08-29",
+  "sourceDigest": "sha256:914145c839b5228341ee63cd2de1bb5730cc80272aa12b3b304ed3c8d627b175",
   "resolvedDigest": "sha256:d015bd4d254830954a96823022545952062c66af6f220e8b60322dffcb1ac934",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
     "owner": "hosts",
     "status": "active",
-    "description": "Makes Customers the sole Host CRM directory for server-backed sorting, computed segments, organizer-authored notes and tags, per-person campaign and Announcement history, reviewed identity merges and reversals, contact administration, customer detail, identity-gated Catch chat, personal WhatsApp handoff, and a deep-linked segment bridge into Messaging campaigns."
+    "description": "Makes Customers the sole Host CRM directory for server-backed sorting, computed segments, organizer-authored notes and tags, per-person campaign and Announcement history, reviewed identity merges and reversals, contact administration, customer detail, identity-gated Catch chat, personal WhatsApp handoff, and truthful deep links into Messaging campaigns."
   },
   "coverage": {
     "surfaces": 1,
     "states": 41,
     "scenarios": 41,
     "actionCases": 41,
-    "actions": 22,
+    "actions": 23,
     "captures": 2,
     "previews": 1,
     "testFiles": 8,
@@ -32,7 +32,7 @@
         "id": "screen.host.customers"
       },
       "actionScope": {
-        "included": "Customer directory recovery, shared organizer selection, debounced name search, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, header-menu export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account Catch chat creation, editable personal WhatsApp app handoff for contacts with a valid phone, and routing only an eligible computed segment into the Messaging campaign composer.",
+        "included": "Customer directory recovery, shared organizer selection, debounced name search, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, header-menu export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account Catch chat creation, editable personal WhatsApp app handoff for contacts with a valid phone, routing an eligible computed segment into the Messaging campaign composer, and routing blocked or unsegmented computed views to a narrower WhatsApp-ready Messaging audience without claiming the full directory is sendable.",
         "excluded": [
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
         ]
@@ -127,6 +127,7 @@
         "testEvidence": {
           "customers_populated": [
             "test/hosts/host_customers_screen_state_test.dart",
+            "test/hosts/host_operations_screen_test.dart",
             "test/routing/host_shell_navigation_test.dart",
             "test/routing/router_redirect_test.dart"
           ],
@@ -213,7 +214,7 @@
         "states": 41,
         "scenarios": 41,
         "actionCases": 41,
-        "actions": 22,
+        "actions": 23,
         "captures": 2,
         "previews": 1,
         "testFiles": 8,
@@ -482,7 +483,7 @@
         {
           "id": "message_filtered_customers",
           "owner": "customers_screen",
-          "codeValue": "_messageCustomers",
+          "codeValue": "_openMessaging",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
@@ -499,7 +500,30 @@
               }
             }
           ],
-          "description": "Routes an eligible active-sender segment into the Messaging Campaigns composer with that segment preselected; otherwise keeps the control disabled beside its campaign blocker reason.",
+          "description": "Routes an eligible active-sender computed segment into the Messaging Campaigns composer with that exact segment preselected.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_messaging_workspace",
+          "owner": "customers_screen",
+          "codeValue": "_openMessaging",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "filter",
+            "campaignBlocker"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.inbox"
+              }
+            }
+          ],
+          "description": "Routes an unsegmented or blocked computed customer view into Messaging with the narrower WhatsApp-ready segment preselected instead of claiming every displayed customer is sendable.",
           "implementationStatus": "implemented"
         },
         {
@@ -1049,6 +1073,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1126,6 +1151,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1194,7 +1220,8 @@
               "actions": {
                 "enabled": [
                   "switch_organizer",
-                  "create_customer"
+                  "create_customer",
+                  "open_messaging_workspace"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -1287,7 +1314,8 @@
                   "export_customers",
                   "create_customer",
                   "open_customer",
-                  "manage_customer"
+                  "manage_customer",
+                  "open_messaging_workspace"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -1358,7 +1386,8 @@
                 "enabled": [
                   "search_customers",
                   "filter_customers",
-                  "sort_customers"
+                  "sort_customers",
+                  "open_messaging_workspace"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -1444,6 +1473,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "export_customers",
                   "create_customer",
                   "open_customer",
@@ -1524,6 +1554,7 @@
                   "open_customer_filters",
                   "filter_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1604,6 +1635,7 @@
                   "open_customer_filters",
                   "filter_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1682,6 +1714,7 @@
                   "open_customer_filters",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -1755,7 +1788,8 @@
                   "filter_customers"
                 ],
                 "disabled": [
-                  "message_filtered_customers"
+                  "message_filtered_customers",
+                  "open_messaging_workspace"
                 ],
                 "notAllowed": [
                   "retry_directory",
@@ -1835,7 +1869,9 @@
                 "enabled": [
                   "message_filtered_customers"
                 ],
-                "disabled": [],
+                "disabled": [
+                  "open_messaging_workspace"
+                ],
                 "notAllowed": [
                   "retry_directory",
                   "switch_organizer",
@@ -1894,7 +1930,7 @@
           },
           "actionCases": [
             {
-              "id": "explain",
+              "id": "explain_and_open",
               "dimensions": {
                 "load": "ready",
                 "directory": "populated",
@@ -1912,7 +1948,9 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [],
+                "enabled": [
+                  "open_messaging_workspace"
+                ],
                 "disabled": [
                   "message_filtered_customers"
                 ],
@@ -2001,6 +2039,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "open_customer",
@@ -2078,6 +2117,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "create_customer",
                   "open_customer",
@@ -2158,6 +2198,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -2235,6 +2276,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -2310,6 +2352,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -2388,6 +2431,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -2471,6 +2515,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -2551,6 +2596,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -2631,6 +2677,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -2716,6 +2763,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -2794,6 +2842,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -2872,6 +2921,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -2954,6 +3004,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3034,6 +3085,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3113,6 +3165,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3190,6 +3243,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3269,6 +3323,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3346,6 +3401,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3425,6 +3481,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3501,6 +3558,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3577,6 +3635,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3659,6 +3718,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3738,6 +3798,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3818,6 +3879,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3899,6 +3961,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -3976,6 +4039,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -4051,6 +4115,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -4127,6 +4192,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -4203,6 +4269,7 @@
                   "filter_customers",
                   "sort_customers",
                   "message_filtered_customers",
+                  "open_messaging_workspace",
                   "load_more",
                   "export_customers",
                   "create_customer",
