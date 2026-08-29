@@ -10,14 +10,21 @@ export interface OrganizerCommunicationPreferenceDocument {
   uid: string;
   whatsapp: {
     status: "unknown" | "optedIn" | "optedOut";
+    /**
+     * Only complete evidence may make an opted-in channel eligible for managed delivery.
+     */
+    evidenceStatus: "notApplicable" | "complete" | "incomplete";
+    currentReceiptId: string | null;
     termsVersion: string | null;
     source:
       | null
       | "publicEventRegistration"
+      | "hostFormResponse"
+      | "participantSettings"
       | "unsubscribeLink"
-      | "hostApp"
       | "inboundStop"
-      | "providerWebhook";
+      | "providerWebhook"
+      | "legacyIncomplete";
     sourceEventId: string | null;
     updatedAt: {
       _seconds: number;
@@ -26,14 +33,21 @@ export interface OrganizerCommunicationPreferenceDocument {
   };
   sms: {
     status: "unknown" | "optedIn" | "optedOut";
+    /**
+     * Only complete evidence may make an opted-in channel eligible for managed delivery.
+     */
+    evidenceStatus: "notApplicable" | "complete" | "incomplete";
+    currentReceiptId: string | null;
     termsVersion: string | null;
     source:
       | null
       | "publicEventRegistration"
+      | "hostFormResponse"
+      | "participantSettings"
       | "unsubscribeLink"
-      | "hostApp"
       | "inboundStop"
-      | "providerWebhook";
+      | "providerWebhook"
+      | "legacyIncomplete";
     sourceEventId: string | null;
     updatedAt: {
       _seconds: number;

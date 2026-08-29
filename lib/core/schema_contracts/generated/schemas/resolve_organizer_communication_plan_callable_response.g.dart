@@ -104,41 +104,6 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
                 'availability',
                 'blocker',
               ],
-              'allOf': <Object?>[
-                <String, Object?>{
-                  'if': <String, Object?>{
-                    'properties': <String, Object?>{
-                      'availability': <String, Object?>{
-                        'const': 'available',
-                      },
-                    },
-                  },
-                  'then': <String, Object?>{
-                    'properties': <String, Object?>{
-                      'blocker': <String, Object?>{
-                        'type': 'null',
-                      },
-                    },
-                  },
-                  'else': <String, Object?>{
-                    'properties': <String, Object?>{
-                      'blocker': <String, Object?>{
-                        'type': 'string',
-                        'enum': <Object?>[
-                          'catchAccountRequired',
-                          'identityAmbiguous',
-                          'missingPhone',
-                          'organizerSuppressed',
-                          'contactOptedOut',
-                          'permissionRequired',
-                          'senderUnavailable',
-                          'intentUnsupported',
-                        ],
-                      },
-                    },
-                  },
-                },
-              ],
               'properties': <String, Object?>{
                 'routeId': <String, Object?>{
                   'type': 'string',
@@ -225,41 +190,6 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
         'executionMode',
         'availability',
         'blocker',
-      ],
-      'allOf': <Object?>[
-        <String, Object?>{
-          'if': <String, Object?>{
-            'properties': <String, Object?>{
-              'availability': <String, Object?>{
-                'const': 'available',
-              },
-            },
-          },
-          'then': <String, Object?>{
-            'properties': <String, Object?>{
-              'blocker': <String, Object?>{
-                'type': 'null',
-              },
-            },
-          },
-          'else': <String, Object?>{
-            'properties': <String, Object?>{
-              'blocker': <String, Object?>{
-                'type': 'string',
-                'enum': <Object?>[
-                  'catchAccountRequired',
-                  'identityAmbiguous',
-                  'missingPhone',
-                  'organizerSuppressed',
-                  'contactOptedOut',
-                  'permissionRequired',
-                  'senderUnavailable',
-                  'intentUnsupported',
-                ],
-              },
-            },
-          },
-        },
       ],
       'properties': <String, Object?>{
         'routeId': <String, Object?>{
@@ -369,41 +299,6 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
               'executionMode',
               'availability',
               'blocker',
-            ],
-            'allOf': <Object?>[
-              <String, Object?>{
-                'if': <String, Object?>{
-                  'properties': <String, Object?>{
-                    'availability': <String, Object?>{
-                      'const': 'available',
-                    },
-                  },
-                },
-                'then': <String, Object?>{
-                  'properties': <String, Object?>{
-                    'blocker': <String, Object?>{
-                      'type': 'null',
-                    },
-                  },
-                },
-                'else': <String, Object?>{
-                  'properties': <String, Object?>{
-                    'blocker': <String, Object?>{
-                      'type': 'string',
-                      'enum': <Object?>[
-                        'catchAccountRequired',
-                        'identityAmbiguous',
-                        'missingPhone',
-                        'organizerSuppressed',
-                        'contactOptedOut',
-                        'permissionRequired',
-                        'senderUnavailable',
-                        'intentUnsupported',
-                      ],
-                    },
-                  },
-                },
-              },
             ],
             'properties': <String, Object?>{
               'routeId': <String, Object?>{

@@ -31,7 +31,9 @@ import {OrganizerPostDeliveryRecipientDocument} from "./organizerPostDeliveryRec
 import {OrganizerTeamMembershipDocument} from "./organizerTeamMembershipDocument";
 import {OrganizerFollowDocument} from "./organizerFollowDocument";
 import {OrganizerCommunicationPreferenceDocument} from "./organizerCommunicationPreferenceDocument";
+import {OrganizerCommunicationPermissionReceiptDocument} from "./organizerCommunicationPermissionReceiptDocument";
 import {OrganizerContactDocument} from "./organizerContactDocument";
+import {OrganizerContactOriginDocument} from "./organizerContactOriginDocument";
 import {OrganizerContactNoteDocument} from "./organizerContactNoteDocument";
 import {OrganizerContactTagVocabularyDocument} from "./organizerContactTagVocabularyDocument";
 import {OrganizerContactIdentityLinkDocument} from "./organizerContactIdentityLinkDocument";
@@ -532,7 +534,9 @@ import {
   organizerTeamMembershipDocumentSchema,
   organizerFollowDocumentSchema,
   organizerCommunicationPreferenceDocumentSchema,
+  organizerCommunicationPermissionReceiptDocumentSchema,
   organizerContactDocumentSchema,
+  organizerContactOriginDocumentSchema,
   organizerContactNoteDocumentSchema,
   organizerContactTagVocabularyDocumentSchema,
   organizerContactIdentityLinkDocumentSchema,
@@ -1078,8 +1082,12 @@ export const validateOrganizerFollowDocument =
   lazyValidator<OrganizerFollowDocument>(organizerFollowDocumentSchema);
 export const validateOrganizerCommunicationPreferenceDocument =
   lazyValidator<OrganizerCommunicationPreferenceDocument>(organizerCommunicationPreferenceDocumentSchema);
+export const validateOrganizerCommunicationPermissionReceiptDocument =
+  lazyValidator<OrganizerCommunicationPermissionReceiptDocument>(organizerCommunicationPermissionReceiptDocumentSchema);
 export const validateOrganizerContactDocument =
   lazyValidator<OrganizerContactDocument>(organizerContactDocumentSchema);
+export const validateOrganizerContactOriginDocument =
+  lazyValidator<OrganizerContactOriginDocument>(organizerContactOriginDocumentSchema);
 export const validateOrganizerContactNoteDocument =
   lazyValidator<OrganizerContactNoteDocument>(organizerContactNoteDocumentSchema);
 export const validateOrganizerContactTagVocabularyDocument =

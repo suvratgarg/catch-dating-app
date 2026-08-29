@@ -82,6 +82,7 @@ export async function mergeOrganizerContactsHandler(
     edgeSnap,
     evidenceSnap,
     claimSnap,
+    originSnap,
   ] = await Promise.all([
     survivorRef.get(),
     sourceRef.get(),
@@ -94,6 +95,9 @@ export async function mergeOrganizerContactsHandler(
     db.collection("organizerContactIdentityClaims")
       .where("verifiedContactId", "==", data.sourceContactId)
       .limit(maxAtomicMergeDocuments + 1).get(),
+    db.collection("organizerContactOrigins")
+      .where("currentContactId", "==", data.sourceContactId)
+      .limit(maxAtomicMergeDocuments + 1).get(),
   ]);
   const survivor = activeContact(survivorSnap, data.organizerId);
   const source = activeContact(sourceSnap, data.organizerId);
@@ -104,7 +108,8 @@ export async function mergeOrganizerContactsHandler(
       "Contact data changed. Refresh before merging."
     );
   }
-  const totalMoved = edgeSnap.size + evidenceSnap.size + claimSnap.size;
+  const totalMoved = edgeSnap.size + evidenceSnap.size + claimSnap.size +
+    originSnap.size;
   if (totalMoved > maxAtomicMergeDocuments) {
     throw new HttpsError(
       "resource-exhausted",
@@ -133,9 +138,11 @@ export async function mergeOrganizerContactsHandler(
     movedEdgeIds: edgeSnap.docs.map((doc) => doc.id),
     movedIdentityEvidenceIds: evidenceSnap.docs.map((doc) => doc.id),
     movedClaimIds: claimSnap.docs.map((doc) => doc.id),
+    movedOriginIds: originSnap.docs.map((doc) => doc.id),
     movedEdgeCount: edgeSnap.size,
     movedIdentityEvidenceCount: evidenceSnap.size,
     movedClaimCount: claimSnap.size,
+    movedOriginCount: originSnap.size,
     idempotencyKey: data.idempotencyKey,
     reversalOfReceiptId: null,
     createdAt: now,
@@ -144,6 +151,7 @@ export async function mergeOrganizerContactsHandler(
     ...edgeSnap.docs.map((doc) => ({kind: "edge" as const, doc})),
     ...evidenceSnap.docs.map((doc) => ({kind: "evidence" as const, doc})),
     ...claimSnap.docs.map((doc) => ({kind: "claim" as const, doc})),
+    ...originSnap.docs.map((doc) => ({kind: "origin" as const, doc})),
   ];
   await db.runTransaction(async (tx) => {
     const [liveReceipt, liveSurvivor, liveSource, ...liveMoves] =
@@ -194,6 +202,9 @@ export async function mergeOrganizerContactsHandler(
         updatedAt: now,
       });
     }
+    for (const document of originSnap.docs) {
+      tx.update(document.ref, {currentContactId: data.survivorContactId});
+    }
     tx.update(survivorRef, {
       ambiguousCandidateContactIds: [],
       revision: Math.max(currentSurvivor.revision + 1, now.toMillis()),
@@ -213,7 +224,7 @@ export async function mergeOrganizerContactsHandler(
 }
 
 function assertMergeMoveUnchanged(
-  kind: "edge" | "evidence" | "claim",
+  kind: "edge" | "evidence" | "claim" | "origin",
   planned: FirebaseFirestore.QueryDocumentSnapshot,
   live: FirebaseFirestore.DocumentSnapshot,
   sourceContactId: string
@@ -222,7 +233,8 @@ function assertMergeMoveUnchanged(
     throw new HttpsError("aborted", "A contact fact changed. Refresh first.");
   }
   const liveData = live.data() as Record<string, unknown>;
-  const contactField = kind === "claim" ? "verifiedContactId" : "contactId";
+  const contactField = kind === "claim" ? "verifiedContactId" :
+    kind === "origin" ? "currentContactId" : "contactId";
   const plannedVersion = planned.updateTime?.toMillis();
   const liveVersion = live.updateTime?.toMillis();
   if (liveData[contactField] !== sourceContactId ||
@@ -271,6 +283,8 @@ export async function unmergeOrganizerContactsHandler(
   const now = deps.timestamp();
   const reversal: OrganizerContactMergeReceiptDocument = {
     ...mergeReceipt,
+    movedOriginIds: mergeReceipt.movedOriginIds ?? [],
+    movedOriginCount: mergeReceipt.movedOriginCount ?? 0,
     operation: "unmerge",
     actorUid,
     idempotencyKey: data.idempotencyKey,
@@ -324,7 +338,7 @@ export async function unmergeOrganizerContactsHandler(
 function mergeMoveReferences(
   db: FirebaseFirestore.Firestore,
   receipt: OrganizerContactMergeReceiptDocument
-): Array<{kind: "edge" | "evidence" | "claim";
+): Array<{kind: "edge" | "evidence" | "claim" | "origin";
   ref: FirebaseFirestore.DocumentReference}> {
   return [
     ...receipt.movedEdgeIds.map((id) => ({
@@ -339,11 +353,15 @@ function mergeMoveReferences(
       kind: "claim" as const,
       ref: db.collection("organizerContactIdentityClaims").doc(id),
     })),
+    ...(receipt.movedOriginIds ?? []).map((id) => ({
+      kind: "origin" as const,
+      ref: db.collection("organizerContactOrigins").doc(id),
+    })),
   ];
 }
 
 function assertReversibleMove(
-  kind: "edge" | "evidence" | "claim",
+  kind: "edge" | "evidence" | "claim" | "origin",
   snap: FirebaseFirestore.DocumentSnapshot,
   receipt: OrganizerContactMergeReceiptDocument
 ): void {
@@ -354,7 +372,8 @@ function assertReversibleMove(
     );
   }
   const data = snap.data() as Record<string, unknown>;
-  const current = kind === "claim" ? data.verifiedContactId : data.contactId;
+  const current = kind === "claim" ? data.verifiedContactId :
+    kind === "origin" ? data.currentContactId : data.contactId;
   const origin = kind === "claim" ? data.originVerifiedContactId :
     data.originContactId;
   if (current !== receipt.survivorContactId ||
@@ -367,7 +386,7 @@ function assertReversibleMove(
 }
 
 function restoredMovePatch(
-  kind: "edge" | "evidence" | "claim",
+  kind: "edge" | "evidence" | "claim" | "origin",
   snap: FirebaseFirestore.DocumentSnapshot,
   now: FirebaseFirestore.Timestamp
 ): Record<string, unknown> {
@@ -378,6 +397,9 @@ function restoredMovePatch(
       revision: Math.max(Number(data.revision ?? 0) + 1, now.toMillis()),
       updatedAt: now,
     };
+  }
+  if (kind === "origin") {
+    return {currentContactId: data.originContactId};
   }
   return {contactId: data.originContactId, updatedAt: now};
 }
@@ -501,6 +523,7 @@ function receiptResponse(
     movedEdgeCount: receipt.movedEdgeCount,
     movedIdentityEvidenceCount: receipt.movedIdentityEvidenceCount,
     movedClaimCount: receipt.movedClaimCount,
+    movedOriginCount: receipt.movedOriginCount ?? 0,
     replayed,
   };
 }

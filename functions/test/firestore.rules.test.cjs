@@ -1742,6 +1742,8 @@ describe("firestore.rules", () => {
         ["eventVenueSessions", "session-1"],
         ["eventVenueSessionRedemptions", "redemption-1"],
         ["organizerProviderConnections", "connection-1"],
+        ["organizerCommunicationPermissionReceipts", "permission-1"],
+        ["organizerContactOrigins", "origin-1"],
         ["externalEventMappings", "mapping-1"],
         ["providerSyncRuns", "sync-1"],
         ["organizerApplicationForms", "form-1"],

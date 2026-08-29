@@ -3,11 +3,16 @@ import test from "node:test";
 import type {
   EventDocument,
   OrganizerCampaignDocument,
+  OrganizerCommunicationPreferenceDocument,
+  OrganizerContactDocument,
+  OrganizerContactTraitDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   campaignVariables,
+  evaluateAudienceRows,
   hasReachableCampaignRecipient,
 } from "./organizerCampaigns";
+import * as admin from "firebase-admin";
 
 test("campaign preview rejects empty and fully excluded audiences", () => {
   assert.equal(hasReachableCampaignRecipient([]), false);
@@ -50,3 +55,46 @@ test(
     );
   }
 );
+
+test("campaign eligibility fails closed for an incomplete legacy grant", () => {
+  const now = admin.firestore.Timestamp.fromMillis(10_000);
+  const contact = {
+    organizerId: "organizer-1",
+    linkedUid: "user-1",
+    phoneE164: "+919876543210",
+    identityState: "verified",
+    identityConfidence: "verified",
+    deletedAt: null,
+    hiddenAt: null,
+  } as OrganizerContactDocument;
+  const trait = {
+    segmentIds: ["repeat_attendee"],
+  } as OrganizerContactTraitDocument;
+  const preference = {
+    organizerId: "organizer-1",
+    uid: "user-1",
+    whatsapp: {
+      status: "optedIn",
+      evidenceStatus: "incomplete",
+      currentReceiptId: "legacy-receipt",
+    },
+  } as OrganizerCommunicationPreferenceDocument;
+  const [row] = evaluateAudienceRows([{
+    contactId: "contact-1",
+    contact,
+    trait,
+    preference,
+    channelState: null,
+  }], now, ["repeat_attendee"]);
+  assert.equal(row.eligibility, "excluded");
+  assert.equal(row.exclusionReason, "unknownPermission");
+  preference.whatsapp.evidenceStatus = "complete";
+  const [eligible] = evaluateAudienceRows([{
+    contactId: "contact-1",
+    contact,
+    trait,
+    preference,
+    channelState: null,
+  }], now, ["repeat_attendee"]);
+  assert.equal(eligible.eligibility, "eligible");
+});

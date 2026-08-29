@@ -163,9 +163,23 @@ const schemaSpecs = [
       "organizerCommunicationPreferenceDocument.ts",
   },
   {
+    name: "OrganizerCommunicationPermissionReceiptDocument",
+    source:
+      "firestore/organizer_communication_permission_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerCommunicationPermissionReceiptDocument.ts",
+  },
+  {
     name: "OrganizerContactDocument",
     source: "firestore/organizer_contacts.schema.json",
     typeOutput: "functions/src/shared/generated/organizerContactDocument.ts",
+  },
+  {
+    name: "OrganizerContactOriginDocument",
+    source: "firestore/organizer_contact_origins.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactOriginDocument.ts",
   },
   {
     name: "OrganizerContactNoteDocument",

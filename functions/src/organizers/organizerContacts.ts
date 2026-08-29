@@ -75,6 +75,10 @@ import {
   OrganizerAudienceSourceCoverage,
   resolveOrganizerAudienceCoverage,
 } from "./organizerAudienceCoverage";
+import {
+  manualOrganizerContactOrigin,
+  organizerContactOriginId,
+} from "../shared/organizerContactOrigins";
 
 const defaultContactPageSize = 50;
 const maxDetailEvents = 100;
@@ -362,6 +366,20 @@ export async function createOrganizerContactRecord(params: {
   const manualEvidenceAttendeeId = manualContactEvidenceAttendeeId(
     contactRef.id
   );
+  const origin = manualOrganizerContactOrigin({
+    organizerId: params.organizerId,
+    contactId: contactRef.id,
+    actorUid: params.actorUid,
+    now,
+  });
+  const originRef = params.db.collection("organizerContactOrigins").doc(
+    organizerContactOriginId({
+      organizerId: origin.organizerId,
+      sourceKind: origin.sourceKind,
+      sourceEntityKind: origin.sourceEntityKind,
+      sourceEntityId: origin.sourceEntityId,
+    })
+  );
   const revision = Math.max(1, now.toMillis());
   const trait: OrganizerContactTraitDocument = {
     organizerId: params.organizerId,
@@ -441,19 +459,22 @@ export async function createOrganizerContactRecord(params: {
     } : null;
 
   await params.db.runTransaction(async (tx) => {
-    const [summarySnap, contactSnap] = await Promise.all([
+    const [summarySnap, contactSnap, originSnap] = await Promise.all([
       tx.get(summaryRef),
       tx.get(contactRef),
+      tx.get(originRef),
     ]);
     if (contactSnap.exists) {
       const existing = contactSnap.data() as OrganizerContactDocument;
       if (existing.organizerId !== params.organizerId) {
         throw new HttpsError("already-exists", "Contact identity is in use.");
       }
+      if (!originSnap.exists) tx.create(originRef, origin);
       return;
     }
     tx.create(contactRef, contact);
     tx.create(traitRef, trait);
+    tx.create(originRef, origin);
     for (const link of identityLinks) tx.create(link.ref, link.data);
     if (initialNoteRef && initialNote) tx.create(initialNoteRef, initialNote);
     tx.set(summaryRef, summaryWithTrait(
@@ -720,7 +741,8 @@ async function activeMergeRows(params: {
       conflicts: receipt.data.conflicts,
       movedFactCount: receipt.data.movedEdgeCount +
         receipt.data.movedIdentityEvidenceCount +
-        receipt.data.movedClaimCount,
+        receipt.data.movedClaimCount +
+        (receipt.data.movedOriginCount ?? 0),
       mergedAtMillis: receipt.data.createdAt.toMillis(),
     };
   }));

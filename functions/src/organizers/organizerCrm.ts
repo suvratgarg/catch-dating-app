@@ -20,6 +20,8 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {resolveOrganizerAudienceCoverage} from
   "./organizerAudienceCoverage";
+import {hasCompleteOrganizerCommunicationGrant} from
+  "../shared/organizerCommunicationPreferences";
 
 const maxRosterDocuments = 2500;
 
@@ -225,10 +227,12 @@ export function summarizeOrganizerCrm(params: {
       continue;
     }
     const preference = preferenceByUid.get(contact.linkedUid);
-    if (preference?.whatsapp.status === "optedIn") {
+    if (hasCompleteOrganizerCommunicationGrant(preference, "whatsapp")) {
       whatsappOptInCount += 1;
     }
-    if (preference?.sms.status === "optedIn") smsOptInCount += 1;
+    if (hasCompleteOrganizerCommunicationGrant(preference, "sms")) {
+      smsOptInCount += 1;
+    }
   }
 
   return {

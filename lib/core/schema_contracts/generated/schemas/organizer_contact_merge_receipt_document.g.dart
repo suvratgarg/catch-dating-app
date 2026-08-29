@@ -28,9 +28,11 @@ const schemaOrganizerContactMergeReceiptDocumentSchema = <String, Object?>{
     'movedEdgeIds',
     'movedIdentityEvidenceIds',
     'movedClaimIds',
+    'movedOriginIds',
     'movedEdgeCount',
     'movedIdentityEvidenceCount',
     'movedClaimCount',
+    'movedOriginCount',
     'idempotencyKey',
     'reversalOfReceiptId',
     'createdAt',
@@ -127,6 +129,16 @@ const schemaOrganizerContactMergeReceiptDocumentSchema = <String, Object?>{
         'maxLength': 180,
       },
     },
+    'movedOriginIds': <String, Object?>{
+      'type': 'array',
+      'maxItems': 400,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 180,
+      },
+    },
     'movedEdgeCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
@@ -138,6 +150,11 @@ const schemaOrganizerContactMergeReceiptDocumentSchema = <String, Object?>{
       'maximum': 400,
     },
     'movedClaimCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 400,
+    },
+    'movedOriginCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 400,

@@ -13,5 +13,6 @@ export interface MutateOrganizerContactMergeCallableResponse {
   movedEdgeCount: number;
   movedIdentityEvidenceCount: number;
   movedClaimCount: number;
+  movedOriginCount: number;
   replayed: boolean;
 }

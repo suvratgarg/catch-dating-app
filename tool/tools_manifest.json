@@ -2332,6 +2332,20 @@
       "role": "generator"
     },
     {
+      "id": "data:backfill-organizer-crm-authority-v2",
+      "category": "data",
+      "path": "tool/data/backfill_organizer_crm_authority_v2.mjs",
+      "command": "node tool/data/backfill_organizer_crm_authority_v2.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Backfills contact origins only from canonical attendee edges and classifies legacy communication decisions as incomplete without inferring permission.",
+      "checks": [
+        "node --check tool/data/backfill_organizer_crm_authority_v2.mjs",
+        "node --test tool/data/backfill_organizer_crm_authority_v2.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "data:repair-legacy-host-contact-projection",
       "category": "data",
       "path": "tool/data/repair_legacy_host_contact_projection.mjs",

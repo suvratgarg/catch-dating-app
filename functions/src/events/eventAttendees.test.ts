@@ -385,7 +385,10 @@ test("registration consent only adds explicit channel grants", () => {
     now,
   });
   assert.equal(preference?.whatsapp.status, "optedIn");
+  assert.equal(preference?.whatsapp.evidenceStatus, "complete");
+  assert.match(preference?.whatsapp.currentReceiptId ?? "", /^ocpr_/);
   assert.equal(preference?.sms.status, "unknown");
+  assert.equal(preference?.sms.evidenceStatus, "notApplicable");
 
   const replay = mergeOrganizerCommunicationPreference({
     existing: preference!,

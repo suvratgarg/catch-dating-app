@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.36.0
+version: 1.36.1
 updated: 2026-08-29
 owner: recursive_audit_loop
 status: active
@@ -781,6 +781,15 @@ backfill must never infer or promote permission from a phone number, contact
 source, roster membership, form answer not bound to the reviewed consent copy,
 or prior send.
 
+`tool/data/backfill_organizer_crm_authority_v2.mjs` is the dry-run-first
+additive migration. It creates contact origins only when a canonical attendee
+edge names both current and original contact identity. Existing non-unknown
+preference state without a complete referenced receipt becomes an immutable
+`legacyIncomplete` receipt and remains ineligible for managed delivery. The
+tool reports, rather than guesses, attendee rows whose canonical edge is
+missing. The migration is available in source but has not been applied to any
+environment.
+
 `organizerContactOrigins/{originId}` is the immutable multi-source provenance
 ledger for organizer CRM contacts. Each deterministic row records organizer,
 current contact, origin contact, source kind, source entity kind/id, nullable
@@ -803,8 +812,9 @@ Manager merges are optimistic and receipt-backed. The client supplies the
 current survivor and source revisions; the transaction also verifies every
 source-origin fact has the same Firestore version observed during planning.
 Conflicting UID, phone, or email facts require explicit confirmation. Unmerge
-restores only the exact source-origin edge, evidence, and claim identifiers in
-the original receipt and creates one deterministic reversal receipt. Facts
+restores only the exact source-origin edge, evidence, claim, and contact-origin
+identifiers in the original receipt and creates one deterministic reversal
+receipt. Facts
 created after a merge remain with the survivor instead of being guessed back.
 The manager review boundary lists conflicted verified UID/phone claims plus
 exact proposed phone/email hashes. It derives shared events, source kinds and
@@ -813,6 +823,11 @@ confidence at read time, never proposes name-only matches, and stores a
 people. Only that manager may reopen the decision. Contact detail returns the
 newest active merge receipts for the survivor so each receipt can be reversed
 individually.
+
+Account deletion is the only erasure exception to receipt and origin retention:
+it deletes permission receipts carrying the participant UID and redacts that
+UID from retained contact-origin facts while preserving non-PII source
+classification.
 
 `organizerContactTraits` are rebuilt from event edges and verified invite
 attribution facts and contain only

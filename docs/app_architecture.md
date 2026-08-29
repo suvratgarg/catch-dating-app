@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.15.1
+version: 1.15.2
 updated: 2026-08-29
 owner: app_architecture
 status: active
@@ -2677,6 +2677,52 @@ Every delivery mutation must recheck the authoritative facts. A previously
 resolved plan may explain the current UI, but it never authorizes a later send.
 External handoff means the host owns the final send; it must never generate a
 Catch delivery receipt until a later verified receipt workflow exists.
+
+### Exhibit ARCH-CRM-AUTHORITY-001: Provenance And Permission Authority
+
+<!-- exhibit-freshness: ARCH-CRM-AUTHORITY-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+
+Reference files:
+
+- `functions/src/shared/organizerContactOrigins.ts`
+- `functions/src/shared/organizerCommunicationPreferences.ts`
+- `functions/src/events/eventAttendees.ts`
+- `functions/src/organizers/organizerAudienceProjection.ts`
+- `functions/src/organizers/organizerContactMerges.ts`
+- `functions/src/organizers/organizerCampaigns.ts`
+- `functions/src/organizers/organizerCampaignDispatcher.ts`
+- `tool/data/backfill_organizer_crm_authority_v2.mjs`
+
+Contact creation, identity convergence, communication permission, and
+operational suppression are separate authorities. Every approved contact
+creator appends a deterministic origin without copying raw response or message
+content. A merge moves only `currentContactId`; `originContactId` and source
+facts stay stable and the merge receipt names every moved origin so reversal
+does not infer ownership.
+
+Current preference is a projection over immutable participant decisions.
+Managed delivery may treat a channel as opted in only when current state names
+a complete receipt:
+
+```ts
+export function effectiveOrganizerCommunicationStatus(
+  preference: OrganizerCommunicationPreferenceDocument | null | undefined,
+  channel: OrganizerCommunicationChannel
+): "unknown" | "optedIn" | "optedOut" {
+  const value = preference?.[channel];
+  if (value?.status === "optedOut") return "optedOut";
+  return hasCompleteOrganizerCommunicationGrant(preference, channel) ?
+    "optedIn" : "unknown";
+}
+```
+
+An explicit withdrawal appends a new receipt and supersedes current state; it
+does not rewrite the earlier grant. Organizer suppression remains a separate
+operational pause and never becomes participant consent. Legacy non-unknown
+state without complete evidence fails closed as unknown for sending, while a
+legacy withdrawal remains effective. The backfill creates provenance only
+from canonical attendee edges, labels legacy decisions incomplete, reports
+missing canonical evidence, and records zero inferred grants.
 
 ### Exhibit ARCH-ENTITY-MATERIAL-001: Entity Material Composition
 

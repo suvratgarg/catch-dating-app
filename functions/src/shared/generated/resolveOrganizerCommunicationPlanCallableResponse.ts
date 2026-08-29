@@ -33,7 +33,27 @@ export interface ResolveOrganizerCommunicationPlanCallableResponse {
      * @maxItems 2
      */
     routes: {
-      [k: string]: unknown;
+      routeId:
+        | "personalWhatsappHandoff"
+        | "organizerWhatsappCampaign"
+        | "catchWhatsapp"
+        | "catchChat"
+        | "catchEventAnnouncement"
+        | "organizerFollowerUpdate";
+      executionMode: "managedDelivery" | "externalHandoff";
+      availability: "available" | "unavailable";
+      blocker:
+        | (
+            | "catchAccountRequired"
+            | "identityAmbiguous"
+            | "missingPhone"
+            | "organizerSuppressed"
+            | "contactOptedOut"
+            | "permissionRequired"
+            | "senderUnavailable"
+            | "intentUnsupported"
+          )
+        | null;
     }[];
   }[];
 }

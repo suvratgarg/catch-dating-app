@@ -1,7 +1,10 @@
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
-import {organizerCommunicationPreferenceId} from
+import {
+  effectiveOrganizerCommunicationStatus,
+  organizerCommunicationPreferenceId,
+} from
   "../shared/organizerCommunicationPreferences";
 import {
   EventAttendeeDocument,
@@ -13,6 +16,7 @@ import {
   OrganizerContactEventEdgeDocument,
   OrganizerContactIdentityClaimDocument,
   OrganizerContactIdentityLinkDocument,
+  OrganizerContactOriginDocument,
   OrganizerContactTraitDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
@@ -28,6 +32,10 @@ import {
 } from "./organizerAudienceModel";
 import {eventTitleLabel} from "../shared/eventLabels";
 import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
+import {
+  attendeeOrganizerContactOrigin,
+  organizerContactOriginId,
+} from "../shared/organizerContactOrigins";
 
 const projectionReceiptTtlMillis = 30 * 24 * 60 * 60 * 1000;
 
@@ -167,6 +175,21 @@ export async function projectEventAttendeeToOrganizerAudience(
     };
   });
   const contactId = claimResolution.contactId;
+  const origin = attendeeOrganizerContactOrigin({
+    attendeeId,
+    attendee: after,
+    contactId,
+    originContactId: existingEdge?.originContactId ?? contactId,
+    now,
+  });
+  const originRef = db.collection("organizerContactOrigins").doc(
+    organizerContactOriginId({
+      organizerId: origin.organizerId,
+      sourceKind: origin.sourceKind,
+      sourceEntityKind: origin.sourceEntityKind,
+      sourceEntityId: origin.sourceEntityId,
+    })
+  );
 
   if (existingEdge && existingEdge.contactId !== contactId) {
     affectedContactIds.add(existingEdge.contactId);
@@ -182,9 +205,10 @@ export async function projectEventAttendeeToOrganizerAudience(
       after.organizerId,
       after.linkedUid
     ));
-  const [existingContactSnap, preferenceSnap] = await Promise.all([
+  const [existingContactSnap, preferenceSnap, originSnap] = await Promise.all([
     existingContactRef.get(),
     preferenceRef?.get() ?? Promise.resolve(null),
+    originRef.get(),
   ]);
   const existingContact = existingContactSnap.data() as
     OrganizerContactDocument | undefined;
@@ -224,6 +248,12 @@ export async function projectEventAttendeeToOrganizerAudience(
   const batch = db.batch();
   batch.set(edgeRef, edge);
   batch.set(existingContactRef, contact);
+  const existingOrigin = originSnap.data() as
+    OrganizerContactOriginDocument | undefined;
+  batch.set(originRef, existingOrigin ? {
+    ...existingOrigin,
+    currentContactId: contactId,
+  } : origin);
   for (const existingEvidence of existingEvidenceSnap.docs) {
     if (!currentEvidenceIds.has(existingEvidence.id)) {
       batch.delete(existingEvidence.ref);
@@ -406,8 +436,11 @@ export async function projectOrganizerCommunicationPreference(
       `${preference.updatedAt.toMillis()}`;
   for (const doc of contactsSnap.docs) {
     await doc.ref.update({
-      whatsappStatus: after?.whatsapp.status ?? "unknown",
-      smsStatus: after?.sms.status ?? "unknown",
+      whatsappStatus: effectiveOrganizerCommunicationStatus(
+        after,
+        "whatsapp"
+      ),
+      smsStatus: effectiveOrganizerCommunicationStatus(after, "sms"),
       revision: Math.max(
         (doc.data() as OrganizerContactDocument).revision + 1,
         now.toMillis()
@@ -634,9 +667,11 @@ function buildOrganizerContact(params: {
     firstSeenAt: existing?.firstSeenAt ?? attendee.createdAt,
     lastSeenAt: attendee.updatedAt,
     sourceCount: existing?.sourceCount ?? 1,
-    whatsappStatus: params.preference?.whatsapp.status ??
+    whatsappStatus: params.preference ?
+      effectiveOrganizerCommunicationStatus(params.preference, "whatsapp") :
       existing?.whatsappStatus ?? "unknown",
-    smsStatus: params.preference?.sms.status ??
+    smsStatus: params.preference ?
+      effectiveOrganizerCommunicationStatus(params.preference, "sms") :
       existing?.smsStatus ?? "unknown",
     revision: Math.max(existing?.revision ?? 0, now.toMillis(), 1),
     mergedIntoContactId: existing?.mergedIntoContactId ?? null,

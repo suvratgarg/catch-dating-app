@@ -33093,6 +33093,14 @@ abstract final class CatchContractConstraints {
     maximum: 400,
   );
 
+  static const mutateOrganizerContactMergeCallableResponseMovedOriginCount = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactMergeCallableResponse.movedOriginCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 400,
+  );
+
   static const mutateOrganizerContactMergeCallableResponseOperation = CatchContractFieldConstraints(
     path: 'mutateOrganizerContactMergeCallableResponse.operation',
     required: true,
@@ -36328,6 +36336,161 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerCommunicationPermissionReceiptDocumentActorClass = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.actorClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['participant', 'provider', 'system'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentChannel = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.channel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['whatsapp', 'sms'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentConsentCopyHash = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.consentCopyHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentDecision = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['optedIn', 'optedOut'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentEvidenceStatus = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.evidenceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['complete', 'incomplete'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentGrantedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.grantedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentGrantedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.grantedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentIdentityStrength = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.identityStrength',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'emailVerified', 'phoneVerified', 'catchAccount'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentRevokedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.revokedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentRevokedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.revokedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSource = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['publicEventRegistration', 'hostFormResponse', 'participantSettings', 'unsubscribeLink', 'inboundStop', 'providerWebhook', 'legacyIncomplete'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSourceEventId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.sourceEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSourceFormId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.sourceFormId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSourceProviderEventId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.sourceProviderEventId',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSourceResponseId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.sourceResponseId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSupersedesReceiptId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.supersedesReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentTermsVersion = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.termsVersion',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentUid = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerCommunicationPreferenceDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'organizerCommunicationPreferenceDocument.createdAt._nanoseconds',
     required: true,
@@ -36350,10 +36513,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerCommunicationPreferenceDocumentSmsCurrentReceiptId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.sms.currentReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentSmsEvidenceStatus = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.sms.evidenceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notApplicable', 'complete', 'incomplete'],
+  );
+
   static const organizerCommunicationPreferenceDocumentSmsSource = CatchContractFieldConstraints(
     path: 'organizerCommunicationPreferenceDocument.sms.source',
     valueTypes: <String>['string'],
-    enumValues: <String>['publicEventRegistration', 'unsubscribeLink', 'hostApp', 'inboundStop', 'providerWebhook'],
+    enumValues: <String>['publicEventRegistration', 'hostFormResponse', 'participantSettings', 'unsubscribeLink', 'inboundStop', 'providerWebhook', 'legacyIncomplete'],
   );
 
   static const organizerCommunicationPreferenceDocumentSmsSourceEventId = CatchContractFieldConstraints(
@@ -36413,10 +36590,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerCommunicationPreferenceDocumentWhatsappCurrentReceiptId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.whatsapp.currentReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentWhatsappEvidenceStatus = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.whatsapp.evidenceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notApplicable', 'complete', 'incomplete'],
+  );
+
   static const organizerCommunicationPreferenceDocumentWhatsappSource = CatchContractFieldConstraints(
     path: 'organizerCommunicationPreferenceDocument.whatsapp.source',
     valueTypes: <String>['string'],
-    enumValues: <String>['publicEventRegistration', 'unsubscribeLink', 'hostApp', 'inboundStop', 'providerWebhook'],
+    enumValues: <String>['publicEventRegistration', 'hostFormResponse', 'participantSettings', 'unsubscribeLink', 'inboundStop', 'providerWebhook', 'legacyIncomplete'],
   );
 
   static const organizerCommunicationPreferenceDocumentWhatsappSourceEventId = CatchContractFieldConstraints(
@@ -37677,6 +37868,31 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerContactMergeReceiptDocumentMovedOriginCount = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedOriginCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 400,
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedOriginIds = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedOriginIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 400,
+    uniqueItems: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedOriginIdsItems = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedOriginIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerContactMergeReceiptDocumentOperation = CatchContractFieldConstraints(
     path: 'organizerContactMergeReceiptDocument.operation',
     required: true,
@@ -37979,6 +38195,121 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentActorClass = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.actorClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['participant', 'organizerManager', 'provider', 'system'],
+  );
+
+  static const organizerContactOriginDocumentActorUid = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerContactOriginDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactOriginDocumentCurrentContactId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.currentContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentEventId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentObservedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.observedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerContactOriginDocumentObservedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.observedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactOriginDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentOriginContactId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.originContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentOriginVersion = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.originVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactOriginDocumentResponseId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentSourceEntityId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.sourceEntityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentSourceEntityKind = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.sourceEntityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventAttendee', 'manualEntry', 'hostFormResponse', 'providerRecord', 'importBatch', 'webRegistration'],
+  );
+
+  static const organizerContactOriginDocumentSourceKind = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.sourceKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const organizerContactTagVocabularyDocumentOrganizerId = CatchContractFieldConstraints(
@@ -63193,6 +63524,7 @@ abstract final class CatchContractConstraints {
     'mutateOrganizerContactMergeCallableResponse.movedClaimCount': mutateOrganizerContactMergeCallableResponseMovedClaimCount,
     'mutateOrganizerContactMergeCallableResponse.movedEdgeCount': mutateOrganizerContactMergeCallableResponseMovedEdgeCount,
     'mutateOrganizerContactMergeCallableResponse.movedIdentityEvidenceCount': mutateOrganizerContactMergeCallableResponseMovedIdentityEvidenceCount,
+    'mutateOrganizerContactMergeCallableResponse.movedOriginCount': mutateOrganizerContactMergeCallableResponseMovedOriginCount,
     'mutateOrganizerContactMergeCallableResponse.operation': mutateOrganizerContactMergeCallableResponseOperation,
     'mutateOrganizerContactMergeCallableResponse.receiptId': mutateOrganizerContactMergeCallableResponseReceiptId,
     'mutateOrganizerContactMergeCallableResponse.replayed': mutateOrganizerContactMergeCallableResponseReplayed,
@@ -63633,9 +63965,33 @@ abstract final class CatchContractConstraints {
     'organizerClaimRequestDocument.status': organizerClaimRequestDocumentStatus,
     'organizerClaimRequestDocument.updatedAt._nanoseconds': organizerClaimRequestDocumentUpdatedAtNanoseconds,
     'organizerClaimRequestDocument.updatedAt._seconds': organizerClaimRequestDocumentUpdatedAtSeconds,
+    'organizerCommunicationPermissionReceiptDocument.actorClass': organizerCommunicationPermissionReceiptDocumentActorClass,
+    'organizerCommunicationPermissionReceiptDocument.actorUid': organizerCommunicationPermissionReceiptDocumentActorUid,
+    'organizerCommunicationPermissionReceiptDocument.channel': organizerCommunicationPermissionReceiptDocumentChannel,
+    'organizerCommunicationPermissionReceiptDocument.consentCopyHash': organizerCommunicationPermissionReceiptDocumentConsentCopyHash,
+    'organizerCommunicationPermissionReceiptDocument.createdAt._nanoseconds': organizerCommunicationPermissionReceiptDocumentCreatedAtNanoseconds,
+    'organizerCommunicationPermissionReceiptDocument.createdAt._seconds': organizerCommunicationPermissionReceiptDocumentCreatedAtSeconds,
+    'organizerCommunicationPermissionReceiptDocument.decision': organizerCommunicationPermissionReceiptDocumentDecision,
+    'organizerCommunicationPermissionReceiptDocument.evidenceStatus': organizerCommunicationPermissionReceiptDocumentEvidenceStatus,
+    'organizerCommunicationPermissionReceiptDocument.grantedAt._nanoseconds': organizerCommunicationPermissionReceiptDocumentGrantedAtNanoseconds,
+    'organizerCommunicationPermissionReceiptDocument.grantedAt._seconds': organizerCommunicationPermissionReceiptDocumentGrantedAtSeconds,
+    'organizerCommunicationPermissionReceiptDocument.identityStrength': organizerCommunicationPermissionReceiptDocumentIdentityStrength,
+    'organizerCommunicationPermissionReceiptDocument.organizerId': organizerCommunicationPermissionReceiptDocumentOrganizerId,
+    'organizerCommunicationPermissionReceiptDocument.revokedAt._nanoseconds': organizerCommunicationPermissionReceiptDocumentRevokedAtNanoseconds,
+    'organizerCommunicationPermissionReceiptDocument.revokedAt._seconds': organizerCommunicationPermissionReceiptDocumentRevokedAtSeconds,
+    'organizerCommunicationPermissionReceiptDocument.source': organizerCommunicationPermissionReceiptDocumentSource,
+    'organizerCommunicationPermissionReceiptDocument.sourceEventId': organizerCommunicationPermissionReceiptDocumentSourceEventId,
+    'organizerCommunicationPermissionReceiptDocument.sourceFormId': organizerCommunicationPermissionReceiptDocumentSourceFormId,
+    'organizerCommunicationPermissionReceiptDocument.sourceProviderEventId': organizerCommunicationPermissionReceiptDocumentSourceProviderEventId,
+    'organizerCommunicationPermissionReceiptDocument.sourceResponseId': organizerCommunicationPermissionReceiptDocumentSourceResponseId,
+    'organizerCommunicationPermissionReceiptDocument.supersedesReceiptId': organizerCommunicationPermissionReceiptDocumentSupersedesReceiptId,
+    'organizerCommunicationPermissionReceiptDocument.termsVersion': organizerCommunicationPermissionReceiptDocumentTermsVersion,
+    'organizerCommunicationPermissionReceiptDocument.uid': organizerCommunicationPermissionReceiptDocumentUid,
     'organizerCommunicationPreferenceDocument.createdAt._nanoseconds': organizerCommunicationPreferenceDocumentCreatedAtNanoseconds,
     'organizerCommunicationPreferenceDocument.createdAt._seconds': organizerCommunicationPreferenceDocumentCreatedAtSeconds,
     'organizerCommunicationPreferenceDocument.organizerId': organizerCommunicationPreferenceDocumentOrganizerId,
+    'organizerCommunicationPreferenceDocument.sms.currentReceiptId': organizerCommunicationPreferenceDocumentSmsCurrentReceiptId,
+    'organizerCommunicationPreferenceDocument.sms.evidenceStatus': organizerCommunicationPreferenceDocumentSmsEvidenceStatus,
     'organizerCommunicationPreferenceDocument.sms.source': organizerCommunicationPreferenceDocumentSmsSource,
     'organizerCommunicationPreferenceDocument.sms.sourceEventId': organizerCommunicationPreferenceDocumentSmsSourceEventId,
     'organizerCommunicationPreferenceDocument.sms.status': organizerCommunicationPreferenceDocumentSmsStatus,
@@ -63645,6 +64001,8 @@ abstract final class CatchContractConstraints {
     'organizerCommunicationPreferenceDocument.uid': organizerCommunicationPreferenceDocumentUid,
     'organizerCommunicationPreferenceDocument.updatedAt._nanoseconds': organizerCommunicationPreferenceDocumentUpdatedAtNanoseconds,
     'organizerCommunicationPreferenceDocument.updatedAt._seconds': organizerCommunicationPreferenceDocumentUpdatedAtSeconds,
+    'organizerCommunicationPreferenceDocument.whatsapp.currentReceiptId': organizerCommunicationPreferenceDocumentWhatsappCurrentReceiptId,
+    'organizerCommunicationPreferenceDocument.whatsapp.evidenceStatus': organizerCommunicationPreferenceDocumentWhatsappEvidenceStatus,
     'organizerCommunicationPreferenceDocument.whatsapp.source': organizerCommunicationPreferenceDocumentWhatsappSource,
     'organizerCommunicationPreferenceDocument.whatsapp.sourceEventId': organizerCommunicationPreferenceDocumentWhatsappSourceEventId,
     'organizerCommunicationPreferenceDocument.whatsapp.status': organizerCommunicationPreferenceDocumentWhatsappStatus,
@@ -63819,6 +64177,9 @@ abstract final class CatchContractConstraints {
     'organizerContactMergeReceiptDocument.movedIdentityEvidenceCount': organizerContactMergeReceiptDocumentMovedIdentityEvidenceCount,
     'organizerContactMergeReceiptDocument.movedIdentityEvidenceIds': organizerContactMergeReceiptDocumentMovedIdentityEvidenceIds,
     'organizerContactMergeReceiptDocument.movedIdentityEvidenceIds.items': organizerContactMergeReceiptDocumentMovedIdentityEvidenceIdsItems,
+    'organizerContactMergeReceiptDocument.movedOriginCount': organizerContactMergeReceiptDocumentMovedOriginCount,
+    'organizerContactMergeReceiptDocument.movedOriginIds': organizerContactMergeReceiptDocumentMovedOriginIds,
+    'organizerContactMergeReceiptDocument.movedOriginIds.items': organizerContactMergeReceiptDocumentMovedOriginIdsItems,
     'organizerContactMergeReceiptDocument.operation': organizerContactMergeReceiptDocumentOperation,
     'organizerContactMergeReceiptDocument.organizerId': organizerContactMergeReceiptDocumentOrganizerId,
     'organizerContactMergeReceiptDocument.reversalOfReceiptId': organizerContactMergeReceiptDocumentReversalOfReceiptId,
@@ -63859,6 +64220,22 @@ abstract final class CatchContractConstraints {
     'organizerContactNoteDocument.updatedAt._nanoseconds': organizerContactNoteDocumentUpdatedAtNanoseconds,
     'organizerContactNoteDocument.updatedAt._seconds': organizerContactNoteDocumentUpdatedAtSeconds,
     'organizerContactNoteDocument.updatedByUid': organizerContactNoteDocumentUpdatedByUid,
+    'organizerContactOriginDocument.actorClass': organizerContactOriginDocumentActorClass,
+    'organizerContactOriginDocument.actorUid': organizerContactOriginDocumentActorUid,
+    'organizerContactOriginDocument.createdAt._nanoseconds': organizerContactOriginDocumentCreatedAtNanoseconds,
+    'organizerContactOriginDocument.createdAt._seconds': organizerContactOriginDocumentCreatedAtSeconds,
+    'organizerContactOriginDocument.currentContactId': organizerContactOriginDocumentCurrentContactId,
+    'organizerContactOriginDocument.eventId': organizerContactOriginDocumentEventId,
+    'organizerContactOriginDocument.formId': organizerContactOriginDocumentFormId,
+    'organizerContactOriginDocument.observedAt._nanoseconds': organizerContactOriginDocumentObservedAtNanoseconds,
+    'organizerContactOriginDocument.observedAt._seconds': organizerContactOriginDocumentObservedAtSeconds,
+    'organizerContactOriginDocument.organizerId': organizerContactOriginDocumentOrganizerId,
+    'organizerContactOriginDocument.originContactId': organizerContactOriginDocumentOriginContactId,
+    'organizerContactOriginDocument.originVersion': organizerContactOriginDocumentOriginVersion,
+    'organizerContactOriginDocument.responseId': organizerContactOriginDocumentResponseId,
+    'organizerContactOriginDocument.sourceEntityId': organizerContactOriginDocumentSourceEntityId,
+    'organizerContactOriginDocument.sourceEntityKind': organizerContactOriginDocumentSourceEntityKind,
+    'organizerContactOriginDocument.sourceKind': organizerContactOriginDocumentSourceKind,
     'organizerContactTagVocabularyDocument.organizerId': organizerContactTagVocabularyDocumentOrganizerId,
     'organizerContactTagVocabularyDocument.tags': organizerContactTagVocabularyDocumentTags,
     'organizerContactTagVocabularyDocument.tags.items.createdAt._nanoseconds': organizerContactTagVocabularyDocumentTagsItemsCreatedAtNanoseconds,

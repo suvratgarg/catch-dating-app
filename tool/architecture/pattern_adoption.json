@@ -1,5 +1,5 @@
 {
-  "version": "1.13.0",
+  "version": "1.14.0",
   "updated": "2026-08-29",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Defines architecture reference exhibits, adopter files, candidate status, and back-propagation obligations enforced by architecture checks.",
@@ -2108,6 +2108,91 @@
         "bash tool/check_catch_ui_lints.sh"
       ],
       "notes": "The first reference intent is an individual customer conversation. Catch chat is managed delivery; personal WhatsApp is an external handoff where the host presses send. Unknown marketing permission is not rewritten as a grant, and no handoff is represented as Catch delivery."
+    },
+    {
+      "id": "ARCH-CRM-AUTHORITY-001",
+      "name": "CRM provenance and permission authority",
+      "status": "reference",
+      "screenInventory": "design/screens/catch.screens.json",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-crm-authority-001-provenance-and-permission-authority",
+      "prototypeFiles": [
+        "functions/src/shared/organizerContactOrigins.ts",
+        "functions/src/shared/organizerContactOrigins.test.ts",
+        "functions/src/shared/organizerCommunicationPreferences.ts",
+        "functions/src/shared/organizerCommunicationPreferences.test.ts",
+        "functions/src/events/eventAttendees.ts",
+        "functions/src/organizers/organizerAudienceProjection.ts",
+        "functions/src/organizers/organizerContactMerges.ts",
+        "functions/src/organizers/organizerCampaigns.ts",
+        "functions/src/organizers/organizerCampaignDispatcher.ts",
+        "tool/data/backfill_organizer_crm_authority_v2.mjs",
+        "tool/data/backfill_organizer_crm_authority_v2.test.mjs"
+      ],
+      "adopters": [
+        {
+          "path": "functions/src/events/eventAttendees.ts",
+          "role": "phone-verified registration writer that binds explicit channel choice to server-reviewed consent copy and an immutable receipt",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/organizers/organizerAudienceProjection.ts",
+          "role": "deterministic attendee-origin writer and fail-closed effective-permission projector",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/organizers/organizerContacts.ts",
+          "role": "manager-entered Customers writer that appends a manual source origin without inventing identity or permission",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/organizers/organizerContactMerges.ts",
+          "role": "receipt-backed current-contact move and exact origin restoration with stable originContactId",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/organizers/organizerWhatsappWebhook.ts",
+          "role": "participant STOP writer that appends withdrawal evidence and cannot replay over a later decision",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/organizers/organizerCampaigns.ts",
+          "role": "campaign preview excludes incomplete legacy grants as unknown permission",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/organizers/organizerCampaignDispatcher.ts",
+          "role": "final delivery recheck requires current complete grant evidence independently of organizer suppression",
+          "status": "aligned"
+        },
+        {
+          "path": "tool/data/backfill_organizer_crm_authority_v2.mjs",
+          "role": "dry-run-first migration that creates only source-backed origins and records zero inferred grants",
+          "status": "aligned"
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "ARCH-CRM-AUTHORITY-001-FORM-CONVERSION",
+          "path": "functions/src/organizers/organizerFormResponses.ts",
+          "reason": "A later approved Host Forms conversion writer must append hostForm origin and participant permission receipts only from reviewed versioned consent questions."
+        },
+        {
+          "id": "ARCH-CRM-AUTHORITY-001-SELF-SERVICE",
+          "path": "functions/src/organizers",
+          "reason": "Participant settings and unsubscribe flows must append receipts through the same authority before those surfaces ship."
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When approved contact creators, origin fields, permission sources, evidence completeness, consent-copy versions, merge behavior, withdrawal handling, deletion erasure, or send eligibility changes, update both Firestore schemas, generated contracts, source writers, merge receipts, account deletion, audience projections, campaign preview and dispatcher rechecks, migration semantics, owner docs, focused tests, and this exhibit in one pass.",
+      "requiredChecks": [
+        "./tool/check_data_contract.sh",
+        "npm --prefix functions run lint && npm --prefix functions run build",
+        "node --test tool/data/backfill_organizer_crm_authority_v2.test.mjs",
+        "node tool/contracts/check_firestore_contract.mjs",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/architecture/check_adopted_architecture_boundaries.mjs"
+      ],
+      "notes": "Current preference is a projection over immutable participant decisions. Complete referenced grant evidence is mandatory for managed delivery; legacy incomplete grants fail closed and organizer suppression remains a separate operational state."
     }
   ]
 }

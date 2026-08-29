@@ -28,7 +28,10 @@ import {
   validateOrganizerCampaignActionCallablePayload,
   validateUpsertOrganizerCampaignCallablePayload,
 } from "../shared/generated/schemaValidators";
-import {organizerCommunicationPreferenceId} from
+import {
+  effectiveOrganizerCommunicationStatus,
+  organizerCommunicationPreferenceId,
+} from
   "../shared/organizerCommunicationPreferences";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
@@ -773,10 +776,14 @@ export function evaluateAudienceRows(
       !preference ||
       preference.organizerId !== contact.organizerId ||
       preference.uid !== contact.linkedUid ||
-      preference.whatsapp.status === "unknown"
+      effectiveOrganizerCommunicationStatus(preference, "whatsapp") ===
+        "unknown"
     ) {
       reason = "unknownPermission";
-    } else if (preference.whatsapp.status === "optedOut") reason = "optedOut";
+    } else if (
+      effectiveOrganizerCommunicationStatus(preference, "whatsapp") ===
+        "optedOut"
+    ) reason = "optedOut";
     else if (channelState?.suppressionStatus === "optedOut") {
       reason = "optedOut";
     } else if (channelState?.suppressionStatus === "providerBlocked") {

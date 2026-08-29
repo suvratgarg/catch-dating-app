@@ -47,13 +47,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["routeId", "executionMode", "availability", "blocker"],
-      "allOf": [
-        {
-          "if": {"properties": {"availability": {"const": "available"}}},
-          "then": {"properties": {"blocker": {"type": "null"}}},
-          "else": {"properties": {"blocker": {"$ref": "#/definitions/routeBlocker"}}}
-        }
-      ],
       "properties": {
         "routeId": {"$ref": "#/definitions/routeId"},
         "executionMode": {"type": "string", "enum": ["managedDelivery", "externalHandoff"]},

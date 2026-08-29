@@ -39,9 +39,14 @@ export interface OrganizerContactMergeReceiptDocument {
    * @maxItems 400
    */
   movedClaimIds: string[];
+  /**
+   * @maxItems 400
+   */
+  movedOriginIds: string[];
   movedEdgeCount: number;
   movedIdentityEvidenceCount: number;
   movedClaimCount: number;
+  movedOriginCount: number;
   idempotencyKey: string;
   reversalOfReceiptId: string | null;
   /**

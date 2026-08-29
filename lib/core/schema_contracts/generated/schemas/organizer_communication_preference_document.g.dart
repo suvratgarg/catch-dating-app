@@ -41,6 +41,8 @@ const schemaOrganizerCommunicationPreferenceDocumentSchema = <String, Object?>{
       'additionalProperties': false,
       'required': <Object?>[
         'status',
+        'evidenceStatus',
+        'currentReceiptId',
         'termsVersion',
         'source',
         'sourceEventId',
@@ -53,6 +55,29 @@ const schemaOrganizerCommunicationPreferenceDocumentSchema = <String, Object?>{
             'unknown',
             'optedIn',
             'optedOut',
+          ],
+          'x-catch-ownership': 'server-only',
+        },
+        'evidenceStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'notApplicable',
+            'complete',
+            'incomplete',
+          ],
+          'description': 'Only complete evidence may make an opted-in channel eligible for managed delivery.',
+          'x-catch-ownership': 'server-only',
+        },
+        'currentReceiptId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
           'x-catch-ownership': 'server-only',
         },
@@ -73,10 +98,12 @@ const schemaOrganizerCommunicationPreferenceDocumentSchema = <String, Object?>{
           'enum': <Object?>[
             null,
             'publicEventRegistration',
+            'hostFormResponse',
+            'participantSettings',
             'unsubscribeLink',
-            'hostApp',
             'inboundStop',
             'providerWebhook',
+            'legacyIncomplete',
           ],
           'x-catch-ownership': 'server-only',
         },
@@ -128,6 +155,8 @@ const schemaOrganizerCommunicationPreferenceDocumentSchema = <String, Object?>{
       'additionalProperties': false,
       'required': <Object?>[
         'status',
+        'evidenceStatus',
+        'currentReceiptId',
         'termsVersion',
         'source',
         'sourceEventId',
@@ -140,6 +169,29 @@ const schemaOrganizerCommunicationPreferenceDocumentSchema = <String, Object?>{
             'unknown',
             'optedIn',
             'optedOut',
+          ],
+          'x-catch-ownership': 'server-only',
+        },
+        'evidenceStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'notApplicable',
+            'complete',
+            'incomplete',
+          ],
+          'description': 'Only complete evidence may make an opted-in channel eligible for managed delivery.',
+          'x-catch-ownership': 'server-only',
+        },
+        'currentReceiptId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
           'x-catch-ownership': 'server-only',
         },
@@ -160,10 +212,12 @@ const schemaOrganizerCommunicationPreferenceDocumentSchema = <String, Object?>{
           'enum': <Object?>[
             null,
             'publicEventRegistration',
+            'hostFormResponse',
+            'participantSettings',
             'unsubscribeLink',
-            'hostApp',
             'inboundStop',
             'providerWebhook',
+            'legacyIncomplete',
           ],
           'x-catch-ownership': 'server-only',
         },
@@ -259,6 +313,8 @@ const schemaOrganizerCommunicationPreferenceDocumentSchema = <String, Object?>{
       'additionalProperties': false,
       'required': <Object?>[
         'status',
+        'evidenceStatus',
+        'currentReceiptId',
         'termsVersion',
         'source',
         'sourceEventId',
@@ -271,6 +327,29 @@ const schemaOrganizerCommunicationPreferenceDocumentSchema = <String, Object?>{
             'unknown',
             'optedIn',
             'optedOut',
+          ],
+          'x-catch-ownership': 'server-only',
+        },
+        'evidenceStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'notApplicable',
+            'complete',
+            'incomplete',
+          ],
+          'description': 'Only complete evidence may make an opted-in channel eligible for managed delivery.',
+          'x-catch-ownership': 'server-only',
+        },
+        'currentReceiptId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
           'x-catch-ownership': 'server-only',
         },
@@ -291,10 +370,12 @@ const schemaOrganizerCommunicationPreferenceDocumentSchema = <String, Object?>{
           'enum': <Object?>[
             null,
             'publicEventRegistration',
+            'hostFormResponse',
+            'participantSettings',
             'unsubscribeLink',
-            'hostApp',
             'inboundStop',
             'providerWebhook',
+            'legacyIncomplete',
           ],
           'x-catch-ownership': 'server-only',
         },

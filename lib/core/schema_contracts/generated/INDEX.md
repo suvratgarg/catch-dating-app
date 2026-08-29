@@ -39,7 +39,9 @@ Do not edit it by hand.
 | OrganizerTeamMembershipDocument | `firestore/organizer_team_memberships.schema.json` | `functions/src/shared/generated/organizerTeamMembershipDocument.ts` |
 | OrganizerFollowDocument | `firestore/organizer_follows.schema.json` | `functions/src/shared/generated/organizerFollowDocument.ts` |
 | OrganizerCommunicationPreferenceDocument | `firestore/organizer_communication_preferences.schema.json` | `functions/src/shared/generated/organizerCommunicationPreferenceDocument.ts` |
+| OrganizerCommunicationPermissionReceiptDocument | `firestore/organizer_communication_permission_receipts.schema.json` | `functions/src/shared/generated/organizerCommunicationPermissionReceiptDocument.ts` |
 | OrganizerContactDocument | `firestore/organizer_contacts.schema.json` | `functions/src/shared/generated/organizerContactDocument.ts` |
+| OrganizerContactOriginDocument | `firestore/organizer_contact_origins.schema.json` | `functions/src/shared/generated/organizerContactOriginDocument.ts` |
 | OrganizerContactNoteDocument | `firestore/organizer_contact_notes.schema.json` | `functions/src/shared/generated/organizerContactNoteDocument.ts` |
 | OrganizerContactTagVocabularyDocument | `firestore/organizer_contact_tag_vocabularies.schema.json` | `functions/src/shared/generated/organizerContactTagVocabularyDocument.ts` |
 | OrganizerContactIdentityLinkDocument | `firestore/organizer_contact_identity_links.schema.json` | `functions/src/shared/generated/organizerContactIdentityLinkDocument.ts` |
@@ -544,7 +546,9 @@ Do not edit it by hand.
 | `schemaOrganizerTeamMembershipDocumentSchema` | OrganizerTeamMembershipDocument | `firestore/organizer_team_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_team_membership_document.g.dart` |
 | `schemaOrganizerFollowDocumentSchema` | OrganizerFollowDocument | `firestore/organizer_follows.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_follow_document.g.dart` |
 | `schemaOrganizerCommunicationPreferenceDocumentSchema` | OrganizerCommunicationPreferenceDocument | `firestore/organizer_communication_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_communication_preference_document.g.dart` |
+| `schemaOrganizerCommunicationPermissionReceiptDocumentSchema` | OrganizerCommunicationPermissionReceiptDocument | `firestore/organizer_communication_permission_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_communication_permission_receipt_document.g.dart` |
 | `schemaOrganizerContactDocumentSchema` | OrganizerContactDocument | `firestore/organizer_contacts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_document.g.dart` |
+| `schemaOrganizerContactOriginDocumentSchema` | OrganizerContactOriginDocument | `firestore/organizer_contact_origins.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_origin_document.g.dart` |
 | `schemaOrganizerContactNoteDocumentSchema` | OrganizerContactNoteDocument | `firestore/organizer_contact_notes.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_note_document.g.dart` |
 | `schemaOrganizerContactTagVocabularyDocumentSchema` | OrganizerContactTagVocabularyDocument | `firestore/organizer_contact_tag_vocabularies.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_tag_vocabulary_document.g.dart` |
 | `schemaOrganizerContactIdentityLinkDocumentSchema` | OrganizerContactIdentityLinkDocument | `firestore/organizer_contact_identity_links.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_identity_link_document.g.dart` |

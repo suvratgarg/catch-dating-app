@@ -1656,32 +1656,82 @@ export interface OrganizerCommunicationPreferenceDocument {
   uid: string;
   whatsapp: {
     status: "unknown" | "optedIn" | "optedOut";
+    /**
+     * Only complete evidence may make an opted-in channel eligible for managed delivery.
+     */
+    evidenceStatus: "notApplicable" | "complete" | "incomplete";
+    currentReceiptId: string | null;
     termsVersion: string | null;
     source:
       | null
       | "publicEventRegistration"
+      | "hostFormResponse"
+      | "participantSettings"
       | "unsubscribeLink"
-      | "hostApp"
       | "inboundStop"
-      | "providerWebhook";
+      | "providerWebhook"
+      | "legacyIncomplete";
     sourceEventId: string | null;
     updatedAt: FirebaseFirestore.Timestamp | null;
   };
   sms: {
     status: "unknown" | "optedIn" | "optedOut";
+    /**
+     * Only complete evidence may make an opted-in channel eligible for managed delivery.
+     */
+    evidenceStatus: "notApplicable" | "complete" | "incomplete";
+    currentReceiptId: string | null;
     termsVersion: string | null;
     source:
       | null
       | "publicEventRegistration"
+      | "hostFormResponse"
+      | "participantSettings"
       | "unsubscribeLink"
-      | "hostApp"
       | "inboundStop"
-      | "providerWebhook";
+      | "providerWebhook"
+      | "legacyIncomplete";
     sourceEventId: string | null;
     updatedAt: FirebaseFirestore.Timestamp | null;
   };
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable participant-controlled grant or withdrawal evidence for one organizer and channel. Current preference projections reference these receipts but never replace their history.
+ */
+export interface OrganizerCommunicationPermissionReceiptDocument {
+  organizerId: string;
+  uid: string;
+  channel: "whatsapp" | "sms";
+  decision: "optedIn" | "optedOut";
+  evidenceStatus: "complete" | "incomplete";
+  termsVersion: string | null;
+  consentCopyHash: string | null;
+  source:
+    | "publicEventRegistration"
+    | "hostFormResponse"
+    | "participantSettings"
+    | "unsubscribeLink"
+    | "inboundStop"
+    | "providerWebhook"
+    | "legacyIncomplete";
+  sourceEventId: string | null;
+  sourceFormId: string | null;
+  sourceResponseId: string | null;
+  sourceProviderEventId: string | null;
+  actorClass: "participant" | "provider" | "system";
+  actorUid: string | null;
+  identityStrength:
+    | "unknown"
+    | "emailVerified"
+    | "phoneVerified"
+    | "catchAccount";
+  grantedAt: FirebaseFirestore.Timestamp | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  supersedesReceiptId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -1735,6 +1785,38 @@ export interface OrganizerContactDocument {
    * Bounded organizer-audience contribution snapshot used only to restore a hidden contact without recomputing private event history.
    */
   hiddenTraitSnapshot?: OrganizerContactTraitDocument | null;
+}
+
+/**
+ * Server-owned provenance for one organizer contact source. Source facts are immutable; only currentContactId moves during a receipt-backed merge or unmerge.
+ */
+export interface OrganizerContactOriginDocument {
+  organizerId: string;
+  currentContactId: string;
+  originContactId: string;
+  sourceKind:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync"
+    | "hostForm";
+  sourceEntityKind:
+    | "eventAttendee"
+    | "manualEntry"
+    | "hostFormResponse"
+    | "providerRecord"
+    | "importBatch"
+    | "webRegistration";
+  sourceEntityId: string;
+  eventId: string | null;
+  formId: string | null;
+  responseId: string | null;
+  actorClass: "participant" | "organizerManager" | "provider" | "system";
+  actorUid: string | null;
+  observedAt: FirebaseFirestore.Timestamp;
+  originVersion: 1;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -1978,9 +2060,14 @@ export interface OrganizerContactMergeReceiptDocument {
    * @maxItems 400
    */
   movedClaimIds: string[];
+  /**
+   * @maxItems 400
+   */
+  movedOriginIds: string[];
   movedEdgeCount: number;
   movedIdentityEvidenceCount: number;
   movedClaimCount: number;
+  movedOriginCount: number;
   idempotencyKey: string;
   reversalOfReceiptId: string | null;
   createdAt: FirebaseFirestore.Timestamp;

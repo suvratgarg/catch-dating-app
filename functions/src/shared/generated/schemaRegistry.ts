@@ -12218,6 +12218,8 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
       "additionalProperties": false,
       "required": [
         "status",
+        "evidenceStatus",
+        "currentReceiptId",
         "termsVersion",
         "source",
         "sourceEventId",
@@ -12230,6 +12232,29 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
             "unknown",
             "optedIn",
             "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ],
+          "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+          "x-catch-ownership": "server-only"
+        },
+        "currentReceiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12250,10 +12275,12 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
           "enum": [
             null,
             "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
             "unsubscribeLink",
-            "hostApp",
             "inboundStop",
-            "providerWebhook"
+            "providerWebhook",
+            "legacyIncomplete"
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12305,6 +12332,8 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
       "additionalProperties": false,
       "required": [
         "status",
+        "evidenceStatus",
+        "currentReceiptId",
         "termsVersion",
         "source",
         "sourceEventId",
@@ -12317,6 +12346,29 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
             "unknown",
             "optedIn",
             "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ],
+          "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+          "x-catch-ownership": "server-only"
+        },
+        "currentReceiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12337,10 +12389,12 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
           "enum": [
             null,
             "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
             "unsubscribeLink",
-            "hostApp",
             "inboundStop",
-            "providerWebhook"
+            "providerWebhook",
+            "legacyIncomplete"
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12436,6 +12490,8 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
       "additionalProperties": false,
       "required": [
         "status",
+        "evidenceStatus",
+        "currentReceiptId",
         "termsVersion",
         "source",
         "sourceEventId",
@@ -12448,6 +12504,29 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
             "unknown",
             "optedIn",
             "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ],
+          "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+          "x-catch-ownership": "server-only"
+        },
+        "currentReceiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12468,10 +12547,12 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
           "enum": [
             null,
             "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
             "unsubscribeLink",
-            "hostApp",
             "inboundStop",
-            "providerWebhook"
+            "providerWebhook",
+            "legacyIncomplete"
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12519,6 +12600,352 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
       }
     }
   }
+} as const;
+
+export const organizerCommunicationPermissionReceiptDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_communication_permission_receipts.schema.json",
+  "title": "OrganizerCommunicationPermissionReceiptDocument",
+  "description": "Immutable participant-controlled grant or withdrawal evidence for one organizer and channel. Current preference projections reference these receipts but never replace their history.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerCommunicationPermissionReceipts",
+  "x-firestore-path": "organizerCommunicationPermissionReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "participant registration, self-service preference, unsubscribe, and inbound STOP handlers",
+  "required": [
+    "organizerId",
+    "uid",
+    "channel",
+    "decision",
+    "evidenceStatus",
+    "termsVersion",
+    "consentCopyHash",
+    "source",
+    "sourceEventId",
+    "sourceFormId",
+    "sourceResponseId",
+    "sourceProviderEventId",
+    "actorClass",
+    "actorUid",
+    "identityStrength",
+    "grantedAt",
+    "revokedAt",
+    "supersedesReceiptId",
+    "createdAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "sms"
+      ]
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "optedIn",
+        "optedOut"
+      ]
+    },
+    "evidenceStatus": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "incomplete"
+      ]
+    },
+    "termsVersion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "consentCopyHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "publicEventRegistration",
+        "hostFormResponse",
+        "participantSettings",
+        "unsubscribeLink",
+        "inboundStop",
+        "providerWebhook",
+        "legacyIncomplete"
+      ]
+    },
+    "sourceEventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceFormId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceResponseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceProviderEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "actorClass": {
+      "type": "string",
+      "enum": [
+        "participant",
+        "provider",
+        "system"
+      ]
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "identityStrength": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "emailVerified",
+        "phoneVerified",
+        "catchAccount"
+      ]
+    },
+    "grantedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "supersedesReceiptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "optedIn"
+          },
+          "evidenceStatus": {
+            "const": "complete"
+          }
+        },
+        "required": [
+          "decision",
+          "evidenceStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "termsVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "consentCopyHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "grantedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "revokedAt": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "optedOut"
+          },
+          "evidenceStatus": {
+            "const": "complete"
+          }
+        },
+        "required": [
+          "decision",
+          "evidenceStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "grantedAt": {
+            "type": "null"
+          },
+          "revokedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 } as const;
 
 export const organizerContactDocumentSchema: Record<string, unknown> = {
@@ -13166,6 +13593,176 @@ export const organizerContactDocumentSchema: Record<string, unknown> = {
         "optedOut"
       ],
       "x-catch-ownership": "server-only"
+    }
+  }
+} as const;
+
+export const organizerContactOriginDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_origins.schema.json",
+  "title": "OrganizerContactOriginDocument",
+  "description": "Server-owned provenance for one organizer contact source. Source facts are immutable; only currentContactId moves during a receipt-backed merge or unmerge.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactOrigins",
+  "x-firestore-path": "organizerContactOrigins/{originId}",
+  "x-document-id-field": "originId",
+  "x-owner": "approved organizer contact creators and organizer contact merge callables",
+  "required": [
+    "organizerId",
+    "currentContactId",
+    "originContactId",
+    "sourceKind",
+    "sourceEntityKind",
+    "sourceEntityId",
+    "eventId",
+    "formId",
+    "responseId",
+    "actorClass",
+    "actorUid",
+    "observedAt",
+    "originVersion",
+    "createdAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "currentContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "originContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceKind": {
+      "type": "string",
+      "enum": [
+        "catchBooking",
+        "hostImport",
+        "hostManual",
+        "webOtp",
+        "providerSync",
+        "hostForm"
+      ]
+    },
+    "sourceEntityKind": {
+      "type": "string",
+      "enum": [
+        "eventAttendee",
+        "manualEntry",
+        "hostFormResponse",
+        "providerRecord",
+        "importBatch",
+        "webRegistration"
+      ]
+    },
+    "sourceEntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "formId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "responseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "actorClass": {
+      "type": "string",
+      "enum": [
+        "participant",
+        "organizerManager",
+        "provider",
+        "system"
+      ]
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "observedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "originVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
     }
   }
 } as const;
@@ -14654,9 +15251,11 @@ export const organizerContactMergeReceiptDocumentSchema: Record<string, unknown>
     "movedEdgeIds",
     "movedIdentityEvidenceIds",
     "movedClaimIds",
+    "movedOriginIds",
     "movedEdgeCount",
     "movedIdentityEvidenceCount",
     "movedClaimCount",
+    "movedOriginCount",
     "idempotencyKey",
     "reversalOfReceiptId",
     "createdAt"
@@ -14753,6 +15352,16 @@ export const organizerContactMergeReceiptDocumentSchema: Record<string, unknown>
         "maxLength": 180
       }
     },
+    "movedOriginIds": {
+      "type": "array",
+      "maxItems": 400,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
     "movedEdgeCount": {
       "type": "integer",
       "minimum": 0,
@@ -14764,6 +15373,11 @@ export const organizerContactMergeReceiptDocumentSchema: Record<string, unknown>
       "maximum": 400
     },
     "movedClaimCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 400
+    },
+    "movedOriginCount": {
       "type": "integer",
       "minimum": 0,
       "maximum": 400
@@ -83607,41 +84221,6 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
                 "availability",
                 "blocker"
               ],
-              "allOf": [
-                {
-                  "if": {
-                    "properties": {
-                      "availability": {
-                        "const": "available"
-                      }
-                    }
-                  },
-                  "then": {
-                    "properties": {
-                      "blocker": {
-                        "type": "null"
-                      }
-                    }
-                  },
-                  "else": {
-                    "properties": {
-                      "blocker": {
-                        "type": "string",
-                        "enum": [
-                          "catchAccountRequired",
-                          "identityAmbiguous",
-                          "missingPhone",
-                          "organizerSuppressed",
-                          "contactOptedOut",
-                          "permissionRequired",
-                          "senderUnavailable",
-                          "intentUnsupported"
-                        ]
-                      }
-                    }
-                  }
-                }
-              ],
               "properties": {
                 "routeId": {
                   "type": "string",
@@ -83728,41 +84307,6 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
         "executionMode",
         "availability",
         "blocker"
-      ],
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "availability": {
-                "const": "available"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "blocker": {
-                "type": "null"
-              }
-            }
-          },
-          "else": {
-            "properties": {
-              "blocker": {
-                "type": "string",
-                "enum": [
-                  "catchAccountRequired",
-                  "identityAmbiguous",
-                  "missingPhone",
-                  "organizerSuppressed",
-                  "contactOptedOut",
-                  "permissionRequired",
-                  "senderUnavailable",
-                  "intentUnsupported"
-                ]
-              }
-            }
-          }
-        }
       ],
       "properties": {
         "routeId": {
@@ -83872,41 +84416,6 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
               "executionMode",
               "availability",
               "blocker"
-            ],
-            "allOf": [
-              {
-                "if": {
-                  "properties": {
-                    "availability": {
-                      "const": "available"
-                    }
-                  }
-                },
-                "then": {
-                  "properties": {
-                    "blocker": {
-                      "type": "null"
-                    }
-                  }
-                },
-                "else": {
-                  "properties": {
-                    "blocker": {
-                      "type": "string",
-                      "enum": [
-                        "catchAccountRequired",
-                        "identityAmbiguous",
-                        "missingPhone",
-                        "organizerSuppressed",
-                        "contactOptedOut",
-                        "permissionRequired",
-                        "senderUnavailable",
-                        "intentUnsupported"
-                      ]
-                    }
-                  }
-                }
-              }
             ],
             "properties": {
               "routeId": {
@@ -85623,6 +86132,7 @@ export const mutateOrganizerContactMergeCallableResponseSchema: Record<string, u
     "movedEdgeCount",
     "movedIdentityEvidenceCount",
     "movedClaimCount",
+    "movedOriginCount",
     "replayed"
   ],
   "properties": {
@@ -85659,6 +86169,11 @@ export const mutateOrganizerContactMergeCallableResponseSchema: Record<string, u
       "maximum": 400
     },
     "movedClaimCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 400
+    },
+    "movedOriginCount": {
       "type": "integer",
       "minimum": 0,
       "maximum": 400

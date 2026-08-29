@@ -7,6 +7,7 @@ import {
   EventAttendeeImportDocument,
   EventDocument,
   OnboardingDraftDocument,
+  OrganizerCommunicationPermissionReceiptDocument,
   OrganizerCommunicationPreferenceDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {ImportEventAttendeesCallablePayload} from
@@ -38,7 +39,11 @@ import {requireEventOperatorPermission} from
   "../shared/eventOperatorAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {organizerCommunicationPreferenceId} from
+import {
+  organizerCommunicationPreferenceId,
+  publicRegistrationPermissionReceipt,
+  unknownOrganizerCommunicationChannel,
+} from
   "../shared/organizerCommunicationPreferences";
 import {eventPolicyFromEvent} from "./eventPolicy";
 import {resolveInviteAttributionToken} from "./inviteLinks";
@@ -556,6 +561,7 @@ export async function registerPublicEventHandler(
       null;
     const alreadyRegistered = existing?.status === "registered" ||
       existing?.status === "checkedIn";
+    const registrationReplay = alreadyRegistered && existing?.linkedUid === uid;
     const activeCount = rosterSnap.docs.reduce((count, document) => {
       const attendee = requireDoc<EventAttendeeDocument>(
         document,
@@ -579,6 +585,21 @@ export async function registerPublicEventHandler(
     });
 
     const now = deps.timestamp();
+    const permissionReceipts = registrationReplay ? [] :
+      publicRegistrationPermissionReceipts({
+        existing: communicationPreferenceSnap.exists ?
+          communicationPreferenceSnap.data() as
+            OrganizerCommunicationPreferenceDocument : undefined,
+        organizerId,
+        uid,
+        eventId: payload.eventId,
+        organizerUpdates: payload.organizerUpdates,
+        now,
+      });
+    const receiptSnaps = await Promise.all(permissionReceipts.map((receipt) =>
+      tx.get(db.collection("organizerCommunicationPermissionReceipts")
+        .doc(receipt.id))
+    ));
     const displayName = existing?.displayName ?? payload.displayName;
     const status = publicRegistrationStatus({
       activeCount,
@@ -625,18 +646,33 @@ export async function registerPublicEventHandler(
         phoneE164: phone,
       }));
     }
-    const communicationPreference = mergeOrganizerCommunicationPreference({
-      existing: communicationPreferenceSnap.exists ?
-        communicationPreferenceSnap.data() as
-          OrganizerCommunicationPreferenceDocument : undefined,
-      organizerId,
-      uid,
-      eventId: payload.eventId,
-      organizerUpdates: payload.organizerUpdates,
-      now,
-    });
+    const communicationPreference = registrationReplay ? null :
+      mergeOrganizerCommunicationPreference({
+        existing: communicationPreferenceSnap.exists ?
+          communicationPreferenceSnap.data() as
+            OrganizerCommunicationPreferenceDocument : undefined,
+        organizerId,
+        uid,
+        eventId: payload.eventId,
+        organizerUpdates: payload.organizerUpdates,
+        now,
+        permissionReceipts,
+      });
     if (communicationPreference) {
       tx.set(communicationPreferenceRef, communicationPreference);
+    }
+    for (let index = 0; index < permissionReceipts.length; index += 1) {
+      const receipt = permissionReceipts[index];
+      const existingReceipt = receiptSnaps[index];
+      if (existingReceipt.exists) {
+        assertPermissionReceiptReplay(existingReceipt, receipt.document);
+      } else {
+        tx.create(
+          db.collection("organizerCommunicationPermissionReceipts")
+            .doc(receipt.id),
+          receipt.document
+        );
+      }
     }
     return {
       eventId: payload.eventId,
@@ -674,35 +710,97 @@ export function mergeOrganizerCommunicationPreference(params: {
   eventId: string;
   organizerUpdates?: RegisterPublicEventCallablePayload["organizerUpdates"];
   now: FirebaseFirestore.Timestamp;
+  permissionReceipts?: Array<{
+    id: string;
+    document: OrganizerCommunicationPermissionReceiptDocument;
+  }>;
 }): OrganizerCommunicationPreferenceDocument | null {
   const grantsWhatsapp = params.organizerUpdates?.whatsapp === true;
   const grantsSms = params.organizerUpdates?.sms === true;
   if (!params.existing && !grantsWhatsapp && !grantsSms) return null;
   if (params.existing && !grantsWhatsapp && !grantsSms) return null;
 
-  const unknownChannel = {
-    status: "unknown" as const,
-    termsVersion: null,
-    source: null,
-    sourceEventId: null,
-    updatedAt: null,
-  };
-  const optedInChannel = {
+  const receipts = params.permissionReceipts ??
+    publicRegistrationPermissionReceipts(params);
+  const receiptByChannel = new Map(receipts.map((receipt) => [
+    receipt.document.channel,
+    receipt,
+  ]));
+  const optedInChannel = (channel: "whatsapp" | "sms") => ({
     status: "optedIn" as const,
+    evidenceStatus: "complete" as const,
+    currentReceiptId: receiptByChannel.get(channel)!.id,
     termsVersion: params.organizerUpdates!.termsVersion,
     source: "publicEventRegistration" as const,
     sourceEventId: params.eventId,
     updatedAt: params.now,
-  };
+  });
   return {
     organizerId: params.organizerId,
     uid: params.uid,
-    whatsapp: grantsWhatsapp ? optedInChannel :
-      params.existing?.whatsapp ?? unknownChannel,
-    sms: grantsSms ? optedInChannel : params.existing?.sms ?? unknownChannel,
+    whatsapp: grantsWhatsapp ? optedInChannel("whatsapp") :
+      params.existing?.whatsapp ?? unknownOrganizerCommunicationChannel(),
+    sms: grantsSms ? optedInChannel("sms") :
+      params.existing?.sms ?? unknownOrganizerCommunicationChannel(),
     createdAt: params.existing?.createdAt ?? params.now,
     updatedAt: params.now,
   };
+}
+
+export function publicRegistrationPermissionReceipts(params: {
+  existing?: OrganizerCommunicationPreferenceDocument;
+  organizerId: string;
+  uid: string;
+  eventId: string;
+  organizerUpdates?: RegisterPublicEventCallablePayload["organizerUpdates"];
+  now: FirebaseFirestore.Timestamp;
+}): Array<{
+  id: string;
+  document: OrganizerCommunicationPermissionReceiptDocument;
+}> {
+  const grants = [
+    ...(params.organizerUpdates?.whatsapp === true ?
+      ["whatsapp" as const] : []),
+    ...(params.organizerUpdates?.sms === true ? ["sms" as const] : []),
+  ];
+  return grants.map((channel) => {
+    const receipt = publicRegistrationPermissionReceipt({
+      organizerId: params.organizerId,
+      uid: params.uid,
+      channel,
+      eventId: params.eventId,
+      termsVersion: params.organizerUpdates!.termsVersion,
+      supersedesReceiptId: params.existing?.[channel].currentReceiptId ?? null,
+      now: params.now,
+    });
+    if (!receipt) {
+      throw new HttpsError(
+        "invalid-argument",
+        "The selected organizer-update consent version is not supported."
+      );
+    }
+    return receipt;
+  });
+}
+
+function assertPermissionReceiptReplay(
+  snapshot: FirebaseFirestore.DocumentSnapshot,
+  expected: OrganizerCommunicationPermissionReceiptDocument
+): void {
+  const existing = snapshot.data() as
+    OrganizerCommunicationPermissionReceiptDocument | undefined;
+  if (!existing || existing.organizerId !== expected.organizerId ||
+      existing.uid !== expected.uid || existing.channel !== expected.channel ||
+      existing.decision !== expected.decision ||
+      existing.source !== expected.source ||
+      existing.sourceEventId !== expected.sourceEventId ||
+      existing.termsVersion !== expected.termsVersion ||
+      existing.consentCopyHash !== expected.consentCopyHash) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Stored communication permission evidence is inconsistent."
+    );
+  }
 }
 
 function splitSupportedPhone(phoneE164: string): {
