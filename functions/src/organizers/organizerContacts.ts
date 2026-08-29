@@ -107,6 +107,18 @@ const maxOrganizerManualTags = 20;
 const maxContactManualTags = 5;
 const maxSortedCandidateScan = 2500;
 
+/**
+ * Contact reads load the CRM projection and its schema validators in the same
+ * Functions process. Keep enough startup headroom and cap per-instance work so
+ * a transient traffic burst cannot reproduce the 256 MiB production OOM loop.
+ */
+export const organizerContactReadCallableLimits = {
+  timeoutSeconds: 60,
+  memory: "512MiB" as const,
+  maxInstances: 20,
+  concurrency: 20,
+};
+
 type ContactSort = NonNullable<ListOrganizerContactsCallablePayload["sort"]>;
 
 interface OrganizerContactsDeps {
@@ -2990,11 +3002,11 @@ function normalizeNullableString(value: unknown): unknown {
 }
 
 export const listOrganizerContacts = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
+  appCheckCallableOptionsWithLimits(organizerContactReadCallableLimits),
   (request) => listOrganizerContactsHandler(request)
 );
 
 export const getOrganizerContactDetail = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
+  appCheckCallableOptionsWithLimits(organizerContactReadCallableLimits),
   (request) => getOrganizerContactDetailHandler(request)
 );

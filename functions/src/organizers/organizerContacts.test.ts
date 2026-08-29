@@ -11,6 +11,7 @@ import {
   listContactsMatchCountResult,
   manualContactDetailsEditable,
   manualContactHasIdentityEndpoint,
+  organizerContactReadCallableLimits,
   resolveManualTags,
   summarizeContactRevenue,
   summarizeContactRevenueFacts,
@@ -122,6 +123,17 @@ test("customer timeline joins sources newest-first without overstating handoff",
       "catchAndManagedWhatsappOnly"
     );
   });
+
+const callableResourceTestName =
+  "contact read callables reserve startup memory and bounded concurrency";
+test(callableResourceTestName, () => {
+  assert.deepEqual(organizerContactReadCallableLimits, {
+    timeoutSeconds: 60,
+    memory: "512MiB",
+    maxInstances: 20,
+    concurrency: 20,
+  });
+});
 
 test("contact cursors round trip every query plan", () => {
   for (const cursor of [
