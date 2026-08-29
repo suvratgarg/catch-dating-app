@@ -10,6 +10,7 @@ import {
   listContactsMatchCountResult,
   manualContactDetailsEditable,
   manualContactHasIdentityEndpoint,
+  organizerContactReadCallableLimits,
   resolveManualTags,
   summarizeContactRevenue,
   summarizeContactRevenueFacts,
@@ -21,6 +22,17 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 import {validateCreateOrganizerContactCallablePayload} from
   "../shared/generated/schemaValidators";
+
+const callableResourceTestName =
+  "contact read callables reserve startup memory and bounded concurrency";
+test(callableResourceTestName, () => {
+  assert.deepEqual(organizerContactReadCallableLimits, {
+    timeoutSeconds: 60,
+    memory: "512MiB",
+    maxInstances: 20,
+    concurrency: 20,
+  });
+});
 
 test("contact cursors round trip every query plan", () => {
   for (const cursor of [
