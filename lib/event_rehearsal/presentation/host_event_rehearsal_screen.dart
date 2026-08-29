@@ -25,9 +25,7 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_ru
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
+import 'package:catch_dating_app/event_success/event_success.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:flutter/material.dart';

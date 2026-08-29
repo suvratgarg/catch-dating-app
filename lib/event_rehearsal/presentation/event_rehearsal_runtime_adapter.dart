@@ -114,7 +114,7 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
       for (var index = 0; index < tableCount; index++)
         EventSuccessLayoutUnit(
           id: 'table-${index + 1}',
-          label: 'Table ${index + 1}',
+          label: _tableLabelForIndex(index),
           shape: EventSuccessLayoutShape.round,
           capacity: 4,
           gridX: index % 2,
@@ -264,7 +264,7 @@ EventSuccessAssignment _assignmentFor({
   final tableIndex = parsedTableIndex == null
       ? index % tableCount
       : (parsedTableIndex - 1).clamp(0, tableCount - 1);
-  final tableLabel = 'Table ${tableIndex + 1}';
+  final tableLabel = _tableLabelForIndex(tableIndex);
   final legacyConfirmed =
       actor.layoutUnitId == null &&
       (actor.status == EventRehearsalActorStatus.present ||
@@ -291,4 +291,12 @@ EventSuccessAssignment _assignmentFor({
     createdAt: now,
     updatedAt: now,
   );
+}
+
+String _tableLabelForIndex(int index) {
+  final noun = EventSuccessUnitKind.tables.singularLabel;
+  final titleNoun = noun.isEmpty
+      ? noun
+      : '${noun[0].toUpperCase()}${noun.substring(1)}';
+  return '$titleNoun ${index + 1}';
 }

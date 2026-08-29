@@ -41,10 +41,7 @@ void _registerEventSuccessHostLiveTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostSection(
-              event: event,
-              referenceNow: now,
-            ),
+            body: EventSuccessHostSection(event: event, referenceNow: now),
           ),
         ),
       ),

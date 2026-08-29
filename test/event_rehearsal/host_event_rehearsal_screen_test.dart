@@ -257,7 +257,7 @@ EventRehearsalBootstrap _bootstrap({
       hostGoal: 'Learn the live flow',
       attendeePrompt: 'Say hello to someone new',
       modules: [EventRehearsalModule.arrival, EventRehearsalModule.firstHello],
-      movementSimulation: EventRehearsalMovementSimulation(
+      movementSimulation: const EventRehearsalMovementSimulation(
         itinerary: [
           EventItineraryItem(
             id: 'stop-1',
