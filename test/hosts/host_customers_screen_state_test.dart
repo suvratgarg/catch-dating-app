@@ -16,6 +16,10 @@ void main() {
       HostAudienceSegment.reliableAttendee,
     );
     expect(
+      hostAudienceSegmentForCustomerFilter(HostCustomerFilter.attended),
+      HostAudienceSegment.pastAttendee,
+    );
+    expect(
       hostAudienceSegmentForCustomerFilter(
         HostCustomerFilter.highImpactAdvocate,
       ),
@@ -83,6 +87,18 @@ void main() {
       computed?.predicates.single,
       isA<HostSavedAudienceComputedSegment>(),
     );
+
+    final attended = hostSavedAudienceDefinitionForCustomerSelection(
+      filter: HostCustomerFilter.attended,
+      manualTag: null,
+    );
+    final attendancePredicate =
+        attended?.predicates.single as HostSavedAudienceAttendanceCount?;
+    expect(
+      attendancePredicate?.operator,
+      HostSavedAudienceAttendanceOperator.atLeast,
+    );
+    expect(attendancePredicate?.eventCount, 1);
 
     final manual = hostSavedAudienceDefinitionForCustomerSelection(
       filter: HostCustomerFilter.all,
@@ -180,6 +196,7 @@ void main() {
     expect(unavailable.keys, HostCustomerFilterGroup.values);
     expect(unavailable[HostCustomerFilterGroup.attendance], [
       HostCustomerFilter.newToOrganizer,
+      HostCustomerFilter.attended,
       HostCustomerFilter.firstTime,
       HostCustomerFilter.repeat,
       HostCustomerFilter.regular,

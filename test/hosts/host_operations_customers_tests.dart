@@ -277,6 +277,7 @@ void _registerHostOperationsCustomersTests() {
   });
 
   testWidgets('incomplete CRM totals render as lower bounds', (tester) async {
+    HostCustomerFilter? selectedFilter;
     await _pumpHostScreen(
       tester,
       Scaffold(
@@ -298,6 +299,8 @@ void _registerHostOperationsCustomersTests() {
             ),
           ),
           onRetry: () {},
+          selectedFilter: HostCustomerFilter.all,
+          onFilterSelected: (filter) => selectedFilter = filter,
         ),
       ),
     );
@@ -330,12 +333,24 @@ void _registerHostOperationsCustomersTests() {
       surfaces.every((surface) => surface.radius == CatchRadius.md),
       isTrue,
     );
+    expect(surfaces.every((surface) => surface.borderSpec != null), isTrue);
+    expect(surfaces.every((surface) => surface.onTap != null), isTrue);
+
+    final contactsTile = find.byKey(
+      const ValueKey('host-customers-summary-all'),
+    );
+    final contactsSemantics = tester.getSemantics(contactsTile);
+    expect(contactsSemantics.label, 'Contacts, 4+');
+    expect(contactsSemantics.flagsCollection.isButton, isTrue);
+    expect(contactsSemantics.flagsCollection.isSelected, ui.Tristate.isTrue);
     expect(
-      surfaces.every(
-        (surface) => surface.borderRole == CatchBorderRole.boundary,
-      ),
+      contactsSemantics.getSemanticsData().hasAction(ui.SemanticsAction.tap),
       isTrue,
     );
+    await tester.tap(
+      find.byKey(const ValueKey('host-customers-summary-attended')),
+    );
+    expect(selectedFilter, HostCustomerFilter.attended);
 
     final surfaceRects = <Rect>[
       for (var index = 0; index < 3; index++)
@@ -535,7 +550,11 @@ void _registerHostOperationsCustomersTests() {
     );
     final position = tester.state<ScrollableState>(scrollable).position;
     expect(position.maxScrollExtent, greaterThan(0));
-    await tester.drag(scrollable, const Offset(0, -420));
+    await tester.scrollUntilVisible(
+      find.text('ADVOCACY'),
+      200,
+      scrollable: scrollable,
+    );
     await pumpFeatureUi(tester);
 
     expect(position.pixels, greaterThan(0));
@@ -843,6 +862,30 @@ void _registerHostOperationsCustomersTests() {
     );
     expect(find.byTooltip('More customer actions'), findsOneWidget);
     expect(find.byTooltip('Export this audience'), findsNothing);
+
+    await tester.tap(
+      find.byKey(const ValueKey('host-customers-summary-attended')),
+    );
+    await pumpFeatureUi(tester);
+    expect(requests.last.filter, HostCustomerFilter.attended);
+    expect(find.text('Attended · 0 people'), findsOneWidget);
+    final attendedSemantics = tester.getSemantics(
+      find.byKey(const ValueKey('host-customers-summary-attended')),
+    );
+    expect(attendedSemantics.label, 'Attended, 0');
+    expect(attendedSemantics.flagsCollection.isButton, isTrue);
+    expect(attendedSemantics.flagsCollection.isSelected, ui.Tristate.isTrue);
+    expect(
+      attendedSemantics.getSemanticsData().hasAction(ui.SemanticsAction.tap),
+      isTrue,
+    );
+
+    await tester.tap(
+      find.byKey(const ValueKey('host-customers-summary-attended')),
+    );
+    await pumpFeatureUi(tester);
+    expect(requests.last.filter, HostCustomerFilter.all);
+    expect(find.text('All · 0 people'), findsOneWidget);
 
     await tester.tap(find.text('Filters'));
     await pumpFeatureUi(tester);

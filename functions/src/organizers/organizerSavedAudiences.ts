@@ -46,6 +46,7 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {hashCanonical, organizerContactChannelStateId} from
   "./organizerCampaignModel";
+import {organizerContactTraitMatchesSegment} from "./organizerAudienceModel";
 import {resolveOrganizerAudienceCoverage} from
   "./organizerAudienceCoverage";
 
@@ -441,7 +442,10 @@ function savedAudiencePredicateMatches(
 ): boolean {
   switch (predicate.kind) {
   case "computedSegment":
-    return row.trait.segmentIds.includes(predicate.segmentId);
+    return organizerContactTraitMatchesSegment(
+      row.trait,
+      predicate.segmentId
+    );
   case "manualTag":
     return (row.contact.manualTagIds ?? []).includes(predicate.manualTagId);
   case "attendanceCount":

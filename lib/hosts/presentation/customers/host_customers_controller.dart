@@ -102,19 +102,21 @@ HostAudienceQuery _queryFor(
 
 HostAudienceSegment? hostAudienceSegmentForCustomerFilter(
   HostCustomerFilter filter,
-) => switch (filter.tag) {
-  null => null,
-  HostCustomerTag.newToOrganizer => HostAudienceSegment.newToOrganizer,
-  HostCustomerTag.firstTime => HostAudienceSegment.firstTimeAttendee,
-  HostCustomerTag.repeat => HostAudienceSegment.repeatAttendee,
-  HostCustomerTag.regular => HostAudienceSegment.regular,
-  HostCustomerTag.atRisk => HostAudienceSegment.lapsedRegular,
-  HostCustomerTag.reliable => HostAudienceSegment.reliableAttendee,
-  HostCustomerTag.needsConfirmation => HostAudienceSegment.needsConfirmation,
-  HostCustomerTag.advocate => HostAudienceSegment.advocate,
-  HostCustomerTag.highImpactAdvocate => HostAudienceSegment.highImpactAdvocate,
-  HostCustomerTag.whatsappReachable => HostAudienceSegment.whatsappReachable,
-  HostCustomerTag.smsReachable => HostAudienceSegment.smsReachable,
+) => switch (filter) {
+  HostCustomerFilter.all => null,
+  HostCustomerFilter.newToOrganizer => HostAudienceSegment.newToOrganizer,
+  HostCustomerFilter.attended => HostAudienceSegment.pastAttendee,
+  HostCustomerFilter.firstTime => HostAudienceSegment.firstTimeAttendee,
+  HostCustomerFilter.repeat => HostAudienceSegment.repeatAttendee,
+  HostCustomerFilter.regular => HostAudienceSegment.regular,
+  HostCustomerFilter.atRisk => HostAudienceSegment.lapsedRegular,
+  HostCustomerFilter.reliable => HostAudienceSegment.reliableAttendee,
+  HostCustomerFilter.needsConfirmation => HostAudienceSegment.needsConfirmation,
+  HostCustomerFilter.advocate => HostAudienceSegment.advocate,
+  HostCustomerFilter.highImpactAdvocate =>
+    HostAudienceSegment.highImpactAdvocate,
+  HostCustomerFilter.whatsappReachable => HostAudienceSegment.whatsappReachable,
+  HostCustomerFilter.smsReachable => HostAudienceSegment.smsReachable,
 };
 
 HostSavedAudienceDefinition? hostSavedAudienceDefinitionForCustomerSelection({
@@ -125,6 +127,17 @@ HostSavedAudienceDefinition? hostSavedAudienceDefinitionForCustomerSelection({
     return HostSavedAudienceDefinition(
       join: HostSavedAudienceJoin.all,
       predicates: [HostSavedAudienceManualTag(manualTag.tagId)],
+    );
+  }
+  if (filter == HostCustomerFilter.attended) {
+    return const HostSavedAudienceDefinition(
+      join: HostSavedAudienceJoin.all,
+      predicates: [
+        HostSavedAudienceAttendanceCount(
+          operator: HostSavedAudienceAttendanceOperator.atLeast,
+          eventCount: 1,
+        ),
+      ],
     );
   }
   final segment = hostAudienceSegmentForCustomerFilter(filter);
@@ -190,6 +203,7 @@ HostCustomerFilter hostCustomerFilterForAudienceSegment(
   HostAudienceSegment segment,
 ) => switch (segment) {
   HostAudienceSegment.newToOrganizer => HostCustomerFilter.newToOrganizer,
+  HostAudienceSegment.pastAttendee => HostCustomerFilter.attended,
   HostAudienceSegment.firstTimeAttendee => HostCustomerFilter.firstTime,
   HostAudienceSegment.repeatAttendee => HostCustomerFilter.repeat,
   HostAudienceSegment.regular => HostCustomerFilter.regular,
@@ -221,6 +235,7 @@ hostCustomerFilterGroupsForSmsReadiness(HostCrmChannelReadiness? smsReadiness) {
   return {
     HostCustomerFilterGroup.attendance: [
       HostCustomerFilter.newToOrganizer,
+      HostCustomerFilter.attended,
       HostCustomerFilter.firstTime,
       HostCustomerFilter.repeat,
       HostCustomerFilter.regular,
@@ -283,6 +298,7 @@ HostCustomerManualTag _directoryManualTag(HostManualTag tag) =>
 
 HostCustomerTag? _customerTag(HostAudienceSegment segment) => switch (segment) {
   HostAudienceSegment.newToOrganizer => HostCustomerTag.newToOrganizer,
+  HostAudienceSegment.pastAttendee => null,
   HostAudienceSegment.firstTimeAttendee => HostCustomerTag.firstTime,
   HostAudienceSegment.repeatAttendee => HostCustomerTag.repeat,
   HostAudienceSegment.regular => HostCustomerTag.regular,

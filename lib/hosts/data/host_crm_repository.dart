@@ -401,6 +401,7 @@ class HostEventRosterInsights {
 
 enum HostAudienceSegment {
   newToOrganizer('new_to_organizer'),
+  pastAttendee('past_attendee'),
   firstTimeAttendee('first_time_attendee'),
   repeatAttendee('repeat_attendee'),
   regular('regular'),

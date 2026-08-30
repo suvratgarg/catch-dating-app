@@ -86,6 +86,7 @@ export interface GetOrganizerContactDetailCallableResponse {
      */
     segmentIds: (
       | "new_to_organizer"
+      | "past_attendee"
       | "first_time_attendee"
       | "repeat_attendee"
       | "regular"

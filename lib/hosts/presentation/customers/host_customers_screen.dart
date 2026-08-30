@@ -333,6 +333,23 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                         onRetry: () => ref.invalidate(
                           hostCrmSummaryProvider(selectedClub.id),
                         ),
+                        selectedFilter:
+                            _manualTag == null &&
+                                const {
+                                  HostCustomerFilter.all,
+                                  HostCustomerFilter.attended,
+                                  HostCustomerFilter.repeat,
+                                }.contains(effectiveFilter)
+                            ? effectiveFilter
+                            : null,
+                        onFilterSelected: (selectedFilter) => setState(() {
+                          _filter =
+                              selectedFilter == effectiveFilter &&
+                                  selectedFilter != HostCustomerFilter.all
+                              ? HostCustomerFilter.all
+                              : selectedFilter;
+                          _manualTag = null;
+                        }),
                         directorySummary: directoryState == null
                             ? null
                             : HostCustomerFilterSummary(

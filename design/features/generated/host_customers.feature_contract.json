@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-31",
-  "sourceDigest": "sha256:7548bab02179109ed758766efe4c1cee140c8515f145eeaec9d704b51732faca",
+  "sourceDigest": "sha256:1f0dfe6b71d4ab7e467722ec9eabd2cbd6505c7c0d7865c51031db3aa88b83b6",
   "resolvedDigest": "sha256:e105a762b27c5b17cd3d9c814b70d3104d2507bcc24f7f911c0ce2aa9716dfe2",
   "feature": {
     "id": "feature.host_customers",
@@ -32,7 +32,7 @@
         "id": "screen.host.customers"
       },
       "actionScope": {
-        "included": "People/Audiences peer navigation, customer directory recovery, shared organizer selection, view-aware debounced search, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, People-only header actions and export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account Catch chat creation, editable personal WhatsApp app handoff for contacts with a valid phone, a flat divided saved-audience directory with one New audience action, full-page create/detail/edit/archive routes for the closed audience predicate vocabulary, exact preview and server-derived reach summaries, persisting an eligible exact People filter before routing it into the Messaging composer, and opening the dedicated WhatsApp Business setup route only when an otherwise eligible audience is blocked by organizer sender readiness.",
+        "included": "People/Audiences peer navigation, customer directory recovery, shared organizer selection, view-aware debounced search, accessible selected Contacts/Attended/Repeat summary filters backed by the canonical server directory, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, People-only header actions and export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account Catch chat creation, editable personal WhatsApp app handoff for contacts with a valid phone, a flat divided saved-audience directory with one New audience action, full-page create/detail/edit/archive routes for the closed audience predicate vocabulary, exact preview and server-derived reach summaries, persisting an eligible exact People filter before routing it into the Messaging composer, and opening the dedicated WhatsApp Business setup route only when an otherwise eligible audience is blocked by organizer sender readiness.",
         "excluded": [
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
         ]
@@ -683,7 +683,7 @@
               ]
             }
           ],
-          "description": "Filters the directory by either one server-backed computed segment or one organizer-owned manual tag, never conflating their namespaces or visual treatment.",
+          "description": "Filters the directory by either a selected Contacts/Attended/Repeat summary control, one grouped server-backed computed segment, or one organizer-owned manual tag. Contacts clears segmentation, Attended means at least one attendance, and Repeat means at least two; no client combines independently paginated segments.",
           "implementationStatus": "implemented"
         },
         {

@@ -13482,6 +13482,7 @@ export const organizerContactDocumentSchema: Record<string, unknown> = {
                 "type": "string",
                 "enum": [
                   "new_to_organizer",
+                  "past_attendee",
                   "first_time_attendee",
                   "repeat_attendee",
                   "regular",
@@ -13555,6 +13556,7 @@ export const organizerContactDocumentSchema: Record<string, unknown> = {
               "type": "string",
               "enum": [
                 "new_to_organizer",
+                "past_attendee",
                 "first_time_attendee",
                 "repeat_attendee",
                 "regular",
@@ -14121,6 +14123,7 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                     "type": "string",
                     "enum": [
                       "new_to_organizer",
+                      "past_attendee",
                       "first_time_attendee",
                       "repeat_attendee",
                       "regular",
@@ -14452,6 +14455,7 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                     "type": "string",
                     "enum": [
                       "new_to_organizer",
+                      "past_attendee",
                       "first_time_attendee",
                       "repeat_attendee",
                       "regular",
@@ -14565,6 +14569,7 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
               "type": "string",
               "enum": [
                 "new_to_organizer",
+                "past_attendee",
                 "first_time_attendee",
                 "repeat_attendee",
                 "regular",
@@ -14673,6 +14678,7 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
           "type": "string",
           "enum": [
             "new_to_organizer",
+            "past_attendee",
             "first_time_attendee",
             "repeat_attendee",
             "regular",
@@ -16103,6 +16109,7 @@ export const organizerContactTraitDocumentSchema: Record<string, unknown> = {
         "type": "string",
         "enum": [
           "new_to_organizer",
+          "past_attendee",
           "first_time_attendee",
           "repeat_attendee",
           "regular",
@@ -16176,6 +16183,7 @@ export const organizerContactTraitDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "enum": [
         "new_to_organizer",
+        "past_attendee",
         "first_time_attendee",
         "repeat_attendee",
         "regular",
@@ -60057,6 +60065,7 @@ export const upsertOrganizerSavedAudienceCallablePayloadSchema: Record<string, u
                     "type": "string",
                     "enum": [
                       "new_to_organizer",
+                      "past_attendee",
                       "first_time_attendee",
                       "repeat_attendee",
                       "regular",
@@ -60359,6 +60368,7 @@ export const organizerSavedAudienceCallableResponseSchema: Record<string, unknow
                     "type": "string",
                     "enum": [
                       "new_to_organizer",
+                      "past_attendee",
                       "first_time_attendee",
                       "repeat_attendee",
                       "regular",
@@ -60638,6 +60648,7 @@ export const listOrganizerSavedAudiencesCallableResponseSchema: Record<string, u
                           "type": "string",
                           "enum": [
                             "new_to_organizer",
+                            "past_attendee",
                             "first_time_attendee",
                             "repeat_attendee",
                             "regular",
@@ -60922,6 +60933,7 @@ export const previewOrganizerSavedAudienceCallableResponseSchema: Record<string,
                         "type": "string",
                         "enum": [
                           "new_to_organizer",
+                          "past_attendee",
                           "first_time_attendee",
                           "repeat_attendee",
                           "regular",
@@ -70838,6 +70850,7 @@ export const listOrganizerContactsCallablePayloadSchema: Record<string, unknown>
           "type": "string",
           "enum": [
             "new_to_organizer",
+            "past_attendee",
             "first_time_attendee",
             "repeat_attendee",
             "regular",
@@ -85612,6 +85625,7 @@ export const listOrganizerContactsCallableResponseSchema: Record<string, unknown
               "type": "string",
               "enum": [
                 "new_to_organizer",
+                "past_attendee",
                 "first_time_attendee",
                 "repeat_attendee",
                 "regular",
@@ -85834,6 +85848,7 @@ export const listOrganizerContactsCallableResponseSchema: Record<string, unknown
             "type": "string",
             "enum": [
               "new_to_organizer",
+              "past_attendee",
               "first_time_attendee",
               "repeat_attendee",
               "regular",
@@ -86298,6 +86313,7 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
             "type": "string",
             "enum": [
               "new_to_organizer",
+              "past_attendee",
               "first_time_attendee",
               "repeat_attendee",
               "regular",
@@ -88664,6 +88680,7 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
             "type": "string",
             "enum": [
               "new_to_organizer",
+              "past_attendee",
               "first_time_attendee",
               "repeat_attendee",
               "regular",
@@ -89660,6 +89677,7 @@ export const exportOrganizerContactsCallablePayloadSchema: Record<string, unknow
           "type": "string",
           "enum": [
             "new_to_organizer",
+            "past_attendee",
             "first_time_attendee",
             "repeat_attendee",
             "regular",
