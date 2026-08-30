@@ -11,6 +11,7 @@ import type {
 import {
   canonicalSavedAudienceDefinition,
   isReachableForOrganizerWhatsappCampaign,
+  savedAudienceReachSummary,
   savedAudienceDefinitionMatches,
   SavedAudienceEvaluationRow,
 } from "./organizerSavedAudiences";
@@ -31,9 +32,11 @@ function row(): SavedAudienceEvaluationRow {
       manualTagIds: ["a".repeat(32)],
       identityState: "verified",
       identityConfidence: "verified",
+      ambiguousCandidateContactIds: [],
+      whatsappStatus: "optedIn",
       deletedAt: null,
       hiddenAt: null,
-    } as OrganizerContactDocument,
+    } as unknown as OrganizerContactDocument,
     trait: {
       organizerId: "organizer-1",
       attendedEventCount: 4,
@@ -120,4 +123,29 @@ test("canonical definitions reject duplicate predicates", () => {
     (error: unknown) => error instanceof HttpsError &&
       error.code === "invalid-argument",
   );
+});
+
+test("saved audience reach summaries reuse the shared route plan", () => {
+  const inCatch = row();
+  const byHand = row();
+  byHand.contact = {
+    ...byHand.contact,
+    linkedUid: null,
+    identityState: "unlinked",
+    identityConfidence: "proposed",
+  };
+  const unavailable = row();
+  unavailable.contact = {
+    ...unavailable.contact,
+    linkedUid: null,
+    phoneE164: null,
+    identityState: "unlinked",
+    identityConfidence: "proposed",
+  };
+  assert.deepEqual(savedAudienceReachSummary([inCatch, byHand, unavailable]), {
+    inCatch: 1,
+    automatic: 0,
+    byHand: 1,
+    unavailable: 1,
+  });
 });

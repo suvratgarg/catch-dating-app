@@ -3,25 +3,25 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-30",
-  "sourceDigest": "sha256:4a3f5f0a8987a317230f7debda0fc549826be3c04c2035d83186dc07769db040",
-  "resolvedDigest": "sha256:6c16d84b5c06e204b0e00c9ddad27328efc5ed53f6c3d7a777da1e7ec7362ad6",
+  "sourceDigest": "sha256:fdb24e4bf3e02093f7546fc8b17fc122f1d961d9128e70f90de77fed480ebfee",
+  "resolvedDigest": "sha256:107084cc59c67f2b8ba45762481c8e4b3e3eec6f7246203dba349782d9eb76cd",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
     "owner": "hosts",
     "status": "active",
-    "description": "Makes Customers the sole Host CRM directory and durable reusable-audience owner for server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration, customer detail, identity-gated Catch chat, personal WhatsApp handoff, saved-audience deep links into Messaging campaigns, and a truthful Messaging fallback when the active view cannot become an audience."
+    "description": "Makes Customers the sole Host CRM owner through first-class People and Audiences peer workspaces. People owns server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration and customer detail. Audiences owns reusable group discovery, full-page definition authoring, exact previews and archive. Messaging consumes saved-audience identifiers for sends without recreating audience logic."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 44,
-    "scenarios": 44,
-    "actionCases": 44,
-    "actions": 23,
-    "captures": 3,
+    "states": 48,
+    "scenarios": 48,
+    "actionCases": 48,
+    "actions": 30,
+    "captures": 6,
     "previews": 2,
-    "testFiles": 11,
-    "evidenceExceptions": 50
+    "testFiles": 12,
+    "evidenceExceptions": 54
   },
   "surfaces": [
     {
@@ -32,7 +32,7 @@
         "id": "screen.host.customers"
       },
       "actionScope": {
-        "included": "Customer directory recovery, shared organizer selection, debounced name search, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, header-menu export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account Catch chat creation, editable personal WhatsApp app handoff for contacts with a valid phone, persisting an eligible exact filter as a saved audience before routing it into the Messaging campaign composer, and opening Messaging for blocked or unpersistable views without claiming the full directory is sendable.",
+        "included": "People/Audiences peer navigation, customer directory recovery, shared organizer selection, view-aware debounced search, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, People-only header actions and export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account Catch chat creation, editable personal WhatsApp app handoff for contacts with a valid phone, a flat divided saved-audience directory with one New audience action, full-page create/detail/edit/archive routes for the closed audience predicate vocabulary, exact preview and server-derived reach summaries, persisting an eligible exact People filter before routing it into the Messaging composer, and opening Messaging for blocked or unpersistable views without claiming the full directory is sendable.",
         "excluded": [
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
         ]
@@ -47,6 +47,18 @@
             "language": "dart",
             "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
             "symbol": "HostCustomersScreen"
+          },
+          {
+            "id": "audiences_workspace",
+            "language": "dart",
+            "file": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
+            "symbol": "HostSavedAudiencesWorkspace"
+          },
+          {
+            "id": "audience_editor",
+            "language": "dart",
+            "file": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
+            "symbol": "HostSavedAudienceEditorScreen"
           },
           {
             "id": "customer_create",
@@ -98,6 +110,7 @@
           "catch.section",
           "catch.skeleton",
           "catch.surface",
+          "catch.tab_rail",
           "catch.top_bar"
         ],
         "dataContracts": [
@@ -110,6 +123,9 @@
           "contracts/callable_responses/organizer_contact_note_response.schema.json",
           "contracts/callable_responses/review_organizer_contact_merge_candidate_response.schema.json",
           "contracts/callable_responses/organizer_messaging_setup_response.schema.json",
+          "contracts/callable_responses/list_organizer_saved_audiences_response.schema.json",
+          "contracts/callable_responses/organizer_saved_audience_response.schema.json",
+          "contracts/callable_responses/preview_organizer_saved_audience_response.schema.json",
           "contracts/callables/create_organizer_contact_payload.schema.json",
           "contracts/callables/export_organizer_contacts_payload.schema.json",
           "contracts/callables/get_organizer_contact_detail_payload.schema.json",
@@ -120,6 +136,10 @@
           "contracts/callables/mutate_organizer_contact_note_payload.schema.json",
           "contracts/callables/start_organizer_contact_conversation_payload.schema.json",
           "contracts/callables/review_organizer_contact_merge_candidate_payload.schema.json",
+          "contracts/callables/list_organizer_saved_audiences_payload.schema.json",
+          "contracts/callables/upsert_organizer_saved_audience_payload.schema.json",
+          "contracts/callables/preview_organizer_saved_audience_payload.schema.json",
+          "contracts/callables/archive_organizer_saved_audience_payload.schema.json",
           "contracts/firestore/organizer_contact_channel_states.schema.json",
           "contracts/firestore/organizer_contact_event_edges.schema.json",
           "contracts/firestore/organizer_contact_merge_receipts.schema.json",
@@ -224,18 +244,30 @@
           ],
           "customer_saved_audience_error": [
             "test/hosts/host_operations_customers_tests.dart"
+          ],
+          "customer_saved_audience_create": [
+            "test/hosts/host_operations_customers_tests.dart"
+          ],
+          "customer_saved_audience_detail": [
+            "test/hosts/host_operations_customers_tests.dart"
+          ],
+          "customer_saved_audience_mutation": [
+            "test/hosts/host_crm_repository_test.dart"
+          ],
+          "customer_saved_audience_archive": [
+            "test/hosts/host_crm_repository_test.dart"
           ]
         }
       },
       "coverage": {
-        "states": 44,
-        "scenarios": 44,
-        "actionCases": 44,
-        "actions": 23,
-        "captures": 3,
+        "states": 48,
+        "scenarios": 48,
+        "actionCases": 48,
+        "actions": 30,
+        "captures": 6,
         "previews": 2,
-        "testFiles": 11,
-        "evidenceExceptions": 50
+        "testFiles": 12,
+        "evidenceExceptions": 54
       },
       "dimensions": {
         "load": {
@@ -247,6 +279,13 @@
             "offline"
           ]
         },
+        "view": {
+          "default": "people",
+          "values": [
+            "people",
+            "audiences"
+          ]
+        },
         "directory": {
           "default": "populated",
           "values": [
@@ -254,6 +293,24 @@
             "empty",
             "filtered_empty",
             "paginating"
+          ]
+        },
+        "audience_directory": {
+          "default": "populated",
+          "values": [
+            "populated",
+            "empty",
+            "filtered_empty"
+          ]
+        },
+        "audience_editor": {
+          "default": "closed",
+          "values": [
+            "closed",
+            "creating",
+            "editing",
+            "previewing",
+            "archiving"
           ]
         },
         "sort": {
@@ -340,7 +397,8 @@
             "managing_contact",
             "editing_note",
             "editing_tags",
-            "starting_conversation"
+            "starting_conversation",
+            "saving_audience"
           ]
         },
         "accessibility": {
@@ -360,6 +418,162 @@
         }
       },
       "actions": [
+        {
+          "id": "switch_customers_view",
+          "owner": "customers_screen",
+          "codeValue": "HostCustomersView",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "view"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customers_populated",
+                "customer_saved_audience_manage"
+              ]
+            }
+          ],
+          "description": "Switches the canonical Customers destination between its People and Audiences peer responsibilities without changing organizer scope.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "search_saved_audiences",
+          "owner": "audiences_workspace",
+          "codeValue": "_matchingSavedAudiences",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "query"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_saved_audience_manage",
+                "customer_saved_audience_empty"
+              ]
+            }
+          ],
+          "description": "Filters the complete bounded organizer audience directory by saved-audience name without mutating its definition.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_saved_audience_create",
+          "owner": "audiences_workspace",
+          "codeValue": "onCreate",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "routeInstanceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_saved_audience_create"
+              ]
+            }
+          ],
+          "description": "Uses the directory's single New audience action to open the full-page Customers-owned authoring route.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_saved_audience_detail",
+          "owner": "audiences_workspace",
+          "codeValue": "onOpen",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "audienceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_saved_audience_detail"
+              ]
+            }
+          ],
+          "description": "Opens one divided directory row as the full-page Customers-owned audience detail and editor route.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "save_saved_audience",
+          "owner": "audience_editor",
+          "codeValue": "saveAudience",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "audienceId",
+            "expectedRevision",
+            "definition"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_saved_audience_mutation",
+                "customer_saved_audience_detail"
+              ]
+            }
+          ],
+          "description": "Creates or revision-updates one named definition from the closed predicate vocabulary, then requires an exact preview before returning to the directory.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "refresh_saved_audience_preview",
+          "owner": "audience_editor",
+          "codeValue": "previewAudience",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "audienceId",
+            "revision",
+            "definitionHash"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_saved_audience_detail"
+              ]
+            }
+          ],
+          "description": "Refreshes the exact match count and shared-route reach summary without composing or dispatching a send.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "archive_saved_audience",
+          "owner": "audience_editor",
+          "codeValue": "archiveAudience",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "audienceId",
+            "expectedRevision"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_saved_audience_archive",
+                "customer_saved_audience_manage"
+              ]
+            }
+          ],
+          "description": "Archives one reusable definition from its full-page detail route after explicit confirmation.",
+          "implementationStatus": "implemented"
+        },
         {
           "id": "retry_directory",
           "owner": "customers_screen",
@@ -939,6 +1153,19 @@
       "evidenceExceptions": [
         {
           "stateIds": [
+            "customer_saved_audience_create",
+            "customer_saved_audience_detail",
+            "customer_saved_audience_mutation",
+            "customer_saved_audience_archive"
+          ],
+          "evidence": [
+            "previews"
+          ],
+          "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
+          "reason": "The route-level audience editor has focused rendered and repository/backend tests; deterministic create, detail, pending, and archive Widgetbook variants remain explicit preview debt."
+        },
+        {
+          "stateIds": [
             "customer_sorted_most_attended",
             "customer_sorted_name",
             "customer_merge_review",
@@ -1041,7 +1268,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "loading",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -1065,7 +1295,10 @@
               "id": "default",
               "dimensions": {
                 "load": "loading",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -1083,6 +1316,13 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -1118,7 +1358,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "error",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -1142,7 +1385,10 @@
               "id": "recovery",
               "dimensions": {
                 "load": "error",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -1162,6 +1408,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "switch_organizer",
                   "search_customers",
                   "open_customer_filters",
@@ -1196,7 +1449,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "empty",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -1220,7 +1476,10 @@
               "id": "first_customer",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "empty",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -1242,6 +1501,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "search_customers",
                   "open_customer_filters",
@@ -1274,7 +1540,10 @@
           "status": "captured",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -1305,7 +1574,10 @@
               "id": "directory",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -1336,6 +1608,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "message_filtered_customers",
                   "open_customer_event",
@@ -1359,7 +1638,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "filtered_empty",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -1385,7 +1667,10 @@
               "id": "adjust",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "filtered_empty",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -1408,6 +1693,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "open_customer_filters",
@@ -1439,7 +1731,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "paginating",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -1463,7 +1758,10 @@
               "id": "pending",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "paginating",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -1483,6 +1781,13 @@
                   "load_more"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -1517,7 +1822,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "most_attended",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -1544,7 +1852,10 @@
               "id": "sort",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "most_attended",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -1565,6 +1876,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -1598,7 +1916,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "name",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -1625,7 +1946,10 @@
               "id": "sort",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "name",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -1646,6 +1970,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -1679,7 +2010,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "open",
             "merge_review": "closed",
@@ -1705,7 +2039,10 @@
               "id": "choose",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "open",
                 "merge_review": "closed",
@@ -1725,6 +2062,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -1759,7 +2103,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "open",
             "merge_review": "closed",
@@ -1786,7 +2133,10 @@
               "id": "choose_manual",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "open",
                 "merge_review": "closed",
@@ -1809,6 +2159,13 @@
                   "open_messaging_workspace"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -1841,7 +2198,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -1869,7 +2229,10 @@
               "id": "message",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -1891,6 +2254,13 @@
                   "open_messaging_workspace"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -1924,7 +2294,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -1951,7 +2324,10 @@
               "id": "explain_and_open",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -1973,6 +2349,13 @@
                   "message_filtered_customers"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2003,10 +2386,13 @@
           "id": "customer_saved_audience_manage",
           "stateId": "customer_saved_audience_manage",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "dimensions": {
             "load": "ready",
+            "view": "audiences",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2021,7 +2407,9 @@
             "theme": "standard"
           },
           "evidence": {
-            "captureIds": [],
+            "captureIds": [
+              "host_customers_audiences_populated"
+            ],
             "previewIds": [
               "hostSavedAudiencesStates"
             ],
@@ -2032,10 +2420,13 @@
           },
           "actionCases": [
             {
-              "id": "manage",
+              "id": "directory",
               "dimensions": {
                 "load": "ready",
+                "view": "audiences",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2050,9 +2441,17 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [],
+                "enabled": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail"
+                ],
                 "disabled": [],
                 "notAllowed": [
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2088,7 +2487,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
-            "directory": "empty",
+            "view": "audiences",
+            "directory": "populated",
+            "audience_directory": "empty",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2113,10 +2515,13 @@
           },
           "actionCases": [
             {
-              "id": "empty",
+              "id": "first_audience",
               "dimensions": {
                 "load": "ready",
-                "directory": "empty",
+                "view": "audiences",
+                "directory": "populated",
+                "audience_directory": "empty",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2131,9 +2536,17 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [],
+                "enabled": [
+                  "switch_customers_view",
+                  "open_saved_audience_create"
+                ],
                 "disabled": [],
                 "notAllowed": [
+                  "search_saved_audiences",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2169,7 +2582,10 @@
           "status": "tested",
           "dimensions": {
             "load": "error",
+            "view": "audiences",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2197,7 +2613,10 @@
               "id": "recovery",
               "dimensions": {
                 "load": "error",
+                "view": "audiences",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2212,9 +2631,394 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [],
+                "enabled": [
+                  "switch_customers_view"
+                ],
                 "disabled": [],
                 "notAllowed": [
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "sort_customers",
+                  "message_filtered_customers",
+                  "open_messaging_workspace",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "review_duplicate_customers",
+                  "decide_duplicate_customer",
+                  "undo_customer_merge",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation",
+                  "open_personal_whatsapp_handoff"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_saved_audience_create",
+          "stateId": "customer_saved_audience_create",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "view": "audiences",
+            "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "creating",
+            "sort": "last_seen",
+            "filter_sheet": "closed",
+            "merge_review": "closed",
+            "notes": "populated",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "personal_whatsapp": "ready",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_saved_audience_create"
+            ],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_operations_customers_tests.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "author",
+              "dimensions": {
+                "load": "ready",
+                "view": "audiences",
+                "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "creating",
+                "sort": "last_seen",
+                "filter_sheet": "closed",
+                "merge_review": "closed",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "personal_whatsapp": "ready",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "save_saved_audience"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "sort_customers",
+                  "message_filtered_customers",
+                  "open_messaging_workspace",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "review_duplicate_customers",
+                  "decide_duplicate_customer",
+                  "undo_customer_merge",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation",
+                  "open_personal_whatsapp_handoff"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_saved_audience_detail",
+          "stateId": "customer_saved_audience_detail",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "view": "audiences",
+            "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "editing",
+            "sort": "last_seen",
+            "filter_sheet": "closed",
+            "merge_review": "closed",
+            "notes": "populated",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "personal_whatsapp": "ready",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_saved_audience_detail"
+            ],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_operations_customers_tests.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "edit",
+              "dimensions": {
+                "load": "ready",
+                "view": "audiences",
+                "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "editing",
+                "sort": "last_seen",
+                "filter_sheet": "closed",
+                "merge_review": "closed",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "personal_whatsapp": "ready",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "sort_customers",
+                  "message_filtered_customers",
+                  "open_messaging_workspace",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "review_duplicate_customers",
+                  "decide_duplicate_customer",
+                  "undo_customer_merge",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation",
+                  "open_personal_whatsapp_handoff"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_saved_audience_mutation",
+          "stateId": "customer_saved_audience_mutation",
+          "kind": "mutation",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "view": "audiences",
+            "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "previewing",
+            "sort": "last_seen",
+            "filter_sheet": "closed",
+            "merge_review": "closed",
+            "notes": "populated",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "personal_whatsapp": "ready",
+            "mutation": "saving_audience",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_crm_repository_test.dart",
+              "functions/src/organizers/organizerSavedAudiences.test.ts"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "view": "audiences",
+                "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "previewing",
+                "sort": "last_seen",
+                "filter_sheet": "closed",
+                "merge_review": "closed",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "personal_whatsapp": "ready",
+                "mutation": "saving_audience",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience"
+                ],
+                "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "sort_customers",
+                  "message_filtered_customers",
+                  "open_messaging_workspace",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "review_duplicate_customers",
+                  "decide_duplicate_customer",
+                  "undo_customer_merge",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation",
+                  "open_personal_whatsapp_handoff"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_saved_audience_archive",
+          "stateId": "customer_saved_audience_archive",
+          "kind": "mutation",
+          "status": "implemented",
+          "dimensions": {
+            "load": "ready",
+            "view": "audiences",
+            "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "archiving",
+            "sort": "last_seen",
+            "filter_sheet": "closed",
+            "merge_review": "closed",
+            "notes": "populated",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "personal_whatsapp": "ready",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/hosts/host_crm_repository_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "confirm",
+              "dimensions": {
+                "load": "ready",
+                "view": "audiences",
+                "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "archiving",
+                "sort": "last_seen",
+                "filter_sheet": "closed",
+                "merge_review": "closed",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "personal_whatsapp": "ready",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "archive_saved_audience"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2250,7 +3054,10 @@
           "status": "captured",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2280,7 +3087,10 @@
               "id": "pending",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2300,6 +3110,13 @@
                   "create_customer"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2334,7 +3151,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2358,7 +3178,10 @@
               "id": "pending",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2378,6 +3201,13 @@
                   "export_customers"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2412,7 +3242,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2439,7 +3272,10 @@
               "id": "manage",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2459,6 +3295,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2493,7 +3336,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2517,7 +3363,10 @@
               "id": "pending",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2537,6 +3386,13 @@
                   "manage_customer"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2571,7 +3427,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "loading",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2595,7 +3454,10 @@
               "id": "default",
               "dimensions": {
                 "load": "loading",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2613,6 +3475,13 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2648,7 +3517,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "error",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2672,7 +3544,10 @@
               "id": "recovery",
               "dimensions": {
                 "load": "error",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2692,6 +3567,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2726,7 +3608,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2755,7 +3640,10 @@
               "id": "linked",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2776,6 +3664,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2809,7 +3704,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2836,7 +3734,10 @@
               "id": "unlinked",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2858,6 +3759,13 @@
                   "start_conversation"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2891,7 +3799,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2918,7 +3829,10 @@
               "id": "ambiguous",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2940,6 +3854,13 @@
                   "start_conversation"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2973,7 +3894,10 @@
           "status": "captured",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -3004,7 +3928,10 @@
               "id": "memory",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -3026,6 +3953,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3058,7 +3992,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -3084,7 +4021,10 @@
               "id": "note_pending",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -3105,6 +4045,13 @@
                   "edit_contact_note"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3138,7 +4085,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -3164,7 +4114,10 @@
               "id": "tags_pending",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -3184,6 +4137,13 @@
                   "edit_contact_tags"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3218,7 +4178,10 @@
           "status": "captured",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -3249,7 +4212,10 @@
               "id": "default",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -3267,6 +4233,13 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3302,7 +4275,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "candidates",
@@ -3328,7 +4304,10 @@
               "id": "review",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "candidates",
@@ -3348,6 +4327,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3382,7 +4368,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "dismissed",
@@ -3408,7 +4397,10 @@
               "id": "reopen",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "dismissed",
@@ -3428,6 +4420,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3462,7 +4461,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "conflict_confirmation",
@@ -3486,7 +4488,10 @@
               "id": "confirm",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "conflict_confirmation",
@@ -3506,6 +4511,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3540,7 +4552,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "active_receipts",
@@ -3566,7 +4581,10 @@
               "id": "undo",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "active_receipts",
@@ -3586,6 +4604,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3620,7 +4645,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "undoing",
@@ -3644,7 +4672,10 @@
               "id": "pending",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "undoing",
@@ -3664,6 +4695,13 @@
                   "undo_customer_merge"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3698,7 +4736,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -3726,7 +4767,10 @@
               "id": "default",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -3744,6 +4788,13 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3779,7 +4830,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -3803,7 +4857,10 @@
               "id": "default",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -3821,6 +4878,13 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3856,7 +4920,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -3880,7 +4947,10 @@
               "id": "default",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -3898,6 +4968,13 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3933,7 +5010,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -3963,7 +5043,10 @@
               "id": "start",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -3983,6 +5066,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -4017,7 +5107,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -4045,7 +5138,10 @@
               "id": "blocked",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -4065,6 +5161,13 @@
                   "start_conversation"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -4099,7 +5202,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -4128,7 +5234,10 @@
               "id": "explain",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -4148,6 +5257,13 @@
                   "open_personal_whatsapp_handoff"
                 ],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -4182,7 +5298,10 @@
           "status": "tested",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -4210,7 +5329,10 @@
               "id": "edit_and_open",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -4230,6 +5352,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -4264,7 +5393,10 @@
           "status": "implemented",
           "dimensions": {
             "load": "offline",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -4288,7 +5420,10 @@
               "id": "retry",
               "dimensions": {
                 "load": "offline",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -4309,6 +5444,13 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "switch_organizer",
                   "search_customers",
                   "open_customer_filters",
@@ -4342,7 +5484,10 @@
           "status": "planned",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -4366,7 +5511,10 @@
               "id": "default",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -4384,6 +5532,13 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -4419,7 +5574,10 @@
           "status": "planned",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -4443,7 +5601,10 @@
               "id": "default",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -4461,6 +5622,13 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -4496,7 +5664,10 @@
           "status": "planned",
           "dimensions": {
             "load": "ready",
+            "view": "people",
             "directory": "populated",
+            "audience_directory": "populated",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -4520,7 +5691,10 @@
               "id": "default",
               "dimensions": {
                 "load": "ready",
+                "view": "people",
                 "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -4538,6 +5712,13 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "refresh_saved_audience_preview",
+                  "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -4580,6 +5761,16 @@
             {
               "id": "hostAddCustomerScreen",
               "path": "/host/customers/new",
+              "role": "host"
+            },
+            {
+              "id": "hostCreateSavedAudienceScreen",
+              "path": "/host/customers/audiences/new",
+              "role": "host"
+            },
+            {
+              "id": "hostSavedAudienceDetailScreen",
+              "path": "/host/customers/audiences/:audienceId",
               "role": "host"
             },
             {
@@ -4748,6 +5939,17 @@
                 "CatchSurface.card",
                 "CatchSurface.tinted",
                 "CatchSurface.message"
+              ]
+            }
+          },
+          {
+            "id": "catch.tab_rail",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchTabRail",
+              "file": "lib/core/widgets/catch_tab_rail.dart",
+              "constructors": [
+                "CatchTabRail"
               ]
             }
           },

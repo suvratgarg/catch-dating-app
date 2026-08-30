@@ -6,14 +6,14 @@
   "name": "Host Customers",
   "owner": "hosts",
   "status": "active",
-  "description": "Makes Customers the sole Host CRM directory and durable reusable-audience owner for server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration, customer detail, identity-gated Catch chat, personal WhatsApp handoff, saved-audience deep links into Messaging campaigns, and a truthful Messaging fallback when the active view cannot become an audience.",
+  "description": "Makes Customers the sole Host CRM owner through first-class People and Audiences peer workspaces. People owns server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration and customer detail. Audiences owns reusable group discovery, full-page definition authoring, exact previews and archive. Messaging consumes saved-audience identifiers for sends without recreating audience logic.",
   "surfaces": [
     {
       "id": "host_flutter",
       "runtime": "flutter",
       "authority": {"registry": "flutter_screens", "id": "screen.host.customers"},
       "actionScope": {
-        "included": "Customer directory recovery, shared organizer selection, debounced name search, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, header-menu export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account Catch chat creation, editable personal WhatsApp app handoff for contacts with a valid phone, persisting an eligible exact filter as a saved audience before routing it into the Messaging campaign composer, and opening Messaging for blocked or unpersistable views without claiming the full directory is sendable.",
+        "included": "People/Audiences peer navigation, customer directory recovery, shared organizer selection, view-aware debounced search, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, People-only header actions and export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account Catch chat creation, editable personal WhatsApp app handoff for contacts with a valid phone, a flat divided saved-audience directory with one New audience action, full-page create/detail/edit/archive routes for the closed audience predicate vocabulary, exact preview and server-derived reach summaries, persisting an eligible exact People filter before routing it into the Messaging composer, and opening Messaging for blocked or unpersistable views without claiming the full directory is sendable.",
         "excluded": [
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
         ]
@@ -22,6 +22,8 @@
         "previewSources": ["widgetbook/lib/hosts/host_operations_use_cases.dart"],
         "actionOwners": [
           {"id": "customers_screen", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomersScreen"},
+          {"id": "audiences_workspace", "language": "dart", "file": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart", "symbol": "HostSavedAudiencesWorkspace"},
+          {"id": "audience_editor", "language": "dart", "file": "lib/hosts/presentation/customers/host_saved_audience_editor.dart", "symbol": "HostSavedAudienceEditorScreen"},
           {"id": "customer_create", "language": "dart", "file": "lib/hosts/presentation/customers/host_customer_editor.dart", "symbol": "HostAddCustomerScreen"},
           {"id": "customers_directory", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersDirectoryController"},
           {"id": "customers_mutations", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersController"},
@@ -29,7 +31,7 @@
           {"id": "customer_memory", "language": "dart", "file": "lib/hosts/presentation/customers/host_customer_memory.dart", "symbol": "HostCustomerMemorySection"},
           {"id": "customer_merge_review", "language": "dart", "file": "lib/hosts/presentation/customers/host_contact_merge_review.dart", "symbol": "HostContactMergeReviewSheet"}
         ],
-        "componentContracts": ["catch.button", "catch.chip", "catch.empty_state", "catch.error_state", "catch.field", "catch.notice", "catch.option_group", "catch.person_row", "catch.search_field", "catch.section", "catch.skeleton", "catch.surface", "catch.top_bar"],
+        "componentContracts": ["catch.button", "catch.chip", "catch.empty_state", "catch.error_state", "catch.field", "catch.notice", "catch.option_group", "catch.person_row", "catch.search_field", "catch.section", "catch.skeleton", "catch.surface", "catch.tab_rail", "catch.top_bar"],
         "dataContracts": [
           "contracts/callable_responses/create_organizer_contact_response.schema.json",
           "contracts/callable_responses/export_organizer_contacts_response.schema.json",
@@ -40,6 +42,9 @@
           "contracts/callable_responses/organizer_contact_note_response.schema.json",
           "contracts/callable_responses/review_organizer_contact_merge_candidate_response.schema.json",
           "contracts/callable_responses/organizer_messaging_setup_response.schema.json",
+          "contracts/callable_responses/list_organizer_saved_audiences_response.schema.json",
+          "contracts/callable_responses/organizer_saved_audience_response.schema.json",
+          "contracts/callable_responses/preview_organizer_saved_audience_response.schema.json",
           "contracts/callables/create_organizer_contact_payload.schema.json",
           "contracts/callables/export_organizer_contacts_payload.schema.json",
           "contracts/callables/get_organizer_contact_detail_payload.schema.json",
@@ -50,6 +55,10 @@
           "contracts/callables/mutate_organizer_contact_note_payload.schema.json",
           "contracts/callables/start_organizer_contact_conversation_payload.schema.json",
           "contracts/callables/review_organizer_contact_merge_candidate_payload.schema.json",
+          "contracts/callables/list_organizer_saved_audiences_payload.schema.json",
+          "contracts/callables/upsert_organizer_saved_audience_payload.schema.json",
+          "contracts/callables/preview_organizer_saved_audience_payload.schema.json",
+          "contracts/callables/archive_organizer_saved_audience_payload.schema.json",
           "contracts/firestore/organizer_contact_channel_states.schema.json",
           "contracts/firestore/organizer_contact_event_edges.schema.json",
           "contracts/firestore/organizer_contact_merge_receipts.schema.json",
@@ -84,15 +93,22 @@
           "customer_merge_review": ["test/hosts/host_crm_repository_test.dart"],
           "customer_active_merges": ["test/hosts/host_crm_repository_test.dart"],
           "personal_whatsapp_unavailable": ["test/hosts/host_operations_screen_test.dart", "test/hosts/host_crm_repository_test.dart"],
-          "personal_whatsapp_handoff": ["test/hosts/host_operations_screen_test.dart", "test/core/external_links_test.dart", "test/communications/communication_route_test.dart"]
-          ,"customer_saved_audience_manage": ["test/hosts/host_crm_repository_test.dart", "test/hosts/host_operations_customers_tests.dart"],
+          "personal_whatsapp_handoff": ["test/hosts/host_operations_screen_test.dart", "test/core/external_links_test.dart", "test/communications/communication_route_test.dart"],
+          "customer_saved_audience_manage": ["test/hosts/host_crm_repository_test.dart", "test/hosts/host_operations_customers_tests.dart"],
           "customer_saved_audience_empty": ["test/hosts/host_operations_customers_tests.dart"],
-          "customer_saved_audience_error": ["test/hosts/host_operations_customers_tests.dart"]
+          "customer_saved_audience_error": ["test/hosts/host_operations_customers_tests.dart"],
+          "customer_saved_audience_create": ["test/hosts/host_operations_customers_tests.dart"],
+          "customer_saved_audience_detail": ["test/hosts/host_operations_customers_tests.dart"],
+          "customer_saved_audience_mutation": ["test/hosts/host_crm_repository_test.dart"],
+          "customer_saved_audience_archive": ["test/hosts/host_crm_repository_test.dart"]
         }
       },
       "dimensions": {
         "load": {"default": "ready", "values": ["ready", "loading", "error", "offline"]},
+        "view": {"default": "people", "values": ["people", "audiences"]},
         "directory": {"default": "populated", "values": ["populated", "empty", "filtered_empty", "paginating"]},
+        "audience_directory": {"default": "populated", "values": ["populated", "empty", "filtered_empty"]},
+        "audience_editor": {"default": "closed", "values": ["closed", "creating", "editing", "previewing", "archiving"]},
         "sort": {"default": "last_seen", "values": ["last_seen", "most_attended", "name"]},
         "filter_sheet": {"default": "closed", "values": ["closed", "open"]},
         "merge_review": {"default": "closed", "values": ["closed", "candidates", "dismissed", "conflict_confirmation", "active_receipts", "undoing"]},
@@ -102,11 +118,74 @@
         "identity": {"default": "linked", "values": ["linked", "unlinked", "ambiguous"]},
         "revenue": {"default": "exact", "values": ["exact", "partial", "unavailable"]},
         "personal_whatsapp": {"default": "ready", "values": ["unavailable", "ready", "editing", "opening"]},
-        "mutation": {"default": "idle", "values": ["idle", "adding", "exporting", "managing_contact", "editing_note", "editing_tags", "starting_conversation"]},
+        "mutation": {"default": "idle", "values": ["idle", "adding", "exporting", "managing_contact", "editing_note", "editing_tags", "starting_conversation", "saving_audience"]},
         "accessibility": {"default": "standard", "values": ["standard", "text_scale_2", "reduced_motion"]},
         "theme": {"default": "standard", "values": ["standard", "light_dark"]}
       },
       "actions": [
+        {
+          "id": "switch_customers_view",
+          "owner": "customers_screen",
+          "codeValue": "HostCustomersView",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "organizerId", "view"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customers_populated", "customer_saved_audience_manage"]}],
+          "description": "Switches the canonical Customers destination between its People and Audiences peer responsibilities without changing organizer scope."
+        },
+        {
+          "id": "search_saved_audiences",
+          "owner": "audiences_workspace",
+          "codeValue": "_matchingSavedAudiences",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "query"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customer_saved_audience_manage", "customer_saved_audience_empty"]}],
+          "description": "Filters the complete bounded organizer audience directory by saved-audience name without mutating its definition."
+        },
+        {
+          "id": "open_saved_audience_create",
+          "owner": "audiences_workspace",
+          "codeValue": "onCreate",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "organizerId", "routeInstanceId"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customer_saved_audience_create"]}],
+          "description": "Uses the directory's single New audience action to open the full-page Customers-owned authoring route."
+        },
+        {
+          "id": "open_saved_audience_detail",
+          "owner": "audiences_workspace",
+          "codeValue": "onOpen",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "audienceId"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customer_saved_audience_detail"]}],
+          "description": "Opens one divided directory row as the full-page Customers-owned audience detail and editor route."
+        },
+        {
+          "id": "save_saved_audience",
+          "owner": "audience_editor",
+          "codeValue": "saveAudience",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "organizerId", "audienceId", "expectedRevision", "definition"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customer_saved_audience_mutation", "customer_saved_audience_detail"]}],
+          "description": "Creates or revision-updates one named definition from the closed predicate vocabulary, then requires an exact preview before returning to the directory."
+        },
+        {
+          "id": "refresh_saved_audience_preview",
+          "owner": "audience_editor",
+          "codeValue": "previewAudience",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "organizerId", "audienceId", "revision", "definitionHash"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customer_saved_audience_detail"]}],
+          "description": "Refreshes the exact match count and shared-route reach summary without composing or dispatching a send."
+        },
+        {
+          "id": "archive_saved_audience",
+          "owner": "audience_editor",
+          "codeValue": "archiveAudience",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "organizerId", "audienceId", "expectedRevision"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customer_saved_audience_archive", "customer_saved_audience_manage"]}],
+          "description": "Archives one reusable definition from its full-page detail route after explicit confirmation."
+        },
         {
           "id": "retry_directory",
           "owner": "customers_screen",
@@ -345,7 +424,7 @@
           "description": "Opens an editable prefilled native WhatsApp app handoff, with wa.me fallback, for one valid contact phone only while no explicit WhatsApp opt-out or admin suppression applies. The Host remains responsible for pressing Send in WhatsApp, and Catch records no delivery or reply receipt."
         }
       ],
-      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "customer_sorted_most_attended", "customer_sorted_name", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "customer_saved_audience_manage", "customer_saved_audience_empty", "customer_saved_audience_error", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_memory_populated", "customer_note_editing", "customer_tags_editing", "customer_send_history", "customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation", "customer_active_merges", "customer_unmerge_pending", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "personal_whatsapp_unavailable", "personal_whatsapp_handoff", "offline", "text_scale_2", "reduced_motion", "light_dark"],
+      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "customer_sorted_most_attended", "customer_sorted_name", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "customer_saved_audience_manage", "customer_saved_audience_empty", "customer_saved_audience_error", "customer_saved_audience_create", "customer_saved_audience_detail", "customer_saved_audience_mutation", "customer_saved_audience_archive", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_memory_populated", "customer_note_editing", "customer_tags_editing", "customer_send_history", "customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation", "customer_active_merges", "customer_unmerge_pending", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "personal_whatsapp_unavailable", "personal_whatsapp_handoff", "offline", "text_scale_2", "reduced_motion", "light_dark"],
       "scenarioDefaults": {"dimensions": {}, "actionCases": [{"id": "default"}]},
       "scenarioOverrides": {
         "customers_loading": {"dimensions": {"load": "loading"}},
@@ -360,9 +439,13 @@
         "customer_filter_manual_tag": {"dimensions": {"filter_sheet": "open", "tags": "assigned"}, "actionCases": [{"id": "choose_manual", "enabledActions": ["filter_customers", "message_filtered_customers"], "disabledActions": ["open_messaging_workspace"]}]},
         "customer_campaign_bridge_ready": {"dimensions": {"campaign_bridge": "ready"}, "actionCases": [{"id": "message", "enabledActions": ["message_filtered_customers"], "disabledActions": ["open_messaging_workspace"]}]},
         "customer_campaign_bridge_blocked": {"dimensions": {"campaign_bridge": "blocked"}, "actionCases": [{"id": "explain_and_open", "enabledActions": ["open_messaging_workspace"], "disabledActions": ["message_filtered_customers"]}]},
-        "customer_saved_audience_manage": {"actionCases": [{"id": "manage"}]},
-        "customer_saved_audience_empty": {"dimensions": {"directory": "empty"}, "actionCases": [{"id": "empty"}]},
-        "customer_saved_audience_error": {"dimensions": {"load": "error"}, "actionCases": [{"id": "recovery"}]},
+        "customer_saved_audience_manage": {"dimensions": {"view": "audiences", "audience_directory": "populated"}, "actionCases": [{"id": "directory", "enabledActions": ["switch_customers_view", "search_saved_audiences", "open_saved_audience_create", "open_saved_audience_detail"]}]},
+        "customer_saved_audience_empty": {"dimensions": {"view": "audiences", "audience_directory": "empty"}, "actionCases": [{"id": "first_audience", "enabledActions": ["switch_customers_view", "open_saved_audience_create"]}]},
+        "customer_saved_audience_error": {"dimensions": {"view": "audiences", "load": "error"}, "actionCases": [{"id": "recovery", "enabledActions": ["switch_customers_view"]}]},
+        "customer_saved_audience_create": {"dimensions": {"view": "audiences", "audience_editor": "creating"}, "actionCases": [{"id": "author", "enabledActions": ["save_saved_audience"]}]},
+        "customer_saved_audience_detail": {"dimensions": {"view": "audiences", "audience_editor": "editing"}, "actionCases": [{"id": "edit", "enabledActions": ["save_saved_audience", "refresh_saved_audience_preview", "archive_saved_audience"]}]},
+        "customer_saved_audience_mutation": {"dimensions": {"view": "audiences", "audience_editor": "previewing", "mutation": "saving_audience"}, "actionCases": [{"id": "pending", "disabledActions": ["save_saved_audience", "refresh_saved_audience_preview", "archive_saved_audience"]}]},
+        "customer_saved_audience_archive": {"dimensions": {"view": "audiences", "audience_editor": "archiving"}, "actionCases": [{"id": "confirm", "enabledActions": ["archive_saved_audience"]}]},
         "manual_add_pending": {"dimensions": {"mutation": "adding"}, "actionCases": [{"id": "pending", "disabledActions": ["create_customer"]}]},
         "customer_export_pending": {"dimensions": {"mutation": "exporting"}, "actionCases": [{"id": "pending", "disabledActions": ["export_customers"]}]},
         "customer_manage": {"actionCases": [{"id": "manage", "enabledActions": ["manage_customer"]}]},
@@ -395,6 +478,12 @@
       },
       "requiredEvidence": {"captures": false, "previews": true, "tests": true},
       "evidenceExceptions": [
+        {
+          "stateIds": ["customer_saved_audience_create", "customer_saved_audience_detail", "customer_saved_audience_mutation", "customer_saved_audience_archive"],
+          "evidence": ["previews"],
+          "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
+          "reason": "The route-level audience editor has focused rendered and repository/backend tests; deterministic create, detail, pending, and archive Widgetbook variants remain explicit preview debt."
+        },
         {
           "stateIds": ["customer_sorted_most_attended", "customer_sorted_name", "customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation", "customer_active_merges", "customer_unmerge_pending"],
           "evidence": ["previews"],

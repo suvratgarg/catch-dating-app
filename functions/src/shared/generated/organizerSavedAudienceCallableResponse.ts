@@ -56,6 +56,12 @@ export interface OrganizerSavedAudienceCallableResponse {
   definitionVersion: number;
   revision: number;
   lastPreviewMatchCount: number | null;
+  lastPreviewReachSummary: null | {
+    inCatch: number;
+    automatic: number;
+    byHand: number;
+    unavailable: number;
+  };
   lastPreviewAtMillis: number | null;
   createdAtMillis: number;
   updatedAtMillis: number;

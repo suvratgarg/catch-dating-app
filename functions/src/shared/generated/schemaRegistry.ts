@@ -14249,6 +14249,45 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
       "minimum": 0,
       "maximum": 2500
     },
+    "lastPreviewReachSummary": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inCatch",
+            "automatic",
+            "byHand",
+            "unavailable"
+          ],
+          "properties": {
+            "inCatch": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "automatic": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "byHand": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "unavailable": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            }
+          }
+        }
+      ]
+    },
     "lastPreviewAt": {
       "anyOf": [
         {
@@ -14345,6 +14384,38 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
     }
   },
   "definitions": {
+    "reachSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inCatch",
+        "automatic",
+        "byHand",
+        "unavailable"
+      ],
+      "properties": {
+        "inCatch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "automatic": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "byHand": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "unavailable": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        }
+      }
+    },
     "definition": {
       "type": "object",
       "additionalProperties": false,
@@ -60221,6 +60292,7 @@ export const organizerSavedAudienceCallableResponseSchema: Record<string, unknow
     "definitionVersion",
     "revision",
     "lastPreviewMatchCount",
+    "lastPreviewReachSummary",
     "lastPreviewAtMillis",
     "createdAtMillis",
     "updatedAtMillis"
@@ -60405,6 +60477,45 @@ export const organizerSavedAudienceCallableResponseSchema: Record<string, unknow
       "minimum": 0,
       "maximum": 2500
     },
+    "lastPreviewReachSummary": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inCatch",
+            "automatic",
+            "byHand",
+            "unavailable"
+          ],
+          "properties": {
+            "inCatch": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "automatic": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "byHand": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "unavailable": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            }
+          }
+        }
+      ]
+    },
     "lastPreviewAtMillis": {
       "type": [
         "integer",
@@ -60460,6 +60571,7 @@ export const listOrganizerSavedAudiencesCallableResponseSchema: Record<string, u
           "definitionVersion",
           "revision",
           "lastPreviewMatchCount",
+          "lastPreviewReachSummary",
           "lastPreviewAtMillis",
           "createdAtMillis",
           "updatedAtMillis"
@@ -60644,6 +60756,45 @@ export const listOrganizerSavedAudiencesCallableResponseSchema: Record<string, u
             "minimum": 0,
             "maximum": 2500
           },
+          "lastPreviewReachSummary": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "inCatch",
+                  "automatic",
+                  "byHand",
+                  "unavailable"
+                ],
+                "properties": {
+                  "inCatch": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2500
+                  },
+                  "automatic": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2500
+                  },
+                  "byHand": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2500
+                  },
+                  "unavailable": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2500
+                  }
+                }
+              }
+            ]
+          },
           "lastPreviewAtMillis": {
             "type": [
               "integer",
@@ -60683,6 +60834,7 @@ export const previewOrganizerSavedAudienceCallableResponseSchema: Record<string,
     "audience",
     "coverage",
     "matchCount",
+    "reachSummary",
     "sample",
     "evaluatedAtMillis"
   ],
@@ -60703,6 +60855,7 @@ export const previewOrganizerSavedAudienceCallableResponseSchema: Record<string,
         "definitionVersion",
         "revision",
         "lastPreviewMatchCount",
+        "lastPreviewReachSummary",
         "lastPreviewAtMillis",
         "createdAtMillis",
         "updatedAtMillis"
@@ -60887,6 +61040,45 @@ export const previewOrganizerSavedAudienceCallableResponseSchema: Record<string,
           "minimum": 0,
           "maximum": 2500
         },
+        "lastPreviewReachSummary": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "inCatch",
+                "automatic",
+                "byHand",
+                "unavailable"
+              ],
+              "properties": {
+                "inCatch": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                },
+                "automatic": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                },
+                "byHand": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                },
+                "unavailable": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                }
+              }
+            }
+          ]
+        },
         "lastPreviewAtMillis": {
           "type": [
             "integer",
@@ -60911,6 +61103,38 @@ export const previewOrganizerSavedAudienceCallableResponseSchema: Record<string,
       "type": "integer",
       "minimum": 0,
       "maximum": 2500
+    },
+    "reachSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inCatch",
+        "automatic",
+        "byHand",
+        "unavailable"
+      ],
+      "properties": {
+        "inCatch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "automatic": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "byHand": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "unavailable": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        }
+      }
     },
     "sample": {
       "type": "array",

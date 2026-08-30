@@ -2150,6 +2150,30 @@ class HostSavedAudienceDefinition {
   };
 }
 
+class HostAudienceReachSummary {
+  const HostAudienceReachSummary({
+    required this.inCatch,
+    required this.automatic,
+    required this.byHand,
+    required this.unavailable,
+  });
+
+  factory HostAudienceReachSummary.fromMap(Map<Object?, Object?> map) =>
+      HostAudienceReachSummary(
+        inCatch: _requiredInt(map, 'inCatch'),
+        automatic: _requiredInt(map, 'automatic'),
+        byHand: _requiredInt(map, 'byHand'),
+        unavailable: _requiredInt(map, 'unavailable'),
+      );
+
+  final int inCatch;
+  final int automatic;
+  final int byHand;
+  final int unavailable;
+
+  int get total => inCatch + automatic + byHand + unavailable;
+}
+
 class HostSavedAudience {
   const HostSavedAudience({
     required this.organizerId,
@@ -2161,6 +2185,7 @@ class HostSavedAudience {
     required this.definitionVersion,
     required this.revision,
     required this.lastPreviewMatchCount,
+    this.lastPreviewReachSummary,
     required this.lastPreviewAt,
     required this.createdAt,
     required this.updatedAt,
@@ -2184,6 +2209,14 @@ class HostSavedAudience {
       lastPreviewMatchCount: map['lastPreviewMatchCount'] == null
           ? null
           : _requiredInt(map, 'lastPreviewMatchCount'),
+      lastPreviewReachSummary: map['lastPreviewReachSummary'] == null
+          ? null
+          : HostAudienceReachSummary.fromMap(
+              _requiredMap(
+                map['lastPreviewReachSummary'],
+                'saved audience reach summary',
+              ),
+            ),
       lastPreviewAt: _dateTimeFromMillis(map['lastPreviewAtMillis']),
       createdAt: _requiredDateTimeFromMillis(map, 'createdAtMillis'),
       updatedAt: _requiredDateTimeFromMillis(map, 'updatedAtMillis'),
@@ -2199,6 +2232,7 @@ class HostSavedAudience {
   final int definitionVersion;
   final int revision;
   final int? lastPreviewMatchCount;
+  final HostAudienceReachSummary? lastPreviewReachSummary;
   final DateTime? lastPreviewAt;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -2245,6 +2279,7 @@ class HostSavedAudiencePreview {
   const HostSavedAudiencePreview({
     required this.audience,
     required this.matchCount,
+    required this.reachSummary,
     required this.sample,
     required this.evaluatedAt,
   });
@@ -2259,6 +2294,9 @@ class HostSavedAudiencePreview {
         _requiredMap(map['audience'], 'saved audience'),
       ),
       matchCount: _requiredInt(map, 'matchCount'),
+      reachSummary: HostAudienceReachSummary.fromMap(
+        _requiredMap(map['reachSummary'], 'saved audience reach summary'),
+      ),
       sample: _mapList(
         map['sample'],
         'saved audience sample',
@@ -2269,6 +2307,7 @@ class HostSavedAudiencePreview {
 
   final HostSavedAudience audience;
   final int matchCount;
+  final HostAudienceReachSummary reachSummary;
   final List<HostSavedAudiencePreviewContact> sample;
   final DateTime evaluatedAt;
 }
@@ -3446,6 +3485,36 @@ Future<HostMessagingSetup> hostMessagingSetup(Ref ref, String organizerId) =>
 @riverpod
 Future<HostSavedAudiencePage> hostSavedAudiences(Ref ref, String organizerId) =>
     ref.read(hostCrmRepositoryProvider).listSavedAudiences(organizerId);
+
+/// Exhaustive saved-audience directory used by the Customers-owned workspace.
+///
+/// The callable remains cursor-paginated; this bounded provider follows those
+/// cursors so client-side name search never silently searches only page one.
+@riverpod
+Future<HostSavedAudiencePage> hostAllSavedAudiences(
+  Ref ref,
+  String organizerId,
+) async {
+  const maximumDefinitions = 2500;
+  final repository = ref.read(hostCrmRepositoryProvider);
+  final audiences = <HostSavedAudience>[];
+  String? cursor;
+  do {
+    final page = await repository.listSavedAudiences(
+      organizerId,
+      cursor: cursor,
+      limit: 50,
+    );
+    audiences.addAll(page.audiences);
+    cursor = page.nextCursor;
+    if (audiences.length >= maximumDefinitions && cursor != null) {
+      throw StateError(
+        'Saved audience directory exceeds $maximumDefinitions definitions.',
+      );
+    }
+  } while (cursor != null);
+  return HostSavedAudiencePage(audiences: audiences, nextCursor: null);
+}
 
 @riverpod
 Future<HostSendsPage> hostSends(Ref ref, String organizerId) =>

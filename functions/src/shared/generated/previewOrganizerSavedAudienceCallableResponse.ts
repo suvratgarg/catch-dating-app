@@ -11,6 +11,12 @@ export interface PreviewOrganizerSavedAudienceCallableResponse {
   audience: OrganizerSavedAudienceCallableResponse;
   coverage: "exact";
   matchCount: number;
+  reachSummary: {
+    inCatch: number;
+    automatic: number;
+    byHand: number;
+    unavailable: number;
+  };
   /**
    * @maxItems 25
    */

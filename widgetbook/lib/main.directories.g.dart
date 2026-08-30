@@ -8021,7 +8021,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostSavedAudiencesSheet',
+                name: 'HostSavedAudiencesWorkspace',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Saved audience states',

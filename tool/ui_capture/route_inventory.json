@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "04233f9aa73711e4a09d2e58f8987f74d7b4c814cf01f0b0bd06c9bd34ffcb37",
-    "routeContractSha256": "795f981b469d0e67835de354f09427e702ddeb500f9789f2079ef2928fc5f8e1",
-    "goRouteCount": 68,
+    "normalizedFileSha256": "1753673d9bf6be1531acc624b737ce3949e8b13e8014f3eb17e85633577a1dfd",
+    "routeContractSha256": "872fb882020e46ade4cc88ec77d470759aa06569399fec27846902c838c7607c",
+    "goRouteCount": 70,
     "shellBranchCount": 9,
-    "enumRouteCount": 66,
-    "referencedRouteCount": 66,
-    "runtimeRouteCount": 66,
+    "enumRouteCount": 68,
+    "referencedRouteCount": 68,
+    "runtimeRouteCount": 68,
     "routeHelperCount": 2,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -468,6 +468,32 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostCreateSavedAudienceScreen",
+      "path": "/host/customers/audiences/new",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/customers/audiences/new",
+      "runtimeParentId": "hostCustomersScreen",
+      "runtimePathExpression": "'audiences/new'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostSavedAudienceDetailScreen",
+      "path": "/host/customers/audiences/:audienceId",
+      "pathParameters": [
+        "audienceId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/customers/audiences/:audienceId",
+      "runtimeParentId": "hostCustomersScreen",
+      "runtimePathExpression": "'audiences/:audienceId'",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostFormsScreen",
       "path": "/host/forms",
       "pathParameters": [],
@@ -919,6 +945,7 @@
     "hostClubTeamScreen",
     "hostCreateClubScreen",
     "hostCreateEventScreen",
+    "hostCreateSavedAudienceScreen",
     "hostCustomerDetailScreen",
     "hostCustomersScreen",
     "hostEventRehearsalScreen",
@@ -937,6 +964,7 @@
     "hostOperatorEventScreen",
     "hostOrganizerMessagingScreen",
     "hostOrganizerScreen",
+    "hostSavedAudienceDetailScreen",
     "launchAccessScreen",
     "loadingScreen",
     "matchesListScreen",

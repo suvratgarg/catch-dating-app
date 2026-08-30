@@ -2075,11 +2075,13 @@ Rules:
 
 - `HostCrmRepository` is the single Flutter Functions facade for organizer
   customer summary, directory/detail, contact controls/export, Meta sender
-  setup and campaign lifecycle. The top-level Customers branch owns the direct
-  organizer CRM directory and customer detail; the top-level Messaging branch
-  owns the Inbox and Campaigns workspaces, including sender setup and campaign
-  lifecycle. Organizer must not mount a second Audience workspace, and
-  event-manage widgets must not read restricted CRM collections directly.
+  setup and campaign lifecycle. The top-level Customers branch owns peer People
+  and Audiences workspaces: People owns the organizer CRM directory and customer
+  detail, while Audiences owns reusable definition authoring and exact previews.
+  The top-level Messaging branch owns the Inbox and Sends workspaces, including
+  sender setup and campaign lifecycle. Messaging and Organizer must not mount a
+  second audience builder, and event-manage widgets must not read restricted CRM
+  collections directly.
 - A CRM contact, identity link, communication permission, communication route,
   saved audience, send attempt, and delivery receipt are different authorities.
   No screen or repository model may collapse one into another. A linked Catch
@@ -2786,13 +2788,18 @@ Reference files:
 - `functions/src/organizers/organizerCampaigns.ts`
 - `lib/hosts/data/host_crm_repository.dart`
 - `lib/hosts/presentation/customers/host_customers_screen.dart`
-- `lib/hosts/presentation/customers/host_customer_editor_sheets.dart`
+- `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart`
+- `lib/hosts/presentation/customers/host_saved_audience_editor.dart`
 - `lib/hosts/presentation/inbox/host_campaign_composer.dart`
 
-Customers owns reusable CRM audience definitions. Sends can select one saved
-audience id, but it cannot author a parallel filter expression. Event-scoped
-Booked or Prospective groups remain event authority and do not enter this
-organizer-CRM collection.
+Customers owns reusable CRM audience definitions through its first-class
+Audiences peer workspace. The top-level directory is a flat divided list; one
+section action opens the full-page create route, and selecting a row opens the
+full-page detail/editor route. The Customers top bar does not silently repurpose
+the People add-customer action, and the removed management modal must not return
+as a parallel surface. Sends can select one saved audience id, but it cannot
+author a parallel filter expression. Event-scoped Booked or Prospective groups
+remain event authority and do not enter this organizer-CRM collection.
 
 The server accepts only a versioned, closed predicate vocabulary: reviewed
 computed segments, organizer tags, attendance count, last-seen recency, and

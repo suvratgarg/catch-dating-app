@@ -2,11 +2,44 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   applicationRouteOwnershipFindings,
+  audienceWorkspacePresentationFindings,
   hostCrmCountCopyFindings,
   manualSendContractFindings,
   scanBackendFile,
   scanPresentationFile,
 } from "./check_host_crm_boundaries.mjs";
+
+test("flags modal, contained, or duplicate saved-audience presentation", () => {
+  const findings = audienceWorkspacePresentationFindings({
+    customersPath: "customers.dart",
+    customersSource: [
+      "enum HostCustomersView { people, audiences }",
+      "CatchTabbedScreenScaffold(",
+      "HostSavedAudiencesWorkspace(",
+      "actions: peopleView",
+      "HostSavedAudiencesSheet()",
+    ].join("\n"),
+    workspacePath: "workspace.dart",
+    workspaceSource: [
+      "CatchSection.contained(",
+      "ValueKey('host-saved-audience-create')",
+      "ValueKey('host-saved-audience-create')",
+    ].join("\n"),
+    editorSheetsPath: "sheets.dart",
+    editorSheetsSource: "class HostSavedAudiencesSheet {}",
+    routeContractPath: "routes.dart",
+    routeContractSource: "",
+  });
+  assert.ok(findings.some((item) => /overflow or a modal/u.test(item.reason)));
+  assert.ok(findings.some((item) => /divided section/u.test(item.reason)));
+  assert.ok(findings.some((item) => /exactly one/u.test(item.reason)));
+  assert.ok(findings.some((item) => /parallel modal/u.test(item.reason)));
+  assert.equal(
+    findings.filter((item) => /full-page Customers routes/u.test(item.reason))
+      .length,
+    2,
+  );
+});
 
 test("flags saved-audience mutation outside Customers", () => {
   const findings = scanPresentationFile({

@@ -68,6 +68,12 @@ void _registerHostOperationsCustomersTests() {
       definitionVersion: 1,
       revision: 2,
       lastPreviewMatchCount: 24,
+      lastPreviewReachSummary: const HostAudienceReachSummary(
+        inCatch: 14,
+        automatic: 0,
+        byHand: 8,
+        unavailable: 2,
+      ),
       lastPreviewAt: DateTime(2026, 8, 29),
       createdAt: DateTime(2026, 8, 28),
       updatedAt: DateTime(2026, 8, 29),
@@ -75,38 +81,77 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      const HostSavedAudiencesSheet(organizerId: organizerId),
+      CatchTabbedScreenScaffold(
+        title: 'Customers',
+        tabRail: const PreferredSize(
+          preferredSize: Size.fromHeight(1),
+          child: SizedBox(height: 1),
+        ),
+        body: HostSavedAudiencesWorkspace(
+          organizerId: organizerId,
+          query: null,
+          onCreate: () {},
+          onOpen: (_) {},
+        ),
+      ),
       overrides: [
-        hostSavedAudiencesProvider(organizerId).overrideWithValue(
+        hostAllSavedAudiencesProvider(organizerId).overrideWithValue(
           AsyncData(
             HostSavedAudiencePage(audiences: [audience], nextCursor: null),
           ),
         ),
       ],
     );
-    expect(find.text('REPEAT RUNNERS'), findsOneWidget);
-    expect(find.text('24 people in the exact preview'), findsOneWidget);
-    expect(find.text('Refresh exact preview'), findsOneWidget);
-    expect(find.text('Archive'), findsOneWidget);
+    expect(find.text('Repeat runners'), findsOneWidget);
+    expect(
+      find.text('24 people\n14 IN CATCH · 8 BY HAND · 2 NO REACH'),
+      findsOneWidget,
+    );
+    expect(find.text('New audience'), findsOneWidget);
+    expect(find.text('Archive'), findsNothing);
 
     await _pumpHostScreen(
       tester,
-      const HostSavedAudiencesSheet(organizerId: organizerId),
+      CatchTabbedScreenScaffold(
+        title: 'Customers',
+        tabRail: const PreferredSize(
+          preferredSize: Size.fromHeight(1),
+          child: SizedBox(height: 1),
+        ),
+        body: HostSavedAudiencesWorkspace(
+          organizerId: organizerId,
+          query: null,
+          onCreate: () {},
+          onOpen: (_) {},
+        ),
+      ),
       overrides: [
-        hostSavedAudiencesProvider(organizerId).overrideWithValue(
+        hostAllSavedAudiencesProvider(organizerId).overrideWithValue(
           const AsyncData(
             HostSavedAudiencePage(audiences: [], nextCursor: null),
           ),
         ),
       ],
     );
-    expect(find.text('Create an audience in Customers first'), findsOneWidget);
+    expect(find.text('No saved audiences yet'), findsOneWidget);
 
     await _pumpHostScreen(
       tester,
-      const HostSavedAudiencesSheet(organizerId: organizerId),
+      CatchTabbedScreenScaffold(
+        title: 'Customers',
+        tabRail: const PreferredSize(
+          preferredSize: Size.fromHeight(1),
+          child: SizedBox(height: 1),
+        ),
+        body: HostSavedAudiencesWorkspace(
+          organizerId: organizerId,
+          query: null,
+          onCreate: () {},
+          onOpen: (_) {},
+        ),
+      ),
       overrides: [
-        hostSavedAudiencesProvider(organizerId).overrideWithValue(
+        hostAllSavedAudiencesProvider(organizerId).overrideWithValue(
           AsyncError(StateError('unavailable'), StackTrace.empty),
         ),
       ],
@@ -342,6 +387,62 @@ void _registerHostOperationsCustomersTests() {
     expect(requests.last.search, 'ananya');
   });
 
+  testWidgets('Audiences has one local create action and skips People loads', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'customers-club', ownerUserId: _hostUid);
+    final requests = <HostCustomersDirectoryRequest>[];
+    final audience = HostSavedAudience(
+      organizerId: club.id,
+      audienceId: 'audience-1',
+      name: 'Repeat runners',
+      status: 'active',
+      definition: const HostSavedAudienceDefinition(
+        join: HostSavedAudienceJoin.all,
+        predicates: [
+          HostSavedAudienceComputedSegment(HostAudienceSegment.repeatAttendee),
+        ],
+      ),
+      definitionHash:
+          'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      definitionVersion: 1,
+      revision: 1,
+      lastPreviewMatchCount: 9,
+      lastPreviewAt: DateTime(2026, 8, 30),
+      createdAt: DateTime(2026, 8, 29),
+      updatedAt: DateTime(2026, 8, 30),
+    );
+
+    await _pumpHostScreen(
+      tester,
+      const HostCustomersScreen(initialView: HostCustomersView.audiences),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        hostCustomersDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostCustomersDirectoryController(
+            requests,
+            _customerDirectoryState(),
+          ),
+        ),
+        hostAllSavedAudiencesProvider(club.id).overrideWithValue(
+          AsyncData(
+            HostSavedAudiencePage(audiences: [audience], nextCursor: null),
+          ),
+        ),
+      ],
+    );
+
+    expect(find.text('People'), findsOneWidget);
+    expect(find.text('Audiences'), findsOneWidget);
+    expect(find.text('New audience'), findsOneWidget);
+    expect(find.text('Repeat runners'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-customers-add-customer')),
+      findsNothing,
+    );
+    expect(requests, isEmpty);
+  });
+
   testWidgets(
     'expanded customer workspace keeps directory and detail together',
     (tester) async {
@@ -514,7 +615,9 @@ void _registerHostOperationsCustomersTests() {
     );
   });
 
-  testWidgets('saved audience management stays in Customers', (tester) async {
+  testWidgets('saved audience directory exposes one create action', (
+    tester,
+  ) async {
     const organizerId = 'organizer-1';
     final audience = HostSavedAudience(
       organizerId: organizerId,
@@ -539,9 +642,21 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      const Scaffold(body: HostSavedAudiencesSheet(organizerId: organizerId)),
+      CatchTabbedScreenScaffold(
+        title: 'Customers',
+        tabRail: const PreferredSize(
+          preferredSize: Size.fromHeight(1),
+          child: SizedBox(height: 1),
+        ),
+        body: HostSavedAudiencesWorkspace(
+          organizerId: organizerId,
+          query: null,
+          onCreate: () {},
+          onOpen: (_) {},
+        ),
+      ),
       overrides: [
-        hostSavedAudiencesProvider(organizerId).overrideWithValue(
+        hostAllSavedAudiencesProvider(organizerId).overrideWithValue(
           AsyncData(
             HostSavedAudiencePage(audiences: [audience], nextCursor: null),
           ),
@@ -549,9 +664,85 @@ void _registerHostOperationsCustomersTests() {
       ],
     );
 
-    expect(find.text('Saved audiences'), findsOneWidget);
-    expect(find.text('REGULAR CUSTOMERS'), findsOneWidget);
-    expect(find.text('9 people in the exact preview'), findsOneWidget);
+    expect(find.text('New audience'), findsOneWidget);
+    expect(find.text('Regular customers'), findsOneWidget);
+    expect(find.text('9 people'), findsOneWidget);
+    expect(find.text('Archive'), findsNothing);
+    expect(find.text('Refresh exact preview'), findsNothing);
+  });
+
+  testWidgets('saved audience create and edit use full-page routes', (
+    tester,
+  ) async {
+    const organizerId = 'organizer-1';
+    final audience = HostSavedAudience(
+      organizerId: organizerId,
+      audienceId: 'audience-1',
+      name: 'Repeat runners',
+      status: 'active',
+      definition: const HostSavedAudienceDefinition(
+        join: HostSavedAudienceJoin.all,
+        predicates: [
+          HostSavedAudienceComputedSegment(HostAudienceSegment.repeatAttendee),
+        ],
+      ),
+      definitionHash:
+          'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      definitionVersion: 1,
+      revision: 3,
+      lastPreviewMatchCount: 9,
+      lastPreviewReachSummary: const HostAudienceReachSummary(
+        inCatch: 5,
+        automatic: 0,
+        byHand: 3,
+        unavailable: 1,
+      ),
+      lastPreviewAt: DateTime(2026, 8, 30),
+      createdAt: DateTime(2026, 8, 29),
+      updatedAt: DateTime(2026, 8, 30),
+    );
+
+    await _pumpHostScreen(
+      tester,
+      const HostSavedAudienceEditorScreen(organizerId: organizerId),
+      overrides: [
+        hostCustomersDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostCustomersDirectoryController(
+            [],
+            _customerDirectoryState(),
+          ),
+        ),
+      ],
+    );
+
+    expect(find.text('New audience'), findsOneWidget);
+    expect(find.text('AUDIENCE DETAILS'), findsOneWidget);
+    expect(find.text('CONDITION 1'), findsOneWidget);
+    expect(find.text('Create audience'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-saved-audience-create')),
+      findsNothing,
+    );
+
+    await _pumpHostScreen(
+      tester,
+      HostSavedAudienceEditorScreen(
+        organizerId: organizerId,
+        initialAudience: audience,
+      ),
+      overrides: [
+        hostCustomersDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostCustomersDirectoryController(
+            [],
+            _customerDirectoryState(),
+          ),
+        ),
+      ],
+    );
+
+    expect(find.text('Repeat runners'), findsWidgets);
+    expect(find.text('Save changes'), findsOneWidget);
+    expect(find.text('CURRENT PREVIEW'), findsOneWidget);
     expect(find.text('Refresh exact preview'), findsOneWidget);
     expect(find.text('Archive'), findsOneWidget);
   });

@@ -5,11 +5,12 @@
   "description": "Exact saved-audience preview. Incomplete or over-limit evaluation fails instead of returning this shape.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["audience", "coverage", "matchCount", "sample", "evaluatedAtMillis"],
+  "required": ["audience", "coverage", "matchCount", "reachSummary", "sample", "evaluatedAtMillis"],
   "properties": {
     "audience": {"$ref": "organizer_saved_audience_response.schema.json"},
     "coverage": {"const": "exact"},
     "matchCount": {"type": "integer", "minimum": 0, "maximum": 2500},
+    "reachSummary": {"$ref": "../firestore/organizer_saved_audiences.schema.json#/definitions/reachSummary"},
     "sample": {
       "type": "array",
       "maxItems": 25,
