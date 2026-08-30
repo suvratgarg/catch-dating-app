@@ -69,6 +69,38 @@ class HostAudienceController {
     templateVariables: templateVariables,
   );
 
+  Future<HostSavedAudience> saveAudience({
+    required String organizerId,
+    required String requestId,
+    required String name,
+    required HostSavedAudienceDefinition definition,
+    String? audienceId,
+    int? expectedRevision,
+  }) => _repository.upsertSavedAudience(
+    organizerId: organizerId,
+    requestId: requestId,
+    name: name,
+    definition: definition,
+    audienceId: audienceId,
+    expectedRevision: expectedRevision,
+  );
+
+  Future<HostSavedAudiencePreview> previewAudience({
+    required String organizerId,
+    required HostSavedAudience audience,
+  }) => _repository.previewSavedAudience(
+    organizerId: organizerId,
+    audience: audience,
+  );
+
+  Future<HostSavedAudience> archiveAudience({
+    required String organizerId,
+    required HostSavedAudience audience,
+  }) => _repository.archiveSavedAudience(
+    organizerId: organizerId,
+    audience: audience,
+  );
+
   Future<HostCampaign> saveAndPreviewCampaign({
     required String organizerId,
     required HostCampaignDraft draft,
@@ -101,6 +133,45 @@ class HostAudienceController {
     required String organizerId,
     String? cursor,
   }) => _repository.listCampaigns(organizerId, cursor: cursor);
+
+  Future<HostManualSendTask> prepareManualSendTask({
+    required String organizerId,
+    required String contactId,
+    required String requestId,
+    required String prefillText,
+  }) => _repository.prepareManualSendTask(
+    organizerId: organizerId,
+    contactId: contactId,
+    requestId: requestId,
+    prefillText: prefillText,
+  );
+
+  Future<HostManualSendTask> recordManualHandoffOpened(
+    HostManualSendTask task,
+  ) => _repository.recordManualHandoffOpened(task);
+
+  Future<HostManualSendTask> validateManualSendTaskLaunch(
+    HostManualSendTask task,
+  ) => _repository.validateManualSendTaskLaunch(task);
+
+  Future<HostManualSendTask> markManualSendTask(
+    HostManualSendTask task,
+    HostManualSendTaskAction action,
+  ) => _repository.markManualSendTask(task, action);
+
+  Future<HostManualSendTaskReplan> replanManualSendTasks({
+    required String organizerId,
+    required List<String> taskIds,
+  }) => _repository.replanManualSendTasks(
+    organizerId: organizerId,
+    taskIds: taskIds,
+  );
+
+  Future<HostManualSendTaskPage> listManualSendTasks({
+    required String organizerId,
+    String? cursor,
+  }) =>
+      _repository.listManualSendTasks(organizerId: organizerId, cursor: cursor);
 
   Future<HostWhatsappThreadDetail> getWhatsappThread({
     required String organizerId,

@@ -4,6 +4,7 @@ import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import {
   csvCell,
+  buildContactTimeline,
   decodeContactCursor,
   encodeContactCursor,
   exactContactCountFromSummary,
@@ -16,8 +17,108 @@ import {
 import {
   OrganizerAudienceSummaryDocument,
   OrganizerContactTagVocabularyDocument,
+  OrganizerManualSendTaskDocument,
+  OrganizerWhatsappMessageDocument,
   PaymentDocument,
 } from "../shared/generated/firestoreAdminTypes";
+
+test("customer timeline joins sources newest-first without overstating handoff",
+  () => {
+    const at = (millis: number) =>
+      admin.firestore.Timestamp.fromMillis(millis);
+    const manualTask = {
+      organizerId: "organizer-1",
+      taskId: "task-1",
+      contactId: "contact-1",
+      sourceKind: "individualConversation",
+      sourceId: "contact-1",
+      intent: "individualConversation",
+      routeId: "personalWhatsappHandoff",
+      deliveryMode: "byHand",
+      status: "handoffOpened",
+      active: true,
+      revision: 2,
+      idempotencyKey: "request-123",
+      requestHash: "a".repeat(64),
+      displayNameSnapshot: "Asha",
+      endpointE164Snapshot: "+919876543210",
+      endpointHash: "b".repeat(64),
+      permissionSnapshot: {
+        whatsappStatus: "optedIn",
+        adminSuppressed: false,
+        recordedAt: at(2_000),
+      },
+      capabilitySnapshot: {version: 1, managedRouteAvailable: false},
+      prefillText: "Hello",
+      prefillHash: "c".repeat(64),
+      openCount: 1,
+      createdByUid: "manager-1",
+      updatedByUid: "manager-1",
+      createdAt: at(2_000),
+      updatedAt: at(4_000),
+      openedAt: at(4_000),
+      hostMarkedSentAt: null,
+      skippedAt: null,
+      cancelledAt: null,
+      supersededAt: null,
+      expiresAt: at(10_000),
+    } satisfies OrganizerManualSendTaskDocument;
+    const whatsappMessage = {
+      schemaVersion: 1,
+      messageId: "message-1",
+      threadId: "thread-1",
+      organizerId: "organizer-1",
+      contactId: "contact-1",
+      connectionId: "connection-1",
+      direction: "inbound",
+      body: "Thanks!",
+      providerMessageId: "wamid.1",
+      actorUid: null,
+      occurredAt: at(5_000),
+      createdAt: at(5_000),
+      expiresAt: at(10_000),
+    } satisfies OrganizerWhatsappMessageDocument;
+
+    const result = buildContactTimeline({
+      forms: [{
+        kind: "form",
+        timelineId: "form-1",
+        responseId: "response-1",
+        formId: "form-1",
+        formTitle: "Quiz sign-up",
+        action: "submitted",
+        answeredQuestionCount: 4,
+        occurredAtMillis: 1_000,
+      }],
+      events: [],
+      sends: [],
+      manualSendTasks: [manualTask],
+      whatsappMessages: [whatsappMessage],
+      catchReplies: [],
+      formsCoverage: "exact",
+      eventsCoverage: "exact",
+      sendsCoverage: "exact",
+      repliesCoverage: "partial",
+      repliesTruncated: false,
+    });
+
+    assert.deepEqual(result.timeline.map((entry) => entry.kind), [
+      "reply",
+      "send",
+      "form",
+    ]);
+    const manual = result.timeline[1];
+    assert.equal(manual.kind, "send");
+    if (manual.kind !== "send") throw new Error("Expected send entry.");
+    assert.equal(manual.deliveryMode, "byHand");
+    assert.equal(manual.observation, "hostOpened");
+    assert.equal(manual.status, "handoffOpened");
+    assert.equal(result.coverage.replies, "partial");
+    assert.equal(
+      result.coverage.replyObservation,
+      "catchAndManagedWhatsappOnly"
+    );
+  });
 
 test("contact cursors round trip every query plan", () => {
   for (const cursor of [

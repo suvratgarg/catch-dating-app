@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.35.0
-updated: 2026-08-20
+version: 1.38.0
+updated: 2026-08-30
 owner: recursive_audit_loop
 status: active
 ---
@@ -772,6 +772,34 @@ unchecked box does not grant permission and cannot revoke a prior grant;
 withdrawal belongs to the future self-service/STOP callable. Host imports and
 manual roster entry never create channel permission.
 
+Each non-unknown channel preference carries a permission receipt sufficient to
+explain the decision without reading private response content: source kind,
+nullable source event/form/response ids as applicable, terms version, consent
+copy hash, grant timestamp, and nullable revocation timestamp/source. A legacy
+row without complete evidence remains explicitly incomplete or unknown; a
+backfill must never infer or promote permission from a phone number, contact
+source, roster membership, form answer not bound to the reviewed consent copy,
+or prior send.
+
+`tool/data/backfill_organizer_crm_authority_v2.mjs` is the dry-run-first
+additive migration. It creates contact origins only when a canonical attendee
+edge names both current and original contact identity. Existing non-unknown
+preference state without a complete referenced receipt becomes an immutable
+`legacyIncomplete` receipt and remains ineligible for managed delivery. The
+tool reports, rather than guesses, attendee rows whose canonical edge is
+missing. The migration is available in source but has not been applied to any
+environment.
+
+`organizerContactOrigins/{originId}` is the immutable multi-source provenance
+ledger for organizer CRM contacts. Each deterministic row records organizer,
+current contact, origin contact, source kind, source entity kind/id, nullable
+form/event/response ids, actor class and bounded actor uid where appropriate,
+observed time, and creation time without copying raw response or message bodies.
+Merges may move the current contact id while retaining the origin contact id;
+unmerge uses receipt-named origin facts and never guesses later ownership.
+`organizerContacts.primarySource` remains a compatibility summary during the
+additive migration and is not a complete history.
+
 Every canonical `eventAttendees` write projects into an organizer-scoped
 contact plus one event fact edge. A contact is operational memory for one
 organizer, not a Consumer profile. An imported normalized phone/email creates
@@ -784,8 +812,9 @@ Manager merges are optimistic and receipt-backed. The client supplies the
 current survivor and source revisions; the transaction also verifies every
 source-origin fact has the same Firestore version observed during planning.
 Conflicting UID, phone, or email facts require explicit confirmation. Unmerge
-restores only the exact source-origin edge, evidence, and claim identifiers in
-the original receipt and creates one deterministic reversal receipt. Facts
+restores only the exact source-origin edge, evidence, claim, and contact-origin
+identifiers in the original receipt and creates one deterministic reversal
+receipt. Facts
 created after a merge remain with the survivor instead of being guessed back.
 The manager review boundary lists conflicted verified UID/phone claims plus
 exact proposed phone/email hashes. It derives shared events, source kinds and
@@ -794,6 +823,11 @@ confidence at read time, never proposes name-only matches, and stores a
 people. Only that manager may reopen the decision. Contact detail returns the
 newest active merge receipts for the survivor so each receipt can be reversed
 individually.
+
+Account deletion is the only erasure exception to receipt and origin retention:
+it deletes permission receipts carrying the participant UID and redacts that
+UID from retained contact-origin facts while preserving non-PII source
+classification.
 
 `organizerContactTraits` are rebuilt from event edges and verified invite
 attribution facts and contain only
@@ -829,8 +863,9 @@ The directory accepts `lastSeen`, `mostAttended`, or `name`; every opaque cursor
 is versioned and bound to its query plan, filters, and ordering. Filtered sorts
 are computed over a bounded complete candidate set rather than sorting one
 already-paginated page, and an over-limit candidate set fails explicitly.
-`createOrganizerContact` may add a contact name, optional organizer-entered
-phone/email evidence, an optional first private note, and its zero-history
+`createOrganizerContact` requires a contact name plus at least one
+organizer-entered phone/email evidence value, may add an optional first private
+note, and creates its zero-history
 trait. Organizer-entered endpoints remain `proposed`, organizer-scoped evidence:
 they create no attendee, verified identity, UID, Consumer profile, opt-in, or
 messaging grant. Only unlinked contacts whose primary source is `hostManual`
@@ -857,6 +892,56 @@ new notes append, edits use optimistic revisions, contact detail returns the
 newest bounded window, and exports never include note content. Existing contact
 documents may omit `manualTagIds` and read as an empty assignment, so neither
 feature requires a backfill.
+
+`organizerSavedAudiences/{audienceId}` owns reusable Customers-authored CRM
+audiences. A definition contains one to eight predicates joined by `all` or
+`any` over the reviewed computed-segment, organizer-tag, attendance-count,
+last-seen recency, and named-intent reach vocabulary. Arbitrary collection
+paths and raw Firestore queries are forbidden. The server canonicalizes and
+hashes definitions, validates organizer-owned tags, and applies optimistic
+revisions. Preview returns exact coverage or an explicit incomplete/over-limit
+failure; the bounded evaluator refuses organizers above 2,500 active contacts
+instead of truncating. Event-scoped Booked/Prospective audiences remain event
+authority and
+are referenced directly by event-announcement sends rather than copied into a
+CRM audience. Campaign approval freezes resolved recipient ids and revisions;
+the selected saved audience id, revision, and definition hash remain on the
+campaign. A changed or archived definition blocks draft preview/approval but
+does not rewrite an already approved send. Campaign preview also persists an
+exact audience-state hash; approval requires the current resolution to match it
+before freezing recipients, so a count-preserving membership change cannot
+silently pass.
+
+`organizerManualSendTasks/{taskId}` is the server-only durable external-handoff
+queue. One task represents one organizer, contact, originating send, intent,
+route, permission/capability snapshot, idempotency key, endpoint snapshot/hash,
+bounded prefill content with TTL, and progress state. Its only progress states
+are `queued`, `handoffOpened`, `hostMarkedSent`, `skipped`, `cancelled`,
+`superseded`, and `expired`; it has no delivered/read state. Opening an external
+application records only `handoffOpened`. The prepare callable persists or
+returns the idempotent queued task only after current manager, contact, endpoint,
+permission, and route checks; the client performs the external launch and then
+acknowledges the accepted launch against the current revision. An exact prepare
+retry revalidates the existing task rather than bypassing those checks. Tasks
+opened again from the durable queue first pass a revision-bound, read-only
+callable that rechecks the current contact, endpoint, permission, suppression,
+and route and returns the already-bounded task payload. The open acknowledgement
+repeats those checks after device acceptance; neither check mutates or sends.
+Existing tasks never auto-dispatch after a capability change. An explicit host
+re-plan rechecks
+current authority and returns advice only; it does not write, supersede, remove,
+complete, or dispatch any task. A separate explicit host action is required to
+close manual work. Active queue reads apply the server-time expiry bound in the
+indexed query rather than waiting for asynchronous TTL deletion to hide stale
+work.
+
+`organizerContactActivity` is a callable-composed bounded cursor projection,
+not a client-readable master collection. It joins sanitized origin, form or
+application, attendance, note, permission, send/reply and merge facts for one
+active organizer contact. Each row has a typed kind, stable source id,
+occurred-at time, safe display payload, and coverage metadata. It never copies
+private Consumer profile, compatibility, safety, wingman, raw provider receipt,
+or unrelated organizer content.
 
 Contact detail also reads the bounded newest campaign-recipient window from
 `organizerCampaignRecipients` and joins safe campaign labels and delivery

@@ -197,6 +197,11 @@ void main() {
       expect(published.canResume, isFalse);
       expect(published.canDeleteDraft, isFalse);
       expect(draft.canDeleteDraft, isTrue);
+      expect(published.consequences.isExact, isTrue);
+      expect(
+        published.consequences.enabledAutomationActionKinds,
+        contains(HostFormAutomationActionKind.createCrmContact),
+      );
     });
   });
 
@@ -495,6 +500,11 @@ Map<String, Object?> _summaryMap({
   'draftRevision': 2,
   'publishedVersion': publishedVersion,
   'submittedResponseCount': 0,
+  'consequences': {
+    'coverage': 'exact',
+    'identityPolicy': 'emailVerified',
+    'enabledAutomationActionKinds': ['createCrmContact'],
+  },
   'updatedAtMillis': 1,
   'publishedAtMillis': publishedVersion == 0 ? null : 1,
   'lastResponseAtMillis': null,

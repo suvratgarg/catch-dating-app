@@ -120,69 +120,6 @@ class HostCustomerMemorySection extends StatelessWidget {
   }
 }
 
-class HostCustomerSendHistory extends StatelessWidget {
-  const HostCustomerSendHistory({super.key, required this.customer});
-
-  final HostAudienceContactDetail customer;
-
-  @override
-  Widget build(BuildContext context) => CatchSection.plain(
-    title: context.l10n.hostCustomersSendHistory,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (customer.sends.isEmpty &&
-            customer.sendsCoverage == HostCustomerHistoryCoverage.exact)
-          Text(
-            context.l10n.hostCustomersNoSends,
-            style: CatchTextStyles.supporting(context),
-          )
-        else if (customer.sends.isNotEmpty)
-          CatchFieldLanes.divided(
-            children: [
-              for (final send in customer.sends)
-                CatchField.read(
-                  key: ValueKey(
-                    'host-customer-${send.kind.name}-send-${send.campaignId}',
-                  ),
-                  title: send.name,
-                  body: AppTimeFormatters.shortDate(
-                    send.sentAt ?? send.createdAt,
-                  ),
-                  valueText: [
-                    send.kind == HostCustomerSendKind.announcement
-                        ? context.l10n.hostSendsAnnouncementType
-                        : context.l10n.hostSendsCampaignType,
-                    context.l10n.hostCustomersSendStatus(
-                      status: send.deliveryStatus.name,
-                    ),
-                  ].join(' · '),
-                ),
-            ],
-          ),
-        if (customer.sendsCoverage ==
-            HostCustomerHistoryCoverage.unavailable) ...[
-          gapH12,
-          CatchSurface.message(
-            title: context.l10n.hostCustomersSendsUnavailableTitle,
-            message: context.l10n.hostCustomersSendsUnavailableBody,
-            messageIcon: CatchIcons.infoOutlineRounded,
-            messageTone: CatchSurfaceMessageTone.warning,
-          ),
-        ] else if (customer.sendsTruncated) ...[
-          gapH12,
-          CatchSurface.message(
-            title: context.l10n.hostCustomersSendHistory,
-            message: context.l10n.hostCustomersSendsTruncated,
-            messageIcon: CatchIcons.infoOutlineRounded,
-            messageTone: CatchSurfaceMessageTone.warning,
-          ),
-        ],
-      ],
-    ),
-  );
-}
-
 class HostCustomerNoteSheet extends ConsumerStatefulWidget {
   const HostCustomerNoteSheet({super.key, required this.customer, this.note});
 

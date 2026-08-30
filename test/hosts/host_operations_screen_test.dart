@@ -50,6 +50,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/host_club_ed
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
@@ -69,6 +70,7 @@ import 'package:catch_dating_app/payments/data/host_payment_account_repository.d
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -82,6 +84,7 @@ import '../test_pump_helpers.dart';
 part 'host_operations_state_events_tests.dart';
 part 'host_operations_club_workspace_tests.dart';
 part 'host_operations_customers_tests.dart';
+part 'host_operations_customer_communications_tests.dart';
 part 'host_operations_customers_test_support.dart';
 part 'host_operations_customer_state_tests.dart';
 part 'host_operations_analytics_team_tests.dart';
@@ -100,6 +103,7 @@ void main() {
   _registerHostOperationsStateEventsTests();
   _registerHostOperationsClubWorkspaceTests();
   _registerHostOperationsCustomersTests();
+  _registerHostOperationsCustomerCommunicationsTests();
   _registerHostOperationsCustomerStateTests();
   _registerHostOperationsAnalyticsTeamTests();
   _registerHostOperationsTeamFailuresTests();

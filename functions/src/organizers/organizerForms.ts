@@ -79,6 +79,12 @@ type ValidationIssue =
   ValidateOrganizerFormDraftCallableResponse["issues"][number];
 type Question = FormDefinition["sections"][number]["questions"][number];
 type QuestionValidation = Question["validation"];
+type FormConsequenceProjection = NonNullable<
+  OrganizerFormDocument["consequenceProjection"]
+>;
+type FormIdentityPolicy = NonNullable<
+  FormConsequenceProjection["identityPolicy"]
+>;
 
 interface OrganizerFormsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -207,6 +213,9 @@ export async function createOrganizerFormHandler(
       draftRevision: 1,
       publishedVersion: 0,
       submittedResponseCount: 0,
+      consequenceProjection: exactConsequenceProjection(
+        definition.identityPolicy
+      ),
       createdAt: now,
       updatedAt: now,
       publishedAt: null,
@@ -285,6 +294,10 @@ export async function updateOrganizerFormDraftHandler(
       purpose: definition.purpose,
       defaultTargetKind: definition.defaultTargetKind,
       defaultTargetId: definition.defaultTargetId,
+      consequenceProjection: synchronizeConsequenceIdentity(
+        current.form.consequenceProjection,
+        definition.identityPolicy
+      ),
       draftRevision: revision,
       updatedAt: now,
     };
@@ -517,6 +530,10 @@ export async function publishOrganizerFormHandler(
       status: "published",
       defaultTargetKind: current.draft.definition.defaultTargetKind,
       defaultTargetId: current.draft.definition.defaultTargetId,
+      consequenceProjection: synchronizeConsequenceIdentity(
+        current.form.consequenceProjection,
+        current.draft.definition.identityPolicy
+      ),
       activeVersionId: versionId,
       publishedVersion: version,
       updatedAt: now,
@@ -656,6 +673,9 @@ export async function duplicateOrganizerFormHandler(
       draftRevision: 1,
       publishedVersion: 0,
       submittedResponseCount: 0,
+      consequenceProjection: exactConsequenceProjection(
+        definition.identityPolicy
+      ),
       createdAt: now,
       updatedAt: now,
       publishedAt: null,
@@ -1351,9 +1371,65 @@ function projectSummary(
     draftRevision: form.draftRevision,
     publishedVersion: form.publishedVersion,
     submittedResponseCount: form.submittedResponseCount,
+    consequences: consequenceSummary(form.consequenceProjection),
     updatedAtMillis: form.updatedAt.toMillis(),
     publishedAtMillis: form.publishedAt?.toMillis() ?? null,
     lastResponseAtMillis: form.lastResponseAt?.toMillis() ?? null,
+  };
+}
+
+function emptyAutomationActionKindCounts():
+FormConsequenceProjection["enabledAutomationActionKindCounts"] {
+  return {
+    notifyTeam: 0,
+    addOrganizerTag: 0,
+    createCrmContact: 0,
+    addApplicationQueue: 0,
+    proposeEventAttendee: 0,
+    signedWebhook: 0,
+    campaignHandoff: 0,
+  };
+}
+
+function exactConsequenceProjection(
+  identityPolicy: FormIdentityPolicy
+): FormConsequenceProjection {
+  return {
+    version: 1,
+    coverage: "exact",
+    identityPolicy,
+    enabledAutomationActionKinds: [],
+    enabledAutomationActionKindCounts: emptyAutomationActionKindCounts(),
+  };
+}
+
+function synchronizeConsequenceIdentity(
+  current: OrganizerFormDocument["consequenceProjection"],
+  identityPolicy: FormIdentityPolicy
+): FormConsequenceProjection {
+  if (!current) {
+    return {
+      ...exactConsequenceProjection(identityPolicy),
+      coverage: "identityOnly",
+    };
+  }
+  return {...current, identityPolicy};
+}
+
+function consequenceSummary(
+  projection: OrganizerFormDocument["consequenceProjection"]
+): FormSummary["consequences"] {
+  if (!projection) {
+    return {
+      coverage: "unavailable",
+      identityPolicy: null,
+      enabledAutomationActionKinds: [],
+    };
+  }
+  return {
+    coverage: projection.coverage,
+    identityPolicy: projection.identityPolicy,
+    enabledAutomationActionKinds: projection.enabledAutomationActionKinds,
   };
 }
 

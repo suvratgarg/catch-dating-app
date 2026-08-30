@@ -35,6 +35,8 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
               'campaignId',
               'name',
               'status',
+              'savedAudienceId',
+              'savedAudienceName',
               'segmentIds',
               'templateId',
               'templateName',
@@ -73,11 +75,27 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
                   'blocked',
                 ],
               },
+              'savedAudienceId': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'savedAudienceName': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'minLength': 1,
+                'maxLength': 80,
+              },
               'segmentIds': <String, Object?>{
                 'type': 'array',
-                'minItems': 1,
                 'maxItems': 5,
                 'uniqueItems': true,
+                'description': 'Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.',
                 'items': <String, Object?>{
                   'type': 'string',
                   'enum': <Object?>[
@@ -425,6 +443,8 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
             'campaignId',
             'name',
             'status',
+            'savedAudienceId',
+            'savedAudienceName',
             'segmentIds',
             'templateId',
             'templateName',
@@ -463,11 +483,27 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
                 'blocked',
               ],
             },
+            'savedAudienceId': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'savedAudienceName': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 80,
+            },
             'segmentIds': <String, Object?>{
               'type': 'array',
-              'minItems': 1,
               'maxItems': 5,
               'uniqueItems': true,
+              'description': 'Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.',
               'items': <String, Object?>{
                 'type': 'string',
                 'enum': <Object?>[
@@ -803,6 +839,8 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
         'campaignId',
         'name',
         'status',
+        'savedAudienceId',
+        'savedAudienceName',
         'segmentIds',
         'templateId',
         'templateName',
@@ -841,11 +879,27 @@ const schemaListOrganizerCampaignsCallableResponseSchema = <String, Object?>{
             'blocked',
           ],
         },
+        'savedAudienceId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'savedAudienceName': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 80,
+        },
         'segmentIds': <String, Object?>{
           'type': 'array',
-          'minItems': 1,
           'maxItems': 5,
           'uniqueItems': true,
+          'description': 'Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.',
           'items': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[

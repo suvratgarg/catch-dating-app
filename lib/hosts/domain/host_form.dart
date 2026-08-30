@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:meta/meta.dart';
 
 enum HostFormPurpose {
@@ -10,6 +11,8 @@ enum HostFormPurpose {
 }
 
 enum HostFormLifecycleStatus { draft, published, paused, archived }
+
+enum HostFormConsequenceCoverage { exact, identityOnly, unavailable }
 
 enum HostFormIdentityPolicy {
   anonymous,
@@ -195,6 +198,7 @@ class HostFormSummary {
     required this.draftRevision,
     required this.publishedVersion,
     required this.submittedResponseCount,
+    required this.consequences,
     required this.updatedAt,
     required this.publishedAt,
     required this.lastResponseAt,
@@ -227,6 +231,9 @@ class HostFormSummary {
     draftRevision: _requiredInt(map, 'draftRevision'),
     publishedVersion: _requiredInt(map, 'publishedVersion'),
     submittedResponseCount: _requiredInt(map, 'submittedResponseCount'),
+    consequences: HostFormConsequences.fromMap(
+      _requiredMap(map['consequences'], 'form consequences'),
+    ),
     updatedAt: _dateTimeFromMillis(map, 'updatedAtMillis'),
     publishedAt: _nullableDateTimeFromMillis(map['publishedAtMillis']),
     lastResponseAt: _nullableDateTimeFromMillis(map['lastResponseAtMillis']),
@@ -246,6 +253,7 @@ class HostFormSummary {
   final int draftRevision;
   final int publishedVersion;
   final int submittedResponseCount;
+  final HostFormConsequences consequences;
   final DateTime updatedAt;
   final DateTime? publishedAt;
   final DateTime? lastResponseAt;
@@ -255,6 +263,56 @@ class HostFormSummary {
   bool get canPublish => status != HostFormLifecycleStatus.archived;
   bool get canPause => status == HostFormLifecycleStatus.published;
   bool get canResume => status == HostFormLifecycleStatus.paused;
+}
+
+@immutable
+class HostFormConsequences {
+  const HostFormConsequences({
+    required this.coverage,
+    required this.identityPolicy,
+    required this.enabledAutomationActionKinds,
+  });
+
+  const HostFormConsequences.unavailable()
+    : coverage = HostFormConsequenceCoverage.unavailable,
+      identityPolicy = null,
+      enabledAutomationActionKinds = const {};
+
+  factory HostFormConsequences.fromMap(Map<Object?, Object?> map) {
+    final rawKinds = map['enabledAutomationActionKinds'];
+    if (rawKinds is! List<Object?>) {
+      throw const FormatException('Invalid form consequence actions.');
+    }
+    return HostFormConsequences(
+      coverage: _enumByName(
+        HostFormConsequenceCoverage.values,
+        _requiredString(map, 'coverage'),
+        'form consequence coverage',
+      ),
+      identityPolicy: map['identityPolicy'] == null
+          ? null
+          : _enumByName(
+              HostFormIdentityPolicy.values,
+              _stringValue(map['identityPolicy']),
+              'form consequence identity policy',
+            ),
+      enabledAutomationActionKinds: Set.unmodifiable(
+        rawKinds.map(
+          (kind) => _enumByName(
+            HostFormAutomationActionKind.values,
+            _stringValue(kind),
+            'form consequence action',
+          ),
+        ),
+      ),
+    );
+  }
+
+  final HostFormConsequenceCoverage coverage;
+  final HostFormIdentityPolicy? identityPolicy;
+  final Set<HostFormAutomationActionKind> enabledAutomationActionKinds;
+
+  bool get isExact => coverage == HostFormConsequenceCoverage.exact;
 }
 
 @immutable

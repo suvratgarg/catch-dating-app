@@ -43,6 +43,8 @@
       "additionalProperties": false,
       "required": [
         "status",
+        "evidenceStatus",
+        "currentReceiptId",
         "termsVersion",
         "source",
         "sourceEventId",
@@ -54,6 +56,19 @@
           "enum": ["unknown", "optedIn", "optedOut"],
           "x-catch-ownership": "server-only"
         },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": ["notApplicable", "complete", "incomplete"],
+          "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+          "x-catch-ownership": "server-only"
+        },
+        "currentReceiptId": {
+          "anyOf": [
+            {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ],
+          "x-catch-ownership": "server-only"
+        },
         "termsVersion": {
           "type": ["string", "null"],
           "minLength": 1,
@@ -62,7 +77,7 @@
         },
         "source": {
           "type": ["string", "null"],
-          "enum": [null, "publicEventRegistration", "unsubscribeLink", "hostApp", "inboundStop", "providerWebhook"],
+          "enum": [null, "publicEventRegistration", "hostFormResponse", "participantSettings", "unsubscribeLink", "inboundStop", "providerWebhook", "legacyIncomplete"],
           "x-catch-ownership": "server-only"
         },
         "sourceEventId": {

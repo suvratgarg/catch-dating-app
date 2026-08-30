@@ -271,17 +271,23 @@ async function queueOrganizerAudienceIdentityCleanup(
   }
 }
 
-/** Deletes organizer-scoped marketing grants owned by the account. */
+/** Deletes permission evidence and redacts retained contact provenance. */
 async function queueOrganizerCommunicationPreferenceCleanup(
   db: FirebaseFirestore.Firestore,
   uid: string,
   writer: BatchQueue
 ) {
-  const preferences = await db
-    .collection("organizerCommunicationPreferences")
-    .where("uid", "==", uid)
-    .get();
+  const [preferences, receipts, origins] = await Promise.all([
+    db.collection("organizerCommunicationPreferences")
+      .where("uid", "==", uid).get(),
+    db.collection("organizerCommunicationPermissionReceipts")
+      .where("uid", "==", uid).get(),
+    db.collection("organizerContactOrigins")
+      .where("actorUid", "==", uid).get(),
+  ]);
   preferences.forEach((doc) => writer.delete(doc.ref));
+  receipts.forEach((doc) => writer.delete(doc.ref));
+  origins.forEach((doc) => writer.update(doc.ref, {actorUid: null}));
 }
 
 /** Releases and deletes pair reservations that expose the deleted account. */

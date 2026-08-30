@@ -12217,6 +12217,8 @@ export const organizerCommunicationPreferenceDocumentSchema = {
       "additionalProperties": false,
       "required": [
         "status",
+        "evidenceStatus",
+        "currentReceiptId",
         "termsVersion",
         "source",
         "sourceEventId",
@@ -12229,6 +12231,29 @@ export const organizerCommunicationPreferenceDocumentSchema = {
             "unknown",
             "optedIn",
             "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ],
+          "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+          "x-catch-ownership": "server-only"
+        },
+        "currentReceiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12249,10 +12274,12 @@ export const organizerCommunicationPreferenceDocumentSchema = {
           "enum": [
             null,
             "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
             "unsubscribeLink",
-            "hostApp",
             "inboundStop",
-            "providerWebhook"
+            "providerWebhook",
+            "legacyIncomplete"
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12304,6 +12331,8 @@ export const organizerCommunicationPreferenceDocumentSchema = {
       "additionalProperties": false,
       "required": [
         "status",
+        "evidenceStatus",
+        "currentReceiptId",
         "termsVersion",
         "source",
         "sourceEventId",
@@ -12316,6 +12345,29 @@ export const organizerCommunicationPreferenceDocumentSchema = {
             "unknown",
             "optedIn",
             "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ],
+          "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+          "x-catch-ownership": "server-only"
+        },
+        "currentReceiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12336,10 +12388,12 @@ export const organizerCommunicationPreferenceDocumentSchema = {
           "enum": [
             null,
             "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
             "unsubscribeLink",
-            "hostApp",
             "inboundStop",
-            "providerWebhook"
+            "providerWebhook",
+            "legacyIncomplete"
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12435,6 +12489,8 @@ export const organizerCommunicationPreferenceDocumentSchema = {
       "additionalProperties": false,
       "required": [
         "status",
+        "evidenceStatus",
+        "currentReceiptId",
         "termsVersion",
         "source",
         "sourceEventId",
@@ -12447,6 +12503,29 @@ export const organizerCommunicationPreferenceDocumentSchema = {
             "unknown",
             "optedIn",
             "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ],
+          "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+          "x-catch-ownership": "server-only"
+        },
+        "currentReceiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12467,10 +12546,12 @@ export const organizerCommunicationPreferenceDocumentSchema = {
           "enum": [
             null,
             "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
             "unsubscribeLink",
-            "hostApp",
             "inboundStop",
-            "providerWebhook"
+            "providerWebhook",
+            "legacyIncomplete"
           ],
           "x-catch-ownership": "server-only"
         },
@@ -12518,6 +12599,352 @@ export const organizerCommunicationPreferenceDocumentSchema = {
       }
     }
   }
+};
+
+export const organizerCommunicationPermissionReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_communication_permission_receipts.schema.json",
+  "title": "OrganizerCommunicationPermissionReceiptDocument",
+  "description": "Immutable participant-controlled grant or withdrawal evidence for one organizer and channel. Current preference projections reference these receipts but never replace their history.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerCommunicationPermissionReceipts",
+  "x-firestore-path": "organizerCommunicationPermissionReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "participant registration, self-service preference, unsubscribe, and inbound STOP handlers",
+  "required": [
+    "organizerId",
+    "uid",
+    "channel",
+    "decision",
+    "evidenceStatus",
+    "termsVersion",
+    "consentCopyHash",
+    "source",
+    "sourceEventId",
+    "sourceFormId",
+    "sourceResponseId",
+    "sourceProviderEventId",
+    "actorClass",
+    "actorUid",
+    "identityStrength",
+    "grantedAt",
+    "revokedAt",
+    "supersedesReceiptId",
+    "createdAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "sms"
+      ]
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "optedIn",
+        "optedOut"
+      ]
+    },
+    "evidenceStatus": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "incomplete"
+      ]
+    },
+    "termsVersion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "consentCopyHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "publicEventRegistration",
+        "hostFormResponse",
+        "participantSettings",
+        "unsubscribeLink",
+        "inboundStop",
+        "providerWebhook",
+        "legacyIncomplete"
+      ]
+    },
+    "sourceEventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceFormId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceResponseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceProviderEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "actorClass": {
+      "type": "string",
+      "enum": [
+        "participant",
+        "provider",
+        "system"
+      ]
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "identityStrength": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "emailVerified",
+        "phoneVerified",
+        "catchAccount"
+      ]
+    },
+    "grantedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "supersedesReceiptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "optedIn"
+          },
+          "evidenceStatus": {
+            "const": "complete"
+          }
+        },
+        "required": [
+          "decision",
+          "evidenceStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "termsVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "consentCopyHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "grantedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "revokedAt": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "optedOut"
+          },
+          "evidenceStatus": {
+            "const": "complete"
+          }
+        },
+        "required": [
+          "decision",
+          "evidenceStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "grantedAt": {
+            "type": "null"
+          },
+          "revokedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 };
 
 export const organizerContactDocumentSchema = {
@@ -12634,7 +13061,8 @@ export const organizerContactDocumentSchema = {
         "hostImport",
         "hostManual",
         "webOtp",
-        "providerSync"
+        "providerSync",
+        "hostForm"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -13169,6 +13597,176 @@ export const organizerContactDocumentSchema = {
   }
 };
 
+export const organizerContactOriginDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_origins.schema.json",
+  "title": "OrganizerContactOriginDocument",
+  "description": "Server-owned provenance for one organizer contact source. Source facts are immutable; only currentContactId moves during a receipt-backed merge or unmerge.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactOrigins",
+  "x-firestore-path": "organizerContactOrigins/{originId}",
+  "x-document-id-field": "originId",
+  "x-owner": "approved organizer contact creators and organizer contact merge callables",
+  "required": [
+    "organizerId",
+    "currentContactId",
+    "originContactId",
+    "sourceKind",
+    "sourceEntityKind",
+    "sourceEntityId",
+    "eventId",
+    "formId",
+    "responseId",
+    "actorClass",
+    "actorUid",
+    "observedAt",
+    "originVersion",
+    "createdAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "currentContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "originContactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceKind": {
+      "type": "string",
+      "enum": [
+        "catchBooking",
+        "hostImport",
+        "hostManual",
+        "webOtp",
+        "providerSync",
+        "hostForm"
+      ]
+    },
+    "sourceEntityKind": {
+      "type": "string",
+      "enum": [
+        "eventAttendee",
+        "manualEntry",
+        "hostFormResponse",
+        "providerRecord",
+        "importBatch",
+        "webRegistration"
+      ]
+    },
+    "sourceEntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "formId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "responseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "actorClass": {
+      "type": "string",
+      "enum": [
+        "participant",
+        "organizerManager",
+        "provider",
+        "system"
+      ]
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "observedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "originVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
 export const organizerContactNoteDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_contact_notes.schema.json",
@@ -13431,6 +14029,1094 @@ export const organizerContactTagVocabularyDocumentSchema = {
   }
 };
 
+export const organizerSavedAudienceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_saved_audiences.schema.json",
+  "title": "OrganizerSavedAudienceDocument",
+  "description": "One reusable Customers-owned organizer CRM audience. Definitions use only the closed reviewed predicate vocabulary and never contain event-scoped or arbitrary Firestore queries.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerSavedAudiences",
+  "x-firestore-path": "organizerSavedAudiences/{audienceId}",
+  "x-document-id-field": "audienceId",
+  "x-owner": "manager-only organizer saved-audience callables",
+  "required": [
+    "organizerId",
+    "audienceId",
+    "scope",
+    "name",
+    "status",
+    "definition",
+    "definitionHash",
+    "definitionVersion",
+    "revision",
+    "createdByUid",
+    "updatedByUid",
+    "lastPreviewMatchCount",
+    "lastPreviewAt",
+    "createdAt",
+    "updatedAt",
+    "archivedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "scope": {
+      "const": "organizerCrm"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ]
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "join",
+        "predicates"
+      ],
+      "properties": {
+        "join": {
+          "type": "string",
+          "enum": [
+            "all",
+            "any"
+          ]
+        },
+        "predicates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "computedSegment"
+                  },
+                  "segmentId": {
+                    "type": "string",
+                    "enum": [
+                      "new_to_organizer",
+                      "first_time_attendee",
+                      "repeat_attendee",
+                      "regular",
+                      "lapsed_regular",
+                      "reliable_attendee",
+                      "needs_confirmation",
+                      "advocate",
+                      "high_impact_advocate",
+                      "whatsapp_reachable",
+                      "sms_reachable"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "manualTagId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "manualTag"
+                  },
+                  "manualTagId": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{32}$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "eventCount"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendanceCount"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "eventCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "days"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "lastSeenWithinDays"
+                  },
+                  "days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "intent"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "reachableForIntent"
+                  },
+                  "intent": {
+                    "const": "organizerWhatsappCampaign"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "definitionHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "definitionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "lastPreviewMatchCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "lastPreviewAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "archivedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "join",
+        "predicates"
+      ],
+      "properties": {
+        "join": {
+          "type": "string",
+          "enum": [
+            "all",
+            "any"
+          ]
+        },
+        "predicates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "computedSegment"
+                  },
+                  "segmentId": {
+                    "type": "string",
+                    "enum": [
+                      "new_to_organizer",
+                      "first_time_attendee",
+                      "repeat_attendee",
+                      "regular",
+                      "lapsed_regular",
+                      "reliable_attendee",
+                      "needs_confirmation",
+                      "advocate",
+                      "high_impact_advocate",
+                      "whatsapp_reachable",
+                      "sms_reachable"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "manualTagId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "manualTag"
+                  },
+                  "manualTagId": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{32}$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "eventCount"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendanceCount"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "eventCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "days"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "lastSeenWithinDays"
+                  },
+                  "days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "intent"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "reachableForIntent"
+                  },
+                  "intent": {
+                    "const": "organizerWhatsappCampaign"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "predicate": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "segmentId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "computedSegment"
+            },
+            "segmentId": {
+              "type": "string",
+              "enum": [
+                "new_to_organizer",
+                "first_time_attendee",
+                "repeat_attendee",
+                "regular",
+                "lapsed_regular",
+                "reliable_attendee",
+                "needs_confirmation",
+                "advocate",
+                "high_impact_advocate",
+                "whatsapp_reachable",
+                "sms_reachable"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "manualTagId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "manualTag"
+            },
+            "manualTagId": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "operator",
+            "eventCount"
+          ],
+          "properties": {
+            "kind": {
+              "const": "attendanceCount"
+            },
+            "operator": {
+              "type": "string",
+              "enum": [
+                "atLeast",
+                "atMost"
+              ]
+            },
+            "eventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "days"
+          ],
+          "properties": {
+            "kind": {
+              "const": "lastSeenWithinDays"
+            },
+            "days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3650
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "intent"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reachableForIntent"
+            },
+            "intent": {
+              "const": "organizerWhatsappCampaign"
+            }
+          }
+        }
+      ]
+    },
+    "computedSegmentPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "segmentId"
+      ],
+      "properties": {
+        "kind": {
+          "const": "computedSegment"
+        },
+        "segmentId": {
+          "type": "string",
+          "enum": [
+            "new_to_organizer",
+            "first_time_attendee",
+            "repeat_attendee",
+            "regular",
+            "lapsed_regular",
+            "reliable_attendee",
+            "needs_confirmation",
+            "advocate",
+            "high_impact_advocate",
+            "whatsapp_reachable",
+            "sms_reachable"
+          ]
+        }
+      }
+    },
+    "manualTagPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "manualTagId"
+      ],
+      "properties": {
+        "kind": {
+          "const": "manualTag"
+        },
+        "manualTagId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        }
+      }
+    },
+    "attendanceCountPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "operator",
+        "eventCount"
+      ],
+      "properties": {
+        "kind": {
+          "const": "attendanceCount"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "atLeast",
+            "atMost"
+          ]
+        },
+        "eventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        }
+      }
+    },
+    "lastSeenWithinDaysPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "days"
+      ],
+      "properties": {
+        "kind": {
+          "const": "lastSeenWithinDays"
+        },
+        "days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3650
+        }
+      }
+    },
+    "reachableForIntentPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "intent"
+      ],
+      "properties": {
+        "kind": {
+          "const": "reachableForIntent"
+        },
+        "intent": {
+          "const": "organizerWhatsappCampaign"
+        }
+      }
+    }
+  }
+};
+
+export const organizerManualSendTaskDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_manual_send_tasks.schema.json",
+  "title": "OrganizerManualSendTaskDocument",
+  "description": "One durable host-performed external handoff. Catch may record preparation, external-app acceptance, and explicit host assertions, but never delivery or read state.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerManualSendTasks",
+  "x-firestore-path": "organizerManualSendTasks/{taskId}",
+  "x-document-id-field": "taskId",
+  "x-owner": "manager-only organizer manual-send callables",
+  "required": [
+    "organizerId",
+    "taskId",
+    "contactId",
+    "sourceKind",
+    "sourceId",
+    "intent",
+    "routeId",
+    "deliveryMode",
+    "status",
+    "active",
+    "revision",
+    "idempotencyKey",
+    "requestHash",
+    "displayNameSnapshot",
+    "endpointE164Snapshot",
+    "endpointHash",
+    "permissionSnapshot",
+    "capabilitySnapshot",
+    "prefillText",
+    "prefillHash",
+    "openCount",
+    "createdByUid",
+    "updatedByUid",
+    "createdAt",
+    "updatedAt",
+    "openedAt",
+    "hostMarkedSentAt",
+    "skippedAt",
+    "cancelledAt",
+    "supersededAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceKind": {
+      "type": "string",
+      "enum": [
+        "individualConversation",
+        "campaignRecipient"
+      ]
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "individualConversation",
+        "savedAudienceCampaign"
+      ]
+    },
+    "routeId": {
+      "const": "personalWhatsappHandoff"
+    },
+    "deliveryMode": {
+      "const": "byHand"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "handoffOpened",
+        "hostMarkedSent",
+        "skipped",
+        "cancelled",
+        "superseded",
+        "expired"
+      ]
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "displayNameSnapshot": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "endpointE164Snapshot": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "permissionSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "whatsappStatus",
+        "adminSuppressed",
+        "recordedAt"
+      ],
+      "properties": {
+        "whatsappStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn"
+          ]
+        },
+        "adminSuppressed": {
+          "const": false
+        },
+        "recordedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        }
+      }
+    },
+    "capabilitySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "managedRouteAvailable"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "managedRouteAvailable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "prefillText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "prefillHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "openCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "openedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "hostMarkedSentAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "skippedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cancelledAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "supersededAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "definitions": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "handoffOpened",
+        "hostMarkedSent",
+        "skipped",
+        "cancelled",
+        "superseded",
+        "expired"
+      ]
+    }
+  }
+};
+
 export const organizerContactIdentityLinkDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_contact_identity_links.schema.json",
@@ -13474,7 +15160,8 @@ export const organizerContactIdentityLinkDocumentSchema = {
     "attendeeId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "description": "Legacy evidence-row key: an attendee id for roster sources or a deterministic form-response key for Host Forms."
     },
     "kind": {
       "type": "string",
@@ -13509,7 +15196,8 @@ export const organizerContactIdentityLinkDocumentSchema = {
         "hostImport",
         "hostManual",
         "webOtp",
-        "providerSync"
+        "providerSync",
+        "hostForm"
       ]
     },
     "createdAt": {
@@ -14653,9 +16341,11 @@ export const organizerContactMergeReceiptDocumentSchema = {
     "movedEdgeIds",
     "movedIdentityEvidenceIds",
     "movedClaimIds",
+    "movedOriginIds",
     "movedEdgeCount",
     "movedIdentityEvidenceCount",
     "movedClaimCount",
+    "movedOriginCount",
     "idempotencyKey",
     "reversalOfReceiptId",
     "createdAt"
@@ -14752,6 +16442,16 @@ export const organizerContactMergeReceiptDocumentSchema = {
         "maxLength": 180
       }
     },
+    "movedOriginIds": {
+      "type": "array",
+      "maxItems": 400,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
     "movedEdgeCount": {
       "type": "integer",
       "minimum": 0,
@@ -14763,6 +16463,11 @@ export const organizerContactMergeReceiptDocumentSchema = {
       "maximum": 400
     },
     "movedClaimCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 400
+    },
+    "movedOriginCount": {
       "type": "integer",
       "minimum": 0,
       "maximum": 400
@@ -16056,6 +17761,117 @@ export const organizerFormDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 1000000000
+    },
+    "consequenceProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "coverage",
+        "identityPolicy",
+        "enabledAutomationActionKinds",
+        "enabledAutomationActionKindCounts"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "enum": [
+            1
+          ]
+        },
+        "coverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "identityOnly",
+            "unavailable"
+          ]
+        },
+        "identityPolicy": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "emailVerified",
+                "phoneVerified",
+                "emailOrPhoneVerified",
+                "catchAccount"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "enabledAutomationActionKinds": {
+          "type": "array",
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "notifyTeam",
+              "addOrganizerTag",
+              "createCrmContact",
+              "addApplicationQueue",
+              "proposeEventAttendee",
+              "signedWebhook",
+              "campaignHandoff"
+            ]
+          }
+        },
+        "enabledAutomationActionKindCounts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "notifyTeam",
+            "addOrganizerTag",
+            "createCrmContact",
+            "addApplicationQueue",
+            "proposeEventAttendee",
+            "signedWebhook",
+            "campaignHandoff"
+          ],
+          "properties": {
+            "notifyTeam": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "addOrganizerTag": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "createCrmContact": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "addApplicationQueue": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "proposeEventAttendee": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "signedWebhook": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "campaignHandoff": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          }
+        }
+      }
     },
     "createdAt": {
       "type": "object",
@@ -22313,9 +24129,9 @@ export const organizerCampaignDocumentSchema = {
     },
     "segmentIds": {
       "type": "array",
-      "minItems": 1,
       "maxItems": 5,
       "uniqueItems": true,
+      "description": "Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.",
       "items": {
         "type": "string",
         "enum": [
@@ -22329,6 +24145,30 @@ export const organizerCampaignDocumentSchema = {
           "whatsapp_reachable"
         ]
       }
+    },
+    "savedAudienceId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Customers-owned reusable audience used by every new campaign. Null or absent only on legacy segment-authored campaigns."
+    },
+    "savedAudienceRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "savedAudienceDefinitionHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
     },
     "connectionId": {
       "type": "string",
@@ -22405,7 +24245,8 @@ export const organizerCampaignDocumentSchema = {
         "string",
         "null"
       ],
-      "pattern": "^[a-f0-9]{64}$"
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Exact audience-state hash stored by preview and required unchanged at approval; retained as the frozen recipient snapshot hash after approval."
     },
     "contentHash": {
       "type": "string",
@@ -57941,7 +59782,7 @@ export const upsertOrganizerCampaignCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/upsert_organizer_campaign_payload.schema.json",
   "title": "UpsertOrganizerCampaignCallablePayload",
-  "description": "Creates or revision-updates one draft WhatsApp organizer campaign.",
+  "description": "Creates or revision-updates one draft WhatsApp organizer campaign that consumes a Customers-owned saved audience id.",
   "x-callable-aliases": [
     "upsertOrganizerCampaign"
   ],
@@ -57952,7 +59793,7 @@ export const upsertOrganizerCampaignCallablePayloadSchema = {
     "requestId",
     "name",
     "messageClass",
-    "segmentIds",
+    "savedAudienceId",
     "connectionId",
     "templateId",
     "templateVariables"
@@ -57997,24 +59838,10 @@ export const upsertOrganizerCampaignCallablePayloadSchema = {
         "organizerPromotion"
       ]
     },
-    "segmentIds": {
-      "type": "array",
-      "minItems": 1,
-      "maxItems": 5,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "enum": [
-          "first_time_attendee",
-          "repeat_attendee",
-          "regular",
-          "lapsed_regular",
-          "reliable_attendee",
-          "advocate",
-          "high_impact_advocate",
-          "whatsapp_reachable"
-        ]
-      }
+    "savedAudienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     },
     "connectionId": {
       "type": "string",
@@ -58066,6 +59893,1632 @@ export const upsertOrganizerCampaignCallablePayloadSchema = {
       ],
       "minimum": 0,
       "maximum": 4102444800000
+    }
+  }
+};
+
+export const upsertOrganizerSavedAudienceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_organizer_saved_audience_payload.schema.json",
+  "title": "UpsertOrganizerSavedAudienceCallablePayload",
+  "description": "Creates or revision-updates one reusable Customers-owned CRM audience.",
+  "x-callable-aliases": [
+    "upsertOrganizerSavedAudience"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "scope",
+    "name",
+    "definition"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audienceId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "scope": {
+      "const": "organizerCrm"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "join",
+        "predicates"
+      ],
+      "properties": {
+        "join": {
+          "type": "string",
+          "enum": [
+            "all",
+            "any"
+          ]
+        },
+        "predicates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "computedSegment"
+                  },
+                  "segmentId": {
+                    "type": "string",
+                    "enum": [
+                      "new_to_organizer",
+                      "first_time_attendee",
+                      "repeat_attendee",
+                      "regular",
+                      "lapsed_regular",
+                      "reliable_attendee",
+                      "needs_confirmation",
+                      "advocate",
+                      "high_impact_advocate",
+                      "whatsapp_reachable",
+                      "sms_reachable"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "manualTagId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "manualTag"
+                  },
+                  "manualTagId": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{32}$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "eventCount"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendanceCount"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "eventCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "days"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "lastSeenWithinDays"
+                  },
+                  "days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "intent"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "reachableForIntent"
+                  },
+                  "intent": {
+                    "const": "organizerWhatsappCampaign"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
+export const listOrganizerSavedAudiencesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_saved_audiences_payload.schema.json",
+  "title": "ListOrganizerSavedAudiencesCallablePayload",
+  "description": "Lists one organizer's reusable CRM audiences.",
+  "x-callable-aliases": [
+    "listOrganizerSavedAudiences"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ],
+      "default": "active"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+};
+
+export const previewOrganizerSavedAudienceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/preview_organizer_saved_audience_payload.schema.json",
+  "title": "PreviewOrganizerSavedAudienceCallablePayload",
+  "description": "Resolves an exact bounded preview for one saved CRM audience.",
+  "x-callable-aliases": [
+    "previewOrganizerSavedAudience"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "audienceId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "sampleLimit": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 25,
+      "default": 10
+    }
+  }
+};
+
+export const archiveOrganizerSavedAudienceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/archive_organizer_saved_audience_payload.schema.json",
+  "title": "ArchiveOrganizerSavedAudienceCallablePayload",
+  "description": "Archives one reusable CRM audience with optimistic revision control.",
+  "x-callable-aliases": [
+    "archiveOrganizerSavedAudience"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "audienceId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const organizerSavedAudienceCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_saved_audience_response.schema.json",
+  "title": "OrganizerSavedAudienceCallableResponse",
+  "description": "Sanitized reusable organizer CRM audience definition.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "audienceId",
+    "scope",
+    "name",
+    "status",
+    "definition",
+    "definitionHash",
+    "definitionVersion",
+    "revision",
+    "lastPreviewMatchCount",
+    "lastPreviewAtMillis",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "scope": {
+      "const": "organizerCrm"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ]
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "join",
+        "predicates"
+      ],
+      "properties": {
+        "join": {
+          "type": "string",
+          "enum": [
+            "all",
+            "any"
+          ]
+        },
+        "predicates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "computedSegment"
+                  },
+                  "segmentId": {
+                    "type": "string",
+                    "enum": [
+                      "new_to_organizer",
+                      "first_time_attendee",
+                      "repeat_attendee",
+                      "regular",
+                      "lapsed_regular",
+                      "reliable_attendee",
+                      "needs_confirmation",
+                      "advocate",
+                      "high_impact_advocate",
+                      "whatsapp_reachable",
+                      "sms_reachable"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "manualTagId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "manualTag"
+                  },
+                  "manualTagId": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{32}$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "eventCount"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendanceCount"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "eventCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "days"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "lastSeenWithinDays"
+                  },
+                  "days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "intent"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "reachableForIntent"
+                  },
+                  "intent": {
+                    "const": "organizerWhatsappCampaign"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "definitionHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "definitionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "lastPreviewMatchCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "lastPreviewAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
+export const listOrganizerSavedAudiencesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_saved_audiences_response.schema.json",
+  "title": "ListOrganizerSavedAudiencesCallableResponse",
+  "description": "One bounded page of reusable organizer CRM audiences.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "audiences",
+    "nextCursor"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "audiences": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "title": "OrganizerSavedAudienceCallableResponse",
+        "description": "Sanitized reusable organizer CRM audience definition.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "audienceId",
+          "scope",
+          "name",
+          "status",
+          "definition",
+          "definitionHash",
+          "definitionVersion",
+          "revision",
+          "lastPreviewMatchCount",
+          "lastPreviewAtMillis",
+          "createdAtMillis",
+          "updatedAtMillis"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "audienceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "scope": {
+            "const": "organizerCrm"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "archived"
+            ]
+          },
+          "definition": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "join",
+              "predicates"
+            ],
+            "properties": {
+              "join": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "any"
+                ]
+              },
+              "predicates": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 8,
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "segmentId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "computedSegment"
+                        },
+                        "segmentId": {
+                          "type": "string",
+                          "enum": [
+                            "new_to_organizer",
+                            "first_time_attendee",
+                            "repeat_attendee",
+                            "regular",
+                            "lapsed_regular",
+                            "reliable_attendee",
+                            "needs_confirmation",
+                            "advocate",
+                            "high_impact_advocate",
+                            "whatsapp_reachable",
+                            "sms_reachable"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "manualTagId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "manualTag"
+                        },
+                        "manualTagId": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{32}$"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "operator",
+                        "eventCount"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "attendanceCount"
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "atLeast",
+                            "atMost"
+                          ]
+                        },
+                        "eventCount": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 10000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "days"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "lastSeenWithinDays"
+                        },
+                        "days": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 3650
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "intent"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "reachableForIntent"
+                        },
+                        "intent": {
+                          "const": "organizerWhatsappCampaign"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "definitionHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "definitionVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "lastPreviewMatchCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 2500
+          },
+          "lastPreviewAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+};
+
+export const previewOrganizerSavedAudienceCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/preview_organizer_saved_audience_response.schema.json",
+  "title": "PreviewOrganizerSavedAudienceCallableResponse",
+  "description": "Exact saved-audience preview. Incomplete or over-limit evaluation fails instead of returning this shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "audience",
+    "coverage",
+    "matchCount",
+    "sample",
+    "evaluatedAtMillis"
+  ],
+  "properties": {
+    "audience": {
+      "title": "OrganizerSavedAudienceCallableResponse",
+      "description": "Sanitized reusable organizer CRM audience definition.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "audienceId",
+        "scope",
+        "name",
+        "status",
+        "definition",
+        "definitionHash",
+        "definitionVersion",
+        "revision",
+        "lastPreviewMatchCount",
+        "lastPreviewAtMillis",
+        "createdAtMillis",
+        "updatedAtMillis"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "audienceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "scope": {
+          "const": "organizerCrm"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "archived"
+          ]
+        },
+        "definition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "join",
+            "predicates"
+          ],
+          "properties": {
+            "join": {
+              "type": "string",
+              "enum": [
+                "all",
+                "any"
+              ]
+            },
+            "predicates": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "segmentId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "computedSegment"
+                      },
+                      "segmentId": {
+                        "type": "string",
+                        "enum": [
+                          "new_to_organizer",
+                          "first_time_attendee",
+                          "repeat_attendee",
+                          "regular",
+                          "lapsed_regular",
+                          "reliable_attendee",
+                          "needs_confirmation",
+                          "advocate",
+                          "high_impact_advocate",
+                          "whatsapp_reachable",
+                          "sms_reachable"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "manualTagId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "manualTag"
+                      },
+                      "manualTagId": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{32}$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "operator",
+                      "eventCount"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "attendanceCount"
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": [
+                          "atLeast",
+                          "atMost"
+                        ]
+                      },
+                      "eventCount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "days"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "lastSeenWithinDays"
+                      },
+                      "days": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 3650
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "intent"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "reachableForIntent"
+                      },
+                      "intent": {
+                        "const": "organizerWhatsappCampaign"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "definitionHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definitionVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "lastPreviewMatchCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "lastPreviewAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "createdAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "updatedAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "coverage": {
+      "const": "exact"
+    },
+    "matchCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2500
+    },
+    "sample": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contactId",
+          "displayName"
+        ],
+        "properties": {
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        }
+      }
+    },
+    "evaluatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
+export const prepareOrganizerManualSendTaskCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_organizer_manual_send_task_payload.schema.json",
+  "title": "PrepareOrganizerManualSendTaskCallablePayload",
+  "description": "Persists one queued individual external handoff before the client attempts to open the external application.",
+  "x-callable-aliases": [
+    "prepareOrganizerManualSendTask"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "requestId",
+    "intent",
+    "prefillText"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "intent": {
+      "const": "individualConversation"
+    },
+    "prefillText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
+export const listOrganizerManualSendTasksCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_manual_send_tasks_payload.schema.json",
+  "title": "ListOrganizerManualSendTasksCallablePayload",
+  "description": "Lists a bounded organizer manual-send queue or history page.",
+  "x-callable-aliases": [
+    "listOrganizerManualSendTasks"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "activeOnly": {
+      "type": "boolean",
+      "default": true
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "default": 25
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
+export const openOrganizerManualSendTaskCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/open_organizer_manual_send_task_payload.schema.json",
+  "title": "OpenOrganizerManualSendTaskCallablePayload",
+  "description": "Revision-bound acknowledgement that the device accepted the external handoff.",
+  "x-callable-aliases": [
+    "openOrganizerManualSendTask"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "taskId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const validateOrganizerManualSendTaskLaunchCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/validate_organizer_manual_send_task_launch_payload.schema.json",
+  "title": "ValidateOrganizerManualSendTaskLaunchCallablePayload",
+  "description": "Revision-bound, read-only authority check immediately before re-opening an external handoff.",
+  "x-callable-aliases": [
+    "validateOrganizerManualSendTaskLaunch"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "taskId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const markOrganizerManualSendTaskCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/mark_organizer_manual_send_task_payload.schema.json",
+  "title": "MarkOrganizerManualSendTaskCallablePayload",
+  "description": "Revision-bound explicit terminal host action for one manual-send task.",
+  "x-callable-aliases": [
+    "markOrganizerManualSendTask"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "taskId",
+    "expectedRevision",
+    "action"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "hostMarkedSent",
+        "skipped",
+        "cancelled"
+      ]
+    }
+  }
+};
+
+export const replanOrganizerManualSendTasksCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/replan_organizer_manual_send_tasks_payload.schema.json",
+  "title": "ReplanOrganizerManualSendTasksCallablePayload",
+  "description": "Explicitly rechecks current communication routes for active manual work without mutating, dispatching, or completing it.",
+  "x-callable-aliases": [
+    "replanOrganizerManualSendTasks"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "taskIds"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    }
+  }
+};
+
+export const organizerManualSendTaskCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_manual_send_task_response.schema.json",
+  "title": "OrganizerManualSendTaskCallableResponse",
+  "description": "Manager-visible manual handoff task. Handoff-opened and host-marked-sent are assertions, never delivery receipts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "taskId",
+    "contactId",
+    "displayName",
+    "intent",
+    "routeId",
+    "deliveryMode",
+    "status",
+    "active",
+    "revision",
+    "phoneE164",
+    "prefillText",
+    "openCount",
+    "createdAtMillis",
+    "updatedAtMillis",
+    "openedAtMillis",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "individualConversation",
+        "savedAudienceCampaign"
+      ]
+    },
+    "routeId": {
+      "const": "personalWhatsappHandoff"
+    },
+    "deliveryMode": {
+      "const": "byHand"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "handoffOpened",
+        "hostMarkedSent",
+        "skipped",
+        "cancelled",
+        "superseded",
+        "expired"
+      ]
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "phoneE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "prefillText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "openCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "openedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
+export const listOrganizerManualSendTasksCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_manual_send_tasks_response.schema.json",
+  "title": "ListOrganizerManualSendTasksCallableResponse",
+  "description": "Bounded manual-send queue or history page.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "tasks",
+    "nextCursor"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "tasks": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "title": "OrganizerManualSendTaskCallableResponse",
+        "description": "Manager-visible manual handoff task. Handoff-opened and host-marked-sent are assertions, never delivery receipts.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "taskId",
+          "contactId",
+          "displayName",
+          "intent",
+          "routeId",
+          "deliveryMode",
+          "status",
+          "active",
+          "revision",
+          "phoneE164",
+          "prefillText",
+          "openCount",
+          "createdAtMillis",
+          "updatedAtMillis",
+          "openedAtMillis",
+          "expiresAtMillis"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "taskId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "intent": {
+            "type": "string",
+            "enum": [
+              "individualConversation",
+              "savedAudienceCampaign"
+            ]
+          },
+          "routeId": {
+            "const": "personalWhatsappHandoff"
+          },
+          "deliveryMode": {
+            "const": "byHand"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "handoffOpened",
+              "hostMarkedSent",
+              "skipped",
+              "cancelled",
+              "superseded",
+              "expired"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "phoneE164": {
+            "type": "string",
+            "pattern": "^\\+[1-9][0-9]{7,14}$"
+          },
+          "prefillText": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "openCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "openedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
+export const replanOrganizerManualSendTasksCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/replan_organizer_manual_send_tasks_response.schema.json",
+  "title": "ReplanOrganizerManualSendTasksCallableResponse",
+  "description": "Current route advice for manual tasks. Returning this response never mutates or completes a task.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "results",
+    "resolvedAtMillis"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "taskId",
+          "contactId",
+          "disposition",
+          "recommendedRouteId",
+          "blocker"
+        ],
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "keepByHand",
+              "managedRouteAvailable",
+              "unavailable",
+              "taskInactive"
+            ]
+          },
+          "recommendedRouteId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "catchChat",
+              "personalWhatsappHandoff",
+              null
+            ]
+          },
+          "blocker": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "catchAccountRequired",
+              "identityAmbiguous",
+              "missingPhone",
+              "organizerSuppressed",
+              "contactOptedOut",
+              "contactUnavailable",
+              "endpointChanged",
+              null
+            ]
+          }
+        }
+      }
+    },
+    "resolvedAtMillis": {
+      "type": "integer",
+      "minimum": 0
     }
   }
 };
@@ -58249,6 +61702,7 @@ export const organizerCampaignCallableResponseSchema = {
   "required": [
     "organizerId",
     "campaignId",
+    "savedAudienceId",
     "status",
     "revision",
     "audienceCounts",
@@ -58267,6 +61721,14 @@ export const organizerCampaignCallableResponseSchema = {
     },
     "campaignId": {
       "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "savedAudienceId": {
+      "type": [
+        "string",
+        "null"
+      ],
       "minLength": 1,
       "maxLength": 180
     },
@@ -58457,6 +61919,8 @@ export const organizerCampaignCallableResponseSchema = {
           "senderInactive",
           "templateMissing",
           "templateUnapproved",
+          "savedAudienceMissing",
+          "savedAudienceChanged",
           "noReachableRecipients",
           "audienceCoveragePartial",
           "audienceTooLarge",
@@ -58535,6 +61999,8 @@ export const listOrganizerCampaignsCallableResponseSchema = {
               "campaignId",
               "name",
               "status",
+              "savedAudienceId",
+              "savedAudienceName",
               "segmentIds",
               "templateId",
               "templateName",
@@ -58573,11 +62039,27 @@ export const listOrganizerCampaignsCallableResponseSchema = {
                   "blocked"
                 ]
               },
+              "savedAudienceId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "savedAudienceName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 80
+              },
               "segmentIds": {
                 "type": "array",
-                "minItems": 1,
                 "maxItems": 5,
                 "uniqueItems": true,
+                "description": "Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.",
                 "items": {
                   "type": "string",
                   "enum": [
@@ -58925,6 +62407,8 @@ export const listOrganizerCampaignsCallableResponseSchema = {
             "campaignId",
             "name",
             "status",
+            "savedAudienceId",
+            "savedAudienceName",
             "segmentIds",
             "templateId",
             "templateName",
@@ -58963,11 +62447,27 @@ export const listOrganizerCampaignsCallableResponseSchema = {
                 "blocked"
               ]
             },
+            "savedAudienceId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "savedAudienceName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80
+            },
             "segmentIds": {
               "type": "array",
-              "minItems": 1,
               "maxItems": 5,
               "uniqueItems": true,
+              "description": "Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.",
               "items": {
                 "type": "string",
                 "enum": [
@@ -59303,6 +62803,8 @@ export const listOrganizerCampaignsCallableResponseSchema = {
         "campaignId",
         "name",
         "status",
+        "savedAudienceId",
+        "savedAudienceName",
         "segmentIds",
         "templateId",
         "templateName",
@@ -59341,11 +62843,27 @@ export const listOrganizerCampaignsCallableResponseSchema = {
             "blocked"
           ]
         },
+        "savedAudienceId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "savedAudienceName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
+        },
         "segmentIds": {
           "type": "array",
-          "minItems": 1,
           "maxItems": 5,
           "uniqueItems": true,
+          "description": "Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.",
           "items": {
             "type": "string",
             "enum": [
@@ -67217,6 +70735,7 @@ export const createOrganizerFormCallableResponseSchema = {
             "draftRevision",
             "publishedVersion",
             "submittedResponseCount",
+            "consequences",
             "updatedAtMillis",
             "publishedAtMillis",
             "lastResponseAtMillis"
@@ -67322,6 +70841,59 @@ export const createOrganizerFormCallableResponseSchema = {
               "type": "integer",
               "minimum": 0,
               "maximum": 1000000000
+            },
+            "consequences": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "coverage",
+                "identityPolicy",
+                "enabledAutomationActionKinds"
+              ],
+              "properties": {
+                "coverage": {
+                  "type": "string",
+                  "enum": [
+                    "exact",
+                    "identityOnly",
+                    "unavailable"
+                  ]
+                },
+                "identityPolicy": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "anonymous",
+                        "emailVerified",
+                        "phoneVerified",
+                        "emailOrPhoneVerified",
+                        "catchAccount"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "enabledAutomationActionKinds": {
+                  "type": "array",
+                  "maxItems": 7,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "notifyTeam",
+                      "addOrganizerTag",
+                      "createCrmContact",
+                      "addApplicationQueue",
+                      "proposeEventAttendee",
+                      "signedWebhook",
+                      "campaignHandoff"
+                    ]
+                  }
+                }
+              }
             },
             "updatedAtMillis": {
               "type": "integer",
@@ -68884,6 +72456,7 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
             "draftRevision",
             "publishedVersion",
             "submittedResponseCount",
+            "consequences",
             "updatedAtMillis",
             "publishedAtMillis",
             "lastResponseAtMillis"
@@ -68989,6 +72562,59 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
               "type": "integer",
               "minimum": 0,
               "maximum": 1000000000
+            },
+            "consequences": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "coverage",
+                "identityPolicy",
+                "enabledAutomationActionKinds"
+              ],
+              "properties": {
+                "coverage": {
+                  "type": "string",
+                  "enum": [
+                    "exact",
+                    "identityOnly",
+                    "unavailable"
+                  ]
+                },
+                "identityPolicy": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "anonymous",
+                        "emailVerified",
+                        "phoneVerified",
+                        "emailOrPhoneVerified",
+                        "catchAccount"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "enabledAutomationActionKinds": {
+                  "type": "array",
+                  "maxItems": 7,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "notifyTeam",
+                      "addOrganizerTag",
+                      "createCrmContact",
+                      "addApplicationQueue",
+                      "proposeEventAttendee",
+                      "signedWebhook",
+                      "campaignHandoff"
+                    ]
+                  }
+                }
+              }
             },
             "updatedAtMillis": {
               "type": "integer",
@@ -69829,6 +73455,7 @@ export const getOrganizerFormEditorCallableResponseSchema = {
             "draftRevision",
             "publishedVersion",
             "submittedResponseCount",
+            "consequences",
             "updatedAtMillis",
             "publishedAtMillis",
             "lastResponseAtMillis"
@@ -69934,6 +73561,59 @@ export const getOrganizerFormEditorCallableResponseSchema = {
               "type": "integer",
               "minimum": 0,
               "maximum": 1000000000
+            },
+            "consequences": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "coverage",
+                "identityPolicy",
+                "enabledAutomationActionKinds"
+              ],
+              "properties": {
+                "coverage": {
+                  "type": "string",
+                  "enum": [
+                    "exact",
+                    "identityOnly",
+                    "unavailable"
+                  ]
+                },
+                "identityPolicy": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "anonymous",
+                        "emailVerified",
+                        "phoneVerified",
+                        "emailOrPhoneVerified",
+                        "catchAccount"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "enabledAutomationActionKinds": {
+                  "type": "array",
+                  "maxItems": 7,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "notifyTeam",
+                      "addOrganizerTag",
+                      "createCrmContact",
+                      "addApplicationQueue",
+                      "proposeEventAttendee",
+                      "signedWebhook",
+                      "campaignHandoff"
+                    ]
+                  }
+                }
+              }
             },
             "updatedAtMillis": {
               "type": "integer",
@@ -70828,6 +74508,7 @@ export const listOrganizerFormsCallableResponseSchema = {
           "draftRevision",
           "publishedVersion",
           "submittedResponseCount",
+          "consequences",
           "updatedAtMillis",
           "publishedAtMillis",
           "lastResponseAtMillis"
@@ -70933,6 +74614,59 @@ export const listOrganizerFormsCallableResponseSchema = {
             "type": "integer",
             "minimum": 0,
             "maximum": 1000000000
+          },
+          "consequences": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "coverage",
+              "identityPolicy",
+              "enabledAutomationActionKinds"
+            ],
+            "properties": {
+              "coverage": {
+                "type": "string",
+                "enum": [
+                  "exact",
+                  "identityOnly",
+                  "unavailable"
+                ]
+              },
+              "identityPolicy": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "anonymous",
+                      "emailVerified",
+                      "phoneVerified",
+                      "emailOrPhoneVerified",
+                      "catchAccount"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "enabledAutomationActionKinds": {
+                "type": "array",
+                "maxItems": 7,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "notifyTeam",
+                    "addOrganizerTag",
+                    "createCrmContact",
+                    "addApplicationQueue",
+                    "proposeEventAttendee",
+                    "signedWebhook",
+                    "campaignHandoff"
+                  ]
+                }
+              }
+            }
           },
           "updatedAtMillis": {
             "type": "integer",
@@ -71827,6 +75561,7 @@ export const publishOrganizerFormCallableResponseSchema = {
         "draftRevision",
         "publishedVersion",
         "submittedResponseCount",
+        "consequences",
         "updatedAtMillis",
         "publishedAtMillis",
         "lastResponseAtMillis"
@@ -71932,6 +75667,59 @@ export const publishOrganizerFormCallableResponseSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 1000000000
+        },
+        "consequences": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "coverage",
+            "identityPolicy",
+            "enabledAutomationActionKinds"
+          ],
+          "properties": {
+            "coverage": {
+              "type": "string",
+              "enum": [
+                "exact",
+                "identityOnly",
+                "unavailable"
+              ]
+            },
+            "identityPolicy": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "anonymous",
+                    "emailVerified",
+                    "phoneVerified",
+                    "emailOrPhoneVerified",
+                    "catchAccount"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "enabledAutomationActionKinds": {
+              "type": "array",
+              "maxItems": 7,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "notifyTeam",
+                  "addOrganizerTag",
+                  "createCrmContact",
+                  "addApplicationQueue",
+                  "proposeEventAttendee",
+                  "signedWebhook",
+                  "campaignHandoff"
+                ]
+              }
+            }
+          }
         },
         "updatedAtMillis": {
           "type": "integer",
@@ -72027,6 +75815,7 @@ export const setOrganizerFormLifecycleCallableResponseSchema = {
         "draftRevision",
         "publishedVersion",
         "submittedResponseCount",
+        "consequences",
         "updatedAtMillis",
         "publishedAtMillis",
         "lastResponseAtMillis"
@@ -72132,6 +75921,59 @@ export const setOrganizerFormLifecycleCallableResponseSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 1000000000
+        },
+        "consequences": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "coverage",
+            "identityPolicy",
+            "enabledAutomationActionKinds"
+          ],
+          "properties": {
+            "coverage": {
+              "type": "string",
+              "enum": [
+                "exact",
+                "identityOnly",
+                "unavailable"
+              ]
+            },
+            "identityPolicy": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "anonymous",
+                    "emailVerified",
+                    "phoneVerified",
+                    "emailOrPhoneVerified",
+                    "catchAccount"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "enabledAutomationActionKinds": {
+              "type": "array",
+              "maxItems": 7,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "notifyTeam",
+                  "addOrganizerTag",
+                  "createCrmContact",
+                  "addApplicationQueue",
+                  "proposeEventAttendee",
+                  "signedWebhook",
+                  "campaignHandoff"
+                ]
+              }
+            }
+          }
         },
         "updatedAtMillis": {
           "type": "integer",
@@ -72232,6 +76074,7 @@ export const duplicateOrganizerFormCallableResponseSchema = {
             "draftRevision",
             "publishedVersion",
             "submittedResponseCount",
+            "consequences",
             "updatedAtMillis",
             "publishedAtMillis",
             "lastResponseAtMillis"
@@ -72337,6 +76180,59 @@ export const duplicateOrganizerFormCallableResponseSchema = {
               "type": "integer",
               "minimum": 0,
               "maximum": 1000000000
+            },
+            "consequences": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "coverage",
+                "identityPolicy",
+                "enabledAutomationActionKinds"
+              ],
+              "properties": {
+                "coverage": {
+                  "type": "string",
+                  "enum": [
+                    "exact",
+                    "identityOnly",
+                    "unavailable"
+                  ]
+                },
+                "identityPolicy": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "anonymous",
+                        "emailVerified",
+                        "phoneVerified",
+                        "emailOrPhoneVerified",
+                        "catchAccount"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "enabledAutomationActionKinds": {
+                  "type": "array",
+                  "maxItems": 7,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "notifyTeam",
+                      "addOrganizerTag",
+                      "createCrmContact",
+                      "addApplicationQueue",
+                      "proposeEventAttendee",
+                      "signedWebhook",
+                      "campaignHandoff"
+                    ]
+                  }
+                }
+              }
             },
             "updatedAtMillis": {
               "type": "integer",
@@ -81804,7 +85700,7 @@ export const getOrganizerContactDetailCallableResponseSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/get_organizer_contact_detail_response.schema.json",
   "title": "GetOrganizerContactDetailCallableResponse",
-  "description": "Manager-only contact facts and bounded event timeline. Private feedback and Event Success inputs are excluded.",
+  "description": "Manager-only contact facts, permission provenance, and a bounded cross-surface activity timeline. Private feedback and Event Success inputs are excluded.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -81820,10 +85716,16 @@ export const getOrganizerContactDetailCallableResponseSchema = {
     "identityConfidence",
     "ambiguousCandidateContactIds",
     "whatsappAdminSuppressed",
+    "whatsappPermission",
+    "origins",
+    "originsTruncated",
     "traits",
     "revenue",
     "events",
     "eventsTruncated",
+    "timeline",
+    "timelineTruncated",
+    "timelineCoverage",
     "activeMerges",
     "revision"
   ],
@@ -81905,6 +85807,201 @@ export const getOrganizerContactDetailCallableResponseSchema = {
       }
     },
     "whatsappAdminSuppressed": {
+      "type": "boolean"
+    },
+    "whatsappPermission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidenceStatus",
+        "receiptId",
+        "source",
+        "sourceFormId",
+        "sourceFormTitle",
+        "decisionAtMillis",
+        "identityStrength"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "unavailable",
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
+            "unsubscribeLink",
+            "inboundStop",
+            "providerWebhook",
+            "legacyIncomplete"
+          ]
+        },
+        "sourceFormId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceFormTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "decisionAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "identityStrength": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "unknown",
+            "emailVerified",
+            "phoneVerified",
+            "catchAccount"
+          ]
+        }
+      }
+    },
+    "origins": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "originId",
+          "sourceKind",
+          "sourceEntityKind",
+          "formId",
+          "formTitle",
+          "eventId",
+          "eventTitle",
+          "observedAtMillis"
+        ],
+        "properties": {
+          "originId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "sourceKind": {
+            "type": "string",
+            "enum": [
+              "catchBooking",
+              "hostImport",
+              "hostManual",
+              "webOtp",
+              "providerSync",
+              "hostForm"
+            ]
+          },
+          "sourceEntityKind": {
+            "type": "string",
+            "enum": [
+              "eventAttendee",
+              "manualEntry",
+              "hostFormResponse",
+              "providerRecord",
+              "importBatch",
+              "webRegistration"
+            ]
+          },
+          "formId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "formTitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "eventTitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "observedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "originsTruncated": {
       "type": "boolean"
     },
     "traits": {
@@ -82518,6 +86615,341 @@ export const getOrganizerContactDetailCallableResponseSchema = {
         "unavailable"
       ]
     },
+    "timeline": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "timelineId",
+              "responseId",
+              "formId",
+              "formTitle",
+              "action",
+              "answeredQuestionCount",
+              "occurredAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "form"
+              },
+              "timelineId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "responseId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "formId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "formTitle": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "submitted",
+                  "withdrawn"
+                ]
+              },
+              "answeredQuestionCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4000
+              },
+              "occurredAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "timelineId",
+              "eventId",
+              "eventName",
+              "status",
+              "checkedIn",
+              "eventOriginMode",
+              "eventProvider",
+              "occurredAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "event"
+              },
+              "timelineId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "eventName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "invited",
+                  "registered",
+                  "waitlisted",
+                  "checkedIn",
+                  "cancelled"
+                ]
+              },
+              "checkedIn": {
+                "type": "boolean"
+              },
+              "eventOriginMode": {
+                "type": "string",
+                "enum": [
+                  "catchNative",
+                  "externalCompanion",
+                  "unknown"
+                ]
+              },
+              "eventProvider": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "catch",
+                  "generic",
+                  "luma",
+                  "eventbrite",
+                  "partiful",
+                  "posh",
+                  "bookmyshow",
+                  "district",
+                  "sortmyscene",
+                  "airbnb",
+                  null
+                ]
+              },
+              "occurredAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "timelineId",
+              "sendKind",
+              "name",
+              "status",
+              "deliveryMode",
+              "observation",
+              "referenceId",
+              "occurredAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "send"
+              },
+              "timelineId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "sendKind": {
+                "type": "string",
+                "enum": [
+                  "campaign",
+                  "announcement",
+                  "manualHandoff"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "available",
+                  "pending",
+                  "sending",
+                  "suppressed",
+                  "accepted",
+                  "sent",
+                  "delivered",
+                  "read",
+                  "failed",
+                  "replied",
+                  "optedOut",
+                  "queued",
+                  "handoffOpened",
+                  "hostMarkedSent",
+                  "skipped",
+                  "cancelled",
+                  "superseded",
+                  "expired"
+                ]
+              },
+              "deliveryMode": {
+                "type": "string",
+                "enum": [
+                  "inCatch",
+                  "api",
+                  "byHand"
+                ]
+              },
+              "observation": {
+                "type": "string",
+                "enum": [
+                  "providerReceipt",
+                  "catchActivity",
+                  "hostOpened",
+                  "hostAssertion",
+                  "notSent"
+                ]
+              },
+              "referenceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "occurredAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "timelineId",
+              "transport",
+              "direction",
+              "bodyPreview",
+              "threadId",
+              "occurredAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "reply"
+              },
+              "timelineId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "transport": {
+                "type": "string",
+                "enum": [
+                  "catchChat",
+                  "managedWhatsapp"
+                ]
+              },
+              "direction": {
+                "type": "string",
+                "enum": [
+                  "inbound",
+                  "outbound"
+                ]
+              },
+              "bodyPreview": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "threadId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "occurredAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    "timelineTruncated": {
+      "type": "boolean"
+    },
+    "timelineCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "forms",
+        "events",
+        "sends",
+        "replies",
+        "replyObservation"
+      ],
+      "properties": {
+        "forms": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "events": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "sends": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "replies": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "replyObservation": {
+          "const": "catchAndManagedWhatsappOnly"
+        }
+      }
+    },
     "activeMerges": {
       "type": "array",
       "maxItems": 50,
@@ -82592,6 +87024,806 @@ export const getOrganizerContactDetailCallableResponseSchema = {
     }
   },
   "definitions": {
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidenceStatus",
+        "receiptId",
+        "source",
+        "sourceFormId",
+        "sourceFormTitle",
+        "decisionAtMillis",
+        "identityStrength"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "unavailable",
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
+            "unsubscribeLink",
+            "inboundStop",
+            "providerWebhook",
+            "legacyIncomplete"
+          ]
+        },
+        "sourceFormId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceFormTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "decisionAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "identityStrength": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "unknown",
+            "emailVerified",
+            "phoneVerified",
+            "catchAccount"
+          ]
+        }
+      }
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "originId",
+        "sourceKind",
+        "sourceEntityKind",
+        "formId",
+        "formTitle",
+        "eventId",
+        "eventTitle",
+        "observedAtMillis"
+      ],
+      "properties": {
+        "originId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "sourceKind": {
+          "type": "string",
+          "enum": [
+            "catchBooking",
+            "hostImport",
+            "hostManual",
+            "webOtp",
+            "providerSync",
+            "hostForm"
+          ]
+        },
+        "sourceEntityKind": {
+          "type": "string",
+          "enum": [
+            "eventAttendee",
+            "manualEntry",
+            "hostFormResponse",
+            "providerRecord",
+            "importBatch",
+            "webRegistration"
+          ]
+        },
+        "formId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "formTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "eventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eventTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "observedAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "timelineCoverageValue": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "partial",
+        "unavailable"
+      ]
+    },
+    "timelineCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "forms",
+        "events",
+        "sends",
+        "replies",
+        "replyObservation"
+      ],
+      "properties": {
+        "forms": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "events": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "sends": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "replies": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "replyObservation": {
+          "const": "catchAndManagedWhatsappOnly"
+        }
+      }
+    },
+    "timelineEntry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "timelineId",
+            "responseId",
+            "formId",
+            "formTitle",
+            "action",
+            "answeredQuestionCount",
+            "occurredAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "form"
+            },
+            "timelineId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "responseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "formId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "formTitle": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "submitted",
+                "withdrawn"
+              ]
+            },
+            "answeredQuestionCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4000
+            },
+            "occurredAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "timelineId",
+            "eventId",
+            "eventName",
+            "status",
+            "checkedIn",
+            "eventOriginMode",
+            "eventProvider",
+            "occurredAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "event"
+            },
+            "timelineId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "eventName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "invited",
+                "registered",
+                "waitlisted",
+                "checkedIn",
+                "cancelled"
+              ]
+            },
+            "checkedIn": {
+              "type": "boolean"
+            },
+            "eventOriginMode": {
+              "type": "string",
+              "enum": [
+                "catchNative",
+                "externalCompanion",
+                "unknown"
+              ]
+            },
+            "eventProvider": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "catch",
+                "generic",
+                "luma",
+                "eventbrite",
+                "partiful",
+                "posh",
+                "bookmyshow",
+                "district",
+                "sortmyscene",
+                "airbnb",
+                null
+              ]
+            },
+            "occurredAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "timelineId",
+            "sendKind",
+            "name",
+            "status",
+            "deliveryMode",
+            "observation",
+            "referenceId",
+            "occurredAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "send"
+            },
+            "timelineId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "sendKind": {
+              "type": "string",
+              "enum": [
+                "campaign",
+                "announcement",
+                "manualHandoff"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "available",
+                "pending",
+                "sending",
+                "suppressed",
+                "accepted",
+                "sent",
+                "delivered",
+                "read",
+                "failed",
+                "replied",
+                "optedOut",
+                "queued",
+                "handoffOpened",
+                "hostMarkedSent",
+                "skipped",
+                "cancelled",
+                "superseded",
+                "expired"
+              ]
+            },
+            "deliveryMode": {
+              "type": "string",
+              "enum": [
+                "inCatch",
+                "api",
+                "byHand"
+              ]
+            },
+            "observation": {
+              "type": "string",
+              "enum": [
+                "providerReceipt",
+                "catchActivity",
+                "hostOpened",
+                "hostAssertion",
+                "notSent"
+              ]
+            },
+            "referenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "occurredAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "timelineId",
+            "transport",
+            "direction",
+            "bodyPreview",
+            "threadId",
+            "occurredAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reply"
+            },
+            "timelineId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "transport": {
+              "type": "string",
+              "enum": [
+                "catchChat",
+                "managedWhatsapp"
+              ]
+            },
+            "direction": {
+              "type": "string",
+              "enum": [
+                "inbound",
+                "outbound"
+              ]
+            },
+            "bodyPreview": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "threadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "occurredAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      ]
+    },
+    "formTimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timelineId",
+        "responseId",
+        "formId",
+        "formTitle",
+        "action",
+        "answeredQuestionCount",
+        "occurredAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "form"
+        },
+        "timelineId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "withdrawn"
+          ]
+        },
+        "answeredQuestionCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4000
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "eventTimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timelineId",
+        "eventId",
+        "eventName",
+        "status",
+        "checkedIn",
+        "eventOriginMode",
+        "eventProvider",
+        "occurredAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "event"
+        },
+        "timelineId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "invited",
+            "registered",
+            "waitlisted",
+            "checkedIn",
+            "cancelled"
+          ]
+        },
+        "checkedIn": {
+          "type": "boolean"
+        },
+        "eventOriginMode": {
+          "type": "string",
+          "enum": [
+            "catchNative",
+            "externalCompanion",
+            "unknown"
+          ]
+        },
+        "eventProvider": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "catch",
+            "generic",
+            "luma",
+            "eventbrite",
+            "partiful",
+            "posh",
+            "bookmyshow",
+            "district",
+            "sortmyscene",
+            "airbnb",
+            null
+          ]
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "sendTimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timelineId",
+        "sendKind",
+        "name",
+        "status",
+        "deliveryMode",
+        "observation",
+        "referenceId",
+        "occurredAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "send"
+        },
+        "timelineId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sendKind": {
+          "type": "string",
+          "enum": [
+            "campaign",
+            "announcement",
+            "manualHandoff"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "available",
+            "pending",
+            "sending",
+            "suppressed",
+            "accepted",
+            "sent",
+            "delivered",
+            "read",
+            "failed",
+            "replied",
+            "optedOut",
+            "queued",
+            "handoffOpened",
+            "hostMarkedSent",
+            "skipped",
+            "cancelled",
+            "superseded",
+            "expired"
+          ]
+        },
+        "deliveryMode": {
+          "type": "string",
+          "enum": [
+            "inCatch",
+            "api",
+            "byHand"
+          ]
+        },
+        "observation": {
+          "type": "string",
+          "enum": [
+            "providerReceipt",
+            "catchActivity",
+            "hostOpened",
+            "hostAssertion",
+            "notSent"
+          ]
+        },
+        "referenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "replyTimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timelineId",
+        "transport",
+        "direction",
+        "bodyPreview",
+        "threadId",
+        "occurredAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "reply"
+        },
+        "timelineId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "transport": {
+          "type": "string",
+          "enum": [
+            "catchChat",
+            "managedWhatsapp"
+          ]
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "inbound",
+            "outbound"
+          ]
+        },
+        "bodyPreview": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "threadId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
     "activeMerge": {
       "type": "object",
       "additionalProperties": false,
@@ -83461,6 +88693,401 @@ export const getOrganizerContactDetailCallableResponseSchema = {
   }
 };
 
+export const resolveOrganizerCommunicationPlanCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/resolve_organizer_communication_plan_payload.schema.json",
+  "title": "ResolveOrganizerCommunicationPlanCallablePayload",
+  "description": "Manager-authorized request for one intent-aware organizer communication plan.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "intent",
+    "target"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "individualConversation"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "contactId"
+      ],
+      "properties": {
+        "kind": {
+          "const": "contact"
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    }
+  }
+};
+
+export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/resolve_organizer_communication_plan_response.schema.json",
+  "title": "ResolveOrganizerCommunicationPlanCallableResponse",
+  "description": "Server-derived communication routes and blockers for a named organizer intent at one capability snapshot.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "intent",
+    "capabilityVersion",
+    "resolvedAtMillis",
+    "recipients"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "individualConversation"
+      ]
+    },
+    "capabilityVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "resolvedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "recipients": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contactId",
+          "displayName",
+          "outcome",
+          "recommendedRouteId",
+          "routes"
+        ],
+        "properties": {
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "inCatch",
+              "automatic",
+              "byHand",
+              "unavailable"
+            ]
+          },
+          "recommendedRouteId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "personalWhatsappHandoff",
+                  "organizerWhatsappCampaign",
+                  "catchWhatsapp",
+                  "catchChat",
+                  "catchEventAnnouncement",
+                  "organizerFollowerUpdate"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "routes": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "routeId",
+                "executionMode",
+                "availability",
+                "blocker"
+              ],
+              "properties": {
+                "routeId": {
+                  "type": "string",
+                  "enum": [
+                    "personalWhatsappHandoff",
+                    "organizerWhatsappCampaign",
+                    "catchWhatsapp",
+                    "catchChat",
+                    "catchEventAnnouncement",
+                    "organizerFollowerUpdate"
+                  ]
+                },
+                "executionMode": {
+                  "type": "string",
+                  "enum": [
+                    "managedDelivery",
+                    "externalHandoff"
+                  ]
+                },
+                "availability": {
+                  "type": "string",
+                  "enum": [
+                    "available",
+                    "unavailable"
+                  ]
+                },
+                "blocker": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "catchAccountRequired",
+                        "identityAmbiguous",
+                        "missingPhone",
+                        "organizerSuppressed",
+                        "contactOptedOut",
+                        "permissionRequired",
+                        "senderUnavailable",
+                        "intentUnsupported"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "routeId": {
+      "type": "string",
+      "enum": [
+        "personalWhatsappHandoff",
+        "organizerWhatsappCampaign",
+        "catchWhatsapp",
+        "catchChat",
+        "catchEventAnnouncement",
+        "organizerFollowerUpdate"
+      ]
+    },
+    "routeBlocker": {
+      "type": "string",
+      "enum": [
+        "catchAccountRequired",
+        "identityAmbiguous",
+        "missingPhone",
+        "organizerSuppressed",
+        "contactOptedOut",
+        "permissionRequired",
+        "senderUnavailable",
+        "intentUnsupported"
+      ]
+    },
+    "routeOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routeId",
+        "executionMode",
+        "availability",
+        "blocker"
+      ],
+      "properties": {
+        "routeId": {
+          "type": "string",
+          "enum": [
+            "personalWhatsappHandoff",
+            "organizerWhatsappCampaign",
+            "catchWhatsapp",
+            "catchChat",
+            "catchEventAnnouncement",
+            "organizerFollowerUpdate"
+          ]
+        },
+        "executionMode": {
+          "type": "string",
+          "enum": [
+            "managedDelivery",
+            "externalHandoff"
+          ]
+        },
+        "availability": {
+          "type": "string",
+          "enum": [
+            "available",
+            "unavailable"
+          ]
+        },
+        "blocker": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "catchAccountRequired",
+                "identityAmbiguous",
+                "missingPhone",
+                "organizerSuppressed",
+                "contactOptedOut",
+                "permissionRequired",
+                "senderUnavailable",
+                "intentUnsupported"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "recipientPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contactId",
+        "displayName",
+        "outcome",
+        "recommendedRouteId",
+        "routes"
+      ],
+      "properties": {
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "inCatch",
+            "automatic",
+            "byHand",
+            "unavailable"
+          ]
+        },
+        "recommendedRouteId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "personalWhatsappHandoff",
+                "organizerWhatsappCampaign",
+                "catchWhatsapp",
+                "catchChat",
+                "catchEventAnnouncement",
+                "organizerFollowerUpdate"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "routes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "routeId",
+              "executionMode",
+              "availability",
+              "blocker"
+            ],
+            "properties": {
+              "routeId": {
+                "type": "string",
+                "enum": [
+                  "personalWhatsappHandoff",
+                  "organizerWhatsappCampaign",
+                  "catchWhatsapp",
+                  "catchChat",
+                  "catchEventAnnouncement",
+                  "organizerFollowerUpdate"
+                ]
+              },
+              "executionMode": {
+                "type": "string",
+                "enum": [
+                  "managedDelivery",
+                  "externalHandoff"
+                ]
+              },
+              "availability": {
+                "type": "string",
+                "enum": [
+                  "available",
+                  "unavailable"
+                ]
+              },
+              "blocker": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "catchAccountRequired",
+                      "identityAmbiguous",
+                      "missingPhone",
+                      "organizerSuppressed",
+                      "contactOptedOut",
+                      "permissionRequired",
+                      "senderUnavailable",
+                      "intentUnsupported"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
 export const mutateOrganizerContactCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/mutate_organizer_contact_payload.schema.json",
@@ -84051,7 +89678,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema = {
                     "hostImport",
                     "hostManual",
                     "webOtp",
-                    "providerSync"
+                    "providerSync",
+                    "hostForm"
                   ]
                 },
                 "revision": {
@@ -84087,7 +89715,7 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema = {
           "sourceKinds": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 5,
+            "maxItems": 6,
             "uniqueItems": true,
             "items": {
               "type": "string",
@@ -84096,7 +89724,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema = {
                 "hostImport",
                 "hostManual",
                 "webOtp",
-                "providerSync"
+                "providerSync",
+                "hostForm"
               ]
             }
           },
@@ -84218,7 +89847,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema = {
                     "hostImport",
                     "hostManual",
                     "webOtp",
-                    "providerSync"
+                    "providerSync",
+                    "hostForm"
                   ]
                 },
                 "revision": {
@@ -84254,7 +89884,7 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema = {
           "sourceKinds": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 5,
+            "maxItems": 6,
             "uniqueItems": true,
             "items": {
               "type": "string",
@@ -84263,7 +89893,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema = {
                 "hostImport",
                 "hostManual",
                 "webOtp",
-                "providerSync"
+                "providerSync",
+                "hostForm"
               ]
             }
           },
@@ -84394,7 +90025,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema = {
                   "hostImport",
                   "hostManual",
                   "webOtp",
-                  "providerSync"
+                  "providerSync",
+                  "hostForm"
                 ]
               },
               "revision": {
@@ -84430,7 +90062,7 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema = {
         "sourceKinds": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 5,
+          "maxItems": 6,
           "uniqueItems": true,
           "items": {
             "type": "string",
@@ -84439,7 +90071,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema = {
               "hostImport",
               "hostManual",
               "webOtp",
-              "providerSync"
+              "providerSync",
+              "hostForm"
             ]
           }
         },
@@ -84531,7 +90164,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema = {
             "hostImport",
             "hostManual",
             "webOtp",
-            "providerSync"
+            "providerSync",
+            "hostForm"
           ]
         },
         "revision": {
@@ -85122,6 +90756,7 @@ export const mutateOrganizerContactMergeCallableResponseSchema = {
     "movedEdgeCount",
     "movedIdentityEvidenceCount",
     "movedClaimCount",
+    "movedOriginCount",
     "replayed"
   ],
   "properties": {
@@ -85158,6 +90793,11 @@ export const mutateOrganizerContactMergeCallableResponseSchema = {
       "maximum": 400
     },
     "movedClaimCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 400
+    },
+    "movedOriginCount": {
       "type": "integer",
       "minimum": 0,
       "maximum": 400

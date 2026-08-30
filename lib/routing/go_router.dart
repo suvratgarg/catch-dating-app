@@ -27,7 +27,6 @@ import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
@@ -109,22 +108,16 @@ HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
     (workspace) => workspace.name == uri.queryParameters['workspace'],
     orElse: () => HostMessagingWorkspace.inbox,
   );
-  final requestedSegment = uri.queryParameters['segment'];
-  final campaignSegment = HostAudienceSegment.values
-      .where((segment) => segment.wireValue == requestedSegment)
-      .firstOrNull;
-  final initialCampaignSegments =
-      uri.queryParameters['compose'] == '1' && campaignSegment != null
-      ? {campaignSegment}
-      : const <HostAudienceSegment>{};
-  final requestedSearch = uri.queryParameters['search']?.trim();
+  final requestedAudienceId = uri.queryParameters['audienceId']?.trim();
   return HostInboxScreen(
     initialScope: initialScope,
     initialWorkspace: initialWorkspace,
-    initialCampaignSegments: initialCampaignSegments,
-    initialCampaignSearch: requestedSearch == null || requestedSearch.isEmpty
-        ? null
-        : requestedSearch,
+    initialSavedAudienceId:
+        uri.queryParameters['compose'] == '1' &&
+            requestedAudienceId != null &&
+            requestedAudienceId.isNotEmpty
+        ? requestedAudienceId
+        : null,
     initialOrganizerId: initialOrganizerId,
     initialThreadId: uri.queryParameters['threadId'],
   );
@@ -140,6 +133,17 @@ String? hostOrganizerAudienceRedirect(Uri uri) {
       if (clubId != null && clubId.isNotEmpty) 'organizerId': clubId,
     },
   ).toString();
+}
+
+@visibleForTesting
+String hostApplicationsLegacyRedirect(Uri uri, {String? applicationId}) {
+  final path = applicationId == null
+      ? Routes.hostApplicationsScreen.path
+      : Routes.hostApplicationDetailScreen.path.replaceFirst(
+          ':applicationId',
+          applicationId,
+        );
+  return uri.replace(path: path).toString();
 }
 
 Event? _eventDetailInitialEvent(GoRouterState state) {
@@ -868,24 +872,16 @@ StatefulShellRoute _hostShellRoute(
             ),
             routes: [
               GoRoute(
-                path: 'applications',
-                name: Routes.hostApplicationsScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostApplicationsScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                path: 'applications/:applicationId',
+                redirect: (context, state) => hostApplicationsLegacyRedirect(
+                  state.uri,
+                  applicationId: state.pathParameters['applicationId'],
                 ),
-                routes: [
-                  GoRoute(
-                    path: ':applicationId',
-                    name: Routes.hostApplicationDetailScreen.name,
-                    parentNavigatorKey: keys.root,
-                    builder: (context, state) => HostApplicationDetailScreen(
-                      organizerId:
-                          state.uri.queryParameters['organizerId'] ?? '',
-                      applicationId: state.pathParameters['applicationId']!,
-                    ),
-                  ),
-                ],
+              ),
+              GoRoute(
+                path: 'applications',
+                redirect: (context, state) =>
+                    hostApplicationsLegacyRedirect(state.uri),
               ),
               GoRoute(
                 path: ':contactId',
@@ -919,6 +915,26 @@ StatefulShellRoute _hostShellRoute(
               initialFormId: state.uri.queryParameters['formId'],
             ),
             routes: [
+              GoRoute(
+                path: 'applications',
+                name: Routes.hostApplicationsScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostApplicationsScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                ),
+                routes: [
+                  GoRoute(
+                    path: ':applicationId',
+                    name: Routes.hostApplicationDetailScreen.name,
+                    parentNavigatorKey: keys.root,
+                    builder: (context, state) => HostApplicationDetailScreen(
+                      organizerId:
+                          state.uri.queryParameters['organizerId'] ?? '',
+                      applicationId: state.pathParameters['applicationId']!,
+                    ),
+                  ),
+                ],
+              ),
               GoRoute(
                 path: 'new',
                 name: Routes.hostFormTemplatesScreen.name,

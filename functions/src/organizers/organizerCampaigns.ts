@@ -16,6 +16,7 @@ import {
   OrganizerContactDocument,
   OrganizerContactTraitDocument,
   OrganizerMessageTemplateDocument,
+  OrganizerSavedAudienceDocument,
   OrganizerSenderConnectionDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {OrganizerCampaignActionCallablePayload} from
@@ -28,7 +29,10 @@ import {
   validateOrganizerCampaignActionCallablePayload,
   validateUpsertOrganizerCampaignCallablePayload,
 } from "../shared/generated/schemaValidators";
-import {organizerCommunicationPreferenceId} from
+import {
+  effectiveOrganizerCommunicationStatus,
+  organizerCommunicationPreferenceId,
+} from
   "../shared/organizerCommunicationPreferences";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
@@ -53,6 +57,10 @@ import {
   effectiveOrganizerAudienceCoverage,
   resolveOrganizerAudienceCoverage,
 } from "./organizerAudienceCoverage";
+import {
+  resolveSavedAudienceRows,
+  SavedAudienceEvaluationRow,
+} from "./organizerSavedAudiences";
 
 type CampaignBlocker = OrganizerCampaignCallableResponse["blockers"][number];
 type ExclusionReason = OrganizerCampaignRecipientDocument["exclusionReason"];
@@ -87,6 +95,8 @@ interface CampaignContext {
   template: OrganizerMessageTemplateDocument | null;
   event: EventDocument | null;
   summary: OrganizerAudienceSummaryDocument | null;
+  savedAudience: OrganizerSavedAudienceDocument | null;
+  savedAudienceChanged: boolean;
   audienceRows: AudienceRow[];
   audienceTooLarge: boolean;
 }
@@ -116,10 +126,28 @@ export async function upsertOrganizerCampaignHandler(
     data.campaignId ??
     organizerCampaignId(data.organizerId, actorUid, data.requestId);
   const campaignRef = db.collection("organizerCampaigns").doc(campaignId);
+  const savedAudienceRef = db.collection("organizerSavedAudiences")
+    .doc(data.savedAudienceId);
   const now = deps.now();
   await db.runTransaction(async (tx) => {
-    const snapshot = await tx.get(campaignRef);
+    const [snapshot, savedAudienceSnap] = await Promise.all([
+      tx.get(campaignRef),
+      tx.get(savedAudienceRef),
+    ]);
     const existing = snapshot.data() as OrganizerCampaignDocument | undefined;
+    const savedAudience = savedAudienceSnap.data() as
+      OrganizerSavedAudienceDocument | undefined;
+    if (
+      !savedAudience ||
+      savedAudience.organizerId !== data.organizerId ||
+      savedAudience.scope !== "organizerCrm" ||
+      savedAudience.status !== "active"
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Choose an active saved customer audience.",
+      );
+    }
     if (existing && existing.organizerId !== data.organizerId) {
       throw new HttpsError("already-exists", "Campaign id collision.");
     }
@@ -147,7 +175,9 @@ export async function upsertOrganizerCampaignHandler(
         admin.firestore.Timestamp.fromMillis(data.scheduledAtMillis);
     const content = {
       messageClass: data.messageClass,
-      segmentIds: [...data.segmentIds].sort(),
+      savedAudienceId: savedAudience.audienceId,
+      savedAudienceRevision: savedAudience.revision,
+      savedAudienceDefinitionHash: savedAudience.definitionHash,
       connectionId: data.connectionId,
       templateId: data.templateId,
       templateVariables: data.templateVariables,
@@ -162,7 +192,10 @@ export async function upsertOrganizerCampaignHandler(
       channel: organizerWhatsappCampaignRoute.transport,
       status: "draft",
       name: data.name,
-      segmentIds: data.segmentIds,
+      segmentIds: [],
+      savedAudienceId: savedAudience.audienceId,
+      savedAudienceRevision: savedAudience.revision,
+      savedAudienceDefinitionHash: savedAudience.definitionHash,
       connectionId: data.connectionId,
       templateId: data.templateId,
       templateVariables: data.templateVariables,
@@ -214,14 +247,24 @@ export async function previewOrganizerCampaignHandler(
       "Approved campaigns cannot be previewed again.",
     );
   }
+  if (
+    context.campaign.savedAudienceId &&
+    (!context.savedAudience || context.savedAudienceChanged)
+  ) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Saved audience changed or was archived. Choose it again.",
+    );
+  }
   const counts = audienceCounts(context.audienceRows);
+  const snapshotHash = campaignAudienceSnapshotHash(context.audienceRows);
   await db
     .collection("organizerCampaigns")
     .doc(data.campaignId)
     .update({
       status: "previewed",
       audienceCounts: counts,
-      recipientSnapshotHash: null,
+      recipientSnapshotHash: snapshotHash,
       updatedAt: deps.now(),
       revision: admin.firestore.FieldValue.increment(1),
     });
@@ -265,6 +308,13 @@ export async function approveOrganizerCampaignHandler(
     );
   }
   const now = deps.now();
+  const snapshotHash = campaignAudienceSnapshotHash(initial.audienceRows);
+  if (initial.campaign.recipientSnapshotHash !== snapshotHash) {
+    throw new HttpsError(
+      "aborted",
+      "Campaign audience changed after preview. Preview it again.",
+    );
+  }
   const recipientTokens = new Map(
     initial.audienceRows
       .filter(
@@ -275,22 +325,15 @@ export async function approveOrganizerCampaignHandler(
         eventInviteToken(campaignInviteLinkId(data.campaignId, row.contactId)),
       ]),
   );
-  const snapshotHash = hashCanonical(
-    initial.audienceRows.map((row) => ({
-      contactId: row.contactId,
-      eligibility: row.eligibility,
-      exclusionReason: row.exclusionReason,
-      endpointHash: row.endpointHash,
-      permissionTermsVersion: row.preference?.whatsapp.termsVersion ?? null,
-      permissionUpdatedAtMillis:
-        row.preference?.whatsapp.updatedAt?.toMillis() ?? null,
-    })),
-  );
   const campaignRef = db.collection("organizerCampaigns").doc(data.campaignId);
   await db.runTransaction(async (tx) => {
+    const savedAudienceRef = initial.campaign.savedAudienceId ?
+      db.collection("organizerSavedAudiences")
+        .doc(initial.campaign.savedAudienceId) : null;
     const refs = [
       campaignRef,
       db.collection("organizerAudienceSummaries").doc(data.organizerId),
+      ...(savedAudienceRef ? [savedAudienceRef] : []),
       ...initial.audienceRows.flatMap((row) => [
         db.collection("organizerContacts").doc(row.contactId),
         db.collection("organizerContactTraits").doc(row.contactId),
@@ -323,6 +366,10 @@ export async function approveOrganizerCampaignHandler(
     const liveSummary = snapshots[1].data() as
       | OrganizerAudienceSummaryDocument
       | undefined;
+    const liveSavedAudience = savedAudienceRef ?
+      snapshots[2].data() as OrganizerSavedAudienceDocument | undefined :
+      undefined;
+    const rowSnapshotOffset = savedAudienceRef ? 3 : 2;
     const liveCoverage = effectiveOrganizerAudienceCoverage(
       liveSummary?.sourceCoverage,
       attendeeHistorySnap.size > 0,
@@ -332,6 +379,14 @@ export async function approveOrganizerCampaignHandler(
       liveCampaign.organizerId !== data.organizerId ||
       liveCampaign.status !== "previewed" ||
       liveCampaign.revision !== initial.campaign.revision ||
+      (savedAudienceRef && (
+        !liveSavedAudience ||
+        liveSavedAudience.organizerId !== data.organizerId ||
+        liveSavedAudience.status !== "active" ||
+        liveSavedAudience.revision !== liveCampaign.savedAudienceRevision ||
+        liveSavedAudience.definitionHash !==
+          liveCampaign.savedAudienceDefinitionHash
+      )) ||
       !liveSummary || liveCoverage !== "exact"
     ) {
       throw new HttpsError(
@@ -341,23 +396,13 @@ export async function approveOrganizerCampaignHandler(
     }
     const liveRows = audienceRowsFromSnapshots({
       organizerId: data.organizerId,
-      segmentIds: liveCampaign.segmentIds,
+      segmentIds: liveCampaign.savedAudienceId ? null : liveCampaign.segmentIds,
       originalRows: initial.audienceRows,
-      snapshots: snapshots.slice(2),
+      snapshots: snapshots.slice(rowSnapshotOffset),
       now,
     });
     if (
-      hashCanonical(
-        liveRows.map((row) => ({
-          contactId: row.contactId,
-          eligibility: row.eligibility,
-          exclusionReason: row.exclusionReason,
-          endpointHash: row.endpointHash,
-          permissionTermsVersion: row.preference?.whatsapp.termsVersion ?? null,
-          permissionUpdatedAtMillis:
-            row.preference?.whatsapp.updatedAt?.toMillis() ?? null,
-        })),
-      ) !== snapshotHash
+      campaignAudienceSnapshotHash(liveRows) !== snapshotHash
     ) {
       throw new HttpsError(
         "aborted",
@@ -559,18 +604,27 @@ async function campaignContext(
   if (!campaign || campaign.organizerId !== organizerId) {
     throw new HttpsError("not-found", "Campaign not found.");
   }
-  const [connectionSnap, templateSnap, eventSnap, summarySnap] =
-    await Promise.all([
-      db
-        .collection("organizerSenderConnections")
-        .doc(campaign.connectionId)
-        .get(),
-      db.collection("organizerMessageTemplates").doc(campaign.templateId).get(),
-      campaign.eventId ?
-        db.collection("events").doc(campaign.eventId).get() :
-        Promise.resolve(null),
-      db.collection("organizerAudienceSummaries").doc(organizerId).get(),
-    ]);
+  const [
+    connectionSnap,
+    templateSnap,
+    eventSnap,
+    summarySnap,
+    savedAudienceSnap,
+  ] = await Promise.all([
+    db
+      .collection("organizerSenderConnections")
+      .doc(campaign.connectionId)
+      .get(),
+    db.collection("organizerMessageTemplates").doc(campaign.templateId).get(),
+    campaign.eventId ?
+      db.collection("events").doc(campaign.eventId).get() :
+      Promise.resolve(null),
+    db.collection("organizerAudienceSummaries").doc(organizerId).get(),
+    campaign.savedAudienceId ?
+      db.collection("organizerSavedAudiences")
+        .doc(campaign.savedAudienceId).get() :
+      Promise.resolve(null),
+  ]);
   const connection = connectionSnap.data() as
     | OrganizerSenderConnectionDocument
     | undefined;
@@ -581,6 +635,19 @@ async function campaignContext(
   const summary = summarySnap.data() as
     | OrganizerAudienceSummaryDocument
     | undefined;
+  const savedAudience = savedAudienceSnap?.data() as
+    | OrganizerSavedAudienceDocument
+    | undefined;
+  const activeSavedAudience =
+    savedAudience?.organizerId === organizerId &&
+    savedAudience.scope === "organizerCrm" &&
+    savedAudience.status === "active" ? savedAudience : null;
+  const savedAudienceChanged = Boolean(
+    campaign.savedAudienceId && activeSavedAudience &&
+    (activeSavedAudience.revision !== campaign.savedAudienceRevision ||
+      activeSavedAudience.definitionHash !==
+        campaign.savedAudienceDefinitionHash),
+  );
   const summaryForOrganizer = summary?.organizerId === organizerId ?
     summary : undefined;
   const sourceCoverage = await resolveOrganizerAudienceCoverage({
@@ -588,14 +655,21 @@ async function campaignContext(
     organizerId,
     storedCoverage: summaryForOrganizer?.sourceCoverage,
   });
-  const audience = loadAudience ?
-    await loadAudienceRows({
-      db,
-      organizerId,
-      segmentIds: campaign.segmentIds,
-      now,
-    }) :
-    {rows: [], tooLarge: false};
+  const audience = !loadAudience ? {rows: [], tooLarge: false} :
+    campaign.savedAudienceId && activeSavedAudience && !savedAudienceChanged ?
+      await loadSavedAudienceCampaignRows({
+        db,
+        organizerId,
+        savedAudience: activeSavedAudience,
+        now,
+      }) : campaign.savedAudienceId ?
+        {rows: [], tooLarge: false} :
+        await loadLegacyAudienceRows({
+          db,
+          organizerId,
+          segmentIds: campaign.segmentIds,
+          now,
+        });
   return {
     campaignId,
     campaign,
@@ -613,12 +687,42 @@ async function campaignContext(
       ...summaryForOrganizer,
       sourceCoverage,
     } : null,
+    savedAudience: activeSavedAudience,
+    savedAudienceChanged,
     audienceRows: audience.rows,
     audienceTooLarge: audience.tooLarge,
   };
 }
 
-async function loadAudienceRows(params: {
+async function loadSavedAudienceCampaignRows(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  savedAudience: OrganizerSavedAudienceDocument;
+  now: FirebaseFirestore.Timestamp;
+}): Promise<{ rows: AudienceRow[]; tooLarge: boolean }> {
+  const matches = await resolveSavedAudienceRows({
+    db: params.db,
+    organizerId: params.organizerId,
+    definition: params.savedAudience.definition,
+    now: params.now,
+  });
+  return {
+    rows: evaluateAudienceRows(
+      matches.map((row: SavedAudienceEvaluationRow) => ({
+        contactId: row.contactId,
+        contact: row.contact,
+        trait: row.trait,
+        preference: row.preference,
+        channelState: row.channelState,
+      })),
+      params.now,
+      null,
+    ),
+    tooLarge: false,
+  };
+}
+
+async function loadLegacyAudienceRows(params: {
   db: FirebaseFirestore.Firestore;
   organizerId: string;
   segmentIds: OrganizerCampaignDocument["segmentIds"];
@@ -698,7 +802,7 @@ async function loadAudienceRows(params: {
 
 function audienceRowsFromSnapshots(params: {
   organizerId: string;
-  segmentIds: OrganizerCampaignDocument["segmentIds"];
+  segmentIds: OrganizerCampaignDocument["segmentIds"] | null;
   originalRows: AudienceRow[];
   snapshots: FirebaseFirestore.DocumentSnapshot[];
   now: FirebaseFirestore.Timestamp;
@@ -742,7 +846,7 @@ export function evaluateAudienceRows(
     channelState: OrganizerContactChannelStateDocument | null;
   }>,
   now: FirebaseFirestore.Timestamp,
-  segmentIds: OrganizerCampaignDocument["segmentIds"],
+  segmentIds: OrganizerCampaignDocument["segmentIds"] | null,
 ): AudienceRow[] {
   const seenEndpoints = new Set<string>();
   return inputs.map((input): AudienceRow => {
@@ -757,6 +861,7 @@ export function evaluateAudienceRows(
     ) {
       reason = "identityUnresolved";
     } else if (
+      segmentIds !== null &&
       !trait.segmentIds.some((id) =>
         segmentIds.includes(
           id as OrganizerCampaignDocument["segmentIds"][number],
@@ -773,10 +878,14 @@ export function evaluateAudienceRows(
       !preference ||
       preference.organizerId !== contact.organizerId ||
       preference.uid !== contact.linkedUid ||
-      preference.whatsapp.status === "unknown"
+      effectiveOrganizerCommunicationStatus(preference, "whatsapp") ===
+        "unknown"
     ) {
       reason = "unknownPermission";
-    } else if (preference.whatsapp.status === "optedOut") reason = "optedOut";
+    } else if (
+      effectiveOrganizerCommunicationStatus(preference, "whatsapp") ===
+        "optedOut"
+    ) reason = "optedOut";
     else if (channelState?.suppressionStatus === "optedOut") {
       reason = "optedOut";
     } else if (channelState?.suppressionStatus === "providerBlocked") {
@@ -876,6 +985,11 @@ function campaignBlockers(
   ) {
     blockers.push("templateUnapproved");
   }
+  if (campaign.savedAudienceId && !context.savedAudience) {
+    blockers.push("savedAudienceMissing");
+  } else if (context.savedAudienceChanged) {
+    blockers.push("savedAudienceChanged");
+  }
   if (context.summary?.sourceCoverage !== "exact") {
     blockers.push("audienceCoveragePartial");
   }
@@ -918,6 +1032,23 @@ export function hasReachableCampaignRecipient(
   return rows.some((row) => row.eligibility === "eligible");
 }
 
+export function campaignAudienceSnapshotHash(rows: AudienceRow[]): string {
+  return hashCanonical(
+    [...rows]
+      .sort((left, right) => left.contactId.localeCompare(right.contactId))
+      .map((row) => ({
+        contactId: row.contactId,
+        eligibility: row.eligibility,
+        exclusionReason: row.exclusionReason,
+        endpointHash: row.endpointHash,
+        permissionTermsVersion:
+          row.preference?.whatsapp.termsVersion ?? null,
+        permissionUpdatedAtMillis:
+          row.preference?.whatsapp.updatedAt?.toMillis() ?? null,
+      })),
+  );
+}
+
 function campaignResponse(
   context: CampaignContext,
   now: FirebaseFirestore.Timestamp,
@@ -926,6 +1057,7 @@ function campaignResponse(
   return {
     organizerId: context.campaign.organizerId,
     campaignId: context.campaignId,
+    savedAudienceId: context.campaign.savedAudienceId ?? null,
     status: context.campaign.status,
     revision: context.campaign.revision,
     audienceCounts: context.campaign.audienceCounts,
@@ -1094,11 +1226,6 @@ function normalizePayload(data: unknown): unknown {
   const normalized = {...(data as Record<string, unknown>)};
   for (const [key, value] of Object.entries(normalized)) {
     if (typeof value === "string") normalized[key] = value.trim();
-  }
-  if (Array.isArray(normalized.segmentIds)) {
-    normalized.segmentIds = normalized.segmentIds.map((item) =>
-      typeof item === "string" ? item.trim() : item,
-    );
   }
   if (
     typeof normalized.templateVariables === "object" &&

@@ -6,7 +6,6 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
@@ -153,29 +152,27 @@ Future<void> _settleRoute(WidgetTester tester) async {
 }
 
 void main() {
-  test('host inbox route restores the campaigns composer segment', () {
+  test('host inbox route restores the campaigns saved audience', () {
     final screen = app_router.hostInboxScreenForUri(
       Uri.parse(
-        '/host/inbox?workspace=campaigns&compose=1&segment=lapsed_regular&search=asha&threadId=match-2',
+        '/host/inbox?workspace=campaigns&compose=1&audienceId=audience-1&threadId=match-2',
       ),
       initialOrganizerId: 'organizer-2',
     );
 
     expect(screen.initialWorkspace, HostMessagingWorkspace.campaigns);
-    expect(screen.initialCampaignSegments, {HostAudienceSegment.lapsedRegular});
-    expect(screen.initialCampaignSearch, 'asha');
+    expect(screen.initialSavedAudienceId, 'audience-1');
     expect(screen.initialOrganizerId, 'organizer-2');
     expect(screen.initialThreadId, 'match-2');
   });
 
-  test('host inbox route ignores a segment outside compose mode', () {
+  test('host inbox route ignores an audience outside compose mode', () {
     final screen = app_router.hostInboxScreenForUri(
-      Uri.parse('/host/inbox?workspace=campaigns&segment=lapsed_regular'),
+      Uri.parse('/host/inbox?workspace=campaigns&audienceId=audience-1'),
     );
 
     expect(screen.initialWorkspace, HostMessagingWorkspace.campaigns);
-    expect(screen.initialCampaignSegments, isEmpty);
-    expect(screen.initialCampaignSearch, isNull);
+    expect(screen.initialSavedAudienceId, isNull);
   });
 
   testWidgets(

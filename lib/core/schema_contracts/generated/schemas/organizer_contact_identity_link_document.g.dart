@@ -48,6 +48,7 @@ const schemaOrganizerContactIdentityLinkDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'description': 'Legacy evidence-row key: an attendee id for roster sources or a deterministic form-response key for Host Forms.',
     },
     'kind': <String, Object?>{
       'type': 'string',
@@ -83,6 +84,7 @@ const schemaOrganizerContactIdentityLinkDocumentSchema = <String, Object?>{
         'hostManual',
         'webOtp',
         'providerSync',
+        'hostForm',
       ],
     },
     'createdAt': <String, Object?>{

@@ -3989,6 +3989,30 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const archiveOrganizerSavedAudienceCallablePayloadAudienceId = CatchContractFieldConstraints(
+    path: 'archiveOrganizerSavedAudienceCallablePayload.audienceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const archiveOrganizerSavedAudienceCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'archiveOrganizerSavedAudienceCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const archiveOrganizerSavedAudienceCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'archiveOrganizerSavedAudienceCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const beginOrganizerFormResponseCallablePayloadPublicFormId = CatchContractFieldConstraints(
     path: 'beginOrganizerFormResponseCallablePayload.publicFormId',
     required: true,
@@ -25880,6 +25904,77 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getOrganizerContactDetailCallableResponseOrigins = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.origins',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const getOrganizerContactDetailCallableResponseOriginsItemsEventId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.origins.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseOriginsItemsEventTitle = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.origins.items.eventTitle',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseOriginsItemsFormId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.origins.items.formId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseOriginsItemsFormTitle = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.origins.items.formTitle',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseOriginsItemsObservedAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.origins.items.observedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseOriginsItemsOriginId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.origins.items.originId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseOriginsItemsSourceEntityKind = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.origins.items.sourceEntityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventAttendee', 'manualEntry', 'hostFormResponse', 'providerRecord', 'importBatch', 'webRegistration'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseOriginsItemsSourceKind = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.origins.items.sourceKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseOriginsTruncated = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.originsTruncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const getOrganizerContactDetailCallableResponsePhoneE164 = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallableResponse.phoneE164',
     valueTypes: <String>['string'],
@@ -26082,6 +26177,220 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getOrganizerContactDetailCallableResponseTimeline = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsAction = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsAnsweredQuestionCount = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.answeredQuestionCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 4000,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsBodyPreview = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.bodyPreview',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsCheckedIn = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.checkedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsDeliveryMode = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.deliveryMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inCatch', 'api', 'byHand'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsDirection = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.direction',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inbound', 'outbound'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsEventId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsEventName = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.eventName',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsEventOriginMode = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.eventOriginMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchNative', 'externalCompanion', 'unknown'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsEventProvider = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.eventProvider',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'generic', 'luma', 'eventbrite', 'partiful', 'posh', 'bookmyshow', 'district', 'sortmyscene', 'airbnb'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsFormId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsFormTitle = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.formTitle',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsKind = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.kind',
+    required: true,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsName = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.name',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsObservation = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.observation',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['providerReceipt', 'catchActivity', 'hostOpened', 'hostAssertion', 'notSent'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsOccurredAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.occurredAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsReferenceId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.referenceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsResponseId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsSendKind = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.sendKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['campaign', 'announcement', 'manualHandoff'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['available', 'pending', 'sending', 'suppressed', 'accepted', 'sent', 'delivered', 'read', 'failed', 'replied', 'optedOut', 'queued', 'handoffOpened', 'hostMarkedSent', 'skipped', 'cancelled', 'superseded', 'expired'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsThreadId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.threadId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsTimelineId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.timelineId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineItemsTransport = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timeline.items.transport',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchChat', 'managedWhatsapp'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineCoverageEvents = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timelineCoverage.events',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial', 'unavailable'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineCoverageForms = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timelineCoverage.forms',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial', 'unavailable'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineCoverageReplies = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timelineCoverage.replies',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial', 'unavailable'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineCoverageReplyObservation = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timelineCoverage.replyObservation',
+    required: true,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineCoverageSends = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timelineCoverage.sends',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial', 'unavailable'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTimelineTruncated = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.timelineTruncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const getOrganizerContactDetailCallableResponseTraitsAttendanceRate = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallableResponse.traits.attendanceRate',
     valueTypes: <String>['number'],
@@ -26171,6 +26480,59 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerContactDetailCallableResponse.whatsappAdminSuppressed',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionDecisionAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.decisionAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionEvidenceStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.evidenceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unavailable', 'notApplicable', 'complete', 'incomplete'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionIdentityStrength = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.identityStrength',
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'emailVerified', 'phoneVerified', 'catchAccount'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionReceiptId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionSource = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.source',
+    valueTypes: <String>['string'],
+    enumValues: <String>['publicEventRegistration', 'hostFormResponse', 'participantSettings', 'unsubscribeLink', 'inboundStop', 'providerWebhook', 'legacyIncomplete'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionSourceFormId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.sourceFormId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionSourceFormTitle = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.sourceFormTitle',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
   );
 
   static const getOrganizerCrmSummaryCallablePayloadOrganizerId = CatchContractFieldConstraints(
@@ -30367,6 +30729,20 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const listOrganizerCampaignsCallableResponseSendsItemsSavedAudienceId = CatchContractFieldConstraints(
+    path: 'listOrganizerCampaignsCallableResponse.sends.items.savedAudienceId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerCampaignsCallableResponseSendsItemsSavedAudienceName = CatchContractFieldConstraints(
+    path: 'listOrganizerCampaignsCallableResponse.sends.items.savedAudienceName',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const listOrganizerCampaignsCallableResponseSendsItemsScheduledAtMillis = CatchContractFieldConstraints(
     path: 'listOrganizerCampaignsCallableResponse.sends.items.scheduledAtMillis',
     valueTypes: <String>['integer'],
@@ -30379,7 +30755,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
     itemEnumValues: <String>['first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'advocate', 'high_impact_advocate', 'whatsapp_reachable'],
-    minItems: 1,
     maxItems: 5,
     uniqueItems: true,
   );
@@ -30519,7 +30894,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactMergeCandidatesCallableResponse.candidates.items.contacts.items.primarySource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const listOrganizerContactMergeCandidatesCallableResponseCandidatesItemsContactsItemsRevision = CatchContractFieldConstraints(
@@ -30592,9 +30967,9 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    itemEnumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
     minItems: 1,
-    maxItems: 5,
+    maxItems: 6,
     uniqueItems: true,
   );
 
@@ -30602,7 +30977,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactMergeCandidatesCallableResponse.candidates.items.sourceKinds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const listOrganizerContactMergeCandidatesCallableResponseCandidatesItemsUpdatedAtMillis = CatchContractFieldConstraints(
@@ -30689,7 +31064,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactMergeCandidatesCallableResponse.dismissedCandidates.items.contacts.items.primarySource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const listOrganizerContactMergeCandidatesCallableResponseDismissedCandidatesItemsContactsItemsRevision = CatchContractFieldConstraints(
@@ -30762,9 +31137,9 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    itemEnumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
     minItems: 1,
-    maxItems: 5,
+    maxItems: 6,
     uniqueItems: true,
   );
 
@@ -30772,7 +31147,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactMergeCandidatesCallableResponse.dismissedCandidates.items.sourceKinds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const listOrganizerContactMergeCandidatesCallableResponseDismissedCandidatesItemsUpdatedAtMillis = CatchContractFieldConstraints(
@@ -31726,6 +32101,36 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listOrganizerFormsCallableResponseItemsItemsConsequencesCoverage = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.consequences.coverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'identityOnly', 'unavailable'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsConsequencesEnabledAutomationActionKinds = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.consequences.enabledAutomationActionKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsConsequencesEnabledAutomationActionKindsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.consequences.enabledAutomationActionKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsConsequencesIdentityPolicy = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.consequences.identityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'emailOrPhoneVerified', 'catchAccount'],
+  );
+
   static const listOrganizerFormsCallableResponseItemsItemsDefaultTargetId = CatchContractFieldConstraints(
     path: 'listOrganizerFormsCallableResponse.items.items.defaultTargetId',
     maxLength: 180,
@@ -32002,6 +32407,374 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerLumaEventsCallableResponse.truncated',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerManualSendTasksCallablePayloadActiveOnly = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallablePayload.activeOnly',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerManualSendTasksCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallablePayload.cursor',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallablePayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 50,
+  );
+
+  static const listOrganizerManualSendTasksCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.nextCursor',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasks = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsActive = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsContactId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsDeliveryMode = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.deliveryMode',
+    required: true,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsDisplayName = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsIntent = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.intent',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation', 'savedAudienceCampaign'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsOpenCount = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.openCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsOpenedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.openedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsPhoneE164 = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.phoneE164',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsPrefillText = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.prefillText',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsRouteId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.routeId',
+    required: true,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['queued', 'handoffOpened', 'hostMarkedSent', 'skipped', 'cancelled', 'superseded', 'expired'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsTaskId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.taskId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerSavedAudiencesCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallablePayload.cursor',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerSavedAudiencesCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallablePayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 50,
+  );
+
+  static const listOrganizerSavedAudiencesCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerSavedAudiencesCallablePayloadStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallablePayload.status',
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'archived'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiences = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsAudienceId = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.audienceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionJoin = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.join',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['all', 'any'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicates = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 8,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsDays = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3650,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsEventCount = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.eventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsIntent = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.intent',
+    required: true,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsKind = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.kind',
+    required: true,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsManualTagId = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.manualTagId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsOperator = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['atLeast', 'atMost'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsSegmentId = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionHash = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definitionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionVersion = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definitionVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewMatchCount = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewMatchCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsName = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.name',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsScope = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.scope',
+    required: true,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'archived'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.nextCursor',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const listOrganizerWhatsappThreadsCallablePayloadCursor = CatchContractFieldConstraints(
@@ -32435,6 +33208,37 @@ abstract final class CatchContractConstraints {
 
   static const markNotificationReadClientWritePathUid = CatchContractFieldConstraints(
     path: 'markNotificationReadClientWrite.path.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const markOrganizerManualSendTaskCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'markOrganizerManualSendTaskCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostMarkedSent', 'skipped', 'cancelled'],
+  );
+
+  static const markOrganizerManualSendTaskCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'markOrganizerManualSendTaskCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const markOrganizerManualSendTaskCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'markOrganizerManualSendTaskCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const markOrganizerManualSendTaskCallablePayloadTaskId = CatchContractFieldConstraints(
+    path: 'markOrganizerManualSendTaskCallablePayload.taskId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -33093,6 +33897,14 @@ abstract final class CatchContractConstraints {
     maximum: 400,
   );
 
+  static const mutateOrganizerContactMergeCallableResponseMovedOriginCount = CatchContractFieldConstraints(
+    path: 'mutateOrganizerContactMergeCallableResponse.movedOriginCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 400,
+  );
+
   static const mutateOrganizerContactMergeCallableResponseOperation = CatchContractFieldConstraints(
     path: 'mutateOrganizerContactMergeCallableResponse.operation',
     required: true,
@@ -33276,6 +34088,30 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
+  );
+
+  static const openOrganizerManualSendTaskCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'openOrganizerManualSendTaskCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const openOrganizerManualSendTaskCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'openOrganizerManualSendTaskCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const openOrganizerManualSendTaskCallablePayloadTaskId = CatchContractFieldConstraints(
+    path: 'openOrganizerManualSendTaskCallablePayload.taskId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const operationRunBudgetsDeadlineAt = CatchContractFieldConstraints(
@@ -35325,7 +36161,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['providerSetupRequired', 'senderInactive', 'templateMissing', 'templateUnapproved', 'noReachableRecipients', 'audienceCoveragePartial', 'audienceTooLarge', 'eventMissing', 'eventUnavailable', 'scheduleInPast', 'campaignImmutable', 'campaignCancelled', 'campaignComplete', 'campaignLeaseActive'],
+    itemEnumValues: <String>['providerSetupRequired', 'senderInactive', 'templateMissing', 'templateUnapproved', 'savedAudienceMissing', 'savedAudienceChanged', 'noReachableRecipients', 'audienceCoveragePartial', 'audienceTooLarge', 'eventMissing', 'eventUnavailable', 'scheduleInPast', 'campaignImmutable', 'campaignCancelled', 'campaignComplete', 'campaignLeaseActive'],
     maxItems: 20,
     uniqueItems: true,
   );
@@ -35334,7 +36170,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerCampaignCallableResponse.blockers.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['providerSetupRequired', 'senderInactive', 'templateMissing', 'templateUnapproved', 'noReachableRecipients', 'audienceCoveragePartial', 'audienceTooLarge', 'eventMissing', 'eventUnavailable', 'scheduleInPast', 'campaignImmutable', 'campaignCancelled', 'campaignComplete', 'campaignLeaseActive'],
+    enumValues: <String>['providerSetupRequired', 'senderInactive', 'templateMissing', 'templateUnapproved', 'savedAudienceMissing', 'savedAudienceChanged', 'noReachableRecipients', 'audienceCoveragePartial', 'audienceTooLarge', 'eventMissing', 'eventUnavailable', 'scheduleInPast', 'campaignImmutable', 'campaignCancelled', 'campaignComplete', 'campaignLeaseActive'],
   );
 
   static const organizerCampaignCallableResponseCampaignId = CatchContractFieldConstraints(
@@ -35443,6 +36279,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const organizerCampaignCallableResponseSavedAudienceId = CatchContractFieldConstraints(
+    path: 'organizerCampaignCallableResponse.savedAudienceId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const organizerCampaignCallableResponseSenderStatus = CatchContractFieldConstraints(
@@ -35779,6 +36622,26 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const organizerCampaignDocumentSavedAudienceDefinitionHash = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.savedAudienceDefinitionHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerCampaignDocumentSavedAudienceId = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.savedAudienceId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentSavedAudienceRevision = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.savedAudienceRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const organizerCampaignDocumentScheduledAtNanoseconds = CatchContractFieldConstraints(
     path: 'organizerCampaignDocument.scheduledAt._nanoseconds',
     required: true,
@@ -35799,7 +36662,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
     itemEnumValues: <String>['first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'advocate', 'high_impact_advocate', 'whatsapp_reachable'],
-    minItems: 1,
     maxItems: 5,
     uniqueItems: true,
   );
@@ -36328,6 +37190,161 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerCommunicationPermissionReceiptDocumentActorClass = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.actorClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['participant', 'provider', 'system'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentChannel = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.channel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['whatsapp', 'sms'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentConsentCopyHash = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.consentCopyHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentDecision = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['optedIn', 'optedOut'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentEvidenceStatus = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.evidenceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['complete', 'incomplete'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentGrantedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.grantedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentGrantedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.grantedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentIdentityStrength = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.identityStrength',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'emailVerified', 'phoneVerified', 'catchAccount'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentRevokedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.revokedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentRevokedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.revokedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSource = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['publicEventRegistration', 'hostFormResponse', 'participantSettings', 'unsubscribeLink', 'inboundStop', 'providerWebhook', 'legacyIncomplete'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSourceEventId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.sourceEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSourceFormId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.sourceFormId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSourceProviderEventId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.sourceProviderEventId',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSourceResponseId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.sourceResponseId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentSupersedesReceiptId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.supersedesReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentTermsVersion = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.termsVersion',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPermissionReceiptDocumentUid = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPermissionReceiptDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerCommunicationPreferenceDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'organizerCommunicationPreferenceDocument.createdAt._nanoseconds',
     required: true,
@@ -36350,10 +37367,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerCommunicationPreferenceDocumentSmsCurrentReceiptId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.sms.currentReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentSmsEvidenceStatus = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.sms.evidenceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notApplicable', 'complete', 'incomplete'],
+  );
+
   static const organizerCommunicationPreferenceDocumentSmsSource = CatchContractFieldConstraints(
     path: 'organizerCommunicationPreferenceDocument.sms.source',
     valueTypes: <String>['string'],
-    enumValues: <String>['publicEventRegistration', 'unsubscribeLink', 'hostApp', 'inboundStop', 'providerWebhook'],
+    enumValues: <String>['publicEventRegistration', 'hostFormResponse', 'participantSettings', 'unsubscribeLink', 'inboundStop', 'providerWebhook', 'legacyIncomplete'],
   );
 
   static const organizerCommunicationPreferenceDocumentSmsSourceEventId = CatchContractFieldConstraints(
@@ -36413,10 +37444,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerCommunicationPreferenceDocumentWhatsappCurrentReceiptId = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.whatsapp.currentReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCommunicationPreferenceDocumentWhatsappEvidenceStatus = CatchContractFieldConstraints(
+    path: 'organizerCommunicationPreferenceDocument.whatsapp.evidenceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notApplicable', 'complete', 'incomplete'],
+  );
+
   static const organizerCommunicationPreferenceDocumentWhatsappSource = CatchContractFieldConstraints(
     path: 'organizerCommunicationPreferenceDocument.whatsapp.source',
     valueTypes: <String>['string'],
-    enumValues: <String>['publicEventRegistration', 'unsubscribeLink', 'hostApp', 'inboundStop', 'providerWebhook'],
+    enumValues: <String>['publicEventRegistration', 'hostFormResponse', 'participantSettings', 'unsubscribeLink', 'inboundStop', 'providerWebhook', 'legacyIncomplete'],
   );
 
   static const organizerCommunicationPreferenceDocumentWhatsappSourceEventId = CatchContractFieldConstraints(
@@ -36972,7 +38017,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactDocument.primarySource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const organizerContactDocumentRevision = CatchContractFieldConstraints(
@@ -37522,7 +38567,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactIdentityLinkDocument.source',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const organizerContactIdentityLinkDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
@@ -37671,6 +38716,31 @@ abstract final class CatchContractConstraints {
 
   static const organizerContactMergeReceiptDocumentMovedIdentityEvidenceIdsItems = CatchContractFieldConstraints(
     path: 'organizerContactMergeReceiptDocument.movedIdentityEvidenceIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedOriginCount = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedOriginCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 400,
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedOriginIds = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedOriginIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 400,
+    uniqueItems: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentMovedOriginIdsItems = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.movedOriginIds.items',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -37979,6 +39049,121 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentActorClass = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.actorClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['participant', 'organizerManager', 'provider', 'system'],
+  );
+
+  static const organizerContactOriginDocumentActorUid = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerContactOriginDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactOriginDocumentCurrentContactId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.currentContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentEventId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentObservedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.observedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerContactOriginDocumentObservedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.observedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactOriginDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentOriginContactId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.originContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentOriginVersion = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.originVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerContactOriginDocumentResponseId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentSourceEntityId = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.sourceEntityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactOriginDocumentSourceEntityKind = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.sourceEntityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventAttendee', 'manualEntry', 'hostFormResponse', 'providerRecord', 'importBatch', 'webRegistration'],
+  );
+
+  static const organizerContactOriginDocumentSourceKind = CatchContractFieldConstraints(
+    path: 'organizerContactOriginDocument.sourceKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const organizerContactTagVocabularyDocumentOrganizerId = CatchContractFieldConstraints(
@@ -41423,6 +42608,98 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerFormDocumentConsequenceProjectionCoverage = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.coverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'identityOnly', 'unavailable'],
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsAddApplicationQueue = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.addApplicationQueue',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsAddOrganizerTag = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.addOrganizerTag',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsCampaignHandoff = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.campaignHandoff',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsCreateCrmContact = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.createCrmContact',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsNotifyTeam = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.notifyTeam',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsProposeEventAttendee = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.proposeEventAttendee',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsSignedWebhook = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.signedWebhook',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKinds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindsItems = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+  );
+
+  static const organizerFormDocumentConsequenceProjectionIdentityPolicy = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.identityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'emailOrPhoneVerified', 'catchAccount'],
+  );
+
+  static const organizerFormDocumentConsequenceProjectionVersion = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const organizerFormDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'organizerFormDocument.createdAt._nanoseconds',
     required: true,
@@ -43965,6 +45242,431 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerManualSendTaskCallableResponseActive = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerManualSendTaskCallableResponseContactId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskCallableResponseCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerManualSendTaskCallableResponseDeliveryMode = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.deliveryMode',
+    required: true,
+  );
+
+  static const organizerManualSendTaskCallableResponseDisplayName = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerManualSendTaskCallableResponseIntent = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.intent',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation', 'savedAudienceCampaign'],
+  );
+
+  static const organizerManualSendTaskCallableResponseOpenCount = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.openCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const organizerManualSendTaskCallableResponseOpenedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.openedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerManualSendTaskCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskCallableResponsePhoneE164 = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.phoneE164',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const organizerManualSendTaskCallableResponsePrefillText = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.prefillText',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerManualSendTaskCallableResponseRouteId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.routeId',
+    required: true,
+  );
+
+  static const organizerManualSendTaskCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['queued', 'handoffOpened', 'hostMarkedSent', 'skipped', 'cancelled', 'superseded', 'expired'],
+  );
+
+  static const organizerManualSendTaskCallableResponseTaskId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.taskId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskCallableResponseUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerManualSendTaskDocumentActive = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerManualSendTaskDocumentCancelledAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.cancelledAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentCancelledAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.cancelledAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentCapabilitySnapshotManagedRouteAvailable = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.capabilitySnapshot.managedRouteAvailable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerManualSendTaskDocumentCapabilitySnapshotVersion = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.capabilitySnapshot.version',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const organizerManualSendTaskDocumentContactId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentCreatedByUid = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.createdByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentDeliveryMode = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.deliveryMode',
+    required: true,
+  );
+
+  static const organizerManualSendTaskDocumentDisplayNameSnapshot = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.displayNameSnapshot',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentEndpointE164Snapshot = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.endpointE164Snapshot',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const organizerManualSendTaskDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerManualSendTaskDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentHostMarkedSentAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.hostMarkedSentAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentHostMarkedSentAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.hostMarkedSentAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentIdempotencyKey = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.idempotencyKey',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentIntent = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.intent',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation', 'savedAudienceCampaign'],
+  );
+
+  static const organizerManualSendTaskDocumentOpenCount = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.openCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const organizerManualSendTaskDocumentOpenedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.openedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentOpenedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.openedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentPermissionSnapshotAdminSuppressed = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.permissionSnapshot.adminSuppressed',
+    required: true,
+  );
+
+  static const organizerManualSendTaskDocumentPermissionSnapshotRecordedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.permissionSnapshot.recordedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentPermissionSnapshotRecordedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.permissionSnapshot.recordedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentPermissionSnapshotWhatsappStatus = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.permissionSnapshot.whatsappStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn'],
+  );
+
+  static const organizerManualSendTaskDocumentPrefillHash = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.prefillHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerManualSendTaskDocumentPrefillText = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.prefillText',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerManualSendTaskDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerManualSendTaskDocumentRouteId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.routeId',
+    required: true,
+  );
+
+  static const organizerManualSendTaskDocumentSkippedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.skippedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentSkippedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.skippedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentSourceId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.sourceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentSourceKind = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.sourceKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation', 'campaignRecipient'],
+  );
+
+  static const organizerManualSendTaskDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['queued', 'handoffOpened', 'hostMarkedSent', 'skipped', 'cancelled', 'superseded', 'expired'],
+  );
+
+  static const organizerManualSendTaskDocumentSupersededAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.supersededAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentSupersededAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.supersededAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentTaskId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.taskId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentUpdatedByUid = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerMessageTemplateDocumentButtonKinds = CatchContractFieldConstraints(
     path: 'organizerMessageTemplateDocument.buttonKinds',
     required: true,
@@ -45459,6 +47161,356 @@ abstract final class CatchContractConstraints {
   static const organizerProviderSetupCallableResponseProvidersItemsRequirement = CatchContractFieldConstraints(
     path: 'organizerProviderSetupCallableResponse.providers.items.requirement',
     maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceCallableResponseAudienceId = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.audienceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceCallableResponseCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionJoin = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.join',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['all', 'any'],
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicates = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 8,
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsDays = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3650,
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsEventCount = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.eventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsIntent = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.intent',
+    required: true,
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsKind = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.kind',
+    required: true,
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsManualTagId = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.manualTagId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsOperator = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['atLeast', 'atMost'],
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsSegmentId = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionHash = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definitionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionVersion = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definitionVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const organizerSavedAudienceCallableResponseLastPreviewAtMillis = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.lastPreviewAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerSavedAudienceCallableResponseLastPreviewMatchCount = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.lastPreviewMatchCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const organizerSavedAudienceCallableResponseName = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.name',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerSavedAudienceCallableResponseScope = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.scope',
+    required: true,
+  );
+
+  static const organizerSavedAudienceCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'archived'],
+  );
+
+  static const organizerSavedAudienceCallableResponseUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerSavedAudienceDocumentArchivedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.archivedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerSavedAudienceDocumentArchivedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.archivedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerSavedAudienceDocumentAudienceId = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.audienceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerSavedAudienceDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerSavedAudienceDocumentCreatedByUid = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.createdByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionJoin = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.join',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['all', 'any'],
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicates = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 8,
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsDays = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3650,
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsEventCount = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.eventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsIntent = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.intent',
+    required: true,
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsKind = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.kind',
+    required: true,
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsManualTagId = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.manualTagId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsOperator = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['atLeast', 'atMost'],
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsSegmentId = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.segmentId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionHash = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definitionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionVersion = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definitionVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const organizerSavedAudienceDocumentLastPreviewAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.lastPreviewAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerSavedAudienceDocumentLastPreviewAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.lastPreviewAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerSavedAudienceDocumentLastPreviewMatchCount = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.lastPreviewMatchCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const organizerSavedAudienceDocumentName = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.name',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerSavedAudienceDocumentScope = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.scope',
+    required: true,
+  );
+
+  static const organizerSavedAudienceDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'archived'],
+  );
+
+  static const organizerSavedAudienceDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerSavedAudienceDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerSavedAudienceDocumentUpdatedByUid = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.updatedByUid',
+    maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -46983,6 +49035,44 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const prepareOrganizerManualSendTaskCallablePayloadContactId = CatchContractFieldConstraints(
+    path: 'prepareOrganizerManualSendTaskCallablePayload.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const prepareOrganizerManualSendTaskCallablePayloadIntent = CatchContractFieldConstraints(
+    path: 'prepareOrganizerManualSendTaskCallablePayload.intent',
+    required: true,
+  );
+
+  static const prepareOrganizerManualSendTaskCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'prepareOrganizerManualSendTaskCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const prepareOrganizerManualSendTaskCallablePayloadPrefillText = CatchContractFieldConstraints(
+    path: 'prepareOrganizerManualSendTaskCallablePayload.prefillText',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const prepareOrganizerManualSendTaskCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'prepareOrganizerManualSendTaskCallablePayload.requestId',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9._:-]+\$',
+  );
+
   static const previewOrganizerApplicationImportCallablePayloadFormVersionId = CatchContractFieldConstraints(
     path: 'previewOrganizerApplicationImportCallablePayload.formVersionId',
     maxLength: 180,
@@ -47356,6 +49446,229 @@ abstract final class CatchContractConstraints {
   static const previewOrganizerFormConversionCallableResponseWarningsItems = CatchContractFieldConstraints(
     path: 'previewOrganizerFormConversionCallableResponse.warnings.items',
     maxLength: 500,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerSavedAudienceCallablePayloadAudienceId = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallablePayload.audienceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerSavedAudienceCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const previewOrganizerSavedAudienceCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerSavedAudienceCallablePayloadSampleLimit = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallablePayload.sampleLimit',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 25,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceAudienceId = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.audienceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionJoin = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.join',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['all', 'any'],
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicates = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 8,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsDays = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3650,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsEventCount = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.eventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsIntent = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.intent',
+    required: true,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsKind = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.kind',
+    required: true,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsManualTagId = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.manualTagId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsOperator = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['atLeast', 'atMost'],
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsSegmentId = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionHash = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definitionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionVersion = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definitionVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewAtMillis = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewMatchCount = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewMatchCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceName = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.name',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceOrganizerId = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceRevision = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceScope = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.scope',
+    required: true,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceStatus = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'archived'],
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseCoverage = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.coverage',
+    required: true,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseEvaluatedAtMillis = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.evaluatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseMatchCount = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.matchCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseSample = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.sample',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 25,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseSampleItemsContactId = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.sample.items.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseSampleItemsDisplayName = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.sample.items.displayName',
+    maxLength: 120,
+    minLength: 1,
     required: true,
     valueTypes: <String>['string'],
   );
@@ -49086,6 +51399,91 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const replanOrganizerManualSendTasksCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const replanOrganizerManualSendTasksCallablePayloadTaskIds = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallablePayload.taskIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const replanOrganizerManualSendTasksCallablePayloadTaskIdsItems = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallablePayload.taskIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResults = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 50,
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResultsItemsBlocker = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results.items.blocker',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchAccountRequired', 'identityAmbiguous', 'missingPhone', 'organizerSuppressed', 'contactOptedOut', 'contactUnavailable', 'endpointChanged'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResultsItemsContactId = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results.items.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResultsItemsDisposition = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results.items.disposition',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['keepByHand', 'managedRouteAvailable', 'unavailable', 'taskInactive'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResultsItemsRecommendedRouteId = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results.items.recommendedRouteId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchChat', 'personalWhatsappHandoff'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResultsItemsTaskId = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results.items.taskId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const reportDocumentContextId = CatchContractFieldConstraints(
     path: 'reportDocument.contextId',
     maxLength: 180,
@@ -49642,6 +52040,138 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 100,
+  );
+
+  static const resolveOrganizerCommunicationPlanCallablePayloadIntent = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallablePayload.intent',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallablePayloadTargetContactId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallablePayload.target.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallablePayloadTargetKind = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallablePayload.target.kind',
+    required: true,
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseCapabilityVersion = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.capabilityVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseIntent = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.intent',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipients = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 1,
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsContactId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsOutcome = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inCatch', 'automatic', 'byHand', 'unavailable'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRecommendedRouteId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.recommendedRouteId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['personalWhatsappHandoff', 'organizerWhatsappCampaign', 'catchWhatsapp', 'catchChat', 'catchEventAnnouncement', 'organizerFollowerUpdate'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutes = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 2,
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsAvailability = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['available', 'unavailable'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsBlocker = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.blocker',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchAccountRequired', 'identityAmbiguous', 'missingPhone', 'organizerSuppressed', 'contactOptedOut', 'permissionRequired', 'senderUnavailable', 'intentUnsupported'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsExecutionMode = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.executionMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['managedDelivery', 'externalHandoff'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsRouteId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['personalWhatsappHandoff', 'organizerWhatsappCampaign', 'catchWhatsapp', 'catchChat', 'catchEventAnnouncement', 'organizerFollowerUpdate'],
+  );
+
+  static const resolveOrganizerCommunicationPlanCallableResponseResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'resolveOrganizerCommunicationPlanCallableResponse.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const respondCrossPathsInvitationCallablePayloadDecision = CatchContractFieldConstraints(
@@ -55743,29 +58273,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const upsertOrganizerCampaignCallablePayloadSavedAudienceId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.savedAudienceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const upsertOrganizerCampaignCallablePayloadScheduledAtMillis = CatchContractFieldConstraints(
     path: 'upsertOrganizerCampaignCallablePayload.scheduledAtMillis',
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 4102444800000,
-  );
-
-  static const upsertOrganizerCampaignCallablePayloadSegmentIds = CatchContractFieldConstraints(
-    path: 'upsertOrganizerCampaignCallablePayload.segmentIds',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'advocate', 'high_impact_advocate', 'whatsapp_reachable'],
-    minItems: 1,
-    maxItems: 5,
-    uniqueItems: true,
-  );
-
-  static const upsertOrganizerCampaignCallablePayloadSegmentIdsItems = CatchContractFieldConstraints(
-    path: 'upsertOrganizerCampaignCallablePayload.segmentIds.items',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'advocate', 'high_impact_advocate', 'whatsapp_reachable'],
   );
 
   static const upsertOrganizerCampaignCallablePayloadTemplateId = CatchContractFieldConstraints(
@@ -55780,6 +58300,112 @@ abstract final class CatchContractConstraints {
     path: 'upsertOrganizerCampaignCallablePayload.templateVariables',
     required: true,
     valueTypes: <String>['object'],
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadAudienceId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.audienceId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionJoin = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.join',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['all', 'any'],
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicates = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 8,
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsDays = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.days',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3650,
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsEventCount = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.eventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsIntent = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.intent',
+    required: true,
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsKind = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.kind',
+    required: true,
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsManualTagId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.manualTagId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.operator',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['atLeast', 'atMost'],
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadName = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.name',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.requestId',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadScope = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.scope',
+    required: true,
   );
 
   static const userAnalyticsCallableResponseCoachingTipRefs = CatchContractFieldConstraints(
@@ -57470,6 +60096,30 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const validateOrganizerManualSendTaskLaunchCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'validateOrganizerManualSendTaskLaunchCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const validateOrganizerManualSendTaskLaunchCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'validateOrganizerManualSendTaskLaunchCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerManualSendTaskLaunchCallablePayloadTaskId = CatchContractFieldConstraints(
+    path: 'validateOrganizerManualSendTaskLaunchCallablePayload.taskId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const verifyRazorpayPaymentCallablePayloadOrderId = CatchContractFieldConstraints(
     path: 'verifyRazorpayPaymentCallablePayload.orderId',
     maxLength: 180,
@@ -59051,6 +61701,9 @@ abstract final class CatchContractConstraints {
     'archiveClubCallablePayload.reason': archiveClubCallablePayloadReason,
     'archiveOrganizerCallablePayload.organizerId': archiveOrganizerCallablePayloadOrganizerId,
     'archiveOrganizerCallablePayload.reason': archiveOrganizerCallablePayloadReason,
+    'archiveOrganizerSavedAudienceCallablePayload.audienceId': archiveOrganizerSavedAudienceCallablePayloadAudienceId,
+    'archiveOrganizerSavedAudienceCallablePayload.expectedRevision': archiveOrganizerSavedAudienceCallablePayloadExpectedRevision,
+    'archiveOrganizerSavedAudienceCallablePayload.organizerId': archiveOrganizerSavedAudienceCallablePayloadOrganizerId,
     'beginOrganizerFormResponseCallablePayload.publicFormId': beginOrganizerFormResponseCallablePayloadPublicFormId,
     'beginOrganizerFormResponseCallablePayload.requestId': beginOrganizerFormResponseCallablePayloadRequestId,
     'beginOrganizerFormResponseCallablePayload.sourceToken': beginOrganizerFormResponseCallablePayloadSourceToken,
@@ -62066,6 +64719,16 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.notesCoverage': getOrganizerContactDetailCallableResponseNotesCoverage,
     'getOrganizerContactDetailCallableResponse.notesTruncated': getOrganizerContactDetailCallableResponseNotesTruncated,
     'getOrganizerContactDetailCallableResponse.organizerId': getOrganizerContactDetailCallableResponseOrganizerId,
+    'getOrganizerContactDetailCallableResponse.origins': getOrganizerContactDetailCallableResponseOrigins,
+    'getOrganizerContactDetailCallableResponse.origins.items.eventId': getOrganizerContactDetailCallableResponseOriginsItemsEventId,
+    'getOrganizerContactDetailCallableResponse.origins.items.eventTitle': getOrganizerContactDetailCallableResponseOriginsItemsEventTitle,
+    'getOrganizerContactDetailCallableResponse.origins.items.formId': getOrganizerContactDetailCallableResponseOriginsItemsFormId,
+    'getOrganizerContactDetailCallableResponse.origins.items.formTitle': getOrganizerContactDetailCallableResponseOriginsItemsFormTitle,
+    'getOrganizerContactDetailCallableResponse.origins.items.observedAtMillis': getOrganizerContactDetailCallableResponseOriginsItemsObservedAtMillis,
+    'getOrganizerContactDetailCallableResponse.origins.items.originId': getOrganizerContactDetailCallableResponseOriginsItemsOriginId,
+    'getOrganizerContactDetailCallableResponse.origins.items.sourceEntityKind': getOrganizerContactDetailCallableResponseOriginsItemsSourceEntityKind,
+    'getOrganizerContactDetailCallableResponse.origins.items.sourceKind': getOrganizerContactDetailCallableResponseOriginsItemsSourceKind,
+    'getOrganizerContactDetailCallableResponse.originsTruncated': getOrganizerContactDetailCallableResponseOriginsTruncated,
     'getOrganizerContactDetailCallableResponse.phoneE164': getOrganizerContactDetailCallableResponsePhoneE164,
     'getOrganizerContactDetailCallableResponse.revenue.amounts': getOrganizerContactDetailCallableResponseRevenueAmounts,
     'getOrganizerContactDetailCallableResponse.revenue.amounts.items.amountMinor': getOrganizerContactDetailCallableResponseRevenueAmountsItemsAmountMinor,
@@ -62094,6 +64757,36 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.sendsCoverage': getOrganizerContactDetailCallableResponseSendsCoverage,
     'getOrganizerContactDetailCallableResponse.sendsTruncated': getOrganizerContactDetailCallableResponseSendsTruncated,
     'getOrganizerContactDetailCallableResponse.sourceDisplayName': getOrganizerContactDetailCallableResponseSourceDisplayName,
+    'getOrganizerContactDetailCallableResponse.timeline': getOrganizerContactDetailCallableResponseTimeline,
+    'getOrganizerContactDetailCallableResponse.timeline.items.action': getOrganizerContactDetailCallableResponseTimelineItemsAction,
+    'getOrganizerContactDetailCallableResponse.timeline.items.answeredQuestionCount': getOrganizerContactDetailCallableResponseTimelineItemsAnsweredQuestionCount,
+    'getOrganizerContactDetailCallableResponse.timeline.items.bodyPreview': getOrganizerContactDetailCallableResponseTimelineItemsBodyPreview,
+    'getOrganizerContactDetailCallableResponse.timeline.items.checkedIn': getOrganizerContactDetailCallableResponseTimelineItemsCheckedIn,
+    'getOrganizerContactDetailCallableResponse.timeline.items.deliveryMode': getOrganizerContactDetailCallableResponseTimelineItemsDeliveryMode,
+    'getOrganizerContactDetailCallableResponse.timeline.items.direction': getOrganizerContactDetailCallableResponseTimelineItemsDirection,
+    'getOrganizerContactDetailCallableResponse.timeline.items.eventId': getOrganizerContactDetailCallableResponseTimelineItemsEventId,
+    'getOrganizerContactDetailCallableResponse.timeline.items.eventName': getOrganizerContactDetailCallableResponseTimelineItemsEventName,
+    'getOrganizerContactDetailCallableResponse.timeline.items.eventOriginMode': getOrganizerContactDetailCallableResponseTimelineItemsEventOriginMode,
+    'getOrganizerContactDetailCallableResponse.timeline.items.eventProvider': getOrganizerContactDetailCallableResponseTimelineItemsEventProvider,
+    'getOrganizerContactDetailCallableResponse.timeline.items.formId': getOrganizerContactDetailCallableResponseTimelineItemsFormId,
+    'getOrganizerContactDetailCallableResponse.timeline.items.formTitle': getOrganizerContactDetailCallableResponseTimelineItemsFormTitle,
+    'getOrganizerContactDetailCallableResponse.timeline.items.kind': getOrganizerContactDetailCallableResponseTimelineItemsKind,
+    'getOrganizerContactDetailCallableResponse.timeline.items.name': getOrganizerContactDetailCallableResponseTimelineItemsName,
+    'getOrganizerContactDetailCallableResponse.timeline.items.observation': getOrganizerContactDetailCallableResponseTimelineItemsObservation,
+    'getOrganizerContactDetailCallableResponse.timeline.items.occurredAtMillis': getOrganizerContactDetailCallableResponseTimelineItemsOccurredAtMillis,
+    'getOrganizerContactDetailCallableResponse.timeline.items.referenceId': getOrganizerContactDetailCallableResponseTimelineItemsReferenceId,
+    'getOrganizerContactDetailCallableResponse.timeline.items.responseId': getOrganizerContactDetailCallableResponseTimelineItemsResponseId,
+    'getOrganizerContactDetailCallableResponse.timeline.items.sendKind': getOrganizerContactDetailCallableResponseTimelineItemsSendKind,
+    'getOrganizerContactDetailCallableResponse.timeline.items.status': getOrganizerContactDetailCallableResponseTimelineItemsStatus,
+    'getOrganizerContactDetailCallableResponse.timeline.items.threadId': getOrganizerContactDetailCallableResponseTimelineItemsThreadId,
+    'getOrganizerContactDetailCallableResponse.timeline.items.timelineId': getOrganizerContactDetailCallableResponseTimelineItemsTimelineId,
+    'getOrganizerContactDetailCallableResponse.timeline.items.transport': getOrganizerContactDetailCallableResponseTimelineItemsTransport,
+    'getOrganizerContactDetailCallableResponse.timelineCoverage.events': getOrganizerContactDetailCallableResponseTimelineCoverageEvents,
+    'getOrganizerContactDetailCallableResponse.timelineCoverage.forms': getOrganizerContactDetailCallableResponseTimelineCoverageForms,
+    'getOrganizerContactDetailCallableResponse.timelineCoverage.replies': getOrganizerContactDetailCallableResponseTimelineCoverageReplies,
+    'getOrganizerContactDetailCallableResponse.timelineCoverage.replyObservation': getOrganizerContactDetailCallableResponseTimelineCoverageReplyObservation,
+    'getOrganizerContactDetailCallableResponse.timelineCoverage.sends': getOrganizerContactDetailCallableResponseTimelineCoverageSends,
+    'getOrganizerContactDetailCallableResponse.timelineTruncated': getOrganizerContactDetailCallableResponseTimelineTruncated,
     'getOrganizerContactDetailCallableResponse.traits.attendanceRate': getOrganizerContactDetailCallableResponseTraitsAttendanceRate,
     'getOrganizerContactDetailCallableResponse.traits.attendedEventCount': getOrganizerContactDetailCallableResponseTraitsAttendedEventCount,
     'getOrganizerContactDetailCallableResponse.traits.cancelledEventCount': getOrganizerContactDetailCallableResponseTraitsCancelledEventCount,
@@ -62106,6 +64799,14 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.traits.sourceCoverage': getOrganizerContactDetailCallableResponseTraitsSourceCoverage,
     'getOrganizerContactDetailCallableResponse.traits.whatsappStatus': getOrganizerContactDetailCallableResponseTraitsWhatsappStatus,
     'getOrganizerContactDetailCallableResponse.whatsappAdminSuppressed': getOrganizerContactDetailCallableResponseWhatsappAdminSuppressed,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.decisionAtMillis': getOrganizerContactDetailCallableResponseWhatsappPermissionDecisionAtMillis,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.evidenceStatus': getOrganizerContactDetailCallableResponseWhatsappPermissionEvidenceStatus,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.identityStrength': getOrganizerContactDetailCallableResponseWhatsappPermissionIdentityStrength,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.receiptId': getOrganizerContactDetailCallableResponseWhatsappPermissionReceiptId,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.source': getOrganizerContactDetailCallableResponseWhatsappPermissionSource,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.sourceFormId': getOrganizerContactDetailCallableResponseWhatsappPermissionSourceFormId,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.sourceFormTitle': getOrganizerContactDetailCallableResponseWhatsappPermissionSourceFormTitle,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.status': getOrganizerContactDetailCallableResponseWhatsappPermissionStatus,
     'getOrganizerCrmSummaryCallablePayload.organizerId': getOrganizerCrmSummaryCallablePayloadOrganizerId,
     'getOrganizerCrmSummaryCallableResponse.advocateCount': getOrganizerCrmSummaryCallableResponseAdvocateCount,
     'getOrganizerCrmSummaryCallableResponse.contactCount': getOrganizerCrmSummaryCallableResponseContactCount,
@@ -62689,6 +65390,8 @@ abstract final class CatchContractConstraints {
     'listOrganizerCampaignsCallableResponse.sends.items.pushFailedCount': listOrganizerCampaignsCallableResponseSendsItemsPushFailedCount,
     'listOrganizerCampaignsCallableResponse.sends.items.pushUnknownCount': listOrganizerCampaignsCallableResponseSendsItemsPushUnknownCount,
     'listOrganizerCampaignsCallableResponse.sends.items.recipientCount': listOrganizerCampaignsCallableResponseSendsItemsRecipientCount,
+    'listOrganizerCampaignsCallableResponse.sends.items.savedAudienceId': listOrganizerCampaignsCallableResponseSendsItemsSavedAudienceId,
+    'listOrganizerCampaignsCallableResponse.sends.items.savedAudienceName': listOrganizerCampaignsCallableResponseSendsItemsSavedAudienceName,
     'listOrganizerCampaignsCallableResponse.sends.items.scheduledAtMillis': listOrganizerCampaignsCallableResponseSendsItemsScheduledAtMillis,
     'listOrganizerCampaignsCallableResponse.sends.items.segmentIds': listOrganizerCampaignsCallableResponseSendsItemsSegmentIds,
     'listOrganizerCampaignsCallableResponse.sends.items.segmentIds.items': listOrganizerCampaignsCallableResponseSendsItemsSegmentIdsItems,
@@ -62871,6 +65574,10 @@ abstract final class CatchContractConstraints {
     'listOrganizerFormsCallablePayload.statuses.items': listOrganizerFormsCallablePayloadStatusesItems,
     'listOrganizerFormsCallableResponse.items': listOrganizerFormsCallableResponseItems,
     'listOrganizerFormsCallableResponse.items.items.activeVersionId': listOrganizerFormsCallableResponseItemsItemsActiveVersionId,
+    'listOrganizerFormsCallableResponse.items.items.consequences.coverage': listOrganizerFormsCallableResponseItemsItemsConsequencesCoverage,
+    'listOrganizerFormsCallableResponse.items.items.consequences.enabledAutomationActionKinds': listOrganizerFormsCallableResponseItemsItemsConsequencesEnabledAutomationActionKinds,
+    'listOrganizerFormsCallableResponse.items.items.consequences.enabledAutomationActionKinds.items': listOrganizerFormsCallableResponseItemsItemsConsequencesEnabledAutomationActionKindsItems,
+    'listOrganizerFormsCallableResponse.items.items.consequences.identityPolicy': listOrganizerFormsCallableResponseItemsItemsConsequencesIdentityPolicy,
     'listOrganizerFormsCallableResponse.items.items.defaultTargetId': listOrganizerFormsCallableResponseItemsItemsDefaultTargetId,
     'listOrganizerFormsCallableResponse.items.items.defaultTargetKind': listOrganizerFormsCallableResponseItemsItemsDefaultTargetKind,
     'listOrganizerFormsCallableResponse.items.items.description': listOrganizerFormsCallableResponseItemsItemsDescription,
@@ -62908,6 +65615,58 @@ abstract final class CatchContractConstraints {
     'listOrganizerLumaEventsCallableResponse.events.items.name': listOrganizerLumaEventsCallableResponseEventsItemsName,
     'listOrganizerLumaEventsCallableResponse.events.items.startAtMillis': listOrganizerLumaEventsCallableResponseEventsItemsStartAtMillis,
     'listOrganizerLumaEventsCallableResponse.truncated': listOrganizerLumaEventsCallableResponseTruncated,
+    'listOrganizerManualSendTasksCallablePayload.activeOnly': listOrganizerManualSendTasksCallablePayloadActiveOnly,
+    'listOrganizerManualSendTasksCallablePayload.cursor': listOrganizerManualSendTasksCallablePayloadCursor,
+    'listOrganizerManualSendTasksCallablePayload.limit': listOrganizerManualSendTasksCallablePayloadLimit,
+    'listOrganizerManualSendTasksCallablePayload.organizerId': listOrganizerManualSendTasksCallablePayloadOrganizerId,
+    'listOrganizerManualSendTasksCallableResponse.nextCursor': listOrganizerManualSendTasksCallableResponseNextCursor,
+    'listOrganizerManualSendTasksCallableResponse.organizerId': listOrganizerManualSendTasksCallableResponseOrganizerId,
+    'listOrganizerManualSendTasksCallableResponse.tasks': listOrganizerManualSendTasksCallableResponseTasks,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.active': listOrganizerManualSendTasksCallableResponseTasksItemsActive,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.contactId': listOrganizerManualSendTasksCallableResponseTasksItemsContactId,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.createdAtMillis': listOrganizerManualSendTasksCallableResponseTasksItemsCreatedAtMillis,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.deliveryMode': listOrganizerManualSendTasksCallableResponseTasksItemsDeliveryMode,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.displayName': listOrganizerManualSendTasksCallableResponseTasksItemsDisplayName,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.expiresAtMillis': listOrganizerManualSendTasksCallableResponseTasksItemsExpiresAtMillis,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.intent': listOrganizerManualSendTasksCallableResponseTasksItemsIntent,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.openCount': listOrganizerManualSendTasksCallableResponseTasksItemsOpenCount,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.openedAtMillis': listOrganizerManualSendTasksCallableResponseTasksItemsOpenedAtMillis,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.organizerId': listOrganizerManualSendTasksCallableResponseTasksItemsOrganizerId,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.phoneE164': listOrganizerManualSendTasksCallableResponseTasksItemsPhoneE164,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.prefillText': listOrganizerManualSendTasksCallableResponseTasksItemsPrefillText,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.revision': listOrganizerManualSendTasksCallableResponseTasksItemsRevision,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.routeId': listOrganizerManualSendTasksCallableResponseTasksItemsRouteId,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.status': listOrganizerManualSendTasksCallableResponseTasksItemsStatus,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.taskId': listOrganizerManualSendTasksCallableResponseTasksItemsTaskId,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.updatedAtMillis': listOrganizerManualSendTasksCallableResponseTasksItemsUpdatedAtMillis,
+    'listOrganizerSavedAudiencesCallablePayload.cursor': listOrganizerSavedAudiencesCallablePayloadCursor,
+    'listOrganizerSavedAudiencesCallablePayload.limit': listOrganizerSavedAudiencesCallablePayloadLimit,
+    'listOrganizerSavedAudiencesCallablePayload.organizerId': listOrganizerSavedAudiencesCallablePayloadOrganizerId,
+    'listOrganizerSavedAudiencesCallablePayload.status': listOrganizerSavedAudiencesCallablePayloadStatus,
+    'listOrganizerSavedAudiencesCallableResponse.audiences': listOrganizerSavedAudiencesCallableResponseAudiences,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.audienceId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsAudienceId,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.createdAtMillis': listOrganizerSavedAudiencesCallableResponseAudiencesItemsCreatedAtMillis,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.join': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionJoin,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicates,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.days': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsDays,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.eventCount': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsEventCount,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.intent': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsIntent,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.kind': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsKind,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.manualTagId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsManualTagId,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.operator': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsOperator,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsSegmentId,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definitionHash': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionHash,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definitionVersion': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionVersion,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewAtMillis': listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewAtMillis,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewMatchCount': listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewMatchCount,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.name': listOrganizerSavedAudiencesCallableResponseAudiencesItemsName,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.organizerId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsOrganizerId,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.revision': listOrganizerSavedAudiencesCallableResponseAudiencesItemsRevision,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.scope': listOrganizerSavedAudiencesCallableResponseAudiencesItemsScope,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.status': listOrganizerSavedAudiencesCallableResponseAudiencesItemsStatus,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.updatedAtMillis': listOrganizerSavedAudiencesCallableResponseAudiencesItemsUpdatedAtMillis,
+    'listOrganizerSavedAudiencesCallableResponse.nextCursor': listOrganizerSavedAudiencesCallableResponseNextCursor,
+    'listOrganizerSavedAudiencesCallableResponse.organizerId': listOrganizerSavedAudiencesCallableResponseOrganizerId,
     'listOrganizerWhatsappThreadsCallablePayload.cursor': listOrganizerWhatsappThreadsCallablePayloadCursor,
     'listOrganizerWhatsappThreadsCallablePayload.limit': listOrganizerWhatsappThreadsCallablePayloadLimit,
     'listOrganizerWhatsappThreadsCallablePayload.organizerId': listOrganizerWhatsappThreadsCallablePayloadOrganizerId,
@@ -62969,6 +65728,10 @@ abstract final class CatchContractConstraints {
     'markNotificationReadClientWrite.data.readAt._seconds': markNotificationReadClientWriteDataReadAtSeconds,
     'markNotificationReadClientWrite.path.notificationId': markNotificationReadClientWritePathNotificationId,
     'markNotificationReadClientWrite.path.uid': markNotificationReadClientWritePathUid,
+    'markOrganizerManualSendTaskCallablePayload.action': markOrganizerManualSendTaskCallablePayloadAction,
+    'markOrganizerManualSendTaskCallablePayload.expectedRevision': markOrganizerManualSendTaskCallablePayloadExpectedRevision,
+    'markOrganizerManualSendTaskCallablePayload.organizerId': markOrganizerManualSendTaskCallablePayloadOrganizerId,
+    'markOrganizerManualSendTaskCallablePayload.taskId': markOrganizerManualSendTaskCallablePayloadTaskId,
     'matchDocument.blockedAt._nanoseconds': matchDocumentBlockedAtNanoseconds,
     'matchDocument.blockedAt._seconds': matchDocumentBlockedAtSeconds,
     'matchDocument.blockedBy': matchDocumentBlockedBy,
@@ -63061,6 +65824,7 @@ abstract final class CatchContractConstraints {
     'mutateOrganizerContactMergeCallableResponse.movedClaimCount': mutateOrganizerContactMergeCallableResponseMovedClaimCount,
     'mutateOrganizerContactMergeCallableResponse.movedEdgeCount': mutateOrganizerContactMergeCallableResponseMovedEdgeCount,
     'mutateOrganizerContactMergeCallableResponse.movedIdentityEvidenceCount': mutateOrganizerContactMergeCallableResponseMovedIdentityEvidenceCount,
+    'mutateOrganizerContactMergeCallableResponse.movedOriginCount': mutateOrganizerContactMergeCallableResponseMovedOriginCount,
     'mutateOrganizerContactMergeCallableResponse.operation': mutateOrganizerContactMergeCallableResponseOperation,
     'mutateOrganizerContactMergeCallableResponse.receiptId': mutateOrganizerContactMergeCallableResponseReceiptId,
     'mutateOrganizerContactMergeCallableResponse.replayed': mutateOrganizerContactMergeCallableResponseReplayed,
@@ -63087,6 +65851,9 @@ abstract final class CatchContractConstraints {
     'onboardingDraftDocument.profilePrompts.items.prompt': onboardingDraftDocumentProfilePromptsItemsPrompt,
     'onboardingDraftDocument.profilePrompts.items.promptId': onboardingDraftDocumentProfilePromptsItemsPromptId,
     'onboardingDraftDocument.step': onboardingDraftDocumentStep,
+    'openOrganizerManualSendTaskCallablePayload.expectedRevision': openOrganizerManualSendTaskCallablePayloadExpectedRevision,
+    'openOrganizerManualSendTaskCallablePayload.organizerId': openOrganizerManualSendTaskCallablePayloadOrganizerId,
+    'openOrganizerManualSendTaskCallablePayload.taskId': openOrganizerManualSendTaskCallablePayloadTaskId,
     'operationRun.budgets.deadlineAt': operationRunBudgetsDeadlineAt,
     'operationRun.budgets.maxCostMicros': operationRunBudgetsMaxCostMicros,
     'operationRun.budgets.maxModelCalls': operationRunBudgetsMaxModelCalls,
@@ -63378,6 +66145,7 @@ abstract final class CatchContractConstraints {
     'organizerCampaignCallableResponse.deliveryCounts.suppressed': organizerCampaignCallableResponseDeliveryCountsSuppressed,
     'organizerCampaignCallableResponse.organizerId': organizerCampaignCallableResponseOrganizerId,
     'organizerCampaignCallableResponse.revision': organizerCampaignCallableResponseRevision,
+    'organizerCampaignCallableResponse.savedAudienceId': organizerCampaignCallableResponseSavedAudienceId,
     'organizerCampaignCallableResponse.senderStatus': organizerCampaignCallableResponseSenderStatus,
     'organizerCampaignCallableResponse.status': organizerCampaignCallableResponseStatus,
     'organizerCampaignCallableResponse.templateStatus': organizerCampaignCallableResponseTemplateStatus,
@@ -63423,6 +66191,9 @@ abstract final class CatchContractConstraints {
     'organizerCampaignDocument.organizerId': organizerCampaignDocumentOrganizerId,
     'organizerCampaignDocument.recipientSnapshotHash': organizerCampaignDocumentRecipientSnapshotHash,
     'organizerCampaignDocument.revision': organizerCampaignDocumentRevision,
+    'organizerCampaignDocument.savedAudienceDefinitionHash': organizerCampaignDocumentSavedAudienceDefinitionHash,
+    'organizerCampaignDocument.savedAudienceId': organizerCampaignDocumentSavedAudienceId,
+    'organizerCampaignDocument.savedAudienceRevision': organizerCampaignDocumentSavedAudienceRevision,
     'organizerCampaignDocument.scheduledAt._nanoseconds': organizerCampaignDocumentScheduledAtNanoseconds,
     'organizerCampaignDocument.scheduledAt._seconds': organizerCampaignDocumentScheduledAtSeconds,
     'organizerCampaignDocument.segmentIds': organizerCampaignDocumentSegmentIds,
@@ -63501,9 +66272,33 @@ abstract final class CatchContractConstraints {
     'organizerClaimRequestDocument.status': organizerClaimRequestDocumentStatus,
     'organizerClaimRequestDocument.updatedAt._nanoseconds': organizerClaimRequestDocumentUpdatedAtNanoseconds,
     'organizerClaimRequestDocument.updatedAt._seconds': organizerClaimRequestDocumentUpdatedAtSeconds,
+    'organizerCommunicationPermissionReceiptDocument.actorClass': organizerCommunicationPermissionReceiptDocumentActorClass,
+    'organizerCommunicationPermissionReceiptDocument.actorUid': organizerCommunicationPermissionReceiptDocumentActorUid,
+    'organizerCommunicationPermissionReceiptDocument.channel': organizerCommunicationPermissionReceiptDocumentChannel,
+    'organizerCommunicationPermissionReceiptDocument.consentCopyHash': organizerCommunicationPermissionReceiptDocumentConsentCopyHash,
+    'organizerCommunicationPermissionReceiptDocument.createdAt._nanoseconds': organizerCommunicationPermissionReceiptDocumentCreatedAtNanoseconds,
+    'organizerCommunicationPermissionReceiptDocument.createdAt._seconds': organizerCommunicationPermissionReceiptDocumentCreatedAtSeconds,
+    'organizerCommunicationPermissionReceiptDocument.decision': organizerCommunicationPermissionReceiptDocumentDecision,
+    'organizerCommunicationPermissionReceiptDocument.evidenceStatus': organizerCommunicationPermissionReceiptDocumentEvidenceStatus,
+    'organizerCommunicationPermissionReceiptDocument.grantedAt._nanoseconds': organizerCommunicationPermissionReceiptDocumentGrantedAtNanoseconds,
+    'organizerCommunicationPermissionReceiptDocument.grantedAt._seconds': organizerCommunicationPermissionReceiptDocumentGrantedAtSeconds,
+    'organizerCommunicationPermissionReceiptDocument.identityStrength': organizerCommunicationPermissionReceiptDocumentIdentityStrength,
+    'organizerCommunicationPermissionReceiptDocument.organizerId': organizerCommunicationPermissionReceiptDocumentOrganizerId,
+    'organizerCommunicationPermissionReceiptDocument.revokedAt._nanoseconds': organizerCommunicationPermissionReceiptDocumentRevokedAtNanoseconds,
+    'organizerCommunicationPermissionReceiptDocument.revokedAt._seconds': organizerCommunicationPermissionReceiptDocumentRevokedAtSeconds,
+    'organizerCommunicationPermissionReceiptDocument.source': organizerCommunicationPermissionReceiptDocumentSource,
+    'organizerCommunicationPermissionReceiptDocument.sourceEventId': organizerCommunicationPermissionReceiptDocumentSourceEventId,
+    'organizerCommunicationPermissionReceiptDocument.sourceFormId': organizerCommunicationPermissionReceiptDocumentSourceFormId,
+    'organizerCommunicationPermissionReceiptDocument.sourceProviderEventId': organizerCommunicationPermissionReceiptDocumentSourceProviderEventId,
+    'organizerCommunicationPermissionReceiptDocument.sourceResponseId': organizerCommunicationPermissionReceiptDocumentSourceResponseId,
+    'organizerCommunicationPermissionReceiptDocument.supersedesReceiptId': organizerCommunicationPermissionReceiptDocumentSupersedesReceiptId,
+    'organizerCommunicationPermissionReceiptDocument.termsVersion': organizerCommunicationPermissionReceiptDocumentTermsVersion,
+    'organizerCommunicationPermissionReceiptDocument.uid': organizerCommunicationPermissionReceiptDocumentUid,
     'organizerCommunicationPreferenceDocument.createdAt._nanoseconds': organizerCommunicationPreferenceDocumentCreatedAtNanoseconds,
     'organizerCommunicationPreferenceDocument.createdAt._seconds': organizerCommunicationPreferenceDocumentCreatedAtSeconds,
     'organizerCommunicationPreferenceDocument.organizerId': organizerCommunicationPreferenceDocumentOrganizerId,
+    'organizerCommunicationPreferenceDocument.sms.currentReceiptId': organizerCommunicationPreferenceDocumentSmsCurrentReceiptId,
+    'organizerCommunicationPreferenceDocument.sms.evidenceStatus': organizerCommunicationPreferenceDocumentSmsEvidenceStatus,
     'organizerCommunicationPreferenceDocument.sms.source': organizerCommunicationPreferenceDocumentSmsSource,
     'organizerCommunicationPreferenceDocument.sms.sourceEventId': organizerCommunicationPreferenceDocumentSmsSourceEventId,
     'organizerCommunicationPreferenceDocument.sms.status': organizerCommunicationPreferenceDocumentSmsStatus,
@@ -63513,6 +66308,8 @@ abstract final class CatchContractConstraints {
     'organizerCommunicationPreferenceDocument.uid': organizerCommunicationPreferenceDocumentUid,
     'organizerCommunicationPreferenceDocument.updatedAt._nanoseconds': organizerCommunicationPreferenceDocumentUpdatedAtNanoseconds,
     'organizerCommunicationPreferenceDocument.updatedAt._seconds': organizerCommunicationPreferenceDocumentUpdatedAtSeconds,
+    'organizerCommunicationPreferenceDocument.whatsapp.currentReceiptId': organizerCommunicationPreferenceDocumentWhatsappCurrentReceiptId,
+    'organizerCommunicationPreferenceDocument.whatsapp.evidenceStatus': organizerCommunicationPreferenceDocumentWhatsappEvidenceStatus,
     'organizerCommunicationPreferenceDocument.whatsapp.source': organizerCommunicationPreferenceDocumentWhatsappSource,
     'organizerCommunicationPreferenceDocument.whatsapp.sourceEventId': organizerCommunicationPreferenceDocumentWhatsappSourceEventId,
     'organizerCommunicationPreferenceDocument.whatsapp.status': organizerCommunicationPreferenceDocumentWhatsappStatus,
@@ -63687,6 +66484,9 @@ abstract final class CatchContractConstraints {
     'organizerContactMergeReceiptDocument.movedIdentityEvidenceCount': organizerContactMergeReceiptDocumentMovedIdentityEvidenceCount,
     'organizerContactMergeReceiptDocument.movedIdentityEvidenceIds': organizerContactMergeReceiptDocumentMovedIdentityEvidenceIds,
     'organizerContactMergeReceiptDocument.movedIdentityEvidenceIds.items': organizerContactMergeReceiptDocumentMovedIdentityEvidenceIdsItems,
+    'organizerContactMergeReceiptDocument.movedOriginCount': organizerContactMergeReceiptDocumentMovedOriginCount,
+    'organizerContactMergeReceiptDocument.movedOriginIds': organizerContactMergeReceiptDocumentMovedOriginIds,
+    'organizerContactMergeReceiptDocument.movedOriginIds.items': organizerContactMergeReceiptDocumentMovedOriginIdsItems,
     'organizerContactMergeReceiptDocument.operation': organizerContactMergeReceiptDocumentOperation,
     'organizerContactMergeReceiptDocument.organizerId': organizerContactMergeReceiptDocumentOrganizerId,
     'organizerContactMergeReceiptDocument.reversalOfReceiptId': organizerContactMergeReceiptDocumentReversalOfReceiptId,
@@ -63727,6 +66527,22 @@ abstract final class CatchContractConstraints {
     'organizerContactNoteDocument.updatedAt._nanoseconds': organizerContactNoteDocumentUpdatedAtNanoseconds,
     'organizerContactNoteDocument.updatedAt._seconds': organizerContactNoteDocumentUpdatedAtSeconds,
     'organizerContactNoteDocument.updatedByUid': organizerContactNoteDocumentUpdatedByUid,
+    'organizerContactOriginDocument.actorClass': organizerContactOriginDocumentActorClass,
+    'organizerContactOriginDocument.actorUid': organizerContactOriginDocumentActorUid,
+    'organizerContactOriginDocument.createdAt._nanoseconds': organizerContactOriginDocumentCreatedAtNanoseconds,
+    'organizerContactOriginDocument.createdAt._seconds': organizerContactOriginDocumentCreatedAtSeconds,
+    'organizerContactOriginDocument.currentContactId': organizerContactOriginDocumentCurrentContactId,
+    'organizerContactOriginDocument.eventId': organizerContactOriginDocumentEventId,
+    'organizerContactOriginDocument.formId': organizerContactOriginDocumentFormId,
+    'organizerContactOriginDocument.observedAt._nanoseconds': organizerContactOriginDocumentObservedAtNanoseconds,
+    'organizerContactOriginDocument.observedAt._seconds': organizerContactOriginDocumentObservedAtSeconds,
+    'organizerContactOriginDocument.organizerId': organizerContactOriginDocumentOrganizerId,
+    'organizerContactOriginDocument.originContactId': organizerContactOriginDocumentOriginContactId,
+    'organizerContactOriginDocument.originVersion': organizerContactOriginDocumentOriginVersion,
+    'organizerContactOriginDocument.responseId': organizerContactOriginDocumentResponseId,
+    'organizerContactOriginDocument.sourceEntityId': organizerContactOriginDocumentSourceEntityId,
+    'organizerContactOriginDocument.sourceEntityKind': organizerContactOriginDocumentSourceEntityKind,
+    'organizerContactOriginDocument.sourceKind': organizerContactOriginDocumentSourceKind,
     'organizerContactTagVocabularyDocument.organizerId': organizerContactTagVocabularyDocumentOrganizerId,
     'organizerContactTagVocabularyDocument.tags': organizerContactTagVocabularyDocumentTags,
     'organizerContactTagVocabularyDocument.tags.items.createdAt._nanoseconds': organizerContactTagVocabularyDocumentTagsItemsCreatedAtNanoseconds,
@@ -64205,6 +67021,18 @@ abstract final class CatchContractConstraints {
     'organizerFormDocument.activeVersionId': organizerFormDocumentActiveVersionId,
     'organizerFormDocument.archivedAt._nanoseconds': organizerFormDocumentArchivedAtNanoseconds,
     'organizerFormDocument.archivedAt._seconds': organizerFormDocumentArchivedAtSeconds,
+    'organizerFormDocument.consequenceProjection.coverage': organizerFormDocumentConsequenceProjectionCoverage,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.addApplicationQueue': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsAddApplicationQueue,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.addOrganizerTag': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsAddOrganizerTag,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.campaignHandoff': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsCampaignHandoff,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.createCrmContact': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsCreateCrmContact,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.notifyTeam': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsNotifyTeam,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.proposeEventAttendee': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsProposeEventAttendee,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.signedWebhook': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsSignedWebhook,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKinds': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKinds,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKinds.items': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindsItems,
+    'organizerFormDocument.consequenceProjection.identityPolicy': organizerFormDocumentConsequenceProjectionIdentityPolicy,
+    'organizerFormDocument.consequenceProjection.version': organizerFormDocumentConsequenceProjectionVersion,
     'organizerFormDocument.createdAt._nanoseconds': organizerFormDocumentCreatedAtNanoseconds,
     'organizerFormDocument.createdAt._seconds': organizerFormDocumentCreatedAtSeconds,
     'organizerFormDocument.createdByUid': organizerFormDocumentCreatedByUid,
@@ -64559,6 +67387,66 @@ abstract final class CatchContractConstraints {
     'organizerIntakeReviewDecisionDocument.schemaVersion': organizerIntakeReviewDecisionDocumentSchemaVersion,
     'organizerIntakeReviewDecisionDocument.updatedAt._nanoseconds': organizerIntakeReviewDecisionDocumentUpdatedAtNanoseconds,
     'organizerIntakeReviewDecisionDocument.updatedAt._seconds': organizerIntakeReviewDecisionDocumentUpdatedAtSeconds,
+    'organizerManualSendTaskCallableResponse.active': organizerManualSendTaskCallableResponseActive,
+    'organizerManualSendTaskCallableResponse.contactId': organizerManualSendTaskCallableResponseContactId,
+    'organizerManualSendTaskCallableResponse.createdAtMillis': organizerManualSendTaskCallableResponseCreatedAtMillis,
+    'organizerManualSendTaskCallableResponse.deliveryMode': organizerManualSendTaskCallableResponseDeliveryMode,
+    'organizerManualSendTaskCallableResponse.displayName': organizerManualSendTaskCallableResponseDisplayName,
+    'organizerManualSendTaskCallableResponse.expiresAtMillis': organizerManualSendTaskCallableResponseExpiresAtMillis,
+    'organizerManualSendTaskCallableResponse.intent': organizerManualSendTaskCallableResponseIntent,
+    'organizerManualSendTaskCallableResponse.openCount': organizerManualSendTaskCallableResponseOpenCount,
+    'organizerManualSendTaskCallableResponse.openedAtMillis': organizerManualSendTaskCallableResponseOpenedAtMillis,
+    'organizerManualSendTaskCallableResponse.organizerId': organizerManualSendTaskCallableResponseOrganizerId,
+    'organizerManualSendTaskCallableResponse.phoneE164': organizerManualSendTaskCallableResponsePhoneE164,
+    'organizerManualSendTaskCallableResponse.prefillText': organizerManualSendTaskCallableResponsePrefillText,
+    'organizerManualSendTaskCallableResponse.revision': organizerManualSendTaskCallableResponseRevision,
+    'organizerManualSendTaskCallableResponse.routeId': organizerManualSendTaskCallableResponseRouteId,
+    'organizerManualSendTaskCallableResponse.status': organizerManualSendTaskCallableResponseStatus,
+    'organizerManualSendTaskCallableResponse.taskId': organizerManualSendTaskCallableResponseTaskId,
+    'organizerManualSendTaskCallableResponse.updatedAtMillis': organizerManualSendTaskCallableResponseUpdatedAtMillis,
+    'organizerManualSendTaskDocument.active': organizerManualSendTaskDocumentActive,
+    'organizerManualSendTaskDocument.cancelledAt._nanoseconds': organizerManualSendTaskDocumentCancelledAtNanoseconds,
+    'organizerManualSendTaskDocument.cancelledAt._seconds': organizerManualSendTaskDocumentCancelledAtSeconds,
+    'organizerManualSendTaskDocument.capabilitySnapshot.managedRouteAvailable': organizerManualSendTaskDocumentCapabilitySnapshotManagedRouteAvailable,
+    'organizerManualSendTaskDocument.capabilitySnapshot.version': organizerManualSendTaskDocumentCapabilitySnapshotVersion,
+    'organizerManualSendTaskDocument.contactId': organizerManualSendTaskDocumentContactId,
+    'organizerManualSendTaskDocument.createdAt._nanoseconds': organizerManualSendTaskDocumentCreatedAtNanoseconds,
+    'organizerManualSendTaskDocument.createdAt._seconds': organizerManualSendTaskDocumentCreatedAtSeconds,
+    'organizerManualSendTaskDocument.createdByUid': organizerManualSendTaskDocumentCreatedByUid,
+    'organizerManualSendTaskDocument.deliveryMode': organizerManualSendTaskDocumentDeliveryMode,
+    'organizerManualSendTaskDocument.displayNameSnapshot': organizerManualSendTaskDocumentDisplayNameSnapshot,
+    'organizerManualSendTaskDocument.endpointE164Snapshot': organizerManualSendTaskDocumentEndpointE164Snapshot,
+    'organizerManualSendTaskDocument.endpointHash': organizerManualSendTaskDocumentEndpointHash,
+    'organizerManualSendTaskDocument.expiresAt._nanoseconds': organizerManualSendTaskDocumentExpiresAtNanoseconds,
+    'organizerManualSendTaskDocument.expiresAt._seconds': organizerManualSendTaskDocumentExpiresAtSeconds,
+    'organizerManualSendTaskDocument.hostMarkedSentAt._nanoseconds': organizerManualSendTaskDocumentHostMarkedSentAtNanoseconds,
+    'organizerManualSendTaskDocument.hostMarkedSentAt._seconds': organizerManualSendTaskDocumentHostMarkedSentAtSeconds,
+    'organizerManualSendTaskDocument.idempotencyKey': organizerManualSendTaskDocumentIdempotencyKey,
+    'organizerManualSendTaskDocument.intent': organizerManualSendTaskDocumentIntent,
+    'organizerManualSendTaskDocument.openCount': organizerManualSendTaskDocumentOpenCount,
+    'organizerManualSendTaskDocument.openedAt._nanoseconds': organizerManualSendTaskDocumentOpenedAtNanoseconds,
+    'organizerManualSendTaskDocument.openedAt._seconds': organizerManualSendTaskDocumentOpenedAtSeconds,
+    'organizerManualSendTaskDocument.organizerId': organizerManualSendTaskDocumentOrganizerId,
+    'organizerManualSendTaskDocument.permissionSnapshot.adminSuppressed': organizerManualSendTaskDocumentPermissionSnapshotAdminSuppressed,
+    'organizerManualSendTaskDocument.permissionSnapshot.recordedAt._nanoseconds': organizerManualSendTaskDocumentPermissionSnapshotRecordedAtNanoseconds,
+    'organizerManualSendTaskDocument.permissionSnapshot.recordedAt._seconds': organizerManualSendTaskDocumentPermissionSnapshotRecordedAtSeconds,
+    'organizerManualSendTaskDocument.permissionSnapshot.whatsappStatus': organizerManualSendTaskDocumentPermissionSnapshotWhatsappStatus,
+    'organizerManualSendTaskDocument.prefillHash': organizerManualSendTaskDocumentPrefillHash,
+    'organizerManualSendTaskDocument.prefillText': organizerManualSendTaskDocumentPrefillText,
+    'organizerManualSendTaskDocument.requestHash': organizerManualSendTaskDocumentRequestHash,
+    'organizerManualSendTaskDocument.revision': organizerManualSendTaskDocumentRevision,
+    'organizerManualSendTaskDocument.routeId': organizerManualSendTaskDocumentRouteId,
+    'organizerManualSendTaskDocument.skippedAt._nanoseconds': organizerManualSendTaskDocumentSkippedAtNanoseconds,
+    'organizerManualSendTaskDocument.skippedAt._seconds': organizerManualSendTaskDocumentSkippedAtSeconds,
+    'organizerManualSendTaskDocument.sourceId': organizerManualSendTaskDocumentSourceId,
+    'organizerManualSendTaskDocument.sourceKind': organizerManualSendTaskDocumentSourceKind,
+    'organizerManualSendTaskDocument.status': organizerManualSendTaskDocumentStatus,
+    'organizerManualSendTaskDocument.supersededAt._nanoseconds': organizerManualSendTaskDocumentSupersededAtNanoseconds,
+    'organizerManualSendTaskDocument.supersededAt._seconds': organizerManualSendTaskDocumentSupersededAtSeconds,
+    'organizerManualSendTaskDocument.taskId': organizerManualSendTaskDocumentTaskId,
+    'organizerManualSendTaskDocument.updatedAt._nanoseconds': organizerManualSendTaskDocumentUpdatedAtNanoseconds,
+    'organizerManualSendTaskDocument.updatedAt._seconds': organizerManualSendTaskDocumentUpdatedAtSeconds,
+    'organizerManualSendTaskDocument.updatedByUid': organizerManualSendTaskDocumentUpdatedByUid,
     'organizerMessageTemplateDocument.buttonKinds': organizerMessageTemplateDocumentButtonKinds,
     'organizerMessageTemplateDocument.buttonKinds.items': organizerMessageTemplateDocumentButtonKindsItems,
     'organizerMessageTemplateDocument.category': organizerMessageTemplateDocumentCategory,
@@ -64780,6 +67668,55 @@ abstract final class CatchContractConstraints {
     'organizerProviderSetupCallableResponse.providers.items.importSupport': organizerProviderSetupCallableResponseProvidersItemsImportSupport,
     'organizerProviderSetupCallableResponse.providers.items.provider': organizerProviderSetupCallableResponseProvidersItemsProvider,
     'organizerProviderSetupCallableResponse.providers.items.requirement': organizerProviderSetupCallableResponseProvidersItemsRequirement,
+    'organizerSavedAudienceCallableResponse.audienceId': organizerSavedAudienceCallableResponseAudienceId,
+    'organizerSavedAudienceCallableResponse.createdAtMillis': organizerSavedAudienceCallableResponseCreatedAtMillis,
+    'organizerSavedAudienceCallableResponse.definition.join': organizerSavedAudienceCallableResponseDefinitionJoin,
+    'organizerSavedAudienceCallableResponse.definition.predicates': organizerSavedAudienceCallableResponseDefinitionPredicates,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.days': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsDays,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.eventCount': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsEventCount,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.intent': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsIntent,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.kind': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsKind,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.manualTagId': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsManualTagId,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.operator': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsOperator,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentId': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsSegmentId,
+    'organizerSavedAudienceCallableResponse.definitionHash': organizerSavedAudienceCallableResponseDefinitionHash,
+    'organizerSavedAudienceCallableResponse.definitionVersion': organizerSavedAudienceCallableResponseDefinitionVersion,
+    'organizerSavedAudienceCallableResponse.lastPreviewAtMillis': organizerSavedAudienceCallableResponseLastPreviewAtMillis,
+    'organizerSavedAudienceCallableResponse.lastPreviewMatchCount': organizerSavedAudienceCallableResponseLastPreviewMatchCount,
+    'organizerSavedAudienceCallableResponse.name': organizerSavedAudienceCallableResponseName,
+    'organizerSavedAudienceCallableResponse.organizerId': organizerSavedAudienceCallableResponseOrganizerId,
+    'organizerSavedAudienceCallableResponse.revision': organizerSavedAudienceCallableResponseRevision,
+    'organizerSavedAudienceCallableResponse.scope': organizerSavedAudienceCallableResponseScope,
+    'organizerSavedAudienceCallableResponse.status': organizerSavedAudienceCallableResponseStatus,
+    'organizerSavedAudienceCallableResponse.updatedAtMillis': organizerSavedAudienceCallableResponseUpdatedAtMillis,
+    'organizerSavedAudienceDocument.archivedAt._nanoseconds': organizerSavedAudienceDocumentArchivedAtNanoseconds,
+    'organizerSavedAudienceDocument.archivedAt._seconds': organizerSavedAudienceDocumentArchivedAtSeconds,
+    'organizerSavedAudienceDocument.audienceId': organizerSavedAudienceDocumentAudienceId,
+    'organizerSavedAudienceDocument.createdAt._nanoseconds': organizerSavedAudienceDocumentCreatedAtNanoseconds,
+    'organizerSavedAudienceDocument.createdAt._seconds': organizerSavedAudienceDocumentCreatedAtSeconds,
+    'organizerSavedAudienceDocument.createdByUid': organizerSavedAudienceDocumentCreatedByUid,
+    'organizerSavedAudienceDocument.definition.join': organizerSavedAudienceDocumentDefinitionJoin,
+    'organizerSavedAudienceDocument.definition.predicates': organizerSavedAudienceDocumentDefinitionPredicates,
+    'organizerSavedAudienceDocument.definition.predicates.items.days': organizerSavedAudienceDocumentDefinitionPredicatesItemsDays,
+    'organizerSavedAudienceDocument.definition.predicates.items.eventCount': organizerSavedAudienceDocumentDefinitionPredicatesItemsEventCount,
+    'organizerSavedAudienceDocument.definition.predicates.items.intent': organizerSavedAudienceDocumentDefinitionPredicatesItemsIntent,
+    'organizerSavedAudienceDocument.definition.predicates.items.kind': organizerSavedAudienceDocumentDefinitionPredicatesItemsKind,
+    'organizerSavedAudienceDocument.definition.predicates.items.manualTagId': organizerSavedAudienceDocumentDefinitionPredicatesItemsManualTagId,
+    'organizerSavedAudienceDocument.definition.predicates.items.operator': organizerSavedAudienceDocumentDefinitionPredicatesItemsOperator,
+    'organizerSavedAudienceDocument.definition.predicates.items.segmentId': organizerSavedAudienceDocumentDefinitionPredicatesItemsSegmentId,
+    'organizerSavedAudienceDocument.definitionHash': organizerSavedAudienceDocumentDefinitionHash,
+    'organizerSavedAudienceDocument.definitionVersion': organizerSavedAudienceDocumentDefinitionVersion,
+    'organizerSavedAudienceDocument.lastPreviewAt._nanoseconds': organizerSavedAudienceDocumentLastPreviewAtNanoseconds,
+    'organizerSavedAudienceDocument.lastPreviewAt._seconds': organizerSavedAudienceDocumentLastPreviewAtSeconds,
+    'organizerSavedAudienceDocument.lastPreviewMatchCount': organizerSavedAudienceDocumentLastPreviewMatchCount,
+    'organizerSavedAudienceDocument.name': organizerSavedAudienceDocumentName,
+    'organizerSavedAudienceDocument.organizerId': organizerSavedAudienceDocumentOrganizerId,
+    'organizerSavedAudienceDocument.revision': organizerSavedAudienceDocumentRevision,
+    'organizerSavedAudienceDocument.scope': organizerSavedAudienceDocumentScope,
+    'organizerSavedAudienceDocument.status': organizerSavedAudienceDocumentStatus,
+    'organizerSavedAudienceDocument.updatedAt._nanoseconds': organizerSavedAudienceDocumentUpdatedAtNanoseconds,
+    'organizerSavedAudienceDocument.updatedAt._seconds': organizerSavedAudienceDocumentUpdatedAtSeconds,
+    'organizerSavedAudienceDocument.updatedByUid': organizerSavedAudienceDocumentUpdatedByUid,
     'organizerScheduleLockDocument.endTimeMillis': organizerScheduleLockDocumentEndTimeMillis,
     'organizerScheduleLockDocument.eventId': organizerScheduleLockDocumentEventId,
     'organizerScheduleLockDocument.organizerId': organizerScheduleLockDocumentOrganizerId,
@@ -64989,6 +67926,11 @@ abstract final class CatchContractConstraints {
     'placesAutocompleteCallableResponse.predictions.items.secondaryText': placesAutocompleteCallableResponsePredictionsItemsSecondaryText,
     'prepareEventSuccessRotationDraftCallablePayload.eventId': prepareEventSuccessRotationDraftCallablePayloadEventId,
     'prepareEventSuccessRotationDraftCallablePayload.expectedRevision': prepareEventSuccessRotationDraftCallablePayloadExpectedRevision,
+    'prepareOrganizerManualSendTaskCallablePayload.contactId': prepareOrganizerManualSendTaskCallablePayloadContactId,
+    'prepareOrganizerManualSendTaskCallablePayload.intent': prepareOrganizerManualSendTaskCallablePayloadIntent,
+    'prepareOrganizerManualSendTaskCallablePayload.organizerId': prepareOrganizerManualSendTaskCallablePayloadOrganizerId,
+    'prepareOrganizerManualSendTaskCallablePayload.prefillText': prepareOrganizerManualSendTaskCallablePayloadPrefillText,
+    'prepareOrganizerManualSendTaskCallablePayload.requestId': prepareOrganizerManualSendTaskCallablePayloadRequestId,
     'previewOrganizerApplicationImportCallablePayload.formVersionId': previewOrganizerApplicationImportCallablePayloadFormVersionId,
     'previewOrganizerApplicationImportCallablePayload.headers': previewOrganizerApplicationImportCallablePayloadHeaders,
     'previewOrganizerApplicationImportCallablePayload.headers.items': previewOrganizerApplicationImportCallablePayloadHeadersItems,
@@ -65039,6 +67981,37 @@ abstract final class CatchContractConstraints {
     'previewOrganizerFormConversionCallableResponse.responseId': previewOrganizerFormConversionCallableResponseResponseId,
     'previewOrganizerFormConversionCallableResponse.warnings': previewOrganizerFormConversionCallableResponseWarnings,
     'previewOrganizerFormConversionCallableResponse.warnings.items': previewOrganizerFormConversionCallableResponseWarningsItems,
+    'previewOrganizerSavedAudienceCallablePayload.audienceId': previewOrganizerSavedAudienceCallablePayloadAudienceId,
+    'previewOrganizerSavedAudienceCallablePayload.expectedRevision': previewOrganizerSavedAudienceCallablePayloadExpectedRevision,
+    'previewOrganizerSavedAudienceCallablePayload.organizerId': previewOrganizerSavedAudienceCallablePayloadOrganizerId,
+    'previewOrganizerSavedAudienceCallablePayload.sampleLimit': previewOrganizerSavedAudienceCallablePayloadSampleLimit,
+    'previewOrganizerSavedAudienceCallableResponse.audience.audienceId': previewOrganizerSavedAudienceCallableResponseAudienceAudienceId,
+    'previewOrganizerSavedAudienceCallableResponse.audience.createdAtMillis': previewOrganizerSavedAudienceCallableResponseAudienceCreatedAtMillis,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.join': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionJoin,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicates,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.days': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsDays,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.eventCount': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsEventCount,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.intent': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsIntent,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.kind': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsKind,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.manualTagId': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsManualTagId,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.operator': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsOperator,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentId': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsSegmentId,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definitionHash': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionHash,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definitionVersion': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionVersion,
+    'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewAtMillis': previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewAtMillis,
+    'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewMatchCount': previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewMatchCount,
+    'previewOrganizerSavedAudienceCallableResponse.audience.name': previewOrganizerSavedAudienceCallableResponseAudienceName,
+    'previewOrganizerSavedAudienceCallableResponse.audience.organizerId': previewOrganizerSavedAudienceCallableResponseAudienceOrganizerId,
+    'previewOrganizerSavedAudienceCallableResponse.audience.revision': previewOrganizerSavedAudienceCallableResponseAudienceRevision,
+    'previewOrganizerSavedAudienceCallableResponse.audience.scope': previewOrganizerSavedAudienceCallableResponseAudienceScope,
+    'previewOrganizerSavedAudienceCallableResponse.audience.status': previewOrganizerSavedAudienceCallableResponseAudienceStatus,
+    'previewOrganizerSavedAudienceCallableResponse.audience.updatedAtMillis': previewOrganizerSavedAudienceCallableResponseAudienceUpdatedAtMillis,
+    'previewOrganizerSavedAudienceCallableResponse.coverage': previewOrganizerSavedAudienceCallableResponseCoverage,
+    'previewOrganizerSavedAudienceCallableResponse.evaluatedAtMillis': previewOrganizerSavedAudienceCallableResponseEvaluatedAtMillis,
+    'previewOrganizerSavedAudienceCallableResponse.matchCount': previewOrganizerSavedAudienceCallableResponseMatchCount,
+    'previewOrganizerSavedAudienceCallableResponse.sample': previewOrganizerSavedAudienceCallableResponseSample,
+    'previewOrganizerSavedAudienceCallableResponse.sample.items.contactId': previewOrganizerSavedAudienceCallableResponseSampleItemsContactId,
+    'previewOrganizerSavedAudienceCallableResponse.sample.items.displayName': previewOrganizerSavedAudienceCallableResponseSampleItemsDisplayName,
     'profilePhoto.createdAt._nanoseconds': profilePhotoCreatedAtNanoseconds,
     'profilePhoto.createdAt._seconds': profilePhotoCreatedAtSeconds,
     'profilePhoto.id': profilePhotoId,
@@ -65272,6 +68245,17 @@ abstract final class CatchContractConstraints {
     'removeClubHostCallablePayload.uid': removeClubHostCallablePayloadUid,
     'removeOrganizerManagerCallablePayload.organizerId': removeOrganizerManagerCallablePayloadOrganizerId,
     'removeOrganizerManagerCallablePayload.uid': removeOrganizerManagerCallablePayloadUid,
+    'replanOrganizerManualSendTasksCallablePayload.organizerId': replanOrganizerManualSendTasksCallablePayloadOrganizerId,
+    'replanOrganizerManualSendTasksCallablePayload.taskIds': replanOrganizerManualSendTasksCallablePayloadTaskIds,
+    'replanOrganizerManualSendTasksCallablePayload.taskIds.items': replanOrganizerManualSendTasksCallablePayloadTaskIdsItems,
+    'replanOrganizerManualSendTasksCallableResponse.organizerId': replanOrganizerManualSendTasksCallableResponseOrganizerId,
+    'replanOrganizerManualSendTasksCallableResponse.resolvedAtMillis': replanOrganizerManualSendTasksCallableResponseResolvedAtMillis,
+    'replanOrganizerManualSendTasksCallableResponse.results': replanOrganizerManualSendTasksCallableResponseResults,
+    'replanOrganizerManualSendTasksCallableResponse.results.items.blocker': replanOrganizerManualSendTasksCallableResponseResultsItemsBlocker,
+    'replanOrganizerManualSendTasksCallableResponse.results.items.contactId': replanOrganizerManualSendTasksCallableResponseResultsItemsContactId,
+    'replanOrganizerManualSendTasksCallableResponse.results.items.disposition': replanOrganizerManualSendTasksCallableResponseResultsItemsDisposition,
+    'replanOrganizerManualSendTasksCallableResponse.results.items.recommendedRouteId': replanOrganizerManualSendTasksCallableResponseResultsItemsRecommendedRouteId,
+    'replanOrganizerManualSendTasksCallableResponse.results.items.taskId': replanOrganizerManualSendTasksCallableResponseResultsItemsTaskId,
     'reportDocument.contextId': reportDocumentContextId,
     'reportDocument.createdAt._nanoseconds': reportDocumentCreatedAtNanoseconds,
     'reportDocument.createdAt._seconds': reportDocumentCreatedAtSeconds,
@@ -65349,6 +68333,24 @@ abstract final class CatchContractConstraints {
     'resolveEventSuccessLateArrivalCallableResponse.revision': resolveEventSuccessLateArrivalCallableResponseRevision,
     'resolveEventSuccessLateArrivalCallableResponse.status': resolveEventSuccessLateArrivalCallableResponseStatus,
     'resolveEventSuccessLateArrivalCallableResponse.targetRoundIndex': resolveEventSuccessLateArrivalCallableResponseTargetRoundIndex,
+    'resolveOrganizerCommunicationPlanCallablePayload.intent': resolveOrganizerCommunicationPlanCallablePayloadIntent,
+    'resolveOrganizerCommunicationPlanCallablePayload.organizerId': resolveOrganizerCommunicationPlanCallablePayloadOrganizerId,
+    'resolveOrganizerCommunicationPlanCallablePayload.target.contactId': resolveOrganizerCommunicationPlanCallablePayloadTargetContactId,
+    'resolveOrganizerCommunicationPlanCallablePayload.target.kind': resolveOrganizerCommunicationPlanCallablePayloadTargetKind,
+    'resolveOrganizerCommunicationPlanCallableResponse.capabilityVersion': resolveOrganizerCommunicationPlanCallableResponseCapabilityVersion,
+    'resolveOrganizerCommunicationPlanCallableResponse.intent': resolveOrganizerCommunicationPlanCallableResponseIntent,
+    'resolveOrganizerCommunicationPlanCallableResponse.organizerId': resolveOrganizerCommunicationPlanCallableResponseOrganizerId,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients': resolveOrganizerCommunicationPlanCallableResponseRecipients,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.contactId': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsContactId,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.displayName': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsDisplayName,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.outcome': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsOutcome,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.recommendedRouteId': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRecommendedRouteId,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutes,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.availability': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsAvailability,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.blocker': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsBlocker,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.executionMode': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsExecutionMode,
+    'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.routeId': resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsRouteId,
+    'resolveOrganizerCommunicationPlanCallableResponse.resolvedAtMillis': resolveOrganizerCommunicationPlanCallableResponseResolvedAtMillis,
     'respondCrossPathsInvitationCallablePayload.decision': respondCrossPathsInvitationCallablePayloadDecision,
     'respondCrossPathsInvitationCallablePayload.invitationId': respondCrossPathsInvitationCallablePayloadInvitationId,
     'respondCrossPathsInvitationCallableResponse.conversationId': respondCrossPathsInvitationCallableResponseConversationId,
@@ -66190,11 +69192,25 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerCampaignCallablePayload.name': upsertOrganizerCampaignCallablePayloadName,
     'upsertOrganizerCampaignCallablePayload.organizerId': upsertOrganizerCampaignCallablePayloadOrganizerId,
     'upsertOrganizerCampaignCallablePayload.requestId': upsertOrganizerCampaignCallablePayloadRequestId,
+    'upsertOrganizerCampaignCallablePayload.savedAudienceId': upsertOrganizerCampaignCallablePayloadSavedAudienceId,
     'upsertOrganizerCampaignCallablePayload.scheduledAtMillis': upsertOrganizerCampaignCallablePayloadScheduledAtMillis,
-    'upsertOrganizerCampaignCallablePayload.segmentIds': upsertOrganizerCampaignCallablePayloadSegmentIds,
-    'upsertOrganizerCampaignCallablePayload.segmentIds.items': upsertOrganizerCampaignCallablePayloadSegmentIdsItems,
     'upsertOrganizerCampaignCallablePayload.templateId': upsertOrganizerCampaignCallablePayloadTemplateId,
     'upsertOrganizerCampaignCallablePayload.templateVariables': upsertOrganizerCampaignCallablePayloadTemplateVariables,
+    'upsertOrganizerSavedAudienceCallablePayload.audienceId': upsertOrganizerSavedAudienceCallablePayloadAudienceId,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.join': upsertOrganizerSavedAudienceCallablePayloadDefinitionJoin,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicates,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.days': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsDays,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.eventCount': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsEventCount,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.intent': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsIntent,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.kind': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsKind,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.manualTagId': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsManualTagId,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.operator': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentId': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentId,
+    'upsertOrganizerSavedAudienceCallablePayload.expectedRevision': upsertOrganizerSavedAudienceCallablePayloadExpectedRevision,
+    'upsertOrganizerSavedAudienceCallablePayload.name': upsertOrganizerSavedAudienceCallablePayloadName,
+    'upsertOrganizerSavedAudienceCallablePayload.organizerId': upsertOrganizerSavedAudienceCallablePayloadOrganizerId,
+    'upsertOrganizerSavedAudienceCallablePayload.requestId': upsertOrganizerSavedAudienceCallablePayloadRequestId,
+    'upsertOrganizerSavedAudienceCallablePayload.scope': upsertOrganizerSavedAudienceCallablePayloadScope,
     'userAnalyticsCallableResponse.coachingTipRefs': userAnalyticsCallableResponseCoachingTipRefs,
     'userAnalyticsCallableResponse.coachingTipRefs.items.copyKey': userAnalyticsCallableResponseCoachingTipRefsItemsCopyKey,
     'userAnalyticsCallableResponse.coachingTipRefs.items.id': userAnalyticsCallableResponseCoachingTipRefsItemsId,
@@ -66432,6 +69448,9 @@ abstract final class CatchContractConstraints {
     'validateOrganizerFormDraftCallableResponse.issues.items.path': validateOrganizerFormDraftCallableResponseIssuesItemsPath,
     'validateOrganizerFormDraftCallableResponse.issues.items.severity': validateOrganizerFormDraftCallableResponseIssuesItemsSeverity,
     'validateOrganizerFormDraftCallableResponse.valid': validateOrganizerFormDraftCallableResponseValid,
+    'validateOrganizerManualSendTaskLaunchCallablePayload.expectedRevision': validateOrganizerManualSendTaskLaunchCallablePayloadExpectedRevision,
+    'validateOrganizerManualSendTaskLaunchCallablePayload.organizerId': validateOrganizerManualSendTaskLaunchCallablePayloadOrganizerId,
+    'validateOrganizerManualSendTaskLaunchCallablePayload.taskId': validateOrganizerManualSendTaskLaunchCallablePayloadTaskId,
     'verifyRazorpayPaymentCallablePayload.orderId': verifyRazorpayPaymentCallablePayloadOrderId,
     'verifyRazorpayPaymentCallablePayload.paymentId': verifyRazorpayPaymentCallablePayloadPaymentId,
     'verifyRazorpayPaymentCallablePayload.signature': verifyRazorpayPaymentCallablePayloadSignature,

@@ -193,6 +193,9 @@ function preference(params: {
 }): OrganizerCommunicationPreferenceDocument {
   const channel = (optedIn: boolean) => ({
     status: optedIn ? "optedIn" as const : "unknown" as const,
+    evidenceStatus: optedIn ? "complete" as const :
+      "notApplicable" as const,
+    currentReceiptId: optedIn ? "receipt-1" : null,
     termsVersion: optedIn ? "organizer-updates-v1" : null,
     source: optedIn ? "publicEventRegistration" as const : null,
     sourceEventId: optedIn ? "event-1" : null,

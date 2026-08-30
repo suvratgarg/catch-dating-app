@@ -890,10 +890,22 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Immutable participant permission evidence is server-only. Neither a
+    // manager nor a client may manufacture, rewrite, or delete consent history.
+    match /organizerCommunicationPermissionReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     // Organizer Audience/CRM projections contain restricted operational PII,
     // identity candidates, and business traits. All client access is through
     // manager-authorized, purpose-built callable projections.
     match /organizerContacts/{contactId} {
+      allow read, write: if false;
+    }
+
+    // Contact source facts are server-owned and move between contact identities
+    // only through a receipt-backed merge or unmerge.
+    match /organizerContactOrigins/{originId} {
       allow read, write: if false;
     }
 
@@ -902,6 +914,20 @@ service cloud.firestore {
     }
 
     match /organizerContactTagVocabularies/{organizerId} {
+      allow read, write: if false;
+    }
+
+    // Reusable CRM audiences are authored and resolved only through bounded,
+    // manager-authorized callables. Definitions and preview metadata are not a
+    // client-side Firestore query language.
+    match /organizerSavedAudiences/{audienceId} {
+      allow read, write: if false;
+    }
+
+    // Manual-send tasks contain endpoint and prefill snapshots. Only
+    // manager-authorized callables may prepare, inspect, or advance them; an
+    // external-app launch is never a delivery receipt.
+    match /organizerManualSendTasks/{taskId} {
       allow read, write: if false;
     }
 

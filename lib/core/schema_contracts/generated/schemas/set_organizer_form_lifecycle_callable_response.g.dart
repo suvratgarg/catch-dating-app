@@ -28,6 +28,7 @@ const schemaSetOrganizerFormLifecycleCallableResponseSchema = <String, Object?>{
         'draftRevision',
         'publishedVersion',
         'submittedResponseCount',
+        'consequences',
         'updatedAtMillis',
         'publishedAtMillis',
         'lastResponseAtMillis',
@@ -133,6 +134,59 @@ const schemaSetOrganizerFormLifecycleCallableResponseSchema = <String, Object?>{
           'type': 'integer',
           'minimum': 0,
           'maximum': 1000000000,
+        },
+        'consequences': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'coverage',
+            'identityPolicy',
+            'enabledAutomationActionKinds',
+          ],
+          'properties': <String, Object?>{
+            'coverage': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'exact',
+                'identityOnly',
+                'unavailable',
+              ],
+            },
+            'identityPolicy': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'anonymous',
+                    'emailVerified',
+                    'phoneVerified',
+                    'emailOrPhoneVerified',
+                    'catchAccount',
+                  ],
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'enabledAutomationActionKinds': <String, Object?>{
+              'type': 'array',
+              'maxItems': 7,
+              'uniqueItems': true,
+              'items': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'notifyTeam',
+                  'addOrganizerTag',
+                  'createCrmContact',
+                  'addApplicationQueue',
+                  'proposeEventAttendee',
+                  'signedWebhook',
+                  'campaignHandoff',
+                ],
+              },
+            },
+          },
         },
         'updatedAtMillis': <String, Object?>{
           'type': 'integer',

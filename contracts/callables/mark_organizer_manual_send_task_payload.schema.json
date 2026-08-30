@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/mark_organizer_manual_send_task_payload.schema.json",
+  "title": "MarkOrganizerManualSendTaskCallablePayload",
+  "description": "Revision-bound explicit terminal host action for one manual-send task.",
+  "x-callable-aliases": ["markOrganizerManualSendTask"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "taskId", "expectedRevision", "action"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "taskId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expectedRevision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "action": {"type": "string", "enum": ["hostMarkedSent", "skipped", "cancelled"]}
+  }
+}

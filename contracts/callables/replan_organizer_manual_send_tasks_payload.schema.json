@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/replan_organizer_manual_send_tasks_payload.schema.json",
+  "title": "ReplanOrganizerManualSendTasksCallablePayload",
+  "description": "Explicitly rechecks current communication routes for active manual work without mutating, dispatching, or completing it.",
+  "x-callable-aliases": ["replanOrganizerManualSendTasks"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "taskIds"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "taskIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+    }
+  }
+}

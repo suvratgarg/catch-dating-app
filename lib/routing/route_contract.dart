@@ -73,9 +73,9 @@ enum Routes {
     '/host/forms/:formId/automations',
     AppRouteAudience.host,
   ),
-  hostApplicationsScreen('/host/customers/applications', AppRouteAudience.host),
+  hostApplicationsScreen('/host/forms/applications', AppRouteAudience.host),
   hostApplicationDetailScreen(
-    '/host/customers/applications/:applicationId',
+    '/host/forms/applications/:applicationId',
     AppRouteAudience.host,
   ),
   hostCustomerDetailScreen('/host/customers/:contactId', AppRouteAudience.host),

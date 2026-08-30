@@ -19,6 +19,7 @@ const schemaMutateOrganizerContactMergeCallableResponseSchema = <String, Object?
     'movedEdgeCount',
     'movedIdentityEvidenceCount',
     'movedClaimCount',
+    'movedOriginCount',
     'replayed',
   ],
   'properties': <String, Object?>{
@@ -55,6 +56,11 @@ const schemaMutateOrganizerContactMergeCallableResponseSchema = <String, Object?
       'maximum': 400,
     },
     'movedClaimCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 400,
+    },
+    'movedOriginCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 400,

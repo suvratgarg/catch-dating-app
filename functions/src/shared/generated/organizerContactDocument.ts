@@ -25,7 +25,8 @@ export interface OrganizerContactDocument {
     | "hostImport"
     | "hostManual"
     | "webOtp"
-    | "providerSync";
+    | "providerSync"
+    | "hostForm";
   /**
    * @maxItems 20
    */

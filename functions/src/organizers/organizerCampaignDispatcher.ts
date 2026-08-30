@@ -25,7 +25,10 @@ import {OrganizerCampaignCallableResponse} from
   "../shared/generated/organizerCampaignCallableResponse";
 import {validateOrganizerCampaignActionCallablePayload} from
   "../shared/generated/schemaValidators";
-import {organizerCommunicationPreferenceId} from
+import {
+  effectiveOrganizerCommunicationStatus,
+  organizerCommunicationPreferenceId,
+} from
   "../shared/organizerCommunicationPreferences";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
@@ -608,14 +611,17 @@ function finalSuppressionReason(params: {
   ) {
     return "invalidEndpoint";
   }
-  if (
-    !params.preference ||
-    params.preference.organizerId !== params.organizerId ||
-    params.preference.uid !== params.contact.linkedUid ||
-    params.preference.whatsapp.status !== "optedIn"
-  ) {
-    return "optedOut";
+  if (!params.preference ||
+      params.preference.organizerId !== params.organizerId ||
+      params.preference.uid !== params.contact.linkedUid) {
+    return "unknownPermission";
   }
+  const permissionStatus = effectiveOrganizerCommunicationStatus(
+    params.preference,
+    "whatsapp"
+  );
+  if (permissionStatus === "unknown") return "unknownPermission";
+  if (permissionStatus === "optedOut") return "optedOut";
   if (
     params.channelState?.adminSuppressed === true
   ) {

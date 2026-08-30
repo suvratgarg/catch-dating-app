@@ -79,6 +79,314 @@ void main() {
     },
   );
 
+  test(
+    'communication plan is parsed from the server without local inference',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('resolveOrganizerCommunicationPlan')
+              as _TestHttpsCallable;
+      callable.resultData = {
+        'organizerId': 'organizer-1',
+        'intent': 'individualConversation',
+        'capabilityVersion': 1,
+        'resolvedAtMillis': 1700000000000,
+        'recipients': [
+          {
+            'contactId': 'contact-1',
+            'displayName': 'Asha',
+            'outcome': 'byHand',
+            'recommendedRouteId': 'personalWhatsappHandoff',
+            'routes': [
+              {
+                'routeId': 'catchChat',
+                'executionMode': 'managedDelivery',
+                'availability': 'unavailable',
+                'blocker': 'catchAccountRequired',
+              },
+              {
+                'routeId': 'personalWhatsappHandoff',
+                'executionMode': 'externalHandoff',
+                'availability': 'available',
+                'blocker': null,
+              },
+            ],
+          },
+        ],
+      };
+      final repository = HostCrmRepository(functions);
+
+      final plan = await repository.resolveIndividualCommunicationPlan(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      );
+
+      expect(callable.calls.single, {
+        'organizerId': 'organizer-1',
+        'intent': 'individualConversation',
+        'target': {'kind': 'contact', 'contactId': 'contact-1'},
+      });
+      expect(plan.singleRecipient.outcome, HostCommunicationOutcome.byHand);
+      expect(
+        plan.singleRecipient.route(HostCommunicationRouteId.catchChat).blocker,
+        HostCommunicationRouteBlocker.catchAccountRequired,
+      );
+    },
+  );
+
+  test('communication plan parser rejects contradictory route state', () {
+    expect(
+      () => HostCommunicationPlan.fromCallableData({
+        'organizerId': 'organizer-1',
+        'intent': 'individualConversation',
+        'capabilityVersion': 1,
+        'resolvedAtMillis': 1700000000000,
+        'recipients': [
+          {
+            'contactId': 'contact-1',
+            'displayName': 'Asha',
+            'outcome': 'inCatch',
+            'recommendedRouteId': 'catchChat',
+            'routes': [
+              {
+                'routeId': 'catchChat',
+                'executionMode': 'managedDelivery',
+                'availability': 'available',
+                'blocker': 'identityAmbiguous',
+              },
+              {
+                'routeId': 'personalWhatsappHandoff',
+                'executionMode': 'externalHandoff',
+                'availability': 'available',
+                'blocker': null,
+              },
+            ],
+          },
+        ],
+      }),
+      throwsFormatException,
+    );
+  });
+
+  test('saved audience writes only the closed Customers definition', () async {
+    final functions = _TestFirebaseFunctions();
+    final callable =
+        functions.httpsCallable('upsertOrganizerSavedAudience')
+            as _TestHttpsCallable;
+    callable.resultData = _savedAudienceData();
+    final repository = HostCrmRepository(functions);
+
+    final audience = await repository.upsertSavedAudience(
+      organizerId: 'organizer-1',
+      requestId: 'request-1234',
+      name: 'Regulars',
+      definition: const HostSavedAudienceDefinition(
+        join: HostSavedAudienceJoin.all,
+        predicates: [
+          HostSavedAudienceComputedSegment(HostAudienceSegment.regular),
+        ],
+      ),
+    );
+
+    expect(callable.calls.single, {
+      'organizerId': 'organizer-1',
+      'requestId': 'request-1234',
+      'scope': 'organizerCrm',
+      'name': 'Regulars',
+      'definition': {
+        'join': 'all',
+        'predicates': [
+          {'kind': 'computedSegment', 'segmentId': 'regular'},
+        ],
+      },
+    });
+    expect(audience.audienceId, 'audience-1');
+    expect(audience.lastPreviewMatchCount, 12);
+  });
+
+  test('saved audience preview rejects a non-exact projection', () {
+    expect(
+      () => HostSavedAudiencePreview.fromCallableData({
+        'audience': _savedAudienceData(),
+        'coverage': 'partial',
+        'matchCount': 12,
+        'sample': const <Object?>[],
+        'evaluatedAtMillis': 1700000000000,
+      }),
+      throwsFormatException,
+    );
+  });
+
+  test('manual handoff preparation persists the named intent first', () async {
+    final functions = _TestFirebaseFunctions();
+    final callable =
+        functions.httpsCallable('prepareOrganizerManualSendTask')
+            as _TestHttpsCallable;
+    callable.resultData = _manualSendTaskData();
+    final repository = HostCrmRepository(functions);
+
+    final task = await repository.prepareManualSendTask(
+      organizerId: 'organizer-1',
+      contactId: 'contact-1',
+      requestId: 'request-1234',
+      prefillText: 'Would you like to join us?',
+    );
+
+    expect(callable.calls.single, {
+      'organizerId': 'organizer-1',
+      'contactId': 'contact-1',
+      'requestId': 'request-1234',
+      'intent': 'individualConversation',
+      'prefillText': 'Would you like to join us?',
+    });
+    expect(task.status, HostManualSendTaskStatus.queued);
+    expect(task.active, isTrue);
+    expect(task.openedAt, isNull);
+  });
+
+  test('manual handoff open is a revision-bound acknowledgement', () async {
+    final functions = _TestFirebaseFunctions();
+    final callable =
+        functions.httpsCallable('openOrganizerManualSendTask')
+            as _TestHttpsCallable;
+    callable.resultData = _manualSendTaskData(
+      status: 'handoffOpened',
+      revision: 2,
+      openCount: 1,
+      openedAtMillis: 1700000000500,
+    );
+    final repository = HostCrmRepository(functions);
+    final queued = HostManualSendTask.fromCallableData(_manualSendTaskData());
+
+    final opened = await repository.recordManualHandoffOpened(queued);
+
+    expect(callable.calls.single, {
+      'organizerId': 'organizer-1',
+      'taskId': 'task-1',
+      'expectedRevision': 1,
+    });
+    expect(opened.status, HostManualSendTaskStatus.handoffOpened);
+    expect(opened.openCount, 1);
+    expect(opened.openedAt, isNotNull);
+  });
+
+  test(
+    'manual handoff launch validation is revision-bound and typed',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('validateOrganizerManualSendTaskLaunch')
+              as _TestHttpsCallable;
+      callable.resultData = _manualSendTaskData();
+      final repository = HostCrmRepository(functions);
+      final queued = HostManualSendTask.fromCallableData(_manualSendTaskData());
+
+      final validated = await repository.validateManualSendTaskLaunch(queued);
+
+      expect(callable.calls.single, {
+        'organizerId': 'organizer-1',
+        'taskId': 'task-1',
+        'expectedRevision': 1,
+      });
+      expect(validated.phoneE164, '+919876543210');
+      expect(validated.revision, 1);
+    },
+  );
+
+  test(
+    'manual sent state is serialized as an explicit host assertion',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('markOrganizerManualSendTask')
+              as _TestHttpsCallable;
+      callable.resultData = _manualSendTaskData(
+        status: 'hostMarkedSent',
+        active: false,
+        revision: 3,
+        openCount: 1,
+        openedAtMillis: 1700000000500,
+      );
+      final repository = HostCrmRepository(functions);
+      final opened = HostManualSendTask.fromCallableData(
+        _manualSendTaskData(
+          status: 'handoffOpened',
+          revision: 2,
+          openCount: 1,
+          openedAtMillis: 1700000000500,
+        ),
+      );
+
+      final marked = await repository.markManualSendTask(
+        opened,
+        HostManualSendTaskAction.hostMarkedSent,
+      );
+
+      expect(callable.calls.single, {
+        'organizerId': 'organizer-1',
+        'taskId': 'task-1',
+        'expectedRevision': 2,
+        'action': 'hostMarkedSent',
+      });
+      expect(marked.status, HostManualSendTaskStatus.hostMarkedSent);
+      expect(marked.active, isFalse);
+    },
+  );
+
+  test(
+    'manual task re-plan parses advice without mutating task input',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('replanOrganizerManualSendTasks')
+              as _TestHttpsCallable;
+      callable.resultData = {
+        'organizerId': 'organizer-1',
+        'resolvedAtMillis': 1700000001000,
+        'results': [
+          {
+            'taskId': 'task-1',
+            'contactId': 'contact-1',
+            'disposition': 'managedRouteAvailable',
+            'recommendedRouteId': 'catchChat',
+            'blocker': null,
+          },
+        ],
+      };
+      final repository = HostCrmRepository(functions);
+
+      final replan = await repository.replanManualSendTasks(
+        organizerId: 'organizer-1',
+        taskIds: const ['task-1'],
+      );
+
+      expect(callable.calls.single, {
+        'organizerId': 'organizer-1',
+        'taskIds': ['task-1'],
+      });
+      expect(
+        replan.results.single.disposition,
+        HostManualSendTaskDisposition.managedRouteAvailable,
+      );
+      expect(
+        replan.results.single.recommendedRouteId,
+        HostCommunicationRouteId.catchChat,
+      );
+    },
+  );
+
+  test(
+    'manual task parser rejects any route presented as managed delivery',
+    () {
+      expect(
+        () => HostManualSendTask.fromCallableData(
+          _manualSendTaskData(deliveryMode: 'managedDelivery'),
+        ),
+        throwsFormatException,
+      );
+    },
+  );
+
   test('non-default contact ordering remains explicit', () async {
     final functions = _TestFirebaseFunctions();
     final callable =
@@ -421,6 +729,29 @@ void main() {
       'contactDetailsEditable': false,
       'ambiguousCandidateContactIds': <String>[],
       'whatsappAdminSuppressed': true,
+      'whatsappPermission': {
+        'status': 'optedIn',
+        'evidenceStatus': 'complete',
+        'receiptId': 'permission-1',
+        'source': 'hostFormResponse',
+        'sourceFormId': 'form-1',
+        'sourceFormTitle': 'Social run sign-up',
+        'decisionAtMillis': 1699000000000,
+        'identityStrength': 'phoneVerified',
+      },
+      'origins': [
+        {
+          'originId': 'origin-1',
+          'sourceKind': 'hostForm',
+          'sourceEntityKind': 'hostFormResponse',
+          'formId': 'form-1',
+          'formTitle': 'Social run sign-up',
+          'eventId': 'event-1',
+          'eventTitle': 'Social run',
+          'observedAtMillis': 1699000000000,
+        },
+      ],
+      'originsTruncated': false,
       'traits': {
         'expectedEventCount': 4,
         'attendedEventCount': 3,
@@ -441,11 +772,7 @@ void main() {
             'amountMinor': 450000,
             'factCount': 3,
             'sources': [
-              {
-                'source': 'catchPayment',
-                'amountMinor': 450000,
-                'factCount': 3,
-              },
+              {'source': 'catchPayment', 'amountMinor': 450000, 'factCount': 3},
             ],
           },
         ],
@@ -472,6 +799,26 @@ void main() {
         },
       ],
       'eventsTruncated': false,
+      'timeline': [
+        {
+          'kind': 'form',
+          'timelineId': 'timeline-form-1',
+          'responseId': 'response-1',
+          'formId': 'form-1',
+          'formTitle': 'Social run sign-up',
+          'action': 'submitted',
+          'answeredQuestionCount': 3,
+          'occurredAtMillis': 1699000000000,
+        },
+      ],
+      'timelineTruncated': false,
+      'timelineCoverage': {
+        'forms': 'exact',
+        'events': 'exact',
+        'sends': 'exact',
+        'replies': 'partial',
+        'replyObservation': 'catchAndManagedWhatsappOnly',
+      },
       'activeMerges': [
         {
           'mergeReceiptId': 'receipt-1',
@@ -490,28 +837,18 @@ void main() {
     expect(detail.displayName, 'Asha');
     expect(detail.contactDetailsEditable, isFalse);
     expect(detail.whatsappAdminSuppressed, isTrue);
-    expect(detail.traits.whatsappStatus, HostAudiencePermissionStatus.optedIn);
+    expect(detail.whatsappPermission.sourceFormTitle, 'Social run sign-up');
     expect(
-      detail.personalWhatsappHandoffAvailability,
-      HostPersonalWhatsappHandoffAvailability.organizerSuppressed,
+      detail.origins.single.sourceKind,
+      HostCustomerOriginSourceKind.hostForm,
     );
-    expect(detail.canUsePersonalWhatsappHandoff, isFalse);
+    expect(detail.traits.whatsappStatus, HostAudiencePermissionStatus.optedIn);
     expect(detail.traits.attendanceRate, 0.75);
     expect(detail.revenue.amounts.single.amountMinor, 450000);
     expect(detail.events.single.checkedIn, isTrue);
+    expect(detail.timeline.single, isA<HostCustomerFormTimelineEntry>());
     expect(detail.activeMerges.single.sourceContactId, 'contact-2');
     expect(detail.activeMerges.single.movedFactCount, 4);
-
-    data['whatsappAdminSuppressed'] = false;
-    final optedOutTraits = Map<String, Object?>.from(data['traits']! as Map);
-    optedOutTraits['whatsappStatus'] = 'optedOut';
-    data['traits'] = optedOutTraits;
-    final optedOut = HostAudienceContactDetail.fromCallableData(data);
-    expect(
-      optedOut.personalWhatsappHandoffAvailability,
-      HostPersonalWhatsappHandoffAvailability.contactOptedOut,
-    );
-    expect(optedOut.canUsePersonalWhatsappHandoff, isFalse);
   });
 
   test('parses evidence-bearing and dismissed merge candidates', () {
@@ -566,6 +903,7 @@ void main() {
     final campaign = HostCampaign.fromCallableData({
       'organizerId': 'organizer-1',
       'campaignId': 'campaign-1',
+      'savedAudienceId': 'audience-1',
       'status': 'previewed',
       'revision': 2,
       'audienceCounts': {'selected': 20, 'eligible': 14, 'suppressed': 6},
@@ -602,6 +940,8 @@ void main() {
           'campaignId': 'campaign-1',
           'name': 'Regulars invite',
           'status': 'scheduled',
+          'savedAudienceId': 'audience-1',
+          'savedAudienceName': 'Regulars',
           'segmentIds': <Object?>['regular'],
           'templateId': 'template-1',
           'templateName': 'Event invite',
@@ -702,4 +1042,52 @@ Map<String, Object?> _emptyAudiencePageData() => {
   'matchCountCoverage': 'exact',
   'sourceCoverage': 'exact',
   'projectionVersion': 1,
+};
+
+Map<String, Object?> _savedAudienceData() => {
+  'organizerId': 'organizer-1',
+  'audienceId': 'audience-1',
+  'scope': 'organizerCrm',
+  'name': 'Regulars',
+  'status': 'active',
+  'definition': {
+    'join': 'all',
+    'predicates': [
+      {'kind': 'computedSegment', 'segmentId': 'regular'},
+    ],
+  },
+  'definitionHash':
+      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  'definitionVersion': 1,
+  'revision': 1,
+  'lastPreviewMatchCount': 12,
+  'lastPreviewAtMillis': 1700000000000,
+  'createdAtMillis': 1700000000000,
+  'updatedAtMillis': 1700000000000,
+};
+
+Map<String, Object?> _manualSendTaskData({
+  String status = 'queued',
+  bool active = true,
+  int revision = 1,
+  int openCount = 0,
+  int? openedAtMillis,
+  String deliveryMode = 'byHand',
+}) => {
+  'organizerId': 'organizer-1',
+  'taskId': 'task-1',
+  'contactId': 'contact-1',
+  'displayName': 'Asha Rao',
+  'routeId': 'personalWhatsappHandoff',
+  'deliveryMode': deliveryMode,
+  'status': status,
+  'active': active,
+  'revision': revision,
+  'phoneE164': '+919876543210',
+  'prefillText': 'Would you like to join us?',
+  'openCount': openCount,
+  'createdAtMillis': 1700000000000,
+  'updatedAtMillis': 1700000000000,
+  'openedAtMillis': openedAtMillis,
+  'expiresAtMillis': 1702592000000,
 };

@@ -8,6 +8,7 @@
 export interface OrganizerCampaignCallableResponse {
   organizerId: string;
   campaignId: string;
+  savedAudienceId: string | null;
   status:
     | "draft"
     | "previewed"
@@ -70,6 +71,8 @@ export interface OrganizerCampaignCallableResponse {
     | "senderInactive"
     | "templateMissing"
     | "templateUnapproved"
+    | "savedAudienceMissing"
+    | "savedAudienceChanged"
     | "noReachableRecipients"
     | "audienceCoveragePartial"
     | "audienceTooLarge"

@@ -153,6 +153,11 @@ void main() {
                   id: 'paused',
                   status: HostFormLifecycleStatus.paused,
                 ),
+                _formSummary(
+                  id: 'legacy',
+                  status: HostFormLifecycleStatus.published,
+                  consequences: const HostFormConsequences.unavailable(),
+                ),
               ],
             ),
           ),
@@ -173,6 +178,16 @@ void main() {
     expect(find.byKey(CatchSectionFocusSurface.rowGroupClipKey), findsNothing);
     expect(find.byKey(const ValueKey('host-form-published')), findsOneWidget);
     expect(find.byKey(const ValueKey('host-form-paused')), findsOneWidget);
+    expect(find.textContaining('Verifies email'), findsNWidgets(2));
+    expect(find.textContaining('Adds a record to Customers'), findsNWidgets(2));
+    expect(
+      find.textContaining('Sends a record to application review'),
+      findsNWidgets(3),
+    );
+    expect(
+      find.textContaining('Identity and automation consequences need review'),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 }
@@ -210,6 +225,13 @@ class _FixedHostFormResponsesController extends HostFormResponsesController {
 HostFormSummary _formSummary({
   required String id,
   required HostFormLifecycleStatus status,
+  HostFormConsequences consequences = const HostFormConsequences(
+    coverage: HostFormConsequenceCoverage.exact,
+    identityPolicy: HostFormIdentityPolicy.emailVerified,
+    enabledAutomationActionKinds: {
+      HostFormAutomationActionKind.createCrmContact,
+    },
+  ),
 }) => HostFormSummary(
   organizerId: 'forms-club',
   formId: id,
@@ -225,6 +247,7 @@ HostFormSummary _formSummary({
   draftRevision: 1,
   publishedVersion: 1,
   submittedResponseCount: 12,
+  consequences: consequences,
   updatedAt: DateTime(2026, 8, 26),
   publishedAt: DateTime(2026, 8, 20),
   lastResponseAt: DateTime(2026, 8, 26),

@@ -140,6 +140,8 @@ export {
   mutateOrganizerContact,
   mutateOrganizerContactNote,
 } from "./organizers/organizerContacts";
+export {resolveOrganizerCommunicationPlan} from
+  "./organizers/organizerCommunicationPlans";
 export {
   getOrganizerApplicationDetail,
   importOrganizerApplications,
@@ -205,6 +207,20 @@ export {
   listOrganizerContactMergeCandidates,
   reviewOrganizerContactMergeCandidate,
 } from "./organizers/organizerContactMergeReview";
+export {
+  archiveOrganizerSavedAudience,
+  listOrganizerSavedAudiences,
+  previewOrganizerSavedAudience,
+  upsertOrganizerSavedAudience,
+} from "./organizers/organizerSavedAudiences";
+export {
+  listOrganizerManualSendTasks,
+  markOrganizerManualSendTask,
+  openOrganizerManualSendTask,
+  prepareOrganizerManualSendTask,
+  replanOrganizerManualSendTasks,
+  validateOrganizerManualSendTaskLaunch,
+} from "./organizers/organizerManualSendTasks";
 export {
   approveOrganizerCampaign,
   cancelOrganizerCampaign,

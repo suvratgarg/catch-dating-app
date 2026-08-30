@@ -23,9 +23,11 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +67,14 @@ class _HostCustomerDetailScreenState
       hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
     );
     final detailState = catchAsyncStateFromAsyncValue(detail);
+    final communicationPlan = detailState.value == null
+        ? null
+        : ref.watch(
+            hostCommunicationPlanProvider(widget.organizerId, widget.contactId),
+          );
+    final communicationPlanState = communicationPlan == null
+        ? null
+        : catchAsyncStateFromAsyncValue(communicationPlan);
     final initialDisplayName = widget.initialDisplayName?.trim();
     final displayName =
         detailState.value?.displayName ??
@@ -101,6 +111,9 @@ class _HostCustomerDetailScreenState
                 noteBody: context.l10n.hostCustomersMemoryHelp,
               ),
               currentUid: currentUid,
+              communicationPlan: null,
+              communicationPlanLoading: true,
+              communicationPlanFailed: false,
               openingConversation: false,
               updatingCustomer: false,
               onSaveDetails: _noopSaveCustomerDetails,
@@ -108,9 +121,13 @@ class _HostCustomerDetailScreenState
               onAddNote: _noop,
               onEditNote: (_) {},
               onReviewDuplicates: _noop,
-              onStartConversation: _noop,
-              onOpenWhatsapp: null,
+              onMessage: _noop,
+              onRetryCommunicationPlan: _noop,
               onMessagingEnabledChanged: (_) {},
+              onOpenFormResponse: (_) {},
+              onOpenEvent: (_) {},
+              onOpenCatchThread: (_) {},
+              onOpenWhatsappThread: (_) {},
               onRemove: _noop,
               onUndoMerge: (_) {},
             ),
@@ -130,6 +147,9 @@ class _HostCustomerDetailScreenState
           builder: (context, customer) => HostCustomerDetailBody(
             customer: customer,
             currentUid: currentUid,
+            communicationPlan: communicationPlanState?.value,
+            communicationPlanLoading: communicationPlanState?.isLoading ?? true,
+            communicationPlanFailed: communicationPlanState?.hasError ?? false,
             openingConversation: _openingConversation,
             updatingCustomer: _updatingCustomer,
             onSaveDetails: ({required displayName, phoneE164, email}) =>
@@ -143,12 +163,15 @@ class _HostCustomerDetailScreenState
             onAddNote: () => _editNote(customer),
             onEditNote: (note) => _editNote(customer, note: note),
             onReviewDuplicates: _reviewDuplicates,
-            onStartConversation: () => _startConversation(customer),
-            onOpenWhatsapp: customer.canUsePersonalWhatsappHandoff
-                ? () => _openWhatsapp(customer)
-                : null,
+            onMessage: () =>
+                _messageCustomer(customer, communicationPlanState?.value),
+            onRetryCommunicationPlan: _refreshCommunicationPlan,
             onMessagingEnabledChanged: (enabled) =>
                 _setMessagingEnabled(customer, enabled),
+            onOpenFormResponse: _openFormResponse,
+            onOpenEvent: _openEvent,
+            onOpenCatchThread: _openCatchThread,
+            onOpenWhatsappThread: _openWhatsappThread,
             onRemove: () => _removeCustomer(customer),
             onUndoMerge: _undoMerge,
           ),
@@ -180,8 +203,15 @@ class _HostCustomerDetailScreenState
     _refreshDetail();
   }
 
-  void _refreshDetail() => ref.invalidate(
-    hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
+  void _refreshDetail() {
+    ref.invalidate(
+      hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
+    );
+    _refreshCommunicationPlan();
+  }
+
+  void _refreshCommunicationPlan() => ref.invalidate(
+    hostCommunicationPlanProvider(widget.organizerId, widget.contactId),
   );
 
   Future<void> _reviewDuplicates() async {
@@ -322,6 +352,65 @@ class _HostCustomerDetailScreenState
     }
   }
 
+  Future<void> _messageCustomer(
+    HostAudienceContactDetail customer,
+    HostCommunicationPlan? plan,
+  ) async {
+    final route = plan?.singleRecipient.recommendedRouteId;
+    switch (route) {
+      case HostCommunicationRouteId.catchChat:
+        return _startConversation(customer);
+      case HostCommunicationRouteId.personalWhatsappHandoff:
+        return _openWhatsapp(customer);
+      case null:
+      case HostCommunicationRouteId.organizerWhatsappCampaign:
+      case HostCommunicationRouteId.catchWhatsapp:
+      case HostCommunicationRouteId.catchEventAnnouncement:
+      case HostCommunicationRouteId.organizerFollowerUpdate:
+        return;
+    }
+  }
+
+  void _openFormResponse(String responseId) {
+    unawaited(
+      context.pushNamed(
+        Routes.hostFormResponseDetailScreen.name,
+        pathParameters: {'responseId': responseId},
+        queryParameters: {'organizerId': widget.organizerId},
+      ),
+    );
+  }
+
+  void _openEvent(String eventId) {
+    unawaited(
+      context.pushNamed(
+        Routes.hostAppEventDetailScreen.name,
+        pathParameters: {'clubId': widget.organizerId, 'eventId': eventId},
+      ),
+    );
+  }
+
+  void _openCatchThread(String matchId) {
+    unawaited(
+      context.pushNamed(
+        Routes.hostChatScreen.name,
+        pathParameters: {'matchId': matchId},
+      ),
+    );
+  }
+
+  void _openWhatsappThread(String threadId) {
+    unawaited(
+      showCatchBottomSheet<void>(
+        context: context,
+        builder: (_) => HostWhatsappThreadSheet(
+          organizerId: widget.organizerId,
+          threadId: threadId,
+        ),
+      ),
+    );
+  }
+
   Future<void> _startConversation(HostAudienceContactDetail customer) async {
     if (_openingConversation) return;
     setState(() => _openingConversation = true);
@@ -373,6 +462,8 @@ class _HostWhatsappHandoffSheet extends ConsumerStatefulWidget {
 class _HostWhatsappHandoffSheetState
     extends ConsumerState<_HostWhatsappHandoffSheet> {
   TextEditingController? _messageController;
+  late final String _requestId =
+      'handoff_${DateTime.now().microsecondsSinceEpoch}_${widget.customer.contactId}';
   bool _opening = false;
 
   TextEditingController get _message => _messageController!;
@@ -431,8 +522,8 @@ class _HostWhatsappHandoffSheetState
               maxLength: 1000,
               textCapitalization: TextCapitalization.sentences,
               contractExemption:
-                  'Editable handoff copy is sent only to the external '
-                  'WhatsApp app and is never persisted by Catch.',
+                  'Editable handoff copy is persisted only in the bounded '
+                  'TTL manual-send task, then passed to the external app.',
               enabled: !_opening,
               onChanged: (_) => setState(() {}),
             ),
@@ -446,11 +537,19 @@ class _HostWhatsappHandoffSheetState
     if (_opening) return;
     setState(() => _opening = true);
     try {
+      final controller = ref.read(hostAudienceControllerProvider);
+      final task = await controller.prepareManualSendTask(
+        organizerId: widget.customer.organizerId,
+        contactId: widget.customer.contactId,
+        requestId: _requestId,
+        prefillText: _message.text,
+      );
+      ref.invalidate(hostManualSendTasksProvider(widget.customer.organizerId));
       final opened = await ref
           .read(externalLinkControllerProvider)
           .openWhatsappHandoff(
-            phoneE164: widget.customer.phoneE164!,
-            message: _message.text,
+            phoneE164: task.phoneE164,
+            message: task.prefillText,
           );
       if (!opened) {
         if (!mounted) return;
@@ -458,6 +557,19 @@ class _HostWhatsappHandoffSheetState
           context.l10n.hostCustomersWhatsappOpenFailed,
         );
       }
+      try {
+        await controller.recordManualHandoffOpened(task);
+      } on Object {
+        if (!mounted) return;
+        showCatchErrorSnackBar(
+          context,
+          ExternalActionException(
+            context.l10n.hostCustomersWhatsappRecordFailed,
+          ),
+          errorContext: AppErrorContext.customer,
+        );
+      }
+      ref.invalidate(hostManualSendTasksProvider(widget.customer.organizerId));
       if (mounted) Navigator.of(context).pop();
     } on Object catch (error) {
       if (mounted) {
@@ -486,6 +598,9 @@ class HostCustomerDetailBody extends StatelessWidget {
     super.key,
     required this.customer,
     required this.currentUid,
+    required this.communicationPlan,
+    required this.communicationPlanLoading,
+    required this.communicationPlanFailed,
     required this.openingConversation,
     required this.updatingCustomer,
     required this.onSaveDetails,
@@ -493,15 +608,22 @@ class HostCustomerDetailBody extends StatelessWidget {
     required this.onAddNote,
     required this.onEditNote,
     required this.onReviewDuplicates,
-    required this.onStartConversation,
-    required this.onOpenWhatsapp,
+    required this.onMessage,
+    required this.onRetryCommunicationPlan,
     required this.onMessagingEnabledChanged,
+    required this.onOpenFormResponse,
+    required this.onOpenEvent,
+    required this.onOpenCatchThread,
+    required this.onOpenWhatsappThread,
     required this.onRemove,
     required this.onUndoMerge,
   });
 
   final HostAudienceContactDetail customer;
   final String? currentUid;
+  final HostCommunicationPlan? communicationPlan;
+  final bool communicationPlanLoading;
+  final bool communicationPlanFailed;
   final bool openingConversation;
   final bool updatingCustomer;
   final HostCustomerDetailsSaveCallback onSaveDetails;
@@ -509,22 +631,18 @@ class HostCustomerDetailBody extends StatelessWidget {
   final VoidCallback onAddNote;
   final ValueChanged<HostCustomerNote> onEditNote;
   final VoidCallback onReviewDuplicates;
-  final VoidCallback onStartConversation;
-  final VoidCallback? onOpenWhatsapp;
+  final VoidCallback onMessage;
+  final VoidCallback onRetryCommunicationPlan;
   final ValueChanged<bool> onMessagingEnabledChanged;
+  final ValueChanged<String> onOpenFormResponse;
+  final ValueChanged<String> onOpenEvent;
+  final ValueChanged<String> onOpenCatchThread;
+  final ValueChanged<String> onOpenWhatsappThread;
   final VoidCallback onRemove;
   final ValueChanged<HostActiveContactMerge> onUndoMerge;
 
   @override
   Widget build(BuildContext context) {
-    final conversationReady =
-        customerConversationAvailability(
-          linkedAccount: customer.linkedAccount,
-          identityVerified:
-              customer.identityState == HostAudienceIdentityState.verified,
-          ambiguousCandidateCount: customer.ambiguousCandidateCount,
-        ) ==
-        HostCustomerConversationAvailability.ready;
     return ListView(
       padding: CatchInsets.pageBody.copyWith(bottom: 0),
       children: [
@@ -532,6 +650,21 @@ class HostCustomerDetailBody extends StatelessWidget {
           emptyStateOmitted: true,
           children: [
             HostCustomerIdentityCard(customer: customer, onSave: onSaveDetails),
+            HostCustomerReachSection(
+              customer: customer,
+              communicationPlan: communicationPlan,
+              communicationPlanLoading: communicationPlanLoading,
+              communicationPlanFailed: communicationPlanFailed,
+              messageLoading: openingConversation,
+              onMessage: onMessage,
+              onRetryCommunicationPlan: onRetryCommunicationPlan,
+              onMessagingEnabledChanged: updatingCustomer
+                  ? null
+                  : onMessagingEnabledChanged,
+              onReviewDuplicates: customer.ambiguousCandidateCount > 0
+                  ? onReviewDuplicates
+                  : null,
+            ),
             HostCustomerMemorySection(
               customer: customer,
               currentUid: currentUid,
@@ -544,25 +677,18 @@ class HostCustomerDetailBody extends StatelessWidget {
               child: HostCustomerAttendanceCard(customer: customer),
             ),
             HostCustomerRevenueCard(revenue: customer.revenue),
-            HostCustomerAttendanceHistory(customer: customer),
-            HostCustomerSendHistory(customer: customer),
+            HostCustomerTimelineSection(
+              customer: customer,
+              onOpenFormResponse: onOpenFormResponse,
+              onOpenEvent: onOpenEvent,
+              onOpenCatchThread: onOpenCatchThread,
+              onOpenWhatsappThread: onOpenWhatsappThread,
+            ),
             if (customer.activeMerges.isNotEmpty)
               HostCustomerActiveMergesSection(
                 merges: customer.activeMerges,
                 onUndo: onUndoMerge,
               ),
-            HostCustomerConversationCard(
-              customer: customer,
-              loading: openingConversation,
-              onReview: customer.ambiguousCandidateCount > 0
-                  ? onReviewDuplicates
-                  : null,
-              onOpen: conversationReady ? onStartConversation : null,
-              onOpenWhatsapp: onOpenWhatsapp,
-              onMessagingEnabledChanged: updatingCustomer
-                  ? null
-                  : onMessagingEnabledChanged,
-            ),
             CatchSection.fieldRows(
               key: const ValueKey('host-customer-controls'),
               title: context.l10n.hostCustomersControls,
@@ -607,6 +733,29 @@ HostAudienceContactDetail _hostCustomerSkeletonDetail({
     contactDetailsEditable: true,
     ambiguousCandidateCount: 0,
     whatsappAdminSuppressed: false,
+    whatsappPermission: HostCustomerWhatsappPermission(
+      status: HostAudiencePermissionStatus.optedIn,
+      evidenceStatus: HostCustomerPermissionEvidenceStatus.complete,
+      receiptId: 'loading-receipt',
+      source: 'hostFormResponse',
+      sourceFormId: 'loading-form',
+      sourceFormTitle: 'Community sign-up',
+      decisionAt: now,
+      identityStrength: 'phoneVerified',
+    ),
+    origins: [
+      HostCustomerOrigin(
+        originId: 'loading-origin',
+        sourceKind: HostCustomerOriginSourceKind.hostForm,
+        sourceEntityKind: 'hostFormResponse',
+        formId: 'loading-form',
+        formTitle: 'Community sign-up',
+        eventId: null,
+        eventTitle: null,
+        observedAt: now,
+      ),
+    ],
+    originsTruncated: false,
     traits: const HostCustomerTraits(
       expectedEventCount: 3,
       attendedEventCount: 2,
@@ -661,6 +810,24 @@ HostAudienceContactDetail _hostCustomerSkeletonDetail({
         updatedAt: now,
       ),
     ],
+    timeline: [
+      HostCustomerFormTimelineEntry(
+        timelineId: 'loading-timeline-form',
+        occurredAt: now,
+        responseId: 'loading-response',
+        formId: 'loading-form',
+        formTitle: 'Community sign-up',
+        action: HostCustomerFormTimelineAction.submitted,
+        answeredQuestionCount: 4,
+      ),
+    ],
+    timelineTruncated: false,
+    timelineCoverage: const HostCustomerTimelineCoverage(
+      forms: HostCustomerTimelineCoverageValue.exact,
+      events: HostCustomerTimelineCoverageValue.exact,
+      sends: HostCustomerTimelineCoverageValue.exact,
+      replies: HostCustomerTimelineCoverageValue.partial,
+    ),
     revision: 1,
   );
 }

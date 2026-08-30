@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/preview_organizer_saved_audience_payload.schema.json",
+  "title": "PreviewOrganizerSavedAudienceCallablePayload",
+  "description": "Resolves an exact bounded preview for one saved CRM audience.",
+  "x-callable-aliases": ["previewOrganizerSavedAudience"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "audienceId"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "audienceId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expectedRevision": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
+    "sampleLimit": {"type": "integer", "minimum": 0, "maximum": 25, "default": 10}
+  }
+}

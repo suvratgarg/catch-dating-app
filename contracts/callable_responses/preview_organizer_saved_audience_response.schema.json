@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/preview_organizer_saved_audience_response.schema.json",
+  "title": "PreviewOrganizerSavedAudienceCallableResponse",
+  "description": "Exact saved-audience preview. Incomplete or over-limit evaluation fails instead of returning this shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["audience", "coverage", "matchCount", "sample", "evaluatedAtMillis"],
+  "properties": {
+    "audience": {"$ref": "organizer_saved_audience_response.schema.json"},
+    "coverage": {"const": "exact"},
+    "matchCount": {"type": "integer", "minimum": 0, "maximum": 2500},
+    "sample": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["contactId", "displayName"],
+        "properties": {
+          "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "displayName": {"type": "string", "minLength": 1, "maxLength": 120}
+        }
+      }
+    },
+    "evaluatedAtMillis": {"type": "integer", "minimum": 0}
+  }
+}

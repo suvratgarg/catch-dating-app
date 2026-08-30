@@ -11,7 +11,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -36,6 +35,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_deta
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
@@ -51,7 +51,7 @@ part 'host_customer_detail_cards.dart';
 part 'host_customer_editor_sheets.dart';
 part 'host_customers_directory.dart';
 
-enum _HostCustomersHeaderAction { applications, reviewDuplicates, export }
+enum _HostCustomersHeaderAction { savedAudiences, reviewDuplicates, export }
 
 class HostCustomersScreen extends ConsumerStatefulWidget {
   const HostCustomersScreen({
@@ -167,7 +167,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     final directory = ref.watch(
       hostCustomersDirectoryControllerProvider(request),
     );
-    final activeSegment = hostAudienceSegmentForCustomerFilter(effectiveFilter);
     final t = CatchTokens.of(context);
     final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
     final compactHeader = screenSize.isCompact;
@@ -202,13 +201,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           if (action == _HostCustomersHeaderAction.reviewDuplicates) {
             unawaited(_reviewDuplicates(selectedClub.id));
           }
-          if (action == _HostCustomersHeaderAction.applications) {
-            unawaited(
-              context.pushNamed(
-                Routes.hostApplicationsScreen.name,
-                queryParameters: {'organizerId': selectedClub.id},
-              ),
-            );
+          if (action == _HostCustomersHeaderAction.savedAudiences) {
+            unawaited(_openSavedAudiences(selectedClub.id));
           }
           if (action == _HostCustomersHeaderAction.export) {
             unawaited(_exportCustomers(selectedClub, effectiveFilter));
@@ -287,8 +281,11 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                       ),
                       builder: (context, state) {
                         final campaignBridgeBlocker = hostCampaignBridgeBlocker(
-                          segment: activeSegment,
-                          smsReadiness: summaryState.value?.smsReadiness,
+                          hasPersistableAudience:
+                              _search == null &&
+                              state.matchCount > 0 &&
+                              state.matchCountCoverage ==
+                                  HostCustomerMatchCountCoverage.exact,
                           messagingSetup: messagingSetupState.value,
                           audienceCoverageComplete:
                               state.sourceCoverage ==
@@ -303,12 +300,11 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                               count: state.matchCount,
                               countCoverage: state.matchCountCoverage,
                               campaignBlocker: campaignBridgeBlocker,
-                              onMessage:
-                                  campaignBridgeBlocker == null &&
-                                      activeSegment != null
-                                  ? () => _messageCustomers(
+                              onMessage: campaignBridgeBlocker == null
+                                  ? () => _saveAndMessageCustomers(
                                       selectedClub,
-                                      activeSegment,
+                                      effectiveFilter,
+                                      _manualTag,
                                     )
                                   : null,
                               onOpenFilters: () => _openFilters(
@@ -390,9 +386,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     String? exportSublabel,
   }) => [
     CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.applications,
-      label: context.l10n.hostApplicationsOpen,
-      icon: CatchIcons.factCheckOutlined,
+      value: _HostCustomersHeaderAction.savedAudiences,
+      label: context.l10n.hostSavedAudiencesManage,
+      icon: CatchIcons.groupsOutlined,
     ),
     CatchActionMenuItem(
       value: _HostCustomersHeaderAction.reviewDuplicates,
@@ -418,6 +414,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     ref.invalidate(hostCustomersDirectoryControllerProvider);
     ref.invalidate(hostCrmSummaryProvider(organizerId));
   }
+
+  Future<void> _openSavedAudiences(String organizerId) =>
+      showCatchBottomSheet<void>(
+        context: context,
+        builder: (_) => HostSavedAudiencesSheet(organizerId: organizerId),
+      );
 
   void _scheduleSearch(String value) {
     _searchDebounce?.cancel();
@@ -464,17 +466,43 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     }
   }
 
-  void _messageCustomers(Club club, HostAudienceSegment segment) =>
-      context.goNamed(
-        Routes.hostInboxScreen.name,
-        queryParameters: {
-          'workspace': HostMessagingWorkspace.campaigns.name,
-          'compose': '1',
-          'segment': segment.wireValue,
-          'search': ?_search,
-        },
-        extra: club,
-      );
+  Future<void> _saveAndMessageCustomers(
+    Club club,
+    HostCustomerFilter filter,
+    HostCustomerManualTag? manualTag,
+  ) async {
+    final label = manualTag?.label ?? _customerFilterLabel(context, filter);
+    final segment = hostAudienceSegmentForCustomerFilter(filter);
+    final predicate = manualTag != null
+        ? HostSavedAudienceManualTag(manualTag.tagId)
+        : segment != null
+        ? HostSavedAudienceComputedSegment(segment)
+        : const HostSavedAudienceAttendanceCount(
+            operator: HostSavedAudienceAttendanceOperator.atLeast,
+            eventCount: 0,
+          );
+    final audience = await showCatchBottomSheet<HostSavedAudience>(
+      context: context,
+      builder: (_) => HostSaveAudienceSheet(
+        organizerId: club.id,
+        suggestedName: label,
+        definition: HostSavedAudienceDefinition(
+          join: HostSavedAudienceJoin.all,
+          predicates: [predicate],
+        ),
+      ),
+    );
+    if (!mounted || audience == null) return;
+    context.goNamed(
+      Routes.hostInboxScreen.name,
+      queryParameters: {
+        'workspace': HostMessagingWorkspace.campaigns.name,
+        'compose': '1',
+        'audienceId': audience.audienceId,
+      },
+      extra: club,
+    );
+  }
 
   Future<void> _addCustomer(
     Club club,

@@ -1656,32 +1656,82 @@ export interface OrganizerCommunicationPreferenceDocument {
   uid: string;
   whatsapp: {
     status: "unknown" | "optedIn" | "optedOut";
+    /**
+     * Only complete evidence may make an opted-in channel eligible for managed delivery.
+     */
+    evidenceStatus: "notApplicable" | "complete" | "incomplete";
+    currentReceiptId: string | null;
     termsVersion: string | null;
     source:
       | null
       | "publicEventRegistration"
+      | "hostFormResponse"
+      | "participantSettings"
       | "unsubscribeLink"
-      | "hostApp"
       | "inboundStop"
-      | "providerWebhook";
+      | "providerWebhook"
+      | "legacyIncomplete";
     sourceEventId: string | null;
     updatedAt: FirebaseFirestore.Timestamp | null;
   };
   sms: {
     status: "unknown" | "optedIn" | "optedOut";
+    /**
+     * Only complete evidence may make an opted-in channel eligible for managed delivery.
+     */
+    evidenceStatus: "notApplicable" | "complete" | "incomplete";
+    currentReceiptId: string | null;
     termsVersion: string | null;
     source:
       | null
       | "publicEventRegistration"
+      | "hostFormResponse"
+      | "participantSettings"
       | "unsubscribeLink"
-      | "hostApp"
       | "inboundStop"
-      | "providerWebhook";
+      | "providerWebhook"
+      | "legacyIncomplete";
     sourceEventId: string | null;
     updatedAt: FirebaseFirestore.Timestamp | null;
   };
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable participant-controlled grant or withdrawal evidence for one organizer and channel. Current preference projections reference these receipts but never replace their history.
+ */
+export interface OrganizerCommunicationPermissionReceiptDocument {
+  organizerId: string;
+  uid: string;
+  channel: "whatsapp" | "sms";
+  decision: "optedIn" | "optedOut";
+  evidenceStatus: "complete" | "incomplete";
+  termsVersion: string | null;
+  consentCopyHash: string | null;
+  source:
+    | "publicEventRegistration"
+    | "hostFormResponse"
+    | "participantSettings"
+    | "unsubscribeLink"
+    | "inboundStop"
+    | "providerWebhook"
+    | "legacyIncomplete";
+  sourceEventId: string | null;
+  sourceFormId: string | null;
+  sourceResponseId: string | null;
+  sourceProviderEventId: string | null;
+  actorClass: "participant" | "provider" | "system";
+  actorUid: string | null;
+  identityStrength:
+    | "unknown"
+    | "emailVerified"
+    | "phoneVerified"
+    | "catchAccount";
+  grantedAt: FirebaseFirestore.Timestamp | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  supersedesReceiptId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -1705,7 +1755,8 @@ export interface OrganizerContactDocument {
     | "hostImport"
     | "hostManual"
     | "webOtp"
-    | "providerSync";
+    | "providerSync"
+    | "hostForm";
   /**
    * @maxItems 20
    */
@@ -1735,6 +1786,38 @@ export interface OrganizerContactDocument {
    * Bounded organizer-audience contribution snapshot used only to restore a hidden contact without recomputing private event history.
    */
   hiddenTraitSnapshot?: OrganizerContactTraitDocument | null;
+}
+
+/**
+ * Server-owned provenance for one organizer contact source. Source facts are immutable; only currentContactId moves during a receipt-backed merge or unmerge.
+ */
+export interface OrganizerContactOriginDocument {
+  organizerId: string;
+  currentContactId: string;
+  originContactId: string;
+  sourceKind:
+    | "catchBooking"
+    | "hostImport"
+    | "hostManual"
+    | "webOtp"
+    | "providerSync"
+    | "hostForm";
+  sourceEntityKind:
+    | "eventAttendee"
+    | "manualEntry"
+    | "hostFormResponse"
+    | "providerRecord"
+    | "importBatch"
+    | "webRegistration";
+  sourceEntityId: string;
+  eventId: string | null;
+  formId: string | null;
+  responseId: string | null;
+  actorClass: "participant" | "organizerManager" | "provider" | "system";
+  actorUid: string | null;
+  observedAt: FirebaseFirestore.Timestamp;
+  originVersion: 1;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -1770,12 +1853,128 @@ export interface OrganizerContactTagVocabularyDocument {
 }
 
 /**
+ * One reusable Customers-owned organizer CRM audience. Definitions use only the closed reviewed predicate vocabulary and never contain event-scoped or arbitrary Firestore queries.
+ */
+export interface OrganizerSavedAudienceDocument {
+  organizerId: string;
+  audienceId: string;
+  scope: "organizerCrm";
+  name: string;
+  status: "active" | "archived";
+  definition: {
+    join: "all" | "any";
+    /**
+     * @minItems 1
+     * @maxItems 8
+     */
+    predicates: (
+      | {
+          kind: "computedSegment";
+          segmentId:
+            | "new_to_organizer"
+            | "first_time_attendee"
+            | "repeat_attendee"
+            | "regular"
+            | "lapsed_regular"
+            | "reliable_attendee"
+            | "needs_confirmation"
+            | "advocate"
+            | "high_impact_advocate"
+            | "whatsapp_reachable"
+            | "sms_reachable";
+        }
+      | {
+          kind: "manualTag";
+          manualTagId: string;
+        }
+      | {
+          kind: "attendanceCount";
+          operator: "atLeast" | "atMost";
+          eventCount: number;
+        }
+      | {
+          kind: "lastSeenWithinDays";
+          days: number;
+        }
+      | {
+          kind: "reachableForIntent";
+          intent: "organizerWhatsappCampaign";
+        }
+    )[];
+  };
+  definitionHash: string;
+  definitionVersion: number;
+  revision: number;
+  createdByUid: string;
+  updatedByUid: string;
+  lastPreviewMatchCount: number | null;
+  lastPreviewAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  archivedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * One durable host-performed external handoff. Catch may record preparation, external-app acceptance, and explicit host assertions, but never delivery or read state.
+ */
+export interface OrganizerManualSendTaskDocument {
+  organizerId: string;
+  taskId: string;
+  contactId: string;
+  sourceKind: "individualConversation" | "campaignRecipient";
+  sourceId: string;
+  intent: "individualConversation" | "savedAudienceCampaign";
+  routeId: "personalWhatsappHandoff";
+  deliveryMode: "byHand";
+  status:
+    | "queued"
+    | "handoffOpened"
+    | "hostMarkedSent"
+    | "skipped"
+    | "cancelled"
+    | "superseded"
+    | "expired";
+  active: boolean;
+  revision: number;
+  idempotencyKey: string;
+  requestHash: string;
+  displayNameSnapshot: string;
+  endpointE164Snapshot: string;
+  endpointHash: string;
+  permissionSnapshot: {
+    whatsappStatus: "unknown" | "optedIn";
+    adminSuppressed: false;
+    recordedAt: FirebaseFirestore.Timestamp;
+  };
+  capabilitySnapshot: {
+    version: number;
+    managedRouteAvailable: boolean;
+  };
+  prefillText: string;
+  prefillHash: string;
+  openCount: number;
+  createdByUid: string;
+  updatedByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  openedAt: FirebaseFirestore.Timestamp | null;
+  hostMarkedSentAt: FirebaseFirestore.Timestamp | null;
+  skippedAt: FirebaseFirestore.Timestamp | null;
+  cancelledAt: FirebaseFirestore.Timestamp | null;
+  supersededAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-only identity evidence edge used for keyed candidate lookup. Hashes are restricted identifiers, not anonymous data.
  */
 export interface OrganizerContactIdentityLinkDocument {
   organizerId: string;
   contactId: string;
   originContactId: string;
+  /**
+   * Legacy evidence-row key: an attendee id for roster sources or a deterministic form-response key for Host Forms.
+   */
   attendeeId: string;
   kind: "uid" | "phone" | "email" | "provider";
   identityHash: string;
@@ -1786,7 +1985,8 @@ export interface OrganizerContactIdentityLinkDocument {
     | "hostImport"
     | "hostManual"
     | "webOtp"
-    | "providerSync";
+    | "providerSync"
+    | "hostForm";
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }
@@ -1978,9 +2178,14 @@ export interface OrganizerContactMergeReceiptDocument {
    * @maxItems 400
    */
   movedClaimIds: string[];
+  /**
+   * @maxItems 400
+   */
+  movedOriginIds: string[];
   movedEdgeCount: number;
   movedIdentityEvidenceCount: number;
   movedClaimCount: number;
+  movedOriginCount: number;
   idempotencyKey: string;
   reversalOfReceiptId: string | null;
   createdAt: FirebaseFirestore.Timestamp;
@@ -2198,6 +2403,40 @@ export interface OrganizerFormDocument {
   draftRevision: number;
   publishedVersion: number;
   submittedResponseCount: number;
+  consequenceProjection?: {
+    version: 1;
+    coverage: "exact" | "identityOnly" | "unavailable";
+    identityPolicy:
+      | (
+          | "anonymous"
+          | "emailVerified"
+          | "phoneVerified"
+          | "emailOrPhoneVerified"
+          | "catchAccount"
+        )
+      | null;
+    /**
+     * @maxItems 7
+     */
+    enabledAutomationActionKinds: (
+      | "notifyTeam"
+      | "addOrganizerTag"
+      | "createCrmContact"
+      | "addApplicationQueue"
+      | "proposeEventAttendee"
+      | "signedWebhook"
+      | "campaignHandoff"
+    )[];
+    enabledAutomationActionKindCounts: {
+      notifyTeam: number;
+      addOrganizerTag: number;
+      createCrmContact: number;
+      addApplicationQueue: number;
+      proposeEventAttendee: number;
+      signedWebhook: number;
+      campaignHandoff: number;
+    };
+  };
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   publishedAt: FirebaseFirestore.Timestamp | null;
@@ -3408,7 +3647,8 @@ export interface OrganizerCampaignDocument {
     | "blocked";
   name: string;
   /**
-   * @minItems 1
+   * Legacy read compatibility only. New campaign writes use savedAudienceId and persist an empty array.
+   *
    * @maxItems 5
    */
   segmentIds: (
@@ -3421,6 +3661,12 @@ export interface OrganizerCampaignDocument {
     | "high_impact_advocate"
     | "whatsapp_reachable"
   )[];
+  /**
+   * Customers-owned reusable audience used by every new campaign. Null or absent only on legacy segment-authored campaigns.
+   */
+  savedAudienceId?: string | null;
+  savedAudienceRevision?: number | null;
+  savedAudienceDefinitionHash?: string | null;
   connectionId: string;
   templateId: string;
   templateVariables: {
@@ -3434,6 +3680,9 @@ export interface OrganizerCampaignDocument {
     | "externalBooking"
     | "marketingLanding";
   scheduledAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Exact audience-state hash stored by preview and required unchanged at approval; retained as the frozen recipient snapshot hash after approval.
+   */
   recipientSnapshotHash: string | null;
   contentHash: string;
   audienceCounts: {

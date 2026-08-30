@@ -562,8 +562,50 @@
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "A roster phone number never grants marketing permission. Only an explicit per-channel organizer opt-in creates or advances this record.",
+        "A roster phone number never grants marketing permission. Only an explicit participant-controlled per-channel receipt creates or advances this projection.",
+        "Managed delivery requires evidenceStatus=complete and a currentReceiptId; legacy non-unknown rows without complete evidence fail closed.",
         "Catch platform marketing consent remains a separate purpose and is not represented here."
+      ]
+    },
+    {
+      "id": "organizerCommunicationPermissionReceipts",
+      "path": "organizerCommunicationPermissionReceipts/{receiptId}",
+      "rulesMatch": "/organizerCommunicationPermissionReceipts/{receiptId}",
+      "typescriptInterface": "OrganizerCommunicationPermissionReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "participant registration, self-service preference, unsubscribe, and inbound STOP handlers",
+      "read": "server only; manager projections expose consequences, not private receipt internals",
+      "write": "server only and append-only by operation design",
+      "exportedFunctions": [
+        "registerPublicEvent",
+        "onOrganizerMessagingWebhookEventCreated"
+      ],
+      "migrationNotes": [
+        "Grant receipts bind the organizer, participant, channel, reviewed terms version, consent-copy hash, source identity, and identity strength.",
+        "Withdrawal creates a new receipt and supersedes current state without deleting prior grants.",
+        "Legacy preference rows are recorded as incomplete and never promoted to permission by inference."
+      ]
+    },
+    {
+      "id": "organizerContactOrigins",
+      "path": "organizerContactOrigins/{originId}",
+      "rulesMatch": "/organizerContactOrigins/{originId}",
+      "typescriptInterface": "OrganizerContactOriginDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "approved organizer contact creators and organizer contact merge callables",
+      "read": "server only; manager callables may expose bounded provenance summaries",
+      "write": "server only; source facts are immutable and currentContactId moves only with merge receipts",
+      "exportedFunctions": [
+        "createOrganizerContact",
+        "onEventAttendeeAudienceProjected",
+        "mergeOrganizerContacts",
+        "unmergeOrganizerContacts"
+      ],
+      "migrationNotes": [
+        "Every approved contact creator appends a deterministic source record without storing raw form responses or message bodies.",
+        "originContactId remains stable through merge and unmerge while currentContactId follows the active identity."
       ]
     },
     {
@@ -590,6 +632,33 @@
         "Contacts are organizer-scoped operational records, never Consumer profiles.",
         "Imported phone and email values are duplicate candidates rather than verified merge evidence.",
         "manualTagIds is a bounded organizer-authored namespace and never aliases computed segmentIds. Legacy documents may omit it and read as an empty assignment."
+      ]
+    },
+    {
+      "id": "organizerManualSendTasks",
+      "path": "organizerManualSendTasks/{taskId}",
+      "rulesMatch": "/organizerManualSendTasks/{taskId}",
+      "typescriptInterface": "OrganizerManualSendTaskDocument",
+      "dartModel": "lib/hosts/data/host_crm_repository.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps invite secrets, touches, share intents, and attribution server-only"
+      ],
+      "owner": "manager-only organizer manual-send task callables",
+      "read": "server only; managers receive bounded callable projections",
+      "write": "server only with deterministic idempotency and optimistic revisions",
+      "exportedFunctions": [
+        "prepareOrganizerManualSendTask",
+        "listOrganizerManualSendTasks",
+        "validateOrganizerManualSendTaskLaunch",
+        "openOrganizerManualSendTask",
+        "markOrganizerManualSendTask",
+        "replanOrganizerManualSendTasks"
+      ],
+      "migrationNotes": [
+        "Prepare persists a bounded 30-day external-handoff task before the first client launch; every later launch is revision-bound and revalidates current endpoint and permission immediately before opening the external app.",
+        "handoffOpened is device acceptance only and hostMarkedSent is an explicit organizer assertion; neither is provider delivery or read evidence.",
+        "Re-plan is read-only and never dispatches, completes, removes, or supersedes task state."
       ]
     },
     {

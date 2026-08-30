@@ -163,9 +163,23 @@ const schemaSpecs = [
       "organizerCommunicationPreferenceDocument.ts",
   },
   {
+    name: "OrganizerCommunicationPermissionReceiptDocument",
+    source:
+      "firestore/organizer_communication_permission_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerCommunicationPermissionReceiptDocument.ts",
+  },
+  {
     name: "OrganizerContactDocument",
     source: "firestore/organizer_contacts.schema.json",
     typeOutput: "functions/src/shared/generated/organizerContactDocument.ts",
+  },
+  {
+    name: "OrganizerContactOriginDocument",
+    source: "firestore/organizer_contact_origins.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactOriginDocument.ts",
   },
   {
     name: "OrganizerContactNoteDocument",
@@ -179,6 +193,18 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "organizerContactTagVocabularyDocument.ts",
+  },
+  {
+    name: "OrganizerSavedAudienceDocument",
+    source: "firestore/organizer_saved_audiences.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerSavedAudienceDocument.ts",
+  },
+  {
+    name: "OrganizerManualSendTaskDocument",
+    source: "firestore/organizer_manual_send_tasks.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerManualSendTaskDocument.ts",
   },
   {
     name: "OrganizerContactIdentityLinkDocument",
@@ -1450,6 +1476,134 @@ const schemaSpecs = [
       "functions/src/shared/generated/upsertOrganizerCampaignCallablePayload.ts",
   },
   {
+    name: "UpsertOrganizerSavedAudienceCallablePayload",
+    source:
+      "callables/upsert_organizer_saved_audience_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertOrganizerSavedAudienceCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerSavedAudiencesCallablePayload",
+    source:
+      "callables/list_organizer_saved_audiences_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerSavedAudiencesCallablePayload.ts",
+  },
+  {
+    name: "PreviewOrganizerSavedAudienceCallablePayload",
+    source:
+      "callables/preview_organizer_saved_audience_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "previewOrganizerSavedAudienceCallablePayload.ts",
+  },
+  {
+    name: "ArchiveOrganizerSavedAudienceCallablePayload",
+    source:
+      "callables/archive_organizer_saved_audience_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "archiveOrganizerSavedAudienceCallablePayload.ts",
+  },
+  {
+    name: "OrganizerSavedAudienceCallableResponse",
+    source:
+      "callable_responses/organizer_saved_audience_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerSavedAudienceCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerSavedAudiencesCallableResponse",
+    source:
+      "callable_responses/list_organizer_saved_audiences_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerSavedAudiencesCallableResponse.ts",
+  },
+  {
+    name: "PreviewOrganizerSavedAudienceCallableResponse",
+    source:
+      "callable_responses/preview_organizer_saved_audience_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "previewOrganizerSavedAudienceCallableResponse.ts",
+  },
+  {
+    name: "PrepareOrganizerManualSendTaskCallablePayload",
+    source:
+      "callables/prepare_organizer_manual_send_task_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "prepareOrganizerManualSendTaskCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerManualSendTasksCallablePayload",
+    source:
+      "callables/list_organizer_manual_send_tasks_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerManualSendTasksCallablePayload.ts",
+  },
+  {
+    name: "OpenOrganizerManualSendTaskCallablePayload",
+    source:
+      "callables/open_organizer_manual_send_task_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "openOrganizerManualSendTaskCallablePayload.ts",
+  },
+  {
+    name: "ValidateOrganizerManualSendTaskLaunchCallablePayload",
+    source:
+      "callables/validate_organizer_manual_send_task_launch_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "validateOrganizerManualSendTaskLaunchCallablePayload.ts",
+  },
+  {
+    name: "MarkOrganizerManualSendTaskCallablePayload",
+    source:
+      "callables/mark_organizer_manual_send_task_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "markOrganizerManualSendTaskCallablePayload.ts",
+  },
+  {
+    name: "ReplanOrganizerManualSendTasksCallablePayload",
+    source:
+      "callables/replan_organizer_manual_send_tasks_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "replanOrganizerManualSendTasksCallablePayload.ts",
+  },
+  {
+    name: "OrganizerManualSendTaskCallableResponse",
+    source:
+      "callable_responses/organizer_manual_send_task_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerManualSendTaskCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerManualSendTasksCallableResponse",
+    source:
+      "callable_responses/list_organizer_manual_send_tasks_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerManualSendTasksCallableResponse.ts",
+  },
+  {
+    name: "ReplanOrganizerManualSendTasksCallableResponse",
+    source:
+      "callable_responses/replan_organizer_manual_send_tasks_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "replanOrganizerManualSendTasksCallableResponse.ts",
+  },
+  {
     name: "OrganizerCampaignActionCallablePayload",
     source: "callables/organizer_campaign_action_payload.schema.json",
     typeOutput:
@@ -2540,6 +2694,23 @@ const schemaSpecs = [
       "callable_responses/get_organizer_contact_detail_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/getOrganizerContactDetailCallableResponse.ts",
+  },
+  {
+    name: "ResolveOrganizerCommunicationPlanCallablePayload",
+    source:
+      "callables/resolve_organizer_communication_plan_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "resolveOrganizerCommunicationPlanCallablePayload.ts",
+  },
+  {
+    name: "ResolveOrganizerCommunicationPlanCallableResponse",
+    source:
+      "callable_responses/" +
+      "resolve_organizer_communication_plan_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "resolveOrganizerCommunicationPlanCallableResponse.ts",
   },
   {
     name: "MutateOrganizerContactCallablePayload",

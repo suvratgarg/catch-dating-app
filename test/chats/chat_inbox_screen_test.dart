@@ -764,7 +764,7 @@ void main() {
     ]);
   });
 
-  testWidgets('host inbox uses attendee-query framing', (tester) async {
+  testWidgets('host inbox keeps attendee queries inbound-only', (tester) async {
     AppConfig.configureEntrypointRole(AppRole.host);
     final unreadInquiry = _buildMatch(
       id: 'host-inquiry',
@@ -814,21 +814,12 @@ void main() {
     expect(find.text('Attendee queries'), findsOneWidget);
     expect(find.text('All'), findsOneWidget);
     expect(find.text('Unread · 1'), findsOneWidget);
-    expect(find.text('Message 2 attendees'), findsOneWidget);
-    expect(find.text('Reminders, the meeting point, changes'), findsOneWidget);
+    expect(find.text('Message 2 attendees'), findsNothing);
+    expect(find.text('Reminders, the meeting point, changes'), findsNothing);
     expect(find.text('Is there parking near the start?'), findsOneWidget);
     expect(find.text('Do I need ID at check-in?'), findsOneWidget);
     expect(find.text('Messages from your matches'), findsNothing);
     expect(find.text('CONVERSATIONS'), findsNothing);
-
-    await tester.tap(find.text('Message 2 attendees'));
-    await pumpFeatureUi(tester);
-
-    expect(find.text('New blast'), findsOneWidget);
-    expect(find.text('Send broadcast'), findsOneWidget);
-
-    await tester.tapAt(const Offset(10, 10));
-    await pumpFeatureUi(tester);
 
     await tester.tap(find.text('Unread · 1'));
     await pumpFeatureUi(tester);

@@ -4,10 +4,9 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/communications/domain/communication_route.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -21,6 +20,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customers_scr
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,7 +57,7 @@ void main() {
     expect(find.text('Create your first organizer'), findsNothing);
   });
 
-  testWidgets('renders selected-event segments and roster-backed broadcast', (
+  testWidgets('renders selected-event segments without an outbound card', (
     tester,
   ) async {
     final event = event_test.buildEvent(
@@ -103,7 +103,7 @@ void main() {
       find.byType(CatchOptionGroup<HostInboxAudienceSegment>),
       findsOneWidget,
     );
-    expect(find.text('Message 1 booked attendee'), findsOneWidget);
+    expect(find.text('Message 1 booked attendee'), findsNothing);
     expect(find.text('Asha Guest'), findsOneWidget);
     expect(
       find.text('Catch chat · Organizer · Booked · Can you help?'),
@@ -114,7 +114,7 @@ void main() {
     await tester.tap(find.text('PROSPECTIVE · 1'));
     await pumpFeatureUi(tester);
 
-    expect(find.text('Message 1 prospective attendee'), findsOneWidget);
+    expect(find.text('Message 1 prospective attendee'), findsNothing);
     expect(find.text('Mira Guest'), findsOneWidget);
     expect(
       find.text('Catch chat · Organizer · Requested · Can you help?'),
@@ -155,7 +155,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('keeps broadcast card when roster exists without threads', (
+  testWidgets('moves roster-backed event announcements into Sends', (
     tester,
   ) async {
     final event = event_test.buildEvent(
@@ -176,14 +176,19 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.text('Message 2 booked attendees'), findsOneWidget);
+    expect(find.text('Message 2 booked attendees'), findsNothing);
     expect(find.text('No booked attendees have written yet'), findsOneWidget);
-    expect(
-      find.textContaining(
-        'Broadcast audience size is based on the event roster',
-      ),
-      findsOneWidget,
-    );
+
+    await tester.tap(find.text('Sends'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Choose what to send'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Send an event announcement'), findsOneWidget);
+    expect(find.textContaining('2 booked people'), findsOneWidget);
+    await tester.tap(find.text('Send an event announcement'));
+    await pumpFeatureUi(tester);
+    expect(find.text('New broadcast'), findsOneWidget);
   });
 
   testWidgets('keeps WhatsApp threads inside the existing Inbox scopes', (
@@ -287,31 +292,37 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
-    expect(find.text('Choose channel'), findsOneWidget);
+    expect(find.text('Choose what to send'), findsOneWidget);
     expect(find.text('WhatsApp Business settings'), findsOneWidget);
     expect(find.byType(HostCampaignComposer), findsNothing);
 
-    await tester.tap(find.text('Choose channel'));
+    await tester.tap(find.text('Choose what to send'));
     await pumpFeatureUi(tester);
 
-    expect(find.text('IN CATCH'), findsOneWidget);
-    expect(find.text('WHATSAPP'), findsOneWidget);
-    expect(find.text('Catch chat · Organizer'), findsOneWidget);
-    expect(find.text('Catch announcement · Organizer'), findsOneWidget);
-    expect(find.text('WhatsApp Business · Organizer number'), findsOneWidget);
-    expect(find.text('WhatsApp app · You'), findsOneWidget);
-    expect(find.text('Follower update · Organizer'), findsOneWidget);
-    expect(find.text('Catch WhatsApp · Catch number'), findsOneWidget);
-    for (final routeId in CommunicationRouteId.values) {
+    expect(find.text('WHAT DO YOU WANT TO DO?'), findsOneWidget);
+    expect(find.text('Continue a conversation'), findsOneWidget);
+    expect(find.text('Message a saved audience'), findsOneWidget);
+    expect(find.text('Send an event announcement'), findsOneWidget);
+    expect(find.text('Post a follower update'), findsOneWidget);
+    expect(find.text('IN CATCH'), findsNothing);
+    expect(find.text('WHATSAPP'), findsNothing);
+    expect(find.textContaining('Meta'), findsNothing);
+    expect(find.text('WhatsApp Business · Organizer number'), findsNothing);
+    for (final intent in const [
+      'conversation',
+      'saved-audience',
+      'event-announcement',
+      'follower-update',
+    ]) {
       expect(
-        find.byKey(ValueKey('host-route-${routeId.name}')),
+        find.byKey(ValueKey('host-send-intent-$intent')),
         findsOneWidget,
-        reason: '${routeId.name} must remain represented in the route picker',
+        reason: '$intent must remain represented in the intent chooser',
       );
     }
     expect(find.byType(HostCampaignComposer), findsNothing);
 
-    await tester.tap(find.text('WhatsApp Business · Organizer number'));
+    await tester.tap(find.text('Message a saved audience'));
     await pumpFeatureUi(tester);
 
     expect(find.byType(HostCampaignComposer), findsOneWidget);
@@ -320,9 +331,7 @@ void main() {
     expect(find.byType(HostInboxAudienceRail), findsNothing);
   });
 
-  testWidgets('Follower update route opens its route-specific composer', (
-    tester,
-  ) async {
+  testWidgets('Follower update intent opens its composer', (tester) async {
     await tester.pumpWidget(
       _app(
         event: null,
@@ -336,9 +345,9 @@ void main() {
 
     await tester.tap(find.text('Sends'));
     await pumpFeatureUi(tester);
-    await tester.tap(find.text('Choose channel'));
+    await tester.tap(find.text('Choose what to send'));
     await pumpFeatureUi(tester);
-    await tester.tap(find.text('Follower update · Organizer'));
+    await tester.tap(find.text('Post a follower update'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Post to followers'), findsOneWidget);
@@ -431,6 +440,77 @@ void main() {
       tester.getTopLeft(find.text('Doors open update')).dy,
       lessThan(tester.getTopLeft(find.text('Bring regulars back')).dy),
     );
+  });
+
+  testWidgets('queued manual handoff cannot be marked sent before opening', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: const [],
+        participations: const [],
+        manualSendTasks: [_manualSendTask(HostManualSendTaskStatus.queued)],
+        now: now,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Sends'));
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(HostManualSendQueue), findsOneWidget);
+    expect(find.text('NEEDS YOUR SEND'), findsOneWidget);
+    expect(find.text('Asha Manual'), findsOneWidget);
+    expect(find.text('Waiting'), findsOneWidget);
+
+    await tester.tap(find.text('Asha Manual'));
+    await pumpFeatureUi(tester);
+
+    final markSent = tester.widget<CatchButton>(
+      find.byKey(const ValueKey('host-manual-send-mark-sent')),
+    );
+    expect(markSent.onPressed, isNull);
+    expect(
+      find.textContaining('cannot verify that the message was sent'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('opened handoff remains unconfirmed but permits host assertion', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: const [],
+        participations: const [],
+        manualSendTasks: [
+          _manualSendTask(HostManualSendTaskStatus.handoffOpened),
+        ],
+        now: now,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Sends'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('WhatsApp opened'), findsOneWidget);
+    expect(
+      find.text(
+        'Not confirmed sent. Catch cannot observe the final action in WhatsApp.',
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('Asha Manual'));
+    await pumpFeatureUi(tester);
+
+    final markSent = tester.widget<CatchButton>(
+      find.byKey(const ValueKey('host-manual-send-mark-sent')),
+    );
+    expect(markSent.onPressed, isNotNull);
   });
 
   testWidgets('compact scope label opens the shared event menu', (
@@ -546,7 +626,7 @@ void main() {
     },
   );
 
-  testWidgets('campaigns workspace restores the routed campaign segment', (
+  testWidgets('campaigns workspace restores the routed saved audience', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -556,17 +636,14 @@ void main() {
         participations: const [],
         now: now,
         initialWorkspace: HostMessagingWorkspace.campaigns,
-        initialCampaignSegments: const {HostAudienceSegment.lapsedRegular},
+        initialSavedAudienceId: 'audience-1',
       ),
     );
     await pumpFeatureUi(tester);
 
     expect(find.byType(HostMessagingWorkspaceRail), findsOneWidget);
     expect(find.byType(HostCampaignComposer), findsOneWidget);
-    final selected = tester.widget<CatchChip>(
-      find.byKey(const ValueKey('host-campaign-segment-lapsed_regular')),
-    );
-    expect(selected.selected, isTrue);
+    expect(find.text('Lapsed customers · 12 people at last preview'), findsOne);
   });
 }
 
@@ -577,9 +654,10 @@ Widget _app({
   required DateTime now,
   HostInboxScope? initialScope,
   HostMessagingWorkspace initialWorkspace = HostMessagingWorkspace.inbox,
-  Set<HostAudienceSegment> initialCampaignSegments = const {},
+  String? initialSavedAudienceId,
   List<HostSendSummary> sends = const [],
   List<HostWhatsappThreadSummary> whatsappThreads = const [],
+  List<HostManualSendTask> manualSendTasks = const [],
   AsyncValue<HostWhatsappThreadPage>? whatsappThreadsValue,
   int remainingFollowerQuota = 3,
 }) {
@@ -592,6 +670,9 @@ Widget _app({
   return ProviderScope(
     overrides: [
       uidProvider.overrideWith((ref) => Stream.value('host-1')),
+      eventRepositoryProvider.overrideWithValue(
+        event_test.FakeEventRepository(),
+      ),
       hostOperableClubsProvider('host-1').overrideWithValue(AsyncData([club])),
       watchEventsForClubProvider(
         club.id,
@@ -606,6 +687,15 @@ Widget _app({
       hostSendsProvider(club.id).overrideWithValue(
         AsyncData(
           HostSendsPage(organizerId: club.id, sends: sends, nextCursor: null),
+        ),
+      ),
+      hostManualSendTasksProvider(club.id).overrideWithValue(
+        AsyncData(
+          HostManualSendTaskPage(
+            organizerId: club.id,
+            tasks: manualSendTasks,
+            nextCursor: null,
+          ),
         ),
       ),
       watchClubPostRemainingWeeklyQuotaProvider(
@@ -627,6 +717,14 @@ Widget _app({
           coverage: HostCustomerMatchCountCoverage.exact,
         ),
       ),
+      hostSavedAudiencesProvider(club.id).overrideWithValue(
+        AsyncData(
+          HostSavedAudiencePage(
+            audiences: [_savedAudience(club.id)],
+            nextCursor: null,
+          ),
+        ),
+      ),
       if (event != null)
         watchEventParticipationsForEventProvider(
           event.id,
@@ -637,13 +735,54 @@ Widget _app({
       home: HostInboxScreen(
         initialScope: initialScope,
         initialWorkspace: initialWorkspace,
-        initialCampaignSegments: initialCampaignSegments,
+        initialSavedAudienceId: initialSavedAudienceId,
         syncSelectionToRoute: false,
         now: now,
       ),
     ),
   );
 }
+
+HostSavedAudience _savedAudience(String organizerId) => HostSavedAudience(
+  organizerId: organizerId,
+  audienceId: 'audience-1',
+  name: 'Lapsed customers',
+  status: 'active',
+  definition: const HostSavedAudienceDefinition(
+    join: HostSavedAudienceJoin.all,
+    predicates: [
+      HostSavedAudienceComputedSegment(HostAudienceSegment.lapsedRegular),
+    ],
+  ),
+  definitionHash:
+      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  definitionVersion: 1,
+  revision: 1,
+  lastPreviewMatchCount: 12,
+  lastPreviewAt: DateTime(2026, 8, 30),
+  createdAt: DateTime(2026, 8, 30),
+  updatedAt: DateTime(2026, 8, 30),
+);
+
+HostManualSendTask _manualSendTask(HostManualSendTaskStatus status) =>
+    HostManualSendTask(
+      organizerId: 'club-1',
+      taskId: 'task-1',
+      contactId: 'contact-1',
+      displayName: 'Asha Manual',
+      status: status,
+      active: true,
+      revision: status == HostManualSendTaskStatus.handoffOpened ? 2 : 1,
+      phoneE164: '+919876543210',
+      prefillText: 'Would you like to join us?',
+      openCount: status == HostManualSendTaskStatus.handoffOpened ? 1 : 0,
+      createdAt: DateTime(2026, 8, 30),
+      updatedAt: DateTime(2026, 8, 30),
+      openedAt: status == HostManualSendTaskStatus.handoffOpened
+          ? DateTime(2026, 8, 30)
+          : null,
+      expiresAt: DateTime(2026, 9, 29),
+    );
 
 HostWhatsappThreadSummary _whatsappThread({
   required String threadId,

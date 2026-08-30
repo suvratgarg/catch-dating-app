@@ -27,7 +27,7 @@ void main() {
     await _pumpBuilder(tester);
 
     expect(find.text('Build'), findsOneWidget);
-    expect(find.text('Responses 2'), findsOneWidget);
+    expect(find.text('Responses · 2'), findsOneWidget);
     expect(find.text('DRAFT · 2 QUESTIONS'), findsOneWidget);
     expect(find.text('Questions'), findsWidgets);
     expect(find.text('What do you need to know?'), findsNothing);
@@ -142,8 +142,56 @@ void main() {
       expect(find.text('Form settings'), findsWidgets);
       expect(find.text('Form title'), findsOneWidget);
       expect(find.text('Who can respond'), findsWidgets);
+      expect(find.text('Identity consequence'), findsOneWidget);
+      expect(find.textContaining('Verifies phone'), findsOneWidget);
+      expect(
+        find.textContaining(
+          'Identity checks and contact creation do not grant messaging permission.',
+        ),
+        findsOneWidget,
+      );
     },
   );
+
+  testWidgets('publish review names cross-workspace consequences and limits', (
+    tester,
+  ) async {
+    await _pumpBuilder(tester);
+
+    await tester.tap(find.text('Review & publish'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Review before publishing'), findsOneWidget);
+    expect(find.text('What publishing does'), findsOneWidget);
+    expect(
+      find.text('Verifies phone · Sends a record to application review'),
+      findsOneWidget,
+    );
+    expect(find.text('Messaging permission'), findsOneWidget);
+    expect(
+      find.text(
+        'Identity checks and contact creation do not grant messaging permission.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('publish review labels incomplete legacy automation coverage', (
+    tester,
+  ) async {
+    await _pumpBuilder(tester, legacyConsequences: true);
+
+    await tester.tap(find.text('Review & publish'));
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.text(
+        'Verifies phone · Sends a record to application review · '
+        'Automation consequences need review',
+      ),
+      findsOneWidget,
+    );
+  });
 
   testWidgets('opening a question closes the previously expanded editor', (
     tester,
@@ -297,6 +345,7 @@ void main() {
 Future<void> _pumpBuilder(
   WidgetTester tester, {
   bool published = false,
+  bool legacyConsequences = false,
   double textScale = 1,
   bool disableAnimations = false,
   ThemeData? theme,
@@ -306,6 +355,13 @@ Future<void> _pumpBuilder(
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
   final summary = _summaryMap();
+  if (legacyConsequences) {
+    summary['consequences'] = <String, Object?>{
+      'coverage': 'identityOnly',
+      'identityPolicy': 'phoneVerified',
+      'enabledAutomationActionKinds': <Object?>[],
+    };
+  }
   if (published) {
     summary
       ..['status'] = 'published'
@@ -412,6 +468,11 @@ Map<String, Object?> _summaryMap() => {
   'draftRevision': 2,
   'publishedVersion': 0,
   'submittedResponseCount': 2,
+  'consequences': {
+    'coverage': 'exact',
+    'identityPolicy': 'phoneVerified',
+    'enabledAutomationActionKinds': <Object?>[],
+  },
   'updatedAtMillis': 1,
   'publishedAtMillis': null,
   'lastResponseAtMillis': null,

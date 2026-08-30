@@ -137,31 +137,4 @@ void main() {
     expect(mostAttended, sameMostAttended);
     expect(mostAttended.hashCode, sameMostAttended.hashCode);
   });
-
-  test('conversation requires an unambiguous linked customer identity', () {
-    expect(
-      customerConversationAvailability(
-        linkedAccount: true,
-        identityVerified: true,
-        ambiguousCandidateCount: 0,
-      ),
-      HostCustomerConversationAvailability.ready,
-    );
-    expect(
-      customerConversationAvailability(
-        linkedAccount: false,
-        identityVerified: true,
-        ambiguousCandidateCount: 0,
-      ),
-      HostCustomerConversationAvailability.unlinked,
-    );
-    expect(
-      customerConversationAvailability(
-        linkedAccount: true,
-        identityVerified: false,
-        ambiguousCandidateCount: 2,
-      ),
-      HostCustomerConversationAvailability.ambiguous,
-    );
-  });
 }

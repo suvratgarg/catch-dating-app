@@ -5,7 +5,7 @@
 // Typed callable request DTO emitted from callables/upsert_organizer_campaign_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Creates or revision-updates one draft WhatsApp organizer campaign.
+/// Creates or revision-updates one draft WhatsApp organizer campaign that consumes a Customers-owned saved audience id.
 final class UpsertOrganizerCampaignCallableRequest {
   const UpsertOrganizerCampaignCallableRequest({
     required this.organizerId,
@@ -14,7 +14,7 @@ final class UpsertOrganizerCampaignCallableRequest {
     this.expectedRevision,
     required this.name,
     required this.messageClass,
-    required this.segmentIds,
+    required this.savedAudienceId,
     required this.connectionId,
     required this.templateId,
     required this.templateVariables,
@@ -29,7 +29,7 @@ final class UpsertOrganizerCampaignCallableRequest {
   final int? expectedRevision;
   final String name;
   final String messageClass;
-  final List<String> segmentIds;
+  final String savedAudienceId;
   final String connectionId;
   final String templateId;
   final Map<String, Object?> templateVariables;
@@ -44,7 +44,7 @@ final class UpsertOrganizerCampaignCallableRequest {
     'expectedRevision': ?expectedRevision,
     'name': name,
     'messageClass': messageClass,
-    'segmentIds': segmentIds,
+    'savedAudienceId': savedAudienceId,
     'connectionId': connectionId,
     'templateId': templateId,
     'templateVariables': templateVariables,

@@ -40,7 +40,7 @@ test(
           requestId: "request-1",
           name: "August regulars",
           messageClass: "organizerUpdate",
-          segmentIds: ["whatsapp_reachable"],
+          savedAudienceId: "audience-1",
           connectionId: "connection-1",
           templateId: "template-1",
           templateVariables: {body: "kill yourself"},

@@ -5,7 +5,7 @@
   "description": "Immutable organizer contact merge or reversal receipt projection.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["receiptId", "operation", "survivorContactId", "sourceContactId", "movedEdgeCount", "movedIdentityEvidenceCount", "movedClaimCount", "replayed"],
+  "required": ["receiptId", "operation", "survivorContactId", "sourceContactId", "movedEdgeCount", "movedIdentityEvidenceCount", "movedClaimCount", "movedOriginCount", "replayed"],
   "properties": {
     "receiptId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "operation": {"type": "string", "enum": ["merge", "unmerge"]},
@@ -14,6 +14,7 @@
     "movedEdgeCount": {"type": "integer", "minimum": 0, "maximum": 400},
     "movedIdentityEvidenceCount": {"type": "integer", "minimum": 0, "maximum": 400},
     "movedClaimCount": {"type": "integer", "minimum": 0, "maximum": 400},
+    "movedOriginCount": {"type": "integer", "minimum": 0, "maximum": 400},
     "replayed": {"type": "boolean"}
   }
 }

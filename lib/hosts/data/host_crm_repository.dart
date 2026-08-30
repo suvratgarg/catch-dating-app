@@ -22,6 +22,203 @@ enum HostAudienceIdentityState { unlinked, verified, ambiguous }
 
 enum HostAudiencePermissionStatus { unknown, optedIn, optedOut }
 
+enum HostCommunicationIntent { individualConversation }
+
+final class _HostCommunicationContactTarget {
+  const _HostCommunicationContactTarget({required this.contactId});
+
+  final String contactId;
+
+  Map<String, Object?> toJson() => {'kind': 'contact', 'contactId': contactId};
+}
+
+enum HostCommunicationOutcome { inCatch, automatic, byHand, unavailable }
+
+enum HostCommunicationRouteId {
+  personalWhatsappHandoff,
+  organizerWhatsappCampaign,
+  catchWhatsapp,
+  catchChat,
+  catchEventAnnouncement,
+  organizerFollowerUpdate,
+}
+
+enum HostCommunicationExecutionMode { managedDelivery, externalHandoff }
+
+enum HostCommunicationRouteAvailability { available, unavailable }
+
+enum HostCommunicationRouteBlocker {
+  catchAccountRequired,
+  identityAmbiguous,
+  missingPhone,
+  organizerSuppressed,
+  contactOptedOut,
+  permissionRequired,
+  senderUnavailable,
+  intentUnsupported,
+  contactUnavailable,
+  endpointChanged,
+}
+
+class HostCommunicationRouteOption {
+  const HostCommunicationRouteOption({
+    required this.routeId,
+    required this.executionMode,
+    required this.availability,
+    required this.blocker,
+  });
+
+  factory HostCommunicationRouteOption.fromMap(Map<Object?, Object?> map) =>
+      HostCommunicationRouteOption(
+        routeId: _enumByName(
+          HostCommunicationRouteId.values,
+          _requiredString(map, 'routeId'),
+          'communication route id',
+        ),
+        executionMode: _enumByName(
+          HostCommunicationExecutionMode.values,
+          _requiredString(map, 'executionMode'),
+          'communication execution mode',
+        ),
+        availability: _enumByName(
+          HostCommunicationRouteAvailability.values,
+          _requiredString(map, 'availability'),
+          'communication route availability',
+        ),
+        blocker: map['blocker'] == null
+            ? null
+            : _enumByName(
+                HostCommunicationRouteBlocker.values,
+                _requiredString(map, 'blocker'),
+                'communication route blocker',
+              ),
+      );
+
+  final HostCommunicationRouteId routeId;
+  final HostCommunicationExecutionMode executionMode;
+  final HostCommunicationRouteAvailability availability;
+  final HostCommunicationRouteBlocker? blocker;
+
+  bool get isAvailable =>
+      availability == HostCommunicationRouteAvailability.available;
+}
+
+class HostCommunicationRecipientPlan {
+  const HostCommunicationRecipientPlan({
+    required this.contactId,
+    required this.displayName,
+    required this.outcome,
+    required this.recommendedRouteId,
+    required this.routes,
+  });
+
+  factory HostCommunicationRecipientPlan.fromMap(Map<Object?, Object?> map) {
+    final routes = _mapList(
+      map['routes'],
+      'communication routes',
+    ).map(HostCommunicationRouteOption.fromMap).toList(growable: false);
+    if (routes.map((route) => route.routeId).toSet().length != routes.length) {
+      throw const FormatException(
+        'Communication plan contains duplicate routes.',
+      );
+    }
+    for (final route in routes) {
+      if (route.isAvailable != (route.blocker == null)) {
+        throw FormatException(
+          'Communication route ${route.routeId.name} has inconsistent '
+          'availability and blocker values.',
+        );
+      }
+    }
+    final recipient = HostCommunicationRecipientPlan(
+      contactId: _requiredString(map, 'contactId'),
+      displayName: _requiredString(map, 'displayName'),
+      outcome: _enumByName(
+        HostCommunicationOutcome.values,
+        _requiredString(map, 'outcome'),
+        'communication outcome',
+      ),
+      recommendedRouteId: map['recommendedRouteId'] == null
+          ? null
+          : _enumByName(
+              HostCommunicationRouteId.values,
+              _requiredString(map, 'recommendedRouteId'),
+              'recommended communication route',
+            ),
+      routes: routes,
+    );
+    final recommendedRouteId = recipient.recommendedRouteId;
+    if (recommendedRouteId != null &&
+        !recipient.route(recommendedRouteId).isAvailable) {
+      throw const FormatException(
+        'Recommended communication route must be available.',
+      );
+    }
+    return recipient;
+  }
+
+  final String contactId;
+  final String displayName;
+  final HostCommunicationOutcome outcome;
+  final HostCommunicationRouteId? recommendedRouteId;
+  final List<HostCommunicationRouteOption> routes;
+
+  HostCommunicationRouteOption route(HostCommunicationRouteId routeId) =>
+      routes.firstWhere(
+        (route) => route.routeId == routeId,
+        orElse: () => throw FormatException(
+          'Communication plan omitted ${routeId.name}.',
+        ),
+      );
+}
+
+class HostCommunicationPlan {
+  const HostCommunicationPlan({
+    required this.organizerId,
+    required this.intent,
+    required this.capabilityVersion,
+    required this.resolvedAt,
+    required this.recipients,
+  });
+
+  factory HostCommunicationPlan.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'organizer communication plan');
+    final plan = HostCommunicationPlan(
+      organizerId: _requiredString(map, 'organizerId'),
+      intent: _enumByName(
+        HostCommunicationIntent.values,
+        _requiredString(map, 'intent'),
+        'communication intent',
+      ),
+      capabilityVersion: _requiredInt(map, 'capabilityVersion'),
+      resolvedAt: _requiredDateTimeFromMillis(map, 'resolvedAtMillis'),
+      recipients: _mapList(
+        map['recipients'],
+        'communication recipients',
+      ).map(HostCommunicationRecipientPlan.fromMap).toList(growable: false),
+    );
+    final recipient = plan.singleRecipient;
+    recipient.route(HostCommunicationRouteId.catchChat);
+    recipient.route(HostCommunicationRouteId.personalWhatsappHandoff);
+    return plan;
+  }
+
+  final String organizerId;
+  final HostCommunicationIntent intent;
+  final int capabilityVersion;
+  final DateTime resolvedAt;
+  final List<HostCommunicationRecipientPlan> recipients;
+
+  HostCommunicationRecipientPlan get singleRecipient {
+    if (recipients.length != 1) {
+      throw const FormatException(
+        'Individual communication plan must contain one recipient.',
+      );
+    }
+    return recipients.single;
+  }
+}
+
 enum HostCustomerRevenueCoverage { exact, partial, unavailable }
 
 enum HostCustomerRevenueSource {
@@ -1000,11 +1197,330 @@ class HostWhatsappThreadDetail {
   final bool messagesTruncated;
 }
 
-enum HostPersonalWhatsappHandoffAvailability {
-  ready,
-  missingPhone,
-  organizerSuppressed,
-  contactOptedOut,
+enum HostCustomerPermissionEvidenceStatus {
+  unavailable,
+  notApplicable,
+  complete,
+  incomplete,
+}
+
+class HostCustomerWhatsappPermission {
+  const HostCustomerWhatsappPermission({
+    required this.status,
+    required this.evidenceStatus,
+    required this.receiptId,
+    required this.source,
+    required this.sourceFormId,
+    required this.sourceFormTitle,
+    required this.decisionAt,
+    required this.identityStrength,
+  });
+
+  factory HostCustomerWhatsappPermission.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerWhatsappPermission(
+        status: _enumByName(
+          HostAudiencePermissionStatus.values,
+          _requiredString(map, 'status'),
+          'WhatsApp permission status',
+        ),
+        evidenceStatus: _enumByName(
+          HostCustomerPermissionEvidenceStatus.values,
+          _requiredString(map, 'evidenceStatus'),
+          'WhatsApp permission evidence status',
+        ),
+        receiptId: _nullableString(map['receiptId']),
+        source: _nullableString(map['source']),
+        sourceFormId: _nullableString(map['sourceFormId']),
+        sourceFormTitle: _nullableString(map['sourceFormTitle']),
+        decisionAt: _dateTimeFromMillis(map['decisionAtMillis']),
+        identityStrength: _nullableString(map['identityStrength']),
+      );
+
+  final HostAudiencePermissionStatus status;
+  final HostCustomerPermissionEvidenceStatus evidenceStatus;
+  final String? receiptId;
+  final String? source;
+  final String? sourceFormId;
+  final String? sourceFormTitle;
+  final DateTime? decisionAt;
+  final String? identityStrength;
+}
+
+enum HostCustomerOriginSourceKind {
+  catchBooking,
+  hostImport,
+  hostManual,
+  webOtp,
+  providerSync,
+  hostForm,
+}
+
+class HostCustomerOrigin {
+  const HostCustomerOrigin({
+    required this.originId,
+    required this.sourceKind,
+    required this.sourceEntityKind,
+    required this.formId,
+    required this.formTitle,
+    required this.eventId,
+    required this.eventTitle,
+    required this.observedAt,
+  });
+
+  factory HostCustomerOrigin.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerOrigin(
+        originId: _requiredString(map, 'originId'),
+        sourceKind: _enumByName(
+          HostCustomerOriginSourceKind.values,
+          _requiredString(map, 'sourceKind'),
+          'customer origin source',
+        ),
+        sourceEntityKind: _requiredString(map, 'sourceEntityKind'),
+        formId: _nullableString(map['formId']),
+        formTitle: _nullableString(map['formTitle']),
+        eventId: _nullableString(map['eventId']),
+        eventTitle: _nullableString(map['eventTitle']),
+        observedAt: _requiredDateTimeFromMillis(map, 'observedAtMillis'),
+      );
+
+  final String originId;
+  final HostCustomerOriginSourceKind sourceKind;
+  final String sourceEntityKind;
+  final String? formId;
+  final String? formTitle;
+  final String? eventId;
+  final String? eventTitle;
+  final DateTime observedAt;
+}
+
+enum HostCustomerTimelineCoverageValue { exact, partial, unavailable }
+
+class HostCustomerTimelineCoverage {
+  const HostCustomerTimelineCoverage({
+    required this.forms,
+    required this.events,
+    required this.sends,
+    required this.replies,
+  });
+
+  factory HostCustomerTimelineCoverage.fromMap(Map<Object?, Object?> map) {
+    if (_requiredString(map, 'replyObservation') !=
+        'catchAndManagedWhatsappOnly') {
+      throw const FormatException(
+        'Customer timeline had an unsupported reply observation boundary.',
+      );
+    }
+    return HostCustomerTimelineCoverage(
+      forms: _timelineCoverageValue(map, 'forms'),
+      events: _timelineCoverageValue(map, 'events'),
+      sends: _timelineCoverageValue(map, 'sends'),
+      replies: _timelineCoverageValue(map, 'replies'),
+    );
+  }
+
+  final HostCustomerTimelineCoverageValue forms;
+  final HostCustomerTimelineCoverageValue events;
+  final HostCustomerTimelineCoverageValue sends;
+  final HostCustomerTimelineCoverageValue replies;
+
+  bool get isComplete =>
+      forms == HostCustomerTimelineCoverageValue.exact &&
+      events == HostCustomerTimelineCoverageValue.exact &&
+      sends == HostCustomerTimelineCoverageValue.exact &&
+      replies == HostCustomerTimelineCoverageValue.exact;
+}
+
+HostCustomerTimelineCoverageValue _timelineCoverageValue(
+  Map<Object?, Object?> map,
+  String key,
+) => _enumByName(
+  HostCustomerTimelineCoverageValue.values,
+  _requiredString(map, key),
+  '$key timeline coverage',
+);
+
+sealed class HostCustomerTimelineEntry {
+  const HostCustomerTimelineEntry({
+    required this.timelineId,
+    required this.occurredAt,
+  });
+
+  factory HostCustomerTimelineEntry.fromMap(Map<Object?, Object?> map) =>
+      switch (_requiredString(map, 'kind')) {
+        'form' => HostCustomerFormTimelineEntry.fromMap(map),
+        'event' => HostCustomerEventTimelineEntry.fromMap(map),
+        'send' => HostCustomerSendTimelineEntry.fromMap(map),
+        'reply' => HostCustomerReplyTimelineEntry.fromMap(map),
+        _ => throw const FormatException(
+          'Customer timeline contained an unsupported entry kind.',
+        ),
+      };
+
+  final String timelineId;
+  final DateTime occurredAt;
+}
+
+enum HostCustomerFormTimelineAction { submitted, withdrawn }
+
+final class HostCustomerFormTimelineEntry extends HostCustomerTimelineEntry {
+  const HostCustomerFormTimelineEntry({
+    required super.timelineId,
+    required super.occurredAt,
+    required this.responseId,
+    required this.formId,
+    required this.formTitle,
+    required this.action,
+    required this.answeredQuestionCount,
+  });
+
+  factory HostCustomerFormTimelineEntry.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerFormTimelineEntry(
+        timelineId: _requiredString(map, 'timelineId'),
+        occurredAt: _requiredDateTimeFromMillis(map, 'occurredAtMillis'),
+        responseId: _requiredString(map, 'responseId'),
+        formId: _requiredString(map, 'formId'),
+        formTitle: _nullableString(map['formTitle']),
+        action: _enumByName(
+          HostCustomerFormTimelineAction.values,
+          _requiredString(map, 'action'),
+          'form timeline action',
+        ),
+        answeredQuestionCount: _requiredInt(map, 'answeredQuestionCount'),
+      );
+
+  final String responseId;
+  final String formId;
+  final String? formTitle;
+  final HostCustomerFormTimelineAction action;
+  final int answeredQuestionCount;
+}
+
+final class HostCustomerEventTimelineEntry extends HostCustomerTimelineEntry {
+  const HostCustomerEventTimelineEntry({
+    required super.timelineId,
+    required super.occurredAt,
+    required this.eventId,
+    required this.eventName,
+    required this.status,
+    required this.checkedIn,
+    required this.eventOrigin,
+    required this.eventProvider,
+  });
+
+  factory HostCustomerEventTimelineEntry.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerEventTimelineEntry(
+        timelineId: _requiredString(map, 'timelineId'),
+        occurredAt: _requiredDateTimeFromMillis(map, 'occurredAtMillis'),
+        eventId: _requiredString(map, 'eventId'),
+        eventName: _requiredString(map, 'eventName'),
+        status: _requiredString(map, 'status'),
+        checkedIn: _requiredBool(map, 'checkedIn'),
+        eventOrigin: _enumByName(
+          HostCustomerEventOrigin.values,
+          _requiredString(map, 'eventOriginMode'),
+          'event timeline origin',
+        ),
+        eventProvider: _nullableString(map['eventProvider']),
+      );
+
+  final String eventId;
+  final String eventName;
+  final String status;
+  final bool checkedIn;
+  final HostCustomerEventOrigin eventOrigin;
+  final String? eventProvider;
+}
+
+enum HostCustomerTimelineSendKind { campaign, announcement, manualHandoff }
+
+enum HostCustomerTimelineDeliveryMode { inCatch, api, byHand }
+
+enum HostCustomerTimelineObservation {
+  providerReceipt,
+  catchActivity,
+  hostOpened,
+  hostAssertion,
+  notSent,
+}
+
+final class HostCustomerSendTimelineEntry extends HostCustomerTimelineEntry {
+  const HostCustomerSendTimelineEntry({
+    required super.timelineId,
+    required super.occurredAt,
+    required this.sendKind,
+    required this.name,
+    required this.status,
+    required this.deliveryMode,
+    required this.observation,
+    required this.referenceId,
+  });
+
+  factory HostCustomerSendTimelineEntry.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerSendTimelineEntry(
+        timelineId: _requiredString(map, 'timelineId'),
+        occurredAt: _requiredDateTimeFromMillis(map, 'occurredAtMillis'),
+        sendKind: _enumByName(
+          HostCustomerTimelineSendKind.values,
+          _requiredString(map, 'sendKind'),
+          'timeline send kind',
+        ),
+        name: _requiredString(map, 'name'),
+        status: _requiredString(map, 'status'),
+        deliveryMode: _enumByName(
+          HostCustomerTimelineDeliveryMode.values,
+          _requiredString(map, 'deliveryMode'),
+          'timeline delivery mode',
+        ),
+        observation: _enumByName(
+          HostCustomerTimelineObservation.values,
+          _requiredString(map, 'observation'),
+          'timeline observation',
+        ),
+        referenceId: _requiredString(map, 'referenceId'),
+      );
+
+  final HostCustomerTimelineSendKind sendKind;
+  final String name;
+  final String status;
+  final HostCustomerTimelineDeliveryMode deliveryMode;
+  final HostCustomerTimelineObservation observation;
+  final String referenceId;
+}
+
+enum HostCustomerReplyTransport { catchChat, managedWhatsapp }
+
+final class HostCustomerReplyTimelineEntry extends HostCustomerTimelineEntry {
+  const HostCustomerReplyTimelineEntry({
+    required super.timelineId,
+    required super.occurredAt,
+    required this.transport,
+    required this.direction,
+    required this.bodyPreview,
+    required this.threadId,
+  });
+
+  factory HostCustomerReplyTimelineEntry.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerReplyTimelineEntry(
+        timelineId: _requiredString(map, 'timelineId'),
+        occurredAt: _requiredDateTimeFromMillis(map, 'occurredAtMillis'),
+        transport: _enumByName(
+          HostCustomerReplyTransport.values,
+          _requiredString(map, 'transport'),
+          'timeline reply transport',
+        ),
+        direction: _enumByName(
+          HostWhatsappMessageDirection.values,
+          _requiredString(map, 'direction'),
+          'timeline reply direction',
+        ),
+        bodyPreview: _requiredString(map, 'bodyPreview'),
+        threadId: _requiredString(map, 'threadId'),
+      );
+
+  final HostCustomerReplyTransport transport;
+  final HostWhatsappMessageDirection direction;
+  final String bodyPreview;
+  final String threadId;
 }
 
 class HostAudienceContactDetail {
@@ -1022,6 +1538,9 @@ class HostAudienceContactDetail {
     this.contactDetailsEditable = false,
     required this.ambiguousCandidateCount,
     required this.whatsappAdminSuppressed,
+    required this.whatsappPermission,
+    required this.origins,
+    required this.originsTruncated,
     required this.traits,
     required this.revenue,
     required this.events,
@@ -1034,6 +1553,9 @@ class HostAudienceContactDetail {
     this.sends = const [],
     this.sendsTruncated = false,
     this.sendsCoverage = HostCustomerHistoryCoverage.exact,
+    required this.timeline,
+    required this.timelineTruncated,
+    required this.timelineCoverage,
     this.activeMerges = const [],
     required this.revision,
   });
@@ -1062,6 +1584,14 @@ class HostAudienceContactDetail {
         map['ambiguousCandidateContactIds'],
       ).length,
       whatsappAdminSuppressed: _requiredBool(map, 'whatsappAdminSuppressed'),
+      whatsappPermission: HostCustomerWhatsappPermission.fromMap(
+        _requiredMap(map['whatsappPermission'], 'WhatsApp permission'),
+      ),
+      origins: _mapList(
+        map['origins'],
+        'contact origins',
+      ).map(HostCustomerOrigin.fromMap).toList(growable: false),
+      originsTruncated: _requiredBool(map, 'originsTruncated'),
       traits: HostCustomerTraits.fromMap(
         _requiredMap(map['traits'], 'customer traits'),
       ),
@@ -1109,6 +1639,14 @@ class HostAudienceContactDetail {
               _requiredString(map, 'sendsCoverage'),
               'sends coverage',
             ),
+      timeline: _mapList(
+        map['timeline'],
+        'customer timeline',
+      ).map(HostCustomerTimelineEntry.fromMap).toList(growable: false),
+      timelineTruncated: _requiredBool(map, 'timelineTruncated'),
+      timelineCoverage: HostCustomerTimelineCoverage.fromMap(
+        _requiredMap(map['timelineCoverage'], 'customer timeline coverage'),
+      ),
       activeMerges: _optionalMapList(
         map['activeMerges'],
         'active contact merges',
@@ -1132,6 +1670,9 @@ class HostAudienceContactDetail {
   final bool contactDetailsEditable;
   final int ambiguousCandidateCount;
   final bool whatsappAdminSuppressed;
+  final HostCustomerWhatsappPermission whatsappPermission;
+  final List<HostCustomerOrigin> origins;
+  final bool originsTruncated;
   final HostCustomerTraits traits;
   final HostCustomerRevenue revenue;
   final List<HostAudienceEventFact> events;
@@ -1144,26 +1685,11 @@ class HostAudienceContactDetail {
   final List<HostCustomerSend> sends;
   final bool sendsTruncated;
   final HostCustomerHistoryCoverage sendsCoverage;
+  final List<HostCustomerTimelineEntry> timeline;
+  final bool timelineTruncated;
+  final HostCustomerTimelineCoverage timelineCoverage;
   final List<HostActiveContactMerge> activeMerges;
   final int revision;
-
-  HostPersonalWhatsappHandoffAvailability
-  get personalWhatsappHandoffAvailability {
-    if (phoneE164 == null) {
-      return HostPersonalWhatsappHandoffAvailability.missingPhone;
-    }
-    if (whatsappAdminSuppressed) {
-      return HostPersonalWhatsappHandoffAvailability.organizerSuppressed;
-    }
-    if (traits.whatsappStatus == HostAudiencePermissionStatus.optedOut) {
-      return HostPersonalWhatsappHandoffAvailability.contactOptedOut;
-    }
-    return HostPersonalWhatsappHandoffAvailability.ready;
-  }
-
-  bool get canUsePersonalWhatsappHandoff =>
-      personalWhatsappHandoffAvailability ==
-      HostPersonalWhatsappHandoffAvailability.ready;
 }
 
 class HostCreatedCustomer {
@@ -1492,12 +2018,267 @@ class HostWhatsappSignupResult {
   final String? businessId;
 }
 
+enum HostSavedAudienceJoin { all, any }
+
+sealed class HostSavedAudiencePredicate {
+  const HostSavedAudiencePredicate();
+
+  factory HostSavedAudiencePredicate.fromMap(Map<Object?, Object?> map) =>
+      switch (_requiredString(map, 'kind')) {
+        'computedSegment' => HostSavedAudienceComputedSegment(
+          _requiredAudienceSegment(map, 'segmentId'),
+        ),
+        'manualTag' => HostSavedAudienceManualTag(
+          _requiredString(map, 'manualTagId'),
+        ),
+        'attendanceCount' => HostSavedAudienceAttendanceCount(
+          operator: _enumByName(
+            HostSavedAudienceAttendanceOperator.values,
+            _requiredString(map, 'operator'),
+            'saved audience attendance operator',
+          ),
+          eventCount: _requiredInt(map, 'eventCount'),
+        ),
+        'lastSeenWithinDays' => HostSavedAudienceLastSeenWithinDays(
+          _requiredInt(map, 'days'),
+        ),
+        'reachableForIntent' =>
+          _requiredString(map, 'intent') == 'organizerWhatsappCampaign'
+              ? const HostSavedAudienceCampaignReachable()
+              : throw const FormatException(
+                  'Saved audience had an unsupported reach intent.',
+                ),
+        _ => throw const FormatException(
+          'Saved audience had an unsupported predicate.',
+        ),
+      };
+
+  Map<String, Object?> toJson();
+}
+
+final class HostSavedAudienceComputedSegment
+    extends HostSavedAudiencePredicate {
+  const HostSavedAudienceComputedSegment(this.segment);
+
+  final HostAudienceSegment segment;
+
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': 'computedSegment',
+    'segmentId': segment.wireValue,
+  };
+}
+
+final class HostSavedAudienceManualTag extends HostSavedAudiencePredicate {
+  const HostSavedAudienceManualTag(this.manualTagId);
+
+  final String manualTagId;
+
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': 'manualTag',
+    'manualTagId': manualTagId,
+  };
+}
+
+enum HostSavedAudienceAttendanceOperator { atLeast, atMost }
+
+final class HostSavedAudienceAttendanceCount
+    extends HostSavedAudiencePredicate {
+  const HostSavedAudienceAttendanceCount({
+    required this.operator,
+    required this.eventCount,
+  });
+
+  final HostSavedAudienceAttendanceOperator operator;
+  final int eventCount;
+
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': 'attendanceCount',
+    'operator': operator.name,
+    'eventCount': eventCount,
+  };
+}
+
+final class HostSavedAudienceLastSeenWithinDays
+    extends HostSavedAudiencePredicate {
+  const HostSavedAudienceLastSeenWithinDays(this.days);
+
+  final int days;
+
+  @override
+  Map<String, Object?> toJson() => {'kind': 'lastSeenWithinDays', 'days': days};
+}
+
+final class HostSavedAudienceCampaignReachable
+    extends HostSavedAudiencePredicate {
+  const HostSavedAudienceCampaignReachable();
+
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': 'reachableForIntent',
+    'intent': 'organizerWhatsappCampaign',
+  };
+}
+
+class HostSavedAudienceDefinition {
+  const HostSavedAudienceDefinition({
+    required this.join,
+    required this.predicates,
+  });
+
+  factory HostSavedAudienceDefinition.fromMap(Map<Object?, Object?> map) =>
+      HostSavedAudienceDefinition(
+        join: _enumByName(
+          HostSavedAudienceJoin.values,
+          _requiredString(map, 'join'),
+          'saved audience join',
+        ),
+        predicates: _mapList(
+          map['predicates'],
+          'saved audience predicates',
+        ).map(HostSavedAudiencePredicate.fromMap).toList(growable: false),
+      );
+
+  final HostSavedAudienceJoin join;
+  final List<HostSavedAudiencePredicate> predicates;
+
+  Map<String, Object?> toJson() => {
+    'join': join.name,
+    'predicates': predicates.map((value) => value.toJson()).toList(),
+  };
+}
+
+class HostSavedAudience {
+  const HostSavedAudience({
+    required this.organizerId,
+    required this.audienceId,
+    required this.name,
+    required this.status,
+    required this.definition,
+    required this.definitionHash,
+    required this.definitionVersion,
+    required this.revision,
+    required this.lastPreviewMatchCount,
+    required this.lastPreviewAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory HostSavedAudience.fromMap(Map<Object?, Object?> map) {
+    if (_requiredString(map, 'scope') != 'organizerCrm') {
+      throw const FormatException('Saved audience had an event-scoped owner.');
+    }
+    return HostSavedAudience(
+      organizerId: _requiredString(map, 'organizerId'),
+      audienceId: _requiredString(map, 'audienceId'),
+      name: _requiredString(map, 'name'),
+      status: _requiredString(map, 'status'),
+      definition: HostSavedAudienceDefinition.fromMap(
+        _requiredMap(map['definition'], 'saved audience definition'),
+      ),
+      definitionHash: _requiredString(map, 'definitionHash'),
+      definitionVersion: _requiredInt(map, 'definitionVersion'),
+      revision: _requiredInt(map, 'revision'),
+      lastPreviewMatchCount: map['lastPreviewMatchCount'] == null
+          ? null
+          : _requiredInt(map, 'lastPreviewMatchCount'),
+      lastPreviewAt: _dateTimeFromMillis(map['lastPreviewAtMillis']),
+      createdAt: _requiredDateTimeFromMillis(map, 'createdAtMillis'),
+      updatedAt: _requiredDateTimeFromMillis(map, 'updatedAtMillis'),
+    );
+  }
+
+  final String organizerId;
+  final String audienceId;
+  final String name;
+  final String status;
+  final HostSavedAudienceDefinition definition;
+  final String definitionHash;
+  final int definitionVersion;
+  final int revision;
+  final int? lastPreviewMatchCount;
+  final DateTime? lastPreviewAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+}
+
+class HostSavedAudiencePage {
+  const HostSavedAudiencePage({
+    required this.audiences,
+    required this.nextCursor,
+  });
+
+  factory HostSavedAudiencePage.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'saved audience page');
+    return HostSavedAudiencePage(
+      audiences: _mapList(
+        map['audiences'],
+        'saved audiences',
+      ).map(HostSavedAudience.fromMap).toList(growable: false),
+      nextCursor: _nullableString(map['nextCursor']),
+    );
+  }
+
+  final List<HostSavedAudience> audiences;
+  final String? nextCursor;
+}
+
+class HostSavedAudiencePreviewContact {
+  const HostSavedAudiencePreviewContact({
+    required this.contactId,
+    required this.displayName,
+  });
+
+  factory HostSavedAudiencePreviewContact.fromMap(Map<Object?, Object?> map) =>
+      HostSavedAudiencePreviewContact(
+        contactId: _requiredString(map, 'contactId'),
+        displayName: _requiredString(map, 'displayName'),
+      );
+
+  final String contactId;
+  final String displayName;
+}
+
+class HostSavedAudiencePreview {
+  const HostSavedAudiencePreview({
+    required this.audience,
+    required this.matchCount,
+    required this.sample,
+    required this.evaluatedAt,
+  });
+
+  factory HostSavedAudiencePreview.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'saved audience preview');
+    if (_requiredString(map, 'coverage') != 'exact') {
+      throw const FormatException('Saved audience preview was not exact.');
+    }
+    return HostSavedAudiencePreview(
+      audience: HostSavedAudience.fromMap(
+        _requiredMap(map['audience'], 'saved audience'),
+      ),
+      matchCount: _requiredInt(map, 'matchCount'),
+      sample: _mapList(
+        map['sample'],
+        'saved audience sample',
+      ).map(HostSavedAudiencePreviewContact.fromMap).toList(growable: false),
+      evaluatedAt: _requiredDateTimeFromMillis(map, 'evaluatedAtMillis'),
+    );
+  }
+
+  final HostSavedAudience audience;
+  final int matchCount;
+  final List<HostSavedAudiencePreviewContact> sample;
+  final DateTime evaluatedAt;
+}
+
 class HostCampaignDraft {
   const HostCampaignDraft({
     required this.requestId,
     required this.name,
     required this.messageClass,
-    required this.segments,
+    required this.savedAudienceId,
     required this.connectionId,
     required this.templateId,
     required this.templateVariables,
@@ -1511,7 +2292,7 @@ class HostCampaignDraft {
   final String requestId;
   final String name;
   final String messageClass;
-  final Set<HostAudienceSegment> segments;
+  final String savedAudienceId;
   final String connectionId;
   final String templateId;
   final Map<String, String> templateVariables;
@@ -1543,6 +2324,7 @@ class HostCampaign {
   const HostCampaign({
     required this.organizerId,
     required this.campaignId,
+    this.savedAudienceId,
     required this.status,
     required this.revision,
     required this.audienceCounts,
@@ -1559,6 +2341,7 @@ class HostCampaign {
     return HostCampaign(
       organizerId: _requiredString(map, 'organizerId'),
       campaignId: _requiredString(map, 'campaignId'),
+      savedAudienceId: _nullableString(map['savedAudienceId']),
       status: _requiredString(map, 'status'),
       revision: _requiredInt(map, 'revision'),
       audienceCounts: HostCampaignCounts.fromMap(
@@ -1579,6 +2362,7 @@ class HostCampaign {
 
   final String organizerId;
   final String campaignId;
+  final String? savedAudienceId;
   final String status;
   final int revision;
   final HostCampaignCounts audienceCounts;
@@ -1610,6 +2394,8 @@ final class HostCampaignSendSummary extends HostSendSummary {
     required this.campaignId,
     required this.name,
     required this.status,
+    this.savedAudienceId,
+    this.savedAudienceName,
     required this.segments,
     required this.templateId,
     required this.templateName,
@@ -1625,6 +2411,8 @@ final class HostCampaignSendSummary extends HostSendSummary {
         campaignId: _requiredString(map, 'campaignId'),
         name: _requiredString(map, 'name'),
         status: _requiredString(map, 'status'),
+        savedAudienceId: _nullableString(map['savedAudienceId']),
+        savedAudienceName: _nullableString(map['savedAudienceName']),
         segments: _stringList(map['segmentIds'])
             .map(HostAudienceSegment.fromWireValue)
             .whereType<HostAudienceSegment>()
@@ -1647,6 +2435,8 @@ final class HostCampaignSendSummary extends HostSendSummary {
   final String campaignId;
   final String name;
   final String status;
+  final String? savedAudienceId;
+  final String? savedAudienceName;
   final Set<HostAudienceSegment> segments;
   final String templateId;
   final String? templateName;
@@ -1777,6 +2567,178 @@ class HostSendsPage {
   final String? nextCursor;
 }
 
+enum HostManualSendTaskStatus {
+  queued,
+  handoffOpened,
+  hostMarkedSent,
+  skipped,
+  cancelled,
+  superseded,
+  expired,
+}
+
+enum HostManualSendTaskAction { hostMarkedSent, skipped, cancelled }
+
+enum HostManualSendTaskDisposition {
+  keepByHand,
+  managedRouteAvailable,
+  unavailable,
+  taskInactive,
+}
+
+class HostManualSendTask {
+  const HostManualSendTask({
+    required this.organizerId,
+    required this.taskId,
+    required this.contactId,
+    required this.displayName,
+    required this.status,
+    required this.active,
+    required this.revision,
+    required this.phoneE164,
+    required this.prefillText,
+    required this.openCount,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.openedAt,
+    required this.expiresAt,
+  });
+
+  factory HostManualSendTask.fromCallableData(Object? data) =>
+      HostManualSendTask.fromMap(_requiredMap(data, 'manual send task'));
+
+  factory HostManualSendTask.fromMap(Map<Object?, Object?> map) {
+    if (_requiredString(map, 'routeId') != 'personalWhatsappHandoff' ||
+        _requiredString(map, 'deliveryMode') != 'byHand') {
+      throw const FormatException('Manual task had an unsafe route.');
+    }
+    return HostManualSendTask(
+      organizerId: _requiredString(map, 'organizerId'),
+      taskId: _requiredString(map, 'taskId'),
+      contactId: _requiredString(map, 'contactId'),
+      displayName: _requiredString(map, 'displayName'),
+      status: _enumByName(
+        HostManualSendTaskStatus.values,
+        _requiredString(map, 'status'),
+        'manual send task status',
+      ),
+      active: _requiredBool(map, 'active'),
+      revision: _requiredInt(map, 'revision'),
+      phoneE164: _requiredString(map, 'phoneE164'),
+      prefillText: _requiredString(map, 'prefillText'),
+      openCount: _requiredInt(map, 'openCount'),
+      createdAt: _requiredDateTimeFromMillis(map, 'createdAtMillis'),
+      updatedAt: _requiredDateTimeFromMillis(map, 'updatedAtMillis'),
+      openedAt: _dateTimeFromMillis(map['openedAtMillis']),
+      expiresAt: _requiredDateTimeFromMillis(map, 'expiresAtMillis'),
+    );
+  }
+
+  final String organizerId;
+  final String taskId;
+  final String contactId;
+  final String displayName;
+  final HostManualSendTaskStatus status;
+  final bool active;
+  final int revision;
+  final String phoneE164;
+  final String prefillText;
+  final int openCount;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? openedAt;
+  final DateTime expiresAt;
+}
+
+class HostManualSendTaskPage {
+  const HostManualSendTaskPage({
+    required this.organizerId,
+    required this.tasks,
+    required this.nextCursor,
+  });
+
+  factory HostManualSendTaskPage.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'manual send task page');
+    return HostManualSendTaskPage(
+      organizerId: _requiredString(map, 'organizerId'),
+      tasks: _mapList(
+        map['tasks'],
+        'manual send tasks',
+      ).map(HostManualSendTask.fromMap).toList(growable: false),
+      nextCursor: _nullableString(map['nextCursor']),
+    );
+  }
+
+  final String organizerId;
+  final List<HostManualSendTask> tasks;
+  final String? nextCursor;
+}
+
+class HostManualSendTaskReplanResult {
+  const HostManualSendTaskReplanResult({
+    required this.taskId,
+    required this.contactId,
+    required this.disposition,
+    required this.recommendedRouteId,
+    required this.blocker,
+  });
+
+  factory HostManualSendTaskReplanResult.fromMap(Map<Object?, Object?> map) =>
+      HostManualSendTaskReplanResult(
+        taskId: _requiredString(map, 'taskId'),
+        contactId: _requiredString(map, 'contactId'),
+        disposition: _enumByName(
+          HostManualSendTaskDisposition.values,
+          _requiredString(map, 'disposition'),
+          'manual task disposition',
+        ),
+        recommendedRouteId: _nullableString(map['recommendedRouteId']) == null
+            ? null
+            : _enumByName(
+                HostCommunicationRouteId.values,
+                _requiredString(map, 'recommendedRouteId'),
+                'manual task recommended route',
+              ),
+        blocker: _nullableString(map['blocker']) == null
+            ? null
+            : _enumByName(
+                HostCommunicationRouteBlocker.values,
+                _requiredString(map, 'blocker'),
+                'manual task blocker',
+              ),
+      );
+
+  final String taskId;
+  final String contactId;
+  final HostManualSendTaskDisposition disposition;
+  final HostCommunicationRouteId? recommendedRouteId;
+  final HostCommunicationRouteBlocker? blocker;
+}
+
+class HostManualSendTaskReplan {
+  const HostManualSendTaskReplan({
+    required this.organizerId,
+    required this.results,
+    required this.resolvedAt,
+  });
+
+  factory HostManualSendTaskReplan.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'manual send task replan');
+    return HostManualSendTaskReplan(
+      organizerId: _requiredString(map, 'organizerId'),
+      results: _mapList(
+        map['results'],
+        'manual task replan results',
+      ).map(HostManualSendTaskReplanResult.fromMap).toList(growable: false),
+      resolvedAt: _requiredDateTimeFromMillis(map, 'resolvedAtMillis'),
+    );
+  }
+
+  final String organizerId;
+  final List<HostManualSendTaskReplanResult> results;
+  final DateTime resolvedAt;
+}
+
 class HostCrmRepository {
   const HostCrmRepository(this._functions);
 
@@ -1835,6 +2797,20 @@ class HostCrmRepository {
     ).toJson(),
     action: 'load organizer contact detail',
     parse: HostAudienceContactDetail.fromCallableData,
+  );
+
+  Future<HostCommunicationPlan> resolveIndividualCommunicationPlan({
+    required String organizerId,
+    required String contactId,
+  }) => _call(
+    name: 'resolveOrganizerCommunicationPlan',
+    payload: ResolveOrganizerCommunicationPlanCallableRequest(
+      organizerId: organizerId,
+      intent: HostCommunicationIntent.individualConversation.name,
+      target: _HostCommunicationContactTarget(contactId: contactId).toJson(),
+    ).toJson(),
+    action: 'resolve organizer customer communication plan',
+    parse: HostCommunicationPlan.fromCallableData,
   );
 
   Future<HostCreatedCustomer> createContact({
@@ -2137,6 +3113,166 @@ class HostCrmRepository {
     parse: HostMessagingSetup.fromCallableData,
   );
 
+  Future<HostSavedAudiencePage> listSavedAudiences(
+    String organizerId, {
+    String status = 'active',
+    String? cursor,
+    int limit = ReadLimitPolicy.directoryPage,
+  }) => _call(
+    name: 'listOrganizerSavedAudiences',
+    payload: ListOrganizerSavedAudiencesCallableRequest(
+      organizerId: organizerId,
+      status: status,
+      limit: limit > 50 ? 50 : limit,
+      cursor: cursor,
+    ).toJson(),
+    action: 'load organizer saved audiences',
+    parse: HostSavedAudiencePage.fromCallableData,
+  );
+
+  Future<HostSavedAudience> upsertSavedAudience({
+    required String organizerId,
+    required String requestId,
+    required String name,
+    required HostSavedAudienceDefinition definition,
+    String? audienceId,
+    int? expectedRevision,
+  }) => _call(
+    name: 'upsertOrganizerSavedAudience',
+    payload: {
+      'organizerId': organizerId,
+      'audienceId': ?audienceId,
+      'requestId': requestId,
+      'expectedRevision': ?expectedRevision,
+      'scope': 'organizerCrm',
+      'name': name,
+      'definition': definition.toJson(),
+    },
+    action: 'save organizer audience',
+    parse: (value) =>
+        HostSavedAudience.fromMap(_requiredMap(value, 'saved audience')),
+  );
+
+  Future<HostSavedAudiencePreview> previewSavedAudience({
+    required String organizerId,
+    required HostSavedAudience audience,
+    int sampleLimit = 10,
+  }) => _call(
+    name: 'previewOrganizerSavedAudience',
+    payload: PreviewOrganizerSavedAudienceCallableRequest(
+      organizerId: organizerId,
+      audienceId: audience.audienceId,
+      expectedRevision: audience.revision,
+      sampleLimit: sampleLimit,
+    ).toJson(),
+    action: 'preview organizer audience',
+    parse: HostSavedAudiencePreview.fromCallableData,
+  );
+
+  Future<HostSavedAudience> archiveSavedAudience({
+    required String organizerId,
+    required HostSavedAudience audience,
+  }) => _call(
+    name: 'archiveOrganizerSavedAudience',
+    payload: ArchiveOrganizerSavedAudienceCallableRequest(
+      organizerId: organizerId,
+      audienceId: audience.audienceId,
+      expectedRevision: audience.revision,
+    ).toJson(),
+    action: 'archive organizer audience',
+    parse: (value) =>
+        HostSavedAudience.fromMap(_requiredMap(value, 'saved audience')),
+  );
+
+  Future<HostManualSendTask> prepareManualSendTask({
+    required String organizerId,
+    required String contactId,
+    required String requestId,
+    required String prefillText,
+  }) => _call(
+    name: 'prepareOrganizerManualSendTask',
+    payload: {
+      'organizerId': organizerId,
+      'contactId': contactId,
+      'requestId': requestId,
+      'intent': 'individualConversation',
+      'prefillText': prefillText,
+    },
+    action: 'prepare manual WhatsApp handoff',
+    parse: HostManualSendTask.fromCallableData,
+  );
+
+  Future<HostManualSendTaskPage> listManualSendTasks({
+    required String organizerId,
+    bool activeOnly = true,
+    String? cursor,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => _call(
+    name: 'listOrganizerManualSendTasks',
+    payload: ListOrganizerManualSendTasksCallableRequest(
+      organizerId: organizerId,
+      activeOnly: activeOnly,
+      limit: limit > 50 ? 50 : limit,
+      cursor: cursor,
+    ).toJson(),
+    action: 'load manual send tasks',
+    parse: HostManualSendTaskPage.fromCallableData,
+  );
+
+  Future<HostManualSendTask> recordManualHandoffOpened(
+    HostManualSendTask task,
+  ) => _call(
+    name: 'openOrganizerManualSendTask',
+    payload: OpenOrganizerManualSendTaskCallableRequest(
+      organizerId: task.organizerId,
+      taskId: task.taskId,
+      expectedRevision: task.revision,
+    ).toJson(),
+    action: 'record manual handoff open',
+    parse: HostManualSendTask.fromCallableData,
+  );
+
+  Future<HostManualSendTask> validateManualSendTaskLaunch(
+    HostManualSendTask task,
+  ) => _call(
+    name: 'validateOrganizerManualSendTaskLaunch',
+    payload: ValidateOrganizerManualSendTaskLaunchCallableRequest(
+      organizerId: task.organizerId,
+      taskId: task.taskId,
+      expectedRevision: task.revision,
+    ).toJson(),
+    action: 'validate manual handoff launch',
+    parse: HostManualSendTask.fromCallableData,
+  );
+
+  Future<HostManualSendTask> markManualSendTask(
+    HostManualSendTask task,
+    HostManualSendTaskAction action,
+  ) => _call(
+    name: 'markOrganizerManualSendTask',
+    payload: MarkOrganizerManualSendTaskCallableRequest(
+      organizerId: task.organizerId,
+      taskId: task.taskId,
+      expectedRevision: task.revision,
+      action: action.name,
+    ).toJson(),
+    action: 'mark manual send task ${action.name}',
+    parse: HostManualSendTask.fromCallableData,
+  );
+
+  Future<HostManualSendTaskReplan> replanManualSendTasks({
+    required String organizerId,
+    required List<String> taskIds,
+  }) => _call(
+    name: 'replanOrganizerManualSendTasks',
+    payload: ReplanOrganizerManualSendTasksCallableRequest(
+      organizerId: organizerId,
+      taskIds: taskIds,
+    ).toJson(),
+    action: 'recheck manual send task routes',
+    parse: HostManualSendTaskReplan.fromCallableData,
+  );
+
   Future<HostCampaign> upsertCampaign(
     String organizerId,
     HostCampaignDraft draft,
@@ -2149,7 +3285,7 @@ class HostCrmRepository {
       expectedRevision: draft.expectedRevision,
       name: draft.name,
       messageClass: draft.messageClass,
-      segmentIds: draft.segments.map((segment) => segment.wireValue).toList(),
+      savedAudienceId: draft.savedAudienceId,
       connectionId: draft.connectionId,
       templateId: draft.templateId,
       templateVariables: draft.templateVariables,
@@ -2292,12 +3428,36 @@ Future<HostAudienceContactDetail> hostAudienceContactDetail(
     .getContactDetail(organizerId, contactId);
 
 @riverpod
+Future<HostCommunicationPlan> hostCommunicationPlan(
+  Ref ref,
+  String organizerId,
+  String contactId,
+) => ref
+    .read(hostCrmRepositoryProvider)
+    .resolveIndividualCommunicationPlan(
+      organizerId: organizerId,
+      contactId: contactId,
+    );
+
+@riverpod
 Future<HostMessagingSetup> hostMessagingSetup(Ref ref, String organizerId) =>
     ref.read(hostCrmRepositoryProvider).getMessagingSetup(organizerId);
 
 @riverpod
+Future<HostSavedAudiencePage> hostSavedAudiences(Ref ref, String organizerId) =>
+    ref.read(hostCrmRepositoryProvider).listSavedAudiences(organizerId);
+
+@riverpod
 Future<HostSendsPage> hostSends(Ref ref, String organizerId) =>
     ref.read(hostCrmRepositoryProvider).listCampaigns(organizerId);
+
+@riverpod
+Future<HostManualSendTaskPage> hostManualSendTasks(
+  Ref ref,
+  String organizerId,
+) => ref
+    .read(hostCrmRepositoryProvider)
+    .listManualSendTasks(organizerId: organizerId);
 
 @riverpod
 Future<HostWhatsappThreadPage> hostWhatsappThreads(
@@ -2374,6 +3534,15 @@ T _enumByName<T extends Enum>(List<T> values, String name, String label) {
     if (value.name == name) return value;
   }
   throw FormatException('Response had invalid $label.');
+}
+
+HostAudienceSegment _requiredAudienceSegment(
+  Map<Object?, Object?> map,
+  String key,
+) {
+  final segment = HostAudienceSegment.fromWireValue(_requiredString(map, key));
+  if (segment != null) return segment;
+  throw const FormatException('Saved audience had an unknown CRM segment.');
 }
 
 HostCrmChannelReadiness _readiness(Object? value) => switch (value) {

@@ -14,6 +14,7 @@ const schemaOrganizerCampaignCallableResponseSchema = <String, Object?>{
   'required': <Object?>[
     'organizerId',
     'campaignId',
+    'savedAudienceId',
     'status',
     'revision',
     'audienceCounts',
@@ -32,6 +33,14 @@ const schemaOrganizerCampaignCallableResponseSchema = <String, Object?>{
     },
     'campaignId': <String, Object?>{
       'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'savedAudienceId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'minLength': 1,
       'maxLength': 180,
     },
@@ -222,6 +231,8 @@ const schemaOrganizerCampaignCallableResponseSchema = <String, Object?>{
           'senderInactive',
           'templateMissing',
           'templateUnapproved',
+          'savedAudienceMissing',
+          'savedAudienceChanged',
           'noReachableRecipients',
           'audienceCoveragePartial',
           'audienceTooLarge',

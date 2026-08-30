@@ -1,10 +1,15 @@
 import {strict as assert} from "node:assert";
 import {describe, it} from "node:test";
-import {OrganizerFormResponseDocument} from
+import {
+  OrganizerFormAutomationRuleDocument,
+  OrganizerFormDocument,
+  OrganizerFormResponseDocument,
+} from
   "../shared/generated/firestoreAdminTypes";
 import {
   formAutomationEventKind,
   organizerFormCampaignHandoffUnavailableMessage,
+  updateConsequenceProjection,
 } from "./organizerFormAutomations";
 import {organizerFormFollowUpUnavailableMessage} from
   "./organizerFormConversions";
@@ -50,4 +55,86 @@ describe("organizer form automation lifecycle", () => {
       /approved messaging template and recipient permission/
     );
   });
+
+  it("tracks enabled action kinds once per rule", () => {
+    const next = updateConsequenceProjection(
+      projection(),
+      null,
+      rule(true, ["createCrmContact", "createCrmContact", "notifyTeam"])
+    );
+    assert.deepEqual(next?.enabledAutomationActionKinds, [
+      "notifyTeam",
+      "createCrmContact",
+    ]);
+    assert.equal(
+      next?.enabledAutomationActionKindCounts.createCrmContact,
+      1
+    );
+  });
+
+  it("keeps an action visible while another enabled rule still owns it", () => {
+    const current = projection();
+    current.enabledAutomationActionKindCounts.createCrmContact = 2;
+    current.enabledAutomationActionKinds = ["createCrmContact"];
+    const next = updateConsequenceProjection(
+      current,
+      rule(true, ["createCrmContact"]),
+      rule(false, ["createCrmContact"])
+    );
+    assert.equal(
+      next?.enabledAutomationActionKindCounts.createCrmContact,
+      1
+    );
+    assert.deepEqual(next?.enabledAutomationActionKinds, ["createCrmContact"]);
+  });
+
+  it("does not pretend a legacy projection is exact", () => {
+    const current = {...projection(), coverage: "identityOnly" as const};
+    assert.equal(
+      updateConsequenceProjection(
+        current,
+        null,
+        rule(true, ["notifyTeam"])
+      ),
+      current
+    );
+  });
 });
+
+function projection(): NonNullable<
+  OrganizerFormDocument["consequenceProjection"]
+  > {
+  return {
+    version: 1,
+    coverage: "exact",
+    identityPolicy: "emailVerified",
+    enabledAutomationActionKinds: [],
+    enabledAutomationActionKindCounts: {
+      notifyTeam: 0,
+      addOrganizerTag: 0,
+      createCrmContact: 0,
+      addApplicationQueue: 0,
+      proposeEventAttendee: 0,
+      signedWebhook: 0,
+      campaignHandoff: 0,
+    },
+  };
+}
+
+function rule(
+  enabled: boolean,
+  kinds: OrganizerFormAutomationRuleDocument["actions"][number]["kind"][]
+): OrganizerFormAutomationRuleDocument {
+  return {
+    enabled,
+    actions: kinds.map((kind, index) => ({
+      actionId: `action-${index}`,
+      kind,
+      tagId: null,
+      eventId: null,
+      webhookUrl: null,
+      webhookSecret: null,
+      channel: null,
+    })),
+  } as OrganizerFormAutomationRuleDocument;
+}

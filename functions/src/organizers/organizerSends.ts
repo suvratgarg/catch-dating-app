@@ -12,6 +12,7 @@ import {
   OrganizerMessageTemplateDocument,
   OrganizerPostDeliveryOperationDocument,
   OrganizerPostDocument,
+  OrganizerSavedAudienceDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {ListOrganizerCampaignsCallablePayload} from
   "../shared/generated/listOrganizerCampaignsCallablePayload";
@@ -109,6 +110,9 @@ export async function listOrganizerCampaignsHandler(
     data: snapshot.data() as OrganizerCampaignDocument,
   })).filter((row) => row.data.organizerId === data.organizerId);
   const templateIds = [...new Set(campaigns.map((row) => row.data.templateId))];
+  const savedAudienceIds = [...new Set(campaigns.flatMap((row) =>
+    row.data.savedAudienceId ? [row.data.savedAudienceId] : [],
+  ))];
   const templateSnapshots = templateIds.length === 0 ? [] : await db.getAll(
     ...templateIds.map((templateId) => db
       .collection("organizerMessageTemplates").doc(templateId)),
@@ -118,6 +122,15 @@ export async function listOrganizerCampaignsHandler(
     .map((snapshot) => [
       snapshot.id,
       (snapshot.data() as OrganizerMessageTemplateDocument).name,
+    ]));
+  const savedAudienceSnapshots = savedAudienceIds.length === 0 ? [] :
+    await db.getAll(...savedAudienceIds.map((audienceId) => db
+      .collection("organizerSavedAudiences").doc(audienceId)));
+  const savedAudienceNames = new Map(savedAudienceSnapshots
+    .filter((snapshot) => snapshot.exists)
+    .map((snapshot) => [
+      snapshot.id,
+      (snapshot.data() as OrganizerSavedAudienceDocument).name,
     ]));
   const followerOperationSnapshots = followerUpdateSnapshot.docs.length === 0 ?
     [] : await db.getAll(...followerUpdateSnapshot.docs.map((snapshot) =>
@@ -135,6 +148,9 @@ export async function listOrganizerCampaignsHandler(
       campaignId: id,
       name: campaign.name,
       status: campaign.status,
+      savedAudienceId: campaign.savedAudienceId ?? null,
+      savedAudienceName: campaign.savedAudienceId ?
+        savedAudienceNames.get(campaign.savedAudienceId) ?? null : null,
       segmentIds: campaign.segmentIds,
       templateId: campaign.templateId,
       templateName: templateNames.get(campaign.templateId) ?? null,

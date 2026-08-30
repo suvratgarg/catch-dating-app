@@ -12,7 +12,11 @@ import {
   OrganizerMessagingWebhookEventDocument,
   OrganizerSenderConnectionDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {organizerCommunicationPreferenceId} from
+import {
+  inboundStopPermissionReceipt,
+  organizerCommunicationPreferenceId,
+  unknownOrganizerCommunicationChannel,
+} from
   "../shared/organizerCommunicationPreferences";
 import {
   classifyMetaError,
@@ -370,7 +374,13 @@ async function processInbound(
       updatedAt: now,
     }, {merge: false});
     if (event.isStop && contact.linkedUid) {
-      await optOutPreference(db, event.organizerId!, contact.linkedUid, now);
+      await optOutPreference({
+        db,
+        organizerId: event.organizerId!,
+        uid: contact.linkedUid,
+        providerEventId: event.providerEventId,
+        now,
+      });
     }
   }
   if (uniqueContactIds.length === 1 && event.inboundBody &&
@@ -414,37 +424,50 @@ async function applyInboundRecipientState(
   });
 }
 
-async function optOutPreference(
-  db: FirebaseFirestore.Firestore,
-  organizerId: string,
-  uid: string,
-  now: FirebaseFirestore.Timestamp
-): Promise<void> {
-  const ref = db.collection("organizerCommunicationPreferences")
-    .doc(organizerCommunicationPreferenceId(organizerId, uid));
-  await db.runTransaction(async (tx) => {
+async function optOutPreference(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  uid: string;
+  providerEventId: string;
+  now: FirebaseFirestore.Timestamp;
+}): Promise<void> {
+  const ref = params.db.collection("organizerCommunicationPreferences")
+    .doc(organizerCommunicationPreferenceId(params.organizerId, params.uid));
+  await params.db.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     const existing = snap.data() as
       OrganizerCommunicationPreferenceDocument | undefined;
+    const receipt = inboundStopPermissionReceipt({
+      organizerId: params.organizerId,
+      uid: params.uid,
+      providerEventId: params.providerEventId,
+      supersedesReceiptId: existing?.whatsapp.currentReceiptId ?? null,
+      now: params.now,
+    });
+    const receiptRef = params.db
+      .collection("organizerCommunicationPermissionReceipts")
+      .doc(receipt.id);
+    const receiptSnap = await tx.get(receiptRef);
+    if (receiptSnap.exists &&
+        existing?.whatsapp.currentReceiptId !== receipt.id) {
+      return;
+    }
+    if (!receiptSnap.exists) tx.create(receiptRef, receipt.document);
     tx.set(ref, {
-      organizerId,
-      uid,
+      organizerId: params.organizerId,
+      uid: params.uid,
       whatsapp: {
         status: "optedOut",
+        evidenceStatus: "complete",
+        currentReceiptId: receipt.id,
         termsVersion: existing?.whatsapp.termsVersion ?? null,
         source: "inboundStop",
         sourceEventId: null,
-        updatedAt: now,
+        updatedAt: params.now,
       },
-      sms: existing?.sms ?? {
-        status: "unknown",
-        termsVersion: null,
-        source: null,
-        sourceEventId: null,
-        updatedAt: null,
-      },
-      createdAt: existing?.createdAt ?? now,
-      updatedAt: now,
+      sms: existing?.sms ?? unknownOrganizerCommunicationChannel(),
+      createdAt: existing?.createdAt ?? params.now,
+      updatedAt: params.now,
     }, {merge: false});
   });
 }

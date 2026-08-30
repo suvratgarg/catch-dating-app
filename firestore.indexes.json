@@ -356,6 +356,16 @@
       ]
     },
     {
+      "collectionGroup": "organizerContacts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "deletedAt", "mode": "ASCENDING"},
+        {"fieldPath": "hiddenAt", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerContactTraits",
       "queryScope": "COLLECTION",
       "fields": [
@@ -403,6 +413,16 @@
       ]
     },
     {
+      "collectionGroup": "organizerContactOrigins",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "currentContactId", "mode": "ASCENDING"},
+        {"fieldPath": "observedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerWhatsappThreads",
       "queryScope": "COLLECTION",
       "fields": [
@@ -419,6 +439,16 @@
         {"fieldPath": "threadId", "mode": "ASCENDING"},
         {"fieldPath": "occurredAt", "mode": "ASCENDING"},
         {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerWhatsappMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "contactId", "mode": "ASCENDING"},
+        {"fieldPath": "occurredAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
       ]
     },
     {
@@ -563,6 +593,46 @@
       "fields": [
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "scheduledAt", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerSavedAudiences",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerManualSendTasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "active", "mode": "ASCENDING"},
+        {"fieldPath": "expiresAt", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerManualSendTasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerManualSendTasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "contactId", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
       ]
     },
     {
@@ -1032,6 +1102,17 @@
       "collectionGroup": "matches",
       "queryScope": "COLLECTION",
       "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "conversationType", "mode": "ASCENDING"},
+        {"fieldPath": "participantIds", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "lastMessageAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "matches",
+      "queryScope": "COLLECTION",
+      "fields": [
         {"fieldPath": "user1Id", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
@@ -1327,6 +1408,16 @@
     },
     {
       "collectionGroup": "organizerCampaignWebhookReceipts",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {"order": "ASCENDING", "queryScope": "COLLECTION"},
+        {"order": "DESCENDING", "queryScope": "COLLECTION"},
+        {"arrayConfig": "CONTAINS", "queryScope": "COLLECTION"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerManualSendTasks",
       "fieldPath": "expiresAt",
       "ttl": true,
       "indexes": [

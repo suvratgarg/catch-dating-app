@@ -72,6 +72,20 @@ const defaultDeps: AutomationDeps = {
 };
 
 const maxAutomationAttempts = 5;
+type FormConsequenceProjection = NonNullable<
+  OrganizerFormDocument["consequenceProjection"]
+>;
+type AutomationActionKind =
+  OrganizerFormAutomationRuleDocument["actions"][number]["kind"];
+const automationActionKinds: readonly AutomationActionKind[] = [
+  "notifyTeam",
+  "addOrganizerTag",
+  "createCrmContact",
+  "addApplicationQueue",
+  "proposeEventAttendee",
+  "signedWebhook",
+  "campaignHandoff",
+];
 
 interface RunCursor {
   version: 1;
@@ -98,7 +112,8 @@ export async function createOrganizerFormAutomationHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "createOrganizerFormAutomation");
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  const formSnap = await db.collection("organizerForms").doc(data.formId).get();
+  const formRef = db.collection("organizerForms").doc(data.formId);
+  const formSnap = await formRef.get();
   if (!formSnap.exists) throw new HttpsError("not-found", "Form not found.");
   const form = requireDoc<OrganizerFormDocument>(
     formSnap,
@@ -130,6 +145,14 @@ export async function createOrganizerFormAutomationHandler(
   const ruleRef = db.collection("organizerFormAutomationRules").doc(ruleId);
   const rule = await db.runTransaction(async (tx) => {
     const snapshot = await tx.get(ruleRef);
+    const transactionFormSnap = await tx.get(formRef);
+    const transactionForm = requireDoc<OrganizerFormDocument>(
+      transactionFormSnap,
+      "OrganizerFormDocument"
+    );
+    if (transactionForm.organizerId !== data.organizerId) {
+      throw new HttpsError("not-found", "Form not found.");
+    }
     const existing = snapshot.exists ?
       requireDoc<OrganizerFormAutomationRuleDocument>(
         snapshot,
@@ -168,6 +191,18 @@ export async function createOrganizerFormAutomationHandler(
       updatedAt: now,
     };
     tx.set(ruleRef, updated);
+    const consequenceProjection = updateConsequenceProjection(
+      transactionForm.consequenceProjection,
+      existing,
+      updated
+    );
+    if (consequenceProjection) {
+      tx.set(formRef, {
+        ...transactionForm,
+        consequenceProjection,
+        updatedAt: now,
+      });
+    }
     return updated;
   });
   return ruleProjection(ruleId, rule);
@@ -205,17 +240,71 @@ export async function setOrganizerFormAutomationStateHandler(
       throw new HttpsError("not-found", "Automation not found.");
     }
     if (current.revision !== data.expectedRevision) throw revisionConflict();
+    const formRef = db.collection("organizerForms").doc(current.formId);
+    const formSnap = await tx.get(formRef);
+    const form = requireDoc<OrganizerFormDocument>(
+      formSnap,
+      "OrganizerFormDocument"
+    );
+    if (form.organizerId !== data.organizerId) {
+      throw new HttpsError("not-found", "Form not found.");
+    }
+    const now = deps.timestamp();
     const updated: OrganizerFormAutomationRuleDocument = {
       ...current,
       enabled: data.enabled,
       revision: current.revision + 1,
       updatedByUid: actorUid,
-      updatedAt: deps.timestamp(),
+      updatedAt: now,
     };
     tx.set(ref, updated);
+    const consequenceProjection = updateConsequenceProjection(
+      form.consequenceProjection,
+      current,
+      updated
+    );
+    if (consequenceProjection) {
+      tx.set(formRef, {...form, consequenceProjection, updatedAt: now});
+    }
     return updated;
   });
   return ruleProjection(data.ruleId, rule);
+}
+
+export function updateConsequenceProjection(
+  current: OrganizerFormDocument["consequenceProjection"],
+  previousRule: OrganizerFormAutomationRuleDocument | null,
+  nextRule: OrganizerFormAutomationRuleDocument
+): FormConsequenceProjection | undefined {
+  if (!current || current.coverage !== "exact") return current;
+  const previousKinds = enabledActionKinds(previousRule);
+  const nextKinds = enabledActionKinds(nextRule);
+  const counts = {...current.enabledAutomationActionKindCounts};
+  for (const kind of automationActionKinds) {
+    const delta = Number(nextKinds.has(kind)) - Number(previousKinds.has(kind));
+    const nextCount = counts[kind] + delta;
+    if (nextCount < 0) {
+      throw new HttpsError(
+        "internal",
+        "Form consequence projection is inconsistent."
+      );
+    }
+    counts[kind] = nextCount;
+  }
+  return {
+    ...current,
+    enabledAutomationActionKinds: automationActionKinds.filter(
+      (kind) => counts[kind] > 0
+    ),
+    enabledAutomationActionKindCounts: counts,
+  };
+}
+
+function enabledActionKinds(
+  rule: OrganizerFormAutomationRuleDocument | null
+): Set<AutomationActionKind> {
+  if (!rule?.enabled) return new Set();
+  return new Set(rule.actions.map((action) => action.kind));
 }
 
 /** Lists bounded rule definitions and execution history. */

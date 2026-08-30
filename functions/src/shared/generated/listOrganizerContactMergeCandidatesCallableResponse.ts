@@ -27,7 +27,8 @@ export interface ListOrganizerContactMergeCandidatesCallableResponse {
         | "hostImport"
         | "hostManual"
         | "webOtp"
-        | "providerSync";
+        | "providerSync"
+        | "hostForm";
       revision: number;
     }[];
     /**
@@ -43,7 +44,7 @@ export interface ListOrganizerContactMergeCandidatesCallableResponse {
     confidence: "verified" | "proposed";
     /**
      * @minItems 1
-     * @maxItems 5
+     * @maxItems 6
      */
     sourceKinds: (
       | "catchBooking"
@@ -51,6 +52,7 @@ export interface ListOrganizerContactMergeCandidatesCallableResponse {
       | "hostManual"
       | "webOtp"
       | "providerSync"
+      | "hostForm"
     )[];
     /**
      * @maxItems 20
@@ -82,7 +84,8 @@ export interface ListOrganizerContactMergeCandidatesCallableResponse {
         | "hostImport"
         | "hostManual"
         | "webOtp"
-        | "providerSync";
+        | "providerSync"
+        | "hostForm";
       revision: number;
     }[];
     /**
@@ -98,7 +101,7 @@ export interface ListOrganizerContactMergeCandidatesCallableResponse {
     confidence: "verified" | "proposed";
     /**
      * @minItems 1
-     * @maxItems 5
+     * @maxItems 6
      */
     sourceKinds: (
       | "catchBooking"
@@ -106,6 +109,7 @@ export interface ListOrganizerContactMergeCandidatesCallableResponse {
       | "hostManual"
       | "webOtp"
       | "providerSync"
+      | "hostForm"
     )[];
     /**
      * @maxItems 20

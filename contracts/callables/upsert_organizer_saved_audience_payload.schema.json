@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_organizer_saved_audience_payload.schema.json",
+  "title": "UpsertOrganizerSavedAudienceCallablePayload",
+  "description": "Creates or revision-updates one reusable Customers-owned CRM audience.",
+  "x-callable-aliases": ["upsertOrganizerSavedAudience"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "requestId", "scope", "name", "definition"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "audienceId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "requestId": {"type": "string", "minLength": 8, "maxLength": 120},
+    "expectedRevision": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
+    "scope": {"const": "organizerCrm"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 80},
+    "definition": {"$ref": "../firestore/organizer_saved_audiences.schema.json#/definitions/definition"}
+  }
+}

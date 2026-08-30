@@ -83,6 +83,15 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         whatsapp: {status: "optedIn"},
         sms: {status: "unknown"},
       },
+      "organizerCommunicationPermissionReceipts/receipt-1": {
+        organizerId: "club-1",
+        uid: "runner-1",
+        channel: "whatsapp",
+      },
+      "organizerContactOrigins/origin-1": {
+        organizerId: "club-1",
+        actorUid: "runner-1",
+      },
       "onboarding_drafts/runner-1": {
         firstName: "Asha",
         phoneNumber: "9876543210",
@@ -327,6 +336,17 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.ok(
     harness.deletedPublicDocs.includes(
       "organizerCommunicationPreferences/club-1_runner-1"
+    )
+  );
+  assert.ok(
+    harness.deletedPublicDocs.includes(
+      "organizerCommunicationPermissionReceipts/receipt-1"
+    )
+  );
+  assert.ok(
+    harness.updateWrites.some((write) =>
+      write.path === "organizerContactOrigins/origin-1" &&
+      write.data.actorUid === null
     )
   );
   assert.ok(

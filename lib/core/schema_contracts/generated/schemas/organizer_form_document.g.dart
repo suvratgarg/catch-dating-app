@@ -139,6 +139,117 @@ const schemaOrganizerFormDocumentSchema = <String, Object?>{
       'minimum': 0,
       'maximum': 1000000000,
     },
+    'consequenceProjection': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'version',
+        'coverage',
+        'identityPolicy',
+        'enabledAutomationActionKinds',
+        'enabledAutomationActionKindCounts',
+      ],
+      'properties': <String, Object?>{
+        'version': <String, Object?>{
+          'type': 'integer',
+          'enum': <Object?>[
+            1,
+          ],
+        },
+        'coverage': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'identityOnly',
+            'unavailable',
+          ],
+        },
+        'identityPolicy': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'anonymous',
+                'emailVerified',
+                'phoneVerified',
+                'emailOrPhoneVerified',
+                'catchAccount',
+              ],
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'enabledAutomationActionKinds': <String, Object?>{
+          'type': 'array',
+          'maxItems': 7,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'notifyTeam',
+              'addOrganizerTag',
+              'createCrmContact',
+              'addApplicationQueue',
+              'proposeEventAttendee',
+              'signedWebhook',
+              'campaignHandoff',
+            ],
+          },
+        },
+        'enabledAutomationActionKindCounts': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'notifyTeam',
+            'addOrganizerTag',
+            'createCrmContact',
+            'addApplicationQueue',
+            'proposeEventAttendee',
+            'signedWebhook',
+            'campaignHandoff',
+          ],
+          'properties': <String, Object?>{
+            'notifyTeam': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'addOrganizerTag': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'createCrmContact': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'addApplicationQueue': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'proposeEventAttendee': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'signedWebhook': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+            'campaignHandoff': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+          },
+        },
+      },
+    },
     'createdAt': <String, Object?>{
       'type': 'object',
       'description': 'Serialized Firestore Timestamp fixture shape.',
