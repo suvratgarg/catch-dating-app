@@ -1,0 +1,1 @@
+enum AuthPagePresentation { standalone, hostInline }

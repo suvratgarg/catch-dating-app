@@ -208,11 +208,29 @@ abstract class AppLocalizations {
   /// **'We\'\'ll send you a one-time code to verify.'**
   String get authPhoneSubtitle;
 
+  /// Heading on the Catch Host phone-number sign-in surface.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with your phone'**
+  String get authHostPhoneTitle;
+
+  /// Explanation below the Catch Host phone sign-in heading.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'\'ll send a one-time code to verify your account.'**
+  String get authHostPhoneSubtitle;
+
   /// Label for the sign-in phone number field.
   ///
   /// In en, this message translates to:
   /// **'Mobile number'**
   String get authPhoneFieldLabel;
+
+  /// Placeholder for an empty phone number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your mobile number'**
+  String get authPhoneFieldPlaceholder;
 
   /// Search hint in the country-code picker.
   ///
@@ -237,6 +255,45 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter the code'**
   String get authOtpTitle;
+
+  /// Visible button label for returning to phone entry from Catch Host OTP entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit number'**
+  String get authHostEditNumberAction;
+
+  /// Disabled Catch Host resend button label during cooldown. Seconds are already zero-padded.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code in {minutes}:{seconds}'**
+  String authHostResendCountdownAction({
+    required int minutes,
+    required String seconds,
+  });
+
+  /// Catch Host action that requests another verification code.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get authHostResendCodeAction;
+
+  /// Catch Host resend action label while another code is being sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending code...'**
+  String get authHostSendingCodeAction;
+
+  /// Inline Catch Host status while a complete OTP is being verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying...'**
+  String get authHostVerifyingStatus;
+
+  /// Supporting reassurance shown while Catch Host verifies an OTP.
+  ///
+  /// In en, this message translates to:
+  /// **'This may take a few seconds.'**
+  String get authHostVerificationPendingHint;
 
   /// Explains which phone number received the one-time code.
   ///

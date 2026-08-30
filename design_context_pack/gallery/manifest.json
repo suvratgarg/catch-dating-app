@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 68,
-    "captures": 633,
+    "captures": 636,
     "statusCounts": {
       "excluded": 2,
       "captured": 44,
@@ -358,6 +358,23 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "auth_phone_valid",
+      "routes": [
+        "authScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/auth_phone_valid.png",
+        "dark": "dark/auth_phone_valid.png"
+      },
+      "whatItIs": "Auth Phone Valid",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "auth_otp_entry",
       "routes": [
         "authScreen"
@@ -372,6 +389,40 @@
         "dark": "dark/auth_otp_entry.png"
       },
       "whatItIs": "Auth Otp Entry",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "auth_otp_partial",
+      "routes": [
+        "authScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/auth_otp_partial.png",
+        "dark": "dark/auth_otp_partial.png"
+      },
+      "whatItIs": "Auth Otp Partial",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "auth_resend_ready",
+      "routes": [
+        "authScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/auth_resend_ready.png",
+        "dark": "dark/auth_resend_ready.png"
+      },
+      "whatItIs": "Auth Resend Ready",
       "keepChangeNotes": ""
     },
     {
