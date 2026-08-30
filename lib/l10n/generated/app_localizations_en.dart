@@ -13896,7 +13896,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostCustomersOpenMessaging => 'Open messaging';
+  String get hostCustomersSetUpWhatsappBusiness => 'Set up WhatsApp Business';
 
   @override
   String get hostCustomersFilterSheetTitle => 'Filter customers';

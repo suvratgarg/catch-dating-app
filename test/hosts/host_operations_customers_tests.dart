@@ -823,11 +823,14 @@ void _registerHostOperationsCustomersTests() {
     expect(find.ancestor(of: activeView, matching: summary), findsOneWidget);
     expect(find.text('All · 0 people'), findsOneWidget);
     expect(find.text('Message these 0'), findsNothing);
-    final messagingAction = tester.widget<CatchButton>(
+    expect(
       find.byKey(const ValueKey('host-customers-messaging-action')),
+      findsNothing,
     );
-    expect(messagingAction.label, 'Open messaging');
-    expect(messagingAction.onPressed, isNotNull);
+    expect(
+      find.byKey(const ValueKey('host-customers-sender-setup-action')),
+      findsNothing,
+    );
 
     final controls = find.byType(HostCustomerDirectoryControls);
     expect(
@@ -912,7 +915,7 @@ void _registerHostOperationsCustomersTests() {
     expect(requests.last.sort, HostCustomerSort.mostAttended);
   });
 
-  testWidgets('all customers opens Messaging without claiming an audience', (
+  testWidgets('sender recovery opens dedicated WhatsApp Business setup', (
     tester,
   ) async {
     final club = buildClub(id: 'messaging-club', ownerUserId: _hostUid);
@@ -920,20 +923,43 @@ void _registerHostOperationsCustomersTests() {
       tester,
       const HostCustomersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostClubOverrides(
+          owned: [club],
+          messagingSetupByOrganizer: {
+            club.id: _hostMessagingSetup(
+              organizerId: club.id,
+              connectionStatus: 'pending',
+            ),
+          },
+        ),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             [],
-            _emptyCustomerDirectoryState(),
+            _customerDirectoryState(),
           ),
         ),
       ],
     );
 
-    await tester.tap(find.text('Open messaging'));
+    expect(find.text('All · 1 person'), findsOneWidget);
+    expect(find.text('Open messaging'), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('host-customers-filters')));
+    await pumpFeatureUi(tester);
+    final atRiskFilter = find.byKey(
+      const ValueKey('host-customer-filter-atRisk'),
+    );
+    await tester.ensureVisible(atRiskFilter);
+    await pumpFeatureUi(tester);
+    await tester.tap(atRiskFilter);
     await pumpFeatureUi(tester);
 
-    expect(find.text('Messaging campaigns null'), findsOneWidget);
+    expect(find.text('Sender verification is incomplete'), findsOneWidget);
+    expect(find.text('Set up WhatsApp Business'), findsOneWidget);
+    await tester.tap(find.text('Set up WhatsApp Business'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Messaging setup messaging-club'), findsOneWidget);
   });
 
   testWidgets('customer search shows clear only while input is non-empty', (

@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.18.1
-updated: 2026-08-30
+version: 1.18.2
+updated: 2026-08-31
 owner: app_architecture
 status: active
 ---
@@ -2107,6 +2107,13 @@ Rules:
   own event-scoped audiences such as Booked and Prospective. Messaging consumes
   either a saved audience id or an event-scoped audience reference and must not
   grow a second audience-builder or reinterpret CRM predicates locally.
+- Customers may hand a scoped, exact computed segment or organizer tag to
+  Messaging only after persisting it as a saved audience and carrying that
+  audience id into compose. An unscoped, searched, partial, empty, or otherwise
+  blocked customer view never gets a generic Messaging shortcut. When an
+  eligible view is blocked by organizer sender readiness, its recovery action
+  opens the dedicated WhatsApp Business setup route; environment/provider
+  unavailability remains explanatory and non-actionable.
 - CRM categories are server facts. Flutter may label fixed segment ids but must
   not infer “valuable customer” from ticket price, private feedback, gender,
   compatibility, wingman, dating or safety data.

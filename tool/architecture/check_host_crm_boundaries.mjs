@@ -100,7 +100,7 @@ export function scanHostCrmBoundaries({root = fromRepo()} = {}) {
   findings.push(...scanAudienceWorkspacePresentation(root));
   return {
     checkedFiles: presentationFiles.length + backendFiles.length,
-    enforcedBoundaries: 12,
+    enforcedBoundaries: 13,
     findings,
   };
 }
@@ -397,6 +397,53 @@ export function audienceWorkspacePresentationFindings({
   return findings;
 }
 
+export function customerMessagingHandoffFindings({
+  customersPath,
+  customersSource,
+}) {
+  const findings = [];
+  for (const forbidden of [
+    "onOpenMessaging",
+    "hostCustomersOpenMessaging",
+  ]) {
+    const index = customersSource.indexOf(forbidden);
+    if (index >= 0) findings.push(finding(
+      customersPath,
+      customersSource,
+      index,
+      "Customers must not expose a generic Messaging handoff; the Host shell already owns that destination."
+    ));
+  }
+
+  const routePattern = /context\.(?:goNamed|pushNamed)\(\s*Routes\.hostInboxScreen\.name,[\s\S]{0,700}?\n\s*\);/gu;
+  for (const match of customersSource.matchAll(routePattern)) {
+    if (match[0].includes("HostMessagingWorkspace.campaigns.name") &&
+        (!match[0].includes("'compose': '1'") ||
+         !match[0].includes("'audienceId': audience.audienceId"))) {
+      findings.push(finding(
+        customersPath,
+        customersSource,
+        match.index,
+        "Customers may open Messaging compose only with a persisted saved-audience id."
+      ));
+    }
+  }
+
+  for (const anchor of [
+    "onReviewSenderSetup:",
+    "Routes.hostOrganizerMessagingScreen.name",
+    "'compose': '1'",
+    "'audienceId': audience.audienceId",
+  ]) {
+    if (!customersSource.includes(anchor)) findings.push({
+      path: customersPath,
+      line: 1,
+      reason: `Customers messaging handoff contract is missing: ${anchor}`,
+    });
+  }
+  return findings;
+}
+
 function shellBranchSource(source, navigatorAnchor) {
   const start = source.indexOf(navigatorAnchor);
   if (start < 0) return "";
@@ -470,16 +517,23 @@ function scanAudienceWorkspacePresentation(root) {
   ];
   const missing = paths.filter((item) => !fs.existsSync(path.join(root, item)));
   if (missing.length > 0) return missing.map(missingFinding);
-  return audienceWorkspacePresentationFindings({
-    customersPath,
-    customersSource: fs.readFileSync(path.join(root, customersPath), "utf8"),
-    workspacePath,
-    workspaceSource: fs.readFileSync(path.join(root, workspacePath), "utf8"),
-    editorSheetsPath,
-    editorSheetsSource: fs.readFileSync(path.join(root, editorSheetsPath), "utf8"),
-    routeContractPath,
-    routeContractSource: fs.readFileSync(path.join(root, routeContractPath), "utf8"),
-  });
+  const customersSource = fs.readFileSync(path.join(root, customersPath), "utf8");
+  return [
+    ...audienceWorkspacePresentationFindings({
+      customersPath,
+      customersSource,
+      workspacePath,
+      workspaceSource: fs.readFileSync(path.join(root, workspacePath), "utf8"),
+      editorSheetsPath,
+      editorSheetsSource: fs.readFileSync(path.join(root, editorSheetsPath), "utf8"),
+      routeContractPath,
+      routeContractSource: fs.readFileSync(path.join(root, routeContractPath), "utf8"),
+    }),
+    ...customerMessagingHandoffFindings({
+      customersPath,
+      customersSource,
+    }),
+  ];
 }
 
 function scanFormProvenanceContract(root) {

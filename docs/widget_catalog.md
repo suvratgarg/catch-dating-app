@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 3.7.7
-updated: 2026-08-29
+version: 3.7.8
+updated: 2026-08-31
 owner: recursive_audit_loop
 status: active
 ---
@@ -1095,6 +1095,7 @@ Widgetbook callers.
 | Widget | File | Purpose |
 |---|---|---|
 | `HostCustomersScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Canonical Host CRM tab with People and Audiences peer workspaces. People follows the shell-selected organizer and owns summary, Filters/Sort, reviewed segments, search, server-backed ordering, export, manual add, cursor pagination, duplicate review, and customer detail routing. Audiences owns reusable group discovery and authoring. The top-bar Add customer action is People-only; audience creation has one explicit in-workspace action. Direct “Message these” actions require an exact persistable view, while Messaging owns sender and send operations. |
+| `HostCustomerFilterSummary` | `lib/hosts/presentation/customers/host_customers_directory.dart` | Flat active-view summary nested under the CRM facts. Only a scoped exact segment or organizer tag can expose **Message these N**, and that action persists a saved audience before compose. Blocked views show their reason without a generic Messaging shortcut; an actionable inactive sender alone exposes **Set up WhatsApp Business** and opens the dedicated setup route. |
 | `HostSavedAudiencesWorkspace` | `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart` | First-class Customers/Audiences directory. Loads the organizer's complete bounded saved-audience set, searches names locally, and renders top-level entities as flat `CatchField.nav` rows in one `CatchSection.divided`. It exposes exactly one New audience action and shows stored exact-preview count plus server-derived reach buckets without becoming a send composer. |
 | `HostSavedAudienceEditorScreen` | `lib/hosts/presentation/customers/host_saved_audience_editor.dart` | Full-page create/detail/edit route for a versioned saved-audience definition. Supports the complete closed predicate vocabulary, exact preview refresh, optimistic update revisions, and archive confirmation. Definition authoring remains in Customers; the screen never owns message content, channel selection, or dispatch. |
 | `HostFormsScreen` | `lib/hosts/presentation/forms/host_forms_screen.dart` | Canonical direct Host Forms destination. Uses `CatchTabbedScreenScaffold` for pinned Forms / Responses peer tabs, one view-aware expanding top-bar search, independent tab scroll state, Forms-only creation, flat divided form rows, and scalar lifecycle/response option groups without moving Forms into Organizer or representing peer views as filter chips. |

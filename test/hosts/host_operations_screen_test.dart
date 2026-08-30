@@ -18,7 +18,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -209,6 +208,12 @@ Future<void> _pumpHostScreen(
           'Messaging ${state.uri.queryParameters['workspace']} '
           '${state.uri.queryParameters['segment']}',
         ),
+      ),
+      GoRoute(
+        path: Routes.hostOrganizerMessagingScreen.path,
+        name: Routes.hostOrganizerMessagingScreen.name,
+        builder: (_, state) =>
+            Text('Messaging setup ${state.pathParameters['clubId']}'),
       ),
       GoRoute(
         path: Routes.hostClubDetailScreen.path,

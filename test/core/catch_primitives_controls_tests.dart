@@ -701,6 +701,53 @@ void _registerCatchPrimitivesControlsTests() {
     expect(find.text('Light'), findsOneWidget);
   });
 
+  testWidgets('resting outlined controls share one semantic border', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CatchButton(
+              key: const ValueKey('outlined-text-control'),
+              label: 'Filters',
+              variant: CatchButtonVariant.secondary,
+              onPressed: () {},
+            ),
+            CatchIconButton.icon(
+              key: const ValueKey('outlined-icon-control'),
+              icon: CatchIcons.search,
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final buttonDecoration = tester
+        .widgetList<DecoratedBox>(
+          find.descendant(
+            of: find.byKey(const ValueKey('outlined-text-control')),
+            matching: find.byType(DecoratedBox),
+          ),
+        )
+        .map((box) => box.decoration)
+        .whereType<BoxDecoration>()
+        .singleWhere((decoration) => decoration.border != null);
+    final iconSurface = tester.widget<CatchSurface>(
+      find.descendant(
+        of: find.byKey(const ValueKey('outlined-icon-control')),
+        matching: find.byType(CatchSurface),
+      ),
+    );
+    final buttonBorder = (buttonDecoration.border! as Border).top;
+
+    expect(buttonBorder.color, iconSurface.borderSpec?.color);
+    expect(buttonBorder.width, iconSurface.borderSpec?.width);
+    expect(iconSurface.borderSpec?.role, CatchBorderRole.control);
+  });
+
   testWidgets('CatchStepProgress renders count and full-width segments', (
     tester,
   ) async {

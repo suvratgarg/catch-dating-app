@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-30",
+  "updated": "2026-08-31",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -5334,7 +5334,7 @@
                 "test/hosts/host_customer_filter_summary_test.dart",
                 "test/hosts/host_crm_contact_memory_test.dart"
               ],
-              "notes": "Your tags is a separately rendered organizer-owned filter namespace and never enables the computed-segment campaign bridge."
+              "notes": "Your tags is a separately rendered organizer-owned filter namespace; an exact selected tag result may be persisted as a Customers-owned saved audience without being conflated with computed segments."
             },
             {
               "id": "customer_campaign_bridge_ready",
@@ -5346,7 +5346,7 @@
               "id": "customer_campaign_bridge_blocked",
               "kind": "permission",
               "status": "tested",
-              "notes": "The selected customer view is not campaign-eligible; the blocker remains visible, Message these is not rendered, and an enabled Open messaging action opens the workspace without claiming that the displayed customers form a sendable audience."
+              "notes": "The blocker remains visible without a generic Messaging shortcut. Only an otherwise eligible audience blocked by organizer sender readiness exposes the dedicated WhatsApp Business setup recovery action; unscoped, searched, partial, empty, provider-unavailable, loading, and failed-readiness states expose no misleading send action."
             },
             {
               "id": "customer_saved_audience_manage",

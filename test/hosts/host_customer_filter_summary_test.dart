@@ -31,7 +31,7 @@ void main() {
           countCoverage: HostCustomerMatchCountCoverage.exact,
           campaignBlocker: null,
           onMessage: () => messagesStarted += 1,
-          onOpenMessaging: () {},
+          onReviewSenderSetup: null,
         ),
       ),
     );
@@ -44,7 +44,7 @@ void main() {
   testWidgets('filter summary qualifies counts and explains a blocked bridge', (
     tester,
   ) async {
-    var messagingOpens = 0;
+    var setupOpens = 0;
 
     await tester.pumpWidget(
       _app(
@@ -54,46 +54,61 @@ void main() {
           countCoverage: HostCustomerMatchCountCoverage.atLeast,
           campaignBlocker: HostCampaignBlockers.senderInactive,
           onMessage: null,
-          onOpenMessaging: () => messagingOpens += 1,
+          onReviewSenderSetup: () => setupOpens += 1,
         ),
       ),
     );
 
     final button = tester.widget<CatchButton>(
-      find.byKey(const ValueKey('host-customers-messaging-action')),
+      find.byKey(const ValueKey('host-customers-sender-setup-action')),
     );
-    expect(button.label, 'Open messaging');
+    expect(button.label, 'Set up WhatsApp Business');
     expect(button.onPressed, isNotNull);
     expect(find.text('Sender verification is incomplete'), findsOneWidget);
 
-    await tester.tap(find.text('Open messaging'));
-    expect(messagingOpens, 1);
+    await tester.tap(find.text('Set up WhatsApp Business'));
+    expect(setupOpens, 1);
   });
 
-  testWidgets('all customers never claims the directory is one campaign', (
+  testWidgets('all customers renders no redundant messaging handoff', (
     tester,
   ) async {
-    var messagingOpens = 0;
-
     await tester.pumpWidget(
       _app(
-        HostCustomerFilterSummary(
+        const HostCustomerFilterSummary(
           filter: HostCustomerFilter.all,
           count: 2,
           countCoverage: HostCustomerMatchCountCoverage.exact,
           campaignBlocker: null,
           onMessage: null,
-          onOpenMessaging: () => messagingOpens += 1,
+          onReviewSenderSetup: null,
         ),
       ),
     );
 
     expect(find.text('All · 2 people'), findsOneWidget);
     expect(find.text('Message these 2'), findsNothing);
-    expect(find.text('Open messaging'), findsOneWidget);
+    expect(find.byType(CatchButton), findsNothing);
+  });
 
-    await tester.tap(find.text('Open messaging'));
-    expect(messagingOpens, 1);
+  testWidgets('provider unavailability explains the blocker without a CTA', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        const HostCustomerFilterSummary(
+          filter: HostCustomerFilter.atRisk,
+          count: 12,
+          countCoverage: HostCustomerMatchCountCoverage.exact,
+          campaignBlocker: HostCampaignBlockers.providerSetupRequired,
+          onMessage: null,
+          onReviewSenderSetup: null,
+        ),
+      ),
+    );
+
+    expect(find.text('WhatsApp provider setup is incomplete'), findsOneWidget);
+    expect(find.byType(CatchButton), findsNothing);
   });
 
   testWidgets('manual tag summary can become its own saved audience', (
@@ -113,7 +128,7 @@ void main() {
           countCoverage: HostCustomerMatchCountCoverage.exact,
           campaignBlocker: null,
           onMessage: () => messagesStarted += 1,
-          onOpenMessaging: () {},
+          onReviewSenderSetup: null,
         ),
       ),
     );

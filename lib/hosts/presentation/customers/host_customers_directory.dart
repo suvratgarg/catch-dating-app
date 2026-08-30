@@ -121,7 +121,7 @@ class HostCustomerFilterSummary extends StatelessWidget {
     required this.countCoverage,
     required this.campaignBlocker,
     required this.onMessage,
-    required this.onOpenMessaging,
+    required this.onReviewSenderSetup,
     this.onClear,
   });
 
@@ -131,7 +131,7 @@ class HostCustomerFilterSummary extends StatelessWidget {
   final HostCustomerMatchCountCoverage countCoverage;
   final String? campaignBlocker;
   final VoidCallback? onMessage;
-  final VoidCallback onOpenMessaging;
+  final VoidCallback? onReviewSenderSetup;
   final VoidCallback? onClear;
 
   @override
@@ -175,19 +175,25 @@ class HostCustomerFilterSummary extends StatelessWidget {
                   color: CatchTokens.of(context).warning,
                 ),
               ),
-            CatchButton(
-              key: const ValueKey('host-customers-messaging-action'),
-              label: onMessage == null
-                  ? context.l10n.hostCustomersOpenMessaging
-                  : countCoverage == HostCustomerMatchCountCoverage.exact
-                  ? context.l10n.hostCustomersMessageThese(count: count)
-                  : context.l10n.hostCustomersMessageTheseAtLeast(count: count),
-              variant: onMessage == null
-                  ? CatchButtonVariant.secondary
-                  : CatchButtonVariant.primary,
-              size: CatchButtonSize.sm,
-              onPressed: onMessage ?? onOpenMessaging,
-            ),
+            if (onMessage case final message?)
+              CatchButton(
+                key: const ValueKey('host-customers-messaging-action'),
+                label: countCoverage == HostCustomerMatchCountCoverage.exact
+                    ? context.l10n.hostCustomersMessageThese(count: count)
+                    : context.l10n.hostCustomersMessageTheseAtLeast(
+                        count: count,
+                      ),
+                size: CatchButtonSize.sm,
+                onPressed: message,
+              )
+            else if (onReviewSenderSetup case final review?)
+              CatchButton(
+                key: const ValueKey('host-customers-sender-setup-action'),
+                label: context.l10n.hostCustomersSetUpWhatsappBusiness,
+                variant: CatchButtonVariant.secondary,
+                size: CatchButtonSize.sm,
+                onPressed: review,
+              ),
           ],
         ),
       ],

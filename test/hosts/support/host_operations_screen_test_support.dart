@@ -420,6 +420,7 @@ List _hostClubOverrides({
   List<Club> hosted = const [],
   Map<String, List<EventDraft>> draftsByOrganizer = const {},
   Map<String, List<Event>> timelineEventsByOrganizer = const {},
+  Map<String, HostMessagingSetup> messagingSetupByOrganizer = const {},
 }) {
   final organizerIds = {
     ...owned.map((club) => club.id),
@@ -466,17 +467,18 @@ List _hostClubOverrides({
     for (final organizerId in organizerIds)
       hostMessagingSetupProvider(organizerId).overrideWithValue(
         AsyncData(
-          HostMessagingSetup(
-            organizerId: organizerId,
-            providerConfigured: false,
-            embeddedSignup: const HostWhatsappEmbeddedSignupConfig(
-              appId: null,
-              configId: null,
-              graphVersion: null,
-            ),
-            connection: null,
-            templates: const [],
-          ),
+          messagingSetupByOrganizer[organizerId] ??
+              HostMessagingSetup(
+                organizerId: organizerId,
+                providerConfigured: false,
+                embeddedSignup: const HostWhatsappEmbeddedSignupConfig(
+                  appId: null,
+                  configId: null,
+                  graphVersion: null,
+                ),
+                connection: null,
+                templates: const [],
+              ),
         ),
       ),
   ];

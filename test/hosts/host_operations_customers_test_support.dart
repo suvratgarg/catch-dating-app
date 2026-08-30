@@ -33,6 +33,33 @@ HostCustomersDirectoryState _emptyCustomerDirectoryState() =>
       projectionVersion: 1,
     );
 
+HostMessagingSetup _hostMessagingSetup({
+  required String organizerId,
+  bool providerConfigured = true,
+  String connectionStatus = 'active',
+}) => HostMessagingSetup(
+  organizerId: organizerId,
+  providerConfigured: providerConfigured,
+  embeddedSignup: const HostWhatsappEmbeddedSignupConfig(
+    appId: 'app-id',
+    configId: 'config-id',
+    graphVersion: 'v24.0',
+  ),
+  connection: HostWhatsappConnection(
+    connectionId: 'connection-1',
+    status: connectionStatus,
+    displayPhoneNumber: '+91 98765 43210',
+    verifiedName: 'Catch Social',
+    qualityRating: 'GREEN',
+    messagingLimitTier: 'TIER_1K',
+    templateSyncStatus: 'ready',
+    webhookStatus: 'healthy',
+    testStatus: 'verified',
+    revision: 1,
+  ),
+  templates: const [],
+);
+
 HostAudienceContactDetail _customerDetail({
   bool contactDetailsEditable = false,
   bool linkedAccount = true,

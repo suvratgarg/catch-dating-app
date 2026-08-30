@@ -21664,11 +21664,11 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{Message at least 1 person} other{Message at least {count} people}}'**
   String hostCustomersMessageTheseAtLeast({required int count});
 
-  /// Opens the Messaging workspace when the current customer view cannot be used directly as a campaign audience.
+  /// Opens the selected organizer's dedicated WhatsApp sender setup when an otherwise eligible customer audience is blocked by sender readiness.
   ///
   /// In en, this message translates to:
-  /// **'Open messaging'**
-  String get hostCustomersOpenMessaging;
+  /// **'Set up WhatsApp Business'**
+  String get hostCustomersSetUpWhatsappBusiness;
 
   /// Grouped customer filter sheet title.
   ///
