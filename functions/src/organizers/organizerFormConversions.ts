@@ -327,13 +327,17 @@ async function applyConversion(params: {
   identitySecret: string;
   now: FirebaseFirestore.Timestamp;
 }): Promise<string> {
-  if (params.context.existingResultId) return params.context.existingResultId;
+  if (params.context.existingResultId && params.data.kind !== "crmContact") {
+    return params.context.existingResultId;
+  }
   switch (params.data.kind) {
   case "crmContact": {
-    const contactId = deterministicResultId(
-      "formcontact",
-      params.data.responseId
-    );
+    const target = crmContactConversionTarget({
+      existingResultId: params.context.existingResultId,
+      responseId: params.data.responseId,
+      formId: params.context.response.formId,
+      submittedAt: params.context.response.submittedAt,
+    });
     const displayName = fieldValue(params.context.fields, "displayName") ??
       params.context.response.identity.displayName ?? "Form respondent";
     const result = await createOrganizerContactRecord({
@@ -347,7 +351,8 @@ async function applyConversion(params: {
         params.context.response.identity.email,
       initialNote: `Created from form response ${params.data.responseId}.`,
       identitySecret: params.identitySecret,
-      contactId,
+      contactId: target.contactId,
+      origin: target.origin,
       now: params.now,
     });
     return result.contactId;
@@ -362,6 +367,38 @@ async function applyConversion(params: {
       organizerFormFollowUpUnavailableMessage
     );
   }
+}
+
+/**
+ * Resolves both new and matched form respondents through the same provenance
+ * writer. A matched contact is not a reason to discard the form origin.
+ */
+export function crmContactConversionTarget(params: {
+  existingResultId: string | null;
+  responseId: string;
+  formId: string;
+  submittedAt: FirebaseFirestore.Timestamp;
+}): {
+  contactId: string;
+  origin: {
+    kind: "hostFormResponse";
+    formId: string;
+    responseId: string;
+    observedAt: FirebaseFirestore.Timestamp;
+  };
+} {
+  return {
+    contactId: params.existingResultId ?? deterministicResultId(
+      "formcontact",
+      params.responseId
+    ),
+    origin: {
+      kind: "hostFormResponse",
+      formId: params.formId,
+      responseId: params.responseId,
+      observedAt: params.submittedAt,
+    },
+  };
 }
 
 async function applyEventAttendeeConversion(params: {

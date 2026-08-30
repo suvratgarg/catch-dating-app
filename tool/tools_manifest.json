@@ -1105,6 +1105,35 @@
       }
     },
     {
+      "id": "audit:host-crm-boundaries",
+      "category": "audit",
+      "path": "tool/architecture/check_host_crm_boundaries.mjs",
+      "command": "node tool/architecture/check_host_crm_boundaries.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Enforces corrected Host CRM ownership, provenance, consent, communication-plan, saved-audience, and manual-handoff boundaries.",
+      "checks": [
+        "node --check tool/architecture/check_host_crm_boundaries.mjs",
+        "node --test tool/architecture/check_host_crm_boundaries.test.mjs",
+        "node tool/architecture/check_host_crm_boundaries.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "HOST-CRM-AUTHORITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/architecture/check_host_crm_boundaries.test.mjs",
+        "contains": [
+          "flags saved-audience mutation outside Customers",
+          "flags host-visible communication route pickers",
+          "flags unreviewed permission-authority access",
+          "flags direct contact creation outside canonical projection owners",
+          "flags provider delivery states on manual handoffs"
+        ]
+      }
+    },
+    {
       "id": "audit:route-string-literals",
       "category": "audit",
       "path": "tool/architecture/check_route_string_literals.mjs",
@@ -2338,7 +2367,7 @@
       "command": "node tool/data/backfill_organizer_crm_authority_v2.mjs",
       "safety": "remote-write-apply-guarded",
       "status": "active",
-      "description": "Backfills contact origins only from canonical attendee edges and classifies legacy communication decisions as incomplete without inferring permission.",
+      "description": "Backfills contact origins from canonical attendee edges and reviewed Host Form CRM receipts, reports unresolved provenance, and classifies legacy communication decisions as incomplete without inferring permission.",
       "checks": [
         "node --check tool/data/backfill_organizer_crm_authority_v2.mjs",
         "node --test tool/data/backfill_organizer_crm_authority_v2.test.mjs"

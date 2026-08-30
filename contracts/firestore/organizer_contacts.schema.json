@@ -26,7 +26,7 @@
     "email": {"type": ["string", "null"], "format": "email", "maxLength": 320, "x-catch-ownership": "server-only"},
     "identityState": {"type": "string", "enum": ["unlinked", "verified", "ambiguous", "merged"], "x-catch-ownership": "server-only"},
     "identityConfidence": {"type": "string", "enum": ["eventOnly", "proposed", "verified"], "x-catch-ownership": "server-only"},
-    "primarySource": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync"], "x-catch-ownership": "server-only"},
+    "primarySource": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync", "hostForm"], "x-catch-ownership": "server-only"},
     "ambiguousCandidateContactIds": {"type": "array", "maxItems": 20, "uniqueItems": true, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, "x-catch-ownership": "server-only"},
     "firstSeenAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
     "lastSeenAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},

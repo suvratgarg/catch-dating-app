@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.17.0
+version: 1.18.0
 updated: 2026-08-30
 owner: app_architecture
 status: active
@@ -2084,9 +2084,14 @@ Rules:
   creation requires a display name and at least one proposed phone or email;
   name-only records are not durable CRM contacts.
 - Participant-controlled communication preferences are the sole marketing
-  permission authority. Forms may ask for permission and preserve the exact
-  receipt; unchecked input, imports, roster writes, manager entry, tags,
-  applications, and merges never grant or revoke permission by inference.
+  permission authority. The standard Host Form consent authorizes receipt and
+  use of the submitted answers; it is not marketing permission. A form may
+  create a communication grant only through a separately reviewed,
+  participant-controlled permission field whose exact copy, version, identity,
+  decision, source form, and source response are preserved in the canonical
+  permission receipt. Unchecked input, ordinary form consent, imports, roster
+  writes, manager entry, tags, applications, and merges never grant or revoke
+  permission by inference.
 - Customers owns durable reusable CRM audiences. Event announcement workflows
   own event-scoped audiences such as Booked and Prospective. Messaging consumes
   either a saved audience id or an event-scoped audience reference and must not
@@ -2276,6 +2281,16 @@ send/reply, origin, and merge events newest-first. It excludes private Consumer
 profile, compatibility, safety, wingman, and unrelated organizer data. Section
 cards may remain for identity and memory; the timeline is an activity lens, not
 a replacement for every structured field.
+
+`HOST-CRM-AUTHORITY-001` enforces these ownership seams with
+`tool/architecture/check_host_crm_boundaries.mjs`. The gate keeps saved-audience
+definition mutations in Customers, prevents presentation-layer transport
+pickers, keeps manual handoff work in Sends, reviews every permission-authority
+collection consumer, confines canonical collection writes, preserves Host Form
+provenance for both new and matched contacts, and rejects provider delivery or
+read claims on manual handoffs. The scanner is deliberately narrower than a
+global “reachable” enum: `HostCommunicationPlan` remains the server-derived,
+intent-specific authority.
 
 ### Installable App Target Contract
 

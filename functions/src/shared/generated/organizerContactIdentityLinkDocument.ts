@@ -9,6 +9,9 @@ export interface OrganizerContactIdentityLinkDocument {
   organizerId: string;
   contactId: string;
   originContactId: string;
+  /**
+   * Legacy evidence-row key: an attendee id for roster sources or a deterministic form-response key for Host Forms.
+   */
   attendeeId: string;
   kind: "uid" | "phone" | "email" | "provider";
   identityHash: string;
@@ -19,7 +22,8 @@ export interface OrganizerContactIdentityLinkDocument {
     | "hostImport"
     | "hostManual"
     | "webOtp"
-    | "providerSync";
+    | "providerSync"
+    | "hostForm";
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

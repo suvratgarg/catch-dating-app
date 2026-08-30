@@ -30894,7 +30894,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactMergeCandidatesCallableResponse.candidates.items.contacts.items.primarySource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const listOrganizerContactMergeCandidatesCallableResponseCandidatesItemsContactsItemsRevision = CatchContractFieldConstraints(
@@ -30967,9 +30967,9 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    itemEnumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
     minItems: 1,
-    maxItems: 5,
+    maxItems: 6,
     uniqueItems: true,
   );
 
@@ -30977,7 +30977,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactMergeCandidatesCallableResponse.candidates.items.sourceKinds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const listOrganizerContactMergeCandidatesCallableResponseCandidatesItemsUpdatedAtMillis = CatchContractFieldConstraints(
@@ -31064,7 +31064,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactMergeCandidatesCallableResponse.dismissedCandidates.items.contacts.items.primarySource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const listOrganizerContactMergeCandidatesCallableResponseDismissedCandidatesItemsContactsItemsRevision = CatchContractFieldConstraints(
@@ -31137,9 +31137,9 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    itemEnumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
     minItems: 1,
-    maxItems: 5,
+    maxItems: 6,
     uniqueItems: true,
   );
 
@@ -31147,7 +31147,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactMergeCandidatesCallableResponse.dismissedCandidates.items.sourceKinds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const listOrganizerContactMergeCandidatesCallableResponseDismissedCandidatesItemsUpdatedAtMillis = CatchContractFieldConstraints(
@@ -38017,7 +38017,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactDocument.primarySource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const organizerContactDocumentRevision = CatchContractFieldConstraints(
@@ -38567,7 +38567,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactIdentityLinkDocument.source',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync'],
+    enumValues: <String>['catchBooking', 'hostImport', 'hostManual', 'webOtp', 'providerSync', 'hostForm'],
   );
 
   static const organizerContactIdentityLinkDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(

@@ -3206,6 +3206,49 @@
         }
       ]
     },
+    "HOST-CRM-AUTHORITY-001": {
+      "title": "Keep Host CRM identity, provenance, permission, intent, route, and delivery authorities separate",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.18.0"
+      },
+      "applies_to": [
+        "lib/hosts/presentation/customers/**",
+        "lib/hosts/presentation/inbox/**",
+        "lib/hosts/presentation/host_audience_controller.dart",
+        "functions/src/events/eventAttendees.ts",
+        "functions/src/organizers/organizerAudienceProjection.ts",
+        "functions/src/organizers/organizerCampaign*.ts",
+        "functions/src/organizers/organizerContacts.ts",
+        "functions/src/organizers/organizerForm*.ts",
+        "functions/src/organizers/organizerManualSendTasks.ts",
+        "functions/src/organizers/organizerSavedAudiences.ts",
+        "functions/src/organizers/organizerWhatsappWebhook.ts",
+        "functions/src/shared/organizerContactOrigins.ts",
+        "contracts/firestore/organizer_*communication*.schema.json",
+        "contracts/firestore/organizer_contact_*.schema.json",
+        "contracts/firestore/organizer_manual_send_tasks.schema.json",
+        "tool/architecture/check_host_crm_boundaries.mjs"
+      ],
+      "instruction": "Keep contact identity, immutable provenance, participant-controlled communication permission, organizer suppression, host intent, server-resolved route, manual work, and provider delivery evidence as separate authorities. Customers owns durable saved audiences and person actions; Messaging consumes audience references and owns Sends/Inbox composition. Host Forms may append source-backed contact provenance or prepare reviewed work but ordinary form consent never grants marketing permission and automations never dispatch outreach. External handoff may record only device acceptance and explicit host assertions, never delivery or read state.",
+      "sunset_when": [
+        "Never; these are permanent consent, evidence, and product-ownership boundaries"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:host-crm-boundaries",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#host-customers-crm-provider-staff-and-offline-boundaries"
+        }
+      ]
+    },
     "PENDING-SNAPSHOT-001": {
       "title": "Protect the submitted request snapshot while an operation is pending",
       "status": "active",
@@ -3249,6 +3292,6 @@
       ]
     }
   },
-  "version": "2.10.0",
-  "updated": "2026-08-07"
+  "version": "2.11.0",
+  "updated": "2026-08-30"
 }

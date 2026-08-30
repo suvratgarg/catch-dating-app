@@ -1755,7 +1755,8 @@ export interface OrganizerContactDocument {
     | "hostImport"
     | "hostManual"
     | "webOtp"
-    | "providerSync";
+    | "providerSync"
+    | "hostForm";
   /**
    * @maxItems 20
    */
@@ -1971,6 +1972,9 @@ export interface OrganizerContactIdentityLinkDocument {
   organizerId: string;
   contactId: string;
   originContactId: string;
+  /**
+   * Legacy evidence-row key: an attendee id for roster sources or a deterministic form-response key for Host Forms.
+   */
   attendeeId: string;
   kind: "uid" | "phone" | "email" | "provider";
   identityHash: string;
@@ -1981,7 +1985,8 @@ export interface OrganizerContactIdentityLinkDocument {
     | "hostImport"
     | "hostManual"
     | "webOtp"
-    | "providerSync";
+    | "providerSync"
+    | "hostForm";
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }

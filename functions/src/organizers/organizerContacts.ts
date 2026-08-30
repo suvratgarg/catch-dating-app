@@ -85,6 +85,7 @@ import {
   resolveOrganizerAudienceCoverage,
 } from "./organizerAudienceCoverage";
 import {
+  formResponseOrganizerContactOrigin,
   manualOrganizerContactOrigin,
   organizerContactOriginId,
 } from "../shared/organizerContactOrigins";
@@ -349,8 +350,18 @@ export async function createOrganizerContactHandler(
     email: data.email ?? null,
     initialNote: data.initialNote ?? null,
     identitySecret: data.phoneE164 || data.email ? deps.identitySecret() : null,
+    origin: {kind: "hostManual"},
   });
 }
+
+export type OrganizerContactCreationOrigin =
+  | {kind: "hostManual"}
+  | {
+    kind: "hostFormResponse";
+    formId: string;
+    responseId: string;
+    observedAt: FirebaseFirestore.Timestamp;
+  };
 
 /** Creates one optionally deterministic organizer-only CRM record. */
 export async function createOrganizerContactRecord(params: {
@@ -362,6 +373,7 @@ export async function createOrganizerContactRecord(params: {
   email: string | null;
   initialNote: string | null;
   identitySecret: string | null;
+  origin: OrganizerContactCreationOrigin;
   contactId?: string;
   now?: FirebaseFirestore.Timestamp;
 }): Promise<CreateOrganizerContactCallableResponse> {
@@ -378,15 +390,25 @@ export async function createOrganizerContactRecord(params: {
     .doc(contactRef.id);
   const summaryRef = params.db.collection("organizerAudienceSummaries")
     .doc(params.organizerId);
-  const manualEvidenceAttendeeId = manualContactEvidenceAttendeeId(
-    contactRef.id
-  );
-  const origin = manualOrganizerContactOrigin({
-    organizerId: params.organizerId,
-    contactId: contactRef.id,
-    actorUid: params.actorUid,
-    now,
-  });
+  const identityEvidenceId = params.origin.kind === "hostManual" ?
+    manualContactEvidenceAttendeeId(contactRef.id) :
+    formContactEvidenceId(params.origin.responseId);
+  const origin = params.origin.kind === "hostManual" ?
+    manualOrganizerContactOrigin({
+      organizerId: params.organizerId,
+      contactId: contactRef.id,
+      actorUid: params.actorUid,
+      now,
+    }) :
+    formResponseOrganizerContactOrigin({
+      organizerId: params.organizerId,
+      contactId: contactRef.id,
+      formId: params.origin.formId,
+      responseId: params.origin.responseId,
+      actorUid: params.actorUid,
+      observedAt: params.origin.observedAt,
+      now,
+    });
   const originRef = params.db.collection("organizerContactOrigins").doc(
     organizerContactOriginId({
       organizerId: origin.organizerId,
@@ -432,7 +454,8 @@ export async function createOrganizerContactRecord(params: {
     identityState: "unlinked",
     identityConfidence: params.phoneE164 || params.email ? "proposed" :
       "eventOnly",
-    primarySource: "hostManual",
+    primarySource: params.origin.kind === "hostManual" ?
+      "hostManual" : "hostForm",
     ambiguousCandidateContactIds: [],
     firstSeenAt: now,
     lastSeenAt: now,
@@ -449,11 +472,12 @@ export async function createOrganizerContactRecord(params: {
     hiddenBy: null,
     hiddenTraitSnapshot: null,
   };
-  const identityLinks = manualContactIdentityLinks({
+  const identityLinks = proposedContactIdentityLinks({
     db: params.db,
     organizerId: params.organizerId,
     contactId: contactRef.id,
-    attendeeId: manualEvidenceAttendeeId,
+    evidenceId: identityEvidenceId,
+    source: params.origin.kind === "hostManual" ? "hostManual" : "hostForm",
     phoneE164: params.phoneE164,
     email: params.email,
     secret: params.identitySecret,
@@ -484,7 +508,14 @@ export async function createOrganizerContactRecord(params: {
       if (existing.organizerId !== params.organizerId) {
         throw new HttpsError("already-exists", "Contact identity is in use.");
       }
-      if (!originSnap.exists) tx.create(originRef, origin);
+      if (!originSnap.exists) {
+        tx.create(originRef, origin);
+        tx.update(contactRef, {
+          sourceCount: admin.firestore.FieldValue.increment(1),
+          updatedAt: now,
+          revision: Math.max(existing.revision + 1, revision),
+        });
+      }
       return;
     }
     tx.create(contactRef, contact);
@@ -2570,16 +2601,21 @@ function manualContactEvidenceAttendeeId(contactId: string): string {
   return `manual_${contactId}`;
 }
 
+function formContactEvidenceId(responseId: string): string {
+  return `form_${responseId}`;
+}
+
 interface ManualIdentityLink {
   ref: FirebaseFirestore.DocumentReference;
   data: OrganizerContactIdentityLinkDocument;
 }
 
-function manualContactIdentityLinks(params: {
+function proposedContactIdentityLinks(params: {
   db: FirebaseFirestore.Firestore;
   organizerId: string;
   contactId: string;
-  attendeeId: string;
+  evidenceId: string;
+  source: OrganizerContactIdentityLinkDocument["source"];
   phoneE164: string | null;
   email: string | null;
   secret: string | null;
@@ -2593,7 +2629,7 @@ function manualContactIdentityLinks(params: {
   );
   if (endpoints.length === 0) return [];
   if (!params.secret) {
-    throw new Error("Manual contact identity evidence requires a secret.");
+    throw new Error("Proposed contact identity evidence requires a secret.");
   }
   return endpoints.map((endpoint) => {
     const identityHash = organizerIdentityHash(
@@ -2603,7 +2639,7 @@ function manualContactIdentityLinks(params: {
       endpoint.value
     );
     const identityLinkId = organizerIdentityEvidenceId({
-      attendeeId: params.attendeeId,
+      attendeeId: params.evidenceId,
       kind: endpoint.kind,
       identityHash,
     });
@@ -2614,12 +2650,12 @@ function manualContactIdentityLinks(params: {
         organizerId: params.organizerId,
         contactId: params.contactId,
         originContactId: params.contactId,
-        attendeeId: params.attendeeId,
+        attendeeId: params.evidenceId,
         kind: endpoint.kind,
         identityHash,
         hashVersion: "hmac-sha256-v1",
         confidence: "proposed",
-        source: "hostManual",
+        source: params.source,
         createdAt: params.now,
         updatedAt: params.now,
       },

@@ -30,7 +30,7 @@
     {
       "id": "new_writers",
       "status": "complete",
-      "description": "Manual Customers creation and attendee projection append deterministic contact origins; public registration and inbound STOP append immutable permission receipts."
+      "description": "Manual Customers creation, reviewed Host Form CRM conversion, and attendee projection append deterministic contact origins; public registration and inbound STOP append immutable permission receipts."
     },
     {
       "id": "delivery_fail_closed",
@@ -40,17 +40,19 @@
     {
       "id": "existing_data_backfill",
       "status": "pending",
-      "description": "The dry-run-first tool creates origins only from canonical attendee edges and marks legacy non-unknown permission state incomplete. It never infers a grant from a phone, source label, roster, form answer, or prior send."
+      "description": "The dry-run-first tool creates origins only from canonical attendee edges and completed reviewed Host Form CRM conversion receipts, reports unresolved contact/origin gaps, and marks legacy non-unknown permission state incomplete. It never infers a grant from a phone, source label, ordinary form consent or answer, roster, or prior send."
     }
   ],
   "knownConsumers": [
     "functions/src/shared/organizerContactOrigins.ts",
     "functions/src/shared/organizerCommunicationPreferences.ts",
     "functions/src/events/eventAttendees.ts",
+    "functions/src/organizers/organizerFormConversions.ts",
     "functions/src/organizers/organizerAudienceProjection.ts",
     "functions/src/organizers/organizerContactMerges.ts",
     "functions/src/organizers/organizerCampaigns.ts",
     "functions/src/organizers/organizerCampaignDispatcher.ts",
+    "tool/architecture/check_host_crm_boundaries.mjs",
     "tool/data/backfill_organizer_crm_authority_v2.mjs"
   ],
   "environmentEvidence": {

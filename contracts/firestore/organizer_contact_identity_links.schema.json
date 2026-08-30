@@ -17,12 +17,12 @@
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "originContactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "attendeeId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "attendeeId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "description": "Legacy evidence-row key: an attendee id for roster sources or a deterministic form-response key for Host Forms."},
     "kind": {"type": "string", "enum": ["uid", "phone", "email", "provider"]},
     "identityHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "hashVersion": {"type": "string", "enum": ["hmac-sha256-v1"]},
     "confidence": {"type": "string", "enum": ["proposed", "verified"]},
-    "source": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync"]},
+    "source": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync", "hostForm"]},
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
   }

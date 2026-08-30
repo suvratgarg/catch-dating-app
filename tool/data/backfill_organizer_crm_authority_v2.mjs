@@ -42,17 +42,34 @@ export async function main(argv = process.argv.slice(2)) {
 }
 
 export async function buildOrganizerCrmAuthorityV2Plan(firestore) {
-  const [attendees, edges, origins, preferences, receipts] =
+  const [
+    attendees,
+    edges,
+    contacts,
+    origins,
+    preferences,
+    permissionReceipts,
+    formConversionReceipts,
+    formResponses,
+  ] =
     await Promise.all([
       firestore.collection("eventAttendees").get(),
       firestore.collection("organizerContactEventEdges").get(),
+      firestore.collection("organizerContacts").get(),
       firestore.collection("organizerContactOrigins").get(),
       firestore.collection("organizerCommunicationPreferences").get(),
       firestore.collection("organizerCommunicationPermissionReceipts").get(),
+      firestore.collection("organizerFormConversionReceipts").get(),
+      firestore.collection("organizerFormResponses").get(),
     ]);
   const edgeById = new Map(edges.docs.map((doc) => [doc.id, doc.data()]));
-  const originIds = new Set(origins.docs.map((doc) => doc.id));
-  const receiptIds = new Set(receipts.docs.map((doc) => doc.id));
+  const contactById = new Map(contacts.docs.map((doc) => [doc.id, doc.data()]));
+  const responseById = new Map(
+    formResponses.docs.map((doc) => [doc.id, doc.data()])
+  );
+  const originById = new Map(origins.docs.map((doc) => [doc.id, doc.data()]));
+  const plannedOriginIds = new Set(originById.keys());
+  const receiptIds = new Set(permissionReceipts.docs.map((doc) => doc.id));
   const originCreates = [];
   const attendeeGaps = [];
   for (const doc of attendees.docs) {
@@ -62,15 +79,77 @@ export async function buildOrganizerCrmAuthorityV2Plan(firestore) {
       attendeeGaps.push(doc.ref.path);
       continue;
     }
+    const currentContact = contactById.get(edge.contactId);
+    const originContact = contactById.get(edge.originContactId);
+    if (currentContact?.organizerId !== attendee.organizerId ||
+        originContact?.organizerId !== attendee.organizerId) {
+      attendeeGaps.push(doc.ref.path);
+      continue;
+    }
     const origin = attendeeOrigin(doc.id, attendee, edge);
     const id = contactOriginId(origin);
-    if (!originIds.has(id)) {
+    if (!plannedOriginIds.has(id)) {
       originCreates.push({
         path: `organizerContactOrigins/${id}`,
         document: origin,
       });
+      plannedOriginIds.add(id);
     }
   }
+
+  const formConversionGaps = [];
+  for (const doc of formConversionReceipts.docs) {
+    const receipt = doc.data();
+    if (receipt.kind !== "crmContact" || receipt.status !== "completed") {
+      continue;
+    }
+    const response = responseById.get(receipt.responseId);
+    const originContact = typeof receipt.resultId === "string" ?
+      contactById.get(receipt.resultId) : null;
+    const currentContactId = typeof receipt.resultId === "string" ?
+      resolveCurrentContactId({
+        contactId: receipt.resultId,
+        organizerId: receipt.organizerId,
+        contactById,
+      }) : null;
+    if (!response ||
+        response.organizerId !== receipt.organizerId ||
+        response.formId !== receipt.formId ||
+        originContact?.organizerId !== receipt.organizerId ||
+        !currentContactId ||
+        typeof receipt.actorUid !== "string" ||
+        !response.submittedAt) {
+      formConversionGaps.push(doc.ref.path);
+      continue;
+    }
+    const origin = formResponseOrigin({
+      receipt,
+      response,
+      currentContactId,
+    });
+    const id = contactOriginId(origin);
+    if (!plannedOriginIds.has(id)) {
+      originCreates.push({
+        path: `organizerContactOrigins/${id}`,
+        document: origin,
+      });
+      plannedOriginIds.add(id);
+    }
+  }
+
+  const plannedOrigins = [
+    ...originById.values(),
+    ...originCreates.map((item) => item.document),
+  ];
+  const contactIdsWithAnyOrigin = new Set(plannedOrigins.flatMap((origin) =>
+    [origin.currentContactId, origin.originContactId]
+  ));
+  const contactsWithoutAnyOrigin = contacts.docs
+    .filter((doc) => !contactIdsWithAnyOrigin.has(doc.id))
+    .map((doc) => doc.ref.path);
+  const orphanOriginPaths = origins.docs
+    .filter((doc) => !validOriginContacts(doc.data(), contactById))
+    .map((doc) => doc.ref.path);
 
   const preferenceUpdates = [];
   const receiptCreates = [];
@@ -132,15 +211,62 @@ export async function buildOrganizerCrmAuthorityV2Plan(firestore) {
     preferenceUpdates,
     summary: {
       attendeesScanned: attendees.size,
+      contactsScanned: contacts.size,
       contactOriginsToCreate: originCreates.length,
       attendeeOriginGaps: attendeeGaps.length,
       attendeeGapPaths: attendeeGaps.slice(0, 100),
+      formConversionReceiptsScanned: formConversionReceipts.size,
+      formConversionOriginGaps: formConversionGaps.length,
+      formConversionGapPaths: formConversionGaps.slice(0, 100),
+      contactsWithoutAnyOrigin: contactsWithoutAnyOrigin.length,
+      contactOriginGapPaths: contactsWithoutAnyOrigin.slice(0, 100),
+      orphanOrigins: orphanOriginPaths.length,
+      orphanOriginPaths: orphanOriginPaths.slice(0, 100),
       preferencesScanned: preferences.size,
       permissionReceiptsToCreate: receiptCreates.length,
       preferencesToUpdate: preferenceUpdates.length,
       inferredGrants: 0,
     },
   };
+}
+
+function formResponseOrigin({receipt, response, currentContactId}) {
+  return {
+    organizerId: receipt.organizerId,
+    currentContactId,
+    originContactId: receipt.resultId,
+    sourceKind: "hostForm",
+    sourceEntityKind: "hostFormResponse",
+    sourceEntityId: receipt.responseId,
+    eventId: null,
+    formId: receipt.formId,
+    responseId: receipt.responseId,
+    actorClass: "organizerManager",
+    actorUid: receipt.actorUid,
+    observedAt: response.submittedAt,
+    originVersion: 1,
+    createdAt: receipt.completedAt ?? receipt.createdAt ?? response.submittedAt,
+  };
+}
+
+function resolveCurrentContactId({contactId, organizerId, contactById}) {
+  const visited = new Set();
+  let candidateId = contactId;
+  while (candidateId && !visited.has(candidateId)) {
+    visited.add(candidateId);
+    const contact = contactById.get(candidateId);
+    if (!contact || contact.organizerId !== organizerId) return null;
+    if (!contact.mergedIntoContactId) return candidateId;
+    candidateId = contact.mergedIntoContactId;
+  }
+  return null;
+}
+
+function validOriginContacts(origin, contactById) {
+  const current = contactById.get(origin.currentContactId);
+  const original = contactById.get(origin.originContactId);
+  return current?.organizerId === origin.organizerId &&
+    original?.organizerId === origin.organizerId;
 }
 
 export async function applyOrganizerCrmAuthorityV2Plan(firestore, plan) {
@@ -314,9 +440,10 @@ function readFirebaseRc() {
 function printHelp() {
   console.log(`Usage: node tool/data/backfill_organizer_crm_authority_v2.mjs [options]
 
-Backfills contact provenance only from canonical attendee edges and marks
-legacy organizer communication decisions incomplete. It never infers a grant.
-The tool is dry-run by default.
+Backfills contact provenance only from canonical attendee edges and completed
+reviewed Host Form CRM conversion receipts, reports unresolved contact/origin
+gaps, and marks legacy organizer communication decisions incomplete. It never
+infers a grant. The tool is dry-run by default.
 
 Options:
   --apply                 Write repairs. Default is dry-run.

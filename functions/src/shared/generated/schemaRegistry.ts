@@ -13062,7 +13062,8 @@ export const organizerContactDocumentSchema: Record<string, unknown> = {
         "hostImport",
         "hostManual",
         "webOtp",
-        "providerSync"
+        "providerSync",
+        "hostForm"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -15160,7 +15161,8 @@ export const organizerContactIdentityLinkDocumentSchema: Record<string, unknown>
     "attendeeId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "description": "Legacy evidence-row key: an attendee id for roster sources or a deterministic form-response key for Host Forms."
     },
     "kind": {
       "type": "string",
@@ -15195,7 +15197,8 @@ export const organizerContactIdentityLinkDocumentSchema: Record<string, unknown>
         "hostImport",
         "hostManual",
         "webOtp",
-        "providerSync"
+        "providerSync",
+        "hostForm"
       ]
     },
     "createdAt": {
@@ -89676,7 +89679,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema: Record<s
                     "hostImport",
                     "hostManual",
                     "webOtp",
-                    "providerSync"
+                    "providerSync",
+                    "hostForm"
                   ]
                 },
                 "revision": {
@@ -89712,7 +89716,7 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema: Record<s
           "sourceKinds": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 5,
+            "maxItems": 6,
             "uniqueItems": true,
             "items": {
               "type": "string",
@@ -89721,7 +89725,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema: Record<s
                 "hostImport",
                 "hostManual",
                 "webOtp",
-                "providerSync"
+                "providerSync",
+                "hostForm"
               ]
             }
           },
@@ -89843,7 +89848,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema: Record<s
                     "hostImport",
                     "hostManual",
                     "webOtp",
-                    "providerSync"
+                    "providerSync",
+                    "hostForm"
                   ]
                 },
                 "revision": {
@@ -89879,7 +89885,7 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema: Record<s
           "sourceKinds": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 5,
+            "maxItems": 6,
             "uniqueItems": true,
             "items": {
               "type": "string",
@@ -89888,7 +89894,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema: Record<s
                 "hostImport",
                 "hostManual",
                 "webOtp",
-                "providerSync"
+                "providerSync",
+                "hostForm"
               ]
             }
           },
@@ -90019,7 +90026,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema: Record<s
                   "hostImport",
                   "hostManual",
                   "webOtp",
-                  "providerSync"
+                  "providerSync",
+                  "hostForm"
                 ]
               },
               "revision": {
@@ -90055,7 +90063,7 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema: Record<s
         "sourceKinds": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 5,
+          "maxItems": 6,
           "uniqueItems": true,
           "items": {
             "type": "string",
@@ -90064,7 +90072,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema: Record<s
               "hostImport",
               "hostManual",
               "webOtp",
-              "providerSync"
+              "providerSync",
+              "hostForm"
             ]
           }
         },
@@ -90156,7 +90165,8 @@ export const listOrganizerContactMergeCandidatesCallableResponseSchema: Record<s
             "hostImport",
             "hostManual",
             "webOtp",
-            "providerSync"
+            "providerSync",
+            "hostForm"
           ]
         },
         "revision": {

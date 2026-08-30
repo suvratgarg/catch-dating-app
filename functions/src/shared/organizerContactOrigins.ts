@@ -44,6 +44,34 @@ export function manualOrganizerContactOrigin(params: {
   };
 }
 
+/** Builds immutable provenance from a reviewed Host Form CRM conversion. */
+export function formResponseOrganizerContactOrigin(params: {
+  organizerId: string;
+  contactId: string;
+  formId: string;
+  responseId: string;
+  actorUid: string;
+  observedAt: FirebaseFirestore.Timestamp;
+  now: FirebaseFirestore.Timestamp;
+}): OrganizerContactOriginDocument {
+  return {
+    organizerId: params.organizerId,
+    currentContactId: params.contactId,
+    originContactId: params.contactId,
+    sourceKind: "hostForm",
+    sourceEntityKind: "hostFormResponse",
+    sourceEntityId: params.responseId,
+    eventId: null,
+    formId: params.formId,
+    responseId: params.responseId,
+    actorClass: "organizerManager",
+    actorUid: params.actorUid,
+    observedAt: params.observedAt,
+    originVersion: 1,
+    createdAt: params.now,
+  };
+}
+
 /** Builds immutable provenance from the canonical operational attendee row. */
 export function attendeeOrganizerContactOrigin(params: {
   attendeeId: string;
