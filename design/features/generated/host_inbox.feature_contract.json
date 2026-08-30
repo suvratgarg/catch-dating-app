@@ -2,26 +2,26 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
-  "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:85ea497ac8c15ebf568bc39110ee86bf31afe16fe127d58d6e1f1c914b3a03ba",
-  "resolvedDigest": "sha256:073657619cc51b628f8eb974b6a1b080435a53c3d00c6778fae306fb2711843f",
+  "generatedFor": "2026-08-30",
+  "sourceDigest": "sha256:0bee6826fc8ca234592441ea4ddc63b28b52c5e93285ae2cb8aa78d40c1afd54",
+  "resolvedDigest": "sha256:0b948cf0b4ff9bbea50fe1d40ccaeb3e4e604eb890a564856355855cfd912e7e",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Messaging",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Orchestrates organizer-scoped Host messaging through one Inbox for explicit Catch chat, organizer WhatsApp and event-announcement facets plus Sends for route selection, mixed outbound history, follower-update composition and cross-event audience messaging, including deep-linked customer segments."
+    "description": "Orchestrates organizer-scoped Host messaging through an inbound Inbox plus Sends for outbound intent selection, event-announcement and follower-update composition, reusable-audience campaigns, manual handoff work, and mixed outbound history."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 39,
-    "scenarios": 39,
-    "actionCases": 43,
-    "actions": 17,
+    "states": 42,
+    "scenarios": 42,
+    "actionCases": 46,
+    "actions": 21,
     "captures": 19,
     "previews": 3,
     "testFiles": 12,
-    "evidenceExceptions": 38
+    "evidenceExceptions": 44
   },
   "surfaces": [
     {
@@ -32,7 +32,7 @@
         "id": "screen.host.inbox"
       },
       "actionScope": {
-        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective audience selection, explicit Catch chat routing, organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies, and Catch event-announcement lifecycle; communication-route selection with sender, delivery, consent and readiness explanations; reverse-chronological WhatsApp Business, Catch Announcement and follower-update history; route-specific follower-update composition with rolling quota; dedicated WhatsApp sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
+        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective inquiry classification, explicit Catch chat routing, and organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies; Sends-owned outbound intent selection for existing conversations, saved-audience campaigns, event announcements, and follower updates; reverse-chronological managed-send history; durable manual handoff work; dedicated sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
         "excluded": [
           "Raw broadcast body edits are form data; the contract cardinalizes template/audience decisions and the send mutation instead of individual keystrokes.",
           "Conversation thread behavior and safety actions retain the shared chat-thread contract."
@@ -79,6 +79,12 @@
             "language": "dart",
             "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
             "symbol": "HostSendsWorkspaceSliver"
+          },
+          {
+            "id": "manual_send_queue",
+            "language": "dart",
+            "file": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
+            "symbol": "HostManualSendQueue"
           },
           {
             "id": "follower_update_composer",
@@ -153,6 +159,10 @@
           "contracts/callables/send_event_broadcast_payload.schema.json",
           "contracts/callables/send_organizer_whatsapp_reply_payload.schema.json",
           "contracts/callables/upsert_organizer_campaign_payload.schema.json",
+          "contracts/callables/list_organizer_manual_send_tasks_payload.schema.json",
+          "contracts/callables/open_organizer_manual_send_task_payload.schema.json",
+          "contracts/callables/mark_organizer_manual_send_task_payload.schema.json",
+          "contracts/callables/replan_organizer_manual_send_tasks_payload.schema.json",
           "contracts/firestore/clubs.schema.json",
           "contracts/firestore/event_broadcasts.schema.json",
           "contracts/firestore/event_participations.schema.json",
@@ -163,6 +173,7 @@
           "contracts/firestore/organizer_campaign_webhook_receipts.schema.json",
           "contracts/firestore/organizer_campaigns.schema.json",
           "contracts/firestore/organizer_posts.schema.json",
+          "contracts/firestore/organizer_manual_send_tasks.schema.json",
           "contracts/firestore/organizer_whatsapp_threads.schema.json",
           "contracts/firestore/organizer_whatsapp_messages.schema.json",
           "contracts/firestore/organizer_whatsapp_reply_operations.schema.json"
@@ -186,9 +197,17 @@
           "customer_campaign_active": [
             "test/hosts/host_crm_repository_test.dart"
           ],
-          "communication_route_picker": [
-            "test/hosts/host_inbox_screen_test.dart",
-            "test/communications/communication_route_test.dart"
+          "communication_intent_picker": [
+            "test/hosts/host_inbox_screen_test.dart"
+          ],
+          "manual_handoff_queue": [
+            "test/hosts/host_inbox_screen_test.dart"
+          ],
+          "manual_handoff_opened_unconfirmed": [
+            "test/hosts/host_inbox_screen_test.dart"
+          ],
+          "manual_handoff_replan_advisory": [
+            "test/hosts/host_crm_repository_test.dart"
           ],
           "follower_update_composer": [
             "test/hosts/host_follower_update_composer_test.dart",
@@ -207,14 +226,14 @@
         }
       },
       "coverage": {
-        "states": 39,
-        "scenarios": 39,
-        "actionCases": 43,
-        "actions": 17,
+        "states": 42,
+        "scenarios": 42,
+        "actionCases": 46,
+        "actions": 21,
         "captures": 19,
         "previews": 3,
         "testFiles": 12,
-        "evidenceExceptions": 38
+        "evidenceExceptions": 44
       },
       "dimensions": {
         "workspace": {
@@ -317,12 +336,14 @@
             "cancelled"
           ]
         },
-        "send_route": {
+        "send_intent": {
           "default": "history",
           "values": [
             "history",
             "picker",
-            "organizer_whatsapp_campaign",
+            "conversation",
+            "saved_audience",
+            "event_announcement",
             "follower_update"
           ]
         },
@@ -558,9 +579,9 @@
           "implementationStatus": "implemented"
         },
         {
-          "id": "open_broadcast_composer",
-          "owner": "inbox_screen",
-          "codeValue": "_openBroadcast",
+          "id": "open_event_announcement_composer",
+          "owner": "sends_workspace",
+          "codeValue": "_composeEventAnnouncement",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
@@ -576,7 +597,7 @@
               ]
             }
           ],
-          "description": "Opens the authorized broadcast composer for a non-empty event audience.",
+          "description": "Opens the Sends-owned event-announcement composer for a non-empty Booked or Prospective roster audience.",
           "implementationStatus": "implemented"
         },
         {
@@ -651,21 +672,22 @@
           "implementationStatus": "implemented"
         },
         {
-          "id": "select_communication_route",
+          "id": "select_communication_intent",
           "owner": "sends_workspace",
-          "codeValue": "_HostSendsRoutePicker",
+          "codeValue": "_HostSendsIntentPicker",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
             "organizerId",
-            "routeId",
+            "intent",
             "readiness"
           ],
           "outcomes": [
             {
               "kind": "surface_state",
               "stateIds": [
-                "communication_route_picker",
+                "communication_intent_picker",
+                "broadcast_composer_lifecycle",
                 "customer_campaign_draft",
                 "follower_update_composer"
               ]
@@ -678,7 +700,98 @@
               }
             }
           ],
-          "description": "Shows every registered communication route exactly once, grouped under In Catch or WhatsApp with its sender and delivery semantics; opens Catch Inbox, an eligible organizer WhatsApp composer, or the in-place follower-update composer; and gives read-only ownership or activation guidance for routes that start elsewhere or are not active.",
+          "description": "Chooses the host's communication intent without exposing provider routing policy: continue an existing conversation in Inbox, compose a saved-audience campaign, compose an event announcement, or post a follower update. Sender and provider details remain in setup and diagnostics.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_manual_send_task",
+          "owner": "manual_send_queue",
+          "codeValue": "_openTask",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "taskId",
+            "revision"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "manual_handoff_queue",
+                "manual_handoff_opened_unconfirmed"
+              ]
+            }
+          ],
+          "description": "Opens one durable by-hand task without claiming provider delivery.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_manual_handoff",
+          "owner": "manual_send_queue",
+          "codeValue": "_openWhatsapp",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "taskId",
+            "revision",
+            "openAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "manual_handoff_opened_unconfirmed"
+              ]
+            }
+          ],
+          "description": "Revalidates the task, opens the external handoff, and records only that the external app accepted the launch.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "mark_manual_send_task",
+          "owner": "manual_send_queue",
+          "codeValue": "_mark",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "taskId",
+            "revision",
+            "hostAssertion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "manual_handoff_queue"
+              ]
+            }
+          ],
+          "description": "Records an explicit Host sent assertion or skip without manufacturing delivered or read receipts.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "replan_manual_send_tasks",
+          "owner": "manual_send_queue",
+          "codeValue": "_replan",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "taskIds",
+            "requestId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "manual_handoff_replan_advisory"
+              ]
+            }
+          ],
+          "description": "Checks current route advice without mutating, dispatching, completing, removing, or superseding manual work.",
           "implementationStatus": "implemented"
         },
         {
@@ -821,7 +934,7 @@
         },
         {
           "stateIds": [
-            "communication_route_picker",
+            "communication_intent_picker",
             "follower_update_composer"
           ],
           "evidence": [
@@ -829,7 +942,20 @@
             "previews"
           ],
           "debtId": "HOST-MESSAGING-EVIDENCE-001",
-          "reason": "The route capability registry, rendered picker, and follower-update composer have focused tests; dedicated deterministic previews and captures remain follow-up evidence."
+          "reason": "The rendered intent chooser and follower-update composer have focused tests; dedicated deterministic previews and captures remain follow-up evidence."
+        },
+        {
+          "stateIds": [
+            "manual_handoff_queue",
+            "manual_handoff_opened_unconfirmed",
+            "manual_handoff_replan_advisory"
+          ],
+          "evidence": [
+            "captures",
+            "previews"
+          ],
+          "debtId": "HOST-MESSAGING-EVIDENCE-001",
+          "reason": "Durable manual-task transitions, launch validation, explicit Host assertions, advisory replanning, repository parsing, and rendered queue behavior have focused tests; dedicated deterministic previews and captures remain follow-up evidence."
         },
         {
           "stateIds": [
@@ -891,7 +1017,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -922,7 +1048,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -939,11 +1065,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -970,7 +1100,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1001,7 +1131,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1018,11 +1148,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1049,7 +1183,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1080,7 +1214,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1098,11 +1232,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1129,7 +1267,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1158,7 +1296,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1176,11 +1314,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1207,7 +1349,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1236,7 +1378,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1254,11 +1396,15 @@
                   "select_audience_segment",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1285,7 +1431,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1318,7 +1464,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1330,17 +1476,21 @@
                   "select_scope",
                   "select_audience_segment",
                   "open_conversation",
-                  "open_whatsapp_thread",
-                  "open_broadcast_composer"
+                  "open_whatsapp_thread"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "retry_inbox",
                   "send_whatsapp_reply",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1367,7 +1517,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1400,7 +1550,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1418,11 +1568,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1449,7 +1603,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1481,7 +1635,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1491,8 +1645,7 @@
                   "search_inquiries",
                   "select_scope",
                   "select_audience_segment",
-                  "open_conversation",
-                  "open_broadcast_composer"
+                  "open_conversation"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -1500,10 +1653,15 @@
                   "retry_inbox",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1530,7 +1688,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1562,7 +1720,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1580,11 +1738,15 @@
                   "select_audience_segment",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1611,7 +1773,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1629,7 +1791,7 @@
           },
           "actionCases": [
             {
-              "id": "broadcast_only",
+              "id": "inquiries_empty",
               "dimensions": {
                 "workspace": "inbox",
                 "load": "ready",
@@ -1643,15 +1805,14 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
               "actions": {
                 "enabled": [
                   "select_scope",
-                  "select_audience_segment",
-                  "open_broadcast_composer"
+                  "select_audience_segment"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -1662,10 +1823,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1692,7 +1858,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1719,7 +1885,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1737,11 +1903,15 @@
                   "select_audience_segment",
                   "open_conversation",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1768,7 +1938,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1795,7 +1965,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1813,11 +1983,15 @@
                   "select_audience_segment",
                   "open_conversation",
                   "open_whatsapp_thread",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1844,7 +2018,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1871,7 +2045,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1889,11 +2063,15 @@
                   "select_audience_segment",
                   "open_conversation",
                   "open_whatsapp_thread",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1920,7 +2098,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1945,7 +2123,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -1963,11 +2141,15 @@
                   "select_audience_segment",
                   "open_conversation",
                   "open_whatsapp_thread",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -1994,7 +2176,7 @@
             "broadcast": "composer",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2028,7 +2210,7 @@
                 "broadcast": "composer",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2049,8 +2231,12 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
-                  "select_communication_route",
+                  "open_event_announcement_composer",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -2072,7 +2258,7 @@
                 "broadcast": "composer",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2094,8 +2280,12 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
-                  "select_communication_route",
+                  "open_event_announcement_composer",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -2117,7 +2307,7 @@
                 "broadcast": "composer",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2138,8 +2328,12 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
-                  "select_communication_route",
+                  "open_event_announcement_composer",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -2161,7 +2355,7 @@
                 "broadcast": "composer",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2182,8 +2376,12 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
-                  "select_communication_route",
+                  "open_event_announcement_composer",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -2193,8 +2391,8 @@
           ]
         },
         {
-          "id": "communication_route_picker",
-          "stateId": "communication_route_picker",
+          "id": "communication_intent_picker",
+          "stateId": "communication_intent_picker",
           "kind": "populated",
           "status": "tested",
           "dimensions": {
@@ -2210,7 +2408,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "picker",
+            "send_intent": "picker",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2218,8 +2416,7 @@
             "captureIds": [],
             "previewIds": [],
             "tests": [
-              "test/hosts/host_inbox_screen_test.dart",
-              "test/communications/communication_route_test.dart"
+              "test/hosts/host_inbox_screen_test.dart"
             ]
           },
           "actionCases": [
@@ -2238,13 +2435,14 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "picker",
+                "send_intent": "picker",
                 "accessibility": "standard",
                 "theme": "standard"
               },
               "actions": {
                 "enabled": [
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_event_announcement_composer",
                   "manage_whatsapp_sender"
                 ],
                 "disabled": [],
@@ -2258,11 +2456,258 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
+                  "manage_campaign"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "manual_handoff_queue",
+          "stateId": "manual_handoff_queue",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "workspace": "campaigns",
+            "load": "ready",
+            "scope": "event",
+            "segment": "booked",
+            "content": "populated",
+            "channel": "catch",
+            "whatsapp_window": "open",
+            "search": "collapsed",
+            "profile": "ready",
+            "broadcast": "idle",
+            "messaging": "ready",
+            "campaign": "draft",
+            "send_intent": "history",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "functions/src/organizers/organizerManualSendTasks.test.ts",
+              "test/hosts/host_crm_repository_test.dart",
+              "test/hosts/host_inbox_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "queued",
+              "dimensions": {
+                "workspace": "campaigns",
+                "load": "ready",
+                "scope": "event",
+                "segment": "booked",
+                "content": "populated",
+                "channel": "catch",
+                "whatsapp_window": "open",
+                "search": "collapsed",
+                "profile": "ready",
+                "broadcast": "idle",
+                "messaging": "ready",
+                "campaign": "draft",
+                "send_intent": "history",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_manual_send_task",
+                  "replan_manual_send_tasks"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_workspace",
+                  "retry_inbox",
+                  "toggle_search",
+                  "search_inquiries",
+                  "select_scope",
+                  "select_audience_segment",
+                  "open_conversation",
+                  "open_whatsapp_thread",
+                  "send_whatsapp_reply",
+                  "open_event_announcement_composer",
+                  "select_broadcast_audience",
+                  "select_broadcast_template",
+                  "send_broadcast",
+                  "select_communication_intent",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "send_follower_update",
+                  "manage_whatsapp_sender",
+                  "manage_campaign"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "manual_handoff_opened_unconfirmed",
+          "stateId": "manual_handoff_opened_unconfirmed",
+          "kind": "mutation",
+          "status": "tested",
+          "dimensions": {
+            "workspace": "campaigns",
+            "load": "ready",
+            "scope": "event",
+            "segment": "booked",
+            "content": "populated",
+            "channel": "catch",
+            "whatsapp_window": "open",
+            "search": "collapsed",
+            "profile": "ready",
+            "broadcast": "idle",
+            "messaging": "ready",
+            "campaign": "draft",
+            "send_intent": "history",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "functions/src/organizers/organizerManualSendTasks.test.ts",
+              "test/hosts/host_inbox_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "opened",
+              "dimensions": {
+                "workspace": "campaigns",
+                "load": "ready",
+                "scope": "event",
+                "segment": "booked",
+                "content": "populated",
+                "channel": "catch",
+                "whatsapp_window": "open",
+                "search": "collapsed",
+                "profile": "ready",
+                "broadcast": "idle",
+                "messaging": "ready",
+                "campaign": "draft",
+                "send_intent": "history",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_workspace",
+                  "retry_inbox",
+                  "toggle_search",
+                  "search_inquiries",
+                  "select_scope",
+                  "select_audience_segment",
+                  "open_conversation",
+                  "open_whatsapp_thread",
+                  "send_whatsapp_reply",
+                  "open_event_announcement_composer",
+                  "select_broadcast_audience",
+                  "select_broadcast_template",
+                  "send_broadcast",
+                  "select_communication_intent",
+                  "replan_manual_send_tasks",
+                  "send_follower_update",
+                  "manage_whatsapp_sender",
+                  "manage_campaign"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "manual_handoff_replan_advisory",
+          "stateId": "manual_handoff_replan_advisory",
+          "kind": "permission",
+          "status": "tested",
+          "dimensions": {
+            "workspace": "campaigns",
+            "load": "ready",
+            "scope": "event",
+            "segment": "booked",
+            "content": "populated",
+            "channel": "catch",
+            "whatsapp_window": "open",
+            "search": "collapsed",
+            "profile": "ready",
+            "broadcast": "idle",
+            "messaging": "ready",
+            "campaign": "draft",
+            "send_intent": "history",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "functions/src/organizers/organizerManualSendTasks.test.ts",
+              "test/hosts/host_crm_repository_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "advisory",
+              "dimensions": {
+                "workspace": "campaigns",
+                "load": "ready",
+                "scope": "event",
+                "segment": "booked",
+                "content": "populated",
+                "channel": "catch",
+                "whatsapp_window": "open",
+                "search": "collapsed",
+                "profile": "ready",
+                "broadcast": "idle",
+                "messaging": "ready",
+                "campaign": "draft",
+                "send_intent": "history",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "replan_manual_send_tasks"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_workspace",
+                  "retry_inbox",
+                  "toggle_search",
+                  "search_inquiries",
+                  "select_scope",
+                  "select_audience_segment",
+                  "open_conversation",
+                  "open_whatsapp_thread",
+                  "send_whatsapp_reply",
+                  "open_event_announcement_composer",
+                  "select_broadcast_audience",
+                  "select_broadcast_template",
+                  "send_broadcast",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "send_follower_update",
+                  "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
               }
@@ -2287,7 +2732,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "follower_update",
+            "send_intent": "follower_update",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2316,7 +2761,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "follower_update",
+                "send_intent": "follower_update",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2335,11 +2780,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -2360,7 +2809,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "follower_update",
+                "send_intent": "follower_update",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2379,11 +2828,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "manage_whatsapp_sender",
                   "manage_campaign"
                 ]
@@ -2409,7 +2862,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2437,7 +2890,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2456,11 +2909,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender"
                 ]
@@ -2486,7 +2943,7 @@
             "broadcast": "idle",
             "messaging": "provider_unavailable",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2513,7 +2970,7 @@
                 "broadcast": "idle",
                 "messaging": "provider_unavailable",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2534,11 +2991,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update"
                 ]
               }
@@ -2563,7 +3024,7 @@
             "broadcast": "idle",
             "messaging": "disconnected",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2592,7 +3053,7 @@
                 "broadcast": "idle",
                 "messaging": "disconnected",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2611,11 +3072,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_campaign"
                 ]
@@ -2641,7 +3106,7 @@
             "broadcast": "idle",
             "messaging": "connecting",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2666,7 +3131,7 @@
                 "broadcast": "idle",
                 "messaging": "connecting",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2686,11 +3151,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update"
                 ]
               }
@@ -2715,7 +3184,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2747,7 +3216,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2767,11 +3236,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update"
                 ]
               }
@@ -2796,7 +3269,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2826,7 +3299,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2845,11 +3318,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender"
                 ]
@@ -2875,7 +3352,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "previewed",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2900,7 +3377,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "previewed",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2919,11 +3396,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender"
                 ]
@@ -2949,7 +3430,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "dispatching",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -2978,7 +3459,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "dispatching",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -2997,11 +3478,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender"
                 ]
@@ -3027,7 +3512,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3059,7 +3544,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3077,11 +3562,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3108,7 +3597,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3139,7 +3628,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3157,11 +3646,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3188,7 +3681,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3219,7 +3712,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3237,11 +3730,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3268,7 +3765,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3297,7 +3794,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3315,11 +3812,15 @@
                   "select_audience_segment",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3346,7 +3847,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3378,7 +3879,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3396,11 +3897,15 @@
                   "select_audience_segment",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3427,7 +3932,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3459,7 +3964,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3477,11 +3982,15 @@
                   "select_audience_segment",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3508,7 +4017,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3538,7 +4047,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3556,11 +4065,15 @@
                   "select_audience_segment",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3587,7 +4100,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3614,7 +4127,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3632,11 +4145,15 @@
                   "select_audience_segment",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3663,7 +4180,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3692,7 +4209,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3710,11 +4227,15 @@
                   "select_audience_segment",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3741,7 +4262,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3770,7 +4291,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3788,11 +4309,15 @@
                   "select_audience_segment",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3819,7 +4344,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -3848,7 +4373,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "standard"
               },
@@ -3867,10 +4392,14 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3897,7 +4426,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "text_scale_2",
             "theme": "standard"
           },
@@ -3926,7 +4455,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "text_scale_2",
                 "theme": "standard"
               },
@@ -3943,11 +4472,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -3974,7 +4507,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "reduced_motion",
             "theme": "standard"
           },
@@ -4003,7 +4536,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "reduced_motion",
                 "theme": "standard"
               },
@@ -4020,11 +4553,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"
@@ -4051,7 +4588,7 @@
             "broadcast": "idle",
             "messaging": "ready",
             "campaign": "draft",
-            "send_route": "history",
+            "send_intent": "history",
             "accessibility": "standard",
             "theme": "light_dark"
           },
@@ -4080,7 +4617,7 @@
                 "broadcast": "idle",
                 "messaging": "ready",
                 "campaign": "draft",
-                "send_route": "history",
+                "send_intent": "history",
                 "accessibility": "standard",
                 "theme": "light_dark"
               },
@@ -4097,11 +4634,15 @@
                   "open_conversation",
                   "open_whatsapp_thread",
                   "send_whatsapp_reply",
-                  "open_broadcast_composer",
+                  "open_event_announcement_composer",
                   "select_broadcast_audience",
                   "select_broadcast_template",
                   "send_broadcast",
-                  "select_communication_route",
+                  "select_communication_intent",
+                  "open_manual_send_task",
+                  "open_manual_handoff",
+                  "mark_manual_send_task",
+                  "replan_manual_send_tasks",
                   "send_follower_update",
                   "manage_whatsapp_sender",
                   "manage_campaign"

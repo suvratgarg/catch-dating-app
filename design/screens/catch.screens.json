@@ -14986,9 +14986,9 @@
         {"id": "customer_filter_manual_tag", "kind": "populated", "status": "tested", "source": "HostCustomerFilterSheet Your tags group + HostCustomerFilterSummary", "tests": ["test/hosts/host_customer_filter_summary_test.dart", "test/hosts/host_crm_contact_memory_test.dart"], "nextAction": "Keep organizer tags visually separate while allowing their exact current result to become a Customers-owned saved audience."},
         {"id": "customer_campaign_bridge_ready", "kind": "populated", "status": "tested", "source": "HostCustomerFilterSummary enabled Message these N action + HostSaveAudienceSheet", "tests": ["test/hosts/host_customer_filter_summary_test.dart", "test/hosts/host_campaign_segment_eligibility_test.dart", "test/hosts/host_crm_repository_test.dart"], "nextAction": "Keep exact coverage, non-search persistence, saved-audience preview, and active-sender gates aligned with campaign blockers."},
         {"id": "customer_campaign_bridge_blocked", "kind": "permission", "status": "tested", "source": "HostCustomerFilterSummary disabled Message these N action with blocker copy", "tests": ["test/hosts/host_customer_filter_summary_test.dart", "test/hosts/host_campaign_segment_eligibility_test.dart"], "nextAction": "Keep every disabled bridge visibly paired with its campaign blocker reason."},
-        {"id": "customer_saved_audience_manage", "kind": "populated", "status": "implemented", "source": "HostSavedAudiencesSheet exact preview and archive actions", "tests": ["test/hosts/host_crm_repository_test.dart"], "nextAction": "Add a deterministic populated management-sheet render and archive interaction test."},
-        {"id": "customer_saved_audience_empty", "kind": "empty", "status": "implemented", "source": "HostSavedAudiencesSheet CatchEmptyState", "nextAction": "Capture the Customers-owned first-audience path."},
-        {"id": "customer_saved_audience_error", "kind": "error", "status": "implemented", "source": "HostSavedAudiencesSheet CatchErrorState", "nextAction": "Add retry interaction coverage."},
+        {"id": "customer_saved_audience_manage", "kind": "populated", "status": "tested", "source": "HostSavedAudiencesSheet exact preview and archive actions", "previewIds": ["hostSavedAudiencesStates"], "tests": ["test/hosts/host_crm_repository_test.dart", "test/hosts/host_operations_customers_tests.dart"], "nextAction": "Capture the populated Customers-owned management sheet when the authenticated gallery is refreshed."},
+        {"id": "customer_saved_audience_empty", "kind": "empty", "status": "tested", "source": "HostSavedAudiencesSheet CatchEmptyState", "previewIds": ["hostSavedAudiencesStates"], "tests": ["test/hosts/host_operations_customers_tests.dart"], "nextAction": "Capture the Customers-owned first-audience path when the authenticated gallery is refreshed."},
+        {"id": "customer_saved_audience_error", "kind": "error", "status": "tested", "source": "HostSavedAudiencesSheet CatchErrorState", "previewIds": ["hostSavedAudiencesStates"], "tests": ["test/hosts/host_operations_customers_tests.dart"], "nextAction": "Capture retry treatment when the authenticated gallery is refreshed."},
         {"id": "manual_add_pending", "kind": "mutation", "status": "implemented", "source": "HostAddCustomerSheet submit lifecycle", "nextAction": "Add manual-add error and pending widget tests."},
         {"id": "customer_detail_loading", "kind": "loading", "status": "implemented", "source": "hostAudienceContactDetailProvider", "nextAction": "Add deterministic detail loading capture."},
         {"id": "customer_detail_error", "kind": "error", "status": "implemented", "source": "CatchErrorState in HostCustomerDetailScreen", "nextAction": "Add detail retry interaction test."},
@@ -15589,15 +15589,14 @@
           ]
         },
         {
-          "id": "communication_route_picker",
+          "id": "communication_intent_picker",
           "kind": "populated",
           "status": "tested",
-          "source": "HostSendsWorkspaceSliver + communicationRouteCatalog",
+          "source": "HostSendsWorkspaceSliver + _HostSendsIntentPicker resolve conversation, saved-audience, event-announcement, and follower-update intents while provider policy remains in setup.",
           "tests": [
-            "test/hosts/host_inbox_screen_test.dart",
-            "test/communications/communication_route_test.dart"
+            "test/hosts/host_inbox_screen_test.dart"
           ],
-          "nextAction": "Add a deterministic Sends route-picker preview and capture after its baseline is approved."
+          "nextAction": "Add a deterministic Sends intent-picker preview and capture after its baseline is approved."
         },
         {
           "id": "manual_handoff_queue",
@@ -15792,7 +15791,7 @@
           "id": "conversation_rows",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatsListBody folds newMatches and conversations into one host inbox body, leads host-mode populated content with HostInboxBroadcastCard, and ChatConversationsList renders contiguous rows.",
+          "source": "ChatsListBody folds newMatches and conversations into one inbox body, while ChatConversationsList renders contiguous rows. Host outbound event announcements are composed only from the Sends workspace.",
           "tests": [
             "test/chats/chat_inbox_screen_test.dart"
           ],

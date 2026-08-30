@@ -17760,6 +17760,117 @@ export const organizerFormDocumentSchema: Record<string, unknown> = {
       "minimum": 0,
       "maximum": 1000000000
     },
+    "consequenceProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "coverage",
+        "identityPolicy",
+        "enabledAutomationActionKinds",
+        "enabledAutomationActionKindCounts"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "enum": [
+            1
+          ]
+        },
+        "coverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "identityOnly",
+            "unavailable"
+          ]
+        },
+        "identityPolicy": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "anonymous",
+                "emailVerified",
+                "phoneVerified",
+                "emailOrPhoneVerified",
+                "catchAccount"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "enabledAutomationActionKinds": {
+          "type": "array",
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "notifyTeam",
+              "addOrganizerTag",
+              "createCrmContact",
+              "addApplicationQueue",
+              "proposeEventAttendee",
+              "signedWebhook",
+              "campaignHandoff"
+            ]
+          }
+        },
+        "enabledAutomationActionKindCounts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "notifyTeam",
+            "addOrganizerTag",
+            "createCrmContact",
+            "addApplicationQueue",
+            "proposeEventAttendee",
+            "signedWebhook",
+            "campaignHandoff"
+          ],
+          "properties": {
+            "notifyTeam": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "addOrganizerTag": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "createCrmContact": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "addApplicationQueue": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "proposeEventAttendee": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "signedWebhook": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "campaignHandoff": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          }
+        }
+      }
+    },
     "createdAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",
@@ -70622,6 +70733,7 @@ export const createOrganizerFormCallableResponseSchema: Record<string, unknown> 
             "draftRevision",
             "publishedVersion",
             "submittedResponseCount",
+            "consequences",
             "updatedAtMillis",
             "publishedAtMillis",
             "lastResponseAtMillis"
@@ -70727,6 +70839,59 @@ export const createOrganizerFormCallableResponseSchema: Record<string, unknown> 
               "type": "integer",
               "minimum": 0,
               "maximum": 1000000000
+            },
+            "consequences": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "coverage",
+                "identityPolicy",
+                "enabledAutomationActionKinds"
+              ],
+              "properties": {
+                "coverage": {
+                  "type": "string",
+                  "enum": [
+                    "exact",
+                    "identityOnly",
+                    "unavailable"
+                  ]
+                },
+                "identityPolicy": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "anonymous",
+                        "emailVerified",
+                        "phoneVerified",
+                        "emailOrPhoneVerified",
+                        "catchAccount"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "enabledAutomationActionKinds": {
+                  "type": "array",
+                  "maxItems": 7,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "notifyTeam",
+                      "addOrganizerTag",
+                      "createCrmContact",
+                      "addApplicationQueue",
+                      "proposeEventAttendee",
+                      "signedWebhook",
+                      "campaignHandoff"
+                    ]
+                  }
+                }
+              }
             },
             "updatedAtMillis": {
               "type": "integer",
@@ -72289,6 +72454,7 @@ export const updateOrganizerFormDraftCallableResponseSchema: Record<string, unkn
             "draftRevision",
             "publishedVersion",
             "submittedResponseCount",
+            "consequences",
             "updatedAtMillis",
             "publishedAtMillis",
             "lastResponseAtMillis"
@@ -72394,6 +72560,59 @@ export const updateOrganizerFormDraftCallableResponseSchema: Record<string, unkn
               "type": "integer",
               "minimum": 0,
               "maximum": 1000000000
+            },
+            "consequences": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "coverage",
+                "identityPolicy",
+                "enabledAutomationActionKinds"
+              ],
+              "properties": {
+                "coverage": {
+                  "type": "string",
+                  "enum": [
+                    "exact",
+                    "identityOnly",
+                    "unavailable"
+                  ]
+                },
+                "identityPolicy": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "anonymous",
+                        "emailVerified",
+                        "phoneVerified",
+                        "emailOrPhoneVerified",
+                        "catchAccount"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "enabledAutomationActionKinds": {
+                  "type": "array",
+                  "maxItems": 7,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "notifyTeam",
+                      "addOrganizerTag",
+                      "createCrmContact",
+                      "addApplicationQueue",
+                      "proposeEventAttendee",
+                      "signedWebhook",
+                      "campaignHandoff"
+                    ]
+                  }
+                }
+              }
             },
             "updatedAtMillis": {
               "type": "integer",
@@ -73234,6 +73453,7 @@ export const getOrganizerFormEditorCallableResponseSchema: Record<string, unknow
             "draftRevision",
             "publishedVersion",
             "submittedResponseCount",
+            "consequences",
             "updatedAtMillis",
             "publishedAtMillis",
             "lastResponseAtMillis"
@@ -73339,6 +73559,59 @@ export const getOrganizerFormEditorCallableResponseSchema: Record<string, unknow
               "type": "integer",
               "minimum": 0,
               "maximum": 1000000000
+            },
+            "consequences": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "coverage",
+                "identityPolicy",
+                "enabledAutomationActionKinds"
+              ],
+              "properties": {
+                "coverage": {
+                  "type": "string",
+                  "enum": [
+                    "exact",
+                    "identityOnly",
+                    "unavailable"
+                  ]
+                },
+                "identityPolicy": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "anonymous",
+                        "emailVerified",
+                        "phoneVerified",
+                        "emailOrPhoneVerified",
+                        "catchAccount"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "enabledAutomationActionKinds": {
+                  "type": "array",
+                  "maxItems": 7,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "notifyTeam",
+                      "addOrganizerTag",
+                      "createCrmContact",
+                      "addApplicationQueue",
+                      "proposeEventAttendee",
+                      "signedWebhook",
+                      "campaignHandoff"
+                    ]
+                  }
+                }
+              }
             },
             "updatedAtMillis": {
               "type": "integer",
@@ -74233,6 +74506,7 @@ export const listOrganizerFormsCallableResponseSchema: Record<string, unknown> =
           "draftRevision",
           "publishedVersion",
           "submittedResponseCount",
+          "consequences",
           "updatedAtMillis",
           "publishedAtMillis",
           "lastResponseAtMillis"
@@ -74338,6 +74612,59 @@ export const listOrganizerFormsCallableResponseSchema: Record<string, unknown> =
             "type": "integer",
             "minimum": 0,
             "maximum": 1000000000
+          },
+          "consequences": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "coverage",
+              "identityPolicy",
+              "enabledAutomationActionKinds"
+            ],
+            "properties": {
+              "coverage": {
+                "type": "string",
+                "enum": [
+                  "exact",
+                  "identityOnly",
+                  "unavailable"
+                ]
+              },
+              "identityPolicy": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "anonymous",
+                      "emailVerified",
+                      "phoneVerified",
+                      "emailOrPhoneVerified",
+                      "catchAccount"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "enabledAutomationActionKinds": {
+                "type": "array",
+                "maxItems": 7,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "notifyTeam",
+                    "addOrganizerTag",
+                    "createCrmContact",
+                    "addApplicationQueue",
+                    "proposeEventAttendee",
+                    "signedWebhook",
+                    "campaignHandoff"
+                  ]
+                }
+              }
+            }
           },
           "updatedAtMillis": {
             "type": "integer",
@@ -75232,6 +75559,7 @@ export const publishOrganizerFormCallableResponseSchema: Record<string, unknown>
         "draftRevision",
         "publishedVersion",
         "submittedResponseCount",
+        "consequences",
         "updatedAtMillis",
         "publishedAtMillis",
         "lastResponseAtMillis"
@@ -75337,6 +75665,59 @@ export const publishOrganizerFormCallableResponseSchema: Record<string, unknown>
           "type": "integer",
           "minimum": 0,
           "maximum": 1000000000
+        },
+        "consequences": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "coverage",
+            "identityPolicy",
+            "enabledAutomationActionKinds"
+          ],
+          "properties": {
+            "coverage": {
+              "type": "string",
+              "enum": [
+                "exact",
+                "identityOnly",
+                "unavailable"
+              ]
+            },
+            "identityPolicy": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "anonymous",
+                    "emailVerified",
+                    "phoneVerified",
+                    "emailOrPhoneVerified",
+                    "catchAccount"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "enabledAutomationActionKinds": {
+              "type": "array",
+              "maxItems": 7,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "notifyTeam",
+                  "addOrganizerTag",
+                  "createCrmContact",
+                  "addApplicationQueue",
+                  "proposeEventAttendee",
+                  "signedWebhook",
+                  "campaignHandoff"
+                ]
+              }
+            }
+          }
         },
         "updatedAtMillis": {
           "type": "integer",
@@ -75432,6 +75813,7 @@ export const setOrganizerFormLifecycleCallableResponseSchema: Record<string, unk
         "draftRevision",
         "publishedVersion",
         "submittedResponseCount",
+        "consequences",
         "updatedAtMillis",
         "publishedAtMillis",
         "lastResponseAtMillis"
@@ -75537,6 +75919,59 @@ export const setOrganizerFormLifecycleCallableResponseSchema: Record<string, unk
           "type": "integer",
           "minimum": 0,
           "maximum": 1000000000
+        },
+        "consequences": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "coverage",
+            "identityPolicy",
+            "enabledAutomationActionKinds"
+          ],
+          "properties": {
+            "coverage": {
+              "type": "string",
+              "enum": [
+                "exact",
+                "identityOnly",
+                "unavailable"
+              ]
+            },
+            "identityPolicy": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "anonymous",
+                    "emailVerified",
+                    "phoneVerified",
+                    "emailOrPhoneVerified",
+                    "catchAccount"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "enabledAutomationActionKinds": {
+              "type": "array",
+              "maxItems": 7,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "notifyTeam",
+                  "addOrganizerTag",
+                  "createCrmContact",
+                  "addApplicationQueue",
+                  "proposeEventAttendee",
+                  "signedWebhook",
+                  "campaignHandoff"
+                ]
+              }
+            }
+          }
         },
         "updatedAtMillis": {
           "type": "integer",
@@ -75637,6 +76072,7 @@ export const duplicateOrganizerFormCallableResponseSchema: Record<string, unknow
             "draftRevision",
             "publishedVersion",
             "submittedResponseCount",
+            "consequences",
             "updatedAtMillis",
             "publishedAtMillis",
             "lastResponseAtMillis"
@@ -75742,6 +76178,59 @@ export const duplicateOrganizerFormCallableResponseSchema: Record<string, unknow
               "type": "integer",
               "minimum": 0,
               "maximum": 1000000000
+            },
+            "consequences": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "coverage",
+                "identityPolicy",
+                "enabledAutomationActionKinds"
+              ],
+              "properties": {
+                "coverage": {
+                  "type": "string",
+                  "enum": [
+                    "exact",
+                    "identityOnly",
+                    "unavailable"
+                  ]
+                },
+                "identityPolicy": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "anonymous",
+                        "emailVerified",
+                        "phoneVerified",
+                        "emailOrPhoneVerified",
+                        "catchAccount"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "enabledAutomationActionKinds": {
+                  "type": "array",
+                  "maxItems": 7,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "notifyTeam",
+                      "addOrganizerTag",
+                      "createCrmContact",
+                      "addApplicationQueue",
+                      "proposeEventAttendee",
+                      "signedWebhook",
+                      "campaignHandoff"
+                    ]
+                  }
+                }
+              }
             },
             "updatedAtMillis": {
               "type": "integer",

@@ -342,6 +342,7 @@ class _EventTestProviderPrimer extends ConsumerWidget {
 
 class FakeEventRepository extends Fake implements EventRepository {
   String generatedId = 'generated-event-id';
+  String generatedBroadcastRequestId = 'generated-broadcast-request-id';
   Event? createdEvent;
   Object? createError;
   Object? cancelError;
@@ -413,6 +414,9 @@ class FakeEventRepository extends Fake implements EventRepository {
 
   @override
   String generateId() => generatedId;
+
+  @override
+  String generateBroadcastRequestId() => generatedBroadcastRequestId;
 
   @override
   Future<void> createEvent({

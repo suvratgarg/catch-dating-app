@@ -31763,6 +31763,36 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listOrganizerFormsCallableResponseItemsItemsConsequencesCoverage = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.consequences.coverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'identityOnly', 'unavailable'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsConsequencesEnabledAutomationActionKinds = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.consequences.enabledAutomationActionKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsConsequencesEnabledAutomationActionKindsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.consequences.enabledAutomationActionKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+  );
+
+  static const listOrganizerFormsCallableResponseItemsItemsConsequencesIdentityPolicy = CatchContractFieldConstraints(
+    path: 'listOrganizerFormsCallableResponse.items.items.consequences.identityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'emailOrPhoneVerified', 'catchAccount'],
+  );
+
   static const listOrganizerFormsCallableResponseItemsItemsDefaultTargetId = CatchContractFieldConstraints(
     path: 'listOrganizerFormsCallableResponse.items.items.defaultTargetId',
     maxLength: 180,
@@ -42236,6 +42266,98 @@ abstract final class CatchContractConstraints {
 
   static const organizerFormDocumentArchivedAtSeconds = CatchContractFieldConstraints(
     path: 'organizerFormDocument.archivedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDocumentConsequenceProjectionCoverage = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.coverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'identityOnly', 'unavailable'],
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsAddApplicationQueue = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.addApplicationQueue',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsAddOrganizerTag = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.addOrganizerTag',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsCampaignHandoff = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.campaignHandoff',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsCreateCrmContact = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.createCrmContact',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsNotifyTeam = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.notifyTeam',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsProposeEventAttendee = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.proposeEventAttendee',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsSignedWebhook = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.signedWebhook',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKinds = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindsItems = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.enabledAutomationActionKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notifyTeam', 'addOrganizerTag', 'createCrmContact', 'addApplicationQueue', 'proposeEventAttendee', 'signedWebhook', 'campaignHandoff'],
+  );
+
+  static const organizerFormDocumentConsequenceProjectionIdentityPolicy = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.identityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'emailOrPhoneVerified', 'catchAccount'],
+  );
+
+  static const organizerFormDocumentConsequenceProjectionVersion = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.consequenceProjection.version',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -65066,6 +65188,10 @@ abstract final class CatchContractConstraints {
     'listOrganizerFormsCallablePayload.statuses.items': listOrganizerFormsCallablePayloadStatusesItems,
     'listOrganizerFormsCallableResponse.items': listOrganizerFormsCallableResponseItems,
     'listOrganizerFormsCallableResponse.items.items.activeVersionId': listOrganizerFormsCallableResponseItemsItemsActiveVersionId,
+    'listOrganizerFormsCallableResponse.items.items.consequences.coverage': listOrganizerFormsCallableResponseItemsItemsConsequencesCoverage,
+    'listOrganizerFormsCallableResponse.items.items.consequences.enabledAutomationActionKinds': listOrganizerFormsCallableResponseItemsItemsConsequencesEnabledAutomationActionKinds,
+    'listOrganizerFormsCallableResponse.items.items.consequences.enabledAutomationActionKinds.items': listOrganizerFormsCallableResponseItemsItemsConsequencesEnabledAutomationActionKindsItems,
+    'listOrganizerFormsCallableResponse.items.items.consequences.identityPolicy': listOrganizerFormsCallableResponseItemsItemsConsequencesIdentityPolicy,
     'listOrganizerFormsCallableResponse.items.items.defaultTargetId': listOrganizerFormsCallableResponseItemsItemsDefaultTargetId,
     'listOrganizerFormsCallableResponse.items.items.defaultTargetKind': listOrganizerFormsCallableResponseItemsItemsDefaultTargetKind,
     'listOrganizerFormsCallableResponse.items.items.description': listOrganizerFormsCallableResponseItemsItemsDescription,
@@ -66509,6 +66635,18 @@ abstract final class CatchContractConstraints {
     'organizerFormDocument.activeVersionId': organizerFormDocumentActiveVersionId,
     'organizerFormDocument.archivedAt._nanoseconds': organizerFormDocumentArchivedAtNanoseconds,
     'organizerFormDocument.archivedAt._seconds': organizerFormDocumentArchivedAtSeconds,
+    'organizerFormDocument.consequenceProjection.coverage': organizerFormDocumentConsequenceProjectionCoverage,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.addApplicationQueue': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsAddApplicationQueue,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.addOrganizerTag': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsAddOrganizerTag,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.campaignHandoff': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsCampaignHandoff,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.createCrmContact': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsCreateCrmContact,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.notifyTeam': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsNotifyTeam,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.proposeEventAttendee': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsProposeEventAttendee,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKindCounts.signedWebhook': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindCountsSignedWebhook,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKinds': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKinds,
+    'organizerFormDocument.consequenceProjection.enabledAutomationActionKinds.items': organizerFormDocumentConsequenceProjectionEnabledAutomationActionKindsItems,
+    'organizerFormDocument.consequenceProjection.identityPolicy': organizerFormDocumentConsequenceProjectionIdentityPolicy,
+    'organizerFormDocument.consequenceProjection.version': organizerFormDocumentConsequenceProjectionVersion,
     'organizerFormDocument.createdAt._nanoseconds': organizerFormDocumentCreatedAtNanoseconds,
     'organizerFormDocument.createdAt._seconds': organizerFormDocumentCreatedAtSeconds,
     'organizerFormDocument.createdByUid': organizerFormDocumentCreatedByUid,

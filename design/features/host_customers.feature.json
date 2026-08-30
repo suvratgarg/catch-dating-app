@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-18",
+  "updated": "2026-08-30",
   "id": "feature.host_customers",
   "name": "Host Customers",
   "owner": "hosts",
   "status": "active",
-  "description": "Makes Customers the sole Host CRM directory for server-backed sorting, computed segments, organizer-authored notes and tags, per-person campaign and Announcement history, reviewed identity merges and reversals, contact administration, customer detail, identity-gated Catch chat, personal WhatsApp handoff, and a deep-linked segment bridge into Messaging campaigns.",
+  "description": "Makes Customers the sole Host CRM directory and durable reusable-audience owner for server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration, customer detail, identity-gated Catch chat, personal WhatsApp handoff, and saved-audience deep links into Messaging campaigns.",
   "surfaces": [
     {
       "id": "host_flutter",
@@ -57,6 +57,7 @@
           "contracts/firestore/organizer_contact_tag_vocabularies.schema.json",
           "contracts/firestore/organizer_contact_traits.schema.json",
           "contracts/firestore/organizer_contacts.schema.json",
+          "contracts/firestore/organizer_saved_audiences.schema.json",
           "contracts/firestore/payments.schema.json"
         ],
         "testEvidence": {
@@ -83,6 +84,9 @@
           "customer_active_merges": ["test/hosts/host_crm_repository_test.dart"],
           "personal_whatsapp_unavailable": ["test/hosts/host_operations_screen_test.dart", "test/hosts/host_crm_repository_test.dart"],
           "personal_whatsapp_handoff": ["test/hosts/host_operations_screen_test.dart", "test/core/external_links_test.dart", "test/communications/communication_route_test.dart"]
+          ,"customer_saved_audience_manage": ["test/hosts/host_crm_repository_test.dart", "test/hosts/host_operations_customers_tests.dart"],
+          "customer_saved_audience_empty": ["test/hosts/host_operations_customers_tests.dart"],
+          "customer_saved_audience_error": ["test/hosts/host_operations_customers_tests.dart"]
         }
       },
       "dimensions": {
@@ -159,11 +163,11 @@
         {
           "id": "message_filtered_customers",
           "owner": "customers_screen",
-          "codeValue": "_messageCustomers",
+          "codeValue": "_saveAndMessageCustomers",
           "cardinality": "singleton",
           "scopeKeys": ["viewerUid", "organizerId", "filter", "matchCountCoverage"],
           "outcomes": [{"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.host.inbox"}}],
-          "description": "Routes an eligible active-sender segment into the Messaging Campaigns composer with that segment preselected; otherwise keeps the control disabled beside its campaign blocker reason."
+          "description": "Persists an eligible exact customer filter as a Customers-owned saved audience, then routes its identifier into the Messaging Sends composer; otherwise keeps the control disabled beside its campaign blocker reason."
         },
         {
           "id": "load_more",
@@ -331,7 +335,7 @@
           "description": "Opens an editable prefilled native WhatsApp app handoff, with wa.me fallback, for one valid contact phone only while no explicit WhatsApp opt-out or admin suppression applies. The Host remains responsible for pressing Send in WhatsApp, and Catch records no delivery or reply receipt."
         }
       ],
-      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "customer_sorted_most_attended", "customer_sorted_name", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_memory_populated", "customer_note_editing", "customer_tags_editing", "customer_send_history", "customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation", "customer_active_merges", "customer_unmerge_pending", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "personal_whatsapp_unavailable", "personal_whatsapp_handoff", "offline", "text_scale_2", "reduced_motion", "light_dark"],
+      "stateIds": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_filtered_empty", "customers_paginating", "customer_sorted_most_attended", "customer_sorted_name", "customer_filter_sheet", "customer_filter_manual_tag", "customer_campaign_bridge_ready", "customer_campaign_bridge_blocked", "customer_saved_audience_manage", "customer_saved_audience_empty", "customer_saved_audience_error", "manual_add_pending", "customer_export_pending", "customer_manage", "customer_manage_pending", "customer_detail_loading", "customer_detail_error", "customer_detail_linked", "customer_detail_unlinked", "customer_detail_ambiguous", "customer_memory_populated", "customer_note_editing", "customer_tags_editing", "customer_send_history", "customer_merge_review", "customer_merge_dismissed", "customer_merge_conflict_confirmation", "customer_active_merges", "customer_unmerge_pending", "customer_revenue_exact", "customer_revenue_partial", "customer_revenue_unavailable", "conversation_available", "conversation_unavailable", "personal_whatsapp_unavailable", "personal_whatsapp_handoff", "offline", "text_scale_2", "reduced_motion", "light_dark"],
       "scenarioDefaults": {"dimensions": {}, "actionCases": [{"id": "default"}]},
       "scenarioOverrides": {
         "customers_loading": {"dimensions": {"load": "loading"}},
@@ -346,6 +350,9 @@
         "customer_filter_manual_tag": {"dimensions": {"filter_sheet": "open", "tags": "assigned"}, "actionCases": [{"id": "choose_manual", "enabledActions": ["filter_customers"], "disabledActions": ["message_filtered_customers"]}]},
         "customer_campaign_bridge_ready": {"dimensions": {"campaign_bridge": "ready"}, "actionCases": [{"id": "message", "enabledActions": ["message_filtered_customers"]}]},
         "customer_campaign_bridge_blocked": {"dimensions": {"campaign_bridge": "blocked"}, "actionCases": [{"id": "explain", "disabledActions": ["message_filtered_customers"]}]},
+        "customer_saved_audience_manage": {"actionCases": [{"id": "manage"}]},
+        "customer_saved_audience_empty": {"dimensions": {"directory": "empty"}, "actionCases": [{"id": "empty"}]},
+        "customer_saved_audience_error": {"dimensions": {"load": "error"}, "actionCases": [{"id": "recovery"}]},
         "manual_add_pending": {"dimensions": {"mutation": "adding"}, "actionCases": [{"id": "pending", "disabledActions": ["create_customer"]}]},
         "customer_export_pending": {"dimensions": {"mutation": "exporting"}, "actionCases": [{"id": "pending", "disabledActions": ["export_customers"]}]},
         "customer_manage": {"actionCases": [{"id": "manage", "enabledActions": ["manage_customer"]}]},

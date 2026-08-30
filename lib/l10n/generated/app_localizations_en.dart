@@ -13288,46 +13288,98 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostMessagingWorkspaceSends => 'Sends';
 
   @override
-  String get hostSendsChooseChannel => 'Choose channel';
+  String get hostSendsChooseIntent => 'Choose what to send';
 
   @override
-  String get hostSendsInCatchChannels => 'In Catch';
+  String get hostSendsIntentTitle => 'What do you want to do?';
 
   @override
-  String get hostSendsWhatsappChannels => 'WhatsApp';
+  String get hostSendsConversationIntent => 'Continue a conversation';
+
+  @override
+  String get hostSendsConversationIntentBody =>
+      'Open Inbox to reply in an existing one-to-one conversation.';
+
+  @override
+  String get hostSendsSavedAudienceIntent => 'Message a saved audience';
+
+  @override
+  String get hostSendsSavedAudienceIntentBody =>
+      'Choose a reusable customer audience and compose one managed campaign.';
+
+  @override
+  String get hostSendsSavedAudienceSetupBody =>
+      'This intent is not ready. Open Messaging settings to see what is required.';
+
+  @override
+  String get hostSendsEventAnnouncementIntent => 'Send an event announcement';
+
+  @override
+  String get hostSendsEventAnnouncementChecking => 'Checking active events…';
+
+  @override
+  String get hostSendsEventAnnouncementCheckingAudience =>
+      'Checking the event audience…';
+
+  @override
+  String get hostSendsEventAnnouncementUnavailable =>
+      'Event announcement availability could not be loaded.';
+
+  @override
+  String get hostSendsEventAnnouncementEmpty =>
+      'There is no active or upcoming event to announce to.';
+
+  @override
+  String hostSendsEventAnnouncementIntentBody({
+    required String eventTitle,
+    required int bookedCount,
+    required int prospectiveCount,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      bookedCount,
+      locale: localeName,
+      other: '$bookedCount booked people',
+      one: '1 booked person',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      prospectiveCount,
+      locale: localeName,
+      other: '$prospectiveCount prospective people',
+      one: '1 prospective person',
+    );
+    return '$eventTitle · $_temp0 · $_temp1';
+  }
+
+  @override
+  String hostSendsEventAudienceSelected({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count selected',
+      one: '1 selected',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostSendsEventAnnouncementUnavailableShort => 'Unavailable now';
+
+  @override
+  String get hostSendsEventAnnouncementNoAudience => 'No audience yet';
+
+  @override
+  String get hostSendsFollowerUpdateIntent => 'Post a follower update';
 
   @override
   String get hostSendsSettings => 'WhatsApp Business settings';
-
-  @override
-  String get hostSendsCatchChatChannel => 'Catch chat · Organizer';
-
-  @override
-  String get hostSendsCatchChatDescription =>
-      'One linked Catch user · two-way in the Catch app';
 
   @override
   String get hostSendsCatchAnnouncementChannel =>
       'Catch announcement · Organizer';
 
   @override
-  String get hostSendsCatchAnnouncementDescription =>
-      'Event roster · Activity plus preference-gated push · no reply thread';
-
-  @override
   String get hostSendsWhatsappBusinessChannel =>
       'WhatsApp Business · Organizer number';
-
-  @override
-  String get hostSendsWhatsappBusinessDescription =>
-      'Permissioned CRM audience · approved template · delivery receipts';
-
-  @override
-  String get hostSendsWhatsappAppChannel => 'WhatsApp app · You';
-
-  @override
-  String get hostSendsWhatsappAppDescription =>
-      'Choose a person in Customers · editable text · you press Send · untracked by Catch';
 
   @override
   String get hostSendsFollowerUpdateChannel => 'Follower update · Organizer';
@@ -13350,41 +13402,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSendsLinkedEventUpdate => 'Linked event';
 
   @override
-  String get hostSendsCatchWhatsappChannel => 'Catch WhatsApp · Catch number';
-
-  @override
-  String get hostSendsCatchWhatsappDescription =>
-      'Catch-owned sender and Catch-specific permission · not an organizer campaign';
-
-  @override
-  String get hostSendsChannelChecking =>
-      'Checking sender and template readiness…';
+  String get hostSendsChannelChecking => 'Checking availability…';
 
   @override
   String get hostSendsChannelUnavailable =>
-      'Readiness could not be loaded. Open settings to retry.';
+      'Availability could not be loaded. Open settings to retry.';
 
   @override
   String get hostSendsSetupRequired => 'Setup required';
-
-  @override
-  String get hostSendsPlanned => 'Not active';
-
-  @override
-  String get hostSendsWhatsappProviderUnavailable =>
-      'Catch has not enabled the Meta provider in this environment.';
-
-  @override
-  String get hostSendsWhatsappSenderRequired =>
-      'Connect and verify an organizer-owned WhatsApp Business number.';
-
-  @override
-  String get hostSendsWhatsappSenderNeedsAttention =>
-      'Finish sender testing or resolve its connection health.';
-
-  @override
-  String get hostSendsWhatsappTemplateRequired =>
-      'Sync at least one approved WhatsApp message template.';
 
   @override
   String get hostSendsLoadMore => 'Load more';
@@ -14649,9 +14674,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostFormsRowSummary({
-    required String purpose,
     required String status,
     required int count,
+    required String consequence,
   }) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -14660,8 +14685,77 @@ class AppLocalizationsEn extends AppLocalizations {
       one: '1 response',
       zero: 'No responses',
     );
-    return '$purpose · $status · $_temp0';
+    return '$status · $_temp0\n$consequence';
   }
+
+  @override
+  String get hostFormConsequencesUnavailable =>
+      'Identity and automation consequences need review';
+
+  @override
+  String get hostFormAutomationConsequencesUnavailable =>
+      'Automation consequences need review';
+
+  @override
+  String get hostFormConsequenceIdentityAnonymous =>
+      'Anonymous responses · no durable customer identity';
+
+  @override
+  String get hostFormConsequenceIdentityEmail => 'Verifies email';
+
+  @override
+  String get hostFormConsequenceIdentityPhone => 'Verifies phone';
+
+  @override
+  String get hostFormConsequenceIdentityEmailOrPhone =>
+      'Verifies email or phone';
+
+  @override
+  String get hostFormConsequenceIdentityCatchAccount =>
+      'Requires a Catch account';
+
+  @override
+  String get hostFormConsequenceIdentityUnknown =>
+      'Identity policy needs review';
+
+  @override
+  String get hostFormConsequenceCreatesCustomer => 'Adds a record to Customers';
+
+  @override
+  String get hostFormConsequenceApplicationReview =>
+      'Sends a record to application review';
+
+  @override
+  String get hostFormConsequenceProposesAttendee =>
+      'Proposes an event attendee';
+
+  @override
+  String get hostFormConsequenceAppliesTags => 'Applies customer tags';
+
+  @override
+  String get hostFormConsequenceNotifiesTeam => 'Notifies your team';
+
+  @override
+  String get hostFormConsequenceCallsWebhook => 'Calls a signed webhook';
+
+  @override
+  String get hostFormConsequencePreparesSend => 'Prepares a send for review';
+
+  @override
+  String get hostFormConsequenceFormsOnly => 'Responses stay in Forms';
+
+  @override
+  String get hostFormConsequenceNoMessagingPermission =>
+      'Identity checks and contact creation do not grant messaging permission.';
+
+  @override
+  String get hostFormConsequencesTitle => 'What publishing does';
+
+  @override
+  String get hostFormMessagingPermissionTitle => 'Messaging permission';
+
+  @override
+  String get hostFormIdentityConsequenceTitle => 'Identity consequence';
 
   @override
   String get hostFormsLoadMore => 'Load more forms';

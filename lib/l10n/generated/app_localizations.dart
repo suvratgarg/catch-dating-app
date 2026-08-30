@@ -20728,23 +20728,111 @@ abstract class AppLocalizations {
   /// **'Sends'**
   String get hostMessagingWorkspaceSends;
 
-  /// Opens the explicit Host communication-route picker.
+  /// Opens the Host outbound-intent chooser without exposing transport policy.
   ///
   /// In en, this message translates to:
-  /// **'Choose channel'**
-  String get hostSendsChooseChannel;
+  /// **'Choose what to send'**
+  String get hostSendsChooseIntent;
 
-  /// Groups Host routes delivered inside Catch.
+  /// Groups Host outbound communication intents rather than delivery channels.
   ///
   /// In en, this message translates to:
-  /// **'In Catch'**
-  String get hostSendsInCatchChannels;
+  /// **'What do you want to do?'**
+  String get hostSendsIntentTitle;
 
-  /// Groups distinct personal, organizer-owned, and Catch-owned WhatsApp routes.
+  /// Intent that takes a host to existing one-to-one Inbox conversations.
   ///
   /// In en, this message translates to:
-  /// **'WhatsApp'**
-  String get hostSendsWhatsappChannels;
+  /// **'Continue a conversation'**
+  String get hostSendsConversationIntent;
+
+  /// Explains that individual replies remain Inbox-owned.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Inbox to reply in an existing one-to-one conversation.'**
+  String get hostSendsConversationIntentBody;
+
+  /// Outbound intent for a reusable Customers-owned audience.
+  ///
+  /// In en, this message translates to:
+  /// **'Message a saved audience'**
+  String get hostSendsSavedAudienceIntent;
+
+  /// Explains the saved-audience campaign intent without naming its transport.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a reusable customer audience and compose one managed campaign.'**
+  String get hostSendsSavedAudienceIntentBody;
+
+  /// Keeps provider and sender policy out of the intent chooser while directing the host to setup.
+  ///
+  /// In en, this message translates to:
+  /// **'This intent is not ready. Open Messaging settings to see what is required.'**
+  String get hostSendsSavedAudienceSetupBody;
+
+  /// Outbound intent for an event-scoped Booked or Prospective audience.
+  ///
+  /// In en, this message translates to:
+  /// **'Send an event announcement'**
+  String get hostSendsEventAnnouncementIntent;
+
+  /// Loading copy for event-announcement intent availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking active events…'**
+  String get hostSendsEventAnnouncementChecking;
+
+  /// Loading copy while resolving the event roster for an announcement.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking the event audience…'**
+  String get hostSendsEventAnnouncementCheckingAudience;
+
+  /// Load failure for the event-announcement intent.
+  ///
+  /// In en, this message translates to:
+  /// **'Event announcement availability could not be loaded.'**
+  String get hostSendsEventAnnouncementUnavailable;
+
+  /// Empty state for event-announcement intent.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no active or upcoming event to announce to.'**
+  String get hostSendsEventAnnouncementEmpty;
+
+  /// Names the event and its two authoritative announcement audiences.
+  ///
+  /// In en, this message translates to:
+  /// **'{eventTitle} · {bookedCount, plural, =1{1 booked person} other{{bookedCount} booked people}} · {prospectiveCount, plural, =1{1 prospective person} other{{prospectiveCount} prospective people}}'**
+  String hostSendsEventAnnouncementIntentBody({
+    required String eventTitle,
+    required int bookedCount,
+    required int prospectiveCount,
+  });
+
+  /// Selected initial event-announcement segment count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 selected} other{{count} selected}}'**
+  String hostSendsEventAudienceSelected({required int count});
+
+  /// Compact unavailable state for an event announcement.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable now'**
+  String get hostSendsEventAnnouncementUnavailableShort;
+
+  /// Compact empty-roster state for an event announcement.
+  ///
+  /// In en, this message translates to:
+  /// **'No audience yet'**
+  String get hostSendsEventAnnouncementNoAudience;
+
+  /// Outbound intent for an organizer follower post.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a follower update'**
+  String get hostSendsFollowerUpdateIntent;
 
   /// Opens organizer WhatsApp sender setup.
   ///
@@ -20752,53 +20840,17 @@ abstract class AppLocalizations {
   /// **'WhatsApp Business settings'**
   String get hostSendsSettings;
 
-  /// Channel and sender label for one-to-one Catch conversations.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch chat · Organizer'**
-  String get hostSendsCatchChatChannel;
-
-  /// Delivery semantics for Catch chat.
-  ///
-  /// In en, this message translates to:
-  /// **'One linked Catch user · two-way in the Catch app'**
-  String get hostSendsCatchChatDescription;
-
   /// Channel and sender label for an event announcement.
   ///
   /// In en, this message translates to:
   /// **'Catch announcement · Organizer'**
   String get hostSendsCatchAnnouncementChannel;
 
-  /// Delivery semantics for a Catch event announcement.
-  ///
-  /// In en, this message translates to:
-  /// **'Event roster · Activity plus preference-gated push · no reply thread'**
-  String get hostSendsCatchAnnouncementDescription;
-
   /// Channel and sender label for organizer-owned WhatsApp Business.
   ///
   /// In en, this message translates to:
   /// **'WhatsApp Business · Organizer number'**
   String get hostSendsWhatsappBusinessChannel;
-
-  /// Delivery semantics for an organizer WhatsApp campaign.
-  ///
-  /// In en, this message translates to:
-  /// **'Permissioned CRM audience · approved template · delivery receipts'**
-  String get hostSendsWhatsappBusinessDescription;
-
-  /// Channel and sender label for a personal-device WhatsApp handoff.
-  ///
-  /// In en, this message translates to:
-  /// **'WhatsApp app · You'**
-  String get hostSendsWhatsappAppChannel;
-
-  /// Delivery semantics for a personal WhatsApp handoff.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose a person in Customers · editable text · you press Send · untracked by Catch'**
-  String get hostSendsWhatsappAppDescription;
 
   /// Channel and sender label for organizer follower posts.
   ///
@@ -20836,28 +20888,16 @@ abstract class AppLocalizations {
   /// **'Linked event'**
   String get hostSendsLinkedEventUpdate;
 
-  /// Channel and sender label for the separate Catch-owned WhatsApp route.
+  /// Loading state for an outbound communication intent.
   ///
   /// In en, this message translates to:
-  /// **'Catch WhatsApp · Catch number'**
-  String get hostSendsCatchWhatsappChannel;
-
-  /// Boundary for future Catch-owned WhatsApp messages.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch-owned sender and Catch-specific permission · not an organizer campaign'**
-  String get hostSendsCatchWhatsappDescription;
-
-  /// Loading state for managed-channel readiness.
-  ///
-  /// In en, this message translates to:
-  /// **'Checking sender and template readiness…'**
+  /// **'Checking availability…'**
   String get hostSendsChannelChecking;
 
-  /// Error state for managed-channel readiness.
+  /// Error state for outbound intent readiness.
   ///
   /// In en, this message translates to:
-  /// **'Readiness could not be loaded. Open settings to retry.'**
+  /// **'Availability could not be loaded. Open settings to retry.'**
   String get hostSendsChannelUnavailable;
 
   /// Managed-channel availability label.
@@ -20865,36 +20905,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Setup required'**
   String get hostSendsSetupRequired;
-
-  /// Honest availability label for a specified but inactive channel.
-  ///
-  /// In en, this message translates to:
-  /// **'Not active'**
-  String get hostSendsPlanned;
-
-  /// Organizer WhatsApp environment configuration blocker.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch has not enabled the Meta provider in this environment.'**
-  String get hostSendsWhatsappProviderUnavailable;
-
-  /// Organizer WhatsApp sender connection blocker.
-  ///
-  /// In en, this message translates to:
-  /// **'Connect and verify an organizer-owned WhatsApp Business number.'**
-  String get hostSendsWhatsappSenderRequired;
-
-  /// Organizer WhatsApp sender health blocker.
-  ///
-  /// In en, this message translates to:
-  /// **'Finish sender testing or resolve its connection health.'**
-  String get hostSendsWhatsappSenderNeedsAttention;
-
-  /// Organizer WhatsApp approved-template blocker.
-  ///
-  /// In en, this message translates to:
-  /// **'Sync at least one approved WhatsApp message template.'**
-  String get hostSendsWhatsappTemplateRequired;
 
   /// Loads the next page of organizer Sends history.
   ///
@@ -22867,15 +22877,135 @@ abstract class AppLocalizations {
   /// **'Form actions'**
   String get hostFormsActions;
 
-  /// Forms directory row summary.
+  /// Forms directory row lifecycle, response count, and real consequence summary.
   ///
   /// In en, this message translates to:
-  /// **'{purpose} · {status} · {count, plural, =0{No responses} =1{1 response} other{{count} responses}}'**
+  /// **'{status} · {count, plural, =0{No responses} =1{1 response} other{{count} responses}}\n{consequence}'**
   String hostFormsRowSummary({
-    required String purpose,
     required String status,
     required int count,
+    required String consequence,
   });
+
+  /// Legacy form consequence projection has not been established yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity and automation consequences need review'**
+  String get hostFormConsequencesUnavailable;
+
+  /// Identity is known but automation consequence coverage is not exact.
+  ///
+  /// In en, this message translates to:
+  /// **'Automation consequences need review'**
+  String get hostFormAutomationConsequencesUnavailable;
+
+  /// Consequence of allowing anonymous form responses.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous responses · no durable customer identity'**
+  String get hostFormConsequenceIdentityAnonymous;
+
+  /// Verified-email form identity consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifies email'**
+  String get hostFormConsequenceIdentityEmail;
+
+  /// Verified-phone form identity consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifies phone'**
+  String get hostFormConsequenceIdentityPhone;
+
+  /// Either-endpoint form identity consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifies email or phone'**
+  String get hostFormConsequenceIdentityEmailOrPhone;
+
+  /// Catch-account form identity consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires a Catch account'**
+  String get hostFormConsequenceIdentityCatchAccount;
+
+  /// Unknown legacy form identity consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity policy needs review'**
+  String get hostFormConsequenceIdentityUnknown;
+
+  /// CRM-contact automation consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds a record to Customers'**
+  String get hostFormConsequenceCreatesCustomer;
+
+  /// Application-purpose or application-queue consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends a record to application review'**
+  String get hostFormConsequenceApplicationReview;
+
+  /// Event-attendee proposal automation consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposes an event attendee'**
+  String get hostFormConsequenceProposesAttendee;
+
+  /// Organizer-tag automation consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies customer tags'**
+  String get hostFormConsequenceAppliesTags;
+
+  /// Team-notification automation consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifies your team'**
+  String get hostFormConsequenceNotifiesTeam;
+
+  /// Signed-webhook automation consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Calls a signed webhook'**
+  String get hostFormConsequenceCallsWebhook;
+
+  /// Campaign-handoff automation consequence; it does not claim dispatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepares a send for review'**
+  String get hostFormConsequencePreparesSend;
+
+  /// No enabled response automation changes another Host workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Responses stay in Forms'**
+  String get hostFormConsequenceFormsOnly;
+
+  /// Legal boundary shown beside form consequence previews.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity checks and contact creation do not grant messaging permission.'**
+  String get hostFormConsequenceNoMessagingPermission;
+
+  /// Publish-review label for actual form identity and automation effects.
+  ///
+  /// In en, this message translates to:
+  /// **'What publishing does'**
+  String get hostFormConsequencesTitle;
+
+  /// Publish-review legal boundary label.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging permission'**
+  String get hostFormMessagingPermissionTitle;
+
+  /// Settings-row label explaining what the selected identity policy establishes.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity consequence'**
+  String get hostFormIdentityConsequenceTitle;
 
   /// Loads the next server-backed Forms page.
   ///

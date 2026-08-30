@@ -24,6 +24,7 @@ import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
+import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -516,14 +517,75 @@ class _HostFormsLibraryPage extends ConsumerWidget {
 }
 
 String _hostFormSummaryBody(BuildContext context, HostFormSummary form) {
-  final purpose = hostFormPurposeLabel(context, form.purpose);
   final status = hostFormStatusLabel(context, form.status);
   return context.l10n.hostFormsRowSummary(
-    purpose: purpose,
     status: status,
     count: form.submittedResponseCount,
+    consequence: _hostFormConsequenceSummary(context, form),
   );
 }
+
+String _hostFormConsequenceSummary(BuildContext context, HostFormSummary form) {
+  final projection = form.consequences;
+  if (projection.coverage == HostFormConsequenceCoverage.unavailable) {
+    return [
+      context.l10n.hostFormConsequencesUnavailable,
+      if (form.purpose == HostFormPurpose.application)
+        context.l10n.hostFormConsequenceApplicationReview,
+    ].join(' · ');
+  }
+  final parts = <String>[
+    _hostFormIdentityConsequence(context, projection.identityPolicy),
+  ];
+  if (projection.coverage == HostFormConsequenceCoverage.identityOnly) {
+    parts.add(context.l10n.hostFormAutomationConsequencesUnavailable);
+    return parts.join(' · ');
+  }
+  final actions = projection.enabledAutomationActionKinds;
+  if (actions.contains(HostFormAutomationActionKind.createCrmContact)) {
+    parts.add(context.l10n.hostFormConsequenceCreatesCustomer);
+  }
+  if (form.purpose == HostFormPurpose.application ||
+      actions.contains(HostFormAutomationActionKind.addApplicationQueue)) {
+    parts.add(context.l10n.hostFormConsequenceApplicationReview);
+  }
+  if (actions.contains(HostFormAutomationActionKind.proposeEventAttendee)) {
+    parts.add(context.l10n.hostFormConsequenceProposesAttendee);
+  }
+  if (actions.contains(HostFormAutomationActionKind.addOrganizerTag)) {
+    parts.add(context.l10n.hostFormConsequenceAppliesTags);
+  }
+  if (actions.contains(HostFormAutomationActionKind.notifyTeam)) {
+    parts.add(context.l10n.hostFormConsequenceNotifiesTeam);
+  }
+  if (actions.contains(HostFormAutomationActionKind.signedWebhook)) {
+    parts.add(context.l10n.hostFormConsequenceCallsWebhook);
+  }
+  if (actions.contains(HostFormAutomationActionKind.campaignHandoff)) {
+    parts.add(context.l10n.hostFormConsequencePreparesSend);
+  }
+  if (parts.length == 1) {
+    parts.add(context.l10n.hostFormConsequenceFormsOnly);
+  }
+  return parts.join(' · ');
+}
+
+String _hostFormIdentityConsequence(
+  BuildContext context,
+  HostFormIdentityPolicy? policy,
+) => switch (policy) {
+  HostFormIdentityPolicy.anonymous =>
+    context.l10n.hostFormConsequenceIdentityAnonymous,
+  HostFormIdentityPolicy.emailVerified =>
+    context.l10n.hostFormConsequenceIdentityEmail,
+  HostFormIdentityPolicy.phoneVerified =>
+    context.l10n.hostFormConsequenceIdentityPhone,
+  HostFormIdentityPolicy.emailOrPhoneVerified =>
+    context.l10n.hostFormConsequenceIdentityEmailOrPhone,
+  HostFormIdentityPolicy.catchAccount =>
+    context.l10n.hostFormConsequenceIdentityCatchAccount,
+  null => context.l10n.hostFormConsequenceIdentityUnknown,
+};
 
 List<CatchActionMenuItem<_HostFormRowAction>> _hostFormRowActions(
   BuildContext context,

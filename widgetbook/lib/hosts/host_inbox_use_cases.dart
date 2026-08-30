@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_body.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -23,7 +22,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 const _deviceWidth = 390.0;
 const _deviceHeight = 812.0;
 const _composerHeight = 760.0;
-const _cardHeight = 150.0;
 const _scopeControlHeight = 180.0;
 const _audienceControlHeight = 120.0;
 const _workspaceHeight = 560.0;
@@ -124,51 +122,6 @@ Widget hostBroadcastComposerLifecycleStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Audience states',
-  type: HostInboxBroadcastCard,
-  path: '[P1 product surfaces]/Host/Inbox/Components',
-)
-Widget hostInboxBroadcastAudienceStates(BuildContext context) {
-  return const _HostRoleBoundary(
-    child: _HostInboxCatalog(
-      title: 'HostInboxBroadcastCard',
-      contractId: 'component.messaging.host_inbox_broadcast_card',
-      children: [
-        _StateCard(
-          label: 'Booked · 24',
-          child: _BroadcastCardFrame(
-            audienceCount: 24,
-            audienceLabel: 'booked attendee',
-          ),
-        ),
-        _StateCard(
-          label: 'Prospective · 9',
-          child: _BroadcastCardFrame(
-            audienceCount: 9,
-            audienceLabel: 'prospective attendee',
-          ),
-        ),
-        _StateCard(
-          label: 'one recipient',
-          child: _BroadcastCardFrame(
-            audienceCount: 1,
-            audienceLabel: 'booked attendee',
-          ),
-        ),
-        _StateCard(
-          label: 'zero recipients',
-          child: _BroadcastCardFrame(
-            audienceCount: 0,
-            audienceLabel: 'prospective attendee',
-            subtitle: 'No eligible recipients in this audience yet',
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Scope control states',
   type: HostInboxScopeSelector,
   path: '[P1 product surfaces]/Host/Inbox/Components',
@@ -257,9 +210,7 @@ Widget hostInboxWorkspaceStates(BuildContext context) {
                   HostInboxWorkspaceSliver(
                     workspace: workspace,
                     now: HostInboxSurfaceFixtures.now,
-                    broadcastEnabled: true,
                     onThreadSelected: (_) {},
-                    onBroadcastSelected: (_) {},
                   ),
                 ],
               ),
@@ -462,36 +413,6 @@ Future<SendEventBroadcastCallableResponse> _previewSend({
   pushUnknownCount: 0,
   idempotentReplay: false,
 );
-
-class _BroadcastCardFrame extends StatelessWidget {
-  const _BroadcastCardFrame({
-    required this.audienceCount,
-    required this.audienceLabel,
-    this.subtitle = 'Reminders, the meeting point, changes',
-  });
-
-  final int audienceCount;
-  final String audienceLabel;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    return _DeviceFrame(
-      height: _cardHeight,
-      child: Scaffold(
-        body: Padding(
-          padding: CatchInsets.content,
-          child: HostInboxBroadcastCard(
-            audienceCount: audienceCount,
-            audienceLabel: audienceLabel,
-            subtitle: subtitle,
-            onTap: () {},
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _DeviceFrame extends StatelessWidget {
   const _DeviceFrame({

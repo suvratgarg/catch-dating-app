@@ -4919,6 +4919,13 @@ HostFormSummary _hostFormsAuditSummary({
     draftRevision: 1,
     publishedVersion: 1,
     submittedResponseCount: submittedResponseCount,
+    consequences: const HostFormConsequences(
+      coverage: HostFormConsequenceCoverage.exact,
+      identityPolicy: HostFormIdentityPolicy.emailOrPhoneVerified,
+      enabledAutomationActionKinds: {
+        HostFormAutomationActionKind.createCrmContact,
+      },
+    ),
     updatedAt: DateTime(2026, 8, 28, 18, 30),
     publishedAt: status == HostFormLifecycleStatus.draft
         ? null

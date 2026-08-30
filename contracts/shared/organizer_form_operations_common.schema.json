@@ -123,6 +123,43 @@
     },
     "automationTrigger": {"type": "string", "enum": ["responseSubmitted", "responseWithdrawn", "answerMatches"]},
     "automationActionKind": {"type": "string", "enum": ["notifyTeam", "addOrganizerTag", "createCrmContact", "addApplicationQueue", "proposeEventAttendee", "signedWebhook", "campaignHandoff"]},
+    "formConsequenceCoverage": {"type": "string", "enum": ["exact", "identityOnly", "unavailable"]},
+    "automationActionKindCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["notifyTeam", "addOrganizerTag", "createCrmContact", "addApplicationQueue", "proposeEventAttendee", "signedWebhook", "campaignHandoff"],
+      "properties": {
+        "notifyTeam": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "addOrganizerTag": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "createCrmContact": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "addApplicationQueue": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "proposeEventAttendee": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "signedWebhook": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "campaignHandoff": {"type": "integer", "minimum": 0, "maximum": 1000000}
+      }
+    },
+    "formConsequenceProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "coverage", "identityPolicy", "enabledAutomationActionKinds", "enabledAutomationActionKindCounts"],
+      "properties": {
+        "version": {"type": "integer", "enum": [1]},
+        "coverage": {"$ref": "#/definitions/formConsequenceCoverage"},
+        "identityPolicy": {"anyOf": [{"$ref": "organizer_form_common.schema.json#/definitions/identityPolicy"}, {"type": "null"}]},
+        "enabledAutomationActionKinds": {"type": "array", "maxItems": 7, "uniqueItems": true, "items": {"$ref": "#/definitions/automationActionKind"}},
+        "enabledAutomationActionKindCounts": {"$ref": "#/definitions/automationActionKindCounts"}
+      }
+    },
+    "formConsequenceSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coverage", "identityPolicy", "enabledAutomationActionKinds"],
+      "properties": {
+        "coverage": {"$ref": "#/definitions/formConsequenceCoverage"},
+        "identityPolicy": {"anyOf": [{"$ref": "organizer_form_common.schema.json#/definitions/identityPolicy"}, {"type": "null"}]},
+        "enabledAutomationActionKinds": {"type": "array", "maxItems": 7, "uniqueItems": true, "items": {"$ref": "#/definitions/automationActionKind"}}
+      }
+    },
     "automationAction": {
       "type": "object",
       "additionalProperties": false,

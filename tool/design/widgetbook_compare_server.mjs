@@ -1882,7 +1882,6 @@ function buildCandidates() {
         "HostEventsClubCard",
         "HostEventToolCard",
         "HostTodayTaskCard",
-        "HostInboxBroadcastCard",
         "HostClubProfileCard",
       ],
     },

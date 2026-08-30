@@ -5,7 +5,6 @@ import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chat_blast_composer_sheet.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_screen_state.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
@@ -406,27 +405,6 @@ Widget matchesListHostInboxStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Eventless blast review',
-  type: ChatBlastComposerSheet,
-  path: '[P2 supporting surfaces]/Matches and chat',
-)
-Widget chatBlastComposerSheetStates(BuildContext context) {
-  return _AppRoleBoundary(
-    role: AppRole.host,
-    child: _MatchesCatalog(
-      title: 'ChatBlastComposerSheet',
-      contractId: 'component.messaging.chat_blast_composer',
-      children: const [
-        _StateCard(
-          label: 'template review surface',
-          child: _ChatBlastComposerFrame(),
-        ),
-      ],
-    ),
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Sliver states',
   type: ChatsList,
   path: '[P1 product surfaces]/Matches and chat/Components',
@@ -668,37 +646,6 @@ Widget chatsEmptyStateVariants(BuildContext context) {
           child: _PrimitiveReviewFrame(
             height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
             child: ChatsEmptyState.noSearchResults(),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Card states',
-  type: HostInboxBroadcastCard,
-  path: '[P1 product surfaces]/Matches and chat/Components',
-)
-Widget hostInboxBroadcastCardStates(BuildContext context) {
-  return _AppRoleBoundary(
-    role: AppRole.host,
-    child: _MatchesCatalog(
-      title: 'HostInboxBroadcastCard',
-      contractId: 'component.messaging.host_inbox_broadcast_card',
-      children: const [
-        _StateCard(
-          label: 'attendee blast affordance',
-          child: _PrimitiveReviewFrame(
-            height: WidgetbookPreviewLayout.photoLikePanelHeight,
-            child: Padding(
-              padding: CatchInsets.content,
-              child: HostInboxBroadcastCard(
-                audienceCount: 8,
-                audienceLabel: 'attendee',
-                subtitle: 'Reminders, the meeting point, changes',
-              ),
-            ),
           ),
         ),
       ],
@@ -2093,29 +2040,6 @@ CatchPersonRow _chatPersonRowForPreview(
     showFreshBackground: false,
     onTap: onTap,
   );
-}
-
-class _ChatBlastComposerFrame extends StatelessWidget {
-  const _ChatBlastComposerFrame();
-
-  @override
-  Widget build(BuildContext context) {
-    return _DeviceFrame(
-      height: WidgetbookPreviewLayout.feedbackViewportHeight,
-      child: Builder(
-        builder: (context) {
-          final t = CatchTokens.of(context);
-          return Scaffold(
-            backgroundColor: t.bg,
-            body: const Align(
-              alignment: Alignment.bottomCenter,
-              child: ChatBlastComposerSheet(),
-            ),
-          );
-        },
-      ),
-    );
-  }
 }
 
 class _ShareCardPreview extends StatelessWidget {

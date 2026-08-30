@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chat_blast_composer_sheet.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_screen_state.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
@@ -9,7 +8,6 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -69,9 +67,6 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
               hostFilter: screenState.hostFilter,
               displayState: screenState.displayState,
               onThreadSelected: _openChatThread,
-              onHostBroadcastSelected: isHostApp
-                  ? _showHostBroadcastComposer
-                  : null,
             ),
             const CatchSliverTerminalPadding(),
           ],
@@ -90,13 +85,6 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
         ? Routes.hostChatScreen.name
         : Routes.chatScreen.name;
     context.goNamed(routeName, pathParameters: {'matchId': preview.matchId});
-  }
-
-  void _showHostBroadcastComposer() {
-    showCatchBottomSheet<void>(
-      context: context,
-      builder: (context) => const ChatBlastComposerSheet(),
-    );
   }
 }
 

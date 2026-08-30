@@ -25,13 +25,11 @@ class ChatsList extends ConsumerWidget {
     this.hostFilter,
     this.displayState,
     this.onThreadSelected,
-    this.onHostBroadcastSelected,
   });
 
   final HostInboxFilter? hostFilter;
   final ChatsListDisplayState? displayState;
   final ChatThreadSelectedCallback? onThreadSelected;
-  final VoidCallback? onHostBroadcastSelected;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -76,7 +74,6 @@ class ChatsList extends ConsumerWidget {
       ChatsListContent(:final viewModel) => ChatsListBody(
         viewModel: viewModel,
         onThreadSelected: onThreadSelected ?? (_) {},
-        onHostBroadcastSelected: onHostBroadcastSelected,
       ),
       ChatsListEmpty(:final kind) => CatchSliverStateViewport(
         child: switch (kind) {

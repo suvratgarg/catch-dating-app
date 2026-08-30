@@ -2,25 +2,25 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
-  "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:24970efda9c8c07f4256fcc72227f304b8b1a3ca0175175848e15835bc6d8bd2",
-  "resolvedDigest": "sha256:d015bd4d254830954a96823022545952062c66af6f220e8b60322dffcb1ac934",
+  "generatedFor": "2026-08-30",
+  "sourceDigest": "sha256:ccab760896b4ca7e496974c08f0bc1d4b0eb98da68342fa539376a7da4fb1d72",
+  "resolvedDigest": "sha256:6e91366f12a66791630f16a2895d60ec22fc2a204033a0e5c030464fd4d65f94",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Customers",
     "owner": "hosts",
     "status": "active",
-    "description": "Makes Customers the sole Host CRM directory for server-backed sorting, computed segments, organizer-authored notes and tags, per-person campaign and Announcement history, reviewed identity merges and reversals, contact administration, customer detail, identity-gated Catch chat, personal WhatsApp handoff, and a deep-linked segment bridge into Messaging campaigns."
+    "description": "Makes Customers the sole Host CRM directory and durable reusable-audience owner for server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration, customer detail, identity-gated Catch chat, personal WhatsApp handoff, and saved-audience deep links into Messaging campaigns."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 41,
-    "scenarios": 41,
-    "actionCases": 41,
+    "states": 44,
+    "scenarios": 44,
+    "actionCases": 44,
     "actions": 22,
     "captures": 2,
-    "previews": 1,
-    "testFiles": 8,
+    "previews": 2,
+    "testFiles": 11,
     "evidenceExceptions": 52
   },
   "surfaces": [
@@ -122,6 +122,7 @@
           "contracts/firestore/organizer_contact_tag_vocabularies.schema.json",
           "contracts/firestore/organizer_contact_traits.schema.json",
           "contracts/firestore/organizer_contacts.schema.json",
+          "contracts/firestore/organizer_saved_audiences.schema.json",
           "contracts/firestore/payments.schema.json"
         ],
         "testEvidence": {
@@ -206,17 +207,27 @@
             "test/hosts/host_operations_screen_test.dart",
             "test/core/external_links_test.dart",
             "test/communications/communication_route_test.dart"
+          ],
+          "customer_saved_audience_manage": [
+            "test/hosts/host_crm_repository_test.dart",
+            "test/hosts/host_operations_customers_tests.dart"
+          ],
+          "customer_saved_audience_empty": [
+            "test/hosts/host_operations_customers_tests.dart"
+          ],
+          "customer_saved_audience_error": [
+            "test/hosts/host_operations_customers_tests.dart"
           ]
         }
       },
       "coverage": {
-        "states": 41,
-        "scenarios": 41,
-        "actionCases": 41,
+        "states": 44,
+        "scenarios": 44,
+        "actionCases": 44,
         "actions": 22,
         "captures": 2,
-        "previews": 1,
-        "testFiles": 8,
+        "previews": 2,
+        "testFiles": 11,
         "evidenceExceptions": 52
       },
       "dimensions": {
@@ -482,7 +493,7 @@
         {
           "id": "message_filtered_customers",
           "owner": "customers_screen",
-          "codeValue": "_messageCustomers",
+          "codeValue": "_saveAndMessageCustomers",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
@@ -499,7 +510,7 @@
               }
             }
           ],
-          "description": "Routes an eligible active-sender segment into the Messaging Campaigns composer with that segment preselected; otherwise keeps the control disabled beside its campaign blocker reason.",
+          "description": "Persists an eligible exact customer filter as a Customers-owned saved audience, then routes its identifier into the Messaging Sends composer; otherwise keeps the control disabled beside its campaign blocker reason.",
           "implementationStatus": "implemented"
         },
         {
@@ -1809,7 +1820,8 @@
             "previewIds": [],
             "tests": [
               "test/hosts/host_customer_filter_summary_test.dart",
-              "test/hosts/host_campaign_segment_eligibility_test.dart"
+              "test/hosts/host_campaign_segment_eligibility_test.dart",
+              "test/hosts/host_crm_repository_test.dart"
             ]
           },
           "actionCases": [
@@ -1923,6 +1935,247 @@
                   "open_customer_filters",
                   "filter_customers",
                   "sort_customers",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "review_duplicate_customers",
+                  "decide_duplicate_customer",
+                  "undo_customer_merge",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation",
+                  "open_personal_whatsapp_handoff"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_saved_audience_manage",
+          "stateId": "customer_saved_audience_manage",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "directory": "populated",
+            "sort": "last_seen",
+            "filter_sheet": "closed",
+            "merge_review": "closed",
+            "notes": "populated",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "personal_whatsapp": "ready",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostSavedAudiencesStates"
+            ],
+            "tests": [
+              "test/hosts/host_crm_repository_test.dart",
+              "test/hosts/host_operations_customers_tests.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "manage",
+              "dimensions": {
+                "load": "ready",
+                "directory": "populated",
+                "sort": "last_seen",
+                "filter_sheet": "closed",
+                "merge_review": "closed",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "personal_whatsapp": "ready",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "sort_customers",
+                  "message_filtered_customers",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "review_duplicate_customers",
+                  "decide_duplicate_customer",
+                  "undo_customer_merge",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation",
+                  "open_personal_whatsapp_handoff"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_saved_audience_empty",
+          "stateId": "customer_saved_audience_empty",
+          "kind": "empty",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "directory": "empty",
+            "sort": "last_seen",
+            "filter_sheet": "closed",
+            "merge_review": "closed",
+            "notes": "populated",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "personal_whatsapp": "ready",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostSavedAudiencesStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_customers_tests.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "empty",
+              "dimensions": {
+                "load": "ready",
+                "directory": "empty",
+                "sort": "last_seen",
+                "filter_sheet": "closed",
+                "merge_review": "closed",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "personal_whatsapp": "ready",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "sort_customers",
+                  "message_filtered_customers",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "review_duplicate_customers",
+                  "decide_duplicate_customer",
+                  "undo_customer_merge",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation",
+                  "open_personal_whatsapp_handoff"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer_saved_audience_error",
+          "stateId": "customer_saved_audience_error",
+          "kind": "error",
+          "status": "tested",
+          "dimensions": {
+            "load": "error",
+            "directory": "populated",
+            "sort": "last_seen",
+            "filter_sheet": "closed",
+            "merge_review": "closed",
+            "notes": "populated",
+            "tags": "assigned",
+            "campaign_bridge": "blocked",
+            "identity": "linked",
+            "revenue": "exact",
+            "personal_whatsapp": "ready",
+            "mutation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostSavedAudiencesStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_customers_tests.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "recovery",
+              "dimensions": {
+                "load": "error",
+                "directory": "populated",
+                "sort": "last_seen",
+                "filter_sheet": "closed",
+                "merge_review": "closed",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "personal_whatsapp": "ready",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "sort_customers",
+                  "message_filtered_customers",
                   "load_more",
                   "export_customers",
                   "create_customer",
@@ -2493,7 +2746,7 @@
           "id": "customer_detail_unlinked",
           "stateId": "customer_detail_unlinked",
           "kind": "permission",
-          "status": "implemented",
+          "status": "tested",
           "dimensions": {
             "load": "ready",
             "directory": "populated",
@@ -2514,7 +2767,8 @@
             "captureIds": [],
             "previewIds": [],
             "tests": [
-              "test/hosts/host_customers_screen_state_test.dart"
+              "functions/src/communications/organizerCommunicationPlan.test.ts",
+              "test/hosts/host_operations_screen_test.dart"
             ]
           },
           "actionCases": [
@@ -2573,7 +2827,7 @@
           "id": "customer_detail_ambiguous",
           "stateId": "customer_detail_ambiguous",
           "kind": "permission",
-          "status": "implemented",
+          "status": "tested",
           "dimensions": {
             "load": "ready",
             "directory": "populated",
@@ -2594,7 +2848,8 @@
             "captureIds": [],
             "previewIds": [],
             "tests": [
-              "test/hosts/host_customers_screen_state_test.dart"
+              "functions/src/communications/organizerCommunicationPlan.test.ts",
+              "test/hosts/host_operations_screen_test.dart"
             ]
           },
           "actionCases": [
@@ -3624,7 +3879,9 @@
               "hostCustomersStates"
             ],
             "tests": [
-              "test/hosts/host_customers_screen_state_test.dart"
+              "functions/src/organizers/organizerCommunicationPlans.test.ts",
+              "test/hosts/host_crm_repository_test.dart",
+              "test/hosts/host_operations_screen_test.dart"
             ]
           },
           "actionCases": [
@@ -3703,7 +3960,9 @@
             "captureIds": [],
             "previewIds": [],
             "tests": [
-              "test/hosts/host_customers_screen_state_test.dart"
+              "functions/src/communications/organizerCommunicationPlan.test.ts",
+              "test/hosts/host_crm_repository_test.dart",
+              "test/hosts/host_operations_screen_test.dart"
             ]
           },
           "actionCases": [
@@ -3782,6 +4041,8 @@
             "captureIds": [],
             "previewIds": [],
             "tests": [
+              "functions/src/communications/organizerCommunicationPlan.test.ts",
+              "functions/src/organizers/organizerCommunicationPlans.test.ts",
               "test/hosts/host_operations_screen_test.dart",
               "test/hosts/host_crm_repository_test.dart"
             ]
@@ -4416,7 +4677,8 @@
           }
         ],
         "previews": [
-          "hostCustomersStates"
+          "hostCustomersStates",
+          "hostSavedAudiencesStates"
         ]
       }
     }

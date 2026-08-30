@@ -26,6 +26,30 @@ export type SetOrganizerFormLifecycleCallableResponse = {
   draftRevision: number;
   publishedVersion: number;
   submittedResponseCount: number;
+  consequences: {
+    coverage: "exact" | "identityOnly" | "unavailable";
+    identityPolicy:
+      | (
+          | "anonymous"
+          | "emailVerified"
+          | "phoneVerified"
+          | "emailOrPhoneVerified"
+          | "catchAccount"
+        )
+      | null;
+    /**
+     * @maxItems 7
+     */
+    enabledAutomationActionKinds: (
+      | "notifyTeam"
+      | "addOrganizerTag"
+      | "createCrmContact"
+      | "addApplicationQueue"
+      | "proposeEventAttendee"
+      | "signedWebhook"
+      | "campaignHandoff"
+    )[];
+  };
   updatedAtMillis: number;
   publishedAtMillis: number | null;
   lastResponseAtMillis: number | null;

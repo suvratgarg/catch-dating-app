@@ -1,19 +1,19 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-18",
+  "updated": "2026-08-30",
   "id": "feature.host_inbox",
   "name": "Host Messaging",
   "owner": "hosts",
   "status": "pilot",
-  "description": "Orchestrates organizer-scoped Host messaging through one Inbox for explicit Catch chat, organizer WhatsApp and event-announcement facets plus Sends for route selection, mixed outbound history, follower-update composition and cross-event audience messaging, including deep-linked customer segments.",
+  "description": "Orchestrates organizer-scoped Host messaging through an inbound Inbox plus Sends for outbound intent selection, event-announcement and follower-update composition, reusable-audience campaigns, manual handoff work, and mixed outbound history.",
   "surfaces": [
     {
       "id": "host_flutter",
       "runtime": "flutter",
       "authority": {"registry": "flutter_screens", "id": "screen.host.inbox"},
       "actionScope": {
-        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective audience selection, explicit Catch chat routing, organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies, and Catch event-announcement lifecycle; communication-route selection with sender, delivery, consent and readiness explanations; reverse-chronological WhatsApp Business, Catch Announcement and follower-update history; route-specific follower-update composition with rolling quota; dedicated WhatsApp sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
+        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective inquiry classification, explicit Catch chat routing, and organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies; Sends-owned outbound intent selection for existing conversations, saved-audience campaigns, event announcements, and follower updates; reverse-chronological managed-send history; durable manual handoff work; dedicated sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
         "excluded": [
           "Raw broadcast body edits are form data; the contract cardinalizes template/audience decisions and the send mutation instead of individual keystrokes.",
           "Conversation thread behavior and safety actions retain the shared chat-thread contract."
@@ -28,6 +28,7 @@
           {"id": "broadcast_composer", "language": "dart", "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "HostBroadcastComposerSheet"},
           {"id": "broadcast_controller", "language": "dart", "file": "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart", "symbol": "HostInboxBroadcastController"},
           {"id": "sends_workspace", "language": "dart", "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart", "symbol": "HostSendsWorkspaceSliver"},
+          {"id": "manual_send_queue", "language": "dart", "file": "lib/hosts/presentation/inbox/host_manual_send_queue.dart", "symbol": "HostManualSendQueue"},
           {"id": "follower_update_composer", "language": "dart", "file": "lib/hosts/presentation/inbox/host_follower_update_composer.dart", "symbol": "showHostFollowerUpdateComposer"},
           {"id": "messaging_setup_screen", "language": "dart", "file": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart", "symbol": "HostMessagingSetupScreen"},
           {"id": "whatsapp_setup", "language": "dart", "file": "lib/hosts/presentation/host_operations/host_audience.dart", "symbol": "HostWhatsappSetupPane"},
@@ -55,6 +56,10 @@
           "contracts/callables/send_event_broadcast_payload.schema.json",
           "contracts/callables/send_organizer_whatsapp_reply_payload.schema.json",
           "contracts/callables/upsert_organizer_campaign_payload.schema.json",
+          "contracts/callables/list_organizer_manual_send_tasks_payload.schema.json",
+          "contracts/callables/open_organizer_manual_send_task_payload.schema.json",
+          "contracts/callables/mark_organizer_manual_send_task_payload.schema.json",
+          "contracts/callables/replan_organizer_manual_send_tasks_payload.schema.json",
           "contracts/firestore/clubs.schema.json",
           "contracts/firestore/event_broadcasts.schema.json",
           "contracts/firestore/event_participations.schema.json",
@@ -65,6 +70,7 @@
           "contracts/firestore/organizer_campaign_webhook_receipts.schema.json",
           "contracts/firestore/organizer_campaigns.schema.json",
           "contracts/firestore/organizer_posts.schema.json",
+          "contracts/firestore/organizer_manual_send_tasks.schema.json",
           "contracts/firestore/organizer_whatsapp_threads.schema.json",
           "contracts/firestore/organizer_whatsapp_messages.schema.json",
           "contracts/firestore/organizer_whatsapp_reply_operations.schema.json"
@@ -75,7 +81,10 @@
           "customer_messaging_disconnected": ["test/hosts/host_whatsapp_setup_pane_test.dart"],
           "customer_campaign_draft": ["test/hosts/host_campaign_composer_test.dart", "test/hosts/host_inbox_screen_test.dart"],
           "customer_campaign_active": ["test/hosts/host_crm_repository_test.dart"],
-          "communication_route_picker": ["test/hosts/host_inbox_screen_test.dart", "test/communications/communication_route_test.dart"],
+          "communication_intent_picker": ["test/hosts/host_inbox_screen_test.dart"],
+          "manual_handoff_queue": ["test/hosts/host_inbox_screen_test.dart"],
+          "manual_handoff_opened_unconfirmed": ["test/hosts/host_inbox_screen_test.dart"],
+          "manual_handoff_replan_advisory": ["test/hosts/host_crm_repository_test.dart"],
           "follower_update_composer": ["test/hosts/host_follower_update_composer_test.dart", "test/hosts/host_inbox_screen_test.dart", "test/hosts/host_crm_repository_test.dart"],
           "whatsapp_inbound_thread": ["test/hosts/host_crm_repository_test.dart"],
           "whatsapp_service_window_open": ["test/hosts/host_crm_repository_test.dart"],
@@ -95,7 +104,7 @@
         "broadcast": {"default": "idle", "values": ["idle", "composer", "pending", "error"]},
         "messaging": {"default": "ready", "values": ["provider_unavailable", "disconnected", "connecting", "ready", "syncing", "testing"]},
         "campaign": {"default": "draft", "values": ["draft", "previewed", "approved", "dispatching", "sent", "cancelled"]},
-        "send_route": {"default": "history", "values": ["history", "picker", "organizer_whatsapp_campaign", "follower_update"]},
+        "send_intent": {"default": "history", "values": ["history", "picker", "conversation", "saved_audience", "event_announcement", "follower_update"]},
         "accessibility": {"default": "standard", "values": ["standard", "text_scale_2", "reduced_motion"]},
         "theme": {"default": "standard", "values": ["standard", "light_dark"]}
       },
@@ -185,13 +194,13 @@
           "description": "Sends free-form text only while the latest inbound message keeps the server-verified customer-service window open; the closed state disables the composer before submit."
         },
         {
-          "id": "open_broadcast_composer",
-          "owner": "inbox_screen",
-          "codeValue": "_openBroadcast",
+          "id": "open_event_announcement_composer",
+          "owner": "sends_workspace",
+          "codeValue": "_composeEventAnnouncement",
           "cardinality": "singleton",
           "scopeKeys": ["viewerUid", "eventId", "segment", "audienceVersion"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["broadcast_composer_lifecycle"]}],
-          "description": "Opens the authorized broadcast composer for a non-empty event audience."
+          "description": "Opens the Sends-owned event-announcement composer for a non-empty Booked or Prospective roster audience."
         },
         {
           "id": "select_broadcast_audience",
@@ -224,16 +233,52 @@
           "description": "Sends one idempotent event broadcast to the selected roster-derived audience and reports partial push delivery honestly."
         },
         {
-          "id": "select_communication_route",
+          "id": "select_communication_intent",
           "owner": "sends_workspace",
-          "codeValue": "_HostSendsRoutePicker",
+          "codeValue": "_HostSendsIntentPicker",
           "cardinality": "unbounded",
-          "scopeKeys": ["viewerUid", "organizerId", "routeId", "readiness"],
+          "scopeKeys": ["viewerUid", "organizerId", "intent", "readiness"],
           "outcomes": [
-            {"kind": "surface_state", "stateIds": ["communication_route_picker", "customer_campaign_draft", "follower_update_composer"]},
+            {"kind": "surface_state", "stateIds": ["communication_intent_picker", "broadcast_composer_lifecycle", "customer_campaign_draft", "follower_update_composer"]},
             {"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.host.inbox"}}
           ],
-          "description": "Shows every registered communication route exactly once, grouped under In Catch or WhatsApp with its sender and delivery semantics; opens Catch Inbox, an eligible organizer WhatsApp composer, or the in-place follower-update composer; and gives read-only ownership or activation guidance for routes that start elsewhere or are not active."
+          "description": "Chooses the host's communication intent without exposing provider routing policy: continue an existing conversation in Inbox, compose a saved-audience campaign, compose an event announcement, or post a follower update. Sender and provider details remain in setup and diagnostics."
+        },
+        {
+          "id": "open_manual_send_task",
+          "owner": "manual_send_queue",
+          "codeValue": "_openTask",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "taskId", "revision"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["manual_handoff_queue", "manual_handoff_opened_unconfirmed"]}],
+          "description": "Opens one durable by-hand task without claiming provider delivery."
+        },
+        {
+          "id": "open_manual_handoff",
+          "owner": "manual_send_queue",
+          "codeValue": "_openWhatsapp",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "taskId", "revision", "openAttemptId"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["manual_handoff_opened_unconfirmed"]}],
+          "description": "Revalidates the task, opens the external handoff, and records only that the external app accepted the launch."
+        },
+        {
+          "id": "mark_manual_send_task",
+          "owner": "manual_send_queue",
+          "codeValue": "_mark",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "taskId", "revision", "hostAssertion"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["manual_handoff_queue"]}],
+          "description": "Records an explicit Host sent assertion or skip without manufacturing delivered or read receipts."
+        },
+        {
+          "id": "replan_manual_send_tasks",
+          "owner": "manual_send_queue",
+          "codeValue": "_replan",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "taskIds", "requestId"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["manual_handoff_replan_advisory"]}],
+          "description": "Checks current route advice without mutating, dispatching, completing, removing, or superseding manual work."
         },
         {
           "id": "send_follower_update",
@@ -272,7 +317,7 @@
           "description": "Creates, schedules, previews, approves, dispatches, cancels, and reports campaigns using explicit segment, template, event, destination, and variable inputs."
         }
       ],
-      "stateIds": ["uid_loading_or_missing", "matches_loading", "matches_error", "empty_host_queries", "host_query_filtering", "populated_queries", "host_header", "prospective_queries", "general_queries", "roster_without_threads", "whatsapp_inbound_thread", "whatsapp_service_window_open", "whatsapp_service_window_closed", "whatsapp_reply_sending", "broadcast_composer_lifecycle", "communication_route_picker", "follower_update_composer", "campaign_compose_deep_link", "customer_messaging_provider_unavailable", "customer_messaging_disconnected", "customer_messaging_connecting", "customer_messaging_ready", "customer_campaign_draft", "customer_campaign_previewed", "customer_campaign_active", "search_collapsed", "search_active", "search_empty", "new_inquiry_without_messages", "conversation_rows", "unread_rows", "host_inquiry_avatar_shape", "profile_loading_fallback", "duplicate_match_collapse", "route_to_host_chat", "offline", "text_scale_2", "reduced_motion", "light_dark"],
+      "stateIds": ["uid_loading_or_missing", "matches_loading", "matches_error", "empty_host_queries", "host_query_filtering", "populated_queries", "host_header", "prospective_queries", "general_queries", "roster_without_threads", "whatsapp_inbound_thread", "whatsapp_service_window_open", "whatsapp_service_window_closed", "whatsapp_reply_sending", "broadcast_composer_lifecycle", "communication_intent_picker", "manual_handoff_queue", "manual_handoff_opened_unconfirmed", "manual_handoff_replan_advisory", "follower_update_composer", "campaign_compose_deep_link", "customer_messaging_provider_unavailable", "customer_messaging_disconnected", "customer_messaging_connecting", "customer_messaging_ready", "customer_campaign_draft", "customer_campaign_previewed", "customer_campaign_active", "search_collapsed", "search_active", "search_empty", "new_inquiry_without_messages", "conversation_rows", "unread_rows", "host_inquiry_avatar_shape", "profile_loading_fallback", "duplicate_match_collapse", "route_to_host_chat", "offline", "text_scale_2", "reduced_motion", "light_dark"],
       "scenarioDefaults": {"dimensions": {}, "actionCases": [{"id": "default"}]},
       "scenarioOverrides": {
         "uid_loading_or_missing": {"dimensions": {"load": "loading"}},
@@ -280,11 +325,11 @@
         "matches_error": {"dimensions": {"load": "error"}, "actionCases": [{"id": "recovery", "enabledActions": ["retry_inbox"]}]},
         "empty_host_queries": {"dimensions": {"content": "empty"}, "actionCases": [{"id": "empty", "enabledActions": ["toggle_search", "select_scope", "select_audience_segment"]}]},
         "host_query_filtering": {"dimensions": {"search": "filtering"}, "actionCases": [{"id": "filter", "enabledActions": ["toggle_search", "search_inquiries", "open_conversation"]}]},
-        "populated_queries": {"actionCases": [{"id": "inbox", "enabledActions": ["select_workspace", "toggle_search", "search_inquiries", "select_scope", "select_audience_segment", "open_conversation", "open_whatsapp_thread", "open_broadcast_composer"]}]},
+        "populated_queries": {"actionCases": [{"id": "inbox", "enabledActions": ["select_workspace", "toggle_search", "search_inquiries", "select_scope", "select_audience_segment", "open_conversation", "open_whatsapp_thread"]}]},
         "host_header": {"actionCases": [{"id": "header", "enabledActions": ["toggle_search", "search_inquiries"]}]},
-        "prospective_queries": {"dimensions": {"segment": "prospective"}, "actionCases": [{"id": "prospective", "enabledActions": ["toggle_search", "search_inquiries", "select_scope", "select_audience_segment", "open_conversation", "open_broadcast_composer"]}]},
+        "prospective_queries": {"dimensions": {"segment": "prospective"}, "actionCases": [{"id": "prospective", "enabledActions": ["toggle_search", "search_inquiries", "select_scope", "select_audience_segment", "open_conversation"]}]},
         "general_queries": {"dimensions": {"scope": "general"}, "actionCases": [{"id": "general", "enabledActions": ["toggle_search", "search_inquiries", "select_scope", "open_conversation"]}]},
-        "roster_without_threads": {"dimensions": {"content": "empty"}, "actionCases": [{"id": "broadcast_only", "enabledActions": ["select_scope", "select_audience_segment", "open_broadcast_composer"]}]},
+        "roster_without_threads": {"dimensions": {"content": "empty"}, "actionCases": [{"id": "inquiries_empty", "enabledActions": ["select_scope", "select_audience_segment"]}]},
         "whatsapp_inbound_thread": {"dimensions": {"channel": "whatsapp"}, "actionCases": [{"id": "open", "enabledActions": ["open_whatsapp_thread"]}]},
         "whatsapp_service_window_open": {"dimensions": {"channel": "whatsapp", "whatsapp_window": "open"}, "actionCases": [{"id": "reply", "enabledActions": ["send_whatsapp_reply"]}]},
         "whatsapp_service_window_closed": {"dimensions": {"channel": "whatsapp", "whatsapp_window": "closed"}, "actionCases": [{"id": "closed", "disabledActions": ["send_whatsapp_reply"]}]},
@@ -295,8 +340,11 @@
           {"id": "pending", "disabledActions": ["select_broadcast_audience", "select_broadcast_template", "send_broadcast"]},
           {"id": "error", "enabledActions": ["select_broadcast_audience", "select_broadcast_template", "send_broadcast"]}
         ]},
-        "communication_route_picker": {"dimensions": {"workspace": "campaigns", "send_route": "picker"}, "actionCases": [{"id": "choose", "enabledActions": ["select_communication_route", "manage_whatsapp_sender"]}]},
-        "follower_update_composer": {"dimensions": {"workspace": "campaigns", "send_route": "follower_update"}, "actionCases": [
+        "communication_intent_picker": {"dimensions": {"workspace": "campaigns", "send_intent": "picker"}, "actionCases": [{"id": "choose", "enabledActions": ["select_communication_intent", "open_event_announcement_composer", "manage_whatsapp_sender"]}]},
+        "manual_handoff_queue": {"dimensions": {"workspace": "campaigns"}, "actionCases": [{"id": "queued", "enabledActions": ["open_manual_send_task", "replan_manual_send_tasks"]}]},
+        "manual_handoff_opened_unconfirmed": {"dimensions": {"workspace": "campaigns"}, "actionCases": [{"id": "opened", "enabledActions": ["open_manual_send_task", "open_manual_handoff", "mark_manual_send_task"]}]},
+        "manual_handoff_replan_advisory": {"dimensions": {"workspace": "campaigns"}, "actionCases": [{"id": "advisory", "enabledActions": ["replan_manual_send_tasks"]}]},
+        "follower_update_composer": {"dimensions": {"workspace": "campaigns", "send_intent": "follower_update"}, "actionCases": [
           {"id": "ready", "enabledActions": ["send_follower_update"]},
           {"id": "pending", "disabledActions": ["send_follower_update"]}
         ]},
@@ -350,10 +398,16 @@
           "reason": "These registered Host Inbox states have deterministic capture and preview evidence but no focused state-level automated test attached to the authority yet."
         },
         {
-          "stateIds": ["communication_route_picker", "follower_update_composer"],
+          "stateIds": ["communication_intent_picker", "follower_update_composer"],
           "evidence": ["captures", "previews"],
           "debtId": "HOST-MESSAGING-EVIDENCE-001",
-          "reason": "The route capability registry, rendered picker, and follower-update composer have focused tests; dedicated deterministic previews and captures remain follow-up evidence."
+          "reason": "The rendered intent chooser and follower-update composer have focused tests; dedicated deterministic previews and captures remain follow-up evidence."
+        },
+        {
+          "stateIds": ["manual_handoff_queue", "manual_handoff_opened_unconfirmed", "manual_handoff_replan_advisory"],
+          "evidence": ["captures", "previews"],
+          "debtId": "HOST-MESSAGING-EVIDENCE-001",
+          "reason": "Durable manual-task transitions, launch validation, explicit Host assertions, advisory replanning, repository parsing, and rendered queue behavior have focused tests; dedicated deterministic previews and captures remain follow-up evidence."
         },
         {
           "stateIds": ["campaign_compose_deep_link", "customer_messaging_provider_unavailable", "customer_messaging_disconnected", "customer_messaging_connecting", "customer_campaign_draft", "customer_campaign_previewed", "customer_campaign_active"],

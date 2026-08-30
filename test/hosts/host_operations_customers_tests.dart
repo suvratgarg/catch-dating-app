@@ -49,6 +49,71 @@ void _registerHostOperationsCustomersTests() {
     expect(tapped, isTrue);
   });
 
+  testWidgets('saved audiences render populated, empty, and error states', (
+    tester,
+  ) async {
+    const organizerId = 'organizer-1';
+    final audience = HostSavedAudience(
+      organizerId: organizerId,
+      audienceId: 'repeat-runners',
+      name: 'Repeat runners',
+      status: 'active',
+      definition: const HostSavedAudienceDefinition(
+        join: HostSavedAudienceJoin.all,
+        predicates: [
+          HostSavedAudienceComputedSegment(HostAudienceSegment.repeatAttendee),
+        ],
+      ),
+      definitionHash: 'repeat-runners-hash',
+      definitionVersion: 1,
+      revision: 2,
+      lastPreviewMatchCount: 24,
+      lastPreviewAt: DateTime(2026, 8, 29),
+      createdAt: DateTime(2026, 8, 28),
+      updatedAt: DateTime(2026, 8, 29),
+    );
+
+    await _pumpHostScreen(
+      tester,
+      const HostSavedAudiencesSheet(organizerId: organizerId),
+      overrides: [
+        hostSavedAudiencesProvider(organizerId).overrideWithValue(
+          AsyncData(
+            HostSavedAudiencePage(audiences: [audience], nextCursor: null),
+          ),
+        ),
+      ],
+    );
+    expect(find.text('REPEAT RUNNERS'), findsOneWidget);
+    expect(find.text('24 people in the exact preview'), findsOneWidget);
+    expect(find.text('Refresh exact preview'), findsOneWidget);
+    expect(find.text('Archive'), findsOneWidget);
+
+    await _pumpHostScreen(
+      tester,
+      const HostSavedAudiencesSheet(organizerId: organizerId),
+      overrides: [
+        hostSavedAudiencesProvider(organizerId).overrideWithValue(
+          const AsyncData(
+            HostSavedAudiencePage(audiences: [], nextCursor: null),
+          ),
+        ),
+      ],
+    );
+    expect(find.text('Create an audience in Customers first'), findsOneWidget);
+
+    await _pumpHostScreen(
+      tester,
+      const HostSavedAudiencesSheet(organizerId: organizerId),
+      overrides: [
+        hostSavedAudiencesProvider(organizerId).overrideWithValue(
+          AsyncError(StateError('unavailable'), StackTrace.empty),
+        ),
+      ],
+    );
+    expect(find.text('Customers unavailable'), findsOneWidget);
+  });
+
   testWidgets('ambiguous customer keeps warning and disclosure affordances', (
     tester,
   ) async {
@@ -508,7 +573,7 @@ void _registerHostOperationsCustomersTests() {
     await tester.tap(find.byTooltip('More customer actions'));
     await pumpFeatureUi(tester);
     expect(find.text('Export this audience'), findsOneWidget);
-    expect(find.text('Review applications'), findsOneWidget);
+    expect(find.text('Review applications'), findsNothing);
     expect(find.text('Review possible duplicates'), findsOneWidget);
     expect(find.text('Last seen'), findsNothing);
     expect(find.text('Most attended'), findsNothing);

@@ -26,6 +26,40 @@ export interface OrganizerFormDocument {
   draftRevision: number;
   publishedVersion: number;
   submittedResponseCount: number;
+  consequenceProjection?: {
+    version: 1;
+    coverage: "exact" | "identityOnly" | "unavailable";
+    identityPolicy:
+      | (
+          | "anonymous"
+          | "emailVerified"
+          | "phoneVerified"
+          | "emailOrPhoneVerified"
+          | "catchAccount"
+        )
+      | null;
+    /**
+     * @maxItems 7
+     */
+    enabledAutomationActionKinds: (
+      | "notifyTeam"
+      | "addOrganizerTag"
+      | "createCrmContact"
+      | "addApplicationQueue"
+      | "proposeEventAttendee"
+      | "signedWebhook"
+      | "campaignHandoff"
+    )[];
+    enabledAutomationActionKindCounts: {
+      notifyTeam: number;
+      addOrganizerTag: number;
+      createCrmContact: number;
+      addApplicationQueue: number;
+      proposeEventAttendee: number;
+      signedWebhook: number;
+      campaignHandoff: number;
+    };
+  };
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

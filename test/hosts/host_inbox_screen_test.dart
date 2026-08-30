@@ -4,7 +4,6 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/communications/domain/communication_route.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -58,7 +57,7 @@ void main() {
     expect(find.text('Create your first organizer'), findsNothing);
   });
 
-  testWidgets('renders selected-event segments and roster-backed broadcast', (
+  testWidgets('renders selected-event segments without an outbound card', (
     tester,
   ) async {
     final event = event_test.buildEvent(
@@ -104,7 +103,7 @@ void main() {
       find.byType(CatchOptionGroup<HostInboxAudienceSegment>),
       findsOneWidget,
     );
-    expect(find.text('Message 1 booked attendee'), findsOneWidget);
+    expect(find.text('Message 1 booked attendee'), findsNothing);
     expect(find.text('Asha Guest'), findsOneWidget);
     expect(
       find.text('Catch chat · Organizer · Booked · Can you help?'),
@@ -115,7 +114,7 @@ void main() {
     await tester.tap(find.text('PROSPECTIVE · 1'));
     await pumpFeatureUi(tester);
 
-    expect(find.text('Message 1 prospective attendee'), findsOneWidget);
+    expect(find.text('Message 1 prospective attendee'), findsNothing);
     expect(find.text('Mira Guest'), findsOneWidget);
     expect(
       find.text('Catch chat · Organizer · Requested · Can you help?'),
@@ -156,7 +155,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('keeps broadcast card when roster exists without threads', (
+  testWidgets('moves roster-backed event announcements into Sends', (
     tester,
   ) async {
     final event = event_test.buildEvent(
@@ -177,14 +176,19 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.text('Message 2 booked attendees'), findsOneWidget);
+    expect(find.text('Message 2 booked attendees'), findsNothing);
     expect(find.text('No booked attendees have written yet'), findsOneWidget);
-    expect(
-      find.textContaining(
-        'Broadcast audience size is based on the event roster',
-      ),
-      findsOneWidget,
-    );
+
+    await tester.tap(find.text('Sends'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Choose what to send'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Send an event announcement'), findsOneWidget);
+    expect(find.textContaining('2 booked people'), findsOneWidget);
+    await tester.tap(find.text('Send an event announcement'));
+    await pumpFeatureUi(tester);
+    expect(find.text('New broadcast'), findsOneWidget);
   });
 
   testWidgets('keeps WhatsApp threads inside the existing Inbox scopes', (
@@ -288,31 +292,37 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
-    expect(find.text('Choose channel'), findsOneWidget);
+    expect(find.text('Choose what to send'), findsOneWidget);
     expect(find.text('WhatsApp Business settings'), findsOneWidget);
     expect(find.byType(HostCampaignComposer), findsNothing);
 
-    await tester.tap(find.text('Choose channel'));
+    await tester.tap(find.text('Choose what to send'));
     await pumpFeatureUi(tester);
 
-    expect(find.text('IN CATCH'), findsOneWidget);
-    expect(find.text('WHATSAPP'), findsOneWidget);
-    expect(find.text('Catch chat · Organizer'), findsOneWidget);
-    expect(find.text('Catch announcement · Organizer'), findsOneWidget);
-    expect(find.text('WhatsApp Business · Organizer number'), findsOneWidget);
-    expect(find.text('WhatsApp app · You'), findsOneWidget);
-    expect(find.text('Follower update · Organizer'), findsOneWidget);
-    expect(find.text('Catch WhatsApp · Catch number'), findsOneWidget);
-    for (final routeId in CommunicationRouteId.values) {
+    expect(find.text('WHAT DO YOU WANT TO DO?'), findsOneWidget);
+    expect(find.text('Continue a conversation'), findsOneWidget);
+    expect(find.text('Message a saved audience'), findsOneWidget);
+    expect(find.text('Send an event announcement'), findsOneWidget);
+    expect(find.text('Post a follower update'), findsOneWidget);
+    expect(find.text('IN CATCH'), findsNothing);
+    expect(find.text('WHATSAPP'), findsNothing);
+    expect(find.textContaining('Meta'), findsNothing);
+    expect(find.text('WhatsApp Business · Organizer number'), findsNothing);
+    for (final intent in const [
+      'conversation',
+      'saved-audience',
+      'event-announcement',
+      'follower-update',
+    ]) {
       expect(
-        find.byKey(ValueKey('host-route-${routeId.name}')),
+        find.byKey(ValueKey('host-send-intent-$intent')),
         findsOneWidget,
-        reason: '${routeId.name} must remain represented in the route picker',
+        reason: '$intent must remain represented in the intent chooser',
       );
     }
     expect(find.byType(HostCampaignComposer), findsNothing);
 
-    await tester.tap(find.text('WhatsApp Business · Organizer number'));
+    await tester.tap(find.text('Message a saved audience'));
     await pumpFeatureUi(tester);
 
     expect(find.byType(HostCampaignComposer), findsOneWidget);
@@ -321,9 +331,7 @@ void main() {
     expect(find.byType(HostInboxAudienceRail), findsNothing);
   });
 
-  testWidgets('Follower update route opens its route-specific composer', (
-    tester,
-  ) async {
+  testWidgets('Follower update intent opens its composer', (tester) async {
     await tester.pumpWidget(
       _app(
         event: null,
@@ -337,9 +345,9 @@ void main() {
 
     await tester.tap(find.text('Sends'));
     await pumpFeatureUi(tester);
-    await tester.tap(find.text('Choose channel'));
+    await tester.tap(find.text('Choose what to send'));
     await pumpFeatureUi(tester);
-    await tester.tap(find.text('Follower update · Organizer'));
+    await tester.tap(find.text('Post a follower update'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Post to followers'), findsOneWidget);
@@ -662,6 +670,9 @@ Widget _app({
   return ProviderScope(
     overrides: [
       uidProvider.overrideWith((ref) => Stream.value('host-1')),
+      eventRepositoryProvider.overrideWithValue(
+        event_test.FakeEventRepository(),
+      ),
       hostOperableClubsProvider('host-1').overrideWithValue(AsyncData([club])),
       watchEventsForClubProvider(
         club.id,

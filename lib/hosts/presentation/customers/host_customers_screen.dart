@@ -52,12 +52,7 @@ part 'host_customer_detail_cards.dart';
 part 'host_customer_editor_sheets.dart';
 part 'host_customers_directory.dart';
 
-enum _HostCustomersHeaderAction {
-  savedAudiences,
-  applications,
-  reviewDuplicates,
-  export,
-}
+enum _HostCustomersHeaderAction { savedAudiences, reviewDuplicates, export }
 
 class HostCustomersScreen extends ConsumerStatefulWidget {
   const HostCustomersScreen({
@@ -209,14 +204,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           }
           if (action == _HostCustomersHeaderAction.savedAudiences) {
             unawaited(_openSavedAudiences(selectedClub.id));
-          }
-          if (action == _HostCustomersHeaderAction.applications) {
-            unawaited(
-              context.pushNamed(
-                Routes.hostApplicationsScreen.name,
-                queryParameters: {'organizerId': selectedClub.id},
-              ),
-            );
           }
           if (action == _HostCustomersHeaderAction.export) {
             unawaited(_exportCustomers(selectedClub, effectiveFilter));
@@ -403,11 +390,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       value: _HostCustomersHeaderAction.savedAudiences,
       label: context.l10n.hostSavedAudiencesManage,
       icon: CatchIcons.groupsOutlined,
-    ),
-    CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.applications,
-      label: context.l10n.hostApplicationsOpen,
-      icon: CatchIcons.factCheckOutlined,
     ),
     CatchActionMenuItem(
       value: _HostCustomersHeaderAction.reviewDuplicates,

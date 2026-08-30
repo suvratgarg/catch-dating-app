@@ -374,6 +374,21 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
               body: hostFormIdentityLabel(context, definition.identityPolicy),
             ),
             CatchField.read(
+              title: context.l10n.hostFormConsequencesTitle,
+              body: _builderConsequenceSummary(
+                context,
+                purpose: definition.purpose,
+                identityPolicy: definition.identityPolicy,
+                consequences: state.editor.form.consequences,
+              ),
+              bodyMaxLines: 8,
+            ),
+            CatchField.read(
+              title: context.l10n.hostFormMessagingPermissionTitle,
+              body: context.l10n.hostFormConsequenceNoMessagingPermission,
+              bodyMaxLines: 4,
+            ),
+            CatchField.read(
               title: context.l10n.hostFormAvailability,
               body: _availabilitySummary(context, definition),
             ),
@@ -1388,6 +1403,13 @@ class _FormSettings extends StatelessWidget {
             itemLabel: (value) => hostFormIdentityLabel(context, value),
             onChanged: (value) =>
                 notifier.updateMetadata(identityPolicy: value),
+          ),
+          CatchField.read(
+            title: context.l10n.hostFormIdentityConsequenceTitle,
+            body:
+                '${_identityConsequence(context, definition.identityPolicy)}. '
+                '${context.l10n.hostFormConsequenceNoMessagingPermission}',
+            bodyMaxLines: 5,
           ),
         ],
       ),
@@ -2772,6 +2794,69 @@ String _saveLabel(BuildContext context, HostFormEditorState state) =>
       HostFormSaveState.conflict => context.l10n.hostFormSaveConflict,
       HostFormSaveState.failed => context.l10n.hostFormSaveFailed,
     };
+
+String _builderConsequenceSummary(
+  BuildContext context, {
+  required HostFormPurpose purpose,
+  required HostFormIdentityPolicy identityPolicy,
+  required HostFormConsequences consequences,
+}) {
+  final parts = <String>[_identityConsequence(context, identityPolicy)];
+  if (purpose == HostFormPurpose.application) {
+    parts.add(context.l10n.hostFormConsequenceApplicationReview);
+  }
+  if (!consequences.isExact) {
+    parts.add(context.l10n.hostFormAutomationConsequencesUnavailable);
+    return parts.join(' · ');
+  }
+  final enabledActions = consequences.enabledAutomationActionKinds;
+  if (enabledActions.contains(HostFormAutomationActionKind.createCrmContact)) {
+    parts.add(context.l10n.hostFormConsequenceCreatesCustomer);
+  }
+  if (purpose != HostFormPurpose.application &&
+      enabledActions.contains(
+        HostFormAutomationActionKind.addApplicationQueue,
+      )) {
+    parts.add(context.l10n.hostFormConsequenceApplicationReview);
+  }
+  if (enabledActions.contains(
+    HostFormAutomationActionKind.proposeEventAttendee,
+  )) {
+    parts.add(context.l10n.hostFormConsequenceProposesAttendee);
+  }
+  if (enabledActions.contains(HostFormAutomationActionKind.addOrganizerTag)) {
+    parts.add(context.l10n.hostFormConsequenceAppliesTags);
+  }
+  if (enabledActions.contains(HostFormAutomationActionKind.notifyTeam)) {
+    parts.add(context.l10n.hostFormConsequenceNotifiesTeam);
+  }
+  if (enabledActions.contains(HostFormAutomationActionKind.signedWebhook)) {
+    parts.add(context.l10n.hostFormConsequenceCallsWebhook);
+  }
+  if (enabledActions.contains(HostFormAutomationActionKind.campaignHandoff)) {
+    parts.add(context.l10n.hostFormConsequencePreparesSend);
+  }
+  if (parts.length == 1) {
+    parts.add(context.l10n.hostFormConsequenceFormsOnly);
+  }
+  return parts.join(' · ');
+}
+
+String _identityConsequence(
+  BuildContext context,
+  HostFormIdentityPolicy policy,
+) => switch (policy) {
+  HostFormIdentityPolicy.anonymous =>
+    context.l10n.hostFormConsequenceIdentityAnonymous,
+  HostFormIdentityPolicy.emailVerified =>
+    context.l10n.hostFormConsequenceIdentityEmail,
+  HostFormIdentityPolicy.phoneVerified =>
+    context.l10n.hostFormConsequenceIdentityPhone,
+  HostFormIdentityPolicy.emailOrPhoneVerified =>
+    context.l10n.hostFormConsequenceIdentityEmailOrPhone,
+  HostFormIdentityPolicy.catchAccount =>
+    context.l10n.hostFormConsequenceIdentityCatchAccount,
+};
 
 String hostFormIdentityLabel(
   BuildContext context,

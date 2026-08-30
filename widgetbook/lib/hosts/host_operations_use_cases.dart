@@ -318,6 +318,74 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 }
 
 @widgetbook.UseCase(
+  name: 'Saved audience states',
+  type: HostSavedAudiencesSheet,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostSavedAudiencesStates(BuildContext context) {
+  final organizerId = HostOperationsFixtures.primaryClub.id;
+  final audience = HostSavedAudience(
+    organizerId: organizerId,
+    audienceId: 'design-repeat-runners',
+    name: 'Repeat runners',
+    status: 'active',
+    definition: const HostSavedAudienceDefinition(
+      join: HostSavedAudienceJoin.all,
+      predicates: [
+        HostSavedAudienceComputedSegment(HostAudienceSegment.repeatAttendee),
+      ],
+    ),
+    definitionHash: 'design-repeat-runners-hash',
+    definitionVersion: 1,
+    revision: 2,
+    lastPreviewMatchCount: 24,
+    lastPreviewAt: DateTime(2030, 6, 20, 10),
+    createdAt: DateTime(2030, 6, 18, 10),
+    updatedAt: DateTime(2030, 6, 20, 10),
+  );
+  Widget frame(AsyncValue<HostSavedAudiencePage> value) => _DeviceFrame(
+    height: WidgetbookPreviewLayout.feedbackViewportHeight,
+    child: ProviderScope(
+      overrides: [
+        hostSavedAudiencesProvider(organizerId).overrideWithValue(value),
+      ],
+      child: Scaffold(body: HostSavedAudiencesSheet(organizerId: organizerId)),
+    ),
+  );
+  return _HostCatalog(
+    title: 'HostSavedAudiencesSheet',
+    contractId: 'screen.host.customers',
+    children: [
+      _StateCard(
+        label: 'populated management',
+        child: frame(
+          AsyncData(
+            HostSavedAudiencePage(audiences: [audience], nextCursor: null),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: frame(
+          const AsyncData(
+            HostSavedAudiencePage(audiences: [], nextCursor: null),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'error',
+        child: frame(
+          AsyncError(
+            StateError('Saved audiences unavailable'),
+            StackTrace.empty,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Covered by host home route states',
   type: HostEventsScaffold,
   path: '[P1 product surfaces]/Host operations/Composed sections',
@@ -8156,9 +8224,10 @@ class _StateCard extends StatelessWidget {
 }
 
 class _DeviceFrame extends StatelessWidget {
-  const _DeviceFrame({required this.child});
+  const _DeviceFrame({required this.child, this.height});
 
   final Widget child;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
@@ -8175,7 +8244,8 @@ class _DeviceFrame extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
             child: SizedBox(
-              height: WidgetbookPreviewLayout.paperScaffoldViewportHeight,
+              height:
+                  height ?? WidgetbookPreviewLayout.paperScaffoldViewportHeight,
               child: child,
             ),
           ),
