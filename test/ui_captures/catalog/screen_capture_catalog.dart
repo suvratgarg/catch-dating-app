@@ -5177,6 +5177,37 @@ List<Object> _hostInboxProviderOverrides({
     ).overrideWithValue(
       AsyncData(_hostMessagingCaptureSetup(HostInboxSurfaceFixtures.club.id)),
     ),
+    hostSendsProvider(HostInboxSurfaceFixtures.club.id).overrideWithValue(
+      AsyncData(
+        HostSendsPage(
+          organizerId: HostInboxSurfaceFixtures.club.id,
+          sends: const [],
+          nextCursor: null,
+        ),
+      ),
+    ),
+    hostManualSendTasksProvider(
+      HostInboxSurfaceFixtures.club.id,
+    ).overrideWithValue(
+      AsyncData(
+        HostManualSendTaskPage(
+          organizerId: HostInboxSurfaceFixtures.club.id,
+          tasks: const [],
+          nextCursor: null,
+        ),
+      ),
+    ),
+    hostWhatsappThreadsProvider(
+      HostInboxSurfaceFixtures.club.id,
+    ).overrideWithValue(
+      AsyncData(
+        HostWhatsappThreadPage(
+          organizerId: HostInboxSurfaceFixtures.club.id,
+          threads: const [],
+          nextCursor: null,
+        ),
+      ),
+    ),
     watchEventParticipationsForEventProvider(
       HostInboxSurfaceFixtures.eventId,
     ).overrideWithValue(

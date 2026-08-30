@@ -94,6 +94,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
+    expect(find.text('One-to-one conversations and replies.'), findsOneWidget);
     expect(find.text('Inbox'), findsOneWidget);
     expect(find.text('Sends'), findsOneWidget);
     expect(find.byType(HostInboxScopeSelector), findsOneWidget);
@@ -181,6 +182,9 @@ void main() {
 
     await tester.tap(find.text('Sends'));
     await pumpFeatureUi(tester);
+
+    expect(find.text('Outbound delivery and history.'), findsOneWidget);
+    expect(find.text('One-to-one conversations and replies.'), findsNothing);
     await tester.tap(find.text('Choose what to send'));
     await pumpFeatureUi(tester);
 

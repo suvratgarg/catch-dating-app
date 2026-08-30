@@ -128,7 +128,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostInboxTitle => 'Messaging';
 
   @override
-  String get hostInboxSubtitle => 'Attendee queries';
+  String get hostInboxSubtitle => 'One-to-one conversations and replies.';
 
   @override
   String get sharedSearchByNameHint => 'Search by name';
@@ -13217,6 +13217,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostMessagingWorkspaceSends => 'Sends';
+
+  @override
+  String get hostSendsSubtitle => 'Outbound delivery and history.';
 
   @override
   String get hostSendsChooseIntent => 'Choose what to send';

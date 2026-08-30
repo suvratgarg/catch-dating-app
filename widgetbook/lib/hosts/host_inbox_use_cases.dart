@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -12,6 +13,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/design_fixtures/host_inbox_surface_fixtures.dart';
@@ -53,7 +55,13 @@ Widget hostInboxEventScopedStates(BuildContext context) {
           child: _HostInboxFrame(initialScope: HostInboxScope.general()),
         ),
         _StateCard(
-          label: 'roster remains visible without threads',
+          label: 'Sends owns outbound intent and delivery history',
+          child: _HostInboxFrame(
+            initialWorkspace: HostMessagingWorkspace.campaigns,
+          ),
+        ),
+        _StateCard(
+          label: 'event scope remains explicit without conversations',
           child: _HostInboxFrame(
             viewModel: AsyncData(HostInboxSurfaceFixtures.noThreads),
           ),
@@ -241,7 +249,7 @@ Widget hostInboxEmptyStates(BuildContext context) {
               body: HostInboxEmptyState(
                 title: 'No booked attendees have written yet',
                 message:
-                    'Personal questions appear here. Broadcast audience size is based on the event roster, not this thread list.',
+                    'Personal questions appear here. Event announcements are composed from Sends.',
               ),
             ),
           ),
@@ -284,6 +292,7 @@ class _HostInboxFrame extends StatelessWidget {
       HostInboxSurfaceFixtures.eventId,
     ),
     this.initialSegment = HostInboxAudienceSegment.booked,
+    this.initialWorkspace = HostMessagingWorkspace.inbox,
     this.broadcastEnabled = true,
     this.query = '',
     this.themeMode = ThemeMode.light,
@@ -296,6 +305,7 @@ class _HostInboxFrame extends StatelessWidget {
         HostInboxSurfaceFixtures.eventId,
       ),
       initialSegment = HostInboxAudienceSegment.booked,
+      initialWorkspace = HostMessagingWorkspace.inbox,
       broadcastEnabled = true,
       query = '',
       themeMode = ThemeMode.light,
@@ -305,6 +315,7 @@ class _HostInboxFrame extends StatelessWidget {
   final AsyncValue<ChatsListViewModel>? viewModel;
   final HostInboxScope initialScope;
   final HostInboxAudienceSegment initialSegment;
+  final HostMessagingWorkspace initialWorkspace;
   final bool broadcastEnabled;
   final String query;
   final ThemeMode themeMode;
@@ -338,6 +349,45 @@ class _HostInboxFrame extends StatelessWidget {
             HostInboxSurfaceFixtures.participations,
           ),
         ),
+        hostMessagingSetupProvider(
+          HostInboxSurfaceFixtures.club.id,
+        ).overrideWithValue(
+          AsyncData(_messagingSetup(HostInboxSurfaceFixtures.club.id)),
+        ),
+        hostSendsProvider(HostInboxSurfaceFixtures.club.id).overrideWithValue(
+          AsyncData(
+            HostSendsPage(
+              organizerId: HostInboxSurfaceFixtures.club.id,
+              sends: const [],
+              nextCursor: null,
+            ),
+          ),
+        ),
+        hostManualSendTasksProvider(
+          HostInboxSurfaceFixtures.club.id,
+        ).overrideWithValue(
+          AsyncData(
+            HostManualSendTaskPage(
+              organizerId: HostInboxSurfaceFixtures.club.id,
+              tasks: const [],
+              nextCursor: null,
+            ),
+          ),
+        ),
+        hostWhatsappThreadsProvider(
+          HostInboxSurfaceFixtures.club.id,
+        ).overrideWithValue(
+          AsyncData(
+            HostWhatsappThreadPage(
+              organizerId: HostInboxSurfaceFixtures.club.id,
+              threads: const [],
+              nextCursor: null,
+            ),
+          ),
+        ),
+        watchClubPostRemainingWeeklyQuotaProvider(
+          HostInboxSurfaceFixtures.club.id,
+        ).overrideWith((ref) => Stream.value(3)),
       ],
       child: _DeviceFrame(
         themeMode: themeMode,
@@ -345,6 +395,7 @@ class _HostInboxFrame extends StatelessWidget {
         child: HostInboxScreen(
           initialScope: initialScope,
           initialSegment: initialSegment,
+          initialWorkspace: initialWorkspace,
           broadcastEnabled: broadcastEnabled,
           syncSelectionToRoute: false,
           now: HostInboxSurfaceFixtures.now,
@@ -353,6 +404,18 @@ class _HostInboxFrame extends StatelessWidget {
     );
   }
 }
+
+HostMessagingSetup _messagingSetup(String organizerId) => HostMessagingSetup(
+  organizerId: organizerId,
+  providerConfigured: false,
+  embeddedSignup: const HostWhatsappEmbeddedSignupConfig(
+    appId: null,
+    configId: null,
+    graphVersion: null,
+  ),
+  connection: null,
+  templates: const [],
+);
 
 class _BroadcastComposerFrame extends StatelessWidget {
   const _BroadcastComposerFrame({

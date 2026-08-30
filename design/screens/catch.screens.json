@@ -15659,7 +15659,7 @@
             "test/routing/router_widgets_test.dart",
             "test/hosts/host_inbox_screen_test.dart"
           ],
-          "nextAction": "Keep workspace, compose, organizer, and segment query parsing aligned with the Campaigns workspace wire value."
+          "nextAction": "Keep workspace, compose, organizer, and segment query parsing aligned with the retained campaigns compatibility wire value while the visible workspace remains Sends."
         },
         {
           "id": "customer_messaging_provider_unavailable",
@@ -15706,7 +15706,7 @@
           "id": "customer_campaign_draft",
           "kind": "mutation",
           "status": "tested",
-          "source": "HostCampaignComposer in the Messaging Campaigns workspace.",
+          "source": "HostCampaignComposer in the Messaging Sends workspace.",
           "nextAction": "Add rendered draft variable validation coverage.",
           "previewIds": ["HostCampaignComposer/Campaign and sender states"],
           "tests": ["test/hosts/host_campaign_composer_test.dart", "test/hosts/host_inbox_screen_test.dart"]
@@ -15715,7 +15715,7 @@
           "id": "customer_campaign_previewed",
           "kind": "mutation",
           "status": "implemented",
-          "source": "HostCampaignComposer campaign preview in the Messaging Campaigns workspace.",
+          "source": "HostCampaignComposer campaign preview in the Messaging Sends workspace.",
           "nextAction": "Add a deterministic preview capture."
         },
         {
@@ -15931,8 +15931,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostInboxScreen presents the product title Messaging and follows the shell-selected organizer. Its Inbox workspace watches that organizer's events, personal inquiry previews, selected-event roster, and search; its Campaigns workspace mounts the same organizer's WhatsApp sender and campaign lifecycle, including route-restored initial segments. HostInboxViewModel keeps organizer, Event/General, Booked/Prospective, roster-count, and thread-count boundaries explicit.",
-        "targetLayout": "Keep Messaging as a Host-owned communication area with first-class Inbox and Campaigns workspaces. Preserve organizer and event provenance, reuse shared header and row primitives, and keep event broadcasts as Activity plus push rather than chat fan-out. Visual closure for the Inbox reference remains separate from the new Campaigns capture.",
+        "currentLayout": "HostInboxScreen presents the product title Messaging and follows the shell-selected organizer. Its header names the selected responsibility: Inbox owns one-to-one conversations and replies, while Sends owns outbound intent, manual handoff work, delivery history, and route-specific reports. Inbox watches the organizer's events, personal inquiry previews, selected Event or General scope, and search. Sends consumes Customers-owned saved audiences or Events-owned audience references without redefining either authority. HostInboxViewModel keeps organizer, Event/General, Booked/Prospective, and thread-count boundaries explicit.",
+        "targetLayout": "Keep Messaging as a Host-owned communication area with first-class Inbox and Sends workspaces. Preserve organizer and event provenance, reuse shared header and row primitives, and keep event announcements as Activity plus push rather than chat fan-out. The campaigns query value remains a compatibility wire detail, never the visible workspace label.",
         "sections": [
           {
             "id": "section.host.inbox_screen_adapter",
@@ -15960,7 +15960,7 @@
               "search",
               "unread_filter"
             ],
-            "migration": "HostInboxScreen now owns selected-organizer resolution, Inbox/Campaigns switching, search-action visibility, typed Host chat routing, and workspace-specific retry behavior. HostInboxViewModel owns organizer-scoped inquiry projection and HostAudienceController retains campaign mutations.",
+            "migration": "HostInboxScreen owns selected-organizer resolution, Inbox/Sends switching, workspace-specific explanatory copy, search-action visibility, typed Host chat routing, and workspace-specific retry behavior. HostInboxViewModel owns organizer-scoped inquiry projection and HostAudienceController retains campaign mutations.",
             "previewIds": [
               "HostInboxScreen/Event-scoped states"
             ]
@@ -16204,7 +16204,7 @@
               "customer_messaging_connecting",
               "customer_messaging_ready"
             ],
-            "migration": "Remains in the host-operations audience library and is composed by the selected-organizer Messaging Campaigns workspace.",
+            "migration": "Remains in the host-operations audience library and is composed by the selected-organizer Messaging Sends workspace.",
             "previewIds": [
               "HostCampaignComposer/Campaign and sender states"
             ]
@@ -16283,7 +16283,7 @@
         {
           "id": "DS-HOST-INBOX-003",
           "status": "closed",
-          "nextAction": "Widgetbook renders the production Messaging Inbox states plus the Campaigns sender workspace; full-shell captures cover the populated Inbox and Campaigns workspaces."
+          "nextAction": "Widgetbook renders the production Messaging Inbox and Sends responsibilities; full-shell captures should use the visible Sends label while preserving the campaigns compatibility wire value."
         },
         {
           "id": "DS-HOST-INBOX-004",

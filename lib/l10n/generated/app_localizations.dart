@@ -301,10 +301,10 @@ abstract class AppLocalizations {
   /// **'Messaging'**
   String get hostInboxTitle;
 
-  /// Host inbox subtitle describing attendee conversations.
+  /// Explains that Inbox owns reply-capable conversations rather than reusable or event-scoped audiences.
   ///
   /// In en, this message translates to:
-  /// **'Attendee queries'**
+  /// **'One-to-one conversations and replies.'**
   String get hostInboxSubtitle;
 
   /// Search hint for a list of people or conversations.
@@ -20619,7 +20619,7 @@ abstract class AppLocalizations {
   /// **'Everyone who has attended, registered, been imported, or been added by your team.'**
   String get hostCustomersIntro;
 
-  /// Messaging workspace label for direct inquiries and event broadcasts.
+  /// Messaging workspace label for reply-capable direct inquiries and conversations.
   ///
   /// In en, this message translates to:
   /// **'Inbox'**
@@ -20630,6 +20630,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sends'**
   String get hostMessagingWorkspaceSends;
+
+  /// Explains the outbound intent and delivery-history responsibility of the Messaging Sends workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Outbound delivery and history.'**
+  String get hostSendsSubtitle;
 
   /// Opens the Host outbound-intent chooser without exposing transport policy.
   ///

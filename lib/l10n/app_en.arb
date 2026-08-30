@@ -294,13 +294,13 @@
     "x-surface": "host.inbox",
     "x-max-chars": 20
   },
-  "hostInboxSubtitle": "Attendee queries",
+  "hostInboxSubtitle": "One-to-one conversations and replies.",
   "@hostInboxSubtitle": {
-    "description": "Host inbox subtitle describing attendee conversations.",
+    "description": "Explains that Inbox owns reply-capable conversations rather than reusable or event-scoped audiences.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "host.inbox",
-    "x-max-chars": 28
+    "x-max-chars": 48
   },
   "sharedSearchByNameHint": "Search by name",
   "@sharedSearchByNameHint": {
@@ -21333,9 +21333,11 @@
   "hostCustomersIntro": "Everyone who has attended, registered, been imported, or been added by your team.",
   "@hostCustomersIntro": {"description": "Customers directory scope explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostMessagingWorkspaceInbox": "Inbox",
-  "@hostMessagingWorkspaceInbox": {"description": "Messaging workspace label for direct inquiries and event broadcasts.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "@hostMessagingWorkspaceInbox": {"description": "Messaging workspace label for reply-capable direct inquiries and conversations.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostMessagingWorkspaceSends": "Sends",
   "@hostMessagingWorkspaceSends": {"description": "Messaging workspace label for outbound history and composing.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "hostSendsSubtitle": "Outbound delivery and history.",
+  "@hostSendsSubtitle": {"description": "Explains the outbound intent and delivery-history responsibility of the Messaging Sends workspace.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox", "x-max-chars": 48},
   "hostSendsChooseIntent": "Choose what to send",
   "@hostSendsChooseIntent": {"description": "Opens the Host outbound-intent chooser without exposing transport policy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostSendsIntentTitle": "What do you want to do?",
