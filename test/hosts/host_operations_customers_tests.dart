@@ -143,14 +143,22 @@ void _registerHostOperationsCustomersTests() {
     );
   });
 
-  testWidgets('customer directory clips pressed rows to its rounded frame', (
-    tester,
-  ) async {
+  testWidgets('customer directory uses flat divided rows', (tester) async {
     await _pumpHostScreen(
       tester,
       Scaffold(
         body: HostCustomersDirectory(
-          state: _customerDirectoryState(),
+          state: HostCustomersDirectoryState(
+            contacts: [
+              _customerDirectoryContact(),
+              _customerDirectoryContact(),
+            ],
+            nextCursor: null,
+            matchCount: 2,
+            matchCountCoverage: HostCustomerMatchCountCoverage.exact,
+            sourceCoverage: HostCustomerDirectoryCoverage.exact,
+            projectionVersion: 1,
+          ),
           hasActiveQuery: false,
           onCustomerSelected: (_) {},
           onLoadMore: null,
@@ -160,21 +168,29 @@ void _registerHostOperationsCustomersTests() {
     );
 
     final frame = find.byKey(const ValueKey('host-customers-directory-list'));
-    final groupClip = tester.widget<ClipRRect>(
+    expect(
       find.descendant(
         of: frame,
         matching: find.byKey(CatchSectionFocusSurface.rowGroupClipKey),
       ),
+      findsNothing,
     );
-    expect(groupClip.clipBehavior, Clip.hardEdge);
-    expect(groupClip.borderRadius, isNot(BorderRadius.zero));
+    expect(
+      find.descendant(of: frame, matching: find.byType(CatchDivider)),
+      findsOneWidget,
+    );
 
-    final row = find.byType(HostCustomerRow);
+    final row = find.byType(HostCustomerRow).first;
     final gesture = await tester.startGesture(tester.getCenter(row));
     await tester.pump();
     expect(
       tester
-          .widget<ColoredBox>(find.byKey(CatchRowPressSurface.overlayKey))
+          .widget<ColoredBox>(
+            find.descendant(
+              of: row,
+              matching: find.byKey(CatchRowPressSurface.overlayKey),
+            ),
+          )
           .color,
       isNot(Colors.transparent),
     );
