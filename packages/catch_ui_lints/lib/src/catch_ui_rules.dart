@@ -71,6 +71,7 @@ const _tokenPrefixes = <String>{
   'CatchGaps',
   'CatchInsets',
   'CatchElevation',
+  'CatchBorder',
   'CatchOpacity',
   'CatchMotion',
   'CatchAspectRatio',
@@ -86,15 +87,6 @@ const _tokenSourceNames = <String>{
   'CatchTextStyles',
   'CatchTokens',
   'Sizes',
-};
-
-const _rawStrokeConstructors = <String>{
-  'Border',
-  'BorderSide',
-  'CircularProgressIndicator',
-  'Divider',
-  'LinearProgressIndicator',
-  'VerticalDivider',
 };
 
 const _assetPathConstructors = <String>{'AssetImage', 'ExactAssetImage'};
@@ -317,7 +309,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const noRawStrokeWidth = LintCode(
     'catch_no_raw_stroke_width',
-    'Use CatchStroke or a primitive-owned stroke contract instead of a raw stroke width.',
+    'Use CatchBorder semantic roles, CatchStroke, or a primitive-owned stroke contract instead of a raw stroke width.',
     severity: DiagnosticSeverity.INFO,
   );
 
@@ -978,7 +970,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       _reportAtNode(node.expression, CatchUiLayoutRules.noRawShadow);
     }
 
-    if (isUiSystemScannerPath && _isRawStrokeNamedArgument(node)) {
+    if (isSizingScannerPath && _isRawStrokeNamedArgument(node)) {
       _reportAtNode(node.expression, CatchUiLayoutRules.noRawStrokeWidth);
     }
   }
@@ -1455,26 +1447,24 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     final name = node.name.label.name;
     final constructorType = _ancestorConstructorType(node);
     if (constructorType == null) return false;
-    if (!_rawStrokeConstructors.contains(constructorType)) return false;
 
     if (name == 'width') {
-      if (constructorType != 'BorderSide' && constructorType != 'Border') {
+      if (constructorType != 'BorderSide' &&
+          constructorType != 'Border' &&
+          constructorType != 'CatchBorderSpec') {
         return false;
       }
-      return _isNumberAtLeast(node.expression, _hairlineLiteralLimit + 0.1);
+      return _containsPositiveNumberLiteral(node.expression);
     }
 
-    if (name == 'strokeWidth') {
-      return constructorType == 'CircularProgressIndicator' ||
-              constructorType == 'LinearProgressIndicator'
-          ? _isNumberAtLeast(node.expression, _hairlineLiteralLimit + 0.1)
-          : false;
+    if (name == 'borderWidth' || name == 'strokeWidth') {
+      return _containsPositiveNumberLiteral(node.expression);
     }
 
     if (name == 'thickness') {
       return constructorType == 'Divider' ||
               constructorType == 'VerticalDivider'
-          ? _isNumberAtLeast(node.expression, _hairlineLiteralLimit + 0.1)
+          ? _containsPositiveNumberLiteral(node.expression)
           : false;
     }
 
@@ -2484,6 +2474,18 @@ bool _isPositiveNumberLiteral(Expression expression) {
 bool _isNumberAtLeast(Expression expression, double minimum) {
   final value = _numberLiteralValue(expression);
   return value != null && value >= minimum;
+}
+
+bool _containsPositiveNumberLiteral(Expression expression) {
+  final directValue = _numberLiteralValue(expression);
+  if (directValue != null) return directValue > 0;
+
+  for (final entity in expression.childEntities) {
+    if (entity is Expression && _containsPositiveNumberLiteral(entity)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool _isNumberBetween(

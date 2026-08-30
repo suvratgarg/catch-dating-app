@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -32,6 +33,7 @@ import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeletonized.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -84,6 +86,7 @@ import '../test_pump_helpers.dart';
 part 'host_operations_state_events_tests.dart';
 part 'host_operations_club_workspace_tests.dart';
 part 'host_operations_customers_tests.dart';
+part 'host_operations_customer_editor_tests.dart';
 part 'host_operations_customer_communications_tests.dart';
 part 'host_operations_customers_test_support.dart';
 part 'host_operations_customer_state_tests.dart';
@@ -103,6 +106,7 @@ void main() {
   _registerHostOperationsStateEventsTests();
   _registerHostOperationsClubWorkspaceTests();
   _registerHostOperationsCustomersTests();
+  _registerHostOperationsCustomerEditorTests();
   _registerHostOperationsCustomerCommunicationsTests();
   _registerHostOperationsCustomerStateTests();
   _registerHostOperationsAnalyticsTeamTests();
@@ -194,6 +198,14 @@ Future<void> _pumpHostScreen(
         name: Routes.hostClubTeamScreen.name,
         builder: (_, state) => HostClubTeamScreen(
           clubId: state.uri.queryParameters['clubId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: Routes.hostInboxScreen.path,
+        name: Routes.hostInboxScreen.name,
+        builder: (_, state) => Text(
+          'Messaging ${state.uri.queryParameters['workspace']} '
+          '${state.uri.queryParameters['segment']}',
         ),
       ),
       GoRoute(

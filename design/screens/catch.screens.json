@@ -14912,8 +14912,8 @@
       "topBar": {
         "role": "shell",
         "expression": "CatchScreenHeaderTitle.block + CatchScreenTopBar",
-        "owner": "HostCustomersScreen and HostCustomerDetailScreen",
-        "reason": "The tab directory uses a direct title and Add customer action while the shell navigation owns organizer identity; the nested detail route owns a compact back title."
+        "owner": "HostCustomersScreen, HostAddCustomerScreen, and HostCustomerDetailScreen",
+        "reason": "The tab directory uses a direct title and canonical Add customer action while the shell navigation owns organizer identity; the route-level add and nested detail surfaces own compact back titles."
       },
       "statePolicy": {
         "requiredStates": ["data", "empty", "error", "loading", "mutation", "offline", "permission"],
@@ -14925,6 +14925,7 @@
       "status": "in_progress",
       "routes": [
         {"id": "hostCustomersScreen", "path": "/host/customers", "role": "primary"},
+        {"id": "hostAddCustomerScreen", "path": "/host/customers/new", "role": "host"},
         {"id": "hostCustomerDetailScreen", "path": "/host/customers/:contactId", "role": "host"}
       ],
       "source": {
@@ -14968,6 +14969,11 @@
           "notes": "Full-shell Customers capture renders the direct organizer-scoped CRM directory with Add customer in the title action area and no People/Campaigns selector."
         },
         {
+          "id": "host_customer_add",
+          "status": "captured",
+          "notes": "Full-page Add customer route groups the shared identity fields under Details, the optional first note under Memory, and a pinned canonical primary action."
+        },
+        {
           "id": "host_customer_detail_memory",
           "status": "captured",
           "notes": "Deterministic customer detail fixture carries organizer-authored tags and notes above attendance, revenue, event history and campaign delivery state."
@@ -14989,7 +14995,7 @@
         {"id": "customer_saved_audience_manage", "kind": "populated", "status": "tested", "source": "HostSavedAudiencesSheet exact preview and archive actions", "previewIds": ["hostSavedAudiencesStates"], "tests": ["test/hosts/host_crm_repository_test.dart", "test/hosts/host_operations_customers_tests.dart"], "nextAction": "Capture the populated Customers-owned management sheet when the authenticated gallery is refreshed."},
         {"id": "customer_saved_audience_empty", "kind": "empty", "status": "tested", "source": "HostSavedAudiencesSheet CatchEmptyState", "previewIds": ["hostSavedAudiencesStates"], "tests": ["test/hosts/host_operations_customers_tests.dart"], "nextAction": "Capture the Customers-owned first-audience path when the authenticated gallery is refreshed."},
         {"id": "customer_saved_audience_error", "kind": "error", "status": "tested", "source": "HostSavedAudiencesSheet CatchErrorState", "previewIds": ["hostSavedAudiencesStates"], "tests": ["test/hosts/host_operations_customers_tests.dart"], "nextAction": "Capture retry treatment when the authenticated gallery is refreshed."},
-        {"id": "manual_add_pending", "kind": "mutation", "status": "implemented", "source": "HostAddCustomerSheet submit lifecycle", "nextAction": "Add manual-add error and pending widget tests."},
+        {"id": "manual_add_pending", "kind": "mutation", "status": "captured", "source": "HostAddCustomerScreen submit lifecycle", "previewIds": ["hostCustomersStates"], "captureIds": ["host_customer_add"], "tests": ["test/hosts/host_operations_screen_test.dart"], "nextAction": "Keep the route-level name-plus-endpoint validation aligned with the callable schema."},
         {"id": "customer_detail_loading", "kind": "loading", "status": "implemented", "source": "hostAudienceContactDetailProvider", "nextAction": "Add deterministic detail loading capture."},
         {"id": "customer_detail_error", "kind": "error", "status": "implemented", "source": "CatchErrorState in HostCustomerDetailScreen", "nextAction": "Add detail retry interaction test."},
         {"id": "customer_detail_linked", "kind": "populated", "status": "implemented", "source": "HostCustomerIdentityCard", "previewIds": ["hostCustomersStates"], "tests": ["test/hosts/host_customers_screen_state_test.dart", "test/hosts/host_crm_repository_test.dart"], "nextAction": "Capture linked identity and conversation availability."},
@@ -15020,7 +15026,7 @@
         {"id": "light_dark", "kind": "theme", "status": "planned", "source": "Catch token primitives", "nextAction": "Capture directory and detail in light and dark themes."}
       ],
       "composition": {
-        "currentLayout": "A dedicated Host tab follows the shell-selected organizer and directly presents CRM summary, export, manual add, search, grouped counted computed-segment and organizer-tag filters, Customers-owned saved-audience creation/management and a paginated directory. The Messaging bridge persists and exactly previews a reusable audience before opening Sends by id; free-text search results are not persistable. A nested route presents identity, organizer-authored memory, attendance, revenue, event history, campaign delivery state, then consent, conversation and removal controls. Campaign composition lives in Messaging but audience authoring does not.",
+        "currentLayout": "A dedicated Host tab follows the shell-selected organizer and directly presents CRM summary, export, search, grouped counted computed-segment and organizer-tag filters, Customers-owned saved-audience creation/management and a paginated directory. Manual add is a full-page route aligned to the identity and memory sections on detail. The Messaging bridge persists and exactly previews an eligible reusable audience before opening Sends by id; blocked or free-text views open Messaging without being misrepresented as sendable audiences. A nested route presents identity, organizer-authored memory, attendance, revenue, event history, campaign delivery state, then consent, conversation and removal controls. Campaign composition lives in Messaging but audience authoring does not.",
         "targetLayout": "Keep Customers as the sole CRM owner without a redundant People/Campaigns switch. Organizer remains focused on organizer configuration, insights and public preview; Messaging owns first-class communication workspaces.",
         "sections": [
           {

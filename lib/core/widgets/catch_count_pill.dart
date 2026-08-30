@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 /// The required label and callback keep this distinct from icon-only
 /// [CatchIconButton] actions and prevent an action-looking passive surface.
 /// Counts stay typed and render through [CatchCountBadge].
-class CatchCountPill extends StatelessWidget {
+class CatchCountPill extends StatefulWidget {
   CatchCountPill.label({
     super.key,
     this.icon,
@@ -35,8 +35,19 @@ class CatchCountPill extends StatelessWidget {
   final String? semanticLabel;
 
   @override
+  State<CatchCountPill> createState() => _CatchCountPillState();
+}
+
+class _CatchCountPillState extends State<CatchCountPill> {
+  bool _focused = false;
+
+  @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final icon = widget.icon;
+    final label = widget.label;
+    final value = widget.value;
+    final count = widget.count;
     final content = LayoutBuilder(
       builder: (context, constraints) {
         final labelText = Text(
@@ -45,10 +56,10 @@ class CatchCountPill extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: CatchTextStyles.monoLabel(context, color: t.ink),
         );
-        final valueText = value == null || value!.isEmpty
+        final valueText = value == null || value.isEmpty
             ? null
             : Text(
-                value!.toUpperCase(),
+                value.toUpperCase(),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.monoCapsLabel(context, color: t.ink),
@@ -90,12 +101,15 @@ class CatchCountPill extends StatelessWidget {
       radius: CatchRadius.pill,
       elevation: CatchSurfaceElevation.raised,
       backgroundColor: t.floatingPillFill,
-      borderColor: t.line2,
+      borderRole: _focused ? CatchBorderRole.focus : CatchBorderRole.control,
       padding: EdgeInsets.only(
         left: CatchSpacing.s4,
         right: count > 0 ? CatchSpacing.s5 : CatchSpacing.s4,
       ),
-      onTap: onPressed,
+      onTap: widget.onPressed,
+      onFocusChange: (focused) {
+        if (_focused != focused) setState(() => _focused = focused);
+      },
       child: content,
     );
 
@@ -105,12 +119,12 @@ class CatchCountPill extends StatelessWidget {
       child: pill,
     );
 
-    if (semanticLabel == null) return countedPill;
+    if (widget.semanticLabel == null) return countedPill;
     return Semantics(
       container: true,
       button: true,
       enabled: true,
-      label: semanticLabel,
+      label: widget.semanticLabel,
       excludeSemantics: true,
       child: countedPill,
     );

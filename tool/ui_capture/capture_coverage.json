@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-19",
+  "updated": "2026-08-29",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -652,7 +652,16 @@
       "captureIds": [
         "host_customers_populated"
       ],
-      "reason": "The production Customers directory has a deterministic populated full-shell capture aligned with the direct people workspace; broader loading, empty, filtering, pagination, manual-add, accessibility, and theme states remain future coverage."
+      "reason": "The production Customers directory has a deterministic populated full-shell capture aligned with the direct people workspace; broader loading, empty, filtering, pagination, accessibility, and theme states remain future coverage."
+    },
+    {
+      "routeId": "hostAddCustomerScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": [
+        "host_customer_add"
+      ],
+      "reason": "The full-page Add customer route is captured in light and dark themes with its shared Details and Memory field semantics plus pinned primary action."
     },
     {
       "routeId": "hostFormsScreen",

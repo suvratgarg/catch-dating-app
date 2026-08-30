@@ -269,7 +269,7 @@ class ReactionControlButton extends StatelessWidget {
                 ? SizedBox.square(
                     dimension: CatchLayout.reactionControlIconSize,
                     child: CircularProgressIndicator(
-                      strokeWidth: 2.2,
+                      strokeWidth: CatchStroke.progressIndicator,
                       valueColor: AlwaysStoppedAnimation<Color>(foreground),
                     ),
                   )

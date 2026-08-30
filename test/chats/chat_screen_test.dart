@@ -1638,9 +1638,9 @@ void main() {
       final matchRepository = FakeMatchRepository(match: buildMatch());
       final conversationRepository = FakeConversationRepository();
       var messageProviderBuilds = 0;
-
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
@@ -2070,9 +2070,9 @@ void main() {
       );
       final conversationRepository = FakeConversationRepository();
       var actionsProviderBuilds = 0;
-
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),

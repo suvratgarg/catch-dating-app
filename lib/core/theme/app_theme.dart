@@ -27,6 +27,15 @@ abstract final class AppTheme {
   }) {
     final base = ThemeData(useMaterial3: true, colorScheme: colorScheme);
     final textTheme = CatchTextStyles.materialTextTheme(base.textTheme, tokens);
+    final controlBorder = CatchBorder.resolve(
+      tokens,
+      CatchBorderRole.control,
+    ).side;
+    final focusBorder = CatchBorder.resolve(tokens, CatchBorderRole.focus).side;
+    final separatorBorder = CatchBorder.resolve(
+      tokens,
+      CatchBorderRole.separator,
+    );
 
     return base.copyWith(
       // Platform system font as the app-wide function/body baseline, tuned to
@@ -49,15 +58,15 @@ abstract final class AppTheme {
         fillColor: tokens.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(CatchRadius.sm),
-          borderSide: BorderSide(color: tokens.line2),
+          borderSide: controlBorder,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(CatchRadius.sm),
-          borderSide: BorderSide(color: tokens.line2),
+          borderSide: controlBorder,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(CatchRadius.sm),
-          borderSide: BorderSide(color: tokens.primary, width: 1.5),
+          borderSide: focusBorder,
         ),
         hintStyle: textTheme.bodyLarge?.copyWith(color: tokens.ink3),
         labelStyle: textTheme.labelLarge?.copyWith(color: tokens.ink2),
@@ -83,7 +92,7 @@ abstract final class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: tokens.primary,
-          side: BorderSide(color: tokens.primary),
+          side: controlBorder,
           minimumSize: const Size(double.infinity, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(CatchRadius.pill),
@@ -172,7 +181,10 @@ abstract final class AppTheme {
         }),
       ),
 
-      dividerTheme: DividerThemeData(color: tokens.line, thickness: 1),
+      dividerTheme: DividerThemeData(
+        color: separatorBorder.color,
+        thickness: separatorBorder.width,
+      ),
 
       cardTheme: CardThemeData(
         color: tokens.surface,
@@ -192,7 +204,7 @@ abstract final class AppTheme {
           fontWeight: FontWeight.w500,
           color: tokens.ink,
         ),
-        side: BorderSide(color: tokens.line2),
+        side: controlBorder,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(CatchRadius.pill),
         ),

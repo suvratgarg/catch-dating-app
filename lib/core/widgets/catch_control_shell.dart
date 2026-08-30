@@ -98,23 +98,36 @@ class CatchControlShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final radius = BorderRadius.circular(CatchControlMetrics.radius(shape));
+    final border = CatchBorder.interactive(
+      t,
+      hasError
+          ? CatchInteractiveBorderState.error
+          : !enabled
+          ? CatchInteractiveBorderState.disabled
+          : focused
+          ? CatchInteractiveBorderState.focused
+          : CatchInteractiveBorderState.resting,
+    );
+    final contentPadding = padding ?? CatchControlMetrics.contentPadding(size);
     final content = AnimatedContainer(
       duration: CatchMotion.fast,
       curve: CatchMotion.standardCurve,
       constraints: BoxConstraints(
         minHeight: CatchControlMetrics.minHeight(size),
       ),
-      padding: padding ?? CatchControlMetrics.contentPadding(size),
+      // Reserve a stable emphasis-stroke footprint. The semantic border paints
+      // in the foreground, so rest/error/focus widths never change layout.
+      padding: contentPadding.add(const EdgeInsets.all(CatchStroke.emphasis)),
       decoration: BoxDecoration(
         color: _fillColor(t),
         borderRadius: radius,
-        border: Border.all(
-          color: _borderColor(t),
-          width: CatchStroke.underline,
-        ),
         boxShadow: focused && !hasError
             ? CatchElevation.focusRing(t)
             : CatchElevation.none,
+      ),
+      foregroundDecoration: BoxDecoration(
+        borderRadius: radius,
+        border: border.all,
       ),
       child: child,
     );
@@ -138,12 +151,5 @@ class CatchControlShell extends StatelessWidget {
       CatchControlTone.surface => t.surface,
       CatchControlTone.raised => t.raised,
     };
-  }
-
-  Color _borderColor(CatchTokens t) {
-    if (hasError) return t.danger;
-    if (!enabled) return t.line;
-    if (focused) return t.primary;
-    return t.line2;
   }
 }

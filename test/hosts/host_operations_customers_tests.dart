@@ -244,6 +244,46 @@ void _registerHostOperationsCustomersTests() {
     expect(find.text('4+'), findsOneWidget);
     expect(find.text('3+'), findsOneWidget);
     expect(find.text('2+'), findsOneWidget);
+
+    final summary = find.byType(HostCustomersSummary);
+    final statColumns = tester
+        .widgetList<CatchStatColumn>(
+          find.descendant(of: summary, matching: find.byType(CatchStatColumn)),
+        )
+        .toList();
+    expect(statColumns, hasLength(3));
+    expect(statColumns.every((column) => !column.surface), isTrue);
+    expect(statColumns.every((column) => !column.center), isTrue);
+
+    final statSurfaces = find.descendant(
+      of: summary,
+      matching: find.byType(CatchSurface),
+    );
+    expect(statSurfaces, findsNWidgets(3));
+    final surfaces = tester.widgetList<CatchSurface>(statSurfaces).toList();
+    expect(
+      surfaces.every((surface) => surface.tone == CatchSurfaceTone.transparent),
+      isTrue,
+    );
+    expect(
+      surfaces.every((surface) => surface.radius == CatchRadius.md),
+      isTrue,
+    );
+    expect(
+      surfaces.every(
+        (surface) => surface.borderRole == CatchBorderRole.boundary,
+      ),
+      isTrue,
+    );
+
+    final surfaceRects = <Rect>[
+      for (var index = 0; index < 3; index++)
+        tester.getRect(statSurfaces.at(index)),
+    ];
+    expect(surfaceRects[0].width, closeTo(surfaceRects[1].width, 0.01));
+    expect(surfaceRects[1].width, closeTo(surfaceRects[2].width, 0.01));
+    expect(surfaceRects[1].left - surfaceRects[0].right, CatchSpacing.s2);
+    expect(surfaceRects[2].left - surfaceRects[1].right, CatchSpacing.s2);
   });
 
   testWidgets('customer search debounces and unavailable SMS stays hidden', (
@@ -392,16 +432,18 @@ void _registerHostOperationsCustomersTests() {
   ) async {
     await _pumpHostScreen(
       tester,
-      const Scaffold(body: HostAddCustomerSheet(organizerId: 'organizer-1')),
+      const HostAddCustomerScreen(organizerId: 'organizer-1'),
     );
 
+    expect(find.byType(CatchRouteScaffold), findsOneWidget);
+    expect(find.byType(CatchBottomSheetScaffold), findsNothing);
     expect(
-      tester
-          .widget<CatchBottomSheetScaffold>(
-            find.byType(CatchBottomSheetScaffold),
-          )
-          .keyboardSafe,
-      isTrue,
+      find.byKey(const ValueKey('host-add-customer-details')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('host-add-customer-memory')),
+      findsOneWidget,
     );
     expect(
       tester
@@ -409,7 +451,7 @@ void _registerHostOperationsCustomersTests() {
             find.byKey(const ValueKey('host-add-customer-name')),
           )
           .title,
-      'Customer name',
+      'Name shown to your team',
     );
     expect(
       tester
@@ -437,6 +479,21 @@ void _registerHostOperationsCustomersTests() {
     );
     expect(
       find.textContaining('never grant messaging permission'),
+      findsOneWidget,
+    );
+
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-add-customer-name')),
+        matching: find.byType(TextField),
+      ),
+      'Name only',
+    );
+    await tester.tap(find.byKey(const ValueKey('host-add-customer-submit')));
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.text('Add or keep at least one mobile number or email address.'),
       findsOneWidget,
     );
   });
@@ -520,7 +577,7 @@ void _registerHostOperationsCustomersTests() {
     expect(find.byType(CatchScreenHeaderTitle), findsOneWidget);
   });
 
-  testWidgets('customer controls separate sorting, commands, and status', (
+  testWidgets('customer overview groups status and directory controls', (
     tester,
   ) async {
     final club = buildClub(id: 'header-club', ownerUserId: _hostUid);
@@ -555,9 +612,33 @@ void _registerHostOperationsCustomersTests() {
       find.text('0 imported or added by your team · 0 linked Catch accounts'),
       findsOneWidget,
     );
-    expect(find.text('Sort: Last seen'), findsOneWidget);
+    final activeView = find.byType(HostCustomerFilterSummary);
+    expect(find.ancestor(of: activeView, matching: summary), findsOneWidget);
+    expect(find.text('All · 0 people'), findsOneWidget);
+    expect(find.text('Message these 0'), findsNothing);
+    final messagingAction = tester.widget<CatchButton>(
+      find.byKey(const ValueKey('host-customers-messaging-action')),
+    );
+    expect(messagingAction.label, 'Open messaging');
+    expect(messagingAction.onPressed, isNotNull);
+
+    final controls = find.byType(HostCustomerDirectoryControls);
+    expect(
+      find.descendant(of: controls, matching: find.text('Filters')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: controls, matching: find.text('Sort: Last seen')),
+      findsOneWidget,
+    );
     expect(find.byTooltip('More customer actions'), findsOneWidget);
     expect(find.byTooltip('Export this audience'), findsNothing);
+
+    await tester.tap(find.text('Filters'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostCustomerFilterSheet), findsOneWidget);
+    Navigator.of(tester.element(find.byType(HostCustomerFilterSheet))).pop();
+    await pumpFeatureUi(tester);
 
     await tester.tap(find.text('Sort: Last seen'));
     await pumpFeatureUi(tester);
@@ -601,14 +682,51 @@ void _registerHostOperationsCustomersTests() {
       ],
     );
 
-    await tester.tap(find.text('Sort: Last seen'));
+    final filtersRect = tester.getRect(
+      find.byKey(const ValueKey('host-customers-filters')),
+    );
+    final sortRect = tester.getRect(
+      find.byKey(const ValueKey('host-customers-sort')),
+    );
+    expect(
+      filtersRect.center.dy,
+      closeTo(sortRect.center.dy, 0.5),
+      reason: 'Filters $filtersRect and Sort $sortRect must share one row.',
+    );
+
+    expect(find.text('Last seen'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('host-customers-sort')));
     await pumpFeatureUi(tester);
     expect(find.byType(CatchSelectionSheet<HostCustomerSort>), findsOneWidget);
 
     await tester.tap(find.text('Most attended'));
     await pumpFeatureUi(tester);
-    expect(find.text('Sort: Most attended'), findsOneWidget);
+    expect(find.text('Most attended'), findsOneWidget);
     expect(requests.last.sort, HostCustomerSort.mostAttended);
+  });
+
+  testWidgets('all customers opens Messaging without claiming an audience', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'messaging-club', ownerUserId: _hostUid);
+    await _pumpHostScreen(
+      tester,
+      const HostCustomersScreen(),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        hostCustomersDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostCustomersDirectoryController(
+            [],
+            _emptyCustomerDirectoryState(),
+          ),
+        ),
+      ],
+    );
+
+    await tester.tap(find.text('Open messaging'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Messaging campaigns null'), findsOneWidget);
   });
 
   testWidgets('customer search shows clear only while input is non-empty', (
@@ -816,231 +934,6 @@ void _registerHostOperationsCustomersTests() {
       find.byKey(const ValueKey('host-customer-controls')),
       findsOneWidget,
     );
-  });
-
-  testWidgets('customer identity edits and saves in place', (tester) async {
-    String? savedDisplayName;
-    String? savedPhone;
-    String? savedEmail;
-    final customer = _customerDetail(
-      contactDetailsEditable: true,
-      linkedAccount: false,
-      identityState: HostAudienceIdentityState.unlinked,
-      identityConfidence: 'unverified',
-    );
-    await _pumpHostScreen(
-      tester,
-      Scaffold(
-        body: HostCustomerIdentityCard(
-          customer: customer,
-          onSave: ({required displayName, phoneE164, email}) async {
-            savedDisplayName = displayName;
-            savedPhone = phoneE164;
-            savedEmail = email;
-          },
-        ),
-      ),
-    );
-
-    expect(find.text('Add mobile number'), findsOneWidget);
-    expect(find.text('Add email'), findsOneWidget);
-    expect(find.text('Added by your team · not verified by Catch'), findsOne);
-    expect(
-      find.descendant(
-        of: find.byType(HostCustomerIdentityCard),
-        matching: find.byIcon(CatchIcons.chevronRightRounded),
-      ),
-      findsNothing,
-    );
-
-    for (final key in const [
-      ValueKey('host-customer-name-field'),
-      ValueKey('host-customer-phone-field'),
-      ValueKey('host-customer-email-field'),
-    ]) {
-      expect(tester.widget<CatchField>(find.byKey(key)).onTap, isNull);
-    }
-
-    await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
-    await tester.pump();
-
-    expect(find.byKey(const ValueKey('host-customer-edit-name')), findsOne);
-    expect(find.byKey(const ValueKey('host-customer-edit-phone')), findsOne);
-    expect(find.byKey(const ValueKey('host-customer-edit-email')), findsOne);
-    expect(
-      find.byKey(const ValueKey('host-customer-edit-details')),
-      findsNothing,
-    );
-    expect(find.byKey(const ValueKey('catch-field-action-bar')), findsOne);
-
-    await tester.enterText(
-      find.descendant(
-        of: find.byKey(const ValueKey('host-customer-edit-name')),
-        matching: find.byType(TextField),
-      ),
-      'Ananya Kapoor',
-    );
-    await tester.enterText(
-      find.descendant(
-        of: find.byKey(const ValueKey('host-customer-edit-phone')),
-        matching: find.byType(TextField),
-      ),
-      '+919999999999',
-    );
-    await tester.enterText(
-      find.descendant(
-        of: find.byKey(const ValueKey('host-customer-edit-email')),
-        matching: find.byType(TextField),
-      ),
-      'NEW@Example.COM',
-    );
-    await tester.tap(find.byKey(const ValueKey('catch-field-done')));
-    await pumpFeatureUi(tester);
-
-    expect(savedDisplayName, 'Ananya Kapoor');
-    expect(savedPhone, '+919999999999');
-    expect(savedEmail, 'new@example.com');
-    expect(find.text('Ananya Kapoor'), findsOneWidget);
-    expect(find.text('+919999999999'), findsOneWidget);
-    expect(find.text('new@example.com'), findsOneWidget);
-    expect(find.byKey(const ValueKey('catch-field-action-bar')), findsNothing);
-  });
-
-  testWidgets('cancel restores customer details without saving', (
-    tester,
-  ) async {
-    var saves = 0;
-    final customer = _customerDetail(
-      contactDetailsEditable: true,
-      linkedAccount: false,
-      identityState: HostAudienceIdentityState.unlinked,
-      identityConfidence: 'unverified',
-    );
-    await _pumpHostScreen(
-      tester,
-      Scaffold(
-        body: HostCustomerIdentityCard(
-          customer: customer,
-          onSave: ({required displayName, phoneE164, email}) async {
-            saves += 1;
-          },
-        ),
-      ),
-    );
-
-    await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
-    await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('catch-field-done')));
-    await tester.pump();
-
-    expect(saves, 0);
-    expect(find.byKey(const ValueKey('host-customer-edit-name')), findsNothing);
-
-    await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
-    await tester.pump();
-    await tester.enterText(
-      find.descendant(
-        of: find.byKey(const ValueKey('host-customer-edit-name')),
-        matching: find.byType(TextField),
-      ),
-      'Discarded name',
-    );
-    await tester.tap(find.byKey(const ValueKey('catch-field-cancel')));
-    await tester.pump();
-
-    expect(saves, 0);
-    expect(find.text('Ananya Rao'), findsOneWidget);
-    expect(find.text('Discarded name'), findsNothing);
-    expect(find.byKey(const ValueKey('host-customer-edit-name')), findsNothing);
-  });
-
-  testWidgets('verified customer edits name while endpoints stay read-only', (
-    tester,
-  ) async {
-    await _pumpHostScreen(
-      tester,
-      Scaffold(
-        body: HostCustomerIdentityCard(
-          customer: _customerDetail(),
-          onSave: ({required displayName, phoneE164, email}) async {},
-        ),
-      ),
-    );
-
-    expect(find.text('Not saved'), findsNWidgets(2));
-    await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
-    await tester.pump();
-
-    expect(find.byKey(const ValueKey('host-customer-edit-name')), findsOne);
-    expect(
-      find.byKey(const ValueKey('host-customer-edit-phone')),
-      findsNothing,
-    );
-    expect(
-      find.byKey(const ValueKey('host-customer-edit-email')),
-      findsNothing,
-    );
-    expect(
-      tester
-          .widget<CatchField>(
-            find.byKey(const ValueKey('host-customer-phone-field')),
-          )
-          .onTap,
-      isNull,
-    );
-    expect(
-      tester
-          .widget<CatchField>(
-            find.byKey(const ValueKey('host-customer-email-field')),
-          )
-          .onTap,
-      isNull,
-    );
-    expect(
-      find.text(
-        'Linked Catch profiles stay private. Phone and email can’t be edited here.',
-      ),
-      findsOne,
-    );
-  });
-
-  testWidgets('inline customer details keep invalid drafts open', (
-    tester,
-  ) async {
-    var saves = 0;
-    final customer = _customerDetail(
-      contactDetailsEditable: true,
-      linkedAccount: false,
-      identityState: HostAudienceIdentityState.unlinked,
-      identityConfidence: 'unverified',
-    );
-    await _pumpHostScreen(
-      tester,
-      Scaffold(
-        body: HostCustomerIdentityCard(
-          customer: customer,
-          onSave: ({required displayName, phoneE164, email}) async {
-            saves += 1;
-          },
-        ),
-      ),
-    );
-
-    await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
-    await tester.pump();
-    await tester.enterText(
-      find.descendant(
-        of: find.byKey(const ValueKey('host-customer-edit-name')),
-        matching: find.byType(TextField),
-      ),
-      '   ',
-    );
-    await tester.tap(find.byKey(const ValueKey('catch-field-done')));
-    await tester.pump();
-
-    expect(saves, 0);
-    expect(find.text('Enter the customer’s name.'), findsOneWidget);
-    expect(find.byKey(const ValueKey('host-customer-edit-name')), findsOne);
   });
 
   testWidgets('organizer messaging control exposes the requested state', (

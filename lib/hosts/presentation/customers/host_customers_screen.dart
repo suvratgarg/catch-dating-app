@@ -7,21 +7,26 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/breakpoints.dart';
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
@@ -48,6 +53,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 part 'host_customer_detail_cards.dart';
+part 'host_customer_editor.dart';
 part 'host_customer_editor_sheets.dart';
 part 'host_customers_directory.dart';
 
@@ -167,26 +173,30 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     final directory = ref.watch(
       hostCustomersDirectoryControllerProvider(request),
     );
+    final directoryState = catchAsyncStateFromAsyncValue(directory).value;
+    String? campaignBridgeBlocker;
+    if (directoryState != null) {
+      campaignBridgeBlocker = hostCampaignBridgeBlocker(
+        hasPersistableAudience:
+            _search == null &&
+            directoryState.matchCount > 0 &&
+            directoryState.matchCountCoverage ==
+                HostCustomerMatchCountCoverage.exact,
+        messagingSetup: messagingSetupState.value,
+        audienceCoverageComplete:
+            directoryState.sourceCoverage ==
+            HostCustomerDirectoryCoverage.exact,
+      );
+    }
     final t = CatchTokens.of(context);
     final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
-    final compactHeader = screenSize.isCompact;
-
     final headerActions = [
-      if (compactHeader)
-        CatchIconAction(
-          key: const ValueKey<String>('host-customers-add-customer'),
-          icon: CatchIcons.personAddAlt1Rounded,
-          tooltip: context.l10n.hostCustomersAdd,
-          onPressed: () => _addCustomer(selectedClub, request),
-        )
-      else
-        CatchButton(
-          key: const ValueKey<String>('host-customers-add-customer'),
-          label: context.l10n.hostCustomersAdd,
-          icon: Icon(CatchIcons.personAddAlt1Rounded, size: CatchIcon.sm),
-          size: CatchButtonSize.sm,
-          onPressed: () => _addCustomer(selectedClub, request),
-        ),
+      CatchTopBarPrimaryAction(
+        key: const ValueKey<String>('host-customers-add-customer'),
+        label: context.l10n.hostCustomersAdd,
+        icon: CatchIcons.personAddAlt1Rounded,
+        onPressed: () => _addCustomer(selectedClub, request),
+      ),
       CatchTopBarMenuAction<_HostCustomersHeaderAction>(
         tooltip: context.l10n.hostCustomersMoreActions,
         items: _hostCustomersHeaderActions(
@@ -257,11 +267,45 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                       onRetry: () => ref.invalidate(
                         hostCrmSummaryProvider(selectedClub.id),
                       ),
+                      directorySummary: directoryState == null
+                          ? null
+                          : HostCustomerFilterSummary(
+                              filter: effectiveFilter,
+                              manualTag: _manualTag,
+                              count: directoryState.matchCount,
+                              countCoverage: directoryState.matchCountCoverage,
+                              campaignBlocker: campaignBridgeBlocker,
+                              onMessage: campaignBridgeBlocker == null
+                                  ? () => _saveAndMessageCustomers(
+                                      selectedClub,
+                                      effectiveFilter,
+                                      _manualTag,
+                                    )
+                                  : null,
+                              onOpenMessaging: () =>
+                                  _openMessaging(selectedClub),
+                              onClear:
+                                  effectiveFilter == HostCustomerFilter.all &&
+                                      _manualTag == null
+                                  ? null
+                                  : () => setState(() {
+                                      _filter = HostCustomerFilter.all;
+                                      _manualTag = null;
+                                    }),
+                            ),
                     ),
                     gapH16,
-                    HostCustomerDirectorySortControl(
+                    HostCustomerDirectoryControls(
                       sort: _sort,
                       onSortChanged: (sort) => setState(() => _sort = sort),
+                      onOpenFilters: directoryState == null
+                          ? null
+                          : () => _openFilters(
+                              effectiveFilter,
+                              _manualTag,
+                              directoryState,
+                              summaryState.value?.smsReadiness,
+                            ),
                     ),
                     gapH16,
                     CatchAsyncValueView<HostCustomersDirectoryState>(
@@ -280,78 +324,31 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                         ),
                       ),
                       builder: (context, state) {
-                        final campaignBridgeBlocker = hostCampaignBridgeBlocker(
-                          hasPersistableAudience:
-                              _search == null &&
-                              state.matchCount > 0 &&
-                              state.matchCountCoverage ==
-                                  HostCustomerMatchCountCoverage.exact,
-                          messagingSetup: messagingSetupState.value,
-                          audienceCoverageComplete:
-                              state.sourceCoverage ==
-                              HostCustomerDirectoryCoverage.exact,
-                        );
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            HostCustomerFilterSummary(
-                              filter: effectiveFilter,
-                              manualTag: _manualTag,
-                              count: state.matchCount,
-                              countCoverage: state.matchCountCoverage,
-                              campaignBlocker: campaignBridgeBlocker,
-                              onMessage: campaignBridgeBlocker == null
-                                  ? () => _saveAndMessageCustomers(
-                                      selectedClub,
-                                      effectiveFilter,
-                                      _manualTag,
+                        return HostCustomersDirectory(
+                          state: state,
+                          hasActiveQuery:
+                              _search != null ||
+                              effectiveFilter != HostCustomerFilter.all ||
+                              _manualTag != null,
+                          onCustomerSelected: (contact) =>
+                              _openCustomer(selectedClub, contact),
+                          onLoadMore: state.canLoadMore
+                              ? () => ref
+                                    .read(
+                                      hostCustomersDirectoryControllerProvider(
+                                        request,
+                                      ).notifier,
                                     )
-                                  : null,
-                              onOpenFilters: () => _openFilters(
-                                effectiveFilter,
-                                _manualTag,
-                                state,
-                                summaryState.value?.smsReadiness,
-                              ),
-                              onClear:
-                                  effectiveFilter == HostCustomerFilter.all &&
-                                      _manualTag == null
-                                  ? null
-                                  : () => setState(() {
-                                      _filter = HostCustomerFilter.all;
-                                      _manualTag = null;
-                                    }),
-                            ),
-                            gapH16,
-                            HostCustomersDirectory(
-                              state: state,
-                              hasActiveQuery:
-                                  _search != null ||
-                                  effectiveFilter != HostCustomerFilter.all ||
-                                  _manualTag != null,
-                              onCustomerSelected: (contact) =>
-                                  _openCustomer(selectedClub, contact),
-                              onLoadMore: state.canLoadMore
-                                  ? () => ref
-                                        .read(
-                                          hostCustomersDirectoryControllerProvider(
-                                            request,
-                                          ).notifier,
-                                        )
-                                        .loadMore()
-                                  : null,
-                              onRefreshCoverage: () {
-                                ref.invalidate(
-                                  hostCrmSummaryProvider(selectedClub.id),
-                                );
-                                ref.invalidate(
-                                  hostCustomersDirectoryControllerProvider(
-                                    request,
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                                    .loadMore()
+                              : null,
+                          onRefreshCoverage: () {
+                            ref.invalidate(
+                              hostCrmSummaryProvider(selectedClub.id),
+                            );
+                            ref.invalidate(
+                              hostCustomersDirectoryControllerProvider(request),
+                            );
+                          },
                         );
                       },
                     ),
@@ -504,13 +501,19 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     );
   }
 
+  void _openMessaging(Club club) => context.goNamed(
+    Routes.hostInboxScreen.name,
+    queryParameters: {'workspace': HostMessagingWorkspace.campaigns.name},
+    extra: club,
+  );
+
   Future<void> _addCustomer(
     Club club,
     HostCustomersDirectoryRequest request,
   ) async {
-    final created = await showCatchBottomSheet<HostCreatedCustomer>(
-      context: context,
-      builder: (context) => HostAddCustomerSheet(organizerId: club.id),
+    final created = await context.pushNamed<HostCreatedCustomer>(
+      Routes.hostAddCustomerScreen.name,
+      queryParameters: {'organizerId': club.id},
     );
     if (!mounted || created == null) return;
     ref.invalidate(hostCrmSummaryProvider(club.id));

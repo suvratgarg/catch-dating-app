@@ -13537,14 +13537,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersAddTitle => 'Add a customer';
 
   @override
-  String get hostCustomersName => 'Customer name';
+  String get hostCustomersName => 'Name shown to your team';
+
+  @override
+  String get hostCustomersNameHelp => 'Use the name your team will recognize.';
 
   @override
   String get hostCustomersAddHelp =>
-      'Add the details you know. Phone and email stay unverified and never grant messaging permission.';
+      'Add a name and at least one way to reach this customer. Phone and email stay unverified and never grant messaging permission.';
 
   @override
   String get hostCustomersNameRequired => 'Enter the customer’s name.';
+
+  @override
+  String get hostCustomersContactMethodRequired =>
+      'Add or keep at least one mobile number or email address.';
 
   @override
   String get hostCustomersPhone => 'Mobile number';
@@ -13565,6 +13572,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersInitialNote => 'Private note';
+
+  @override
+  String get hostCustomersInitialNoteHelp =>
+      'Private notes are visible only to this organizer’s management team.';
 
   @override
   String get hostCustomersVerifiedDetailsManagedByCatch =>
@@ -13689,6 +13700,9 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get hostCustomersOpenMessaging => 'Open messaging';
 
   @override
   String get hostCustomersFilterSheetTitle => 'Filter customers';

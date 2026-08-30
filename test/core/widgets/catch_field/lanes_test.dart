@@ -571,7 +571,10 @@ void main() {
     );
     expect(
       pressedDecoration.border,
-      Border.all(color: CatchTokens.editorialLight.line),
+      CatchBorder.resolve(
+        CatchTokens.editorialLight,
+        CatchBorderRole.boundary,
+      ).all,
     );
 
     await gesture.up();

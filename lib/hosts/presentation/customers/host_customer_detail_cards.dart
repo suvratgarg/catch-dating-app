@@ -35,6 +35,7 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
   String _optimisticDisplayName = '';
   String? _optimisticPhoneE164;
   String? _optimisticEmail;
+  String? _contactMethodError;
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
         oldWidget.customer.revision != widget.customer.revision;
     if (customerChanged) {
       _hasOptimisticDetails = false;
+      _contactMethodError = null;
       if (!_editing) _resetDraft();
     }
     if (!oldWidget.initiallyEditing && widget.initiallyEditing && !_editing) {
@@ -101,99 +103,66 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
         : context.l10n.hostCustomersNotSaved;
     return Form(
       key: _formKey,
-      child: CatchSection.containedFieldRows(
-        key: const ValueKey('host-customer-contact-details'),
-        title: context.l10n.hostCustomersContactDetails,
-        focused: _editing,
-        trailing: _editing
-            ? null
-            : CatchButton(
+      child: _editing
+          ? HostCustomerIdentityInputSection(
+              key: const ValueKey('host-customer-contact-details'),
+              title: context.l10n.hostCustomersContactDetails,
+              mode: HostCustomerIdentityInputMode.edit,
+              nameController: _nameController,
+              phoneController: _phoneController,
+              emailController: _emailController,
+              enabled: !_saving,
+              autofocusName: true,
+              includeEndpoints: widget.customer.contactDetailsEditable,
+              focused: true,
+              readPhoneTitle: phoneTitle,
+              readPhone: _phoneE164,
+              readPhonePlaceholder: phonePlaceholder,
+              readEmail: _email,
+              readEmailPlaceholder: emailPlaceholder,
+              onContactMethodChanged: _clearContactMethodError,
+              onSubmitted: () => unawaited(_saveDetails()),
+              footer: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    widget.customer.contactDetailsEditable
+                        ? context.l10n.hostCustomersUnverifiedContactDetails
+                        : context
+                              .l10n
+                              .hostCustomersVerifiedDetailsManagedByCatch,
+                    style: CatchTextStyles.supporting(context),
+                  ),
+                  gapH12,
+                  if (_contactMethodError != null) ...[
+                    CatchErrorBanner(message: _contactMethodError!),
+                    gapH12,
+                  ],
+                  CatchFieldActionBar(
+                    loading: _saving,
+                    onCancel: _cancelEditing,
+                    onSubmit: () => unawaited(_saveDetails()),
+                  ),
+                ],
+              ),
+            )
+          : CatchSection.containedFieldRows(
+              key: const ValueKey('host-customer-contact-details'),
+              title: context.l10n.hostCustomersContactDetails,
+              trailing: CatchButton(
                 key: const ValueKey('host-customer-edit-details'),
                 label: context.l10n.hostCustomersEditDetails,
                 variant: CatchButtonVariant.ghost,
                 size: CatchButtonSize.sm,
                 onPressed: _beginEditing,
               ),
-        footer: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              widget.customer.contactDetailsEditable
-                  ? context.l10n.hostCustomersUnverifiedContactDetails
-                  : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
-              style: CatchTextStyles.supporting(context),
-            ),
-            if (_editing) ...[
-              gapH12,
-              CatchFieldActionBar(
-                loading: _saving,
-                onCancel: _cancelEditing,
-                onSubmit: () => unawaited(_saveDetails()),
+              footer: Text(
+                widget.customer.contactDetailsEditable
+                    ? context.l10n.hostCustomersUnverifiedContactDetails
+                    : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
+                style: CatchTextStyles.supporting(context),
               ),
-            ],
-          ],
-        ),
-        children: _editing
-            ? [
-                CatchField.input(
-                  key: const ValueKey('host-customer-edit-name'),
-                  title: context.l10n.hostsHostAudienceContactName,
-                  contract: CatchContractConstraints
-                      .mutateOrganizerContactCallablePayloadDisplayNameOverride,
-                  controller: _nameController,
-                  helperText: context.l10n.hostsHostAudienceContactNameHelp,
-                  textCapitalization: TextCapitalization.words,
-                  textInputAction: TextInputAction.next,
-                  autofocus: true,
-                  enabled: !_saving,
-                  validator: (value) => (value ?? '').trim().isEmpty
-                      ? context.l10n.hostCustomersNameRequired
-                      : null,
-                ),
-                if (widget.customer.contactDetailsEditable) ...[
-                  CatchField.input(
-                    key: const ValueKey('host-customer-edit-phone'),
-                    title: context.l10n.hostCustomersPhone,
-                    contract: CatchContractConstraints
-                        .mutateOrganizerContactCallablePayloadPhoneE164,
-                    controller: _phoneController,
-                    isOptional: true,
-                    keyboardType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                    placeholder: '+919876543210',
-                    helperText: context.l10n.hostCustomersPhoneHelp,
-                    enabled: !_saving,
-                    validator: (value) => _manualPhoneError(context, value),
-                  ),
-                  CatchField.input(
-                    key: const ValueKey('host-customer-edit-email'),
-                    title: context.l10n.hostCustomersEmail,
-                    contract: CatchContractConstraints
-                        .mutateOrganizerContactCallablePayloadEmail,
-                    controller: _emailController,
-                    isOptional: true,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.done,
-                    enabled: !_saving,
-                    validator: (value) => _manualEmailError(context, value),
-                    onSubmitted: (_) => unawaited(_saveDetails()),
-                  ),
-                ] else ...[
-                  CatchField.read(
-                    key: const ValueKey('host-customer-phone-field'),
-                    title: phoneTitle,
-                    body: _phoneE164,
-                    placeholder: phonePlaceholder,
-                  ),
-                  CatchField.read(
-                    key: const ValueKey('host-customer-email-field'),
-                    title: context.l10n.hostsHostAudienceContactEmail,
-                    body: _email,
-                    placeholder: emailPlaceholder,
-                  ),
-                ],
-              ]
-            : [
+              children: [
                 CatchField.read(
                   key: const ValueKey('host-customer-name-field'),
                   title: context.l10n.hostsHostAudienceContactName,
@@ -212,7 +181,7 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
                   placeholder: emailPlaceholder,
                 ),
               ],
-      ),
+            ),
     );
   }
 
@@ -228,6 +197,7 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
   }
 
   void _resetDraft() {
+    _contactMethodError = null;
     _nameController.text = _editableDisplayName;
     _phoneController.text = _phoneE164 ?? '';
     _emailController.text = _email ?? '';
@@ -247,6 +217,17 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
     final displayName = _nameController.text.trim();
     final phoneE164 = _optionalManualPhone(_phoneController.text);
     final email = _optionalNormalizedEmail(_emailController.text);
+    final hadContactMethod = _phoneE164 != null || _email != null;
+    if (widget.customer.contactDetailsEditable &&
+        hadContactMethod &&
+        phoneE164 == null &&
+        email == null) {
+      setState(
+        () => _contactMethodError =
+            context.l10n.hostCustomersContactMethodRequired,
+      );
+      return;
+    }
     if (!_draftChanged(
       displayName: displayName,
       phoneE164: phoneE164,
@@ -265,6 +246,7 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
       );
       if (!mounted) return;
       setState(() {
+        _contactMethodError = null;
         _hasOptimisticDetails = true;
         _optimisticDisplayName = displayName;
         _optimisticPhoneE164 = widget.customer.contactDetailsEditable
@@ -286,6 +268,11 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
     } finally {
       if (mounted) setState(() => _saving = false);
     }
+  }
+
+  void _clearContactMethodError() {
+    if (_contactMethodError == null) return;
+    setState(() => _contactMethodError = null);
   }
 }
 

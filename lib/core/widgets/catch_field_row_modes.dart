@@ -137,11 +137,14 @@ extension _CatchFieldRowModes on _CatchFieldState {
       CatchFieldInteractionShape.sectionClipped ||
       CatchFieldInteractionShape.fullBleedBand => BorderRadius.zero,
     };
-    final interactionBorder = Border.all(color: t.line);
-    final fullBleedFocusBorder = Border.all(
-      color: t.ink2,
-      width: CatchStroke.focusRing,
-    );
+    final interactionBorder = CatchBorder.resolve(
+      t,
+      CatchBorderRole.boundary,
+    ).all;
+    final fullBleedFocusBorder = CatchBorder.resolve(
+      t,
+      CatchBorderRole.focus,
+    ).all;
     final fullBleedFocused =
         interactionShape == CatchFieldInteractionShape.fullBleedBand &&
         _rowFocused &&

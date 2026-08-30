@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_internal_member
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
@@ -771,7 +773,9 @@ Widget catchLoadingIndicatorContractStates(BuildContext context) {
         label: 'small',
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.loadingIndicatorSmallExtent,
-          child: CatchLoadingIndicator(strokeWidth: 2),
+          child: CatchLoadingIndicator(
+            strokeWidth: CatchStroke.progressIndicator,
+          ),
         ),
       ),
       _StateCard(
@@ -791,13 +795,32 @@ Widget catchLoadingIndicatorContractStates(BuildContext context) {
   path: '[Core primitives]/Loading',
 )
 Widget catchAsyncValueContractStates(BuildContext context) {
+  // Riverpod exposes these combined states to consumers but keeps the
+  // constructor helper package-internal.
+  final retrying = const AsyncLoading<String>().copyWithPrevious(
+    AsyncError<String>(Exception('Earlier attempt failed'), StackTrace.empty),
+  );
+  final refreshing = const AsyncLoading<String>().copyWithPrevious(
+    const AsyncData<String>('Existing data remains visible while refreshing'),
+  );
+  final staleDataWithError =
+      AsyncError<String>(
+        Exception('Refresh failed'),
+        StackTrace.empty,
+      ).copyWithPrevious(
+        const AsyncData<String>('Credible stale data remains visible'),
+      );
+
   return _ContractScreen(
     title: 'CatchAsyncValueView',
     contractId: 'catch.async_value',
     states: const [
       'data',
-      'loading',
-      'error',
+      'initial-loading',
+      'retrying',
+      'refreshing',
+      'stale-data-with-error',
+      'terminal-error',
       'skip-loading-on-refresh',
       'custom-builders',
     ],
@@ -810,7 +833,7 @@ Widget catchAsyncValueContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'loading',
+        label: 'initial-loading',
         child: SizedBox(
           height: WidgetbookPreviewLayout.loadingSlotHeight,
           child: CatchAsyncValueView<String>(
@@ -820,7 +843,35 @@ Widget catchAsyncValueContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'error',
+        label: 'retrying',
+        child: SizedBox(
+          height: WidgetbookPreviewLayout.loadingSlotHeight,
+          child: CatchAsyncValueView<String>(
+            value: retrying,
+            builder: (context, value) => Text(value),
+            loadingBuilder: (context) => const CatchInlineStatus(
+              label: 'Retrying without replaying the previous error',
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'refreshing',
+        child: CatchAsyncValueView<String>(
+          value: refreshing,
+          builder: (context, value) => CatchSurface.card(child: Text(value)),
+        ),
+      ),
+      _StateCard(
+        label: 'stale-data-with-error',
+        child: CatchAsyncValueView<String>(
+          value: staleDataWithError,
+          builder: (context, value) => CatchSurface.card(child: Text(value)),
+          skipError: true,
+        ),
+      ),
+      _StateCard(
+        label: 'terminal-error',
         child: SizedBox(
           height: WidgetbookPreviewLayout.stateViewportHeight,
           child: CatchAsyncValueView<String>(
@@ -1482,6 +1533,7 @@ Widget catchButtonContractStates(BuildContext context) {
       'default',
       'pressed',
       'hovered',
+      'focused',
       'disabled',
       'loading',
       'full-width',
@@ -1522,6 +1574,12 @@ Widget catchButtonContractStates(BuildContext context) {
           accentColor: t.like,
           onPressed: _noop,
         ),
+      ),
+      _StateCard(
+        label: 'focused',
+        description:
+            'Use keyboard traversal to inspect the semantic focus ring.',
+        child: CatchButton(label: 'Keyboard focus target', onPressed: _noop),
       ),
       _StateCard(
         label: 'disabled',
@@ -1671,6 +1729,7 @@ Widget catchChipContractStates(BuildContext context) {
       'selectable-resting',
       'selectable-selected',
       'selectable-disabled',
+      'selectable-focused',
       'selectable-accented',
       'selectable-with-leading',
       'removable',
@@ -1737,6 +1796,16 @@ Widget catchChipContractStates(BuildContext context) {
               onChanged: _ignoreBool,
             ),
           ],
+        ),
+      ),
+      _StateCard(
+        label: 'selectable-focused',
+        description:
+            'Use keyboard traversal to inspect the semantic focus ring.',
+        child: CatchChip.selectable(
+          label: 'Keyboard focus target',
+          selected: false,
+          onChanged: _ignoreBool,
         ),
       ),
       _StateCard(
@@ -3675,6 +3744,7 @@ Widget catchIconButtonContractStates(BuildContext context) {
     states: const [
       'default',
       'active',
+      'focused',
       'disabled',
       'bordered',
       'float',
@@ -3704,6 +3774,16 @@ Widget catchIconButtonContractStates(BuildContext context) {
           icon: CatchIcons.checkCircle,
           active: true,
           accent: t.like,
+          onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'focused',
+        description:
+            'Use keyboard traversal to inspect the semantic focus ring.',
+        child: CatchIconButton.icon(
+          icon: CatchIcons.search,
+          tooltip: 'Keyboard focus target',
           onTap: _noop,
         ),
       ),
@@ -3987,7 +4067,7 @@ Widget catchOptionCardContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchOptionCard',
     contractId: 'catch.option_card',
-    states: const ['default', 'selected', 'disabled-by-null-action'],
+    states: const ['default', 'selected', 'focused', 'disabled-by-null-action'],
     children: [
       _StateCard(
         label: 'default',
@@ -4006,6 +4086,18 @@ Widget catchOptionCardContractStates(BuildContext context) {
             title: 'Curated',
             description: 'Host approves each request before the event.',
             selected: true,
+            onTap: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'focused',
+        description:
+            'Use keyboard traversal to inspect the semantic focus ring.',
+        child: _OptionWidth(
+          child: CatchOptionCard(
+            title: 'Keyboard focus target',
+            description: 'The focus border is thicker without changing layout.',
             onTap: _noop,
           ),
         ),
@@ -4040,6 +4132,8 @@ Widget catchSurfaceContractStates(BuildContext context) {
       'primary-soft',
       'transparent',
       'tappable',
+      'semantic-border',
+      'focused',
       'elevated',
       'card',
       'tinted',
@@ -4071,6 +4165,28 @@ Widget catchSurfaceContractStates(BuildContext context) {
       _StateCard(
         label: 'tappable',
         child: _SurfaceSpec(tone: CatchSurfaceTone.surface, onTap: _noop),
+      ),
+      _StateCard(
+        label: 'semantic-border',
+        child: CatchSurface(
+          borderRole: CatchBorderRole.boundary,
+          padding: CatchInsets.contentRelaxed,
+          child: Text(
+            'Boundary role resolves color and width together.',
+            style: CatchTextStyles.proseM(context),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'focused',
+        child: CatchSurface(
+          borderRole: CatchBorderRole.focus,
+          padding: CatchInsets.contentRelaxed,
+          child: Text(
+            'Focus role is intentionally thicker and geometry-stable.',
+            style: CatchTextStyles.proseM(context),
+          ),
+        ),
       ),
       _StateCard(
         label: 'elevated',
@@ -6956,6 +7072,7 @@ Widget catchCountPillContractStates(BuildContext context) {
       'label-with-icon',
       'label-with-value',
       'with-count',
+      'focused',
       'semantic-label',
       'text-scale-truncation',
     ],
@@ -6987,6 +7104,16 @@ Widget catchCountPillContractStates(BuildContext context) {
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
           count: 3,
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'focused',
+        description:
+            'Use keyboard traversal to inspect the semantic focus ring.',
+        child: CatchCountPill.label(
+          icon: CatchIcons.tuneRounded,
+          label: 'Keyboard focus target',
           onPressed: _noop,
         ),
       ),
@@ -8107,7 +8234,7 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
         child: CatchPersonAvatar(
           size: 64,
           name: 'Mira Shah',
-          borderWidth: 3,
+          borderWidth: CatchStroke.avatarRing,
           borderColor: t.primary,
         ),
       ),
@@ -8219,7 +8346,7 @@ Widget catchVeiledPersonAvatarContractStates(BuildContext context) {
         child: CatchVeiledPersonAvatar(
           size: 48,
           activityKind: ActivityKind.socialRun,
-          borderWidth: 2,
+          borderWidth: CatchStroke.avatarRing,
           borderColor: t.surface,
         ),
       ),
@@ -8228,7 +8355,7 @@ Widget catchVeiledPersonAvatarContractStates(BuildContext context) {
         child: CatchVeiledPersonAvatar(
           size: 48,
           activityKind: ActivityKind.dinner,
-          borderWidth: 2,
+          borderWidth: CatchStroke.avatarRing,
           borderColor: t.surface,
         ),
       ),

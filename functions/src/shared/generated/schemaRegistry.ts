@@ -85186,12 +85186,24 @@ export const createOrganizerContactCallablePayloadSchema: Record<string, unknown
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/create_organizer_contact_payload.schema.json",
   "title": "CreateOrganizerContactCallablePayload",
-  "description": "Manager-only creation of an organizer CRM contact with optional unverified contact details and an initial private note. It does not create an attendee, Consumer account, or messaging permission.",
+  "description": "Manager-only creation of an organizer CRM contact with a required name, at least one unverified phone or email endpoint, and an optional initial private note. It does not create an attendee, Consumer account, or messaging permission.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "organizerId",
     "displayName"
+  ],
+  "anyOf": [
+    {
+      "required": [
+        "phoneE164"
+      ]
+    },
+    {
+      "required": [
+        "email"
+      ]
+    }
   ],
   "properties": {
     "organizerId": {

@@ -749,8 +749,11 @@ class ItineraryRow extends StatelessWidget {
                     height: CatchLayout.eventDetailItineraryDotExtent,
                     radius: CatchRadius.pill,
                     backgroundColor: dotBackgroundColor ?? t.surface,
-                    borderColor: accent,
-                    borderWidth: 2,
+                    borderSpec: CatchBorder.resolve(
+                      t,
+                      CatchBorderRole.selected,
+                      color: accent,
+                    ),
                     child: const SizedBox.shrink(),
                   ),
                 ),

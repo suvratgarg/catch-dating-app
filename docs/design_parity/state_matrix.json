@@ -5046,10 +5046,12 @@
           "routeId": "hostCustomersScreen",
           "routeIds": [
             "hostCustomersScreen",
+            "hostAddCustomerScreen",
             "hostCustomerDetailScreen"
           ],
           "implementationPaths": [
             "lib/hosts/presentation/customers/host_customers_screen.dart",
+            "lib/hosts/presentation/customers/host_customer_editor.dart",
             "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
             "lib/hosts/presentation/customers/host_contact_merge_review.dart",
             "lib/hosts/presentation/customers/host_customer_memory.dart",
@@ -5076,6 +5078,7 @@
           ],
           "captureIds": [
             "host_customers_populated",
+            "host_customer_add",
             "host_customer_detail_memory"
           ],
           "designRefs": [
@@ -5167,8 +5170,17 @@
             {
               "id": "manual_add_pending",
               "kind": "mutation",
-              "status": "implemented",
-              "notes": "The name-only add sheet owns pending and failure feedback without inventing identity or consent."
+              "status": "captured",
+              "previewIds": [
+                "hostCustomersStates"
+              ],
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart"
+              ],
+              "captureIds": [
+                "host_customer_add"
+              ],
+              "notes": "The full-page Add customer route requires a name plus mobile or email, shares identity field semantics with detail editing, keeps the optional first note in Memory, and owns pending and failure feedback without inventing verification or consent."
             },
             {
               "id": "customer_detail_loading",
@@ -5320,13 +5332,13 @@
               "id": "customer_campaign_bridge_ready",
               "kind": "populated",
               "status": "tested",
-              "notes": "A selected segment is campaign-eligible, so message_filtered_customers is offered."
+              "notes": "A selected computed segment is campaign-eligible, so message_filtered_customers is offered for that exact segment."
             },
             {
               "id": "customer_campaign_bridge_blocked",
               "kind": "permission",
               "status": "tested",
-              "notes": "The selected segment is not campaign-eligible; message_filtered_customers is disabled and explained rather than hidden."
+              "notes": "The selected customer view is not campaign-eligible; the blocker remains visible, Message these is not rendered, and an enabled Open messaging action opens the workspace without claiming that the displayed customers form a sendable audience."
             },
             {
               "id": "customer_saved_audience_manage",

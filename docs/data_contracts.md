@@ -869,7 +869,9 @@ note, and creates its zero-history
 trait. Organizer-entered endpoints remain `proposed`, organizer-scoped evidence:
 they create no attendee, verified identity, UID, Consumer profile, opt-in, or
 messaging grant. Only unlinked contacts whose primary source is `hostManual`
-may later edit or clear those endpoints. Customer detail unifies event-scoped
+may later edit those endpoints but cannot remove its last endpoint. Legacy and
+system-derived name-only records remain readable and can still rename without
+being forced through a migration. Customer detail unifies event-scoped
 revenue from completed, non-refunded Catch payments, financially complete
 provider orders, organizer-imported amounts, and explicit organizer estimates.
 Every amount retains its source; reported and estimated values are never

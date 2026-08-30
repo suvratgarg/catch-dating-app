@@ -680,10 +680,11 @@ class PaymentReferralBanner extends StatelessWidget {
       onTap: onShare,
       padding: CatchInsets.tileContentCompact,
       radius: CatchRadius.md,
-      borderColor: t.primary.withValues(
-        alpha: CatchOpacity.paymentReferralBorder,
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.selected,
+        color: t.primary.withValues(alpha: CatchOpacity.paymentReferralBorder),
       ),
-      borderWidth: 1.5,
       child: Row(
         children: [
           Icon(CatchIcons.groupAddOutlined, color: t.primary),

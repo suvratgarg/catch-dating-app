@@ -110,9 +110,10 @@ void main() {
         title: 'Customers',
         textScale: 2,
         actions: [
-          CatchButton(
+          CatchTopBarPrimaryAction(
             key: const ValueKey('add-customer'),
             label: 'Add customer',
+            icon: CatchIcons.personAddAlt1Rounded,
             onPressed: () {},
           ),
         ],
@@ -288,6 +289,88 @@ void main() {
       tester.widget<Icon>(find.byIcon(CatchIcons.settingsOutlined)).size,
       CatchIcon.md,
     );
+  });
+
+  testWidgets(
+    'CatchTopBarPrimaryAction compacts to the icon action on phones',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      var taps = 0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Center(
+              child: CatchTopBarPrimaryAction(
+                label: 'Create event',
+                icon: CatchIcons.addRounded,
+                onPressed: () => taps += 1,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(CatchIconAction), findsOneWidget);
+      expect(find.byType(CatchButton), findsNothing);
+      expect(
+        tester.getSize(find.byType(CatchIconButton)),
+        const Size.square(CatchIconButton.navSize),
+      );
+      expect(find.byTooltip('Create event'), findsOneWidget);
+      await tester.tap(find.byType(CatchIconAction));
+      await tester.pump();
+      expect(taps, 1);
+    },
+  );
+
+  testWidgets('CatchTopBarPrimaryAction keeps its label beyond phone width', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: Center(
+            child: CatchTopBarPrimaryAction(
+              label: 'Create event',
+              icon: CatchIcons.addRounded,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.widgetWithText(CatchButton, 'Create event'), findsOneWidget);
+    expect(find.byType(CatchIconAction), findsNothing);
+  });
+
+  testWidgets('CatchTopBarActionGroup rejects a direct body-style pill', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: CatchTopBarActionGroup(
+            actions: [CatchButton(label: 'Invalid', onPressed: () {})],
+          ),
+        ),
+      ),
+    );
+
+    final exception = tester.takeException();
+    expect(exception, isA<FlutterError>());
+    expect(exception.toString(), contains('direct top-bar action'));
   });
 
   testWidgets('CatchTopBar supports custom title widgets and text actions', (

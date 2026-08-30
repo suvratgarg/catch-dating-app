@@ -160,6 +160,65 @@ test("accepts the shared tabbed scaffold as a canonical root-header owner", () =
   assert.deepEqual(result.findings, []);
 });
 
+test("flags a direct pill action in canonical top-bar actions", () => {
+  const root = fixtureRoot({
+    source: `Scaffold(
+      appBar: CatchScreenTopBar(
+        title: 'Calendar',
+        actions: [CatchButton(label: 'Today', onPressed: selectToday)],
+      ),
+    );`,
+    contract: screenContract(),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(hasFinding(result, "top-bar-direct-pill-action"));
+});
+
+test("flags a direct pill hidden behind a local top-bar action list", () => {
+  const root = fixtureRoot({
+    source: `Widget build() {
+      final headerActions = [
+        CatchButton(label: 'Add customer', onPressed: addCustomer),
+      ];
+      return Scaffold(
+        appBar: CatchScreenTopBar(
+          title: 'Customers',
+          actions: headerActions,
+        ),
+      );
+    }`,
+    contract: screenContract(),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(hasFinding(result, "top-bar-direct-pill-action"));
+});
+
+test("accepts the canonical adaptive primary top-bar action", () => {
+  const root = fixtureRoot({
+    source: `Scaffold(
+      appBar: CatchScreenTopBar(
+        title: 'Events',
+        actions: [
+          CatchTopBarPrimaryAction(
+            label: 'Create event',
+            icon: CatchIcons.addRounded,
+            onPressed: createEvent,
+          ),
+        ],
+      ),
+    );`,
+    contract: screenContract(),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.deepEqual(result.findings, []);
+});
+
 test("flags every noncanonical surface inside an aligned root adopter", () => {
   const trackedPath = "lib/root/chats_browse_header.dart";
   const root = fixtureRoot({

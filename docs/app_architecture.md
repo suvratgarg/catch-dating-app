@@ -189,9 +189,10 @@ providers, or call `ref.watch/read/listen`; provider-owned composition belongs
 in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
 When a route edge translates Riverpod `AsyncValue` into `CatchAsyncState`, it
 must use `catchAsyncStateFromAsyncValue` from
-`lib/core/presentation/catch_async_value_adapter.dart`. That adapter gives a
-known error precedence over refresh loading, then preserves credible data, and
-uses loading only when neither exists.
+`lib/core/presentation/catch_async_value_adapter.dart`. That adapter preserves
+the exhaustive presentation phase: initial loading, retrying, data,
+refreshing data, stale data with an error, or terminal error. A loading retry
+without credible data always renders loading, never its previous error.
 
 Allowed exceptions:
 
@@ -775,7 +776,9 @@ Constant dimensions are allowed only for:
 - icon sizes through `CatchIcon.{sm,md,lg}`;
 - hairlines/dividers (`1` px) and `0`;
 - spacing gaps through `CatchSpacing` or `gapH*`/`gapW*`;
-- radii, border widths, and stroke widths through named tokens;
+- radii through named tokens, and UI boundaries through semantic
+  `CatchBorderRole` resolution; repeated progress/art strokes use named
+  `CatchStroke` roles;
 - genuinely fixed art such as logo canvases, QR codes, or platform-spec
   graphics, with `sizing:allow`.
 
@@ -950,8 +953,11 @@ The current lint scope is all handwritten `lib/**` Dart except
 `lib/core/theme/**`, generated code, and schema-generated contracts. Theme files
 are the source of raw token definitions; feature/shared widget code consumes
 named `CatchSpacing`, `CatchLayout`, `CatchGaps`, `CatchInsets`, `CatchRadius`,
-`CatchStroke`, and Catch control primitives instead of local raw layout numbers
-or Material/Cupertino controls.
+`CatchBorder`, `CatchStroke`, and Catch control primitives instead of local raw
+layout numbers or Material/Cupertino controls. `catch_no_raw_stroke_width`
+covers all handwritten app code, including shared widgets and 1 px literals;
+zero remains the explicit no-border value, while decorative `CustomPainter`
+artwork is outside this UI-boundary diagnostic.
 
 Implemented diagnostics include raw spacing, token arithmetic, section-list
 composition, semantic inset preference, event-detail photo thumbnail preference,
@@ -1023,8 +1029,9 @@ remain appropriate for genuinely repeated collections whose item count and
 row data do not exist yet; they are not substitutes for a known screen body.
 
 Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
-user-visible resolution. When the deadline expires, the skeleton becomes a
-branded timeout state. Every presentation call site must supply `onRetry`; the
+user-visible resolution and to blocking retries that have no credible data.
+When the deadline expires, the skeleton becomes a branded timeout state. Every
+presentation call site must supply `onRetry`; the
 `catch_async_requires_retry` analyzer diagnostic enforces that contract. The
 deadline is a presentation/provider-boundary policy only: never apply an idle
 timeout to a long-lived Firestore stream after its first value.
@@ -1074,7 +1081,9 @@ The error primitive family separates visual content, placement adapters, and
 delivery channels:
 
 - `CatchErrorState` owns app-facing branded error content through one resolved
-  descriptor and one shared body renderer.
+  descriptor and one shared, cardless body renderer. Full-screen, inline, and
+  compact modes never invent a new fill or outline; they inherit containment
+  from the route or section that owns the failed content.
 - `CatchErrorScaffold`, `CatchSliverErrorState`, and `CatchInlineErrorState`
   are placement adapters for root, sliver, and section errors. Every adapter
   supports the same primary retry and optional secondary-action contract.
@@ -2099,6 +2108,12 @@ Rules:
 - CRM categories are server facts. Flutter may label fixed segment ids but must
   not infer “valuable customer” from ticket price, private feedback, gender,
   compatibility, wingman, dating or safety data.
+- Manual customer creation is a route-level form and requires an
+  organizer-visible name plus at least one phone or email endpoint. Create and
+  inline edit share identity-field semantics; organizer-entered endpoints remain
+  unverified and never grant identity or messaging permission. Existing
+  name-only legacy contacts remain readable, but a manual contact that already
+  has an endpoint cannot lose its last endpoint during edit.
 - `HostProviderRepository` consumes the server capability catalog. UI renders
   `available`, `configurationRequired`, `exportOnly`, `sampleRequired` and
   `partnerAccessRequired` honestly. A provider name on `EventOrigin` never
@@ -3359,6 +3374,16 @@ roles, and explicit leading/action slots. Sliver screens pass
 screens use `CatchScreenTopBar(...)`, which wraps `CatchTopBar` while preserving
 search, leading, action, safe-area, and padding configuration.
 
+Top-bar action slots accept only the top-bar action family. Use
+`CatchTopBarPrimaryAction` for a primary root-screen action: it renders the
+canonical 40 px bordered icon target on compact phones and preserves the
+labelled small button on medium and expanded layouts. Use `CatchIconAction`,
+`CatchTopBarTextAction`, or `CatchTopBarMenuAction` for icon-only, semantic text,
+or overflow behavior. A direct `CatchButton` is page/body CTA chrome and is
+rejected by `CatchTopBarActionGroup` in debug builds. The
+`design:screen-top-bar-contracts` gate also rejects direct pills in inline
+action lists and simple local action-list variables.
+
 Do not use bare `CatchTopBar(title: ...)` for these root headers. That compact
 route-title path intentionally remains available for detail, edit, lab, and
 utility screens where the title is functional navigation chrome rather than the
@@ -3474,10 +3499,13 @@ instead of reading repositories or recomputing product policy. In this exhibit,
 `CalendarEventSummary` owns the merged event list.
 
 Riverpod translation remains at that route edge. Use
-`catchAsyncStateFromAsyncValue` rather than `AsyncValue.when`: refresh-time
-`AsyncError` can also report `isLoading`, so the shared adapter intentionally
-selects error, then available data, then loading. `CatchAsyncState` itself stays
-provider-free.
+`catchAsyncStateFromAsyncValue` rather than ad hoc `AsyncValue` flag checks:
+Riverpod snapshots may legitimately report overlapping loading, error, data,
+refresh, reload, and retry signals. The shared adapter retains those signals as
+one exhaustive `CatchAsyncPhase`; the renderer then selects exactly one visible
+branch. Retrying without credible data selects loading, terminal failure
+selects error, and stale data remains available under an explicit error policy.
+`CatchAsyncState` itself stays provider-free.
 
 Host presentation code must not branch directly on `isLoading`, `hasError`,
 `hasValue`, `asData`, or `valueOrNull` from a watched `AsyncValue`. The
@@ -3485,8 +3513,9 @@ Host presentation code must not branch directly on `isLoading`, `hasError`,
 edge throughout `lib/hosts/presentation/`. Convert the snapshot once, then let
 a feature-owned display state decide whether the result is a full-screen load,
 empty success, missing resource, primary failure, or optional enrichment. This
-keeps Riverpod refresh semantics out of widgets and prevents a refresh-time
-error from being mislabeled as loading or successful absence.
+keeps Riverpod transition semantics out of feature widgets and prevents a
+previous error from flashing during a retry or a refresh-time error from being
+mislabeled as successful absence.
 
 This is a narrow state-boundary exhibit. The first full route/controller
 migration still needs its own reference exhibit before a broad rollout.

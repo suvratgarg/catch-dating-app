@@ -629,6 +629,7 @@
           "default",
           "pressed",
           "hovered",
+          "focused",
           "disabled",
           "loading",
           "full-width",
@@ -659,6 +660,8 @@
           "theme.light.color.line2"
         ],
         "dartRoles": [
+          "CatchBorder.interactive",
+          "CatchBorderRole.focus",
           "CatchMotion.fast",
           "CatchOpacity.controlOverlayPressed",
           "CatchOpacity.controlOverlayHover",
@@ -934,6 +937,7 @@
           "selectable-resting",
           "selectable-selected",
           "selectable-disabled",
+          "selectable-focused",
           "selectable-accented",
           "selectable-with-leading",
           "removable",
@@ -962,6 +966,9 @@
           "theme.light.color.primarySoft"
         ],
         "dartRoles": [
+          "CatchBorder.interactive",
+          "CatchBorderRole.selected",
+          "CatchBorderRole.focus",
           "CatchTextStyles.labelL",
           "CatchTextStyles.fieldRowTitle",
           "CatchIcon.sm",
@@ -1261,7 +1268,7 @@
       "name": "CatchErrorState",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical branded app-facing error surface family for full-screen, inline, compact, scaffold, sliver, and icon-only placements.",
+      "summary": "Canonical cardless app-facing recovery-content family for full-screen, inline, compact, scaffold, sliver, and icon-only placements.",
       "dart": {
         "symbol": "CatchErrorState",
         "file": "lib/core/widgets/catch_error_state.dart",
@@ -1365,12 +1372,9 @@
           "space.s3",
           "space.s4",
           "space.s5",
-          "radius.lg",
           "theme.light.color.bg",
-          "theme.light.color.surface",
           "theme.light.color.ink",
           "theme.light.color.ink2",
-          "theme.light.color.line",
           "theme.light.color.primarySoft",
           "theme.light.color.danger"
         ],
@@ -1378,7 +1382,6 @@
           "CatchErrorStateMode",
           "CatchErrorIcon",
           "CatchButton",
-          "CatchSurface",
           "CatchTextStyles.titleL",
           "CatchTextStyles.sectionTitle",
           "CatchTextStyles.bodyLead",
@@ -1444,7 +1447,7 @@
           {
             "id": "catch.error_state.inline",
             "symbol": "CatchInlineErrorState",
-            "summary": "Inline section/card placement adapter for retryable failures when the rest of the screen remains usable.",
+            "summary": "Cardless inline section placement adapter for retryable failures when the rest of the screen remains usable.",
             "states": [
               "inline",
               "compact",
@@ -1501,7 +1504,7 @@
             "id": "catch.error_state.error_body",
             "symbol": "CatchErrorBody",
             "file": "lib/core/widgets/catch_error_state.dart",
-            "summary": "Direct branded error-body renderer used by error placement adapters.",
+            "summary": "Direct cardless branded error-body renderer used by error placement adapters; parent sections own containment.",
             "states": [
               "full-screen",
               "inline",
@@ -1533,11 +1536,11 @@
       },
       "handoff": {
         "allowedChildren": [
-          "catch.button",
-          "catch.surface"
+          "catch.button"
         ],
         "notes": [
           "Use this family for app-facing data-load failures with mapped copy and retry callbacks.",
+          "Recovery content is cardless; inherit any justified fill or outline from the owning route or section.",
           "Use scaffold and sliver members for placement only; do not create separate error visual systems.",
           "Keep framework crash surfaces separate in CatchFrameworkErrorView, but compose the shared error icon medallion."
         ]
@@ -3996,7 +3999,7 @@
       "name": "CatchAsyncValueView",
       "status": "active",
       "kind": "pattern",
-      "summary": "AsyncValue data, loading, and error boundary with branded defaults for box and sliver layouts.",
+      "summary": "Exhaustive AsyncValue transition boundary with branded defaults for box and sliver layouts.",
       "dart": {
         "symbol": "CatchAsyncValueView",
         "file": "lib/core/widgets/catch_async_value_view.dart",
@@ -4076,8 +4079,11 @@
         ],
         "states": [
           "data",
-          "loading",
-          "error",
+          "initial-loading",
+          "retrying",
+          "refreshing",
+          "stale-data-with-error",
+          "terminal-error",
           "skip-loading-on-refresh",
           "custom-builders"
         ],
@@ -4147,6 +4153,7 @@
         ],
         "notes": [
           "This concept owns async data-state switching, not a loading visual system.",
+          "A retry without credible data renders loading and never replays its previous error.",
           "Use the sliver member only inside sliver-native scroll layouts."
         ]
       },
@@ -5213,6 +5220,7 @@
         "states": [
           "default",
           "active",
+          "focused",
           "disabled",
           "bordered",
           "float",
@@ -5233,6 +5241,9 @@
           "theme.light.color.line2"
         ],
         "dartRoles": [
+          "CatchBorder.interactive",
+          "CatchBorderRole.selected",
+          "CatchBorderRole.focus",
           "CatchLayout.iconButtonSize",
           "CatchLayout.iconButtonNavSize",
           "CatchLayout.iconButtonGlyphScale",
@@ -5818,8 +5829,11 @@
           "CatchControlSize",
           "CatchControlShape",
           "CatchControlTone",
+          "CatchBorder.interactive",
+          "CatchBorderRole.focus",
+          "CatchBorderRole.danger",
           "CatchElevation.focusRing",
-          "CatchStroke.underline"
+          "CatchStroke.hairline"
         ],
         "goldens": [],
         "accessibility": {
@@ -6088,6 +6102,7 @@
         "states": [
           "default",
           "selected",
+          "focused",
           "disabled-by-null-action"
         ],
         "slots": [],
@@ -6102,7 +6117,9 @@
         ],
         "dartRoles": [
           "CatchSurface",
-          "CatchStroke.underline",
+          "CatchBorder.interactive",
+          "CatchBorderRole.selected",
+          "CatchBorderRole.focus",
           "CatchInsets.tileContentCompact",
           "CatchTextStyles.labelL",
           "CatchTextStyles.bodyS",
@@ -6152,7 +6169,8 @@
       "enforcement": {
         "code": "catch_no_raw_surface_shell",
         "codes": [
-          "catch_no_nested_rounded_rectangles"
+          "catch_no_nested_rounded_rectangles",
+          "catch_no_raw_stroke_width"
         ],
         "vehicle": "plugin",
         "replaces": [
@@ -6247,6 +6265,33 @@
             "dartType": "VoidCallback?"
           },
           {
+            "name": "onFocusChange",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<bool>?"
+          },
+          {
+            "name": "borderRole",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchBorderRole?",
+            "values": [
+              "separator",
+              "boundary",
+              "control",
+              "selected",
+              "focus",
+              "danger",
+              "warning"
+            ]
+          },
+          {
+            "name": "borderSpec",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchBorderSpec?"
+          },
+          {
             "name": "role",
             "type": "enum",
             "required": false,
@@ -6286,6 +6331,8 @@
           "primary-soft",
           "transparent",
           "tappable",
+          "semantic-border",
+          "focused",
           "elevated",
           "card",
           "tinted",
@@ -6310,6 +6357,9 @@
           "theme.light.color.primary"
         ],
         "dartRoles": [
+          "CatchBorder",
+          "CatchBorderRole",
+          "CatchBorderSpec",
           "CatchElevation.none",
           "CatchElevation.card",
           "CatchElevation.raised",
@@ -6368,6 +6418,7 @@
         ],
         "notes": [
           "CatchSurface is the only low-level surface primitive. Use CatchSurface.card, CatchSurface.tinted, and CatchSurface.message for surface chrome; use CatchSection.contained for section-card content chrome.",
+          "Choose borderRole for ordinary semantic lines and borderSpec only for a role with a justified color override; raw borderColor and borderWidth are deprecated migration shims.",
           "Do not hand-roll Container/DecoratedBox cards in feature UI; request a Surface mode if this contract is missing a state.",
           "InlineMessageSurface is a member of catch.surface message grammar and should not become a separate surface family."
         ]
@@ -6592,6 +6643,7 @@
           "CatchTextStyles.appBarSubtitle",
           "CatchCollapsedSliverTitle",
           "CatchTopBarIconAction",
+          "CatchTopBarPrimaryAction",
           "CatchTopBarMenuAction",
           "CatchTopBarTextAction",
           "CatchTopBarTabBar"
@@ -6694,6 +6746,25 @@
             }
           },
           {
+            "id": "catch.top_bar.primary_action",
+            "symbol": "CatchTopBarPrimaryAction",
+            "file": "lib/core/widgets/catch_top_bar.dart",
+            "summary": "Adaptive primary top-bar action that renders a canonical bordered icon target on compact phones and a labelled small button on wider viewports.",
+            "states": [
+              "compact",
+              "medium",
+              "expanded",
+              "disabled"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
+          },
+          {
             "id": "catch.top_bar.tab_bar",
             "symbol": "CatchTopBarTabBar",
             "summary": "PreferredSize tab segment used as CatchTopBar bottom chrome.",
@@ -6745,11 +6816,13 @@
       },
       "handoff": {
         "allowedChildren": [
+          "catch.button",
           "catch.icon_button"
         ],
         "notes": [
           "Use this primitive for route chrome before creating local AppBar variants.",
           "Use CatchScreenHeaderTitle or CatchScreenTopBar for root screen headers that need the main tab Archivo title voice.",
+          "Use CatchTopBarPrimaryAction when a root-screen primary action must compact from a labelled button to the canonical icon target; never pass CatchButton directly to an actions slot.",
           "Large mode is implied by a non-empty kicker unless explicitly overridden.",
           "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",
           "Top-bar root header helpers, action wrappers, and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets."
@@ -10310,6 +10383,7 @@
           "label-with-icon",
           "label-with-value",
           "with-count",
+          "focused",
           "semantic-label",
           "text-scale-truncation"
         ],
@@ -10326,6 +10400,8 @@
           "theme.light.color.surface"
         ],
         "dartRoles": [
+          "CatchBorderRole.control",
+          "CatchBorderRole.focus",
           "CatchTextStyles.monoLabel",
           "CatchLayout.countPillIconSize",
           "CatchIconButton.defaultSize",

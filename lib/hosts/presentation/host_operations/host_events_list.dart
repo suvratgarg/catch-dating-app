@@ -123,11 +123,10 @@ class HostEventsClubSection extends StatelessWidget {
           child: CatchScreenHeaderTitle.block(
             title: context.l10n.hostsHostEventsListTextEvents,
             actions: [
-              CatchButton(
+              CatchTopBarPrimaryAction(
                 key: const ValueKey<String>('host-events-create-event'),
                 label: context.l10n.hostsHostEventsListLabelNewEvent,
-                icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
-                size: CatchButtonSize.sm,
+                icon: CatchIcons.addRounded,
                 onPressed: () => _showEventEntrySheet(context),
               ),
             ],

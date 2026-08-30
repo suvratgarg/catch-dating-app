@@ -24,6 +24,10 @@ abstract final class ComponentBreakpoints {
   /// Host event summary rows move values under labels below this width.
   static const double hostEventSummaryRowStackBreakpoint = 340.0;
 
+  /// Host customer Filters and Sort controls use shorter trigger copy below
+  /// this width so both actions remain in one row on phone layouts.
+  static const double hostCustomerDirectoryControlsCompactBreakpoint = 370.0;
+
   /// Catches hub gains horizontal padding once its column is this wide.
   static const double catchesWidePaddingBreakpoint = 700;
 

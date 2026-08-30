@@ -973,6 +973,14 @@ Widget hostCustomersStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'full-page add customer',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            child: HostAddCustomerScreen(organizerId: organizerId),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'linked customer detail',
         child: _DeviceFrame(
           child: _HostShellScope(
@@ -1048,6 +1056,14 @@ Widget hostCustomersDirectoryStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(
+  name: 'Directory control states',
+  type: HostCustomerDirectoryControls,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerDirectoryControlsStates(BuildContext context) =>
+    hostCustomersStates(context);
+
+@widgetbook.UseCase(
   name: 'Row states',
   type: HostCustomerRow,
   path: '[P1 product surfaces]/Host operations/Customers',
@@ -1056,11 +1072,19 @@ Widget hostCustomerDirectoryRowStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(
-  name: 'Manual add state',
-  type: HostAddCustomerSheet,
+  name: 'Full-page add state',
+  type: HostAddCustomerScreen,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
-Widget hostAddCustomerSheetStates(BuildContext context) =>
+Widget hostAddCustomerScreenStates(BuildContext context) =>
+    hostCustomersStates(context);
+
+@widgetbook.UseCase(
+  name: 'Identity input states',
+  type: HostCustomerIdentityInputSection,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerIdentityInputStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(

@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.8.4
+version: 1.8.5
 updated: 2026-08-29
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -241,6 +241,36 @@ Additional rules:
 The audited application of this doctrine lives in
 `docs/design_parity/containment_audit.md`.
 
+### 7.1.1 Semantic line system — how an earned line looks
+
+Containment decides whether a line exists. `CatchBorder` decides how every UI
+separator, boundary, and interactive outline looks once that line has earned a
+place. Callers choose a semantic reason through `CatchBorderRole`; they do not
+pair a color and width independently.
+
+| Role | Stroke | Contrast and state policy |
+|---|---:|---|
+| `separator` | 1 px | Quiet internal division; resolves from `line`. |
+| `boundary` | 1 px | Passive object/list perimeter; resolves from `line2`. |
+| `control` | 1 px | Resting interactive perimeter; resolves to at least 3:1 against both `bg` and `surface` in light and dark themes. |
+| `selected` | 1.5 px | Selected/active perimeter in the semantic action color. |
+| `danger` / `warning` | 1.5 px | Validation or status perimeter in the corresponding semantic color. |
+| `focus` | 2 px | Keyboard-focus perimeter; deliberately thicker than rest and selection. |
+
+Hover and press use fill feedback while retaining the resting border's color
+and width, so pointer interaction never shifts layout. Keyboard focus always
+uses the 2 px focus role and may add the shared focus halo. Disabled controls
+fall back to the passive boundary role plus disabled opacity.
+
+`CatchSurface.borderRole` is the normal low-level adapter;
+`CatchSurface.borderSpec` is reserved for a role with a justified color
+override. Raw `borderColor`/`borderWidth` remain deprecated migration shims.
+Higher-level controls (`CatchButton`, `CatchIconButton`, `CatchChip`,
+`CatchControlShell`, `CatchOptionCard`, search, tabs, and field sections) own
+their state-to-role mapping. Decorative `CustomPainter` illustration strokes
+are outside the UI-boundary system, but repeated artwork and progress geometry
+still uses named `CatchStroke` roles instead of feature-local literals.
+
 ### 7.2 Geometry is owned by the primitive
 
 When a component family has shared placement geometry, the canonical primitive
@@ -255,7 +285,12 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchBottomDock` is a required-child utility plane for chat inputs and
   compact action strips, not a second CTA family.
 - Top-bar action grouping routes through `CatchTopBarActionGroup`; callers do
-  not compose parallel header rows.
+  not compose parallel header rows. A primary root-screen action uses
+  `CatchTopBarPrimaryAction`, which owns the compact 40 px bordered icon and
+  wider labelled-button variants. Semantic text, icon-only, and overflow
+  actions use `CatchTopBarTextAction`, `CatchIconAction`, and
+  `CatchTopBarMenuAction`. Do not pass a body-style `CatchButton` directly into
+  any top-bar `actions` slot.
 - Screen hierarchy follows one control per level. Shell destinations express
   product-level navigation; pinned `CatchTabRail` / `CatchTabbedScreenScaffold`
   tabs switch peer views within one destination. A small fixed set of terse,
@@ -281,6 +316,9 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   scanner-visible debt. Loading, empty, and error children inherit their
   section's divided, contained, or plain surface decision; state changes do not
   introduce a second border or switch a peer module to a different variant.
+  `CatchErrorBody` is therefore cardless in full-screen, inline, and compact
+  modes; its placement adapter supplies spacing while the parent owns any
+  justified containment.
 - `CatchSection.containedFieldRows` treats its title, count, and trailing action
   as an external label by default, so the outline begins with the first field.
   When that header belongs to the bounded field group itself, opt into

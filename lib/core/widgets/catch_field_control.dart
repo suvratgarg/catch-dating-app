@@ -204,6 +204,7 @@ class CatchFieldFocusOutline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final focusBorder = CatchBorder.resolve(t, CatchBorderRole.focus);
     return Stack(
       key: debugKey,
       fit: StackFit.passthrough,
@@ -215,7 +216,8 @@ class CatchFieldFocusOutline extends StatelessWidget {
             child: IgnorePointer(
               child: CustomPaint(
                 painter: _CatchFieldFocusOutlinePainter(
-                  color: t.ink,
+                  color: focusBorder.color,
+                  width: focusBorder.width,
                   borderRadius: borderRadius,
                 ),
               ),
@@ -229,10 +231,12 @@ class CatchFieldFocusOutline extends StatelessWidget {
 class _CatchFieldFocusOutlinePainter extends CustomPainter {
   const _CatchFieldFocusOutlinePainter({
     required this.color,
+    required this.width,
     required this.borderRadius,
   });
 
   final Color color;
+  final double width;
   final BorderRadius borderRadius;
 
   @override
@@ -245,13 +249,15 @@ class _CatchFieldFocusOutlinePainter extends CustomPainter {
       Paint()
         ..color = color
         ..style = PaintingStyle.stroke
-        ..strokeWidth = CatchFieldTokens.focusRingWidth,
+        ..strokeWidth = width,
     );
   }
 
   @override
   bool shouldRepaint(_CatchFieldFocusOutlinePainter oldDelegate) =>
-      color != oldDelegate.color || borderRadius != oldDelegate.borderRadius;
+      color != oldDelegate.color ||
+      width != oldDelegate.width ||
+      borderRadius != oldDelegate.borderRadius;
 }
 
 class _CatchFieldDisclosureClipper extends CustomClipper<Rect> {
@@ -297,6 +303,14 @@ class _CatchFieldChoiceChipState extends State<CatchFieldChoiceChip> {
     final t = CatchTokens.of(context);
     final foreground = widget.selected ? t.primaryInk : t.ink;
     final background = widget.selected ? t.ink : t.surface;
+    final border = CatchBorder.interactive(
+      t,
+      widget.selected
+          ? CatchInteractiveBorderState.selected
+          : _pressed
+          ? CatchInteractiveBorderState.pressed
+          : CatchInteractiveBorderState.resting,
+    );
     final visual = AnimatedScale(
       duration: _fieldDuration(
         context,
@@ -318,7 +332,12 @@ class _CatchFieldChoiceChipState extends State<CatchFieldChoiceChip> {
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(CatchRadius.pill),
-          border: Border.all(color: widget.selected ? t.ink : t.line2),
+        ),
+        // Paint stateful strokes above the fill so selected/focus emphasis can
+        // change width without changing the chip's measured height or wrap.
+        foregroundDecoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
+          border: border.all,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -591,6 +610,14 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final border = CatchBorder.interactive(
+      t,
+      !widget.enabled
+          ? CatchInteractiveBorderState.disabled
+          : _pressed
+          ? CatchInteractiveBorderState.pressed
+          : CatchInteractiveBorderState.resting,
+    );
     final visual = AnimatedScale(
       duration: _fieldDuration(
         context,
@@ -603,7 +630,7 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
         decoration: BoxDecoration(
           color: t.surface,
           shape: BoxShape.circle,
-          border: Border.all(color: t.line2),
+          border: border.all,
         ),
         child: SizedBox.square(
           dimension: CatchFieldTokens.stepperVisualExtent,

@@ -268,7 +268,10 @@ void main() {
 
     expect(
       pressedDecoration().border,
-      Border.all(color: CatchTokens.editorialLight.line),
+      CatchBorder.resolve(
+        CatchTokens.editorialLight,
+        CatchBorderRole.boundary,
+      ).all,
     );
     expect(
       pressedDecoration().borderRadius,
@@ -280,7 +283,10 @@ void main() {
     await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
     expect(
       pressedDecoration().border,
-      Border.all(color: CatchTokens.editorialLight.line),
+      CatchBorder.resolve(
+        CatchTokens.editorialLight,
+        CatchBorderRole.boundary,
+      ).all,
     );
     expect(pressedDecoration().color, isNot(equals(Colors.transparent)));
 
@@ -291,7 +297,10 @@ void main() {
     // focus activation cannot introduce a transparent flash.
     expect(
       pressedDecoration().border,
-      Border.all(color: CatchTokens.editorialLight.line),
+      CatchBorder.resolve(
+        CatchTokens.editorialLight,
+        CatchBorderRole.boundary,
+      ).all,
     );
     expect(activeDecoration().border, isNull);
 
@@ -314,7 +323,10 @@ void main() {
 
     expect(
       pressedDecoration().border,
-      Border.all(color: CatchTokens.editorialLight.line),
+      CatchBorder.resolve(
+        CatchTokens.editorialLight,
+        CatchBorderRole.boundary,
+      ).all,
     );
     expect(activeDecoration().border, isNull);
     expect(pressedDecoration().borderRadius, activeDecoration().borderRadius);
@@ -367,10 +379,10 @@ void main() {
 
     expect(
       decoration.border,
-      Border.all(
-        color: CatchTokens.editorialLight.ink2,
-        width: CatchStroke.focusRing,
-      ),
+      CatchBorder.resolve(
+        CatchTokens.editorialLight,
+        CatchBorderRole.focus,
+      ).all,
     );
     expect(decoration.borderRadius, BorderRadius.zero);
     expect(decoration.boxShadow, isEmpty);

@@ -1,37 +1,86 @@
 part of 'host_customers_screen.dart';
 
-class HostCustomerDirectorySortControl extends StatelessWidget {
-  const HostCustomerDirectorySortControl({
+class HostCustomerDirectoryControls extends StatelessWidget {
+  const HostCustomerDirectoryControls({
     super.key,
     required this.sort,
     required this.onSortChanged,
+    required this.onOpenFilters,
   });
 
   final HostCustomerSort sort;
   final ValueChanged<HostCustomerSort> onSortChanged;
+  final VoidCallback? onOpenFilters;
 
   @override
-  Widget build(BuildContext context) {
-    final sortControl = CatchAdaptiveSelectionControl<HostCustomerSort>(
-      buttonKey: const ValueKey('host-customers-sort'),
-      title: context.l10n.hostCustomersSort,
-      subtitle: context.l10n.hostCustomersSortSheetSubtitle,
-      tooltip: context.l10n.hostCustomersSort,
-      value: sort,
-      items: [
-        for (final option in HostCustomerSort.values)
-          CatchSelectionMenuItem(
-            value: option,
-            label: _customerSortLabel(context, option),
-          ),
+  Widget build(BuildContext context) => ComponentResponsiveBuilder(
+    breakpoint:
+        ComponentBreakpoints.hostCustomerDirectoryControlsCompactBreakpoint,
+    compact: (context) => Wrap(
+      alignment: WrapAlignment.end,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: [
+        CatchButton(
+          key: const ValueKey('host-customers-filters'),
+          label: context.l10n.hostCustomersFilters,
+          variant: CatchButtonVariant.secondary,
+          size: CatchButtonSize.sm,
+          onPressed: onOpenFilters,
+        ),
+        CatchAdaptiveSelectionControl<HostCustomerSort>(
+          buttonKey: const ValueKey('host-customers-sort'),
+          title: context.l10n.hostCustomersSort,
+          subtitle: context.l10n.hostCustomersSortSheetSubtitle,
+          tooltip: context.l10n.hostCustomersSort,
+          value: sort,
+          items: [
+            for (final option in HostCustomerSort.values)
+              CatchSelectionMenuItem(
+                value: option,
+                label: _customerSortLabel(context, option),
+              ),
+          ],
+          triggerLabel: (selected) => selected.label,
+          onSelected: onSortChanged,
+        ),
       ],
-      triggerLabel: (selected) =>
-          context.l10n.hostCustomersSortControl(label: selected.label),
-      onSelected: onSortChanged,
-    );
-
-    return Align(alignment: AlignmentDirectional.centerEnd, child: sortControl);
-  }
+    ),
+    expanded: (context) => Wrap(
+      alignment: WrapAlignment.end,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: [
+        CatchButton(
+          key: const ValueKey('host-customers-filters'),
+          label: context.l10n.hostCustomersFilters,
+          icon: Icon(CatchIcons.tuneRounded),
+          variant: CatchButtonVariant.secondary,
+          size: CatchButtonSize.sm,
+          onPressed: onOpenFilters,
+        ),
+        CatchAdaptiveSelectionControl<HostCustomerSort>(
+          buttonKey: const ValueKey('host-customers-sort'),
+          title: context.l10n.hostCustomersSort,
+          subtitle: context.l10n.hostCustomersSortSheetSubtitle,
+          tooltip: context.l10n.hostCustomersSort,
+          value: sort,
+          items: [
+            for (final option in HostCustomerSort.values)
+              CatchSelectionMenuItem(
+                value: option,
+                label: _customerSortLabel(context, option),
+              ),
+          ],
+          triggerLabel: (selected) =>
+              context.l10n.hostCustomersSortControl(label: selected.label),
+          onSelected: onSortChanged,
+        ),
+      ],
+    ),
+  );
 }
 
 class HostCustomersNoOrganizer extends StatelessWidget {
@@ -71,8 +120,8 @@ class HostCustomerFilterSummary extends StatelessWidget {
     required this.count,
     required this.countCoverage,
     required this.campaignBlocker,
-    required this.onOpenFilters,
     required this.onMessage,
+    required this.onOpenMessaging,
     this.onClear,
   });
 
@@ -81,8 +130,8 @@ class HostCustomerFilterSummary extends StatelessWidget {
   final int count;
   final HostCustomerMatchCountCoverage countCoverage;
   final String? campaignBlocker;
-  final VoidCallback onOpenFilters;
   final VoidCallback? onMessage;
+  final VoidCallback onOpenMessaging;
   final VoidCallback? onClear;
 
   @override
@@ -92,70 +141,56 @@ class HostCustomerFilterSummary extends StatelessWidget {
       label: manualTag?.label ?? _customerFilterLabel(context, filter),
       countLabel: countLabel,
     );
-    return CatchSurface(
-      radius: CatchRadius.md,
-      padding: CatchInsets.tileContentCompact,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: CatchSpacing.s3,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              Text(header, style: CatchTextStyles.labelL(context)),
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: CatchSpacing.s1,
-                children: [
-                  if (onClear case final clear?)
-                    CatchButton(
-                      label: context.l10n.hostCustomersClearFilter,
-                      variant: CatchButtonVariant.ghost,
-                      size: CatchButtonSize.sm,
-                      onPressed: clear,
-                    ),
-                  CatchButton(
-                    label: context.l10n.hostCustomersFilters,
-                    icon: Icon(CatchIcons.tuneRounded),
-                    variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
-                    onPressed: onOpenFilters,
-                  ),
-                ],
-              ),
-            ],
-          ),
-          gapH12,
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: CatchSpacing.s3,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              if (campaignBlocker case final String blocker)
-                Text(
-                  hostCampaignBlockerLabel(context, blocker),
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).warning,
-                  ),
-                ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: CatchSpacing.s3,
+          runSpacing: CatchSpacing.s1,
+          children: [
+            Text(header, style: CatchTextStyles.labelL(context)),
+            if (onClear case final clear?)
               CatchButton(
-                key: const ValueKey('host-customers-message-segment'),
-                label: countCoverage == HostCustomerMatchCountCoverage.exact
-                    ? context.l10n.hostCustomersMessageThese(count: count)
-                    : context.l10n.hostCustomersMessageTheseAtLeast(
-                        count: count,
-                      ),
+                label: context.l10n.hostCustomersClearFilter,
+                variant: CatchButtonVariant.ghost,
                 size: CatchButtonSize.sm,
-                onPressed: onMessage,
+                onPressed: clear,
               ),
-            ],
-          ),
-        ],
-      ),
+          ],
+        ),
+        gapH12,
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: CatchSpacing.s3,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            if (campaignBlocker case final String blocker)
+              Text(
+                hostCampaignBlockerLabel(context, blocker),
+                style: CatchTextStyles.supporting(
+                  context,
+                  color: CatchTokens.of(context).warning,
+                ),
+              ),
+            CatchButton(
+              key: const ValueKey('host-customers-messaging-action'),
+              label: onMessage == null
+                  ? context.l10n.hostCustomersOpenMessaging
+                  : countCoverage == HostCustomerMatchCountCoverage.exact
+                  ? context.l10n.hostCustomersMessageThese(count: count)
+                  : context.l10n.hostCustomersMessageTheseAtLeast(count: count),
+              variant: onMessage == null
+                  ? CatchButtonVariant.secondary
+                  : CatchButtonVariant.primary,
+              size: CatchButtonSize.sm,
+              onPressed: onMessage ?? onOpenMessaging,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -401,10 +436,12 @@ class HostCustomersSummary extends StatelessWidget {
     super.key,
     required this.summary,
     required this.onRetry,
+    this.directorySummary,
   });
 
   final AsyncValue<HostCrmSummary> summary;
   final VoidCallback onRetry;
+  final Widget? directorySummary;
 
   @override
   Widget build(BuildContext context) => CatchAsyncValueView<HostCrmSummary>(
@@ -421,81 +458,80 @@ class HostCustomersSummary extends StatelessWidget {
     builder: (context, value) {
       final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
       String countLabel(int count) => value.truncated ? '$count+' : '$count';
-      return CatchSurface(
-        padding: CatchInsets.cardContent,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (usesLargeText)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  CatchStatColumn(
-                    value: countLabel(value.contactCount),
-                    label: context.l10n.hostsHostAudienceContacts,
-                    monoValue: true,
-                  ),
-                  gapH16,
-                  CatchStatColumn(
-                    value: countLabel(value.pastAttendeeCount),
-                    label: context.l10n.hostsHostAudienceAttended,
-                    monoValue: true,
-                  ),
-                  gapH16,
-                  CatchStatColumn(
-                    value: countLabel(value.repeatAttendeeCount),
-                    label: context.l10n.hostsHostAudienceRepeat,
-                    monoValue: true,
-                  ),
+      final stats = <({String label, String value})>[
+        (
+          value: countLabel(value.contactCount),
+          label: context.l10n.hostsHostAudienceContacts,
+        ),
+        (
+          value: countLabel(value.pastAttendeeCount),
+          label: context.l10n.hostsHostAudienceAttended,
+        ),
+        (
+          value: countLabel(value.repeatAttendeeCount),
+          label: context.l10n.hostsHostAudienceRepeat,
+        ),
+      ];
+      final statTiles = <Widget>[
+        for (final stat in stats)
+          CatchSurface(
+            tone: CatchSurfaceTone.transparent,
+            radius: CatchRadius.md,
+            padding: CatchInsets.cardContent,
+            borderRole: CatchBorderRole.boundary,
+            child: CatchStatColumn(
+              value: stat.value,
+              label: stat.label,
+              monoValue: true,
+            ),
+          ),
+      ];
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (usesLargeText)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var index = 0; index < statTiles.length; index++) ...[
+                  if (index > 0) gapH8,
+                  statTiles[index],
                 ],
-              )
-            else
-              Row(
-                children: [
-                  Expanded(
-                    child: CatchStatColumn(
-                      value: countLabel(value.contactCount),
-                      label: context.l10n.hostsHostAudienceContacts,
-                      monoValue: true,
-                    ),
-                  ),
-                  Expanded(
-                    child: CatchStatColumn(
-                      value: countLabel(value.pastAttendeeCount),
-                      label: context.l10n.hostsHostAudienceAttended,
-                      monoValue: true,
-                    ),
-                  ),
-                  Expanded(
-                    child: CatchStatColumn(
-                      value: countLabel(value.repeatAttendeeCount),
-                      label: context.l10n.hostsHostAudienceRepeat,
-                      monoValue: true,
-                    ),
-                  ),
+              ],
+            )
+          else
+            Row(
+              children: [
+                for (var index = 0; index < statTiles.length; index++) ...[
+                  if (index > 0) gapW8,
+                  Expanded(child: statTiles[index]),
                 ],
-              ),
+              ],
+            ),
+          gapH20,
+          CatchMetaRow(
+            icon: CatchIcons.tabChats,
+            label: context.l10n.hostCustomersWhatsappReadyCount(
+              count: value.whatsappOptInCount,
+            ),
+            maxLines: 2,
+          ),
+          gapH8,
+          CatchMetaRow(
+            icon: CatchIcons.infoOutlineRounded,
+            label: context.l10n.hostCustomersSourceSummary(
+              importedCount: value.importedContactCount,
+              linkedCount: value.linkedAccountCount,
+            ),
+            maxLines: 3,
+          ),
+          if (directorySummary case final summary?) ...[
             gapH16,
             const CatchDivider.section(),
             gapH12,
-            CatchMetaRow(
-              icon: CatchIcons.tabChats,
-              label: context.l10n.hostCustomersWhatsappReadyCount(
-                count: value.whatsappOptInCount,
-              ),
-              maxLines: 2,
-            ),
-            gapH8,
-            CatchMetaRow(
-              icon: CatchIcons.infoOutlineRounded,
-              label: context.l10n.hostCustomersSourceSummary(
-                importedCount: value.importedContactCount,
-                linkedCount: value.linkedAccountCount,
-              ),
-              maxLines: 3,
-            ),
+            summary,
           ],
-        ),
+        ],
       );
     },
   );
@@ -556,32 +592,3 @@ String _customerPeopleCountLabel(
   HostCustomerMatchCountCoverage.atLeast =>
     context.l10n.hostCustomersPeopleCountAtLeast(count: count),
 };
-
-String? _optionalTrimmed(String value) {
-  final trimmed = value.trim();
-  return trimmed.isEmpty ? null : trimmed;
-}
-
-String? _optionalManualPhone(String value) {
-  final trimmed = _optionalTrimmed(value);
-  return trimmed?.replaceAll(RegExp(r'[()\s-]+'), '');
-}
-
-String? _optionalNormalizedEmail(String value) =>
-    _optionalTrimmed(value)?.toLowerCase();
-
-String? _manualPhoneError(BuildContext context, String? value) {
-  final phone = _optionalManualPhone(value ?? '');
-  if (phone == null) return null;
-  return RegExp(r'^\+[1-9][0-9]{7,14}$').hasMatch(phone)
-      ? null
-      : context.l10n.hostCustomersPhoneInvalid;
-}
-
-String? _manualEmailError(BuildContext context, String? value) {
-  final email = _optionalNormalizedEmail(value ?? '');
-  if (email == null) return null;
-  return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)
-      ? null
-      : context.l10n.hostCustomersEmailInvalid;
-}

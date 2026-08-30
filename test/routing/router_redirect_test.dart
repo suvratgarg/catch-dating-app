@@ -166,6 +166,7 @@ void main() {
       expect(Routes.hostHomeScreen.path, '/host');
       expect(Routes.hostEventsScreen.path, '/host/events');
       expect(Routes.hostCustomersScreen.path, '/host/customers');
+      expect(Routes.hostAddCustomerScreen.path, '/host/customers/new');
       expect(Routes.hostFormsScreen.path, '/host/forms');
       expect(Routes.hostApplicationsScreen.path, '/host/forms/applications');
       expect(

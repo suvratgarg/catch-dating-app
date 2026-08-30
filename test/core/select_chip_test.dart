@@ -20,10 +20,14 @@ void main() {
     final chip = _chip('Easy');
     final tokens = CatchTokens.of(tester.element(chip));
     final decoration = _chipDecoration(tester, chip);
+    final borderDecoration = _chipBorderDecoration(tester, chip);
     final semantics = _chipSemantics(tester, chip);
 
     expect(decoration.color, tokens.surface);
-    expect(decoration.border?.top.color, tokens.line2);
+    expect(
+      borderDecoration.border,
+      CatchBorder.resolve(tokens, CatchBorderRole.boundary).all,
+    );
     expect(decoration.boxShadow, isEmpty);
     expect(semantics.properties.button, isNull);
     expect(semantics.properties.selected, isNull);
@@ -74,6 +78,7 @@ void main() {
       await pumpFeatureUi(tester);
 
       final selectedDecoration = _chipDecoration(tester, chip);
+      final selectedBorderDecoration = _chipBorderDecoration(tester, chip);
       final tokens = CatchTokens.of(tester.element(chip));
       final label = tester.widget<Text>(find.text('Trail run'));
       final scale = tester.widget<AnimatedScale>(
@@ -84,7 +89,14 @@ void main() {
       expect(_chipSemantics(tester, chip).properties.button, isTrue);
       expect(_chipSemantics(tester, chip).properties.enabled, isTrue);
       expect(selectedDecoration.color, accent);
-      expect(selectedDecoration.border?.top.color, Colors.transparent);
+      expect(
+        selectedBorderDecoration.border,
+        CatchBorder.resolve(
+          tokens,
+          CatchBorderRole.selected,
+          color: accent,
+        ).all,
+      );
       expect(selectedDecoration.boxShadow, isNotEmpty);
       expect(label.style?.color, tokens.onFill(accent));
       expect(label.overflow, TextOverflow.ellipsis);
@@ -329,6 +341,15 @@ BoxDecoration _chipDecoration(WidgetTester tester, Finder chip) {
             find.descendant(of: chip, matching: find.byType(AnimatedContainer)),
           )
           .decoration!
+      as BoxDecoration;
+}
+
+BoxDecoration _chipBorderDecoration(WidgetTester tester, Finder chip) {
+  return tester
+          .widget<AnimatedContainer>(
+            find.descendant(of: chip, matching: find.byType(AnimatedContainer)),
+          )
+          .foregroundDecoration!
       as BoxDecoration;
 }
 

@@ -119,7 +119,8 @@
       "catch.control_shell"
     ],
     "catch_no_raw_stroke_width": [
-      "catch.control_shell"
+      "catch.control_shell",
+      "catch.surface"
     ],
     "catch_no_raw_surface_shell": [
       "catch.surface"

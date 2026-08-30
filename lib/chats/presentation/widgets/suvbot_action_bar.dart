@@ -265,7 +265,7 @@ class SuvbotActionBar extends StatelessWidget {
         },
         loading: () => const SizedBox(
           height: CatchLayout.suvbotLoadingControlsHeight,
-          child: Center(child: CatchLoadingIndicator(strokeWidth: 2)),
+          child: Center(child: CatchLoadingIndicator()),
         ),
         error: (_, _) {
           final t = CatchTokens.of(context);

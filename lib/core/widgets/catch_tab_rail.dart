@@ -53,7 +53,10 @@ class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
                 ? BoxDecoration(
                     color: t.raised,
                     borderRadius: BorderRadius.circular(CatchRadius.pill),
-                    border: Border.all(color: t.line),
+                    border: CatchBorder.resolve(
+                      t,
+                      CatchBorderRole.boundary,
+                    ).all,
                   )
                 : const BoxDecoration(),
             child: CatchOptionGroup<T>(
