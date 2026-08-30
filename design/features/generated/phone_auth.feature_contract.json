@@ -2,15 +2,15 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/phone_auth.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:390b851e8fd1b42f62e168b0ae4dfd7dd525429f81ec3b91b6fa4619581993a1",
-  "resolvedDigest": "sha256:8bba4c729b2e84708fca05ad1374fd92056fcd2112b813405ee04da69ff17638",
+  "generatedFor": "2026-08-30",
+  "sourceDigest": "sha256:8c99c2419256b4e8cf232e233bd1bcc6e3607e5a6078fac001d391a47f3bc653",
+  "resolvedDigest": "sha256:0f7305fe791743d4694b54c18145df02356325ee6059675e6bd1ea76d3dd23e9",
   "feature": {
     "id": "feature.phone_auth",
     "name": "Phone Authentication",
     "owner": "auth",
     "status": "pilot",
-    "description": "Orchestrates shared consumer/host phone-number entry, Firebase verification-code delivery, OTP verification and resend, and returning to phone entry."
+    "description": "Orchestrates shared consumer/host phone-number entry, Firebase verification-code delivery, OTP verification and resend, and returning to phone entry. Host projects those states through one persistent splash/auth brand anchor and an inline lower-stage card; Consumer retains the standalone onboarding presentation."
   },
   "coverage": {
     "surfaces": 1,
@@ -18,7 +18,7 @@
     "scenarios": 8,
     "actionCases": 14,
     "actions": 6,
-    "captures": 14,
+    "captures": 17,
     "previews": 4,
     "testFiles": 2,
     "evidenceExceptions": 2
@@ -60,7 +60,8 @@
         "componentContracts": [
           "catch.button",
           "catch.error_banner",
-          "catch.field"
+          "catch.field",
+          "catch.surface"
         ],
         "dataContracts": []
       },
@@ -69,7 +70,7 @@
         "scenarios": 8,
         "actionCases": 14,
         "actions": 6,
-        "captures": 14,
+        "captures": 17,
         "previews": 4,
         "testFiles": 2,
         "evidenceExceptions": 2
@@ -268,6 +269,7 @@
           "evidence": {
             "captureIds": [
               "auth_phone_entry",
+              "auth_phone_valid",
               "auth_phone_text_scale_2"
             ],
             "previewIds": [
@@ -486,6 +488,8 @@
           "evidence": {
             "captureIds": [
               "auth_otp_entry",
+              "auth_otp_partial",
+              "auth_resend_ready",
               "auth_otp_text_scale_2",
               "auth_otp_reduced_motion"
             ],
@@ -832,6 +836,20 @@
                 "CatchField.stepper",
                 "CatchField.add",
                 "CatchField.select"
+              ]
+            }
+          },
+          {
+            "id": "catch.surface",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchSurface",
+              "file": "lib/core/widgets/catch_surface.dart",
+              "constructors": [
+                "CatchSurface",
+                "CatchSurface.card",
+                "CatchSurface.tinted",
+                "CatchSurface.message"
               ]
             }
           }

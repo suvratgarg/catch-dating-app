@@ -42,6 +42,8 @@ void main() {
       );
 
       expect(state.displayPhoneNumber, '+91 9999999999');
+      expect(state.maskedDisplayPhoneNumber, '+91 •••••• 9999');
+      expect(state.maskedNationalPhoneNumber, '•••••• 9999');
       expect(state.shouldAutofocus, true);
       expect(state.canVerify, true);
       expect(state.verifyButtonLoading, false);

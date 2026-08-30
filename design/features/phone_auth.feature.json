@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-08-30",
   "id": "feature.phone_auth",
   "name": "Phone Authentication",
   "owner": "auth",
   "status": "pilot",
-  "description": "Orchestrates shared consumer/host phone-number entry, Firebase verification-code delivery, OTP verification and resend, and returning to phone entry.",
+  "description": "Orchestrates shared consumer/host phone-number entry, Firebase verification-code delivery, OTP verification and resend, and returning to phone entry. Host projects those states through one persistent splash/auth brand anchor and an inline lower-stage card; Consumer retains the standalone onboarding presentation.",
   "surfaces": [
     {
       "id": "shared_flutter",
@@ -36,7 +36,7 @@
             "symbol": "AuthController"
           }
         ],
-        "componentContracts": ["catch.button", "catch.error_banner", "catch.field"],
+        "componentContracts": ["catch.button", "catch.error_banner", "catch.field", "catch.surface"],
         "dataContracts": []
       },
       "dimensions": {

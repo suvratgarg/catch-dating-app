@@ -81,6 +81,28 @@ class AuthInput {
     return '****${phoneNumber.substring(phoneNumber.length - 4)}';
   }
 
+  static String maskedDisplayPhoneNumber({
+    required String phoneNumber,
+    required String countryCode,
+  }) {
+    if (phoneNumber.isEmpty) return '';
+    final nationalNumber = phoneNumber.startsWith(countryCode)
+        ? phoneNumber.substring(countryCode.length)
+        : phoneNumber;
+    return '$countryCode ${maskedNationalPhoneNumber(nationalNumber)}';
+  }
+
+  static String maskedNationalPhoneNumber(String phoneNumber) {
+    if (phoneNumber.isEmpty) return '';
+    final visibleDigits = phoneNumber.length <= 4
+        ? phoneNumber
+        : phoneNumber.substring(phoneNumber.length - 4);
+    final hiddenCount = (phoneNumber.length - visibleDigits.length)
+        .clamp(4, 7)
+        .toInt();
+    return '${List.filled(hiddenCount, '•').join()} $visibleDigits';
+  }
+
   static bool isCompleteOtpCode(String code) => code.length == otpCodeLength;
 
   static AuthInputIssue? phoneNumberIssue(String? phoneNumber) {

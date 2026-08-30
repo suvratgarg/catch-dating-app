@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('Consumer iOS launch mark uses generated responsive reel geometry', () {
+  test('iOS launch marks use generated role-specific geometry', () {
     final consumerLaunch = File(
       'apps/consumer/ios/Runner/Base.lproj/LaunchScreen.storyboard',
     ).readAsStringSync();
@@ -59,12 +59,21 @@ void main() {
     expect(
       hostLaunch,
       contains(
-        'firstAttribute="centerY" secondItem="Ze5-6b-2t3" '
-        'secondAttribute="centerY"',
+        'firstAttribute="top" secondItem="6Tk-OE-BBY" '
+        'secondAttribute="top" constant="8"',
       ),
     );
-    expect(hostLaunch, contains('firstAttribute="width" constant="256"'));
-    expect(hostLaunch, contains('firstAttribute="height" constant="256"'));
+    expect(hostLaunch, contains('firstAttribute="width" constant="96"'));
+    expect(hostLaunch, contains('firstAttribute="height" constant="96"'));
+    expect(
+      hostLaunch,
+      isNot(
+        contains(
+          'firstAttribute="centerY" secondItem="Ze5-6b-2t3" '
+          'secondAttribute="centerY"',
+        ),
+      ),
+    );
     expect(hostLaunch, isNot(contains('constant="-145" priority="750"')));
   });
 }

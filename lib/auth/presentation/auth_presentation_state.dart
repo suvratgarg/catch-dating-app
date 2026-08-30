@@ -31,6 +31,8 @@ class AuthPhoneEntryViewState {
 class AuthOtpEntryViewState {
   const AuthOtpEntryViewState({
     required this.displayPhoneNumber,
+    required this.maskedDisplayPhoneNumber,
+    required this.maskedNationalPhoneNumber,
     required this.shouldAutofocus,
     required this.canVerify,
     required this.verifyButtonLoading,
@@ -43,6 +45,8 @@ class AuthOtpEntryViewState {
   static const resendCooldown = CatchMotion.authOtpResendCooldown;
 
   final String displayPhoneNumber;
+  final String maskedDisplayPhoneNumber;
+  final String maskedNationalPhoneNumber;
   final bool shouldAutofocus;
   final bool canVerify;
   final bool verifyButtonLoading;
@@ -62,6 +66,16 @@ class AuthOtpEntryViewState {
       displayPhoneNumber: AuthInput.displayPhoneNumber(
         phoneNumber: data.phoneNumber,
         countryCode: data.countryCode,
+      ),
+      maskedDisplayPhoneNumber: AuthInput.maskedDisplayPhoneNumber(
+        phoneNumber: data.phoneNumber,
+        countryCode: data.countryCode,
+      ),
+      maskedNationalPhoneNumber: AuthInput.maskedNationalPhoneNumber(
+        AuthInput.phoneNumberForState(
+          phoneNumber: data.phoneNumber,
+          countryCode: data.countryCode,
+        ),
       ),
       shouldAutofocus: data.step == AuthStep.otp,
       canVerify:

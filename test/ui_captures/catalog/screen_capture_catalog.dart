@@ -57,6 +57,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -7882,7 +7883,10 @@ class _SettingsMutationCaptureState
 
 enum _AuthCaptureMode {
   phoneEntry,
+  phoneValid,
   otpEntry,
+  otpPartial,
+  resendReady,
   countryCodeAustralia,
   sendCodePending,
   sendCodeError,
@@ -7899,7 +7903,27 @@ class _AuthCapture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _AuthCaptureSeeder(mode: mode, child: const AuthScreen());
+    final initialCode = switch (mode) {
+      _AuthCaptureMode.otpPartial => '137',
+      _AuthCaptureMode.verifyCodePending ||
+      _AuthCaptureMode.verifyCodeError => '137289',
+      _ => '',
+    };
+    final initialPhoneNumber = switch (mode) {
+      _AuthCaptureMode.phoneValid ||
+      _AuthCaptureMode.sendCodePending ||
+      _AuthCaptureMode.sendCodeError => '9876543210',
+      _ => '',
+    };
+    return _AuthCaptureSeeder(
+      mode: mode,
+      child: AuthScreen(
+        appRole: AppRole.host,
+        initialPhoneNumber: initialPhoneNumber,
+        initialOtpCode: initialCode,
+        initialResendSeconds: mode == _AuthCaptureMode.resendReady ? 0 : null,
+      ),
+    );
   }
 }
 
@@ -7911,6 +7935,13 @@ final _authProviderOverrides = <Object>[
 final _authAustraliaProviderOverrides = <Object>[
   authRepositoryProvider.overrideWithValue(const _CaptureAuthRepository()),
   authInitialCountryDialCodeProvider.overrideWithValue('+61'),
+];
+
+const _authHostBrandImages = <ImageProvider<Object>>[
+  AssetImage(CatchStartupLoadingScreen.hostLightIconAsset),
+  AssetImage(CatchStartupLoadingScreen.hostDarkIconAsset),
+  AssetImage('flags/in.png', package: 'country_code_picker'),
+  AssetImage('flags/au.png', package: 'country_code_picker'),
 ];
 
 final _onboardingCaptureProfileNoPhotos = ProfileSurfaceFixtures.viewer
@@ -8295,10 +8326,13 @@ class _AuthCaptureSeederState extends ConsumerState<_AuthCaptureSeeder> {
 
     switch (widget.mode) {
       case _AuthCaptureMode.phoneEntry:
+      case _AuthCaptureMode.phoneValid:
       case _AuthCaptureMode.countryCodeAustralia:
         ref.read(authControllerProvider.notifier).goToStep(AuthStep.phone);
         break;
       case _AuthCaptureMode.otpEntry:
+      case _AuthCaptureMode.otpPartial:
+      case _AuthCaptureMode.resendReady:
         await _seedOtpStep();
         break;
       case _AuthCaptureMode.sendCodePending:
@@ -8784,20 +8818,48 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) => const _AuthCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_phone_valid',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
+    builder: (context) => const _AuthCapture(mode: _AuthCaptureMode.phoneValid),
   ),
   ScreenCaptureEntry(
     id: 'auth_otp_entry',
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) => const _AuthCapture(mode: _AuthCaptureMode.otpEntry),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_otp_partial',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
+    builder: (context) => const _AuthCapture(mode: _AuthCaptureMode.otpPartial),
+  ),
+  ScreenCaptureEntry(
+    id: 'auth_resend_ready',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
+    builder: (context) =>
+        const _AuthCapture(mode: _AuthCaptureMode.resendReady),
   ),
   ScreenCaptureEntry(
     id: 'auth_phone_validation_error',
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) => const _AuthCapture(),
     drive: _driveAuthPhoneValidationError,
   ),
@@ -8806,6 +8868,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) => const _AuthCapture(),
     includeOverlays: true,
     drive: _driveAuthCountryPickerOpen,
@@ -8816,6 +8879,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authAustraliaProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) =>
         const _AuthCapture(mode: _AuthCaptureMode.countryCodeAustralia),
   ),
@@ -8824,6 +8888,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) =>
         const _AuthCapture(mode: _AuthCaptureMode.sendCodePending),
   ),
@@ -8832,6 +8897,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) =>
         const _AuthCapture(mode: _AuthCaptureMode.sendCodeError),
   ),
@@ -8840,6 +8906,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) =>
         const _AuthCapture(mode: _AuthCaptureMode.verifyCodePending),
   ),
@@ -8848,6 +8915,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) =>
         const _AuthCapture(mode: _AuthCaptureMode.verifyCodeError),
   ),
@@ -8856,6 +8924,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) =>
         const _AuthCapture(mode: _AuthCaptureMode.resendPending),
   ),
@@ -8864,6 +8933,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['authScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) =>
         const _AuthCapture(mode: _AuthCaptureMode.resendError),
   ),
@@ -8873,6 +8943,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     textScale: 2,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) => const _AuthCapture(),
   ),
   ScreenCaptureEntry(
@@ -8881,6 +8952,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     textScale: 2,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) => const _AuthCapture(mode: _AuthCaptureMode.otpEntry),
   ),
   ScreenCaptureEntry(
@@ -8889,6 +8961,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     disableAnimations: true,
     providerOverrides: _authProviderOverrides,
+    precache: _authHostBrandImages,
     builder: (context) => const _AuthCapture(mode: _AuthCaptureMode.otpEntry),
   ),
   ScreenCaptureEntry(

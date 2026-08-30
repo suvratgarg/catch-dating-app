@@ -245,7 +245,7 @@
       ],
       "anchors": [
         {"file": "lib/auth/presentation/phone_page.dart", "symbol": "CatchFormFieldLabel", "expected": 1},
-        {"file": "lib/auth/presentation/otp_page.dart", "symbol": "CatchOtpCodeField", "expected": 1}
+        {"file": "lib/auth/presentation/otp_page.dart", "symbol": "CatchOtpCodeField", "expected": 2}
       ],
       "targetModes": ["CatchSection.fieldRows", "CatchField.control"],
       "preserve": ["country picker", "OTP semantics", "autofill", "auth timing and focus behavior"],
