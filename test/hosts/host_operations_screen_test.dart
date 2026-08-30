@@ -86,6 +86,7 @@ import '../test_pump_helpers.dart';
 part 'host_operations_state_events_tests.dart';
 part 'host_operations_club_workspace_tests.dart';
 part 'host_operations_customers_tests.dart';
+part 'host_operations_customer_summary_filters_tests.dart';
 part 'host_operations_saved_audience_failure_tests.dart';
 part 'host_operations_customer_editor_tests.dart';
 part 'host_operations_customer_communications_tests.dart';
@@ -107,6 +108,7 @@ void main() {
   _registerHostOperationsStateEventsTests();
   _registerHostOperationsClubWorkspaceTests();
   _registerHostOperationsCustomersTests();
+  _registerHostOperationsCustomerSummaryFiltersTests();
   _registerHostOperationsSavedAudienceFailureTests();
   _registerHostOperationsCustomerEditorTests();
   _registerHostOperationsCustomerCommunicationsTests();
