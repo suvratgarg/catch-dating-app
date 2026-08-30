@@ -471,55 +471,67 @@ class _HostSendsIntentPicker extends ConsumerWidget {
       watchClubPostRemainingWeeklyQuotaProvider(club.id),
     );
     final campaignField = setup.when<Widget>(
-      loading: () => CatchField.read(
-        key: const ValueKey('host-send-intent-saved-audience'),
-        title: context.l10n.hostSendsSavedAudienceIntent,
-        body: context.l10n.hostSendsChannelChecking,
+      loading: () => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: const ValueKey('host-send-intent-saved-audience'),
+          title: context.l10n.hostSendsSavedAudienceIntent,
+          body: context.l10n.hostSendsChannelChecking,
+        ),
       ),
-      error: (_, _) => CatchField.read(
-        key: const ValueKey('host-send-intent-saved-audience'),
-        title: context.l10n.hostSendsSavedAudienceIntent,
-        body: context.l10n.hostSendsChannelUnavailable,
-        valueText: context.l10n.hostSendsSetupRequired,
+      error: (_, _) => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: const ValueKey('host-send-intent-saved-audience'),
+          title: context.l10n.hostSendsSavedAudienceIntent,
+          body: context.l10n.hostSendsChannelUnavailable,
+          valueText: context.l10n.hostSendsSetupRequired,
+        ),
       ),
-      data: (value) => value.canComposeCampaign
-          ? CatchField.nav(
-              key: const ValueKey('host-send-intent-saved-audience'),
-              title: context.l10n.hostSendsSavedAudienceIntent,
-              body: context.l10n.hostSendsSavedAudienceIntentBody,
-              onTap: onStartCampaign,
-            )
-          : CatchField.read(
-              key: const ValueKey('host-send-intent-saved-audience'),
-              title: context.l10n.hostSendsSavedAudienceIntent,
-              body: context.l10n.hostSendsSavedAudienceSetupBody,
-              valueText: context.l10n.hostSendsSetupRequired,
-            ),
+      data: (value) => CatchFieldLanes.single(
+        child: value.canComposeCampaign
+            ? CatchField.nav(
+                key: const ValueKey('host-send-intent-saved-audience'),
+                title: context.l10n.hostSendsSavedAudienceIntent,
+                body: context.l10n.hostSendsSavedAudienceIntentBody,
+                onTap: onStartCampaign,
+              )
+            : CatchField.read(
+                key: const ValueKey('host-send-intent-saved-audience'),
+                title: context.l10n.hostSendsSavedAudienceIntent,
+                body: context.l10n.hostSendsSavedAudienceSetupBody,
+                valueText: context.l10n.hostSendsSetupRequired,
+              ),
+      ),
     );
     final followerUpdateField = followerQuota.when<Widget>(
-      loading: () => CatchField.read(
-        key: const ValueKey('host-send-intent-follower-update'),
-        title: context.l10n.hostSendsFollowerUpdateIntent,
-        body: context.l10n.hostSendsChannelChecking,
+      loading: () => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: const ValueKey('host-send-intent-follower-update'),
+          title: context.l10n.hostSendsFollowerUpdateIntent,
+          body: context.l10n.hostSendsChannelChecking,
+        ),
       ),
-      error: (_, _) => CatchField.read(
-        key: const ValueKey('host-send-intent-follower-update'),
-        title: context.l10n.hostSendsFollowerUpdateIntent,
-        body: context.l10n.hostSendsChannelUnavailable,
+      error: (_, _) => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: const ValueKey('host-send-intent-follower-update'),
+          title: context.l10n.hostSendsFollowerUpdateIntent,
+          body: context.l10n.hostSendsChannelUnavailable,
+        ),
       ),
-      data: (remainingQuota) => remainingQuota > 0
-          ? CatchField.nav(
-              key: const ValueKey('host-send-intent-follower-update'),
-              title: context.l10n.hostSendsFollowerUpdateIntent,
-              body: context.l10n.hostSendsFollowerUpdateDescription,
-              onTap: () => unawaited(onStartFollowerUpdate(remainingQuota)),
-            )
-          : CatchField.read(
-              key: const ValueKey('host-send-intent-follower-update'),
-              title: context.l10n.hostSendsFollowerUpdateIntent,
-              body: context.l10n.hostSendsFollowerUpdateQuotaUsed,
-              valueText: context.l10n.hostSendsWeeklyLimit,
-            ),
+      data: (remainingQuota) => CatchFieldLanes.single(
+        child: remainingQuota > 0
+            ? CatchField.nav(
+                key: const ValueKey('host-send-intent-follower-update'),
+                title: context.l10n.hostSendsFollowerUpdateIntent,
+                body: context.l10n.hostSendsFollowerUpdateDescription,
+                onTap: () => unawaited(onStartFollowerUpdate(remainingQuota)),
+              )
+            : CatchField.read(
+                key: const ValueKey('host-send-intent-follower-update'),
+                title: context.l10n.hostSendsFollowerUpdateIntent,
+                body: context.l10n.hostSendsFollowerUpdateQuotaUsed,
+                valueText: context.l10n.hostSendsWeeklyLimit,
+              ),
+      ),
     );
 
     return Column(
@@ -529,28 +541,26 @@ class _HostSendsIntentPicker extends ConsumerWidget {
         gapH12,
         CatchSection.divided(
           title: context.l10n.hostSendsIntentTitle,
-          child: CatchFieldLanes.single(
-            child: Column(
-              children: [
-                CatchField.nav(
-                  key: const ValueKey('host-send-intent-conversation'),
-                  title: context.l10n.hostSendsConversationIntent,
-                  body: context.l10n.hostSendsConversationIntentBody,
-                  onTap: onOpenInbox,
-                ),
-                campaignField,
-                _HostEventAnnouncementIntent(
-                  organizerId: club.id,
-                  preferredEventId: preferredEventId,
-                  initialSegment: initialSegment,
-                  sendingEnabled: broadcastEnabled,
-                  now: now,
-                  onStart: onStartEventAnnouncement,
-                ),
-                followerUpdateField,
-              ],
+          children: [
+            CatchFieldLanes.single(
+              child: CatchField.nav(
+                key: const ValueKey('host-send-intent-conversation'),
+                title: context.l10n.hostSendsConversationIntent,
+                body: context.l10n.hostSendsConversationIntentBody,
+                onTap: onOpenInbox,
+              ),
             ),
-          ),
+            campaignField,
+            _HostEventAnnouncementIntent(
+              organizerId: club.id,
+              preferredEventId: preferredEventId,
+              initialSegment: initialSegment,
+              sendingEnabled: broadcastEnabled,
+              now: now,
+              onStart: onStartEventAnnouncement,
+            ),
+            followerUpdateField,
+          ],
         ),
         gapH12,
         CatchButton(
@@ -599,15 +609,19 @@ class _HostEventAnnouncementIntent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final events = ref.watch(watchEventsForClubProvider(organizerId));
     return events.when(
-      loading: () => CatchField.read(
-        key: const ValueKey('host-send-intent-event-announcement'),
-        title: context.l10n.hostSendsEventAnnouncementIntent,
-        body: context.l10n.hostSendsEventAnnouncementChecking,
+      loading: () => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: const ValueKey('host-send-intent-event-announcement'),
+          title: context.l10n.hostSendsEventAnnouncementIntent,
+          body: context.l10n.hostSendsEventAnnouncementChecking,
+        ),
       ),
-      error: (_, _) => CatchField.read(
-        key: const ValueKey('host-send-intent-event-announcement'),
-        title: context.l10n.hostSendsEventAnnouncementIntent,
-        body: context.l10n.hostSendsEventAnnouncementUnavailable,
+      error: (_, _) => CatchFieldLanes.single(
+        child: CatchField.read(
+          key: const ValueKey('host-send-intent-event-announcement'),
+          title: context.l10n.hostSendsEventAnnouncementIntent,
+          body: context.l10n.hostSendsEventAnnouncementUnavailable,
+        ),
       ),
       data: (events) {
         final event = _eventForAnnouncement(
@@ -616,25 +630,31 @@ class _HostEventAnnouncementIntent extends ConsumerWidget {
           now: now,
         );
         if (event == null) {
-          return CatchField.read(
-            key: const ValueKey('host-send-intent-event-announcement'),
-            title: context.l10n.hostSendsEventAnnouncementIntent,
-            body: context.l10n.hostSendsEventAnnouncementEmpty,
+          return CatchFieldLanes.single(
+            child: CatchField.read(
+              key: const ValueKey('host-send-intent-event-announcement'),
+              title: context.l10n.hostSendsEventAnnouncementIntent,
+              body: context.l10n.hostSendsEventAnnouncementEmpty,
+            ),
           );
         }
         final participations = ref.watch(
           watchEventParticipationsForEventProvider(event.id),
         );
         return participations.when(
-          loading: () => CatchField.read(
-            key: const ValueKey('host-send-intent-event-announcement'),
-            title: context.l10n.hostSendsEventAnnouncementIntent,
-            body: context.l10n.hostSendsEventAnnouncementCheckingAudience,
+          loading: () => CatchFieldLanes.single(
+            child: CatchField.read(
+              key: const ValueKey('host-send-intent-event-announcement'),
+              title: context.l10n.hostSendsEventAnnouncementIntent,
+              body: context.l10n.hostSendsEventAnnouncementCheckingAudience,
+            ),
           ),
-          error: (_, _) => CatchField.read(
-            key: const ValueKey('host-send-intent-event-announcement'),
-            title: context.l10n.hostSendsEventAnnouncementIntent,
-            body: context.l10n.hostSendsEventAnnouncementUnavailable,
+          error: (_, _) => CatchFieldLanes.single(
+            child: CatchField.read(
+              key: const ValueKey('host-send-intent-event-announcement'),
+              title: context.l10n.hostSendsEventAnnouncementIntent,
+              body: context.l10n.hostSendsEventAnnouncementUnavailable,
+            ),
           ),
           data: (participations) {
             final roster = EventParticipationRoster.fromParticipations(
@@ -663,26 +683,32 @@ class _HostEventAnnouncementIntent extends ConsumerWidget {
               bookedCount: target.bookedCount,
               prospectiveCount: target.prospectiveCount,
             );
-            return canStart
-                ? CatchField.nav(
-                    key: const ValueKey('host-send-intent-event-announcement'),
-                    title: context.l10n.hostSendsEventAnnouncementIntent,
-                    body: body,
-                    valueText: context.l10n.hostSendsEventAudienceSelected(
-                      count: selectedCount,
+            return CatchFieldLanes.single(
+              child: canStart
+                  ? CatchField.nav(
+                      key: const ValueKey(
+                        'host-send-intent-event-announcement',
+                      ),
+                      title: context.l10n.hostSendsEventAnnouncementIntent,
+                      body: body,
+                      valueText: context.l10n.hostSendsEventAudienceSelected(
+                        count: selectedCount,
+                      ),
+                      onTap: () => unawaited(onStart(target)),
+                    )
+                  : CatchField.read(
+                      key: const ValueKey(
+                        'host-send-intent-event-announcement',
+                      ),
+                      title: context.l10n.hostSendsEventAnnouncementIntent,
+                      body: body,
+                      valueText: hasAudience
+                          ? context
+                                .l10n
+                                .hostSendsEventAnnouncementUnavailableShort
+                          : context.l10n.hostSendsEventAnnouncementNoAudience,
                     ),
-                    onTap: () => unawaited(onStart(target)),
-                  )
-                : CatchField.read(
-                    key: const ValueKey('host-send-intent-event-announcement'),
-                    title: context.l10n.hostSendsEventAnnouncementIntent,
-                    body: body,
-                    valueText: hasAudience
-                        ? context
-                              .l10n
-                              .hostSendsEventAnnouncementUnavailableShort
-                        : context.l10n.hostSendsEventAnnouncementNoAudience,
-                  );
+            );
           },
         );
       },

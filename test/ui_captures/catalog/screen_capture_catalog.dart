@@ -4951,6 +4951,29 @@ HostAudienceContactDetail _hostCustomerMemoryDetail() {
     identityConfidence: 'verified',
     ambiguousCandidateCount: 0,
     whatsappAdminSuppressed: false,
+    whatsappPermission: HostCustomerWhatsappPermission(
+      status: HostAudiencePermissionStatus.optedIn,
+      evidenceStatus: HostCustomerPermissionEvidenceStatus.complete,
+      receiptId: 'capture-receipt-1',
+      source: 'hostFormResponse',
+      sourceFormId: 'capture-form-1',
+      sourceFormTitle: 'Sunday Run sign-up',
+      decisionAt: DateTime(2026, 5, 20),
+      identityStrength: 'catchAccount',
+    ),
+    origins: [
+      HostCustomerOrigin(
+        originId: 'capture-origin-1',
+        sourceKind: HostCustomerOriginSourceKind.hostForm,
+        sourceEntityKind: 'hostFormResponse',
+        formId: 'capture-form-1',
+        formTitle: 'Sunday Run sign-up',
+        eventId: 'capture-event-1',
+        eventTitle: 'Sunday Run Club',
+        observedAt: DateTime(2026, 5, 20),
+      ),
+    ],
+    originsTruncated: false,
     traits: const HostCustomerTraits(
       expectedEventCount: 9,
       attendedEventCount: 8,
@@ -5020,9 +5043,75 @@ HostAudienceContactDetail _hostCustomerMemoryDetail() {
         updatedAt: DateTime(2026, 8, 14, 9, 6),
       ),
     ],
+    timeline: [
+      HostCustomerReplyTimelineEntry(
+        timelineId: 'capture-reply-1',
+        occurredAt: DateTime(2026, 8, 16, 12),
+        transport: HostCustomerReplyTransport.catchChat,
+        direction: HostWhatsappMessageDirection.inbound,
+        bodyPreview: 'I’ll bring two friends next week.',
+        threadId: 'capture-match-1',
+      ),
+      HostCustomerEventTimelineEntry(
+        timelineId: 'capture-event-1',
+        occurredAt: DateTime(2026, 6, 18, 18, 30),
+        eventId: 'capture-event-1',
+        eventName: 'Sunday Run Club',
+        status: 'checkedIn',
+        checkedIn: true,
+        eventOrigin: HostCustomerEventOrigin.catchNative,
+        eventProvider: 'catch',
+      ),
+      HostCustomerFormTimelineEntry(
+        timelineId: 'capture-form-1',
+        occurredAt: DateTime(2026, 5, 20),
+        responseId: 'capture-response-1',
+        formId: 'capture-form-1',
+        formTitle: 'Sunday Run sign-up',
+        action: HostCustomerFormTimelineAction.submitted,
+        answeredQuestionCount: 5,
+      ),
+    ],
+    timelineTruncated: false,
+    timelineCoverage: const HostCustomerTimelineCoverage(
+      forms: HostCustomerTimelineCoverageValue.exact,
+      events: HostCustomerTimelineCoverageValue.exact,
+      sends: HostCustomerTimelineCoverageValue.exact,
+      replies: HostCustomerTimelineCoverageValue.partial,
+    ),
     revision: 3,
   );
 }
+
+HostCommunicationPlan _hostCustomerMemoryCommunicationPlan() =>
+    HostCommunicationPlan(
+      organizerId: HostOperationsFixtures.primaryClub.id,
+      intent: HostCommunicationIntent.individualConversation,
+      capabilityVersion: 1,
+      resolvedAt: DateTime(2026, 8, 29),
+      recipients: const [
+        HostCommunicationRecipientPlan(
+          contactId: 'capture-customer-ananya',
+          displayName: 'Ananya Rao',
+          outcome: HostCommunicationOutcome.inCatch,
+          recommendedRouteId: HostCommunicationRouteId.catchChat,
+          routes: [
+            HostCommunicationRouteOption(
+              routeId: HostCommunicationRouteId.catchChat,
+              executionMode: HostCommunicationExecutionMode.managedDelivery,
+              availability: HostCommunicationRouteAvailability.available,
+              blocker: null,
+            ),
+            HostCommunicationRouteOption(
+              routeId: HostCommunicationRouteId.personalWhatsappHandoff,
+              executionMode: HostCommunicationExecutionMode.externalHandoff,
+              availability: HostCommunicationRouteAvailability.available,
+              blocker: null,
+            ),
+          ],
+        ),
+      ],
+    );
 
 HostMessagingSetup _hostMessagingCaptureSetup(String organizerId) =>
     HostMessagingSetup(
@@ -14842,6 +14931,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         HostOperationsFixtures.primaryClub.id,
         'capture-customer-ananya',
       ).overrideWithValue(AsyncData(_hostCustomerMemoryDetail())),
+      hostCommunicationPlanProvider(
+        HostOperationsFixtures.primaryClub.id,
+        'capture-customer-ananya',
+      ).overrideWithValue(AsyncData(_hostCustomerMemoryCommunicationPlan())),
     ],
     builder: (context) => _HostRoutedShellCapture(
       initialLocation: '/host/customers',

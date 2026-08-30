@@ -413,6 +413,16 @@
       ]
     },
     {
+      "collectionGroup": "organizerContactOrigins",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "currentContactId", "mode": "ASCENDING"},
+        {"fieldPath": "observedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerWhatsappThreads",
       "queryScope": "COLLECTION",
       "fields": [
@@ -429,6 +439,16 @@
         {"fieldPath": "threadId", "mode": "ASCENDING"},
         {"fieldPath": "occurredAt", "mode": "ASCENDING"},
         {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerWhatsappMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "contactId", "mode": "ASCENDING"},
+        {"fieldPath": "occurredAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
       ]
     },
     {
@@ -601,6 +621,16 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "updatedAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerManualSendTasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "contactId", "mode": "ASCENDING"},
         {"fieldPath": "updatedAt", "mode": "DESCENDING"},
         {"fieldPath": "__name__", "mode": "DESCENDING"}
       ]
@@ -1066,6 +1096,17 @@
       "fields": [
         {"fieldPath": "participantIds", "arrayConfig": "CONTAINS"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "matches",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "conversationType", "mode": "ASCENDING"},
+        {"fieldPath": "participantIds", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "lastMessageAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
       ]
     },
     {

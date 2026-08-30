@@ -7868,28 +7868,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostCustomerAttendanceHistory',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Event history states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostCustomerAttendanceHistoryStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostCustomerConversationCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Conversation permission states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostCustomerConversationStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerDetailBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7923,6 +7901,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerReachSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reach and provenance states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerConversationStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerRevenueCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7941,6 +7930,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostCustomerDirectoryRowStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerTimelineSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Unified timeline states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerTimelineStates,
                   ),
                 ],
               ),

@@ -729,6 +729,29 @@ void main() {
       'contactDetailsEditable': false,
       'ambiguousCandidateContactIds': <String>[],
       'whatsappAdminSuppressed': true,
+      'whatsappPermission': {
+        'status': 'optedIn',
+        'evidenceStatus': 'complete',
+        'receiptId': 'permission-1',
+        'source': 'hostFormResponse',
+        'sourceFormId': 'form-1',
+        'sourceFormTitle': 'Social run sign-up',
+        'decisionAtMillis': 1699000000000,
+        'identityStrength': 'phoneVerified',
+      },
+      'origins': [
+        {
+          'originId': 'origin-1',
+          'sourceKind': 'hostForm',
+          'sourceEntityKind': 'hostFormResponse',
+          'formId': 'form-1',
+          'formTitle': 'Social run sign-up',
+          'eventId': 'event-1',
+          'eventTitle': 'Social run',
+          'observedAtMillis': 1699000000000,
+        },
+      ],
+      'originsTruncated': false,
       'traits': {
         'expectedEventCount': 4,
         'attendedEventCount': 3,
@@ -776,6 +799,26 @@ void main() {
         },
       ],
       'eventsTruncated': false,
+      'timeline': [
+        {
+          'kind': 'form',
+          'timelineId': 'timeline-form-1',
+          'responseId': 'response-1',
+          'formId': 'form-1',
+          'formTitle': 'Social run sign-up',
+          'action': 'submitted',
+          'answeredQuestionCount': 3,
+          'occurredAtMillis': 1699000000000,
+        },
+      ],
+      'timelineTruncated': false,
+      'timelineCoverage': {
+        'forms': 'exact',
+        'events': 'exact',
+        'sends': 'exact',
+        'replies': 'partial',
+        'replyObservation': 'catchAndManagedWhatsappOnly',
+      },
       'activeMerges': [
         {
           'mergeReceiptId': 'receipt-1',
@@ -794,10 +837,16 @@ void main() {
     expect(detail.displayName, 'Asha');
     expect(detail.contactDetailsEditable, isFalse);
     expect(detail.whatsappAdminSuppressed, isTrue);
+    expect(detail.whatsappPermission.sourceFormTitle, 'Social run sign-up');
+    expect(
+      detail.origins.single.sourceKind,
+      HostCustomerOriginSourceKind.hostForm,
+    );
     expect(detail.traits.whatsappStatus, HostAudiencePermissionStatus.optedIn);
     expect(detail.traits.attendanceRate, 0.75);
     expect(detail.revenue.amounts.single.amountMinor, 450000);
     expect(detail.events.single.checkedIn, isTrue);
+    expect(detail.timeline.single, isA<HostCustomerFormTimelineEntry>());
     expect(detail.activeMerges.single.sourceContactId, 'contact-2');
     expect(detail.activeMerges.single.movedFactCount, 4);
   });

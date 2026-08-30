@@ -8,7 +8,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callable_responses/get_organizer_contact_detail_response.schema.json',
   'title': 'GetOrganizerContactDetailCallableResponse',
-  'description': 'Manager-only contact facts and bounded event timeline. Private feedback and Event Success inputs are excluded.',
+  'description': 'Manager-only contact facts, permission provenance, and a bounded cross-surface activity timeline. Private feedback and Event Success inputs are excluded.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -24,10 +24,16 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     'identityConfidence',
     'ambiguousCandidateContactIds',
     'whatsappAdminSuppressed',
+    'whatsappPermission',
+    'origins',
+    'originsTruncated',
     'traits',
     'revenue',
     'events',
     'eventsTruncated',
+    'timeline',
+    'timelineTruncated',
+    'timelineCoverage',
     'activeMerges',
     'revision',
   ],
@@ -109,6 +115,201 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
       },
     },
     'whatsappAdminSuppressed': <String, Object?>{
+      'type': 'boolean',
+    },
+    'whatsappPermission': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'status',
+        'evidenceStatus',
+        'receiptId',
+        'source',
+        'sourceFormId',
+        'sourceFormTitle',
+        'decisionAtMillis',
+        'identityStrength',
+      ],
+      'properties': <String, Object?>{
+        'status': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unknown',
+            'optedIn',
+            'optedOut',
+          ],
+        },
+        'evidenceStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unavailable',
+            'notApplicable',
+            'complete',
+            'incomplete',
+          ],
+        },
+        'receiptId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'source': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            null,
+            'publicEventRegistration',
+            'hostFormResponse',
+            'participantSettings',
+            'unsubscribeLink',
+            'inboundStop',
+            'providerWebhook',
+            'legacyIncomplete',
+          ],
+        },
+        'sourceFormId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'sourceFormTitle': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 160,
+        },
+        'decisionAtMillis': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 0,
+        },
+        'identityStrength': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            null,
+            'unknown',
+            'emailVerified',
+            'phoneVerified',
+            'catchAccount',
+          ],
+        },
+      },
+    },
+    'origins': <String, Object?>{
+      'type': 'array',
+      'maxItems': 50,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'originId',
+          'sourceKind',
+          'sourceEntityKind',
+          'formId',
+          'formTitle',
+          'eventId',
+          'eventTitle',
+          'observedAtMillis',
+        ],
+        'properties': <String, Object?>{
+          'originId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'sourceKind': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'catchBooking',
+              'hostImport',
+              'hostManual',
+              'webOtp',
+              'providerSync',
+              'hostForm',
+            ],
+          },
+          'sourceEntityKind': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'eventAttendee',
+              'manualEntry',
+              'hostFormResponse',
+              'providerRecord',
+              'importBatch',
+              'webRegistration',
+            ],
+          },
+          'formId': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'formTitle': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'minLength': 1,
+            'maxLength': 160,
+          },
+          'eventId': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'eventTitle': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'minLength': 1,
+            'maxLength': 160,
+          },
+          'observedAtMillis': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+          },
+        },
+      },
+    },
+    'originsTruncated': <String, Object?>{
       'type': 'boolean',
     },
     'traits': <String, Object?>{
@@ -722,6 +923,341 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
         'unavailable',
       ],
     },
+    'timeline': <String, Object?>{
+      'type': 'array',
+      'maxItems': 100,
+      'items': <String, Object?>{
+        'oneOf': <Object?>[
+          <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'kind',
+              'timelineId',
+              'responseId',
+              'formId',
+              'formTitle',
+              'action',
+              'answeredQuestionCount',
+              'occurredAtMillis',
+            ],
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'form',
+              },
+              'timelineId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+              'responseId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'formId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'formTitle': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'minLength': 1,
+                'maxLength': 160,
+              },
+              'action': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'submitted',
+                  'withdrawn',
+                ],
+              },
+              'answeredQuestionCount': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 4000,
+              },
+              'occurredAtMillis': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+          },
+          <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'kind',
+              'timelineId',
+              'eventId',
+              'eventName',
+              'status',
+              'checkedIn',
+              'eventOriginMode',
+              'eventProvider',
+              'occurredAtMillis',
+            ],
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'event',
+              },
+              'timelineId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+              'eventId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'eventName': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 160,
+              },
+              'status': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'invited',
+                  'registered',
+                  'waitlisted',
+                  'checkedIn',
+                  'cancelled',
+                ],
+              },
+              'checkedIn': <String, Object?>{
+                'type': 'boolean',
+              },
+              'eventOriginMode': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'catchNative',
+                  'externalCompanion',
+                  'unknown',
+                ],
+              },
+              'eventProvider': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'enum': <Object?>[
+                  'catch',
+                  'generic',
+                  'luma',
+                  'eventbrite',
+                  'partiful',
+                  'posh',
+                  'bookmyshow',
+                  'district',
+                  'sortmyscene',
+                  'airbnb',
+                  null,
+                ],
+              },
+              'occurredAtMillis': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+          },
+          <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'kind',
+              'timelineId',
+              'sendKind',
+              'name',
+              'status',
+              'deliveryMode',
+              'observation',
+              'referenceId',
+              'occurredAtMillis',
+            ],
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'send',
+              },
+              'timelineId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+              'sendKind': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'campaign',
+                  'announcement',
+                  'manualHandoff',
+                ],
+              },
+              'name': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 160,
+              },
+              'status': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'available',
+                  'pending',
+                  'sending',
+                  'suppressed',
+                  'accepted',
+                  'sent',
+                  'delivered',
+                  'read',
+                  'failed',
+                  'replied',
+                  'optedOut',
+                  'queued',
+                  'handoffOpened',
+                  'hostMarkedSent',
+                  'skipped',
+                  'cancelled',
+                  'superseded',
+                  'expired',
+                ],
+              },
+              'deliveryMode': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'inCatch',
+                  'api',
+                  'byHand',
+                ],
+              },
+              'observation': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'providerReceipt',
+                  'catchActivity',
+                  'hostOpened',
+                  'hostAssertion',
+                  'notSent',
+                ],
+              },
+              'referenceId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'occurredAtMillis': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+          },
+          <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'kind',
+              'timelineId',
+              'transport',
+              'direction',
+              'bodyPreview',
+              'threadId',
+              'occurredAtMillis',
+            ],
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'reply',
+              },
+              'timelineId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+              'transport': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'catchChat',
+                  'managedWhatsapp',
+                ],
+              },
+              'direction': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'inbound',
+                  'outbound',
+                ],
+              },
+              'bodyPreview': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 300,
+              },
+              'threadId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'occurredAtMillis': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+          },
+        ],
+      },
+    },
+    'timelineTruncated': <String, Object?>{
+      'type': 'boolean',
+    },
+    'timelineCoverage': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'forms',
+        'events',
+        'sends',
+        'replies',
+        'replyObservation',
+      ],
+      'properties': <String, Object?>{
+        'forms': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'events': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'sends': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'replies': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'replyObservation': <String, Object?>{
+          'const': 'catchAndManagedWhatsappOnly',
+        },
+      },
+    },
     'activeMerges': <String, Object?>{
       'type': 'array',
       'maxItems': 50,
@@ -796,6 +1332,806 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     },
   },
   'definitions': <String, Object?>{
+    'permission': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'status',
+        'evidenceStatus',
+        'receiptId',
+        'source',
+        'sourceFormId',
+        'sourceFormTitle',
+        'decisionAtMillis',
+        'identityStrength',
+      ],
+      'properties': <String, Object?>{
+        'status': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unknown',
+            'optedIn',
+            'optedOut',
+          ],
+        },
+        'evidenceStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unavailable',
+            'notApplicable',
+            'complete',
+            'incomplete',
+          ],
+        },
+        'receiptId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'source': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            null,
+            'publicEventRegistration',
+            'hostFormResponse',
+            'participantSettings',
+            'unsubscribeLink',
+            'inboundStop',
+            'providerWebhook',
+            'legacyIncomplete',
+          ],
+        },
+        'sourceFormId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'sourceFormTitle': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 160,
+        },
+        'decisionAtMillis': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 0,
+        },
+        'identityStrength': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            null,
+            'unknown',
+            'emailVerified',
+            'phoneVerified',
+            'catchAccount',
+          ],
+        },
+      },
+    },
+    'origin': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'originId',
+        'sourceKind',
+        'sourceEntityKind',
+        'formId',
+        'formTitle',
+        'eventId',
+        'eventTitle',
+        'observedAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'originId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'sourceKind': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'catchBooking',
+            'hostImport',
+            'hostManual',
+            'webOtp',
+            'providerSync',
+            'hostForm',
+          ],
+        },
+        'sourceEntityKind': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'eventAttendee',
+            'manualEntry',
+            'hostFormResponse',
+            'providerRecord',
+            'importBatch',
+            'webRegistration',
+          ],
+        },
+        'formId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'formTitle': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 160,
+        },
+        'eventId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'eventTitle': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 160,
+        },
+        'observedAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+      },
+    },
+    'timelineCoverageValue': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'exact',
+        'partial',
+        'unavailable',
+      ],
+    },
+    'timelineCoverage': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'forms',
+        'events',
+        'sends',
+        'replies',
+        'replyObservation',
+      ],
+      'properties': <String, Object?>{
+        'forms': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'events': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'sends': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'replies': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'replyObservation': <String, Object?>{
+          'const': 'catchAndManagedWhatsappOnly',
+        },
+      },
+    },
+    'timelineEntry': <String, Object?>{
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'timelineId',
+            'responseId',
+            'formId',
+            'formTitle',
+            'action',
+            'answeredQuestionCount',
+            'occurredAtMillis',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'form',
+            },
+            'timelineId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 240,
+            },
+            'responseId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'formId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'formTitle': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'action': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'submitted',
+                'withdrawn',
+              ],
+            },
+            'answeredQuestionCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 4000,
+            },
+            'occurredAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'timelineId',
+            'eventId',
+            'eventName',
+            'status',
+            'checkedIn',
+            'eventOriginMode',
+            'eventProvider',
+            'occurredAtMillis',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'event',
+            },
+            'timelineId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 240,
+            },
+            'eventId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'eventName': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'status': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'invited',
+                'registered',
+                'waitlisted',
+                'checkedIn',
+                'cancelled',
+              ],
+            },
+            'checkedIn': <String, Object?>{
+              'type': 'boolean',
+            },
+            'eventOriginMode': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'catchNative',
+                'externalCompanion',
+                'unknown',
+              ],
+            },
+            'eventProvider': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'enum': <Object?>[
+                'catch',
+                'generic',
+                'luma',
+                'eventbrite',
+                'partiful',
+                'posh',
+                'bookmyshow',
+                'district',
+                'sortmyscene',
+                'airbnb',
+                null,
+              ],
+            },
+            'occurredAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'timelineId',
+            'sendKind',
+            'name',
+            'status',
+            'deliveryMode',
+            'observation',
+            'referenceId',
+            'occurredAtMillis',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'send',
+            },
+            'timelineId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 240,
+            },
+            'sendKind': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'campaign',
+                'announcement',
+                'manualHandoff',
+              ],
+            },
+            'name': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'status': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'available',
+                'pending',
+                'sending',
+                'suppressed',
+                'accepted',
+                'sent',
+                'delivered',
+                'read',
+                'failed',
+                'replied',
+                'optedOut',
+                'queued',
+                'handoffOpened',
+                'hostMarkedSent',
+                'skipped',
+                'cancelled',
+                'superseded',
+                'expired',
+              ],
+            },
+            'deliveryMode': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'inCatch',
+                'api',
+                'byHand',
+              ],
+            },
+            'observation': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'providerReceipt',
+                'catchActivity',
+                'hostOpened',
+                'hostAssertion',
+                'notSent',
+              ],
+            },
+            'referenceId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'occurredAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'timelineId',
+            'transport',
+            'direction',
+            'bodyPreview',
+            'threadId',
+            'occurredAtMillis',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'reply',
+            },
+            'timelineId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 240,
+            },
+            'transport': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'catchChat',
+                'managedWhatsapp',
+              ],
+            },
+            'direction': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'inbound',
+                'outbound',
+              ],
+            },
+            'bodyPreview': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 300,
+            },
+            'threadId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'occurredAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+          },
+        },
+      ],
+    },
+    'formTimelineEntry': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'timelineId',
+        'responseId',
+        'formId',
+        'formTitle',
+        'action',
+        'answeredQuestionCount',
+        'occurredAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'form',
+        },
+        'timelineId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 240,
+        },
+        'responseId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'formId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'formTitle': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 160,
+        },
+        'action': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'submitted',
+            'withdrawn',
+          ],
+        },
+        'answeredQuestionCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 4000,
+        },
+        'occurredAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+      },
+    },
+    'eventTimelineEntry': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'timelineId',
+        'eventId',
+        'eventName',
+        'status',
+        'checkedIn',
+        'eventOriginMode',
+        'eventProvider',
+        'occurredAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'event',
+        },
+        'timelineId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 240,
+        },
+        'eventId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'eventName': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+        },
+        'status': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'invited',
+            'registered',
+            'waitlisted',
+            'checkedIn',
+            'cancelled',
+          ],
+        },
+        'checkedIn': <String, Object?>{
+          'type': 'boolean',
+        },
+        'eventOriginMode': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'catchNative',
+            'externalCompanion',
+            'unknown',
+          ],
+        },
+        'eventProvider': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            'catch',
+            'generic',
+            'luma',
+            'eventbrite',
+            'partiful',
+            'posh',
+            'bookmyshow',
+            'district',
+            'sortmyscene',
+            'airbnb',
+            null,
+          ],
+        },
+        'occurredAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+      },
+    },
+    'sendTimelineEntry': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'timelineId',
+        'sendKind',
+        'name',
+        'status',
+        'deliveryMode',
+        'observation',
+        'referenceId',
+        'occurredAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'send',
+        },
+        'timelineId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 240,
+        },
+        'sendKind': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'campaign',
+            'announcement',
+            'manualHandoff',
+          ],
+        },
+        'name': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+        },
+        'status': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'available',
+            'pending',
+            'sending',
+            'suppressed',
+            'accepted',
+            'sent',
+            'delivered',
+            'read',
+            'failed',
+            'replied',
+            'optedOut',
+            'queued',
+            'handoffOpened',
+            'hostMarkedSent',
+            'skipped',
+            'cancelled',
+            'superseded',
+            'expired',
+          ],
+        },
+        'deliveryMode': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'inCatch',
+            'api',
+            'byHand',
+          ],
+        },
+        'observation': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'providerReceipt',
+            'catchActivity',
+            'hostOpened',
+            'hostAssertion',
+            'notSent',
+          ],
+        },
+        'referenceId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'occurredAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+      },
+    },
+    'replyTimelineEntry': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'timelineId',
+        'transport',
+        'direction',
+        'bodyPreview',
+        'threadId',
+        'occurredAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'reply',
+        },
+        'timelineId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 240,
+        },
+        'transport': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'catchChat',
+            'managedWhatsapp',
+          ],
+        },
+        'direction': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'inbound',
+            'outbound',
+          ],
+        },
+        'bodyPreview': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 300,
+        },
+        'threadId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'occurredAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+      },
+    },
     'activeMerge': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

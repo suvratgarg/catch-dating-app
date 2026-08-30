@@ -78,6 +78,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
@@ -760,6 +761,39 @@ Widget hostCustomersStates(BuildContext context) {
     identityConfidence: 'verified_account',
     ambiguousCandidateCount: 0,
     whatsappAdminSuppressed: false,
+    whatsappPermission: HostCustomerWhatsappPermission(
+      status: HostAudiencePermissionStatus.optedIn,
+      evidenceStatus: HostCustomerPermissionEvidenceStatus.complete,
+      receiptId: 'design-permission-receipt',
+      source: 'hostFormResponse',
+      sourceFormId: 'design-form-1',
+      sourceFormTitle: 'Sunday Run sign-up',
+      decisionAt: DateTime(2030, 4, 30),
+      identityStrength: 'catchAccount',
+    ),
+    origins: [
+      HostCustomerOrigin(
+        originId: 'design-origin-1',
+        sourceKind: HostCustomerOriginSourceKind.hostForm,
+        sourceEntityKind: 'hostFormResponse',
+        formId: 'design-form-1',
+        formTitle: 'Sunday Run sign-up',
+        eventId: 'design-customer-event-2',
+        eventTitle: 'Monsoon Mixer',
+        observedAt: DateTime(2030, 4, 30),
+      ),
+      HostCustomerOrigin(
+        originId: 'design-origin-2',
+        sourceKind: HostCustomerOriginSourceKind.catchBooking,
+        sourceEntityKind: 'eventAttendee',
+        formId: null,
+        formTitle: null,
+        eventId: 'design-customer-event-1',
+        eventTitle: 'Sunday Run Club',
+        observedAt: DateTime(2030, 6, 18),
+      ),
+    ],
+    originsTruncated: false,
     traits: const HostCustomerTraits(
       expectedEventCount: 9,
       attendedEventCount: 8,
@@ -843,6 +877,52 @@ Widget hostCustomersStates(BuildContext context) {
       ),
     ],
     sendsTruncated: false,
+    timeline: [
+      HostCustomerReplyTimelineEntry(
+        timelineId: 'design-reply-1',
+        occurredAt: DateTime(2030, 6, 19, 12),
+        transport: HostCustomerReplyTransport.catchChat,
+        direction: HostWhatsappMessageDirection.inbound,
+        bodyPreview: 'I’ll bring two friends next Sunday.',
+        threadId: 'design-match-1',
+      ),
+      HostCustomerEventTimelineEntry(
+        timelineId: 'design-event-1',
+        occurredAt: DateTime(2030, 6, 18, 18, 30),
+        eventId: 'design-customer-event-1',
+        eventName: 'Sunday Run Club',
+        status: 'checkedIn',
+        checkedIn: true,
+        eventOrigin: HostCustomerEventOrigin.catchNative,
+        eventProvider: 'catch',
+      ),
+      HostCustomerSendTimelineEntry(
+        timelineId: 'design-send-1',
+        occurredAt: DateTime(2030, 6, 17, 9, 6),
+        sendKind: HostCustomerTimelineSendKind.campaign,
+        name: 'June member invite',
+        status: 'delivered',
+        deliveryMode: HostCustomerTimelineDeliveryMode.api,
+        observation: HostCustomerTimelineObservation.providerReceipt,
+        referenceId: 'design-campaign-1',
+      ),
+      HostCustomerFormTimelineEntry(
+        timelineId: 'design-form-1',
+        occurredAt: DateTime(2030, 4, 30),
+        responseId: 'design-response-1',
+        formId: 'design-form-1',
+        formTitle: 'Sunday Run sign-up',
+        action: HostCustomerFormTimelineAction.submitted,
+        answeredQuestionCount: 5,
+      ),
+    ],
+    timelineTruncated: false,
+    timelineCoverage: const HostCustomerTimelineCoverage(
+      forms: HostCustomerTimelineCoverageValue.exact,
+      events: HostCustomerTimelineCoverageValue.exact,
+      sends: HostCustomerTimelineCoverageValue.exact,
+      replies: HostCustomerTimelineCoverageValue.partial,
+    ),
     revision: 3,
   );
   final communicationPlan = HostCommunicationPlan(
@@ -931,10 +1011,13 @@ Widget hostCustomersStates(BuildContext context) {
             onAddNote: () {},
             onEditNote: (_) {},
             onReviewDuplicates: () {},
-            onStartConversation: () {},
-            onOpenWhatsapp: () {},
+            onMessage: () {},
             onRetryCommunicationPlan: () {},
             onMessagingEnabledChanged: (_) {},
+            onOpenFormResponse: (_) {},
+            onOpenEvent: (_) {},
+            onOpenCatchThread: (_) {},
+            onOpenWhatsappThread: (_) {},
             onRemove: () {},
             onUndoMerge: (_) {},
           ),
@@ -1021,11 +1104,11 @@ Widget hostCustomerRevenueStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(
-  name: 'Event history states',
-  type: HostCustomerAttendanceHistory,
+  name: 'Unified timeline states',
+  type: HostCustomerTimelineSection,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
-Widget hostCustomerAttendanceHistoryStates(BuildContext context) =>
+Widget hostCustomerTimelineStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(
@@ -1037,8 +1120,8 @@ Widget hostCustomersNoOrganizerStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(
-  name: 'Conversation permission states',
-  type: HostCustomerConversationCard,
+  name: 'Reach and provenance states',
+  type: HostCustomerReachSection,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerConversationStates(BuildContext context) =>

@@ -18,6 +18,29 @@ void main() {
         'identityConfidence': 'verified',
         'ambiguousCandidateContactIds': <Object?>[],
         'whatsappAdminSuppressed': false,
+        'whatsappPermission': {
+          'status': 'optedIn',
+          'evidenceStatus': 'complete',
+          'receiptId': 'permission-1',
+          'source': 'hostFormResponse',
+          'sourceFormId': 'form-1',
+          'sourceFormTitle': 'Friday run sign-up',
+          'decisionAtMillis': 1000,
+          'identityStrength': 'phoneVerified',
+        },
+        'origins': <Object?>[
+          {
+            'originId': 'origin-1',
+            'sourceKind': 'hostForm',
+            'sourceEntityKind': 'hostFormResponse',
+            'formId': 'form-1',
+            'formTitle': 'Friday run sign-up',
+            'eventId': 'event-1',
+            'eventTitle': 'Friday run',
+            'observedAtMillis': 1000,
+          },
+        ],
+        'originsTruncated': false,
         'traits': {
           'expectedEventCount': 1,
           'attendedEventCount': 1,
@@ -82,6 +105,27 @@ void main() {
           },
         ],
         'sendsTruncated': false,
+        'timeline': <Object?>[
+          {
+            'kind': 'send',
+            'timelineId': 'timeline-send-1',
+            'sendKind': 'manualHandoff',
+            'name': 'Ananya Rao',
+            'status': 'handoffOpened',
+            'deliveryMode': 'byHand',
+            'observation': 'hostOpened',
+            'referenceId': 'task-1',
+            'occurredAtMillis': 7000,
+          },
+        ],
+        'timelineTruncated': false,
+        'timelineCoverage': {
+          'forms': 'exact',
+          'events': 'exact',
+          'sends': 'exact',
+          'replies': 'partial',
+          'replyObservation': 'catchAndManagedWhatsappOnly',
+        },
         'revision': 4,
       });
 
@@ -94,6 +138,7 @@ void main() {
       );
       expect(detail.sends.last.kind, HostCustomerSendKind.announcement);
       expect(detail.sends.last.eventId, 'event-1');
+      expect(detail.timeline.single, isA<HostCustomerSendTimelineEntry>());
       expect(
         detail.sends.last.deliveryStatus,
         HostCustomerSendDeliveryStatus.available,

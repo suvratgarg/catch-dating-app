@@ -1189,6 +1189,332 @@ class HostWhatsappThreadDetail {
   final bool messagesTruncated;
 }
 
+enum HostCustomerPermissionEvidenceStatus {
+  unavailable,
+  notApplicable,
+  complete,
+  incomplete,
+}
+
+class HostCustomerWhatsappPermission {
+  const HostCustomerWhatsappPermission({
+    required this.status,
+    required this.evidenceStatus,
+    required this.receiptId,
+    required this.source,
+    required this.sourceFormId,
+    required this.sourceFormTitle,
+    required this.decisionAt,
+    required this.identityStrength,
+  });
+
+  factory HostCustomerWhatsappPermission.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerWhatsappPermission(
+        status: _enumByName(
+          HostAudiencePermissionStatus.values,
+          _requiredString(map, 'status'),
+          'WhatsApp permission status',
+        ),
+        evidenceStatus: _enumByName(
+          HostCustomerPermissionEvidenceStatus.values,
+          _requiredString(map, 'evidenceStatus'),
+          'WhatsApp permission evidence status',
+        ),
+        receiptId: _nullableString(map['receiptId']),
+        source: _nullableString(map['source']),
+        sourceFormId: _nullableString(map['sourceFormId']),
+        sourceFormTitle: _nullableString(map['sourceFormTitle']),
+        decisionAt: _dateTimeFromMillis(map['decisionAtMillis']),
+        identityStrength: _nullableString(map['identityStrength']),
+      );
+
+  final HostAudiencePermissionStatus status;
+  final HostCustomerPermissionEvidenceStatus evidenceStatus;
+  final String? receiptId;
+  final String? source;
+  final String? sourceFormId;
+  final String? sourceFormTitle;
+  final DateTime? decisionAt;
+  final String? identityStrength;
+}
+
+enum HostCustomerOriginSourceKind {
+  catchBooking,
+  hostImport,
+  hostManual,
+  webOtp,
+  providerSync,
+  hostForm,
+}
+
+class HostCustomerOrigin {
+  const HostCustomerOrigin({
+    required this.originId,
+    required this.sourceKind,
+    required this.sourceEntityKind,
+    required this.formId,
+    required this.formTitle,
+    required this.eventId,
+    required this.eventTitle,
+    required this.observedAt,
+  });
+
+  factory HostCustomerOrigin.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerOrigin(
+        originId: _requiredString(map, 'originId'),
+        sourceKind: _enumByName(
+          HostCustomerOriginSourceKind.values,
+          _requiredString(map, 'sourceKind'),
+          'customer origin source',
+        ),
+        sourceEntityKind: _requiredString(map, 'sourceEntityKind'),
+        formId: _nullableString(map['formId']),
+        formTitle: _nullableString(map['formTitle']),
+        eventId: _nullableString(map['eventId']),
+        eventTitle: _nullableString(map['eventTitle']),
+        observedAt: _requiredDateTimeFromMillis(map, 'observedAtMillis'),
+      );
+
+  final String originId;
+  final HostCustomerOriginSourceKind sourceKind;
+  final String sourceEntityKind;
+  final String? formId;
+  final String? formTitle;
+  final String? eventId;
+  final String? eventTitle;
+  final DateTime observedAt;
+}
+
+enum HostCustomerTimelineCoverageValue { exact, partial, unavailable }
+
+class HostCustomerTimelineCoverage {
+  const HostCustomerTimelineCoverage({
+    required this.forms,
+    required this.events,
+    required this.sends,
+    required this.replies,
+  });
+
+  factory HostCustomerTimelineCoverage.fromMap(Map<Object?, Object?> map) {
+    if (_requiredString(map, 'replyObservation') !=
+        'catchAndManagedWhatsappOnly') {
+      throw const FormatException(
+        'Customer timeline had an unsupported reply observation boundary.',
+      );
+    }
+    return HostCustomerTimelineCoverage(
+      forms: _timelineCoverageValue(map, 'forms'),
+      events: _timelineCoverageValue(map, 'events'),
+      sends: _timelineCoverageValue(map, 'sends'),
+      replies: _timelineCoverageValue(map, 'replies'),
+    );
+  }
+
+  final HostCustomerTimelineCoverageValue forms;
+  final HostCustomerTimelineCoverageValue events;
+  final HostCustomerTimelineCoverageValue sends;
+  final HostCustomerTimelineCoverageValue replies;
+
+  bool get isComplete =>
+      forms == HostCustomerTimelineCoverageValue.exact &&
+      events == HostCustomerTimelineCoverageValue.exact &&
+      sends == HostCustomerTimelineCoverageValue.exact &&
+      replies == HostCustomerTimelineCoverageValue.exact;
+}
+
+HostCustomerTimelineCoverageValue _timelineCoverageValue(
+  Map<Object?, Object?> map,
+  String key,
+) => _enumByName(
+  HostCustomerTimelineCoverageValue.values,
+  _requiredString(map, key),
+  '$key timeline coverage',
+);
+
+sealed class HostCustomerTimelineEntry {
+  const HostCustomerTimelineEntry({
+    required this.timelineId,
+    required this.occurredAt,
+  });
+
+  factory HostCustomerTimelineEntry.fromMap(Map<Object?, Object?> map) =>
+      switch (_requiredString(map, 'kind')) {
+        'form' => HostCustomerFormTimelineEntry.fromMap(map),
+        'event' => HostCustomerEventTimelineEntry.fromMap(map),
+        'send' => HostCustomerSendTimelineEntry.fromMap(map),
+        'reply' => HostCustomerReplyTimelineEntry.fromMap(map),
+        _ => throw const FormatException(
+          'Customer timeline contained an unsupported entry kind.',
+        ),
+      };
+
+  final String timelineId;
+  final DateTime occurredAt;
+}
+
+enum HostCustomerFormTimelineAction { submitted, withdrawn }
+
+final class HostCustomerFormTimelineEntry extends HostCustomerTimelineEntry {
+  const HostCustomerFormTimelineEntry({
+    required super.timelineId,
+    required super.occurredAt,
+    required this.responseId,
+    required this.formId,
+    required this.formTitle,
+    required this.action,
+    required this.answeredQuestionCount,
+  });
+
+  factory HostCustomerFormTimelineEntry.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerFormTimelineEntry(
+        timelineId: _requiredString(map, 'timelineId'),
+        occurredAt: _requiredDateTimeFromMillis(map, 'occurredAtMillis'),
+        responseId: _requiredString(map, 'responseId'),
+        formId: _requiredString(map, 'formId'),
+        formTitle: _nullableString(map['formTitle']),
+        action: _enumByName(
+          HostCustomerFormTimelineAction.values,
+          _requiredString(map, 'action'),
+          'form timeline action',
+        ),
+        answeredQuestionCount: _requiredInt(map, 'answeredQuestionCount'),
+      );
+
+  final String responseId;
+  final String formId;
+  final String? formTitle;
+  final HostCustomerFormTimelineAction action;
+  final int answeredQuestionCount;
+}
+
+final class HostCustomerEventTimelineEntry extends HostCustomerTimelineEntry {
+  const HostCustomerEventTimelineEntry({
+    required super.timelineId,
+    required super.occurredAt,
+    required this.eventId,
+    required this.eventName,
+    required this.status,
+    required this.checkedIn,
+    required this.eventOrigin,
+    required this.eventProvider,
+  });
+
+  factory HostCustomerEventTimelineEntry.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerEventTimelineEntry(
+        timelineId: _requiredString(map, 'timelineId'),
+        occurredAt: _requiredDateTimeFromMillis(map, 'occurredAtMillis'),
+        eventId: _requiredString(map, 'eventId'),
+        eventName: _requiredString(map, 'eventName'),
+        status: _requiredString(map, 'status'),
+        checkedIn: _requiredBool(map, 'checkedIn'),
+        eventOrigin: _enumByName(
+          HostCustomerEventOrigin.values,
+          _requiredString(map, 'eventOriginMode'),
+          'event timeline origin',
+        ),
+        eventProvider: _nullableString(map['eventProvider']),
+      );
+
+  final String eventId;
+  final String eventName;
+  final String status;
+  final bool checkedIn;
+  final HostCustomerEventOrigin eventOrigin;
+  final String? eventProvider;
+}
+
+enum HostCustomerTimelineSendKind { campaign, announcement, manualHandoff }
+
+enum HostCustomerTimelineDeliveryMode { inCatch, api, byHand }
+
+enum HostCustomerTimelineObservation {
+  providerReceipt,
+  catchActivity,
+  hostOpened,
+  hostAssertion,
+  notSent,
+}
+
+final class HostCustomerSendTimelineEntry extends HostCustomerTimelineEntry {
+  const HostCustomerSendTimelineEntry({
+    required super.timelineId,
+    required super.occurredAt,
+    required this.sendKind,
+    required this.name,
+    required this.status,
+    required this.deliveryMode,
+    required this.observation,
+    required this.referenceId,
+  });
+
+  factory HostCustomerSendTimelineEntry.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerSendTimelineEntry(
+        timelineId: _requiredString(map, 'timelineId'),
+        occurredAt: _requiredDateTimeFromMillis(map, 'occurredAtMillis'),
+        sendKind: _enumByName(
+          HostCustomerTimelineSendKind.values,
+          _requiredString(map, 'sendKind'),
+          'timeline send kind',
+        ),
+        name: _requiredString(map, 'name'),
+        status: _requiredString(map, 'status'),
+        deliveryMode: _enumByName(
+          HostCustomerTimelineDeliveryMode.values,
+          _requiredString(map, 'deliveryMode'),
+          'timeline delivery mode',
+        ),
+        observation: _enumByName(
+          HostCustomerTimelineObservation.values,
+          _requiredString(map, 'observation'),
+          'timeline observation',
+        ),
+        referenceId: _requiredString(map, 'referenceId'),
+      );
+
+  final HostCustomerTimelineSendKind sendKind;
+  final String name;
+  final String status;
+  final HostCustomerTimelineDeliveryMode deliveryMode;
+  final HostCustomerTimelineObservation observation;
+  final String referenceId;
+}
+
+enum HostCustomerReplyTransport { catchChat, managedWhatsapp }
+
+final class HostCustomerReplyTimelineEntry extends HostCustomerTimelineEntry {
+  const HostCustomerReplyTimelineEntry({
+    required super.timelineId,
+    required super.occurredAt,
+    required this.transport,
+    required this.direction,
+    required this.bodyPreview,
+    required this.threadId,
+  });
+
+  factory HostCustomerReplyTimelineEntry.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerReplyTimelineEntry(
+        timelineId: _requiredString(map, 'timelineId'),
+        occurredAt: _requiredDateTimeFromMillis(map, 'occurredAtMillis'),
+        transport: _enumByName(
+          HostCustomerReplyTransport.values,
+          _requiredString(map, 'transport'),
+          'timeline reply transport',
+        ),
+        direction: _enumByName(
+          HostWhatsappMessageDirection.values,
+          _requiredString(map, 'direction'),
+          'timeline reply direction',
+        ),
+        bodyPreview: _requiredString(map, 'bodyPreview'),
+        threadId: _requiredString(map, 'threadId'),
+      );
+
+  final HostCustomerReplyTransport transport;
+  final HostWhatsappMessageDirection direction;
+  final String bodyPreview;
+  final String threadId;
+}
+
 class HostAudienceContactDetail {
   const HostAudienceContactDetail({
     required this.organizerId,
@@ -1204,6 +1530,9 @@ class HostAudienceContactDetail {
     this.contactDetailsEditable = false,
     required this.ambiguousCandidateCount,
     required this.whatsappAdminSuppressed,
+    required this.whatsappPermission,
+    required this.origins,
+    required this.originsTruncated,
     required this.traits,
     required this.revenue,
     required this.events,
@@ -1216,6 +1545,9 @@ class HostAudienceContactDetail {
     this.sends = const [],
     this.sendsTruncated = false,
     this.sendsCoverage = HostCustomerHistoryCoverage.exact,
+    required this.timeline,
+    required this.timelineTruncated,
+    required this.timelineCoverage,
     this.activeMerges = const [],
     required this.revision,
   });
@@ -1244,6 +1576,14 @@ class HostAudienceContactDetail {
         map['ambiguousCandidateContactIds'],
       ).length,
       whatsappAdminSuppressed: _requiredBool(map, 'whatsappAdminSuppressed'),
+      whatsappPermission: HostCustomerWhatsappPermission.fromMap(
+        _requiredMap(map['whatsappPermission'], 'WhatsApp permission'),
+      ),
+      origins: _mapList(
+        map['origins'],
+        'contact origins',
+      ).map(HostCustomerOrigin.fromMap).toList(growable: false),
+      originsTruncated: _requiredBool(map, 'originsTruncated'),
       traits: HostCustomerTraits.fromMap(
         _requiredMap(map['traits'], 'customer traits'),
       ),
@@ -1291,6 +1631,14 @@ class HostAudienceContactDetail {
               _requiredString(map, 'sendsCoverage'),
               'sends coverage',
             ),
+      timeline: _mapList(
+        map['timeline'],
+        'customer timeline',
+      ).map(HostCustomerTimelineEntry.fromMap).toList(growable: false),
+      timelineTruncated: _requiredBool(map, 'timelineTruncated'),
+      timelineCoverage: HostCustomerTimelineCoverage.fromMap(
+        _requiredMap(map['timelineCoverage'], 'customer timeline coverage'),
+      ),
       activeMerges: _optionalMapList(
         map['activeMerges'],
         'active contact merges',
@@ -1314,6 +1662,9 @@ class HostAudienceContactDetail {
   final bool contactDetailsEditable;
   final int ambiguousCandidateCount;
   final bool whatsappAdminSuppressed;
+  final HostCustomerWhatsappPermission whatsappPermission;
+  final List<HostCustomerOrigin> origins;
+  final bool originsTruncated;
   final HostCustomerTraits traits;
   final HostCustomerRevenue revenue;
   final List<HostAudienceEventFact> events;
@@ -1326,6 +1677,9 @@ class HostAudienceContactDetail {
   final List<HostCustomerSend> sends;
   final bool sendsTruncated;
   final HostCustomerHistoryCoverage sendsCoverage;
+  final List<HostCustomerTimelineEntry> timeline;
+  final bool timelineTruncated;
+  final HostCustomerTimelineCoverage timelineCoverage;
   final List<HostActiveContactMerge> activeMerges;
   final int revision;
 }

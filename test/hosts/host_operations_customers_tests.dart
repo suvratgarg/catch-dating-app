@@ -710,25 +710,34 @@ void _registerHostOperationsCustomersTests() {
     expect(find.byTooltip('Add customer'), findsOneWidget);
   });
 
-  testWidgets('customer event history opens the host event detail route', (
+  testWidgets('customer timeline opens the host event detail route', (
     tester,
   ) async {
     await _pumpHostScreen(
       tester,
       Scaffold(
-        body: HostCustomerAttendanceHistory(customer: _customerDetail()),
+        body: Builder(
+          builder: (context) => HostCustomerTimelineSection(
+            customer: _customerDetail(),
+            onOpenFormResponse: (_) {},
+            onOpenEvent: (eventId) => context.pushNamed(
+              Routes.hostAppEventDetailScreen.name,
+              pathParameters: {'clubId': 'organizer-1', 'eventId': eventId},
+            ),
+            onOpenCatchThread: (_) {},
+            onOpenWhatsappThread: (_) {},
+          ),
+        ),
       ),
     );
 
     expect(
       find.descendant(
-        of: find.byType(HostCustomerAttendanceHistory),
+        of: find.byType(HostCustomerTimelineSection),
         matching: find.byIcon(CatchIcons.chevronRightRounded),
       ),
-      findsOneWidget,
+      findsNWidgets(3),
     );
-    expect(find.textContaining('Externally hosted'), findsOneWidget);
-    expect(find.textContaining('Imported by your team'), findsOneWidget);
 
     await tester.tap(find.text('Sunday Run Club'));
     await pumpFeatureUi(tester);
@@ -801,7 +810,8 @@ void _registerHostOperationsCustomersTests() {
     expect(find.byType(HostCustomerIdentityCard), findsOneWidget);
     expect(find.byType(HostCustomerMemorySection), findsOneWidget);
     expect(find.byType(HostCustomerAttendanceCard), findsOneWidget);
-    expect(find.byType(HostCustomerConversationCard), findsOneWidget);
+    expect(find.byType(HostCustomerReachSection), findsOneWidget);
+    expect(find.byType(HostCustomerTimelineSection), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-customer-controls')),
       findsOneWidget,
@@ -1040,38 +1050,43 @@ void _registerHostOperationsCustomersTests() {
     await _pumpHostScreen(
       tester,
       Scaffold(
-        body: HostCustomerConversationCard(
+        body: HostCustomerReachSection(
           customer: _customerDetail(),
           communicationPlan: _individualCommunicationPlan(),
           communicationPlanLoading: false,
           communicationPlanFailed: false,
-          loading: false,
-          onOpen: () {},
-          onOpenWhatsapp: () {},
+          messageLoading: false,
+          onMessage: () {},
           onRetryCommunicationPlan: () {},
           onMessagingEnabledChanged: (value) => requestedValue = value,
         ),
       ),
     );
 
-    expect(find.text('Organizer messages'), findsOneWidget);
+    expect(find.text('Pause personal WhatsApp handoffs'), findsOneWidget);
     await tester.tap(
       find.byKey(const ValueKey('host-customer-organizer-messages')),
     );
     expect(requestedValue, isFalse);
   });
 
-  testWidgets('customer activity shows campaign delivery history', (
-    tester,
-  ) async {
+  testWidgets('customer timeline joins form and reply history', (tester) async {
     await _pumpHostScreen(
       tester,
-      Scaffold(body: HostCustomerSendHistory(customer: _customerDetail())),
+      Scaffold(
+        body: HostCustomerTimelineSection(
+          customer: _customerDetail(),
+          onOpenFormResponse: (_) {},
+          onOpenEvent: (_) {},
+          onOpenCatchThread: (_) {},
+          onOpenWhatsappThread: (_) {},
+        ),
+      ),
     );
 
-    expect(find.text('MESSAGES SENT'), findsOneWidget);
-    expect(find.text('August invite'), findsOneWidget);
-    expect(find.textContaining('Delivered'), findsOneWidget);
+    expect(find.text('HISTORY'), findsOneWidget);
+    expect(find.text('Sunday Run sign-up'), findsOneWidget);
+    expect(find.text('See you there!'), findsOneWidget);
   });
 
   testWidgets('customer detail orders identity, memory, activity, controls', (
@@ -1119,7 +1134,7 @@ void _registerHostOperationsCustomersTests() {
     expect(activityY, lessThan(controlsY));
   });
 
-  testWidgets('customer detail explains an unavailable WhatsApp handoff', (
+  testWidgets('customer detail exposes only the recommended message route', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 3600);
@@ -1150,15 +1165,10 @@ void _registerHostOperationsCustomersTests() {
       ],
     );
 
-    expect(find.text('You press send'), findsOneWidget);
-    expect(
-      find.text('Add a valid phone number to use a personal WhatsApp handoff.'),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('host-customer-open-whatsapp')),
-      findsOneWidget,
-    );
+    expect(find.text('Message Ananya Rao'), findsOneWidget);
+    expect(find.text('Opens the Catch conversation.'), findsOneWidget);
+    expect(find.byKey(const ValueKey('host-customer-message')), findsOneWidget);
+    expect(find.text('You press send'), findsNothing);
   });
 
   testWidgets('customer WhatsApp handoff pre-fills copy and opens the app', (
@@ -1196,7 +1206,9 @@ void _registerHostOperationsCustomersTests() {
         hostCommunicationPlanProvider(
           'organizer-1',
           'contact-1',
-        ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
+        ).overrideWithValue(
+          AsyncData(_individualCommunicationPlan(catchChatAvailable: false)),
+        ),
         hostCrmRepositoryProvider.overrideWithValue(
           HostCrmRepository(functions),
         ),
@@ -1211,7 +1223,7 @@ void _registerHostOperationsCustomersTests() {
       ],
     );
 
-    await tester.tap(find.byKey(const ValueKey('host-customer-open-whatsapp')));
+    await tester.tap(find.byKey(const ValueKey('host-customer-message')));
     await pumpFeatureUi(tester);
 
     expect(find.text('WhatsApp app'), findsOneWidget);

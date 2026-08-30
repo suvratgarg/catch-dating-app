@@ -14056,6 +14056,199 @@ class AppLocalizationsEn extends AppLocalizations {
       'Resolve this customer’s identity before starting a conversation.';
 
   @override
+  String get hostCustomersReachAndProvenance => 'Reach and provenance';
+
+  @override
+  String hostCustomersMessagePerson({required String name}) {
+    return 'Message $name';
+  }
+
+  @override
+  String get hostCustomersMessagePersonCatch => 'Opens the Catch conversation.';
+
+  @override
+  String get hostCustomersMessagePersonHandoff =>
+      'Prepares a durable handoff. You review it and press Send in WhatsApp.';
+
+  @override
+  String get hostCustomersWhatsappPermission => 'WhatsApp permission';
+
+  @override
+  String get hostCustomersWhatsappPermissionUnknown =>
+      'No participant permission is recorded.';
+
+  @override
+  String hostCustomersWhatsappPermissionGrantedByForm({
+    required String formTitle,
+    required String date,
+  }) {
+    return 'Granted on $formTitle · $date';
+  }
+
+  @override
+  String hostCustomersWhatsappPermissionGranted({required String date}) {
+    return 'Participant granted permission · $date';
+  }
+
+  @override
+  String hostCustomersWhatsappPermissionRevoked({required String date}) {
+    return 'Participant withdrew permission · $date';
+  }
+
+  @override
+  String get hostCustomersWhatsappPermissionIncomplete =>
+      'The current state is known, but its legacy evidence is incomplete.';
+
+  @override
+  String get hostCustomersWhatsappPermissionUnavailable =>
+      'Permission evidence is unavailable right now.';
+
+  @override
+  String get hostCustomersCustomerProvenance => 'Customer sources';
+
+  @override
+  String get hostCustomersCustomerProvenanceUnavailable =>
+      'No source receipt is available for this legacy customer.';
+
+  @override
+  String hostCustomersCustomerProvenanceItem({
+    required String source,
+    required String date,
+  }) {
+    return '$source · $date';
+  }
+
+  @override
+  String get hostCustomersOriginCatchBooking => 'Catch booking';
+
+  @override
+  String get hostCustomersOriginHostImport => 'Imported by your team';
+
+  @override
+  String get hostCustomersOriginHostManual => 'Added by your team';
+
+  @override
+  String get hostCustomersOriginWebOtp => 'Verified web registration';
+
+  @override
+  String get hostCustomersOriginProviderSync => 'Synced from an event provider';
+
+  @override
+  String hostCustomersOriginHostForm({required String formTitle}) {
+    return '$formTitle';
+  }
+
+  @override
+  String get hostCustomersPauseWhatsappHandoffs =>
+      'Pause personal WhatsApp handoffs';
+
+  @override
+  String get hostCustomersPauseWhatsappHandoffsBody =>
+      'This is your team’s suppression. It does not change the participant’s permission record.';
+
+  @override
+  String get hostCustomersTimeline => 'History';
+
+  @override
+  String get hostCustomersTimelineEmpty =>
+      'No form, event, send, or reply history is available yet.';
+
+  @override
+  String get hostCustomersTimelinePartialTitle => 'Some history may be missing';
+
+  @override
+  String get hostCustomersTimelinePartialBody =>
+      'The available entries are shown newest first. Legacy or temporarily unavailable sources are not represented as complete.';
+
+  @override
+  String get hostCustomersTimelineReplyBoundary =>
+      'Catch and managed WhatsApp messages can appear here. Replies in personal WhatsApp remain outside Catch and cannot be observed.';
+
+  @override
+  String get hostCustomersTimelineFormFallback => 'Form response';
+
+  @override
+  String hostCustomersTimelineFormSubmitted({
+    required int answerCount,
+    required String date,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      answerCount,
+      locale: localeName,
+      other: '$answerCount answers',
+      one: '1 answer',
+      zero: 'no recorded answers',
+    );
+    return 'Submitted · $_temp0 · $date';
+  }
+
+  @override
+  String hostCustomersTimelineFormWithdrawn({required String date}) {
+    return 'Response withdrawn · $date';
+  }
+
+  @override
+  String hostCustomersTimelineEventStatus({required String status}) {
+    String _temp0 = intl.Intl.selectLogic(status, {
+      'invited': 'Invited',
+      'registered': 'Registered',
+      'waitlisted': 'Waitlisted',
+      'checkedIn': 'Checked in',
+      'cancelled': 'Cancelled',
+      'other': 'Event activity',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get hostCustomersTimelineManualHandoff => 'Personal WhatsApp handoff';
+
+  @override
+  String hostCustomersTimelineSendStatus({required String status}) {
+    String _temp0 = intl.Intl.selectLogic(status, {
+      'available': 'Activity available',
+      'pending': 'Pending',
+      'sending': 'Sending',
+      'suppressed': 'Suppressed',
+      'accepted': 'Accepted by provider',
+      'sent': 'Sent',
+      'delivered': 'Delivered',
+      'read': 'Read',
+      'failed': 'Failed',
+      'replied': 'Replied',
+      'optedOut': 'Opted out',
+      'queued': 'Waiting in Sends',
+      'handoffOpened': 'You opened WhatsApp',
+      'hostMarkedSent': 'You marked this sent',
+      'skipped': 'Skipped',
+      'cancelled': 'Cancelled',
+      'superseded': 'Superseded',
+      'expired': 'Expired',
+      'other': 'Status unavailable',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get hostCustomersTimelineCatchMessage => 'Catch message';
+
+  @override
+  String get hostCustomersTimelineManagedWhatsapp => 'Managed WhatsApp message';
+
+  @override
+  String hostCustomersTimelineDirection({
+    required String direction,
+    required String date,
+  }) {
+    String _temp0 = intl.Intl.selectLogic(direction, {
+      'inbound': 'From customer',
+      'outbound': 'From your team',
+      'other': 'Message',
+    });
+    return '$_temp0 · $date';
+  }
+
+  @override
   String get hostCustomersEventHistory => 'Past attendance';
 
   @override

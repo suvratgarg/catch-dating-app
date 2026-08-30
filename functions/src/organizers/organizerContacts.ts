@@ -42,10 +42,19 @@ import {
   OrganizerContactIdentityLinkDocument,
   OrganizerContactMergeReceiptDocument,
   OrganizerContactNoteDocument,
+  OrganizerContactOriginDocument,
   OrganizerContactTagVocabularyDocument,
   OrganizerContactTraitDocument,
+  OrganizerCommunicationPermissionReceiptDocument,
+  OrganizerCommunicationPreferenceDocument,
+  OrganizerFormDocument,
+  OrganizerFormResponseDocument,
+  OrganizerManualSendTaskDocument,
+  OrganizerWhatsappMessageDocument,
   PaymentDocument,
   EventDocument,
+  MatchDocument,
+  ChatMessageDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {eventTitleLabel} from "../shared/eventLabels";
 import {ListOrganizerContactsCallablePayload} from
@@ -79,12 +88,18 @@ import {
   manualOrganizerContactOrigin,
   organizerContactOriginId,
 } from "../shared/organizerContactOrigins";
+import {organizerCommunicationPreferenceId} from
+  "../shared/organizerCommunicationPreferences";
 
 const defaultContactPageSize = 50;
 const maxDetailEvents = 100;
 const maxDetailNotes = 100;
 const maxDetailSends = 100;
 const maxDetailMergeReceipts = 500;
+const maxDetailOrigins = 50;
+const maxDetailTimelineEntries = 100;
+const maxDetailConversationThreads = 20;
+const maxDetailReplyMessages = 100;
 const maxExportContacts = 2500;
 const maxContactPayments = 500;
 const maxOrganizerManualTags = 20;
@@ -528,6 +543,9 @@ export async function getOrganizerContactDetailHandler(
     broadcastSnap,
     tagVocabularySnap,
     mergeReceiptSnap,
+    originSnap,
+    manualSendTaskSnap,
+    whatsappMessageSnap,
   ] = await Promise.all([
     contactRef.get(),
     traitRef.get(),
@@ -578,6 +596,42 @@ export async function getOrganizerContactDetailHandler(
       .orderBy(admin.firestore.FieldPath.documentId(), "desc")
       .limit(maxDetailMergeReceipts)
       .get(),
+    optionalContactQuery(
+      db.collection("organizerContactOrigins")
+        .where("organizerId", "==", data.organizerId)
+        .where("currentContactId", "==", data.contactId)
+        .orderBy("observedAt", "desc")
+        .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+        .limit(maxDetailOrigins + 1)
+        .get(),
+      "contact provenance",
+      data.organizerId,
+      data.contactId
+    ),
+    optionalContactQuery(
+      db.collection("organizerManualSendTasks")
+        .where("organizerId", "==", data.organizerId)
+        .where("contactId", "==", data.contactId)
+        .orderBy("updatedAt", "desc")
+        .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+        .limit(maxDetailSends + 1)
+        .get(),
+      "manual sends",
+      data.organizerId,
+      data.contactId
+    ),
+    optionalContactQuery(
+      db.collection("organizerWhatsappMessages")
+        .where("organizerId", "==", data.organizerId)
+        .where("contactId", "==", data.contactId)
+        .orderBy("occurredAt", "desc")
+        .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+        .limit(maxDetailReplyMessages + 1)
+        .get(),
+      "managed WhatsApp replies",
+      data.organizerId,
+      data.contactId
+    ),
   ]);
   const contact = contactSnap.data() as OrganizerContactDocument | undefined;
   const traits = traitSnap.data() as OrganizerContactTraitDocument | undefined;
@@ -612,6 +666,26 @@ export async function getOrganizerContactDetailHandler(
     revenueResult.byEvent.get(doc.eventId) ?? [],
     hydratedEvents.get(doc.eventId),
   ));
+  const originDocuments = (originSnap?.docs ?? [])
+    .slice(0, maxDetailOrigins)
+    .map((document) => ({
+      id: document.id,
+      data: document.data() as OrganizerContactOriginDocument,
+    }))
+    .filter((origin) => origin.data.organizerId === data.organizerId &&
+      origin.data.currentContactId === data.contactId);
+  const provenance = await hydrateContactProvenance({
+    db,
+    organizerId: data.organizerId,
+    origins: originDocuments,
+    hydratedEvents,
+  });
+  const permission = await contactWhatsappPermission({
+    db,
+    organizerId: data.organizerId,
+    contact,
+    traits,
+  });
   const tagVocabulary = safeManualTagVocabulary(
     data.organizerId,
     tagVocabularySnap.data() as
@@ -653,6 +727,55 @@ export async function getOrganizerContactDetailHandler(
     (left, right) => sendHistoryMillis(right) - sendHistoryMillis(left),
   );
   const sends = allSends.slice(0, maxDetailSends);
+  const manualSendTasks = (manualSendTaskSnap?.docs ?? [])
+    .slice(0, maxDetailSends)
+    .map((document) => document.data() as OrganizerManualSendTaskDocument)
+    .filter((task) => task.organizerId === data.organizerId &&
+      task.contactId === data.contactId);
+  const whatsappMessages = (whatsappMessageSnap?.docs ?? [])
+    .slice(0, maxDetailReplyMessages)
+    .map((document) => document.data() as OrganizerWhatsappMessageDocument)
+    .filter((message) => message.organizerId === data.organizerId &&
+      message.contactId === data.contactId);
+  const catchRepliesResult = await optionalContactQuery(
+    contactCatchReplyTimeline({
+      db,
+      organizerId: data.organizerId,
+      linkedUid: contact.linkedUid,
+    }),
+    "Catch conversation replies",
+    data.organizerId,
+    data.contactId
+  );
+  const formTimeline = await contactFormTimeline({
+    db,
+    organizerId: data.organizerId,
+    origins: originDocuments,
+    formTitles: provenance.formTitles,
+  });
+  const timelineResult = buildContactTimeline({
+    forms: formTimeline.entries,
+    events,
+    sends,
+    manualSendTasks,
+    whatsappMessages,
+    catchReplies: catchRepliesResult?.entries ?? [],
+    formsCoverage: originSnap === null || formTimeline.unavailable ?
+      "unavailable" : originSnap.size > maxDetailOrigins ||
+        formTimeline.truncated || traits.sourceCoverage !== "exact" ?
+        "partial" : "exact",
+    eventsCoverage: eventSnap.size > maxDetailEvents ||
+      traits.sourceCoverage !== "exact" ? "partial" : "exact",
+    sendsCoverage: recipientSnap === null || broadcastSnap === null ||
+      campaignSendsResult === null || manualSendTaskSnap === null ?
+      "unavailable" : (recipientSnap.size > maxDetailSends ||
+        allSends.length > maxDetailSends ||
+        manualSendTaskSnap.size > maxDetailSends) ? "partial" : "exact",
+    repliesCoverage: whatsappMessageSnap === null ||
+      catchRepliesResult === null ? "unavailable" : "partial",
+    repliesTruncated: (whatsappMessageSnap?.size ?? 0) >
+      maxDetailReplyMessages || (catchRepliesResult?.truncated ?? false),
+  });
   const activeMerges = await activeMergeRows({
     db,
     organizerId: data.organizerId,
@@ -677,6 +800,9 @@ export async function getOrganizerContactDetailHandler(
     whatsappAdminSuppressed:
       (channelSnap.data() as OrganizerContactChannelStateDocument | undefined)
         ?.adminSuppressed === true,
+    whatsappPermission: permission,
+    origins: provenance.origins,
+    originsTruncated: (originSnap?.size ?? 0) > maxDetailOrigins,
     traits: {
       expectedEventCount: traits.expectedEventCount,
       attendedEventCount: traits.attendedEventCount,
@@ -704,9 +830,419 @@ export async function getOrganizerContactDetailHandler(
     sendsCoverage:
       recipientSnap === null || broadcastSnap === null ||
       campaignSendsResult === null ? "unavailable" : "exact",
+    timeline: timelineResult.timeline,
+    timelineTruncated: timelineResult.truncated,
+    timelineCoverage: timelineResult.coverage,
     activeMerges,
     revision: contact.revision,
   };
+}
+
+type ContactTimelineEntry =
+  GetOrganizerContactDetailCallableResponse["timeline"][number];
+type ContactReplyTimelineEntry = Extract<
+  ContactTimelineEntry,
+  {kind: "reply"}
+>;
+type ContactHistoryCoverage =
+  GetOrganizerContactDetailCallableResponse["timelineCoverage"]["forms"];
+
+interface HydratedContactProvenance {
+  origins: GetOrganizerContactDetailCallableResponse["origins"];
+  formTitles: Map<string, string>;
+}
+
+async function hydrateContactProvenance(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  origins: Array<{id: string; data: OrganizerContactOriginDocument}>;
+  hydratedEvents: Map<string, EventDocument>;
+}): Promise<HydratedContactProvenance> {
+  const formIds = [...new Set(params.origins
+    .map((origin) => origin.data.formId)
+    .filter((formId): formId is string => formId !== null))];
+  const missingEventIds = [...new Set(params.origins
+    .map((origin) => origin.data.eventId)
+    .filter((eventId): eventId is string => eventId !== null &&
+      !params.hydratedEvents.has(eventId)))];
+  const [formSnapshots, eventSnapshots] = await Promise.all([
+    formIds.length === 0 ? Promise.resolve([]) : optionalContactQuery(
+      params.db.getAll(...formIds.map((formId) =>
+        params.db.collection("organizerForms").doc(formId))),
+      "provenance forms",
+      params.organizerId,
+      params.origins[0]?.data.currentContactId ?? "unknown"
+    ).then((snapshots) => snapshots ?? []),
+    missingEventIds.length === 0 ? Promise.resolve([]) : optionalContactQuery(
+      params.db.getAll(...missingEventIds.map((eventId) =>
+        params.db.collection("events").doc(eventId))),
+      "provenance events",
+      params.organizerId,
+      params.origins[0]?.data.currentContactId ?? "unknown"
+    ).then((snapshots) => snapshots ?? []),
+  ]);
+  const forms = new Map(formSnapshots
+    .filter((snapshot) => snapshot.exists)
+    .map((snapshot) => [
+      snapshot.id,
+      snapshot.data() as OrganizerFormDocument,
+    ] as const)
+    .filter(([, form]) => form.organizerId === params.organizerId));
+  const formTitles = new Map([...forms.entries()]
+    .map(([formId, form]) => [formId, form.title] as const));
+  const events = new Map(params.hydratedEvents);
+  for (const snapshot of eventSnapshots) {
+    const event = snapshot.data() as EventDocument | undefined;
+    if (event?.organizerId === params.organizerId) {
+      events.set(snapshot.id, event);
+    }
+  }
+  return {
+    origins: params.origins.map((origin) => ({
+      originId: origin.id,
+      sourceKind: origin.data.sourceKind,
+      sourceEntityKind: origin.data.sourceEntityKind,
+      formId: origin.data.formId,
+      formTitle: origin.data.formId === null ? null :
+        formTitles.get(origin.data.formId) ?? null,
+      eventId: origin.data.eventId,
+      eventTitle: origin.data.eventId === null ? null :
+        events.has(origin.data.eventId) ?
+          eventTitleLabel(events.get(origin.data.eventId)!) : null,
+      observedAtMillis: origin.data.observedAt.toMillis(),
+    })),
+    formTitles,
+  };
+}
+
+async function contactWhatsappPermission(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  contact: OrganizerContactDocument;
+  traits: OrganizerContactTraitDocument;
+}): Promise<GetOrganizerContactDetailCallableResponse["whatsappPermission"]> {
+  const unavailable = {
+    status: params.traits.whatsappStatus,
+    evidenceStatus: "unavailable" as const,
+    receiptId: null,
+    source: null,
+    sourceFormId: null,
+    sourceFormTitle: null,
+    decisionAtMillis: null,
+    identityStrength: null,
+  };
+  if (params.contact.linkedUid === null) return unavailable;
+  const preferenceSnapshot = await optionalContactQuery(
+    params.db.collection("organizerCommunicationPreferences")
+      .doc(organizerCommunicationPreferenceId(
+        params.organizerId,
+        params.contact.linkedUid
+      )).get(),
+    "WhatsApp permission projection",
+    params.organizerId,
+    params.contact.linkedUid
+  );
+  const preference = preferenceSnapshot?.data() as
+    OrganizerCommunicationPreferenceDocument | undefined;
+  if (!preference || preference.organizerId !== params.organizerId ||
+      preference.uid !== params.contact.linkedUid) {
+    return unavailable;
+  }
+  const channel = preference.whatsapp;
+  const receiptSnapshot = channel.currentReceiptId === null ? null :
+    await optionalContactQuery(
+      params.db.collection("organizerCommunicationPermissionReceipts")
+        .doc(channel.currentReceiptId).get(),
+      "WhatsApp permission receipt",
+      params.organizerId,
+      params.contact.linkedUid
+    );
+  const receipt = receiptSnapshot?.data() as
+    OrganizerCommunicationPermissionReceiptDocument | undefined;
+  const validReceipt = receipt && receipt.organizerId === params.organizerId &&
+    receipt.uid === params.contact.linkedUid && receipt.channel === "whatsapp" ?
+    receipt : null;
+  const sourceFormId = validReceipt?.sourceFormId ?? null;
+  const formSnapshot = sourceFormId === null ? null :
+    await optionalContactQuery(
+      params.db.collection("organizerForms").doc(sourceFormId).get(),
+      "permission source form",
+      params.organizerId,
+      params.contact.linkedUid
+    );
+  const form = formSnapshot?.data() as OrganizerFormDocument | undefined;
+  const decisionAt = validReceipt?.decision === "optedOut" ?
+    validReceipt.revokedAt : validReceipt?.grantedAt;
+  return {
+    status: channel.status,
+    evidenceStatus: channel.evidenceStatus,
+    receiptId: validReceipt ? channel.currentReceiptId : null,
+    source: validReceipt?.source ?? channel.source,
+    sourceFormId,
+    sourceFormTitle: form?.organizerId === params.organizerId ?
+      form.title : null,
+    decisionAtMillis: decisionAt?.toMillis() ??
+      channel.updatedAt?.toMillis() ?? null,
+    identityStrength: validReceipt?.identityStrength ?? null,
+  };
+}
+
+async function contactFormTimeline(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  origins: Array<{id: string; data: OrganizerContactOriginDocument}>;
+  formTitles: Map<string, string>;
+}): Promise<{
+  entries: ContactTimelineEntry[];
+  truncated: boolean;
+  unavailable: boolean;
+}> {
+  const responseOrigins = params.origins.filter((origin) =>
+    origin.data.sourceKind === "hostForm" &&
+    origin.data.formId !== null && origin.data.responseId !== null);
+  const responseIds = [...new Set(responseOrigins
+    .map((origin) => origin.data.responseId!))];
+  if (responseIds.length === 0) {
+    return {entries: [], truncated: false, unavailable: false};
+  }
+  const snapshots = await optionalContactQuery(
+    params.db.getAll(...responseIds.map((responseId) =>
+      params.db.collection("organizerFormResponses").doc(responseId))),
+    "form response timeline",
+    params.organizerId,
+    params.origins[0]?.data.currentContactId ?? "unknown"
+  );
+  if (snapshots === null) {
+    return {entries: [], truncated: false, unavailable: true};
+  }
+  const entries: ContactTimelineEntry[] = [];
+  for (const snapshot of snapshots) {
+    const response = snapshot.data() as
+      OrganizerFormResponseDocument | undefined;
+    if (!response || response.organizerId !== params.organizerId) continue;
+    const answeredQuestionCount = response.answerSnapshots.filter((answer) =>
+      answer.answer !== null && (!Array.isArray(answer.answer) ||
+        answer.answer.length > 0) && answer.answer !== "").length;
+    entries.push({
+      kind: "form",
+      timelineId: timelineEntryId("form-submitted", snapshot.id),
+      responseId: snapshot.id,
+      formId: response.formId,
+      formTitle: params.formTitles.get(response.formId) ?? null,
+      action: "submitted",
+      answeredQuestionCount,
+      occurredAtMillis: response.submittedAt.toMillis(),
+    });
+    if (response.status === "withdrawn" && response.withdrawnAt !== null) {
+      entries.push({
+        kind: "form",
+        timelineId: timelineEntryId("form-withdrawn", snapshot.id),
+        responseId: snapshot.id,
+        formId: response.formId,
+        formTitle: params.formTitles.get(response.formId) ?? null,
+        action: "withdrawn",
+        answeredQuestionCount,
+        occurredAtMillis: response.withdrawnAt.toMillis(),
+      });
+    }
+  }
+  const sorted = entries.sort(compareTimelineEntries);
+  return {
+    entries: sorted.slice(0, maxDetailTimelineEntries),
+    truncated: sorted.length > maxDetailTimelineEntries,
+    unavailable: false,
+  };
+}
+
+async function contactCatchReplyTimeline(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  linkedUid: string | null;
+}): Promise<{entries: ContactReplyTimelineEntry[]; truncated: boolean}> {
+  if (params.linkedUid === null) return {entries: [], truncated: false};
+  const matchSnapshot = await params.db.collection("matches")
+    .where("organizerId", "==", params.organizerId)
+    .where("conversationType", "==", "clubHostInquiry")
+    .where("participantIds", "array-contains", params.linkedUid)
+    .orderBy("lastMessageAt", "desc")
+    .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+    .limit(maxDetailConversationThreads + 1)
+    .get();
+  const matches = matchSnapshot.docs.slice(0, maxDetailConversationThreads)
+    .map((document) => ({
+      id: document.id,
+      data: document.data() as MatchDocument,
+    }))
+    .filter((match) => match.data.organizerId === params.organizerId &&
+      match.data.conversationType === "clubHostInquiry" &&
+      match.data.participantIds.includes(params.linkedUid!));
+  const perMatch = await Promise.all(matches.map(async (match) => {
+    const snapshot = await params.db.collection("matches").doc(match.id)
+      .collection("messages")
+      .orderBy("sentAt", "desc")
+      .limit(maxDetailReplyMessages + 1)
+      .get();
+    return {
+      match,
+      truncated: snapshot.size > maxDetailReplyMessages,
+      messages: snapshot.docs.slice(0, maxDetailReplyMessages),
+    };
+  }));
+  const entries = perMatch.flatMap(({match, messages}) => messages
+    .map((document): ContactReplyTimelineEntry | null => {
+      const message = document.data() as ChatMessageDocument;
+      const bodyPreview = message.text.trim().slice(0, 300);
+      if (bodyPreview.length === 0) return null;
+      return {
+        kind: "reply",
+        timelineId: timelineEntryId(
+          "catch-reply",
+          `${match.id}:${document.id}`
+        ),
+        transport: "catchChat",
+        direction: message.senderId === params.linkedUid ?
+          "inbound" : "outbound",
+        bodyPreview,
+        threadId: match.id,
+        occurredAtMillis: message.sentAt?.toMillis() ??
+          match.data.createdAt.toMillis(),
+      };
+    })
+    .filter((entry): entry is ContactReplyTimelineEntry => entry !== null))
+    .sort(compareTimelineEntries);
+  return {
+    entries: entries.slice(0, maxDetailReplyMessages),
+    truncated: matchSnapshot.size > maxDetailConversationThreads ||
+      perMatch.some((result) => result.truncated) ||
+      entries.length > maxDetailReplyMessages,
+  };
+}
+
+export function buildContactTimeline(params: {
+  forms: ContactTimelineEntry[];
+  events: GetOrganizerContactDetailCallableResponse["events"];
+  sends: NonNullable<GetOrganizerContactDetailCallableResponse["sends"]>;
+  manualSendTasks: OrganizerManualSendTaskDocument[];
+  whatsappMessages: OrganizerWhatsappMessageDocument[];
+  catchReplies: ContactReplyTimelineEntry[];
+  formsCoverage: ContactHistoryCoverage;
+  eventsCoverage: ContactHistoryCoverage;
+  sendsCoverage: ContactHistoryCoverage;
+  repliesCoverage: ContactHistoryCoverage;
+  repliesTruncated: boolean;
+}): {
+  timeline: GetOrganizerContactDetailCallableResponse["timeline"];
+  truncated: boolean;
+  coverage: GetOrganizerContactDetailCallableResponse["timelineCoverage"];
+} {
+  const events: ContactTimelineEntry[] = params.events.map((event) => ({
+    kind: "event",
+    timelineId: timelineEntryId(
+      "event",
+      `${event.eventId}:${event.attendeeId}`
+    ),
+    eventId: event.eventId,
+    eventName: event.displayName,
+    status: event.status,
+    checkedIn: event.checkedIn,
+    eventOriginMode: event.eventOriginMode,
+    eventProvider: event.eventProvider,
+    occurredAtMillis: event.checkedInAtMillis ?? event.cancelledAtMillis ??
+      event.registeredAtMillis ?? event.eventStartAtMillis ?? 0,
+  }));
+  const sends: ContactTimelineEntry[] = params.sends.map((send) =>
+    send.kind === "campaign" ? {
+      kind: "send",
+      timelineId: timelineEntryId("campaign", send.campaignId),
+      sendKind: "campaign",
+      name: send.name,
+      status: send.deliveryStatus,
+      deliveryMode: "api",
+      observation: "providerReceipt",
+      referenceId: send.campaignId,
+      occurredAtMillis: send.updatedAtMillis,
+    } : {
+      kind: "send",
+      timelineId: timelineEntryId("announcement", send.broadcastId),
+      sendKind: "announcement",
+      name: send.eventName,
+      status: send.deliveryStatus,
+      deliveryMode: "inCatch",
+      observation: "catchActivity",
+      referenceId: send.broadcastId,
+      occurredAtMillis: send.sentAtMillis,
+    });
+  const manualSends: ContactTimelineEntry[] = params.manualSendTasks.map(
+    (task) => ({
+      kind: "send",
+      timelineId: timelineEntryId("manual-handoff", task.taskId),
+      sendKind: "manualHandoff",
+      name: task.displayNameSnapshot,
+      status: task.status,
+      deliveryMode: "byHand",
+      observation: manualSendObservation(task),
+      referenceId: task.taskId,
+      occurredAtMillis: manualSendOccurredAt(task),
+    }));
+  const whatsappReplies: ContactReplyTimelineEntry[] =
+    params.whatsappMessages.map((message) => ({
+      kind: "reply",
+      timelineId: timelineEntryId("whatsapp-reply", message.messageId),
+      transport: "managedWhatsapp",
+      direction: message.direction,
+      bodyPreview: message.body.trim().slice(0, 300),
+      threadId: message.threadId,
+      occurredAtMillis: message.occurredAt.toMillis(),
+    }));
+  const combined = [
+    ...params.forms,
+    ...events,
+    ...sends,
+    ...manualSends,
+    ...whatsappReplies,
+    ...params.catchReplies,
+  ].sort(compareTimelineEntries);
+  return {
+    timeline: combined.slice(0, maxDetailTimelineEntries),
+    truncated: combined.length > maxDetailTimelineEntries ||
+      params.formsCoverage === "partial" ||
+      params.eventsCoverage === "partial" ||
+      params.sendsCoverage === "partial" || params.repliesTruncated,
+    coverage: {
+      forms: params.formsCoverage,
+      events: params.eventsCoverage,
+      sends: params.sendsCoverage,
+      replies: params.repliesCoverage,
+      replyObservation: "catchAndManagedWhatsappOnly",
+    },
+  };
+}
+
+function manualSendObservation(
+  task: OrganizerManualSendTaskDocument
+): Extract<ContactTimelineEntry, {kind: "send"}>["observation"] {
+  if (task.status === "hostMarkedSent") return "hostAssertion";
+  if (task.status === "handoffOpened") return "hostOpened";
+  return "notSent";
+}
+
+function manualSendOccurredAt(task: OrganizerManualSendTaskDocument): number {
+  return task.hostMarkedSentAt?.toMillis() ?? task.openedAt?.toMillis() ??
+    task.skippedAt?.toMillis() ?? task.cancelledAt?.toMillis() ??
+    task.supersededAt?.toMillis() ?? task.updatedAt.toMillis();
+}
+
+function compareTimelineEntries(
+  left: ContactTimelineEntry,
+  right: ContactTimelineEntry
+): number {
+  return right.occurredAtMillis - left.occurredAtMillis ||
+    right.timelineId.localeCompare(left.timelineId);
+}
+
+function timelineEntryId(kind: string, sourceId: string): string {
+  return `${kind}_${createHash("sha256").update(sourceId)
+    .digest("hex").slice(0, 40)}`;
 }
 
 async function activeMergeRows(params: {

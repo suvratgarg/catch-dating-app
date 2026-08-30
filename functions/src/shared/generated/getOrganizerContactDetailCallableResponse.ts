@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Manager-only contact facts and bounded event timeline. Private feedback and Event Success inputs are excluded.
+ * Manager-only contact facts, permission provenance, and a bounded cross-surface activity timeline. Private feedback and Event Success inputs are excluded.
  */
 export interface GetOrganizerContactDetailCallableResponse {
   organizerId: string;
@@ -25,6 +25,55 @@ export interface GetOrganizerContactDetailCallableResponse {
    */
   ambiguousCandidateContactIds: string[];
   whatsappAdminSuppressed: boolean;
+  whatsappPermission: {
+    status: "unknown" | "optedIn" | "optedOut";
+    evidenceStatus: "unavailable" | "notApplicable" | "complete" | "incomplete";
+    receiptId: string | null;
+    source:
+      | null
+      | "publicEventRegistration"
+      | "hostFormResponse"
+      | "participantSettings"
+      | "unsubscribeLink"
+      | "inboundStop"
+      | "providerWebhook"
+      | "legacyIncomplete";
+    sourceFormId: string | null;
+    sourceFormTitle: string | null;
+    decisionAtMillis: number | null;
+    identityStrength:
+      | null
+      | "unknown"
+      | "emailVerified"
+      | "phoneVerified"
+      | "catchAccount";
+  };
+  /**
+   * @maxItems 50
+   */
+  origins: {
+    originId: string;
+    sourceKind:
+      | "catchBooking"
+      | "hostImport"
+      | "hostManual"
+      | "webOtp"
+      | "providerSync"
+      | "hostForm";
+    sourceEntityKind:
+      | "eventAttendee"
+      | "manualEntry"
+      | "hostFormResponse"
+      | "providerRecord"
+      | "importBatch"
+      | "webRegistration";
+    formId: string | null;
+    formTitle: string | null;
+    eventId: string | null;
+    eventTitle: string | null;
+    observedAtMillis: number;
+  }[];
+  originsTruncated: boolean;
   traits: {
     expectedEventCount: number;
     attendedEventCount: number;
@@ -190,6 +239,99 @@ export interface GetOrganizerContactDetailCallableResponse {
   )[];
   sendsTruncated?: boolean;
   sendsCoverage?: "exact" | "unavailable";
+  /**
+   * @maxItems 100
+   */
+  timeline: (
+    | {
+        kind: "form";
+        timelineId: string;
+        responseId: string;
+        formId: string;
+        formTitle: string | null;
+        action: "submitted" | "withdrawn";
+        answeredQuestionCount: number;
+        occurredAtMillis: number;
+      }
+    | {
+        kind: "event";
+        timelineId: string;
+        eventId: string;
+        eventName: string;
+        status:
+          | "invited"
+          | "registered"
+          | "waitlisted"
+          | "checkedIn"
+          | "cancelled";
+        checkedIn: boolean;
+        eventOriginMode: "catchNative" | "externalCompanion" | "unknown";
+        eventProvider:
+          | "catch"
+          | "generic"
+          | "luma"
+          | "eventbrite"
+          | "partiful"
+          | "posh"
+          | "bookmyshow"
+          | "district"
+          | "sortmyscene"
+          | "airbnb"
+          | null;
+        occurredAtMillis: number;
+      }
+    | {
+        kind: "send";
+        timelineId: string;
+        sendKind: "campaign" | "announcement" | "manualHandoff";
+        name: string;
+        status:
+          | "available"
+          | "pending"
+          | "sending"
+          | "suppressed"
+          | "accepted"
+          | "sent"
+          | "delivered"
+          | "read"
+          | "failed"
+          | "replied"
+          | "optedOut"
+          | "queued"
+          | "handoffOpened"
+          | "hostMarkedSent"
+          | "skipped"
+          | "cancelled"
+          | "superseded"
+          | "expired";
+        deliveryMode: "inCatch" | "api" | "byHand";
+        observation:
+          | "providerReceipt"
+          | "catchActivity"
+          | "hostOpened"
+          | "hostAssertion"
+          | "notSent";
+        referenceId: string;
+        occurredAtMillis: number;
+      }
+    | {
+        kind: "reply";
+        timelineId: string;
+        transport: "catchChat" | "managedWhatsapp";
+        direction: "inbound" | "outbound";
+        bodyPreview: string;
+        threadId: string;
+        occurredAtMillis: number;
+      }
+  )[];
+  timelineTruncated: boolean;
+  timelineCoverage: {
+    forms: "exact" | "partial" | "unavailable";
+    events: "exact" | "partial" | "unavailable";
+    sends: "exact" | "partial" | "unavailable";
+    replies: "exact" | "partial" | "unavailable";
+    replyObservation: "catchAndManagedWhatsappOnly";
+  };
   /**
    * @maxItems 50
    */

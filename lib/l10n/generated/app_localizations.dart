@@ -21926,6 +21926,234 @@ abstract class AppLocalizations {
   /// **'Resolve this customer’s identity before starting a conversation.'**
   String get hostCustomersConversationAmbiguous;
 
+  /// Above-fold customer communication and provenance section.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach and provenance'**
+  String get hostCustomersReachAndProvenance;
+
+  /// Single person-scoped messaging action whose route is server-derived.
+  ///
+  /// In en, this message translates to:
+  /// **'Message {name}'**
+  String hostCustomersMessagePerson({required String name});
+
+  /// Consequence of the derived Catch conversation route.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens the Catch conversation.'**
+  String get hostCustomersMessagePersonCatch;
+
+  /// Consequence of the derived personal WhatsApp handoff route.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepares a durable handoff. You review it and press Send in WhatsApp.'**
+  String get hostCustomersMessagePersonHandoff;
+
+  /// Participant-controlled WhatsApp permission row.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp permission'**
+  String get hostCustomersWhatsappPermission;
+
+  /// Unknown participant WhatsApp permission state.
+  ///
+  /// In en, this message translates to:
+  /// **'No participant permission is recorded.'**
+  String get hostCustomersWhatsappPermissionUnknown;
+
+  /// Form-backed participant WhatsApp permission provenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Granted on {formTitle} · {date}'**
+  String hostCustomersWhatsappPermissionGrantedByForm({
+    required String formTitle,
+    required String date,
+  });
+
+  /// Participant WhatsApp grant with a receipt but no displayable source form.
+  ///
+  /// In en, this message translates to:
+  /// **'Participant granted permission · {date}'**
+  String hostCustomersWhatsappPermissionGranted({required String date});
+
+  /// Participant WhatsApp withdrawal provenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Participant withdrew permission · {date}'**
+  String hostCustomersWhatsappPermissionRevoked({required String date});
+
+  /// Legacy WhatsApp permission evidence boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'The current state is known, but its legacy evidence is incomplete.'**
+  String get hostCustomersWhatsappPermissionIncomplete;
+
+  /// WhatsApp permission evidence load boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission evidence is unavailable right now.'**
+  String get hostCustomersWhatsappPermissionUnavailable;
+
+  /// Immutable source facts retained for one organizer customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer sources'**
+  String get hostCustomersCustomerProvenance;
+
+  /// Missing legacy customer-source receipt boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'No source receipt is available for this legacy customer.'**
+  String get hostCustomersCustomerProvenanceUnavailable;
+
+  /// One immutable customer source and observation date.
+  ///
+  /// In en, this message translates to:
+  /// **'{source} · {date}'**
+  String hostCustomersCustomerProvenanceItem({
+    required String source,
+    required String date,
+  });
+
+  /// Customer source created from a Catch booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch booking'**
+  String get hostCustomersOriginCatchBooking;
+
+  /// Customer source created by a manager import.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported by your team'**
+  String get hostCustomersOriginHostImport;
+
+  /// Customer source created by explicit manual entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by your team'**
+  String get hostCustomersOriginHostManual;
+
+  /// Customer source created from verified web registration.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified web registration'**
+  String get hostCustomersOriginWebOtp;
+
+  /// Customer source created by a provider sync.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced from an event provider'**
+  String get hostCustomersOriginProviderSync;
+
+  /// Customer source created from a named Host form.
+  ///
+  /// In en, this message translates to:
+  /// **'{formTitle}'**
+  String hostCustomersOriginHostForm({required String formTitle});
+
+  /// Organizer suppression control distinct from participant permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause personal WhatsApp handoffs'**
+  String get hostCustomersPauseWhatsappHandoffs;
+
+  /// Legal distinction between organizer suppression and participant consent.
+  ///
+  /// In en, this message translates to:
+  /// **'This is your team’s suppression. It does not change the participant’s permission record.'**
+  String get hostCustomersPauseWhatsappHandoffsBody;
+
+  /// Newest-first cross-surface customer timeline heading.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get hostCustomersTimeline;
+
+  /// Empty cross-surface customer timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'No form, event, send, or reply history is available yet.'**
+  String get hostCustomersTimelineEmpty;
+
+  /// Partial or unavailable source coverage warning for the customer timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Some history may be missing'**
+  String get hostCustomersTimelinePartialTitle;
+
+  /// Explains bounded and incomplete timeline coverage.
+  ///
+  /// In en, this message translates to:
+  /// **'The available entries are shown newest first. Legacy or temporarily unavailable sources are not represented as complete.'**
+  String get hostCustomersTimelinePartialBody;
+
+  /// Unobservable personal WhatsApp reply boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch and managed WhatsApp messages can appear here. Replies in personal WhatsApp remain outside Catch and cannot be observed.'**
+  String get hostCustomersTimelineReplyBoundary;
+
+  /// Fallback title when the source form no longer has display metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Form response'**
+  String get hostCustomersTimelineFormFallback;
+
+  /// Form-submission timeline summary with ICU answer count.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted · {answerCount, plural, =0{no recorded answers} =1{1 answer} other{{answerCount} answers}} · {date}'**
+  String hostCustomersTimelineFormSubmitted({
+    required int answerCount,
+    required String date,
+  });
+
+  /// Form-withdrawal timeline summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Response withdrawn · {date}'**
+  String hostCustomersTimelineFormWithdrawn({required String date});
+
+  /// Event participation state in the customer timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'{status, select, invited{Invited} registered{Registered} waitlisted{Waitlisted} checkedIn{Checked in} cancelled{Cancelled} other{Event activity}}'**
+  String hostCustomersTimelineEventStatus({required String status});
+
+  /// Manual-send task title in the customer timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal WhatsApp handoff'**
+  String get hostCustomersTimelineManualHandoff;
+
+  /// Observed or explicitly asserted send state in the unified customer timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'{status, select, available{Activity available} pending{Pending} sending{Sending} suppressed{Suppressed} accepted{Accepted by provider} sent{Sent} delivered{Delivered} read{Read} failed{Failed} replied{Replied} optedOut{Opted out} queued{Waiting in Sends} handoffOpened{You opened WhatsApp} hostMarkedSent{You marked this sent} skipped{Skipped} cancelled{Cancelled} superseded{Superseded} expired{Expired} other{Status unavailable}}'**
+  String hostCustomersTimelineSendStatus({required String status});
+
+  /// Catch conversation message timeline title.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch message'**
+  String get hostCustomersTimelineCatchMessage;
+
+  /// Managed WhatsApp thread message timeline title.
+  ///
+  /// In en, this message translates to:
+  /// **'Managed WhatsApp message'**
+  String get hostCustomersTimelineManagedWhatsapp;
+
+  /// Direction and date for one observed conversation message.
+  ///
+  /// In en, this message translates to:
+  /// **'{direction, select, inbound{From customer} outbound{From your team} other{Message}} · {date}'**
+  String hostCustomersTimelineDirection({
+    required String direction,
+    required String date,
+  });
+
   /// Customer event history heading.
   ///
   /// In en, this message translates to:

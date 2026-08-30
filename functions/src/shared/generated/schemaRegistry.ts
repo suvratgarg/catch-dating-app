@@ -85698,7 +85698,7 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/get_organizer_contact_detail_response.schema.json",
   "title": "GetOrganizerContactDetailCallableResponse",
-  "description": "Manager-only contact facts and bounded event timeline. Private feedback and Event Success inputs are excluded.",
+  "description": "Manager-only contact facts, permission provenance, and a bounded cross-surface activity timeline. Private feedback and Event Success inputs are excluded.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -85714,10 +85714,16 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
     "identityConfidence",
     "ambiguousCandidateContactIds",
     "whatsappAdminSuppressed",
+    "whatsappPermission",
+    "origins",
+    "originsTruncated",
     "traits",
     "revenue",
     "events",
     "eventsTruncated",
+    "timeline",
+    "timelineTruncated",
+    "timelineCoverage",
     "activeMerges",
     "revision"
   ],
@@ -85799,6 +85805,201 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
       }
     },
     "whatsappAdminSuppressed": {
+      "type": "boolean"
+    },
+    "whatsappPermission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidenceStatus",
+        "receiptId",
+        "source",
+        "sourceFormId",
+        "sourceFormTitle",
+        "decisionAtMillis",
+        "identityStrength"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "unavailable",
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
+            "unsubscribeLink",
+            "inboundStop",
+            "providerWebhook",
+            "legacyIncomplete"
+          ]
+        },
+        "sourceFormId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceFormTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "decisionAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "identityStrength": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "unknown",
+            "emailVerified",
+            "phoneVerified",
+            "catchAccount"
+          ]
+        }
+      }
+    },
+    "origins": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "originId",
+          "sourceKind",
+          "sourceEntityKind",
+          "formId",
+          "formTitle",
+          "eventId",
+          "eventTitle",
+          "observedAtMillis"
+        ],
+        "properties": {
+          "originId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "sourceKind": {
+            "type": "string",
+            "enum": [
+              "catchBooking",
+              "hostImport",
+              "hostManual",
+              "webOtp",
+              "providerSync",
+              "hostForm"
+            ]
+          },
+          "sourceEntityKind": {
+            "type": "string",
+            "enum": [
+              "eventAttendee",
+              "manualEntry",
+              "hostFormResponse",
+              "providerRecord",
+              "importBatch",
+              "webRegistration"
+            ]
+          },
+          "formId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "formTitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "eventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "eventTitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "observedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "originsTruncated": {
       "type": "boolean"
     },
     "traits": {
@@ -86412,6 +86613,341 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
         "unavailable"
       ]
     },
+    "timeline": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "timelineId",
+              "responseId",
+              "formId",
+              "formTitle",
+              "action",
+              "answeredQuestionCount",
+              "occurredAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "form"
+              },
+              "timelineId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "responseId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "formId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "formTitle": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "submitted",
+                  "withdrawn"
+                ]
+              },
+              "answeredQuestionCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4000
+              },
+              "occurredAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "timelineId",
+              "eventId",
+              "eventName",
+              "status",
+              "checkedIn",
+              "eventOriginMode",
+              "eventProvider",
+              "occurredAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "event"
+              },
+              "timelineId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "eventName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "invited",
+                  "registered",
+                  "waitlisted",
+                  "checkedIn",
+                  "cancelled"
+                ]
+              },
+              "checkedIn": {
+                "type": "boolean"
+              },
+              "eventOriginMode": {
+                "type": "string",
+                "enum": [
+                  "catchNative",
+                  "externalCompanion",
+                  "unknown"
+                ]
+              },
+              "eventProvider": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "catch",
+                  "generic",
+                  "luma",
+                  "eventbrite",
+                  "partiful",
+                  "posh",
+                  "bookmyshow",
+                  "district",
+                  "sortmyscene",
+                  "airbnb",
+                  null
+                ]
+              },
+              "occurredAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "timelineId",
+              "sendKind",
+              "name",
+              "status",
+              "deliveryMode",
+              "observation",
+              "referenceId",
+              "occurredAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "send"
+              },
+              "timelineId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "sendKind": {
+                "type": "string",
+                "enum": [
+                  "campaign",
+                  "announcement",
+                  "manualHandoff"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "available",
+                  "pending",
+                  "sending",
+                  "suppressed",
+                  "accepted",
+                  "sent",
+                  "delivered",
+                  "read",
+                  "failed",
+                  "replied",
+                  "optedOut",
+                  "queued",
+                  "handoffOpened",
+                  "hostMarkedSent",
+                  "skipped",
+                  "cancelled",
+                  "superseded",
+                  "expired"
+                ]
+              },
+              "deliveryMode": {
+                "type": "string",
+                "enum": [
+                  "inCatch",
+                  "api",
+                  "byHand"
+                ]
+              },
+              "observation": {
+                "type": "string",
+                "enum": [
+                  "providerReceipt",
+                  "catchActivity",
+                  "hostOpened",
+                  "hostAssertion",
+                  "notSent"
+                ]
+              },
+              "referenceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "occurredAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "timelineId",
+              "transport",
+              "direction",
+              "bodyPreview",
+              "threadId",
+              "occurredAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "reply"
+              },
+              "timelineId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "transport": {
+                "type": "string",
+                "enum": [
+                  "catchChat",
+                  "managedWhatsapp"
+                ]
+              },
+              "direction": {
+                "type": "string",
+                "enum": [
+                  "inbound",
+                  "outbound"
+                ]
+              },
+              "bodyPreview": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "threadId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "occurredAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    "timelineTruncated": {
+      "type": "boolean"
+    },
+    "timelineCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "forms",
+        "events",
+        "sends",
+        "replies",
+        "replyObservation"
+      ],
+      "properties": {
+        "forms": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "events": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "sends": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "replies": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "replyObservation": {
+          "const": "catchAndManagedWhatsappOnly"
+        }
+      }
+    },
     "activeMerges": {
       "type": "array",
       "maxItems": 50,
@@ -86486,6 +87022,806 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
     }
   },
   "definitions": {
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidenceStatus",
+        "receiptId",
+        "source",
+        "sourceFormId",
+        "sourceFormTitle",
+        "decisionAtMillis",
+        "identityStrength"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "unavailable",
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
+            "unsubscribeLink",
+            "inboundStop",
+            "providerWebhook",
+            "legacyIncomplete"
+          ]
+        },
+        "sourceFormId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceFormTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "decisionAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "identityStrength": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "unknown",
+            "emailVerified",
+            "phoneVerified",
+            "catchAccount"
+          ]
+        }
+      }
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "originId",
+        "sourceKind",
+        "sourceEntityKind",
+        "formId",
+        "formTitle",
+        "eventId",
+        "eventTitle",
+        "observedAtMillis"
+      ],
+      "properties": {
+        "originId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "sourceKind": {
+          "type": "string",
+          "enum": [
+            "catchBooking",
+            "hostImport",
+            "hostManual",
+            "webOtp",
+            "providerSync",
+            "hostForm"
+          ]
+        },
+        "sourceEntityKind": {
+          "type": "string",
+          "enum": [
+            "eventAttendee",
+            "manualEntry",
+            "hostFormResponse",
+            "providerRecord",
+            "importBatch",
+            "webRegistration"
+          ]
+        },
+        "formId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "formTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "eventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eventTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "observedAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "timelineCoverageValue": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "partial",
+        "unavailable"
+      ]
+    },
+    "timelineCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "forms",
+        "events",
+        "sends",
+        "replies",
+        "replyObservation"
+      ],
+      "properties": {
+        "forms": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "events": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "sends": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "replies": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "replyObservation": {
+          "const": "catchAndManagedWhatsappOnly"
+        }
+      }
+    },
+    "timelineEntry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "timelineId",
+            "responseId",
+            "formId",
+            "formTitle",
+            "action",
+            "answeredQuestionCount",
+            "occurredAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "form"
+            },
+            "timelineId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "responseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "formId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "formTitle": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "submitted",
+                "withdrawn"
+              ]
+            },
+            "answeredQuestionCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4000
+            },
+            "occurredAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "timelineId",
+            "eventId",
+            "eventName",
+            "status",
+            "checkedIn",
+            "eventOriginMode",
+            "eventProvider",
+            "occurredAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "event"
+            },
+            "timelineId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "eventName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "invited",
+                "registered",
+                "waitlisted",
+                "checkedIn",
+                "cancelled"
+              ]
+            },
+            "checkedIn": {
+              "type": "boolean"
+            },
+            "eventOriginMode": {
+              "type": "string",
+              "enum": [
+                "catchNative",
+                "externalCompanion",
+                "unknown"
+              ]
+            },
+            "eventProvider": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "catch",
+                "generic",
+                "luma",
+                "eventbrite",
+                "partiful",
+                "posh",
+                "bookmyshow",
+                "district",
+                "sortmyscene",
+                "airbnb",
+                null
+              ]
+            },
+            "occurredAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "timelineId",
+            "sendKind",
+            "name",
+            "status",
+            "deliveryMode",
+            "observation",
+            "referenceId",
+            "occurredAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "send"
+            },
+            "timelineId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "sendKind": {
+              "type": "string",
+              "enum": [
+                "campaign",
+                "announcement",
+                "manualHandoff"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "available",
+                "pending",
+                "sending",
+                "suppressed",
+                "accepted",
+                "sent",
+                "delivered",
+                "read",
+                "failed",
+                "replied",
+                "optedOut",
+                "queued",
+                "handoffOpened",
+                "hostMarkedSent",
+                "skipped",
+                "cancelled",
+                "superseded",
+                "expired"
+              ]
+            },
+            "deliveryMode": {
+              "type": "string",
+              "enum": [
+                "inCatch",
+                "api",
+                "byHand"
+              ]
+            },
+            "observation": {
+              "type": "string",
+              "enum": [
+                "providerReceipt",
+                "catchActivity",
+                "hostOpened",
+                "hostAssertion",
+                "notSent"
+              ]
+            },
+            "referenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "occurredAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "timelineId",
+            "transport",
+            "direction",
+            "bodyPreview",
+            "threadId",
+            "occurredAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reply"
+            },
+            "timelineId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "transport": {
+              "type": "string",
+              "enum": [
+                "catchChat",
+                "managedWhatsapp"
+              ]
+            },
+            "direction": {
+              "type": "string",
+              "enum": [
+                "inbound",
+                "outbound"
+              ]
+            },
+            "bodyPreview": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "threadId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "occurredAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      ]
+    },
+    "formTimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timelineId",
+        "responseId",
+        "formId",
+        "formTitle",
+        "action",
+        "answeredQuestionCount",
+        "occurredAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "form"
+        },
+        "timelineId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "withdrawn"
+          ]
+        },
+        "answeredQuestionCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4000
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "eventTimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timelineId",
+        "eventId",
+        "eventName",
+        "status",
+        "checkedIn",
+        "eventOriginMode",
+        "eventProvider",
+        "occurredAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "event"
+        },
+        "timelineId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "invited",
+            "registered",
+            "waitlisted",
+            "checkedIn",
+            "cancelled"
+          ]
+        },
+        "checkedIn": {
+          "type": "boolean"
+        },
+        "eventOriginMode": {
+          "type": "string",
+          "enum": [
+            "catchNative",
+            "externalCompanion",
+            "unknown"
+          ]
+        },
+        "eventProvider": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "catch",
+            "generic",
+            "luma",
+            "eventbrite",
+            "partiful",
+            "posh",
+            "bookmyshow",
+            "district",
+            "sortmyscene",
+            "airbnb",
+            null
+          ]
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "sendTimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timelineId",
+        "sendKind",
+        "name",
+        "status",
+        "deliveryMode",
+        "observation",
+        "referenceId",
+        "occurredAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "send"
+        },
+        "timelineId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sendKind": {
+          "type": "string",
+          "enum": [
+            "campaign",
+            "announcement",
+            "manualHandoff"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "available",
+            "pending",
+            "sending",
+            "suppressed",
+            "accepted",
+            "sent",
+            "delivered",
+            "read",
+            "failed",
+            "replied",
+            "optedOut",
+            "queued",
+            "handoffOpened",
+            "hostMarkedSent",
+            "skipped",
+            "cancelled",
+            "superseded",
+            "expired"
+          ]
+        },
+        "deliveryMode": {
+          "type": "string",
+          "enum": [
+            "inCatch",
+            "api",
+            "byHand"
+          ]
+        },
+        "observation": {
+          "type": "string",
+          "enum": [
+            "providerReceipt",
+            "catchActivity",
+            "hostOpened",
+            "hostAssertion",
+            "notSent"
+          ]
+        },
+        "referenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "replyTimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timelineId",
+        "transport",
+        "direction",
+        "bodyPreview",
+        "threadId",
+        "occurredAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "reply"
+        },
+        "timelineId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "transport": {
+          "type": "string",
+          "enum": [
+            "catchChat",
+            "managedWhatsapp"
+          ]
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "inbound",
+            "outbound"
+          ]
+        },
+        "bodyPreview": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "threadId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
     "activeMerge": {
       "type": "object",
       "additionalProperties": false,
