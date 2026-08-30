@@ -37,6 +37,7 @@ class ChatsBrowseHeader extends StatefulWidget {
     required this.hostUnreadCount,
     required this.onHostFilterChanged,
     this.showHostSubtitle = true,
+    this.subtitle,
   });
 
   final ChatsBrowsePresentation presentation;
@@ -47,6 +48,7 @@ class ChatsBrowseHeader extends StatefulWidget {
   final int hostUnreadCount;
   final ValueChanged<HostInboxFilter>? onHostFilterChanged;
   final bool showHostSubtitle;
+  final String? subtitle;
 
   @override
   State<ChatsBrowseHeader> createState() => _ChatsBrowseHeaderState();
@@ -75,7 +77,9 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
         CatchScreenTopBar(
           context: context,
           title: isHostApp ? l10n.hostInboxTitle : l10n.consumerChatsTitle,
-          subtitle: hasHeaderSubtitle ? l10n.hostInboxSubtitle : null,
+          subtitle: hasHeaderSubtitle
+              ? widget.subtitle ?? l10n.hostInboxSubtitle
+              : null,
           leadingType: CatchTopBarLeading.none,
           applySafeArea: false,
           search: CatchTopBarSearch(

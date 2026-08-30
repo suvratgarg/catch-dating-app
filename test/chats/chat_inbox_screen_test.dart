@@ -811,7 +811,10 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
-    expect(find.text('Attendee queries'), findsOneWidget);
+    expect(
+      find.text('One-to-one conversations and replies.'),
+      findsOneWidget,
+    );
     expect(find.text('All'), findsOneWidget);
     expect(find.text('Unread · 1'), findsOneWidget);
     expect(find.text('Message 2 attendees'), findsNothing);
