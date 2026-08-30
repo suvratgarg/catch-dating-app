@@ -284,6 +284,10 @@ class _HostSavedAudienceEditorFormState
           predicates: predicates.cast<HostSavedAudiencePredicate>(),
         ),
       );
+      if (!mounted) return;
+      setState(() => _audience = saved);
+      ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
+      ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
       final preview = await controller.previewAudience(
         organizerId: widget.organizerId,
         audience: saved,
