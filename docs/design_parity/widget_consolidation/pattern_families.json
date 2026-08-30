@@ -545,24 +545,25 @@
     {
       "id": "host-broadcast-composer-namespace-collision",
       "title": "Host broadcast composer namespace collision",
-      "intent": "Resolve two public HostBroadcastComposerSheet classes that share one deterministic namespace while owning different workflows: a parameterless Chats inbox blast preview and an event-aware Host inbox broadcast mutation.",
+      "intent": "Resolve the former public HostBroadcastComposerSheet namespace collision and keep the event-aware Host broadcast workflow canonical after retiring the eventless Chats inbox blast.",
       "priority": "P0",
       "status": "implemented",
       "targetContract": "one canonical host broadcast workflow or two explicitly qualified compositions",
       "qualityReference": "HostBroadcastComposerSheet",
-      "decisionSource": "owner-approved:2026-07-19",
+      "decisionSource": "owner-approved:2026-08-30",
       "acceptedVisualDelta": [
-        "No workflow or visual behavior changes: the eventless Chats preview is extracted and renamed while the event-aware Hosts implementation keeps the canonical HostBroadcastComposerSheet name."
+        "The eventless Chats blast sheet is removed because Inbox is inbound-only; outbound audience work remains in Host Sends while the event-aware HostBroadcastComposerSheet stays canonical."
       ],
       "reviewQuestions": [
         {
           "id": "HBC1",
           "prompt": "Should the parameterless Chats blast sheet be replaced by the event-aware Host broadcast workflow, or remain a separately named composition?",
-          "recommendation": "Use the event-aware Host workflow as the canonical broadcast composer; if Chats must retain eventless blasts, rename that composition to ChatBlastComposerSheet so the workflow boundary is explicit.",
-          "selectedOption": "Canonicalize the Host workflow and explicitly rename any retained eventless Chats composition.",
+          "recommendation": "Use the event-aware Host workflow as the canonical broadcast composer; retire the eventless Chats blast once Host Sends owns outbound audience work.",
+          "selectedOption": "Retire the eventless Chats blast; keep Inbox inbound-only and use Host Sends for outbound work.",
           "options": [
             "Canonicalize the Host workflow and explicitly rename any retained eventless Chats composition.",
-            "Keep both public classes with the same HostBroadcastComposerSheet name in separate libraries."
+            "Keep both public classes with the same HostBroadcastComposerSheet name in separate libraries.",
+            "Retire the eventless Chats blast; keep Inbox inbound-only and use Host Sends for outbound work."
           ]
         }
       ],
@@ -575,9 +576,9 @@
         },
         {
           "symbol": "ChatBlastComposerSheet",
-          "disposition": "register",
-          "preview": "required",
-          "rationale": "The eventless Chats review surface remains a distinct composition with a name that states its narrower workflow boundary."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "The eventless Chats review surface was retired when Inbox became inbound-only; durable outbound audience work is owned by Host Sends."
         }
       ]
     },
