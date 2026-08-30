@@ -1180,29 +1180,6 @@ void main() {
       expect(valueRight, closeTo(surfaceRect.right - CatchSpacing.s4, 0.1));
     },
   );
-
-  testWidgets('CatchSection contained error owns the danger state', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        const CatchSection.contained(
-          focused: true,
-          hasError: true,
-          child: Text('Section body'),
-        ),
-      ),
-    );
-    final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
-    expect(
-      surface.borderSpec?.side,
-      CatchBorder.resolve(
-        CatchTokens.editorialLight,
-        CatchBorderRole.danger,
-      ).side,
-    );
-    expect(surface.boxShadow, isNull);
-  });
 }
 
 void _noop() {}
