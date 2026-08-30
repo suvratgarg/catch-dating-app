@@ -705,7 +705,7 @@ void _registerHostOperationsCustomersTests() {
     expect(requests.last.sort, HostCustomerSort.mostAttended);
   });
 
-  testWidgets('all customers opens a truthful WhatsApp-ready campaign', (
+  testWidgets('all customers opens Messaging without claiming an audience', (
     tester,
   ) async {
     final club = buildClub(id: 'messaging-club', ownerUserId: _hostUid);
@@ -726,7 +726,7 @@ void _registerHostOperationsCustomersTests() {
     await tester.tap(find.text('Open messaging'));
     await pumpFeatureUi(tester);
 
-    expect(find.text('Messaging campaigns whatsapp_reachable'), findsOneWidget);
+    expect(find.text('Messaging campaigns null'), findsOneWidget);
   });
 
   testWidgets('customer search shows clear only while input is non-empty', (
