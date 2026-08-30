@@ -635,6 +635,33 @@
       ]
     },
     {
+      "id": "organizerManualSendTasks",
+      "path": "organizerManualSendTasks/{taskId}",
+      "rulesMatch": "/organizerManualSendTasks/{taskId}",
+      "typescriptInterface": "OrganizerManualSendTaskDocument",
+      "dartModel": "lib/hosts/data/host_crm_repository.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps invite secrets, touches, share intents, and attribution server-only"
+      ],
+      "owner": "manager-only organizer manual-send task callables",
+      "read": "server only; managers receive bounded callable projections",
+      "write": "server only with deterministic idempotency and optimistic revisions",
+      "exportedFunctions": [
+        "prepareOrganizerManualSendTask",
+        "listOrganizerManualSendTasks",
+        "validateOrganizerManualSendTaskLaunch",
+        "openOrganizerManualSendTask",
+        "markOrganizerManualSendTask",
+        "replanOrganizerManualSendTasks"
+      ],
+      "migrationNotes": [
+        "Prepare persists a bounded 30-day external-handoff task before the first client launch; every later launch is revision-bound and revalidates current endpoint and permission immediately before opening the external app.",
+        "handoffOpened is device acceptance only and hostMarkedSent is an explicit organizer assertion; neither is provider delivery or read evidence.",
+        "Re-plan is read-only and never dispatches, completes, removes, or supersedes task state."
+      ]
+    },
+    {
       "id": "organizerForms",
       "path": "organizerForms/{formId}",
       "rulesMatch": "/organizerForms/{formId}",

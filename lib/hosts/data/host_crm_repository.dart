@@ -48,6 +48,8 @@ enum HostCommunicationRouteBlocker {
   permissionRequired,
   senderUnavailable,
   intentUnsupported,
+  contactUnavailable,
+  endpointChanged,
 }
 
 class HostCommunicationRouteOption {
@@ -2203,6 +2205,178 @@ class HostSendsPage {
   final String? nextCursor;
 }
 
+enum HostManualSendTaskStatus {
+  queued,
+  handoffOpened,
+  hostMarkedSent,
+  skipped,
+  cancelled,
+  superseded,
+  expired,
+}
+
+enum HostManualSendTaskAction { hostMarkedSent, skipped, cancelled }
+
+enum HostManualSendTaskDisposition {
+  keepByHand,
+  managedRouteAvailable,
+  unavailable,
+  taskInactive,
+}
+
+class HostManualSendTask {
+  const HostManualSendTask({
+    required this.organizerId,
+    required this.taskId,
+    required this.contactId,
+    required this.displayName,
+    required this.status,
+    required this.active,
+    required this.revision,
+    required this.phoneE164,
+    required this.prefillText,
+    required this.openCount,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.openedAt,
+    required this.expiresAt,
+  });
+
+  factory HostManualSendTask.fromCallableData(Object? data) =>
+      HostManualSendTask.fromMap(_requiredMap(data, 'manual send task'));
+
+  factory HostManualSendTask.fromMap(Map<Object?, Object?> map) {
+    if (_requiredString(map, 'routeId') != 'personalWhatsappHandoff' ||
+        _requiredString(map, 'deliveryMode') != 'byHand') {
+      throw const FormatException('Manual task had an unsafe route.');
+    }
+    return HostManualSendTask(
+      organizerId: _requiredString(map, 'organizerId'),
+      taskId: _requiredString(map, 'taskId'),
+      contactId: _requiredString(map, 'contactId'),
+      displayName: _requiredString(map, 'displayName'),
+      status: _enumByName(
+        HostManualSendTaskStatus.values,
+        _requiredString(map, 'status'),
+        'manual send task status',
+      ),
+      active: _requiredBool(map, 'active'),
+      revision: _requiredInt(map, 'revision'),
+      phoneE164: _requiredString(map, 'phoneE164'),
+      prefillText: _requiredString(map, 'prefillText'),
+      openCount: _requiredInt(map, 'openCount'),
+      createdAt: _requiredDateTimeFromMillis(map, 'createdAtMillis'),
+      updatedAt: _requiredDateTimeFromMillis(map, 'updatedAtMillis'),
+      openedAt: _dateTimeFromMillis(map['openedAtMillis']),
+      expiresAt: _requiredDateTimeFromMillis(map, 'expiresAtMillis'),
+    );
+  }
+
+  final String organizerId;
+  final String taskId;
+  final String contactId;
+  final String displayName;
+  final HostManualSendTaskStatus status;
+  final bool active;
+  final int revision;
+  final String phoneE164;
+  final String prefillText;
+  final int openCount;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? openedAt;
+  final DateTime expiresAt;
+}
+
+class HostManualSendTaskPage {
+  const HostManualSendTaskPage({
+    required this.organizerId,
+    required this.tasks,
+    required this.nextCursor,
+  });
+
+  factory HostManualSendTaskPage.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'manual send task page');
+    return HostManualSendTaskPage(
+      organizerId: _requiredString(map, 'organizerId'),
+      tasks: _mapList(
+        map['tasks'],
+        'manual send tasks',
+      ).map(HostManualSendTask.fromMap).toList(growable: false),
+      nextCursor: _nullableString(map['nextCursor']),
+    );
+  }
+
+  final String organizerId;
+  final List<HostManualSendTask> tasks;
+  final String? nextCursor;
+}
+
+class HostManualSendTaskReplanResult {
+  const HostManualSendTaskReplanResult({
+    required this.taskId,
+    required this.contactId,
+    required this.disposition,
+    required this.recommendedRouteId,
+    required this.blocker,
+  });
+
+  factory HostManualSendTaskReplanResult.fromMap(Map<Object?, Object?> map) =>
+      HostManualSendTaskReplanResult(
+        taskId: _requiredString(map, 'taskId'),
+        contactId: _requiredString(map, 'contactId'),
+        disposition: _enumByName(
+          HostManualSendTaskDisposition.values,
+          _requiredString(map, 'disposition'),
+          'manual task disposition',
+        ),
+        recommendedRouteId: _nullableString(map['recommendedRouteId']) == null
+            ? null
+            : _enumByName(
+                HostCommunicationRouteId.values,
+                _requiredString(map, 'recommendedRouteId'),
+                'manual task recommended route',
+              ),
+        blocker: _nullableString(map['blocker']) == null
+            ? null
+            : _enumByName(
+                HostCommunicationRouteBlocker.values,
+                _requiredString(map, 'blocker'),
+                'manual task blocker',
+              ),
+      );
+
+  final String taskId;
+  final String contactId;
+  final HostManualSendTaskDisposition disposition;
+  final HostCommunicationRouteId? recommendedRouteId;
+  final HostCommunicationRouteBlocker? blocker;
+}
+
+class HostManualSendTaskReplan {
+  const HostManualSendTaskReplan({
+    required this.organizerId,
+    required this.results,
+    required this.resolvedAt,
+  });
+
+  factory HostManualSendTaskReplan.fromCallableData(Object? data) {
+    final map = _requiredMap(data, 'manual send task replan');
+    return HostManualSendTaskReplan(
+      organizerId: _requiredString(map, 'organizerId'),
+      results: _mapList(
+        map['results'],
+        'manual task replan results',
+      ).map(HostManualSendTaskReplanResult.fromMap).toList(growable: false),
+      resolvedAt: _requiredDateTimeFromMillis(map, 'resolvedAtMillis'),
+    );
+  }
+
+  final String organizerId;
+  final List<HostManualSendTaskReplanResult> results;
+  final DateTime resolvedAt;
+}
+
 class HostCrmRepository {
   const HostCrmRepository(this._functions);
 
@@ -2648,6 +2822,95 @@ class HostCrmRepository {
         HostSavedAudience.fromMap(_requiredMap(value, 'saved audience')),
   );
 
+  Future<HostManualSendTask> prepareManualSendTask({
+    required String organizerId,
+    required String contactId,
+    required String requestId,
+    required String prefillText,
+  }) => _call(
+    name: 'prepareOrganizerManualSendTask',
+    payload: {
+      'organizerId': organizerId,
+      'contactId': contactId,
+      'requestId': requestId,
+      'intent': 'individualConversation',
+      'prefillText': prefillText,
+    },
+    action: 'prepare manual WhatsApp handoff',
+    parse: HostManualSendTask.fromCallableData,
+  );
+
+  Future<HostManualSendTaskPage> listManualSendTasks({
+    required String organizerId,
+    bool activeOnly = true,
+    String? cursor,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => _call(
+    name: 'listOrganizerManualSendTasks',
+    payload: ListOrganizerManualSendTasksCallableRequest(
+      organizerId: organizerId,
+      activeOnly: activeOnly,
+      limit: limit > 50 ? 50 : limit,
+      cursor: cursor,
+    ).toJson(),
+    action: 'load manual send tasks',
+    parse: HostManualSendTaskPage.fromCallableData,
+  );
+
+  Future<HostManualSendTask> recordManualHandoffOpened(
+    HostManualSendTask task,
+  ) => _call(
+    name: 'openOrganizerManualSendTask',
+    payload: OpenOrganizerManualSendTaskCallableRequest(
+      organizerId: task.organizerId,
+      taskId: task.taskId,
+      expectedRevision: task.revision,
+    ).toJson(),
+    action: 'record manual handoff open',
+    parse: HostManualSendTask.fromCallableData,
+  );
+
+  Future<HostManualSendTask> validateManualSendTaskLaunch(
+    HostManualSendTask task,
+  ) => _call(
+    name: 'validateOrganizerManualSendTaskLaunch',
+    payload: ValidateOrganizerManualSendTaskLaunchCallableRequest(
+      organizerId: task.organizerId,
+      taskId: task.taskId,
+      expectedRevision: task.revision,
+    ).toJson(),
+    action: 'validate manual handoff launch',
+    parse: HostManualSendTask.fromCallableData,
+  );
+
+  Future<HostManualSendTask> markManualSendTask(
+    HostManualSendTask task,
+    HostManualSendTaskAction action,
+  ) => _call(
+    name: 'markOrganizerManualSendTask',
+    payload: MarkOrganizerManualSendTaskCallableRequest(
+      organizerId: task.organizerId,
+      taskId: task.taskId,
+      expectedRevision: task.revision,
+      action: action.name,
+    ).toJson(),
+    action: 'mark manual send task ${action.name}',
+    parse: HostManualSendTask.fromCallableData,
+  );
+
+  Future<HostManualSendTaskReplan> replanManualSendTasks({
+    required String organizerId,
+    required List<String> taskIds,
+  }) => _call(
+    name: 'replanOrganizerManualSendTasks',
+    payload: ReplanOrganizerManualSendTasksCallableRequest(
+      organizerId: organizerId,
+      taskIds: taskIds,
+    ).toJson(),
+    action: 'recheck manual send task routes',
+    parse: HostManualSendTaskReplan.fromCallableData,
+  );
+
   Future<HostCampaign> upsertCampaign(
     String organizerId,
     HostCampaignDraft draft,
@@ -2825,6 +3088,14 @@ Future<HostSavedAudiencePage> hostSavedAudiences(Ref ref, String organizerId) =>
 @riverpod
 Future<HostSendsPage> hostSends(Ref ref, String organizerId) =>
     ref.read(hostCrmRepositoryProvider).listCampaigns(organizerId);
+
+@riverpod
+Future<HostManualSendTaskPage> hostManualSendTasks(
+  Ref ref,
+  String organizerId,
+) => ref
+    .read(hostCrmRepositoryProvider)
+    .listManualSendTasks(organizerId: organizerId);
 
 @riverpod
 Future<HostWhatsappThreadPage> hostWhatsappThreads(

@@ -14694,6 +14694,428 @@ export const organizerSavedAudienceDocumentSchema = {
   }
 };
 
+export const organizerManualSendTaskDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_manual_send_tasks.schema.json",
+  "title": "OrganizerManualSendTaskDocument",
+  "description": "One durable host-performed external handoff. Catch may record preparation, external-app acceptance, and explicit host assertions, but never delivery or read state.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerManualSendTasks",
+  "x-firestore-path": "organizerManualSendTasks/{taskId}",
+  "x-document-id-field": "taskId",
+  "x-owner": "manager-only organizer manual-send callables",
+  "required": [
+    "organizerId",
+    "taskId",
+    "contactId",
+    "sourceKind",
+    "sourceId",
+    "intent",
+    "routeId",
+    "deliveryMode",
+    "status",
+    "active",
+    "revision",
+    "idempotencyKey",
+    "requestHash",
+    "displayNameSnapshot",
+    "endpointE164Snapshot",
+    "endpointHash",
+    "permissionSnapshot",
+    "capabilitySnapshot",
+    "prefillText",
+    "prefillHash",
+    "openCount",
+    "createdByUid",
+    "updatedByUid",
+    "createdAt",
+    "updatedAt",
+    "openedAt",
+    "hostMarkedSentAt",
+    "skippedAt",
+    "cancelledAt",
+    "supersededAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceKind": {
+      "type": "string",
+      "enum": [
+        "individualConversation",
+        "campaignRecipient"
+      ]
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "individualConversation",
+        "savedAudienceCampaign"
+      ]
+    },
+    "routeId": {
+      "const": "personalWhatsappHandoff"
+    },
+    "deliveryMode": {
+      "const": "byHand"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "handoffOpened",
+        "hostMarkedSent",
+        "skipped",
+        "cancelled",
+        "superseded",
+        "expired"
+      ]
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "displayNameSnapshot": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "endpointE164Snapshot": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "permissionSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "whatsappStatus",
+        "adminSuppressed",
+        "recordedAt"
+      ],
+      "properties": {
+        "whatsappStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn"
+          ]
+        },
+        "adminSuppressed": {
+          "const": false
+        },
+        "recordedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        }
+      }
+    },
+    "capabilitySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "managedRouteAvailable"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "managedRouteAvailable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "prefillText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "prefillHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "openCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "openedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "hostMarkedSentAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "skippedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cancelledAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "supersededAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "definitions": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "handoffOpened",
+        "hostMarkedSent",
+        "skipped",
+        "cancelled",
+        "superseded",
+        "expired"
+      ]
+    }
+  }
+};
+
 export const organizerContactIdentityLinkDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_contact_identity_links.schema.json",
@@ -60400,6 +60822,587 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
       }
     },
     "evaluatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
+export const prepareOrganizerManualSendTaskCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_organizer_manual_send_task_payload.schema.json",
+  "title": "PrepareOrganizerManualSendTaskCallablePayload",
+  "description": "Persists one queued individual external handoff before the client attempts to open the external application.",
+  "x-callable-aliases": [
+    "prepareOrganizerManualSendTask"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "requestId",
+    "intent",
+    "prefillText"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "intent": {
+      "const": "individualConversation"
+    },
+    "prefillText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
+export const listOrganizerManualSendTasksCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_manual_send_tasks_payload.schema.json",
+  "title": "ListOrganizerManualSendTasksCallablePayload",
+  "description": "Lists a bounded organizer manual-send queue or history page.",
+  "x-callable-aliases": [
+    "listOrganizerManualSendTasks"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "activeOnly": {
+      "type": "boolean",
+      "default": true
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "default": 25
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
+export const openOrganizerManualSendTaskCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/open_organizer_manual_send_task_payload.schema.json",
+  "title": "OpenOrganizerManualSendTaskCallablePayload",
+  "description": "Revision-bound acknowledgement that the device accepted the external handoff.",
+  "x-callable-aliases": [
+    "openOrganizerManualSendTask"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "taskId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const validateOrganizerManualSendTaskLaunchCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/validate_organizer_manual_send_task_launch_payload.schema.json",
+  "title": "ValidateOrganizerManualSendTaskLaunchCallablePayload",
+  "description": "Revision-bound, read-only authority check immediately before re-opening an external handoff.",
+  "x-callable-aliases": [
+    "validateOrganizerManualSendTaskLaunch"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "taskId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const markOrganizerManualSendTaskCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/mark_organizer_manual_send_task_payload.schema.json",
+  "title": "MarkOrganizerManualSendTaskCallablePayload",
+  "description": "Revision-bound explicit terminal host action for one manual-send task.",
+  "x-callable-aliases": [
+    "markOrganizerManualSendTask"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "taskId",
+    "expectedRevision",
+    "action"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "hostMarkedSent",
+        "skipped",
+        "cancelled"
+      ]
+    }
+  }
+};
+
+export const replanOrganizerManualSendTasksCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/replan_organizer_manual_send_tasks_payload.schema.json",
+  "title": "ReplanOrganizerManualSendTasksCallablePayload",
+  "description": "Explicitly rechecks current communication routes for active manual work without mutating, dispatching, or completing it.",
+  "x-callable-aliases": [
+    "replanOrganizerManualSendTasks"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "taskIds"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    }
+  }
+};
+
+export const organizerManualSendTaskCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_manual_send_task_response.schema.json",
+  "title": "OrganizerManualSendTaskCallableResponse",
+  "description": "Manager-visible manual handoff task. Handoff-opened and host-marked-sent are assertions, never delivery receipts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "taskId",
+    "contactId",
+    "displayName",
+    "intent",
+    "routeId",
+    "deliveryMode",
+    "status",
+    "active",
+    "revision",
+    "phoneE164",
+    "prefillText",
+    "openCount",
+    "createdAtMillis",
+    "updatedAtMillis",
+    "openedAtMillis",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "individualConversation",
+        "savedAudienceCampaign"
+      ]
+    },
+    "routeId": {
+      "const": "personalWhatsappHandoff"
+    },
+    "deliveryMode": {
+      "const": "byHand"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "handoffOpened",
+        "hostMarkedSent",
+        "skipped",
+        "cancelled",
+        "superseded",
+        "expired"
+      ]
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "phoneE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{7,14}$"
+    },
+    "prefillText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "openCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "openedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
+export const listOrganizerManualSendTasksCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_manual_send_tasks_response.schema.json",
+  "title": "ListOrganizerManualSendTasksCallableResponse",
+  "description": "Bounded manual-send queue or history page.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "tasks",
+    "nextCursor"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "tasks": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "title": "OrganizerManualSendTaskCallableResponse",
+        "description": "Manager-visible manual handoff task. Handoff-opened and host-marked-sent are assertions, never delivery receipts.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "taskId",
+          "contactId",
+          "displayName",
+          "intent",
+          "routeId",
+          "deliveryMode",
+          "status",
+          "active",
+          "revision",
+          "phoneE164",
+          "prefillText",
+          "openCount",
+          "createdAtMillis",
+          "updatedAtMillis",
+          "openedAtMillis",
+          "expiresAtMillis"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "taskId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "intent": {
+            "type": "string",
+            "enum": [
+              "individualConversation",
+              "savedAudienceCampaign"
+            ]
+          },
+          "routeId": {
+            "const": "personalWhatsappHandoff"
+          },
+          "deliveryMode": {
+            "const": "byHand"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "handoffOpened",
+              "hostMarkedSent",
+              "skipped",
+              "cancelled",
+              "superseded",
+              "expired"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "phoneE164": {
+            "type": "string",
+            "pattern": "^\\+[1-9][0-9]{7,14}$"
+          },
+          "prefillText": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "openCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "openedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
+export const replanOrganizerManualSendTasksCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/replan_organizer_manual_send_tasks_response.schema.json",
+  "title": "ReplanOrganizerManualSendTasksCallableResponse",
+  "description": "Current route advice for manual tasks. Returning this response never mutates or completes a task.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "results",
+    "resolvedAtMillis"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "taskId",
+          "contactId",
+          "disposition",
+          "recommendedRouteId",
+          "blocker"
+        ],
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "keepByHand",
+              "managedRouteAvailable",
+              "unavailable",
+              "taskInactive"
+            ]
+          },
+          "recommendedRouteId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "catchChat",
+              "personalWhatsappHandoff",
+              null
+            ]
+          },
+          "blocker": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "catchAccountRequired",
+              "identityAmbiguous",
+              "missingPhone",
+              "organizerSuppressed",
+              "contactOptedOut",
+              "contactUnavailable",
+              "endpointChanged",
+              null
+            ]
+          }
+        }
+      }
+    },
+    "resolvedAtMillis": {
       "type": "integer",
       "minimum": 0
     }

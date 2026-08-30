@@ -20902,6 +20902,168 @@ abstract class AppLocalizations {
   /// **'Load more'**
   String get hostSendsLoadMore;
 
+  /// Sends-owned queue of external handoffs that require the host’s final action.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs your send'**
+  String get hostManualSendQueueTitle;
+
+  /// Manual-send queue observability and ownership boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch keeps the editable draft with this task for up to 30 days and can open it in WhatsApp, but only you can press Send. Opening WhatsApp is not a delivery receipt.'**
+  String get hostManualSendQueueDisclosure;
+
+  /// Manual-send queue loading state.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking manual sends'**
+  String get hostManualSendQueueLoading;
+
+  /// Explicitly rechecks current routes without changing manual work.
+  ///
+  /// In en, this message translates to:
+  /// **'Check options'**
+  String get hostManualSendQueueReplan;
+
+  /// One manual-send task title.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to {name}'**
+  String hostManualSendTaskTitle({required String name});
+
+  /// Manual-send task instruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish this handoff in WhatsApp, then tell Catch what you chose.'**
+  String get hostManualSendTaskSubtitle;
+
+  /// Manual-send task evidence boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch keeps this editable draft for up to 30 days and records that WhatsApp opened plus any status you explicitly choose here. It cannot verify that the message was sent, delivered, or read.'**
+  String get hostManualSendTaskDisclosure;
+
+  /// Opens the persisted external handoff again.
+  ///
+  /// In en, this message translates to:
+  /// **'Open WhatsApp'**
+  String get hostManualSendTaskOpenWhatsapp;
+
+  /// Explicit host assertion after opening a manual handoff; not a provider receipt.
+  ///
+  /// In en, this message translates to:
+  /// **'I sent this'**
+  String get hostManualSendTaskMarkSent;
+
+  /// Explicitly closes manual work without claiming a send.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip this send'**
+  String get hostManualSendTaskSkip;
+
+  /// Explains the manual task skip consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes this task without recording a sent assertion.'**
+  String get hostManualSendTaskSkipBody;
+
+  /// Queued manual task state.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting'**
+  String get hostManualSendTaskQueued;
+
+  /// Queued manual task explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp has not been opened for this task yet.'**
+  String get hostManualSendTaskQueuedBody;
+
+  /// External app accepted the handoff; not a sent state.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp opened'**
+  String get hostManualSendTaskOpened;
+
+  /// Opened manual task observability boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Not confirmed sent. Catch cannot observe the final action in WhatsApp.'**
+  String get hostManualSendTaskOpenedBody;
+
+  /// Historical host assertion state, not provider delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Host marked sent'**
+  String get hostManualSendTaskHostMarkedSent;
+
+  /// Skipped manual task state.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get hostManualSendTaskSkipped;
+
+  /// Cancelled manual task state.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get hostManualSendTaskCancelled;
+
+  /// Explicitly superseded manual task state.
+  ///
+  /// In en, this message translates to:
+  /// **'Superseded'**
+  String get hostManualSendTaskSuperseded;
+
+  /// Expired manual task state.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get hostManualSendTaskExpired;
+
+  /// Manual-task route replan result title.
+  ///
+  /// In en, this message translates to:
+  /// **'Current delivery options'**
+  String get hostManualSendReplanTitle;
+
+  /// Replan non-mutation boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'This check does not send, complete, or remove any task.'**
+  String get hostManualSendReplanSubtitle;
+
+  /// Managed-route advisory without auto-draining manual work.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch chat is now available. This manual task remains open until you finish or skip it.'**
+  String get hostManualSendReplanManagedAvailable;
+
+  /// Manual route remains the current option.
+  ///
+  /// In en, this message translates to:
+  /// **'This still needs your final send in WhatsApp.'**
+  String get hostManualSendReplanKeepByHand;
+
+  /// Unavailable replan result without silently clearing work.
+  ///
+  /// In en, this message translates to:
+  /// **'The route is currently unavailable. The task remains open so you can resolve or skip it.'**
+  String get hostManualSendReplanUnavailable;
+
+  /// Stale external endpoint advisory without launching or mutating a task.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer’s phone number changed. Skip this task and start a fresh handoff from Customers.'**
+  String get hostManualSendReplanEndpointChanged;
+
+  /// Inactive task replan result.
+  ///
+  /// In en, this message translates to:
+  /// **'This task is no longer active.'**
+  String get hostManualSendReplanInactive;
+
   /// Empty Sends history title.
   ///
   /// In en, this message translates to:
@@ -21735,6 +21897,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open WhatsApp on this device.'**
   String get hostCustomersWhatsappOpenFailed;
+
+  /// Failure after the external app accepted a handoff but the durable acknowledgement failed.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp opened, but Catch couldn’t record it. The task is still waiting in Sends.'**
+  String get hostCustomersWhatsappRecordFailed;
 
   /// Unlinked customer messaging boundary.
   ///

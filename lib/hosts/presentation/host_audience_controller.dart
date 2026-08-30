@@ -134,6 +134,45 @@ class HostAudienceController {
     String? cursor,
   }) => _repository.listCampaigns(organizerId, cursor: cursor);
 
+  Future<HostManualSendTask> prepareManualSendTask({
+    required String organizerId,
+    required String contactId,
+    required String requestId,
+    required String prefillText,
+  }) => _repository.prepareManualSendTask(
+    organizerId: organizerId,
+    contactId: contactId,
+    requestId: requestId,
+    prefillText: prefillText,
+  );
+
+  Future<HostManualSendTask> recordManualHandoffOpened(
+    HostManualSendTask task,
+  ) => _repository.recordManualHandoffOpened(task);
+
+  Future<HostManualSendTask> validateManualSendTaskLaunch(
+    HostManualSendTask task,
+  ) => _repository.validateManualSendTaskLaunch(task);
+
+  Future<HostManualSendTask> markManualSendTask(
+    HostManualSendTask task,
+    HostManualSendTaskAction action,
+  ) => _repository.markManualSendTask(task, action);
+
+  Future<HostManualSendTaskReplan> replanManualSendTasks({
+    required String organizerId,
+    required List<String> taskIds,
+  }) => _repository.replanManualSendTasks(
+    organizerId: organizerId,
+    taskIds: taskIds,
+  );
+
+  Future<HostManualSendTaskPage> listManualSendTasks({
+    required String organizerId,
+    String? cursor,
+  }) =>
+      _repository.listManualSendTasks(organizerId: organizerId, cursor: cursor);
+
   Future<HostWhatsappThreadDetail> getWhatsappThread({
     required String organizerId,
     required String threadId,

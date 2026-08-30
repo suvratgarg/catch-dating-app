@@ -13390,6 +13390,100 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSendsLoadMore => 'Load more';
 
   @override
+  String get hostManualSendQueueTitle => 'Needs your send';
+
+  @override
+  String get hostManualSendQueueDisclosure =>
+      'Catch keeps the editable draft with this task for up to 30 days and can open it in WhatsApp, but only you can press Send. Opening WhatsApp is not a delivery receipt.';
+
+  @override
+  String get hostManualSendQueueLoading => 'Checking manual sends';
+
+  @override
+  String get hostManualSendQueueReplan => 'Check options';
+
+  @override
+  String hostManualSendTaskTitle({required String name}) {
+    return 'Send to $name';
+  }
+
+  @override
+  String get hostManualSendTaskSubtitle =>
+      'Finish this handoff in WhatsApp, then tell Catch what you chose.';
+
+  @override
+  String get hostManualSendTaskDisclosure =>
+      'Catch keeps this editable draft for up to 30 days and records that WhatsApp opened plus any status you explicitly choose here. It cannot verify that the message was sent, delivered, or read.';
+
+  @override
+  String get hostManualSendTaskOpenWhatsapp => 'Open WhatsApp';
+
+  @override
+  String get hostManualSendTaskMarkSent => 'I sent this';
+
+  @override
+  String get hostManualSendTaskSkip => 'Skip this send';
+
+  @override
+  String get hostManualSendTaskSkipBody =>
+      'Closes this task without recording a sent assertion.';
+
+  @override
+  String get hostManualSendTaskQueued => 'Waiting';
+
+  @override
+  String get hostManualSendTaskQueuedBody =>
+      'WhatsApp has not been opened for this task yet.';
+
+  @override
+  String get hostManualSendTaskOpened => 'WhatsApp opened';
+
+  @override
+  String get hostManualSendTaskOpenedBody =>
+      'Not confirmed sent. Catch cannot observe the final action in WhatsApp.';
+
+  @override
+  String get hostManualSendTaskHostMarkedSent => 'Host marked sent';
+
+  @override
+  String get hostManualSendTaskSkipped => 'Skipped';
+
+  @override
+  String get hostManualSendTaskCancelled => 'Cancelled';
+
+  @override
+  String get hostManualSendTaskSuperseded => 'Superseded';
+
+  @override
+  String get hostManualSendTaskExpired => 'Expired';
+
+  @override
+  String get hostManualSendReplanTitle => 'Current delivery options';
+
+  @override
+  String get hostManualSendReplanSubtitle =>
+      'This check does not send, complete, or remove any task.';
+
+  @override
+  String get hostManualSendReplanManagedAvailable =>
+      'Catch chat is now available. This manual task remains open until you finish or skip it.';
+
+  @override
+  String get hostManualSendReplanKeepByHand =>
+      'This still needs your final send in WhatsApp.';
+
+  @override
+  String get hostManualSendReplanUnavailable =>
+      'The route is currently unavailable. The task remains open so you can resolve or skip it.';
+
+  @override
+  String get hostManualSendReplanEndpointChanged =>
+      'This customer’s phone number changed. Skip this task and start a fresh handoff from Customers.';
+
+  @override
+  String get hostManualSendReplanInactive => 'This task is no longer active.';
+
+  @override
   String get hostSendsEmpty => 'No messages sent yet.';
 
   @override
@@ -13923,6 +14017,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostCustomersWhatsappOpenFailed =>
       'Could not open WhatsApp on this device.';
+
+  @override
+  String get hostCustomersWhatsappRecordFailed =>
+      'WhatsApp opened, but Catch couldn’t record it. The task is still waiting in Sends.';
 
   @override
   String get hostCustomersConversationUnlinked =>

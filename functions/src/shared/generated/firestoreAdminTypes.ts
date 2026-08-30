@@ -1914,6 +1914,57 @@ export interface OrganizerSavedAudienceDocument {
 }
 
 /**
+ * One durable host-performed external handoff. Catch may record preparation, external-app acceptance, and explicit host assertions, but never delivery or read state.
+ */
+export interface OrganizerManualSendTaskDocument {
+  organizerId: string;
+  taskId: string;
+  contactId: string;
+  sourceKind: "individualConversation" | "campaignRecipient";
+  sourceId: string;
+  intent: "individualConversation" | "savedAudienceCampaign";
+  routeId: "personalWhatsappHandoff";
+  deliveryMode: "byHand";
+  status:
+    | "queued"
+    | "handoffOpened"
+    | "hostMarkedSent"
+    | "skipped"
+    | "cancelled"
+    | "superseded"
+    | "expired";
+  active: boolean;
+  revision: number;
+  idempotencyKey: string;
+  requestHash: string;
+  displayNameSnapshot: string;
+  endpointE164Snapshot: string;
+  endpointHash: string;
+  permissionSnapshot: {
+    whatsappStatus: "unknown" | "optedIn";
+    adminSuppressed: false;
+    recordedAt: FirebaseFirestore.Timestamp;
+  };
+  capabilitySnapshot: {
+    version: number;
+    managedRouteAvailable: boolean;
+  };
+  prefillText: string;
+  prefillHash: string;
+  openCount: number;
+  createdByUid: string;
+  updatedByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  openedAt: FirebaseFirestore.Timestamp | null;
+  hostMarkedSentAt: FirebaseFirestore.Timestamp | null;
+  skippedAt: FirebaseFirestore.Timestamp | null;
+  cancelledAt: FirebaseFirestore.Timestamp | null;
+  supersededAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-only identity evidence edge used for keyed candidate lookup. Hashes are restricted identifiers, not anonymous data.
  */
 export interface OrganizerContactIdentityLinkDocument {

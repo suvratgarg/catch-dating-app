@@ -37,6 +37,7 @@ import {OrganizerContactOriginDocument} from "./organizerContactOriginDocument";
 import {OrganizerContactNoteDocument} from "./organizerContactNoteDocument";
 import {OrganizerContactTagVocabularyDocument} from "./organizerContactTagVocabularyDocument";
 import {OrganizerSavedAudienceDocument} from "./organizerSavedAudienceDocument";
+import {OrganizerManualSendTaskDocument} from "./organizerManualSendTaskDocument";
 import {OrganizerContactIdentityLinkDocument} from "./organizerContactIdentityLinkDocument";
 import {OrganizerContactIdentityClaimDocument} from "./organizerContactIdentityClaimDocument";
 import {OrganizerContactEventEdgeDocument} from "./organizerContactEventEdgeDocument";
@@ -252,6 +253,15 @@ import {ArchiveOrganizerSavedAudienceCallablePayload} from "./archiveOrganizerSa
 import {OrganizerSavedAudienceCallableResponse} from "./organizerSavedAudienceCallableResponse";
 import {ListOrganizerSavedAudiencesCallableResponse} from "./listOrganizerSavedAudiencesCallableResponse";
 import {PreviewOrganizerSavedAudienceCallableResponse} from "./previewOrganizerSavedAudienceCallableResponse";
+import {PrepareOrganizerManualSendTaskCallablePayload} from "./prepareOrganizerManualSendTaskCallablePayload";
+import {ListOrganizerManualSendTasksCallablePayload} from "./listOrganizerManualSendTasksCallablePayload";
+import {OpenOrganizerManualSendTaskCallablePayload} from "./openOrganizerManualSendTaskCallablePayload";
+import {ValidateOrganizerManualSendTaskLaunchCallablePayload} from "./validateOrganizerManualSendTaskLaunchCallablePayload";
+import {MarkOrganizerManualSendTaskCallablePayload} from "./markOrganizerManualSendTaskCallablePayload";
+import {ReplanOrganizerManualSendTasksCallablePayload} from "./replanOrganizerManualSendTasksCallablePayload";
+import {OrganizerManualSendTaskCallableResponse} from "./organizerManualSendTaskCallableResponse";
+import {ListOrganizerManualSendTasksCallableResponse} from "./listOrganizerManualSendTasksCallableResponse";
+import {ReplanOrganizerManualSendTasksCallableResponse} from "./replanOrganizerManualSendTasksCallableResponse";
 import {OrganizerCampaignActionCallablePayload} from "./organizerCampaignActionCallablePayload";
 import {CompleteOrganizerWhatsappConnectionCallablePayload} from "./completeOrganizerWhatsappConnectionCallablePayload";
 import {OrganizerSenderConnectionActionCallablePayload} from "./organizerSenderConnectionActionCallablePayload";
@@ -548,6 +558,7 @@ import {
   organizerContactNoteDocumentSchema,
   organizerContactTagVocabularyDocumentSchema,
   organizerSavedAudienceDocumentSchema,
+  organizerManualSendTaskDocumentSchema,
   organizerContactIdentityLinkDocumentSchema,
   organizerContactIdentityClaimDocumentSchema,
   organizerContactEventEdgeDocumentSchema,
@@ -763,6 +774,15 @@ import {
   organizerSavedAudienceCallableResponseSchema,
   listOrganizerSavedAudiencesCallableResponseSchema,
   previewOrganizerSavedAudienceCallableResponseSchema,
+  prepareOrganizerManualSendTaskCallablePayloadSchema,
+  listOrganizerManualSendTasksCallablePayloadSchema,
+  openOrganizerManualSendTaskCallablePayloadSchema,
+  validateOrganizerManualSendTaskLaunchCallablePayloadSchema,
+  markOrganizerManualSendTaskCallablePayloadSchema,
+  replanOrganizerManualSendTasksCallablePayloadSchema,
+  organizerManualSendTaskCallableResponseSchema,
+  listOrganizerManualSendTasksCallableResponseSchema,
+  replanOrganizerManualSendTasksCallableResponseSchema,
   organizerCampaignActionCallablePayloadSchema,
   completeOrganizerWhatsappConnectionCallablePayloadSchema,
   organizerSenderConnectionActionCallablePayloadSchema,
@@ -1110,6 +1130,8 @@ export const validateOrganizerContactTagVocabularyDocument =
   lazyValidator<OrganizerContactTagVocabularyDocument>(organizerContactTagVocabularyDocumentSchema);
 export const validateOrganizerSavedAudienceDocument =
   lazyValidator<OrganizerSavedAudienceDocument>(organizerSavedAudienceDocumentSchema);
+export const validateOrganizerManualSendTaskDocument =
+  lazyValidator<OrganizerManualSendTaskDocument>(organizerManualSendTaskDocumentSchema);
 export const validateOrganizerContactIdentityLinkDocument =
   lazyValidator<OrganizerContactIdentityLinkDocument>(organizerContactIdentityLinkDocumentSchema);
 export const validateOrganizerContactIdentityClaimDocument =
@@ -1540,6 +1562,24 @@ export const validateListOrganizerSavedAudiencesCallableResponse =
   lazyValidator<ListOrganizerSavedAudiencesCallableResponse>(listOrganizerSavedAudiencesCallableResponseSchema);
 export const validatePreviewOrganizerSavedAudienceCallableResponse =
   lazyValidator<PreviewOrganizerSavedAudienceCallableResponse>(previewOrganizerSavedAudienceCallableResponseSchema);
+export const validatePrepareOrganizerManualSendTaskCallablePayload =
+  lazyValidator<PrepareOrganizerManualSendTaskCallablePayload>(prepareOrganizerManualSendTaskCallablePayloadSchema);
+export const validateListOrganizerManualSendTasksCallablePayload =
+  lazyValidator<ListOrganizerManualSendTasksCallablePayload>(listOrganizerManualSendTasksCallablePayloadSchema);
+export const validateOpenOrganizerManualSendTaskCallablePayload =
+  lazyValidator<OpenOrganizerManualSendTaskCallablePayload>(openOrganizerManualSendTaskCallablePayloadSchema);
+export const validateValidateOrganizerManualSendTaskLaunchCallablePayload =
+  lazyValidator<ValidateOrganizerManualSendTaskLaunchCallablePayload>(validateOrganizerManualSendTaskLaunchCallablePayloadSchema);
+export const validateMarkOrganizerManualSendTaskCallablePayload =
+  lazyValidator<MarkOrganizerManualSendTaskCallablePayload>(markOrganizerManualSendTaskCallablePayloadSchema);
+export const validateReplanOrganizerManualSendTasksCallablePayload =
+  lazyValidator<ReplanOrganizerManualSendTasksCallablePayload>(replanOrganizerManualSendTasksCallablePayloadSchema);
+export const validateOrganizerManualSendTaskCallableResponse =
+  lazyValidator<OrganizerManualSendTaskCallableResponse>(organizerManualSendTaskCallableResponseSchema);
+export const validateListOrganizerManualSendTasksCallableResponse =
+  lazyValidator<ListOrganizerManualSendTasksCallableResponse>(listOrganizerManualSendTasksCallableResponseSchema);
+export const validateReplanOrganizerManualSendTasksCallableResponse =
+  lazyValidator<ReplanOrganizerManualSendTasksCallableResponse>(replanOrganizerManualSendTasksCallableResponseSchema);
 export const validateOrganizerCampaignActionCallablePayload =
   lazyValidator<OrganizerCampaignActionCallablePayload>(organizerCampaignActionCallablePayloadSchema);
 export const validateCompleteOrganizerWhatsappConnectionCallablePayload =

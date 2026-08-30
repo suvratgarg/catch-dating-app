@@ -25,6 +25,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -393,6 +394,8 @@ class _HostWhatsappHandoffSheet extends ConsumerStatefulWidget {
 class _HostWhatsappHandoffSheetState
     extends ConsumerState<_HostWhatsappHandoffSheet> {
   TextEditingController? _messageController;
+  late final String _requestId =
+      'handoff_${DateTime.now().microsecondsSinceEpoch}_${widget.customer.contactId}';
   bool _opening = false;
 
   TextEditingController get _message => _messageController!;
@@ -451,8 +454,8 @@ class _HostWhatsappHandoffSheetState
               maxLength: 1000,
               textCapitalization: TextCapitalization.sentences,
               contractExemption:
-                  'Editable handoff copy is sent only to the external '
-                  'WhatsApp app and is never persisted by Catch.',
+                  'Editable handoff copy is persisted only in the bounded '
+                  'TTL manual-send task, then passed to the external app.',
               enabled: !_opening,
               onChanged: (_) => setState(() {}),
             ),
@@ -466,11 +469,19 @@ class _HostWhatsappHandoffSheetState
     if (_opening) return;
     setState(() => _opening = true);
     try {
+      final controller = ref.read(hostAudienceControllerProvider);
+      final task = await controller.prepareManualSendTask(
+        organizerId: widget.customer.organizerId,
+        contactId: widget.customer.contactId,
+        requestId: _requestId,
+        prefillText: _message.text,
+      );
+      ref.invalidate(hostManualSendTasksProvider(widget.customer.organizerId));
       final opened = await ref
           .read(externalLinkControllerProvider)
           .openWhatsappHandoff(
-            phoneE164: widget.customer.phoneE164!,
-            message: _message.text,
+            phoneE164: task.phoneE164,
+            message: task.prefillText,
           );
       if (!opened) {
         if (!mounted) return;
@@ -478,6 +489,19 @@ class _HostWhatsappHandoffSheetState
           context.l10n.hostCustomersWhatsappOpenFailed,
         );
       }
+      try {
+        await controller.recordManualHandoffOpened(task);
+      } on Object {
+        if (!mounted) return;
+        showCatchErrorSnackBar(
+          context,
+          ExternalActionException(
+            context.l10n.hostCustomersWhatsappRecordFailed,
+          ),
+          errorContext: AppErrorContext.customer,
+        );
+      }
+      ref.invalidate(hostManualSendTasksProvider(widget.customer.organizerId));
       if (mounted) Navigator.of(context).pop();
     } on Object catch (error) {
       if (mounted) {

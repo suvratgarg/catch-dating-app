@@ -32041,6 +32041,176 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const listOrganizerManualSendTasksCallablePayloadActiveOnly = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallablePayload.activeOnly',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerManualSendTasksCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallablePayload.cursor',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallablePayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 50,
+  );
+
+  static const listOrganizerManualSendTasksCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.nextCursor',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasks = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsActive = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsContactId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsDeliveryMode = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.deliveryMode',
+    required: true,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsDisplayName = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsIntent = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.intent',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation', 'savedAudienceCampaign'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsOpenCount = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.openCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsOpenedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.openedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsPhoneE164 = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.phoneE164',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsPrefillText = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.prefillText',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsRouteId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.routeId',
+    required: true,
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['queued', 'handoffOpened', 'hostMarkedSent', 'skipped', 'cancelled', 'superseded', 'expired'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsTaskId = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.taskId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerManualSendTasksCallableResponseTasksItemsUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerManualSendTasksCallableResponse.tasks.items.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const listOrganizerSavedAudiencesCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'listOrganizerSavedAudiencesCallablePayload.cursor',
     maxLength: 1000,
@@ -32670,6 +32840,37 @@ abstract final class CatchContractConstraints {
 
   static const markNotificationReadClientWritePathUid = CatchContractFieldConstraints(
     path: 'markNotificationReadClientWrite.path.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const markOrganizerManualSendTaskCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'markOrganizerManualSendTaskCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostMarkedSent', 'skipped', 'cancelled'],
+  );
+
+  static const markOrganizerManualSendTaskCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'markOrganizerManualSendTaskCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const markOrganizerManualSendTaskCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'markOrganizerManualSendTaskCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const markOrganizerManualSendTaskCallablePayloadTaskId = CatchContractFieldConstraints(
+    path: 'markOrganizerManualSendTaskCallablePayload.taskId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -33519,6 +33720,30 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
+  );
+
+  static const openOrganizerManualSendTaskCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'openOrganizerManualSendTaskCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const openOrganizerManualSendTaskCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'openOrganizerManualSendTaskCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const openOrganizerManualSendTaskCallablePayloadTaskId = CatchContractFieldConstraints(
+    path: 'openOrganizerManualSendTaskCallablePayload.taskId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const operationRunBudgetsDeadlineAt = CatchContractFieldConstraints(
@@ -44557,6 +44782,431 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerManualSendTaskCallableResponseActive = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerManualSendTaskCallableResponseContactId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskCallableResponseCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerManualSendTaskCallableResponseDeliveryMode = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.deliveryMode',
+    required: true,
+  );
+
+  static const organizerManualSendTaskCallableResponseDisplayName = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerManualSendTaskCallableResponseIntent = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.intent',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation', 'savedAudienceCampaign'],
+  );
+
+  static const organizerManualSendTaskCallableResponseOpenCount = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.openCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const organizerManualSendTaskCallableResponseOpenedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.openedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerManualSendTaskCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskCallableResponsePhoneE164 = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.phoneE164',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const organizerManualSendTaskCallableResponsePrefillText = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.prefillText',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerManualSendTaskCallableResponseRouteId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.routeId',
+    required: true,
+  );
+
+  static const organizerManualSendTaskCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['queued', 'handoffOpened', 'hostMarkedSent', 'skipped', 'cancelled', 'superseded', 'expired'],
+  );
+
+  static const organizerManualSendTaskCallableResponseTaskId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.taskId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskCallableResponseUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskCallableResponse.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerManualSendTaskDocumentActive = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerManualSendTaskDocumentCancelledAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.cancelledAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentCancelledAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.cancelledAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentCapabilitySnapshotManagedRouteAvailable = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.capabilitySnapshot.managedRouteAvailable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerManualSendTaskDocumentCapabilitySnapshotVersion = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.capabilitySnapshot.version',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const organizerManualSendTaskDocumentContactId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentCreatedByUid = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.createdByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentDeliveryMode = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.deliveryMode',
+    required: true,
+  );
+
+  static const organizerManualSendTaskDocumentDisplayNameSnapshot = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.displayNameSnapshot',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentEndpointE164Snapshot = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.endpointE164Snapshot',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const organizerManualSendTaskDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerManualSendTaskDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentHostMarkedSentAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.hostMarkedSentAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentHostMarkedSentAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.hostMarkedSentAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentIdempotencyKey = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.idempotencyKey',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentIntent = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.intent',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation', 'savedAudienceCampaign'],
+  );
+
+  static const organizerManualSendTaskDocumentOpenCount = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.openCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const organizerManualSendTaskDocumentOpenedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.openedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentOpenedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.openedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentPermissionSnapshotAdminSuppressed = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.permissionSnapshot.adminSuppressed',
+    required: true,
+  );
+
+  static const organizerManualSendTaskDocumentPermissionSnapshotRecordedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.permissionSnapshot.recordedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentPermissionSnapshotRecordedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.permissionSnapshot.recordedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentPermissionSnapshotWhatsappStatus = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.permissionSnapshot.whatsappStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn'],
+  );
+
+  static const organizerManualSendTaskDocumentPrefillHash = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.prefillHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerManualSendTaskDocumentPrefillText = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.prefillText',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerManualSendTaskDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerManualSendTaskDocumentRouteId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.routeId',
+    required: true,
+  );
+
+  static const organizerManualSendTaskDocumentSkippedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.skippedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentSkippedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.skippedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentSourceId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.sourceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentSourceKind = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.sourceKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individualConversation', 'campaignRecipient'],
+  );
+
+  static const organizerManualSendTaskDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['queued', 'handoffOpened', 'hostMarkedSent', 'skipped', 'cancelled', 'superseded', 'expired'],
+  );
+
+  static const organizerManualSendTaskDocumentSupersededAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.supersededAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentSupersededAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.supersededAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentTaskId = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.taskId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerManualSendTaskDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerManualSendTaskDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerManualSendTaskDocumentUpdatedByUid = CatchContractFieldConstraints(
+    path: 'organizerManualSendTaskDocument.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerMessageTemplateDocumentButtonKinds = CatchContractFieldConstraints(
     path: 'organizerMessageTemplateDocument.buttonKinds',
     required: true,
@@ -47925,6 +48575,44 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const prepareOrganizerManualSendTaskCallablePayloadContactId = CatchContractFieldConstraints(
+    path: 'prepareOrganizerManualSendTaskCallablePayload.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const prepareOrganizerManualSendTaskCallablePayloadIntent = CatchContractFieldConstraints(
+    path: 'prepareOrganizerManualSendTaskCallablePayload.intent',
+    required: true,
+  );
+
+  static const prepareOrganizerManualSendTaskCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'prepareOrganizerManualSendTaskCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const prepareOrganizerManualSendTaskCallablePayloadPrefillText = CatchContractFieldConstraints(
+    path: 'prepareOrganizerManualSendTaskCallablePayload.prefillText',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const prepareOrganizerManualSendTaskCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'prepareOrganizerManualSendTaskCallablePayload.requestId',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9._:-]+\$',
+  );
+
   static const previewOrganizerApplicationImportCallablePayloadFormVersionId = CatchContractFieldConstraints(
     path: 'previewOrganizerApplicationImportCallablePayload.formVersionId',
     maxLength: 180,
@@ -50245,6 +50933,91 @@ abstract final class CatchContractConstraints {
 
   static const removeOrganizerManagerCallablePayloadUid = CatchContractFieldConstraints(
     path: 'removeOrganizerManagerCallablePayload.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const replanOrganizerManualSendTasksCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const replanOrganizerManualSendTasksCallablePayloadTaskIds = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallablePayload.taskIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const replanOrganizerManualSendTasksCallablePayloadTaskIdsItems = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallablePayload.taskIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResults = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 50,
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResultsItemsBlocker = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results.items.blocker',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchAccountRequired', 'identityAmbiguous', 'missingPhone', 'organizerSuppressed', 'contactOptedOut', 'contactUnavailable', 'endpointChanged'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResultsItemsContactId = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results.items.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResultsItemsDisposition = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results.items.disposition',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['keepByHand', 'managedRouteAvailable', 'unavailable', 'taskInactive'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResultsItemsRecommendedRouteId = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results.items.recommendedRouteId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchChat', 'personalWhatsappHandoff'],
+  );
+
+  static const replanOrganizerManualSendTasksCallableResponseResultsItemsTaskId = CatchContractFieldConstraints(
+    path: 'replanOrganizerManualSendTasksCallableResponse.results.items.taskId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -58863,6 +59636,30 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const validateOrganizerManualSendTaskLaunchCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'validateOrganizerManualSendTaskLaunchCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const validateOrganizerManualSendTaskLaunchCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'validateOrganizerManualSendTaskLaunchCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerManualSendTaskLaunchCallablePayloadTaskId = CatchContractFieldConstraints(
+    path: 'validateOrganizerManualSendTaskLaunchCallablePayload.taskId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const verifyRazorpayPaymentCallablePayloadOrderId = CatchContractFieldConstraints(
     path: 'verifyRazorpayPaymentCallablePayload.orderId',
     maxLength: 180,
@@ -64306,6 +65103,30 @@ abstract final class CatchContractConstraints {
     'listOrganizerLumaEventsCallableResponse.events.items.name': listOrganizerLumaEventsCallableResponseEventsItemsName,
     'listOrganizerLumaEventsCallableResponse.events.items.startAtMillis': listOrganizerLumaEventsCallableResponseEventsItemsStartAtMillis,
     'listOrganizerLumaEventsCallableResponse.truncated': listOrganizerLumaEventsCallableResponseTruncated,
+    'listOrganizerManualSendTasksCallablePayload.activeOnly': listOrganizerManualSendTasksCallablePayloadActiveOnly,
+    'listOrganizerManualSendTasksCallablePayload.cursor': listOrganizerManualSendTasksCallablePayloadCursor,
+    'listOrganizerManualSendTasksCallablePayload.limit': listOrganizerManualSendTasksCallablePayloadLimit,
+    'listOrganizerManualSendTasksCallablePayload.organizerId': listOrganizerManualSendTasksCallablePayloadOrganizerId,
+    'listOrganizerManualSendTasksCallableResponse.nextCursor': listOrganizerManualSendTasksCallableResponseNextCursor,
+    'listOrganizerManualSendTasksCallableResponse.organizerId': listOrganizerManualSendTasksCallableResponseOrganizerId,
+    'listOrganizerManualSendTasksCallableResponse.tasks': listOrganizerManualSendTasksCallableResponseTasks,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.active': listOrganizerManualSendTasksCallableResponseTasksItemsActive,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.contactId': listOrganizerManualSendTasksCallableResponseTasksItemsContactId,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.createdAtMillis': listOrganizerManualSendTasksCallableResponseTasksItemsCreatedAtMillis,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.deliveryMode': listOrganizerManualSendTasksCallableResponseTasksItemsDeliveryMode,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.displayName': listOrganizerManualSendTasksCallableResponseTasksItemsDisplayName,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.expiresAtMillis': listOrganizerManualSendTasksCallableResponseTasksItemsExpiresAtMillis,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.intent': listOrganizerManualSendTasksCallableResponseTasksItemsIntent,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.openCount': listOrganizerManualSendTasksCallableResponseTasksItemsOpenCount,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.openedAtMillis': listOrganizerManualSendTasksCallableResponseTasksItemsOpenedAtMillis,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.organizerId': listOrganizerManualSendTasksCallableResponseTasksItemsOrganizerId,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.phoneE164': listOrganizerManualSendTasksCallableResponseTasksItemsPhoneE164,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.prefillText': listOrganizerManualSendTasksCallableResponseTasksItemsPrefillText,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.revision': listOrganizerManualSendTasksCallableResponseTasksItemsRevision,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.routeId': listOrganizerManualSendTasksCallableResponseTasksItemsRouteId,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.status': listOrganizerManualSendTasksCallableResponseTasksItemsStatus,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.taskId': listOrganizerManualSendTasksCallableResponseTasksItemsTaskId,
+    'listOrganizerManualSendTasksCallableResponse.tasks.items.updatedAtMillis': listOrganizerManualSendTasksCallableResponseTasksItemsUpdatedAtMillis,
     'listOrganizerSavedAudiencesCallablePayload.cursor': listOrganizerSavedAudiencesCallablePayloadCursor,
     'listOrganizerSavedAudiencesCallablePayload.limit': listOrganizerSavedAudiencesCallablePayloadLimit,
     'listOrganizerSavedAudiencesCallablePayload.organizerId': listOrganizerSavedAudiencesCallablePayloadOrganizerId,
@@ -64395,6 +65216,10 @@ abstract final class CatchContractConstraints {
     'markNotificationReadClientWrite.data.readAt._seconds': markNotificationReadClientWriteDataReadAtSeconds,
     'markNotificationReadClientWrite.path.notificationId': markNotificationReadClientWritePathNotificationId,
     'markNotificationReadClientWrite.path.uid': markNotificationReadClientWritePathUid,
+    'markOrganizerManualSendTaskCallablePayload.action': markOrganizerManualSendTaskCallablePayloadAction,
+    'markOrganizerManualSendTaskCallablePayload.expectedRevision': markOrganizerManualSendTaskCallablePayloadExpectedRevision,
+    'markOrganizerManualSendTaskCallablePayload.organizerId': markOrganizerManualSendTaskCallablePayloadOrganizerId,
+    'markOrganizerManualSendTaskCallablePayload.taskId': markOrganizerManualSendTaskCallablePayloadTaskId,
     'matchDocument.blockedAt._nanoseconds': matchDocumentBlockedAtNanoseconds,
     'matchDocument.blockedAt._seconds': matchDocumentBlockedAtSeconds,
     'matchDocument.blockedBy': matchDocumentBlockedBy,
@@ -64514,6 +65339,9 @@ abstract final class CatchContractConstraints {
     'onboardingDraftDocument.profilePrompts.items.prompt': onboardingDraftDocumentProfilePromptsItemsPrompt,
     'onboardingDraftDocument.profilePrompts.items.promptId': onboardingDraftDocumentProfilePromptsItemsPromptId,
     'onboardingDraftDocument.step': onboardingDraftDocumentStep,
+    'openOrganizerManualSendTaskCallablePayload.expectedRevision': openOrganizerManualSendTaskCallablePayloadExpectedRevision,
+    'openOrganizerManualSendTaskCallablePayload.organizerId': openOrganizerManualSendTaskCallablePayloadOrganizerId,
+    'openOrganizerManualSendTaskCallablePayload.taskId': openOrganizerManualSendTaskCallablePayloadTaskId,
     'operationRun.budgets.deadlineAt': operationRunBudgetsDeadlineAt,
     'operationRun.budgets.maxCostMicros': operationRunBudgetsMaxCostMicros,
     'operationRun.budgets.maxModelCalls': operationRunBudgetsMaxModelCalls,
@@ -66035,6 +66863,66 @@ abstract final class CatchContractConstraints {
     'organizerIntakeReviewDecisionDocument.schemaVersion': organizerIntakeReviewDecisionDocumentSchemaVersion,
     'organizerIntakeReviewDecisionDocument.updatedAt._nanoseconds': organizerIntakeReviewDecisionDocumentUpdatedAtNanoseconds,
     'organizerIntakeReviewDecisionDocument.updatedAt._seconds': organizerIntakeReviewDecisionDocumentUpdatedAtSeconds,
+    'organizerManualSendTaskCallableResponse.active': organizerManualSendTaskCallableResponseActive,
+    'organizerManualSendTaskCallableResponse.contactId': organizerManualSendTaskCallableResponseContactId,
+    'organizerManualSendTaskCallableResponse.createdAtMillis': organizerManualSendTaskCallableResponseCreatedAtMillis,
+    'organizerManualSendTaskCallableResponse.deliveryMode': organizerManualSendTaskCallableResponseDeliveryMode,
+    'organizerManualSendTaskCallableResponse.displayName': organizerManualSendTaskCallableResponseDisplayName,
+    'organizerManualSendTaskCallableResponse.expiresAtMillis': organizerManualSendTaskCallableResponseExpiresAtMillis,
+    'organizerManualSendTaskCallableResponse.intent': organizerManualSendTaskCallableResponseIntent,
+    'organizerManualSendTaskCallableResponse.openCount': organizerManualSendTaskCallableResponseOpenCount,
+    'organizerManualSendTaskCallableResponse.openedAtMillis': organizerManualSendTaskCallableResponseOpenedAtMillis,
+    'organizerManualSendTaskCallableResponse.organizerId': organizerManualSendTaskCallableResponseOrganizerId,
+    'organizerManualSendTaskCallableResponse.phoneE164': organizerManualSendTaskCallableResponsePhoneE164,
+    'organizerManualSendTaskCallableResponse.prefillText': organizerManualSendTaskCallableResponsePrefillText,
+    'organizerManualSendTaskCallableResponse.revision': organizerManualSendTaskCallableResponseRevision,
+    'organizerManualSendTaskCallableResponse.routeId': organizerManualSendTaskCallableResponseRouteId,
+    'organizerManualSendTaskCallableResponse.status': organizerManualSendTaskCallableResponseStatus,
+    'organizerManualSendTaskCallableResponse.taskId': organizerManualSendTaskCallableResponseTaskId,
+    'organizerManualSendTaskCallableResponse.updatedAtMillis': organizerManualSendTaskCallableResponseUpdatedAtMillis,
+    'organizerManualSendTaskDocument.active': organizerManualSendTaskDocumentActive,
+    'organizerManualSendTaskDocument.cancelledAt._nanoseconds': organizerManualSendTaskDocumentCancelledAtNanoseconds,
+    'organizerManualSendTaskDocument.cancelledAt._seconds': organizerManualSendTaskDocumentCancelledAtSeconds,
+    'organizerManualSendTaskDocument.capabilitySnapshot.managedRouteAvailable': organizerManualSendTaskDocumentCapabilitySnapshotManagedRouteAvailable,
+    'organizerManualSendTaskDocument.capabilitySnapshot.version': organizerManualSendTaskDocumentCapabilitySnapshotVersion,
+    'organizerManualSendTaskDocument.contactId': organizerManualSendTaskDocumentContactId,
+    'organizerManualSendTaskDocument.createdAt._nanoseconds': organizerManualSendTaskDocumentCreatedAtNanoseconds,
+    'organizerManualSendTaskDocument.createdAt._seconds': organizerManualSendTaskDocumentCreatedAtSeconds,
+    'organizerManualSendTaskDocument.createdByUid': organizerManualSendTaskDocumentCreatedByUid,
+    'organizerManualSendTaskDocument.deliveryMode': organizerManualSendTaskDocumentDeliveryMode,
+    'organizerManualSendTaskDocument.displayNameSnapshot': organizerManualSendTaskDocumentDisplayNameSnapshot,
+    'organizerManualSendTaskDocument.endpointE164Snapshot': organizerManualSendTaskDocumentEndpointE164Snapshot,
+    'organizerManualSendTaskDocument.endpointHash': organizerManualSendTaskDocumentEndpointHash,
+    'organizerManualSendTaskDocument.expiresAt._nanoseconds': organizerManualSendTaskDocumentExpiresAtNanoseconds,
+    'organizerManualSendTaskDocument.expiresAt._seconds': organizerManualSendTaskDocumentExpiresAtSeconds,
+    'organizerManualSendTaskDocument.hostMarkedSentAt._nanoseconds': organizerManualSendTaskDocumentHostMarkedSentAtNanoseconds,
+    'organizerManualSendTaskDocument.hostMarkedSentAt._seconds': organizerManualSendTaskDocumentHostMarkedSentAtSeconds,
+    'organizerManualSendTaskDocument.idempotencyKey': organizerManualSendTaskDocumentIdempotencyKey,
+    'organizerManualSendTaskDocument.intent': organizerManualSendTaskDocumentIntent,
+    'organizerManualSendTaskDocument.openCount': organizerManualSendTaskDocumentOpenCount,
+    'organizerManualSendTaskDocument.openedAt._nanoseconds': organizerManualSendTaskDocumentOpenedAtNanoseconds,
+    'organizerManualSendTaskDocument.openedAt._seconds': organizerManualSendTaskDocumentOpenedAtSeconds,
+    'organizerManualSendTaskDocument.organizerId': organizerManualSendTaskDocumentOrganizerId,
+    'organizerManualSendTaskDocument.permissionSnapshot.adminSuppressed': organizerManualSendTaskDocumentPermissionSnapshotAdminSuppressed,
+    'organizerManualSendTaskDocument.permissionSnapshot.recordedAt._nanoseconds': organizerManualSendTaskDocumentPermissionSnapshotRecordedAtNanoseconds,
+    'organizerManualSendTaskDocument.permissionSnapshot.recordedAt._seconds': organizerManualSendTaskDocumentPermissionSnapshotRecordedAtSeconds,
+    'organizerManualSendTaskDocument.permissionSnapshot.whatsappStatus': organizerManualSendTaskDocumentPermissionSnapshotWhatsappStatus,
+    'organizerManualSendTaskDocument.prefillHash': organizerManualSendTaskDocumentPrefillHash,
+    'organizerManualSendTaskDocument.prefillText': organizerManualSendTaskDocumentPrefillText,
+    'organizerManualSendTaskDocument.requestHash': organizerManualSendTaskDocumentRequestHash,
+    'organizerManualSendTaskDocument.revision': organizerManualSendTaskDocumentRevision,
+    'organizerManualSendTaskDocument.routeId': organizerManualSendTaskDocumentRouteId,
+    'organizerManualSendTaskDocument.skippedAt._nanoseconds': organizerManualSendTaskDocumentSkippedAtNanoseconds,
+    'organizerManualSendTaskDocument.skippedAt._seconds': organizerManualSendTaskDocumentSkippedAtSeconds,
+    'organizerManualSendTaskDocument.sourceId': organizerManualSendTaskDocumentSourceId,
+    'organizerManualSendTaskDocument.sourceKind': organizerManualSendTaskDocumentSourceKind,
+    'organizerManualSendTaskDocument.status': organizerManualSendTaskDocumentStatus,
+    'organizerManualSendTaskDocument.supersededAt._nanoseconds': organizerManualSendTaskDocumentSupersededAtNanoseconds,
+    'organizerManualSendTaskDocument.supersededAt._seconds': organizerManualSendTaskDocumentSupersededAtSeconds,
+    'organizerManualSendTaskDocument.taskId': organizerManualSendTaskDocumentTaskId,
+    'organizerManualSendTaskDocument.updatedAt._nanoseconds': organizerManualSendTaskDocumentUpdatedAtNanoseconds,
+    'organizerManualSendTaskDocument.updatedAt._seconds': organizerManualSendTaskDocumentUpdatedAtSeconds,
+    'organizerManualSendTaskDocument.updatedByUid': organizerManualSendTaskDocumentUpdatedByUid,
     'organizerMessageTemplateDocument.buttonKinds': organizerMessageTemplateDocumentButtonKinds,
     'organizerMessageTemplateDocument.buttonKinds.items': organizerMessageTemplateDocumentButtonKindsItems,
     'organizerMessageTemplateDocument.category': organizerMessageTemplateDocumentCategory,
@@ -66514,6 +67402,11 @@ abstract final class CatchContractConstraints {
     'placesAutocompleteCallableResponse.predictions.items.secondaryText': placesAutocompleteCallableResponsePredictionsItemsSecondaryText,
     'prepareEventSuccessRotationDraftCallablePayload.eventId': prepareEventSuccessRotationDraftCallablePayloadEventId,
     'prepareEventSuccessRotationDraftCallablePayload.expectedRevision': prepareEventSuccessRotationDraftCallablePayloadExpectedRevision,
+    'prepareOrganizerManualSendTaskCallablePayload.contactId': prepareOrganizerManualSendTaskCallablePayloadContactId,
+    'prepareOrganizerManualSendTaskCallablePayload.intent': prepareOrganizerManualSendTaskCallablePayloadIntent,
+    'prepareOrganizerManualSendTaskCallablePayload.organizerId': prepareOrganizerManualSendTaskCallablePayloadOrganizerId,
+    'prepareOrganizerManualSendTaskCallablePayload.prefillText': prepareOrganizerManualSendTaskCallablePayloadPrefillText,
+    'prepareOrganizerManualSendTaskCallablePayload.requestId': prepareOrganizerManualSendTaskCallablePayloadRequestId,
     'previewOrganizerApplicationImportCallablePayload.formVersionId': previewOrganizerApplicationImportCallablePayloadFormVersionId,
     'previewOrganizerApplicationImportCallablePayload.headers': previewOrganizerApplicationImportCallablePayloadHeaders,
     'previewOrganizerApplicationImportCallablePayload.headers.items': previewOrganizerApplicationImportCallablePayloadHeadersItems,
@@ -66828,6 +67721,17 @@ abstract final class CatchContractConstraints {
     'removeClubHostCallablePayload.uid': removeClubHostCallablePayloadUid,
     'removeOrganizerManagerCallablePayload.organizerId': removeOrganizerManagerCallablePayloadOrganizerId,
     'removeOrganizerManagerCallablePayload.uid': removeOrganizerManagerCallablePayloadUid,
+    'replanOrganizerManualSendTasksCallablePayload.organizerId': replanOrganizerManualSendTasksCallablePayloadOrganizerId,
+    'replanOrganizerManualSendTasksCallablePayload.taskIds': replanOrganizerManualSendTasksCallablePayloadTaskIds,
+    'replanOrganizerManualSendTasksCallablePayload.taskIds.items': replanOrganizerManualSendTasksCallablePayloadTaskIdsItems,
+    'replanOrganizerManualSendTasksCallableResponse.organizerId': replanOrganizerManualSendTasksCallableResponseOrganizerId,
+    'replanOrganizerManualSendTasksCallableResponse.resolvedAtMillis': replanOrganizerManualSendTasksCallableResponseResolvedAtMillis,
+    'replanOrganizerManualSendTasksCallableResponse.results': replanOrganizerManualSendTasksCallableResponseResults,
+    'replanOrganizerManualSendTasksCallableResponse.results.items.blocker': replanOrganizerManualSendTasksCallableResponseResultsItemsBlocker,
+    'replanOrganizerManualSendTasksCallableResponse.results.items.contactId': replanOrganizerManualSendTasksCallableResponseResultsItemsContactId,
+    'replanOrganizerManualSendTasksCallableResponse.results.items.disposition': replanOrganizerManualSendTasksCallableResponseResultsItemsDisposition,
+    'replanOrganizerManualSendTasksCallableResponse.results.items.recommendedRouteId': replanOrganizerManualSendTasksCallableResponseResultsItemsRecommendedRouteId,
+    'replanOrganizerManualSendTasksCallableResponse.results.items.taskId': replanOrganizerManualSendTasksCallableResponseResultsItemsTaskId,
     'reportDocument.contextId': reportDocumentContextId,
     'reportDocument.createdAt._nanoseconds': reportDocumentCreatedAtNanoseconds,
     'reportDocument.createdAt._seconds': reportDocumentCreatedAtSeconds,
@@ -68020,6 +68924,9 @@ abstract final class CatchContractConstraints {
     'validateOrganizerFormDraftCallableResponse.issues.items.path': validateOrganizerFormDraftCallableResponseIssuesItemsPath,
     'validateOrganizerFormDraftCallableResponse.issues.items.severity': validateOrganizerFormDraftCallableResponseIssuesItemsSeverity,
     'validateOrganizerFormDraftCallableResponse.valid': validateOrganizerFormDraftCallableResponseValid,
+    'validateOrganizerManualSendTaskLaunchCallablePayload.expectedRevision': validateOrganizerManualSendTaskLaunchCallablePayloadExpectedRevision,
+    'validateOrganizerManualSendTaskLaunchCallablePayload.organizerId': validateOrganizerManualSendTaskLaunchCallablePayloadOrganizerId,
+    'validateOrganizerManualSendTaskLaunchCallablePayload.taskId': validateOrganizerManualSendTaskLaunchCallablePayloadTaskId,
     'verifyRazorpayPaymentCallablePayload.orderId': verifyRazorpayPaymentCallablePayloadOrderId,
     'verifyRazorpayPaymentCallablePayload.paymentId': verifyRazorpayPaymentCallablePayloadPaymentId,
     'verifyRazorpayPaymentCallablePayload.signature': verifyRazorpayPaymentCallablePayloadSignature,

@@ -924,6 +924,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Manual-send tasks contain endpoint and prefill snapshots. Only
+    // manager-authorized callables may prepare, inspect, or advance them; an
+    // external-app launch is never a delivery receipt.
+    match /organizerManualSendTasks/{taskId} {
+      allow read, write: if false;
+    }
+
     match /organizerContactIdentityLinks/{identityLinkId} {
       allow read, write: if false;
     }

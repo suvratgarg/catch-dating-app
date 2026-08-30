@@ -19,6 +19,7 @@ import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dar
 import 'package:catch_dating_app/hosts/presentation/host_club_post_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -351,6 +352,8 @@ class _HostSendsHistory extends ConsumerWidget {
             ),
           ],
         ),
+        gapH16,
+        HostManualSendQueue(organizerId: organizerId),
         gapH16,
         sends.when(
           loading: () =>

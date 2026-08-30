@@ -15216,6 +15216,10 @@
             "symbol": "HostSendsWorkspaceSliver"
           },
           {
+            "file": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
+            "symbol": "HostManualSendQueue"
+          },
+          {
             "file": "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
             "symbol": "showHostFollowerUpdateComposer"
           },
@@ -15250,7 +15254,7 @@
             "symbol": "HostClubPostController"
           }
         ],
-        "notes": "HostInboxScreen is the Host-owned Messaging surface and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, groups every registered route under In Catch or WhatsApp, owns the route-specific follower composer, and owns the complete campaign lifecycle; its compatibility wire value remains campaigns. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out."
+        "notes": "HostInboxScreen is the Host-owned Messaging surface and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, groups every registered route under In Catch or WhatsApp, owns the route-specific follower composer and durable personal-WhatsApp handoff queue, and owns the complete campaign lifecycle; its compatibility wire value remains campaigns. Manual handoffs distinguish queued, device-opened and explicit host-asserted states, revalidate a stored endpoint immediately before every queue launch, and never claim provider delivery or read evidence. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out."
       },
       "designRefs": [
         {
@@ -15594,6 +15598,40 @@
             "test/communications/communication_route_test.dart"
           ],
           "nextAction": "Add a deterministic Sends route-picker preview and capture after its baseline is approved."
+        },
+        {
+          "id": "manual_handoff_queue",
+          "kind": "populated",
+          "status": "tested",
+          "source": "HostManualSendQueue + hostManualSendTasksProvider render durable organizer-scoped queued and handoffOpened tasks independently of managed Sends history.",
+          "tests": [
+            "functions/src/organizers/organizerManualSendTasks.test.ts",
+            "test/hosts/host_crm_repository_test.dart",
+            "test/hosts/host_inbox_screen_test.dart"
+          ],
+          "nextAction": "Add deterministic captures for queued, opened, pagination, and compact failure after the Sends baseline is approved."
+        },
+        {
+          "id": "manual_handoff_opened_unconfirmed",
+          "kind": "mutation",
+          "status": "tested",
+          "source": "HostManualSendQueue records device acceptance as handoffOpened, labels it Not confirmed sent, and enables the separate I sent this host assertion only after that state.",
+          "tests": [
+            "functions/src/organizers/organizerManualSendTasks.test.ts",
+            "test/hosts/host_inbox_screen_test.dart"
+          ],
+          "nextAction": "Keep external launch, explicit assertion, and provider receipt concepts separate if more handoff transports are added."
+        },
+        {
+          "id": "manual_handoff_replan_advisory",
+          "kind": "permission",
+          "status": "tested",
+          "source": "replanOrganizerManualSendTasks + HostManualSendQueue Check options surface current route advice without mutating, dispatching, completing, removing, or superseding tasks.",
+          "tests": [
+            "functions/src/organizers/organizerManualSendTasks.test.ts",
+            "test/hosts/host_crm_repository_test.dart"
+          ],
+          "nextAction": "Add a deterministic re-plan result capture; preserve the explicit follow-up action boundary."
         },
         {
           "id": "follower_update_composer",

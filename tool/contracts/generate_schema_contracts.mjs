@@ -201,6 +201,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerSavedAudienceDocument.ts",
   },
   {
+    name: "OrganizerManualSendTaskDocument",
+    source: "firestore/organizer_manual_send_tasks.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerManualSendTaskDocument.ts",
+  },
+  {
     name: "OrganizerContactIdentityLinkDocument",
     source: "firestore/organizer_contact_identity_links.schema.json",
     typeOutput:
@@ -1524,6 +1530,78 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "previewOrganizerSavedAudienceCallableResponse.ts",
+  },
+  {
+    name: "PrepareOrganizerManualSendTaskCallablePayload",
+    source:
+      "callables/prepare_organizer_manual_send_task_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "prepareOrganizerManualSendTaskCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerManualSendTasksCallablePayload",
+    source:
+      "callables/list_organizer_manual_send_tasks_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerManualSendTasksCallablePayload.ts",
+  },
+  {
+    name: "OpenOrganizerManualSendTaskCallablePayload",
+    source:
+      "callables/open_organizer_manual_send_task_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "openOrganizerManualSendTaskCallablePayload.ts",
+  },
+  {
+    name: "ValidateOrganizerManualSendTaskLaunchCallablePayload",
+    source:
+      "callables/validate_organizer_manual_send_task_launch_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "validateOrganizerManualSendTaskLaunchCallablePayload.ts",
+  },
+  {
+    name: "MarkOrganizerManualSendTaskCallablePayload",
+    source:
+      "callables/mark_organizer_manual_send_task_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "markOrganizerManualSendTaskCallablePayload.ts",
+  },
+  {
+    name: "ReplanOrganizerManualSendTasksCallablePayload",
+    source:
+      "callables/replan_organizer_manual_send_tasks_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "replanOrganizerManualSendTasksCallablePayload.ts",
+  },
+  {
+    name: "OrganizerManualSendTaskCallableResponse",
+    source:
+      "callable_responses/organizer_manual_send_task_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerManualSendTaskCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerManualSendTasksCallableResponse",
+    source:
+      "callable_responses/list_organizer_manual_send_tasks_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerManualSendTasksCallableResponse.ts",
+  },
+  {
+    name: "ReplanOrganizerManualSendTasksCallableResponse",
+    source:
+      "callable_responses/replan_organizer_manual_send_tasks_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "replanOrganizerManualSendTasksCallableResponse.ts",
   },
   {
     name: "OrganizerCampaignActionCallablePayload",

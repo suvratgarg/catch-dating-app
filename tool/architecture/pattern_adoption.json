@@ -2268,6 +2268,74 @@
         "node tool/architecture/check_adopted_architecture_boundaries.mjs"
       ],
       "notes": "Current preference is a projection over immutable participant decisions. Complete referenced grant evidence is mandatory for managed delivery; legacy incomplete grants fail closed and organizer suppression remains a separate operational state."
+    },
+    {
+      "id": "ARCH-MANUAL-HANDOFF-001",
+      "name": "Durable external handoff task",
+      "status": "reference",
+      "screenInventory": "design/screens/catch.screens.json",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-manual-handoff-001-durable-external-handoff-task",
+      "prototypeFiles": [
+        "contracts/firestore/organizer_manual_send_tasks.schema.json",
+        "contracts/callables/prepare_organizer_manual_send_task_payload.schema.json",
+        "functions/src/organizers/organizerManualSendTasks.ts",
+        "functions/src/organizers/organizerManualSendTasks.test.ts",
+        "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+        "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
+        "test/hosts/host_crm_repository_test.dart",
+        "test/hosts/host_inbox_screen_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "contracts/firestore/organizer_manual_send_tasks.schema.json",
+          "role": "server-owned TTL task contract with explicit queued, device-opened, host-asserted and close states and no delivered or read evidence",
+          "status": "aligned"
+        },
+        {
+          "path": "functions/src/organizers/organizerManualSendTasks.ts",
+          "role": "manager-authorized idempotent prepare, paged list, revision-bound read-only pre-launch validation and open acknowledgement, explicit terminal action and read-only route re-plan boundary",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/data/host_crm_repository.dart",
+          "role": "typed task and re-plan parser plus generated callable payload boundaries that reject a managed-delivery task representation",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+          "role": "two-phase source flow that persists a revalidated queued task before external launch and acknowledges only accepted device handoff",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
+          "role": "Sends-owned independent async queue that revalidates every stored endpoint before launch and provides unconfirmed-opened copy, explicit host assertion, skip, pagination and non-mutating route advice",
+          "status": "aligned"
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "ARCH-MANUAL-HANDOFF-001-TRANSPORT",
+          "path": "functions/src/organizers",
+          "reason": "Any later external transport must extend the typed route/task contract without reusing device-opened or host-asserted state as delivery evidence."
+        },
+        {
+          "id": "ARCH-MANUAL-HANDOFF-001-RECEIPT",
+          "path": "functions/src/organizers",
+          "reason": "A later provider receipt workflow must append distinct verified provider evidence; it must not upgrade historical hostMarkedSent assertions in place."
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When handoff task states, prepare/validate/open ordering, endpoint snapshot policy, explicit close actions, TTL, re-plan semantics, route ownership, or observability claims change, update Firestore and callable schemas, generated contracts, rules and indexes, backend transitions, Flutter repository/controller and Customers/Sends composition, copy, screen inventory, focused tests, owner docs, and this exhibit in one pass. Every queue re-open must validate current endpoint and permission before launch, re-plan remains read-only, and no state may imply provider delivery or read evidence without a verified provider receipt.",
+      "requiredChecks": [
+        "./tool/check_data_contract.sh",
+        "npm --prefix functions run lint && npm --prefix functions run build && node --test functions/lib/organizers/organizerManualSendTasks.test.js",
+        "flutter test test/hosts/host_crm_repository_test.dart test/hosts/host_inbox_screen_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/architecture/check_adopted_architecture_boundaries.mjs",
+        "bash tool/check_catch_ui_lints.sh"
+      ],
+      "notes": "Prepare persists authority-checked work before launch. Every later queue launch first revalidates current endpoint and permission. Device acceptance records only handoffOpened; sent is an explicit host assertion. Re-plan is advisory and never mutates or auto-drains tasks."
     }
   ]
 }

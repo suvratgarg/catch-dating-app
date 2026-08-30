@@ -217,6 +217,176 @@ void main() {
     );
   });
 
+  test('manual handoff preparation persists the named intent first', () async {
+    final functions = _TestFirebaseFunctions();
+    final callable =
+        functions.httpsCallable('prepareOrganizerManualSendTask')
+            as _TestHttpsCallable;
+    callable.resultData = _manualSendTaskData();
+    final repository = HostCrmRepository(functions);
+
+    final task = await repository.prepareManualSendTask(
+      organizerId: 'organizer-1',
+      contactId: 'contact-1',
+      requestId: 'request-1234',
+      prefillText: 'Would you like to join us?',
+    );
+
+    expect(callable.calls.single, {
+      'organizerId': 'organizer-1',
+      'contactId': 'contact-1',
+      'requestId': 'request-1234',
+      'intent': 'individualConversation',
+      'prefillText': 'Would you like to join us?',
+    });
+    expect(task.status, HostManualSendTaskStatus.queued);
+    expect(task.active, isTrue);
+    expect(task.openedAt, isNull);
+  });
+
+  test('manual handoff open is a revision-bound acknowledgement', () async {
+    final functions = _TestFirebaseFunctions();
+    final callable =
+        functions.httpsCallable('openOrganizerManualSendTask')
+            as _TestHttpsCallable;
+    callable.resultData = _manualSendTaskData(
+      status: 'handoffOpened',
+      revision: 2,
+      openCount: 1,
+      openedAtMillis: 1700000000500,
+    );
+    final repository = HostCrmRepository(functions);
+    final queued = HostManualSendTask.fromCallableData(_manualSendTaskData());
+
+    final opened = await repository.recordManualHandoffOpened(queued);
+
+    expect(callable.calls.single, {
+      'organizerId': 'organizer-1',
+      'taskId': 'task-1',
+      'expectedRevision': 1,
+    });
+    expect(opened.status, HostManualSendTaskStatus.handoffOpened);
+    expect(opened.openCount, 1);
+    expect(opened.openedAt, isNotNull);
+  });
+
+  test(
+    'manual handoff launch validation is revision-bound and typed',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('validateOrganizerManualSendTaskLaunch')
+              as _TestHttpsCallable;
+      callable.resultData = _manualSendTaskData();
+      final repository = HostCrmRepository(functions);
+      final queued = HostManualSendTask.fromCallableData(_manualSendTaskData());
+
+      final validated = await repository.validateManualSendTaskLaunch(queued);
+
+      expect(callable.calls.single, {
+        'organizerId': 'organizer-1',
+        'taskId': 'task-1',
+        'expectedRevision': 1,
+      });
+      expect(validated.phoneE164, '+919876543210');
+      expect(validated.revision, 1);
+    },
+  );
+
+  test(
+    'manual sent state is serialized as an explicit host assertion',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('markOrganizerManualSendTask')
+              as _TestHttpsCallable;
+      callable.resultData = _manualSendTaskData(
+        status: 'hostMarkedSent',
+        active: false,
+        revision: 3,
+        openCount: 1,
+        openedAtMillis: 1700000000500,
+      );
+      final repository = HostCrmRepository(functions);
+      final opened = HostManualSendTask.fromCallableData(
+        _manualSendTaskData(
+          status: 'handoffOpened',
+          revision: 2,
+          openCount: 1,
+          openedAtMillis: 1700000000500,
+        ),
+      );
+
+      final marked = await repository.markManualSendTask(
+        opened,
+        HostManualSendTaskAction.hostMarkedSent,
+      );
+
+      expect(callable.calls.single, {
+        'organizerId': 'organizer-1',
+        'taskId': 'task-1',
+        'expectedRevision': 2,
+        'action': 'hostMarkedSent',
+      });
+      expect(marked.status, HostManualSendTaskStatus.hostMarkedSent);
+      expect(marked.active, isFalse);
+    },
+  );
+
+  test(
+    'manual task re-plan parses advice without mutating task input',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('replanOrganizerManualSendTasks')
+              as _TestHttpsCallable;
+      callable.resultData = {
+        'organizerId': 'organizer-1',
+        'resolvedAtMillis': 1700000001000,
+        'results': [
+          {
+            'taskId': 'task-1',
+            'contactId': 'contact-1',
+            'disposition': 'managedRouteAvailable',
+            'recommendedRouteId': 'catchChat',
+            'blocker': null,
+          },
+        ],
+      };
+      final repository = HostCrmRepository(functions);
+
+      final replan = await repository.replanManualSendTasks(
+        organizerId: 'organizer-1',
+        taskIds: const ['task-1'],
+      );
+
+      expect(callable.calls.single, {
+        'organizerId': 'organizer-1',
+        'taskIds': ['task-1'],
+      });
+      expect(
+        replan.results.single.disposition,
+        HostManualSendTaskDisposition.managedRouteAvailable,
+      );
+      expect(
+        replan.results.single.recommendedRouteId,
+        HostCommunicationRouteId.catchChat,
+      );
+    },
+  );
+
+  test(
+    'manual task parser rejects any route presented as managed delivery',
+    () {
+      expect(
+        () => HostManualSendTask.fromCallableData(
+          _manualSendTaskData(deliveryMode: 'managedDelivery'),
+        ),
+        throwsFormatException,
+      );
+    },
+  );
+
   test('non-default contact ordering remains explicit', () async {
     final functions = _TestFirebaseFunctions();
     final callable =
@@ -845,4 +1015,30 @@ Map<String, Object?> _savedAudienceData() => {
   'lastPreviewAtMillis': 1700000000000,
   'createdAtMillis': 1700000000000,
   'updatedAtMillis': 1700000000000,
+};
+
+Map<String, Object?> _manualSendTaskData({
+  String status = 'queued',
+  bool active = true,
+  int revision = 1,
+  int openCount = 0,
+  int? openedAtMillis,
+  String deliveryMode = 'byHand',
+}) => {
+  'organizerId': 'organizer-1',
+  'taskId': 'task-1',
+  'contactId': 'contact-1',
+  'displayName': 'Asha Rao',
+  'routeId': 'personalWhatsappHandoff',
+  'deliveryMode': deliveryMode,
+  'status': status,
+  'active': active,
+  'revision': revision,
+  'phoneE164': '+919876543210',
+  'prefillText': 'Would you like to join us?',
+  'openCount': openCount,
+  'createdAtMillis': 1700000000000,
+  'updatedAtMillis': 1700000000000,
+  'openedAtMillis': openedAtMillis,
+  'expiresAtMillis': 1702592000000,
 };

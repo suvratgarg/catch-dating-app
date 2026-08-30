@@ -214,6 +214,14 @@ export {
   upsertOrganizerSavedAudience,
 } from "./organizers/organizerSavedAudiences";
 export {
+  listOrganizerManualSendTasks,
+  markOrganizerManualSendTask,
+  openOrganizerManualSendTask,
+  prepareOrganizerManualSendTask,
+  replanOrganizerManualSendTasks,
+  validateOrganizerManualSendTaskLaunch,
+} from "./organizers/organizerManualSendTasks";
+export {
   approveOrganizerCampaign,
   cancelOrganizerCampaign,
   getOrganizerCampaignReport,

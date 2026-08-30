@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.16.0
+version: 1.17.0
 updated: 2026-08-30
 owner: app_architecture
 status: active
@@ -2246,9 +2246,11 @@ prefilled copy and presses Send in WhatsApp, so Catch must not create a delivery
 receipt or reply thread from that launch. A durable manual-send task may record
 only `queued`, `handoffOpened`, an explicit `hostMarkedSent`, `skipped`,
 `cancelled`, `superseded`, or `expired`. A later provider-capability change must
-not silently dispatch or complete an existing task; the host must explicitly
-request a re-plan, and the server must recheck permission before superseding the
-manual work. An explicit
+not silently dispatch, complete, remove, or supersede an existing task. A route
+re-plan is an explicit, read-only comparison against current authority; it only
+advises the host whether to keep the handoff, use a newly available managed
+route, or resolve an unavailable route. Only a separate explicit host action
+may close the manual work. An explicit
 organizer WhatsApp opt-out or admin suppression keeps the route visible with
 the exact blocker but removes its action even though it is not a campaign
 route.
@@ -2677,6 +2679,68 @@ Every delivery mutation must recheck the authoritative facts. A previously
 resolved plan may explain the current UI, but it never authorizes a later send.
 External handoff means the host owns the final send; it must never generate a
 Catch delivery receipt until a later verified receipt workflow exists.
+
+### Exhibit ARCH-MANUAL-HANDOFF-001: Durable External Handoff Task
+
+<!-- exhibit-freshness: ARCH-MANUAL-HANDOFF-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+
+Reference files:
+
+- `contracts/firestore/organizer_manual_send_tasks.schema.json`
+- `functions/src/organizers/organizerManualSendTasks.ts`
+- `lib/hosts/data/host_crm_repository.dart`
+- `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
+- `lib/hosts/presentation/inbox/host_manual_send_queue.dart`
+- `test/hosts/host_crm_repository_test.dart`
+- `test/hosts/host_inbox_screen_test.dart`
+
+External handoff uses two durable phases. Before Flutter launches WhatsApp, the
+prepare callable reauthorizes the organizer manager, re-resolves the named
+individual-conversation intent, validates the current endpoint and route, and
+idempotently persists a `queued` task with bounded prefill and endpoint hashes.
+An exact prepare replay returns that task only after repeating the active-task,
+endpoint, permission, and route checks.
+After the device accepts the external-app launch, Flutter acknowledges only
+`handoffOpened` against the task revision. A failed or declined launch leaves
+the queued task visible; an acknowledgement failure never becomes a sent fact.
+Every later launch from the durable queue first calls the revision-bound,
+read-only validation boundary and uses only its returned endpoint and prefill.
+The open acknowledgement repeats current authority checks after device
+acceptance. This is intentionally two-sided because an external app cannot
+participate in the Firestore transaction; neither server check sends or claims
+delivery.
+
+The server transition makes the evidence boundary exhaustive:
+
+```ts
+if (action === "hostMarkedSent" && task.status !== "handoffOpened") {
+  throw new HttpsError(
+    "failed-precondition",
+    "Open the handoff before marking it sent.",
+  );
+}
+return {
+  ...task,
+  status: action,
+  active: false,
+  revision: task.revision + 1,
+  hostMarkedSentAt: action === "hostMarkedSent" ? now : null,
+};
+```
+
+`hostMarkedSent` is an organizer assertion, not provider evidence. The model has
+no delivered or read state. Re-open increments an open count and remains an
+external-app acknowledgement. Skip and cancel are explicit terminal choices.
+Expiry is a server-time projection over the TTL; the active queue query excludes
+expired rows even before Firestore TTL deletion runs, and direct client
+collection access is denied.
+
+Sends owns the active manual-work queue and exposes the complete loading,
+failure, empty, queued, opened, explicit-close, pagination, and re-plan states.
+Re-plan is read-only: it may report that Catch chat is now available, but it
+does not dispatch, complete, remove, or supersede the handoff. The host must
+choose a later action. This prevents capability drift from changing work while
+the organizer is deciding what to do.
 
 ### Exhibit ARCH-SAVED-AUDIENCE-001: Customers-Owned Saved Audiences
 

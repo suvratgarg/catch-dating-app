@@ -36,6 +36,7 @@ import {
   organizerContactNoteDocumentSchema,
   organizerContactTagVocabularyDocumentSchema,
   organizerSavedAudienceDocumentSchema,
+  organizerManualSendTaskDocumentSchema,
   organizerContactIdentityLinkDocumentSchema,
   organizerContactIdentityClaimDocumentSchema,
   organizerContactEventEdgeDocumentSchema,
@@ -251,6 +252,15 @@ import {
   organizerSavedAudienceCallableResponseSchema,
   listOrganizerSavedAudiencesCallableResponseSchema,
   previewOrganizerSavedAudienceCallableResponseSchema,
+  prepareOrganizerManualSendTaskCallablePayloadSchema,
+  listOrganizerManualSendTasksCallablePayloadSchema,
+  openOrganizerManualSendTaskCallablePayloadSchema,
+  validateOrganizerManualSendTaskLaunchCallablePayloadSchema,
+  markOrganizerManualSendTaskCallablePayloadSchema,
+  replanOrganizerManualSendTasksCallablePayloadSchema,
+  organizerManualSendTaskCallableResponseSchema,
+  listOrganizerManualSendTasksCallableResponseSchema,
+  replanOrganizerManualSendTasksCallableResponseSchema,
   organizerCampaignActionCallablePayloadSchema,
   completeOrganizerWhatsappConnectionCallablePayloadSchema,
   organizerSenderConnectionActionCallablePayloadSchema,
@@ -570,6 +580,7 @@ export const validateOrganizerContactOriginDocument = ajv.compile(organizerConta
 export const validateOrganizerContactNoteDocument = ajv.compile(organizerContactNoteDocumentSchema);
 export const validateOrganizerContactTagVocabularyDocument = ajv.compile(organizerContactTagVocabularyDocumentSchema);
 export const validateOrganizerSavedAudienceDocument = ajv.compile(organizerSavedAudienceDocumentSchema);
+export const validateOrganizerManualSendTaskDocument = ajv.compile(organizerManualSendTaskDocumentSchema);
 export const validateOrganizerContactIdentityLinkDocument = ajv.compile(organizerContactIdentityLinkDocumentSchema);
 export const validateOrganizerContactIdentityClaimDocument = ajv.compile(organizerContactIdentityClaimDocumentSchema);
 export const validateOrganizerContactEventEdgeDocument = ajv.compile(organizerContactEventEdgeDocumentSchema);
@@ -785,6 +796,15 @@ export const validateArchiveOrganizerSavedAudienceCallablePayload = ajv.compile(
 export const validateOrganizerSavedAudienceCallableResponse = ajv.compile(organizerSavedAudienceCallableResponseSchema);
 export const validateListOrganizerSavedAudiencesCallableResponse = ajv.compile(listOrganizerSavedAudiencesCallableResponseSchema);
 export const validatePreviewOrganizerSavedAudienceCallableResponse = ajv.compile(previewOrganizerSavedAudienceCallableResponseSchema);
+export const validatePrepareOrganizerManualSendTaskCallablePayload = ajv.compile(prepareOrganizerManualSendTaskCallablePayloadSchema);
+export const validateListOrganizerManualSendTasksCallablePayload = ajv.compile(listOrganizerManualSendTasksCallablePayloadSchema);
+export const validateOpenOrganizerManualSendTaskCallablePayload = ajv.compile(openOrganizerManualSendTaskCallablePayloadSchema);
+export const validateValidateOrganizerManualSendTaskLaunchCallablePayload = ajv.compile(validateOrganizerManualSendTaskLaunchCallablePayloadSchema);
+export const validateMarkOrganizerManualSendTaskCallablePayload = ajv.compile(markOrganizerManualSendTaskCallablePayloadSchema);
+export const validateReplanOrganizerManualSendTasksCallablePayload = ajv.compile(replanOrganizerManualSendTasksCallablePayloadSchema);
+export const validateOrganizerManualSendTaskCallableResponse = ajv.compile(organizerManualSendTaskCallableResponseSchema);
+export const validateListOrganizerManualSendTasksCallableResponse = ajv.compile(listOrganizerManualSendTasksCallableResponseSchema);
+export const validateReplanOrganizerManualSendTasksCallableResponse = ajv.compile(replanOrganizerManualSendTasksCallableResponseSchema);
 export const validateOrganizerCampaignActionCallablePayload = ajv.compile(organizerCampaignActionCallablePayloadSchema);
 export const validateCompleteOrganizerWhatsappConnectionCallablePayload = ajv.compile(completeOrganizerWhatsappConnectionCallablePayloadSchema);
 export const validateOrganizerSenderConnectionActionCallablePayload = ajv.compile(organizerSenderConnectionActionCallablePayloadSchema);

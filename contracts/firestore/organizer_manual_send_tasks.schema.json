@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_manual_send_tasks.schema.json",
+  "title": "OrganizerManualSendTaskDocument",
+  "description": "One durable host-performed external handoff. Catch may record preparation, external-app acceptance, and explicit host assertions, but never delivery or read state.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerManualSendTasks",
+  "x-firestore-path": "organizerManualSendTasks/{taskId}",
+  "x-document-id-field": "taskId",
+  "x-owner": "manager-only organizer manual-send callables",
+  "required": ["organizerId", "taskId", "contactId", "sourceKind", "sourceId", "intent", "routeId", "deliveryMode", "status", "active", "revision", "idempotencyKey", "requestHash", "displayNameSnapshot", "endpointE164Snapshot", "endpointHash", "permissionSnapshot", "capabilitySnapshot", "prefillText", "prefillHash", "openCount", "createdByUid", "updatedByUid", "createdAt", "updatedAt", "openedAt", "hostMarkedSentAt", "skippedAt", "cancelledAt", "supersededAt", "expiresAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "taskId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "sourceKind": {"type": "string", "enum": ["individualConversation", "campaignRecipient"]},
+    "sourceId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "intent": {"type": "string", "enum": ["individualConversation", "savedAudienceCampaign"]},
+    "routeId": {"const": "personalWhatsappHandoff"},
+    "deliveryMode": {"const": "byHand"},
+    "status": {"$ref": "#/definitions/status"},
+    "active": {"type": "boolean"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "idempotencyKey": {"type": "string", "minLength": 8, "maxLength": 120},
+    "requestHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "displayNameSnapshot": {"type": "string", "minLength": 1, "maxLength": 120},
+    "endpointE164Snapshot": {"type": "string", "pattern": "^\\+[1-9][0-9]{7,14}$"},
+    "endpointHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "permissionSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["whatsappStatus", "adminSuppressed", "recordedAt"],
+      "properties": {
+        "whatsappStatus": {"type": "string", "enum": ["unknown", "optedIn"]},
+        "adminSuppressed": {"const": false},
+        "recordedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+      }
+    },
+    "capabilitySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "managedRouteAvailable"],
+      "properties": {
+        "version": {"type": "integer", "minimum": 1, "maximum": 1000},
+        "managedRouteAvailable": {"type": "boolean"}
+      }
+    },
+    "prefillText": {"type": "string", "minLength": 1, "maxLength": 1000},
+    "prefillHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "openCount": {"type": "integer", "minimum": 0, "maximum": 1000},
+    "createdByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "updatedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "openedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "hostMarkedSentAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "skippedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "cancelledAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "supersededAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  },
+  "definitions": {
+    "status": {"type": "string", "enum": ["queued", "handoffOpened", "hostMarkedSent", "skipped", "cancelled", "superseded", "expired"]}
+  }
+}

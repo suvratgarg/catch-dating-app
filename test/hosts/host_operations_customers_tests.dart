@@ -1104,6 +1104,16 @@ void _registerHostOperationsCustomersTests() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     Uri? launchedUri;
+    final lifecycle = <String>[];
+    final functions = _ManualHandoffTestFunctions(lifecycle)
+      ..responses['prepareOrganizerManualSendTask'] =
+          _manualHandoffTaskResponse()
+      ..responses['openOrganizerManualSendTask'] = _manualHandoffTaskResponse(
+        status: 'handoffOpened',
+        revision: 2,
+        openCount: 1,
+        openedAtMillis: 1700000000500,
+      );
     final detail = _customerDetail(phoneE164: '+91 98765 43210');
 
     await _pumpHostScreen(
@@ -1122,10 +1132,14 @@ void _registerHostOperationsCustomersTests() {
           'organizer-1',
           'contact-1',
         ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
+        hostCrmRepositoryProvider.overrideWithValue(
+          HostCrmRepository(functions),
+        ),
         externalUrlLauncherProvider.overrideWithValue((
           uri, {
           mode = LaunchMode.platformDefault,
         }) async {
+          lifecycle.add('launch');
           launchedUri = uri;
           return true;
         }),
@@ -1154,5 +1168,91 @@ void _registerHostOperationsCustomersTests() {
     expect(launchedUri?.host, 'send');
     expect(launchedUri?.queryParameters['phone'], '919876543210');
     expect(launchedUri?.queryParameters['text'], 'Hi Ananya Rao,');
+    expect(lifecycle, [
+      'call:prepareOrganizerManualSendTask',
+      'launch',
+      'call:openOrganizerManualSendTask',
+    ]);
+    final prepare = functions.calls['prepareOrganizerManualSendTask']!.single;
+    expect(prepare['organizerId'], 'organizer-1');
+    expect(prepare['contactId'], 'contact-1');
+    expect(prepare['intent'], 'individualConversation');
+    expect(prepare['prefillText'], 'Hi Ananya Rao,');
+    expect(
+      functions.calls['openOrganizerManualSendTask']!.single,
+      containsPair('expectedRevision', 1),
+    );
   });
 }
+
+class _ManualHandoffTestFunctions extends Fake implements FirebaseFunctions {
+  _ManualHandoffTestFunctions(this.lifecycle);
+
+  final List<String> lifecycle;
+  final Map<String, Object?> responses = {};
+  final Map<String, List<Map<Object?, Object?>>> calls = {};
+
+  @override
+  HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) =>
+      _ManualHandoffTestCallable(
+        name: name,
+        lifecycle: lifecycle,
+        response: () => responses[name],
+        calls: calls.putIfAbsent(name, () => []),
+      );
+}
+
+class _ManualHandoffTestCallable extends Fake implements HttpsCallable {
+  _ManualHandoffTestCallable({
+    required this.name,
+    required this.lifecycle,
+    required this.response,
+    required this.calls,
+  });
+
+  final String name;
+  final List<String> lifecycle;
+  final Object? Function() response;
+  final List<Map<Object?, Object?>> calls;
+
+  @override
+  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
+    lifecycle.add('call:$name');
+    calls.add(parameters as Map<Object?, Object?>);
+    return _ManualHandoffTestCallableResult<T>(response() as T);
+  }
+}
+
+class _ManualHandoffTestCallableResult<T> extends Fake
+    implements HttpsCallableResult<T> {
+  _ManualHandoffTestCallableResult(this.value);
+
+  final T value;
+
+  @override
+  T get data => value;
+}
+
+Map<String, Object?> _manualHandoffTaskResponse({
+  String status = 'queued',
+  int revision = 1,
+  int openCount = 0,
+  int? openedAtMillis,
+}) => {
+  'organizerId': 'organizer-1',
+  'taskId': 'task-1',
+  'contactId': 'contact-1',
+  'displayName': 'Ananya Rao',
+  'routeId': 'personalWhatsappHandoff',
+  'deliveryMode': 'byHand',
+  'status': status,
+  'active': true,
+  'revision': revision,
+  'phoneE164': '+919876543210',
+  'prefillText': 'Hi Ananya Rao,',
+  'openCount': openCount,
+  'createdAtMillis': 1700000000000,
+  'updatedAtMillis': 1700000000000,
+  'openedAtMillis': openedAtMillis,
+  'expiresAtMillis': 1702592000000,
+};

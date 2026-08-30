@@ -693,6 +693,84 @@ final class HostSendsFamily extends $Family
   String toString() => r'hostSendsProvider';
 }
 
+@ProviderFor(hostManualSendTasks)
+final hostManualSendTasksProvider = HostManualSendTasksFamily._();
+
+final class HostManualSendTasksProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostManualSendTaskPage>,
+          HostManualSendTaskPage,
+          FutureOr<HostManualSendTaskPage>
+        >
+    with
+        $FutureModifier<HostManualSendTaskPage>,
+        $FutureProvider<HostManualSendTaskPage> {
+  HostManualSendTasksProvider._({
+    required HostManualSendTasksFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostManualSendTasksProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostManualSendTasksHash();
+
+  @override
+  String toString() {
+    return r'hostManualSendTasksProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostManualSendTaskPage> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostManualSendTaskPage> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostManualSendTasks(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostManualSendTasksProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostManualSendTasksHash() =>
+    r'edaf484d821b42b4d143d1a7130ed8c526d92489';
+
+final class HostManualSendTasksFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<HostManualSendTaskPage>, String> {
+  HostManualSendTasksFamily._()
+    : super(
+        retry: null,
+        name: r'hostManualSendTasksProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostManualSendTasksProvider call(String organizerId) =>
+      HostManualSendTasksProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostManualSendTasksProvider';
+}
+
 @ProviderFor(hostWhatsappThreads)
 final hostWhatsappThreadsProvider = HostWhatsappThreadsFamily._();
 

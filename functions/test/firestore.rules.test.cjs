@@ -1745,6 +1745,7 @@ describe("firestore.rules", () => {
         ["organizerCommunicationPermissionReceipts", "permission-1"],
         ["organizerContactOrigins", "origin-1"],
         ["organizerSavedAudiences", "audience-1"],
+        ["organizerManualSendTasks", "task-1"],
         ["externalEventMappings", "mapping-1"],
         ["providerSyncRuns", "sync-1"],
         ["organizerApplicationForms", "form-1"],

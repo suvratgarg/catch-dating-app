@@ -420,6 +420,8 @@ String _communicationRouteBlockerLabel(
     context.l10n.hostCustomersMessagePermissionRequired,
   HostCommunicationRouteBlocker.senderUnavailable =>
     context.l10n.hostCustomersMessageSenderUnavailable,
+  HostCommunicationRouteBlocker.contactUnavailable ||
+  HostCommunicationRouteBlocker.endpointChanged ||
   HostCommunicationRouteBlocker.intentUnsupported ||
   null => context.l10n.hostCustomersMessageOptionsUnavailable,
 };

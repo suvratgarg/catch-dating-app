@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.37.0
+version: 1.38.0
 updated: 2026-08-30
 owner: recursive_audit_loop
 status: active
@@ -918,9 +918,22 @@ route, permission/capability snapshot, idempotency key, endpoint snapshot/hash,
 bounded prefill content with TTL, and progress state. Its only progress states
 are `queued`, `handoffOpened`, `hostMarkedSent`, `skipped`, `cancelled`,
 `superseded`, and `expired`; it has no delivered/read state. Opening an external
-application records only `handoffOpened`. Existing tasks never auto-dispatch
-after a capability change: an explicit host re-plan rechecks current permission
-and may supersede remaining tasks with new managed-delivery recipients.
+application records only `handoffOpened`. The prepare callable persists or
+returns the idempotent queued task only after current manager, contact, endpoint,
+permission, and route checks; the client performs the external launch and then
+acknowledges the accepted launch against the current revision. An exact prepare
+retry revalidates the existing task rather than bypassing those checks. Tasks
+opened again from the durable queue first pass a revision-bound, read-only
+callable that rechecks the current contact, endpoint, permission, suppression,
+and route and returns the already-bounded task payload. The open acknowledgement
+repeats those checks after device acceptance; neither check mutates or sends.
+Existing tasks never auto-dispatch after a capability change. An explicit host
+re-plan rechecks
+current authority and returns advice only; it does not write, supersede, remove,
+complete, or dispatch any task. A separate explicit host action is required to
+close manual work. Active queue reads apply the server-time expiry bound in the
+indexed query rather than waiting for asynchronous TTL deletion to hide stale
+work.
 
 `organizerContactActivity` is a callable-composed bounded cursor projection,
 not a client-readable master collection. It joins sanitized origin, form or
