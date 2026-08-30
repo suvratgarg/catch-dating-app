@@ -615,7 +615,7 @@ class FoundationStrokeMotionTokens extends StatelessWidget {
             rows: [
               _MetricSpec('hairline', CatchStroke.hairline),
               _MetricSpec('underline', CatchStroke.underline),
-              _MetricSpec('clubMemberSeal', CatchStroke.clubMemberSeal),
+              _MetricSpec('avatarRing', CatchStroke.avatarRing),
               _MetricSpec('selection', CatchStroke.selection),
             ],
           ),
