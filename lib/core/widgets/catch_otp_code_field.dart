@@ -21,6 +21,7 @@ class CatchCodeInput extends StatelessWidget {
     this.value = '',
     this.active,
     this.caret = true,
+    this.hasError = false,
     this.height = CatchLayout.otpDigitHeight,
     this.gap = CatchLayout.otpDigitGap,
   }) : assert(length > 0);
@@ -36,6 +37,7 @@ class CatchCodeInput extends StatelessWidget {
 
   /// Whether an insertion caret appears in the active empty cell.
   final bool caret;
+  final bool hasError;
 
   /// Cell height.
   final double height;
@@ -50,6 +52,7 @@ class CatchCodeInput extends StatelessWidget {
       value: value,
       active: active,
       caret: caret,
+      hasError: hasError,
       height: height,
       gap: gap,
     );
@@ -64,6 +67,7 @@ class CatchCodeInputRow extends StatelessWidget {
     this.value = '',
     this.active,
     this.caret = true,
+    this.hasError = false,
     this.height = CatchLayout.otpDigitHeight,
     this.gap = CatchLayout.otpDigitGap,
     this.cellKeyPrefix = 'code_digit',
@@ -73,6 +77,7 @@ class CatchCodeInputRow extends StatelessWidget {
   final String value;
   final int? active;
   final bool caret;
+  final bool hasError;
   final double height;
   final double gap;
   final String cellKeyPrefix;
@@ -94,6 +99,7 @@ class CatchCodeInputRow extends StatelessWidget {
               key: ValueKey('${cellKeyPrefix}_$i'),
               digit: i < code.length ? code[i] : '',
               isActive: !done && i == activeIndex,
+              hasError: hasError,
               showCaret: caret,
               height: height,
               textStyle: textStyle,
@@ -112,6 +118,7 @@ class CatchCodeInputCell extends StatelessWidget {
     super.key,
     required this.digit,
     required this.isActive,
+    this.hasError = false,
     this.showCaret = true,
     this.height = CatchLayout.otpDigitHeight,
     this.textStyle,
@@ -119,6 +126,7 @@ class CatchCodeInputCell extends StatelessWidget {
 
   final String digit;
   final bool isActive;
+  final bool hasError;
   final bool showCaret;
   final double height;
   final TextStyle? textStyle;
@@ -137,7 +145,9 @@ class CatchCodeInputCell extends StatelessWidget {
         color: tokens.surface,
         borderRadius: BorderRadius.circular(CatchRadius.interactiveTile),
         border:
-            (isActive
+            (hasError
+                    ? CatchBorder.resolve(tokens, CatchBorderRole.danger)
+                    : isActive
                     ? CatchBorder.resolve(
                         tokens,
                         CatchBorderRole.selected,
@@ -193,6 +203,7 @@ class CatchOtpCodeField extends StatelessWidget {
     this.length,
     this.active,
     this.caret = true,
+    this.hasError = false,
     this.height = CatchLayout.otpDigitHeight,
     this.gap = CatchLayout.otpDigitGap,
     this.autofocus = false,
@@ -208,6 +219,7 @@ class CatchOtpCodeField extends StatelessWidget {
   final int? length;
   final int? active;
   final bool caret;
+  final bool hasError;
   final double height;
   final double gap;
   final bool autofocus;
@@ -238,6 +250,7 @@ class CatchOtpCodeField extends StatelessWidget {
             value: controller.text,
             active: active,
             caret: caret,
+            hasError: hasError,
             height: height,
             gap: gap,
             cellKeyPrefix:

@@ -64,6 +64,14 @@ void main() {
         '+91 9876543210',
       );
       expect(AuthInput.maskedPhoneNumber('+919876543210'), '****3210');
+      expect(
+        AuthInput.maskedDisplayPhoneNumber(
+          phoneNumber: '9876543210',
+          countryCode: '+91',
+        ),
+        '+91 •••••• 3210',
+      );
+      expect(AuthInput.maskedNationalPhoneNumber('9876543210'), '•••••• 3210');
     });
   });
 }

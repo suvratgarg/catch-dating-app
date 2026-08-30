@@ -10,6 +10,10 @@
         <scene sceneID="EHf-IW-A2E">
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ydg-fD-yQy"/>
+                        <viewControllerLayoutGuide type="bottom" id="xbc-2k-c8Z"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -23,10 +27,11 @@
                             <constraint firstItem="tWc-Dq-wcI" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="3Lw-Bg-Tp"/>
                             <constraint firstAttribute="bottom" secondItem="tWc-Dq-wcI" secondAttribute="bottom" id="4Lw-Bg-Bt"/>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="5Hs-Cx"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="6Hs-Cy"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="width" constant="256" id="7Hs-Wd"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="height" constant="256" id="8Hs-Ht"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="6Hs-Tp"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="width" constant="96" id="7Hs-Wd"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="height" constant="96" id="8Hs-Ht"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>

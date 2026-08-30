@@ -12,6 +12,7 @@ import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_st
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -206,62 +207,68 @@ Widget authScreenStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'phone entry',
-        child: _authFrame(child: const AuthScreen()),
+        child: _authFrame(child: const AuthScreen(appRole: AppRole.host)),
       ),
       _StateCard(
         label: 'otp entry cooldown',
         child: _authFrame(
           mode: _AuthPreviewMode.otpEntry,
-          child: const AuthScreen(),
+          child: const AuthScreen(appRole: AppRole.host),
         ),
       ),
       _StateCard(
         label: 'send code pending',
         child: _authFrame(
           mode: _AuthPreviewMode.sendCodePending,
-          child: const AuthScreen(),
+          child: const AuthScreen(appRole: AppRole.host),
         ),
       ),
       _StateCard(
         label: 'send code error',
         child: _authFrame(
           mode: _AuthPreviewMode.sendCodeError,
-          child: const AuthScreen(),
+          child: const AuthScreen(appRole: AppRole.host),
         ),
       ),
       _StateCard(
         label: 'verify code pending',
         child: _authFrame(
           mode: _AuthPreviewMode.verifyCodePending,
-          child: const AuthScreen(),
+          child: const AuthScreen(
+            appRole: AppRole.host,
+            initialOtpCode: '137289',
+          ),
         ),
       ),
       _StateCard(
         label: 'verify code error',
         child: _authFrame(
           mode: _AuthPreviewMode.verifyCodeError,
-          child: const AuthScreen(),
+          child: const AuthScreen(
+            appRole: AppRole.host,
+            initialOtpCode: '137289',
+          ),
         ),
       ),
       _StateCard(
         label: 'resend pending',
         child: _authFrame(
           mode: _AuthPreviewMode.resendPending,
-          child: const AuthScreen(),
+          child: const AuthScreen(appRole: AppRole.host),
         ),
       ),
       _StateCard(
         label: 'resend error',
         child: _authFrame(
           mode: _AuthPreviewMode.resendError,
-          child: const AuthScreen(),
+          child: const AuthScreen(appRole: AppRole.host),
         ),
       ),
       _StateCard(
         label: 'phone entry text scale 2',
         child: _authFrame(
           textScaler: const TextScaler.linear(2),
-          child: const AuthScreen(),
+          child: const AuthScreen(appRole: AppRole.host),
         ),
       ),
       _StateCard(
@@ -269,7 +276,7 @@ Widget authScreenStates(BuildContext context) {
         child: _authFrame(
           mode: _AuthPreviewMode.otpEntry,
           disableAnimations: true,
-          child: const AuthScreen(),
+          child: const AuthScreen(appRole: AppRole.host),
         ),
       ),
     ],

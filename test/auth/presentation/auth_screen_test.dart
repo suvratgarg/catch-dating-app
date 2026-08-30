@@ -4,9 +4,14 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
+import 'package:catch_dating_app/auth/presentation/host_auth_widgets.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +26,7 @@ Future<void> pumpAuthScreen(
   WidgetTester tester, {
   required ProviderContainer container,
   ThemeMode themeMode = ThemeMode.light,
+  AppRole? appRole,
 }) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
@@ -29,7 +35,7 @@ Future<void> pumpAuthScreen(
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: themeMode,
-        home: const AuthScreen(),
+        home: AuthScreen(appRole: appRole),
       ),
     ),
   );
@@ -38,6 +44,115 @@ Future<void> pumpAuthScreen(
 
 void main() {
   group('AuthScreen', () {
+    testWidgets('Host uses the selected inline phone presentation', (
+      tester,
+    ) async {
+      final repository = FakeAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      await pumpAuthScreen(tester, container: container, appRole: AppRole.host);
+
+      expect(find.byType(HostAuthFlowFrame), findsOneWidget);
+      expect(find.byType(CatchStartupBrandStage), findsOneWidget);
+      expect(find.byType(HostAuthCard), findsOneWidget);
+      expect(find.text('Sign in with your phone'), findsOneWidget);
+      expect(
+        find.text("We'll send a one-time code to verify your account."),
+        findsOneWidget,
+      );
+      expect(find.byType(CatchStepHeader), findsNothing);
+      expect(find.byType(CatchBottomDock), findsNothing);
+
+      final sendButton = tester.widget<CatchButton>(
+        find.byKey(AuthFormKeys.sendCode),
+      );
+      expect(sendButton.onPressed, isNull);
+      expect(sendButton.shape, CatchButtonShape.rounded);
+    });
+
+    testWidgets('Host reveals OTP inline and keeps the brand anchor fixed', (
+      tester,
+    ) async {
+      final repository = FakeAuthRepository()
+        ..onVerifyPhoneNumber =
+            ({
+              required verificationCompleted,
+              required verificationFailed,
+              required codeSent,
+              required codeAutoRetrievalTimeout,
+            }) {
+              codeSent('verification-id', 11);
+            };
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      await pumpAuthScreen(tester, container: container, appRole: AppRole.host);
+      final logoBefore = tester.getCenter(
+        find.byKey(CatchStartupBrandStage.markKey),
+      );
+
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(AuthFormKeys.phoneField),
+          matching: find.byType(EditableText),
+        ),
+        '9999999999',
+      );
+      await tester.pump();
+      final sendButton = tester.widget<CatchButton>(
+        find.byKey(AuthFormKeys.sendCode),
+      );
+      expect(sendButton.onPressed, isNotNull);
+
+      await tester.tap(find.byKey(AuthFormKeys.sendCode));
+      await tester.pump();
+      await tester.pump(CatchMotion.pageStep);
+      await tester.pump(CatchMotion.fast);
+
+      expect(find.byType(HostAuthFlowFrame), findsOneWidget);
+      expect(find.text('Enter the code'), findsOneWidget);
+      expect(find.text('+91'), findsOneWidget);
+      expect(find.text('•••••• 9999'), findsOneWidget);
+      expect(find.text('Edit number'), findsOneWidget);
+      expect(find.textContaining('Resend code in'), findsOneWidget);
+      expect(find.text('Verify'), findsNothing);
+      expect(
+        tester.getCenter(find.byKey(CatchStartupBrandStage.markKey)),
+        logoBefore,
+      );
+    });
+
+    testWidgets('Host startup and auth share the exact brand anchor', (
+      tester,
+    ) async {
+      AppConfig.configureEntrypointRole(AppRole.host);
+      addTearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const CatchStartupLoadingScreen(),
+        ),
+      );
+      await tester.pump();
+      final startupLogo = tester.getCenter(
+        find.byKey(CatchStartupBrandStage.markKey),
+      );
+
+      final repository = FakeAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      await pumpAuthScreen(tester, container: container, appRole: AppRole.host);
+
+      expect(
+        tester.getCenter(find.byKey(CatchStartupBrandStage.markKey)),
+        startupLogo,
+      );
+    });
+
     testWidgets('starts on phone entry view', (tester) async {
       final repository = FakeAuthRepository();
       final container = _authControllerContainer(repository);

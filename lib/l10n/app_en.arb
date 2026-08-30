@@ -158,6 +158,22 @@
     "x-surface": "auth.phone",
     "x-max-chars": 72
   },
+  "authHostPhoneTitle": "Sign in with your phone",
+  "@authHostPhoneTitle": {
+    "description": "Heading on the Catch Host phone-number sign-in surface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "auth.phone",
+    "x-max-chars": 32
+  },
+  "authHostPhoneSubtitle": "We''ll send a one-time code to verify your account.",
+  "@authHostPhoneSubtitle": {
+    "description": "Explanation below the Catch Host phone sign-in heading.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "auth.phone",
+    "x-max-chars": 72
+  },
   "authPhoneFieldLabel": "Mobile number",
   "@authPhoneFieldLabel": {
     "description": "Label for the sign-in phone number field.",
@@ -165,6 +181,14 @@
     "x-owner": "product",
     "x-surface": "auth.phone",
     "x-max-chars": 24
+  },
+  "authPhoneFieldPlaceholder": "Enter your mobile number",
+  "@authPhoneFieldPlaceholder": {
+    "description": "Placeholder for an empty phone number field.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "auth.phone",
+    "x-max-chars": 32
   },
   "authSearchCountryHint": "Search country",
   "@authSearchCountryHint": {
@@ -197,6 +221,64 @@
     "x-owner": "product",
     "x-surface": "auth.otp",
     "x-max-chars": 28
+  },
+  "authHostEditNumberAction": "Edit number",
+  "@authHostEditNumberAction": {
+    "description": "Visible button label for returning to phone entry from Catch Host OTP entry.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "auth.otp",
+    "x-max-chars": 20
+  },
+  "authHostResendCountdownAction": "Resend code in {minutes}:{seconds}",
+  "@authHostResendCountdownAction": {
+    "description": "Disabled Catch Host resend button label during cooldown. Seconds are already zero-padded.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "0"
+      },
+      "seconds": {
+        "type": "String",
+        "example": "07"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "auth.otp",
+    "x-max-chars": 32
+  },
+  "authHostResendCodeAction": "Resend code",
+  "@authHostResendCodeAction": {
+    "description": "Catch Host action that requests another verification code.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "auth.otp",
+    "x-max-chars": 20
+  },
+  "authHostSendingCodeAction": "Sending code...",
+  "@authHostSendingCodeAction": {
+    "description": "Catch Host resend action label while another code is being sent.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "auth.otp",
+    "x-max-chars": 24
+  },
+  "authHostVerifyingStatus": "Verifying...",
+  "@authHostVerifyingStatus": {
+    "description": "Inline Catch Host status while a complete OTP is being verified.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "auth.otp",
+    "x-max-chars": 20
+  },
+  "authHostVerificationPendingHint": "This may take a few seconds.",
+  "@authHostVerificationPendingHint": {
+    "description": "Supporting reassurance shown while Catch Host verifies an OTP.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "auth.otp",
+    "x-max-chars": 40
   },
   "authOtpSentTo": "Sent to {phoneNumber}",
   "@authOtpSentTo": {

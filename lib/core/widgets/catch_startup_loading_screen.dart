@@ -34,6 +34,47 @@ class CatchStartupLoadingScreen extends StatefulWidget {
       _CatchStartupLoadingScreenState();
 }
 
+/// The shared role-specific brand anchor used by Host startup and auth.
+///
+/// Keeping this stage identical across both surfaces lets navigation replace
+/// only the lower content while the visible Host mark remains pixel-stable.
+class CatchStartupBrandStage extends StatelessWidget {
+  const CatchStartupBrandStage({super.key, this.appRole});
+
+  static const markKey = ValueKey<String>('catch-startup-brand-mark');
+
+  final AppRole? appRole;
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedRole = appRole ?? AppConfig.appRole;
+    final iconAsset = CatchStartupLoadingScreen.iconAssetForBrightness(
+      Theme.of(context).brightness,
+      appRole: resolvedRole,
+    );
+
+    return SizedBox(
+      width: double.infinity,
+      height: CatchLayout.startupBrandStageExtent,
+      child: Padding(
+        padding: const EdgeInsets.only(top: CatchLayout.startupLogoTopInset),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Image.asset(
+            iconAsset,
+            key: markKey,
+            width: CatchLayout.startupLogoExtent,
+            height: CatchLayout.startupLogoExtent,
+            semanticLabel: resolvedRole == AppRole.host
+                ? context.l10n.appTitleHost
+                : context.l10n.coreCatchStartupLoadingScreenSemanticlabelCatch,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
   Timer? _indicatorDelay;
   bool _showIndicator = false;
@@ -58,9 +99,7 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final iconAsset = CatchStartupLoadingScreen.iconAssetForBrightness(
-      Theme.of(context).brightness,
-    );
+    final isHost = AppConfig.appRole == AppRole.host;
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -68,18 +107,25 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Center(
-              child: Image.asset(
-                iconAsset,
-                width: CatchLayout.startupLogoExtent,
-                height: CatchLayout.startupLogoExtent,
-                semanticLabel: AppConfig.appRole == AppRole.host
-                    ? context.l10n.appTitleHost
-                    : context
-                          .l10n
-                          .coreCatchStartupLoadingScreenSemanticlabelCatch,
+            if (isHost)
+              const Align(
+                alignment: Alignment.topCenter,
+                child: CatchStartupBrandStage(appRole: AppRole.host),
+              )
+            else
+              Center(
+                child: Image.asset(
+                  CatchStartupLoadingScreen.iconAssetForBrightness(
+                    Theme.of(context).brightness,
+                  ),
+                  key: CatchStartupBrandStage.markKey,
+                  width: CatchLayout.startupLogoExtent,
+                  height: CatchLayout.startupLogoExtent,
+                  semanticLabel: context
+                      .l10n
+                      .coreCatchStartupLoadingScreenSemanticlabelCatch,
+                ),
               ),
-            ),
             Center(
               child: Transform.translate(
                 offset: const Offset(0, CatchLayout.startupIndicatorOffsetY),

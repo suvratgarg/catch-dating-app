@@ -18,6 +18,13 @@ const _consumerLaunchScreenPath =
 const _hostLaunchScreenPath =
     'apps/host/ios/Runner/Base.lproj/LaunchScreen.storyboard';
 
+// Host launch geometry mirrors CatchLayout.startupLogoExtent and
+// CatchLayout.startupLogoTopInset. The same transparent mark canvas is then
+// painted at the same safe-area anchor by the native launch screen, Flutter
+// startup surface, and Host auth surface.
+const _hostLaunchImageExtent = 96;
+const _hostLaunchImageTopInset = 8;
+
 // Consumer LaunchImage is a 256pt transparent square. Its generated Catch_
 // alpha bounds begin at x=42/y=102. These geometry values mirror the Welcome
 // reel's 320pt contract in CatchLayout without changing the Host launch screen.
@@ -537,6 +544,10 @@ void _writeHostLaunchScreen() {
         <scene sceneID="EHf-IW-A2E">
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ydg-fD-yQy"/>
+                        <viewControllerLayoutGuide type="bottom" id="xbc-2k-c8Z"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -550,10 +561,11 @@ void _writeHostLaunchScreen() {
                             <constraint firstItem="tWc-Dq-wcI" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="3Lw-Bg-Tp"/>
                             <constraint firstAttribute="bottom" secondItem="tWc-Dq-wcI" secondAttribute="bottom" id="4Lw-Bg-Bt"/>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="5Hs-Cx"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="6Hs-Cy"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="width" constant="256" id="7Hs-Wd"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="height" constant="256" id="8Hs-Ht"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="$_hostLaunchImageTopInset" id="6Hs-Tp"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="width" constant="$_hostLaunchImageExtent" id="7Hs-Wd"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="height" constant="$_hostLaunchImageExtent" id="8Hs-Ht"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>

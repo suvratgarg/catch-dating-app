@@ -17636,6 +17636,10 @@
             "symbol": "AuthOtpEntryViewState"
           },
           {
+            "file": "lib/auth/presentation/host_auth_widgets.dart",
+            "symbol": "HostAuthCard"
+          },
+          {
             "file": "lib/auth/presentation/phone_page.dart",
             "symbol": "PhonePage"
           },
@@ -17654,7 +17658,7 @@
             "symbol": "AuthRepository"
           }
         ],
-        "notes": "AuthScreen is a state shell over AuthController.step and swaps PhonePage/OtpPage. PhonePage owns local phone text editing, country picker UI, validation, and send-code mutation feedback; OtpPage owns OTP text, resend cooldown timer, verify/resend mutation feedback, and change-number navigation. AuthPhoneEntryViewState and AuthOtpEntryViewState now expose fixtureable phone, OTP, cooldown, mutation-mode, resend, verify, and change-number display policy."
+        "notes": "AuthScreen remains the state shell over AuthController.step. Consumer swaps the existing standalone PhonePage/OtpPage presentations. Host keeps one CatchStartupBrandStage at the same top-center startup anchor and switches only the bottom-entering HostAuthCard content from phone entry to inline OTP. PhonePage owns local phone editing, country picker UI, validation, and send feedback; OtpPage owns OTP text, cooldown, verify/resend feedback, and edit-number navigation. AuthPhoneEntryViewState and AuthOtpEntryViewState expose fixtureable phone, masked-number, OTP, cooldown, mutation, resend, verify, and edit-number display policy."
       },
       "designRefs": [
         {
@@ -17662,7 +17666,7 @@
           "kind": "repo",
           "status": "available",
           "path": "test/auth/presentation/auth_screen_test.dart",
-          "notes": "Auth screen tests cover shared onboarding frame/header composition, phone validation, OTP transition, send/verify mutations, resend, and change-number behavior."
+          "notes": "Auth screen tests cover Consumer standalone composition, Host fixed startup/auth logo geometry, bottom-stage phone composition, inline OTP transition, phone validation, send/verify mutations, resend, and edit-number behavior."
         },
         {
           "id": "repo.auth-input-tests",
@@ -17675,7 +17679,7 @@
           "id": "auth-handoff",
           "kind": "external",
           "status": "needs_export",
-          "notes": "Auth phone-entry and OTP references are exported, masked, and manifest-registered. Validation, country-picker, mutation, resend, text-scale, and reduced-motion references still need canonical export before this design ref is complete. Current phone-entry comparison is blocked because the handoff uses top chrome/back plus a compact field row while production renders the vertically centered auth frame and current labeled field.",
+          "notes": "The historical auth phone-entry and OTP references are exported, masked, and manifest-registered, but they predate the product-approved Host Option 1 direction. Current Host production now uses a persistent splash/auth mark and a compact bottom-stage card with inline OTP; canonical reference exports for that role-specific composition and its mutation/accessibility states remain outstanding.",
           "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html"
         },
         {
@@ -17704,12 +17708,27 @@
         {
           "id": "auth_phone_entry",
           "status": "captured",
-          "notes": "Baseline phone-entry auth capture."
+          "notes": "Host empty phone-entry capture with persistent startup mark and bottom-stage auth card."
+        },
+        {
+          "id": "auth_phone_valid",
+          "status": "captured",
+          "notes": "Host valid phone-entry capture with enabled rectangular Send code action."
         },
         {
           "id": "auth_otp_entry",
           "status": "captured",
-          "notes": "OTP entry capture with seeded verification id and resend cooldown."
+          "notes": "Host inline OTP entry capture with seeded verification id and resend cooldown."
+        },
+        {
+          "id": "auth_otp_partial",
+          "status": "captured",
+          "notes": "Host inline OTP capture with three entered digits and active fourth cell."
+        },
+        {
+          "id": "auth_resend_ready",
+          "status": "captured",
+          "notes": "Host inline OTP capture with the full-width Resend code action enabled."
         },
         {
           "id": "auth_phone_validation_error",
@@ -17777,19 +17796,20 @@
           "id": "phone_entry",
           "kind": "populated",
           "status": "captured",
-          "source": "AuthScreen renders PhonePage while AuthController.step is AuthStep.phone, using OnboardingStepFrame and CatchField/CatchButton primitives.",
+          "source": "While AuthController.step is AuthStep.phone, Consumer renders the standalone PhonePage and Host renders the persistent CatchStartupBrandStage plus a bottom-stage HostAuthCard with one unified country/phone control and rectangular Send code action.",
           "previewIds": [
             "AuthScreen/Screen states",
             "PhonePage/Phone entry states"
           ],
           "captureIds": [
             "auth_phone_entry",
+            "auth_phone_valid",
             "auth_phone_text_scale_2"
           ],
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Auth phone entry has a manifest-registered design reference and deterministic captures, but the current advisory compare is above threshold at 11.09% mismatch / 22.89 meanDelta because production uses the vertically centered auth frame and current labeled field while the handoff uses top chrome/back plus a compact row. Widgetbook and route captures cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, and reduced motion; add state-specific references before strict visual comparison."
+          "nextAction": "Host empty, valid, pending, error, country-picker, alternate-market, text-scale, and light/dark states have deterministic captures. Export the approved persistent-mark/bottom-card Host reference before replacing the historical manifest comparison or enabling strict pixel comparison."
         },
         {
           "id": "country_selector",
@@ -17849,20 +17869,22 @@
           "id": "otp_entry",
           "kind": "populated",
           "status": "captured",
-          "source": "After codeSent, AuthScreen renders OtpPage with CatchOtpCodeField, verify CTA, resend cooldown, and change-number action.",
+          "source": "After codeSent, Host AuthScreen keeps the same route and startup-aligned mark while OtpPage reveals masked-number confirmation, a separate Edit number button, CatchOtpCodeField, auto-verification status, and a full-width resend cooldown/action inside the same HostAuthCard. Consumer retains its standalone OTP presentation.",
           "previewIds": [
             "AuthScreen/Screen states",
             "OtpPage/OTP entry states"
           ],
           "captureIds": [
             "auth_otp_entry",
+            "auth_otp_partial",
+            "auth_resend_ready",
             "auth_otp_text_scale_2",
             "auth_otp_reduced_motion"
           ],
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "OTP entry has a manifest-registered design reference and compares within advisory threshold at 12.20% mismatch / 16.05 meanDelta after masking fixture-only code digits and caret. Add complete-code ready state if product treats it as visually distinct."
+          "nextAction": "Host empty, partial, resend-ready, verify pending/error, resend pending/error, text-scale, reduced-motion, and light/dark variants are deterministic. Export the approved inline Host OTP reference before strict pixel comparison."
         },
         {
           "id": "verify_otp_mutation",
@@ -17913,8 +17935,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "AuthScreen watches AuthController.step and swaps PhonePage/OtpPage. PhonePage and OtpPage own text controllers, form validation, timers, mutation calls, and branded error banners inside shared onboarding frames, while AuthPhoneEntryViewState and AuthOtpEntryViewState own derived display labels, loading flags, cooldown copy, and action enablement.",
-        "targetLayout": "Auth should keep AuthController as the mutation owner and keep local text/timer lifecycle in the step widgets, while all reusable display policy routes through provider-free AuthPhoneEntryViewState and AuthOtpEntryViewState before future visual refactors.",
+        "currentLayout": "AuthScreen watches AuthController.step and projects one of two presentation adapters. Consumer keeps the standalone onboarding pages. HostAuthFlowFrame owns a startup-identical CatchStartupBrandStage and bottom scroll stage; AnimatedSwitcher replaces only the HostAuthCard content between PhonePage and inline OtpPage. The step widgets retain text controllers, validation, timers, mutation calls, and branded feedback, while provider-free view states own derived labels, masking, loading, cooldown, and action enablement.",
+        "targetLayout": "Implemented: keep AuthController as the shared mutation owner, local text/timer lifecycle in the step widgets, and role-specific composition in AuthScreen. Preserve the Host startup/auth logo anchor and one-card inline transition while routing reusable display policy through AuthPhoneEntryViewState and AuthOtpEntryViewState.",
         "sections": [
           {
             "id": "section.auth.route_adapter",
@@ -17931,7 +17953,8 @@
             "currentOwner": "AuthScreen + AuthController + AuthPhoneEntryViewState + AuthOtpEntryViewState",
             "targetOwner": "Auth display adapters backed by AuthController and mutation state",
             "dependencies": [
-              "catch.surface"
+              "catch.surface",
+              "catch.startup_loading_screen"
             ],
             "states": [
               "phone_entry",
@@ -17939,7 +17962,7 @@
               "send_code_mutation",
               "verify_otp_mutation"
             ],
-            "migration": "AuthPhoneEntryViewState and AuthOtpEntryViewState now expose fixtureable display policy while AuthController remains the mutation owner."
+            "migration": "HostAuthFlowFrame now keeps the real Host mark pixel-stable from Flutter startup through phone and OTP states, while only the lower content enters and switches; Consumer retains the standalone adapter. AuthController remains the mutation owner."
           },
           {
             "id": "section.auth.phone_entry",
@@ -17967,7 +17990,7 @@
               "send_code_mutation",
               "text_scale_2"
             ],
-            "migration": "PhonePage now derives country, autofocus, and send loading display state through AuthPhoneEntryViewState; validation and mutation error mapping stay local because they depend on Form and BuildContext."
+            "migration": "PhonePage now derives country and send loading display state through AuthPhoneEntryViewState. Its Host adapter uses one outlined HostAuthCard, unified flag/dial-code/phone field, and rectangular Send code action; validation and mutation error mapping remain local because they depend on Form and BuildContext."
           },
           {
             "id": "section.auth.otp_entry",
@@ -17993,7 +18016,7 @@
               "verify_otp_mutation",
               "text_scale_2"
             ],
-            "migration": "OtpPage now derives display phone copy, cooldown label, resend label, verify/resend/change-number enablement, and verify loading through AuthOtpEntryViewState while keeping the timer and text controller lifecycle local."
+            "migration": "OtpPage now derives masked phone copy, cooldown label, resend label, verify/resend/edit-number enablement, and verify loading through AuthOtpEntryViewState while keeping timer and text-controller lifecycle local. Its Host adapter reveals these states inline in the same card and auto-verifies a complete code."
           },
           {
             "id": "section.auth.error_feedback",
@@ -18025,7 +18048,7 @@
         {
           "id": "DS-AUTH-001",
           "status": "blocked",
-          "nextAction": "Blocked after the 2026-07-03 phone/OTP reference refresh. Auth Widgetbook and deterministic captures cover phone entry, OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, reduced motion, and light/dark through AuthController, Mutation, and capture-drive seams. OTP reference comparison is within threshold at 12.20% mismatch / 16.05 meanDelta, but phone entry remains above threshold at 11.09% mismatch / 22.89 meanDelta because the current handoff models top chrome/back plus a compact field row while production renders the vertically centered auth frame and current labeled field. Validation, country-picker, mutation, resend, text-scale, and reduced-motion design references remain unavailable. Resume when canonical Auth source reflects production layout or product chooses the older compact/top-chrome treatment."
+          "nextAction": "Blocked only on canonical reference refresh. The product-approved Host Option 1 composition is implemented with a startup-identical top-center mark, bottom-entering outlined card, unified phone row, inline OTP, separate Edit number and Resend code buttons, auto-verification, and deterministic empty/valid/partial/ready/pending/error/accessibility/light/dark captures. Historical manifest references predate this role-specific direction; export and register the approved Host references before strict pixel comparison."
         },
         {
           "id": "DS-AUTH-002",

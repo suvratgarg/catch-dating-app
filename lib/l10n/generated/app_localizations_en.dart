@@ -76,7 +76,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authPhoneSubtitle => 'We\'ll send you a one-time code to verify.';
 
   @override
+  String get authHostPhoneTitle => 'Sign in with your phone';
+
+  @override
+  String get authHostPhoneSubtitle =>
+      'We\'ll send a one-time code to verify your account.';
+
+  @override
   String get authPhoneFieldLabel => 'Mobile number';
+
+  @override
+  String get authPhoneFieldPlaceholder => 'Enter your mobile number';
 
   @override
   String get authSearchCountryHint => 'Search country';
@@ -89,6 +99,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authOtpTitle => 'Enter the code';
+
+  @override
+  String get authHostEditNumberAction => 'Edit number';
+
+  @override
+  String authHostResendCountdownAction({
+    required int minutes,
+    required String seconds,
+  }) {
+    return 'Resend code in $minutes:$seconds';
+  }
+
+  @override
+  String get authHostResendCodeAction => 'Resend code';
+
+  @override
+  String get authHostSendingCodeAction => 'Sending code...';
+
+  @override
+  String get authHostVerifyingStatus => 'Verifying...';
+
+  @override
+  String get authHostVerificationPendingHint => 'This may take a few seconds.';
 
   @override
   String authOtpSentTo({required String phoneNumber}) {

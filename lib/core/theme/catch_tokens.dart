@@ -479,6 +479,15 @@ abstract final class CatchInsets {
     horizontal: CatchSpacing.s6,
   );
 
+  /// Host authentication stage: compact separation below the persistent brand
+  /// anchor, standard screen gutters, and scroll-end breathing room.
+  static const EdgeInsets hostAuthStage = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.s2,
+    CatchSpacing.screenPx,
+    CatchSpacing.s5,
+  );
+
   /// Side breathing room for the full-bleed Catches profile on wide panes.
   static const EdgeInsets catchesWideProfile = EdgeInsets.symmetric(
     horizontal: CatchSpacing.s8,
@@ -1982,6 +1991,7 @@ abstract final class CatchMotion {
   static const Duration pulse = Duration(milliseconds: 700);
   static const Duration skeletonShimmer = Duration(milliseconds: 1200);
   static const Duration startupIndicatorDelay = Duration(milliseconds: 600);
+  static const Duration authContentEntrance = Duration(milliseconds: 360);
   static const Duration welcomeReel = Duration(milliseconds: 3000);
   static const Duration welcomeLandingReveal = Duration(milliseconds: 1400);
   static const Duration welcomeNonFocusFade = Duration(milliseconds: 500);
@@ -2631,8 +2641,14 @@ abstract final class CatchLayout {
       CatchSpacing.s16 + CatchSpacing.s10;
   static const double skeletonStatusPillWidth = 82.0;
   static const double startupLogoExtent = 96.0;
+  static const double startupBrandStageExtent = 120.0;
+  static const double startupLogoTopInset = CatchSpacing.s2;
   static const double startupIndicatorExtent = CatchSpacing.s7;
   static const double startupIndicatorOffsetY = 76.0;
+  static const double authContentEntranceOffset = CatchSpacing.s8;
+  static const double authCountryCodeEmbeddedWidth = 116.0;
+  static const double authOtpDigitHeight = controlCompactMinHeight;
+  static const double authOtpDigitGap = CatchSpacing.s2;
   static const double stepHeaderTopBarHeight = 80.0;
   static const double stepHeaderCounterTopPadding = CatchSpacing.s2;
   static const double stepHeaderProgressHeight = 2.0;
