@@ -223,6 +223,45 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
       'minimum': 0,
       'maximum': 2500,
     },
+    'lastPreviewReachSummary': <String, Object?>{
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'type': 'null',
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'inCatch',
+            'automatic',
+            'byHand',
+            'unavailable',
+          ],
+          'properties': <String, Object?>{
+            'inCatch': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 2500,
+            },
+            'automatic': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 2500,
+            },
+            'byHand': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 2500,
+            },
+            'unavailable': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 2500,
+            },
+          },
+        },
+      ],
+    },
     'lastPreviewAt': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
@@ -319,6 +358,38 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
     },
   },
   'definitions': <String, Object?>{
+    'reachSummary': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'inCatch',
+        'automatic',
+        'byHand',
+        'unavailable',
+      ],
+      'properties': <String, Object?>{
+        'inCatch': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2500,
+        },
+        'automatic': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2500,
+        },
+        'byHand': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2500,
+        },
+        'unavailable': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2500,
+        },
+      },
+    },
     'definition': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

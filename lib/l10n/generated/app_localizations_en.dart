@@ -128,7 +128,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostInboxTitle => 'Messaging';
 
   @override
-  String get hostInboxSubtitle => 'Attendee queries';
+  String get hostInboxSubtitle => 'One-to-one conversations and replies.';
 
   @override
   String get sharedSearchByNameHint => 'Search by name';
@@ -13219,6 +13219,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostMessagingWorkspaceSends => 'Sends';
 
   @override
+  String get hostSendsSubtitle => 'Outbound delivery and history.';
+
+  @override
   String get hostSendsChooseIntent => 'Choose what to send';
 
   @override
@@ -13615,6 +13618,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersClearFilter => 'Clear';
 
   @override
+  String get hostCustomersViewPeople => 'People';
+
+  @override
+  String get hostCustomersViewAudiences => 'Audiences';
+
+  @override
   String get hostSavedAudienceSaveTitle => 'Save this audience';
 
   @override
@@ -13628,12 +13637,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSavedAudienceSaveAndMessage => 'Save and continue to message';
 
   @override
-  String get hostSavedAudiencesEmptyTitle =>
-      'Create an audience in Customers first';
+  String get hostSavedAudiencesEmptyTitle => 'No saved audiences yet';
 
   @override
   String get hostSavedAudiencesEmptyBody =>
-      'Apply a Customers filter, choose Message these, and save the reusable audience. Sends does not create its own customer filters.';
+      'Create a reusable customer group here. Messaging can use it later without redefining who belongs in it.';
 
   @override
   String get hostSavedAudienceFieldLabel => 'Saved audience';
@@ -13653,8 +13661,150 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSavedAudiencesManage => 'Saved audiences';
 
   @override
-  String get hostSavedAudiencesManageBody =>
-      'Preview an exact current count or archive a reusable audience. Archived audiences stay attached to historical sends.';
+  String get hostSavedAudiencesWorkspaceBody =>
+      'Define groups here. Send from Messaging.';
+
+  @override
+  String get hostSavedAudiencesSearch => 'Search audiences';
+
+  @override
+  String get hostSavedAudiencesSearchEmptyTitle =>
+      'No audiences match this search';
+
+  @override
+  String get hostSavedAudiencesSearchEmptyBody =>
+      'Try a different audience name.';
+
+  @override
+  String get hostSavedAudienceNew => 'New audience';
+
+  @override
+  String get hostSavedAudienceCreate => 'Create audience';
+
+  @override
+  String get hostSavedAudienceSaveChanges => 'Save changes';
+
+  @override
+  String get hostSavedAudienceEditorBody =>
+      'Name a reusable group and define who belongs in it. Messaging can select this audience, but cannot change its rules.';
+
+  @override
+  String get hostSavedAudienceDetails => 'Audience details';
+
+  @override
+  String get hostSavedAudienceNameRequired => 'Add an audience name.';
+
+  @override
+  String get hostSavedAudienceMatch => 'Match rules';
+
+  @override
+  String get hostSavedAudienceMatchAll => 'Match every rule';
+
+  @override
+  String get hostSavedAudienceMatchAny => 'Match any rule';
+
+  @override
+  String hostSavedAudienceCondition({required int number}) {
+    return 'Condition $number';
+  }
+
+  @override
+  String get hostSavedAudienceRemoveRule => 'Remove';
+
+  @override
+  String get hostSavedAudienceAddRule => 'Add condition';
+
+  @override
+  String get hostSavedAudienceRuleType => 'Condition type';
+
+  @override
+  String get hostSavedAudienceRuleSegment => 'Customer segment';
+
+  @override
+  String get hostSavedAudienceRuleTag => 'Your tag';
+
+  @override
+  String get hostSavedAudienceRuleAttendance => 'Attendance count';
+
+  @override
+  String get hostSavedAudienceRuleLastSeen => 'Last seen';
+
+  @override
+  String get hostSavedAudienceRuleManagedReach =>
+      'Managed WhatsApp eligibility';
+
+  @override
+  String get hostSavedAudienceSegment => 'Segment';
+
+  @override
+  String get hostSavedAudienceTag => 'Tag';
+
+  @override
+  String get hostSavedAudienceChooseTag => 'Choose a tag';
+
+  @override
+  String get hostSavedAudienceAttendanceComparison => 'Comparison';
+
+  @override
+  String get hostSavedAudienceAtLeast => 'At least';
+
+  @override
+  String get hostSavedAudienceAtMost => 'At most';
+
+  @override
+  String get hostSavedAudienceEventsAttended => 'Events attended';
+
+  @override
+  String get hostSavedAudienceEventsUnit => 'events';
+
+  @override
+  String get hostSavedAudienceLastSeenWithin => 'Last seen within';
+
+  @override
+  String get hostSavedAudienceDaysUnit => 'days';
+
+  @override
+  String get hostSavedAudienceDecreaseCount => 'Decrease event count';
+
+  @override
+  String get hostSavedAudienceIncreaseCount => 'Increase event count';
+
+  @override
+  String get hostSavedAudienceDecreaseDays => 'Decrease day count';
+
+  @override
+  String get hostSavedAudienceIncreaseDays => 'Increase day count';
+
+  @override
+  String get hostSavedAudienceManagedReach => 'Eligibility';
+
+  @override
+  String get hostSavedAudienceManagedReachBody =>
+      'Includes only customers currently eligible for an organizer-managed WhatsApp campaign. Messaging rechecks this at send time.';
+
+  @override
+  String get hostSavedAudienceCompleteRules =>
+      'Complete every audience condition before saving.';
+
+  @override
+  String get hostSavedAudienceCurrentPreview => 'Current preview';
+
+  @override
+  String get hostSavedAudiencePeople => 'People and reach';
+
+  @override
+  String get hostSavedAudiencePreviewDisclosure =>
+      'Counts come from an exact server preview. Messaging checks the audience and each route again before sending.';
+
+  @override
+  String get hostSavedAudienceArchiveTitle => 'Archive this audience?';
+
+  @override
+  String get hostSavedAudienceArchiveBody =>
+      'It will disappear from new sends. Historical sends keep the audience snapshot they used.';
+
+  @override
+  String get hostSavedAudienceNotFound => 'This saved audience is unavailable.';
 
   @override
   String get hostSavedAudiencePreview => 'Refresh exact preview';
@@ -13666,12 +13816,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSavedAudienceNeverPreviewed => 'Not previewed yet';
 
   @override
-  String hostSavedAudienceExactCount({required int count}) {
+  String hostSavedAudiencePeopleCount({required int count}) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count people in the exact preview',
-      one: '1 person in the exact preview',
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostAudienceReachCountInCatch({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count IN CATCH',
+      zero: '0 IN CATCH',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostAudienceReachCountAutomatic({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count AUTO',
+      zero: '0 AUTO',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostAudienceReachCountByHand({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count BY HAND',
+      zero: '0 BY HAND',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostAudienceReachCountUnavailable({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count NO REACH',
+      zero: '0 NO REACH',
     );
     return '$_temp0';
   }

@@ -301,10 +301,10 @@ abstract class AppLocalizations {
   /// **'Messaging'**
   String get hostInboxTitle;
 
-  /// Host inbox subtitle describing attendee conversations.
+  /// Explains that Inbox owns reply-capable conversations rather than reusable or event-scoped audiences.
   ///
   /// In en, this message translates to:
-  /// **'Attendee queries'**
+  /// **'One-to-one conversations and replies.'**
   String get hostInboxSubtitle;
 
   /// Search hint for a list of people or conversations.
@@ -20619,7 +20619,7 @@ abstract class AppLocalizations {
   /// **'Everyone who has attended, registered, been imported, or been added by your team.'**
   String get hostCustomersIntro;
 
-  /// Messaging workspace label for direct inquiries and event broadcasts.
+  /// Messaging workspace label for reply-capable direct inquiries and conversations.
   ///
   /// In en, this message translates to:
   /// **'Inbox'**
@@ -20630,6 +20630,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sends'**
   String get hostMessagingWorkspaceSends;
+
+  /// Explains the outbound intent and delivery-history responsibility of the Messaging Sends workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Outbound delivery and history.'**
+  String get hostSendsSubtitle;
 
   /// Opens the Host outbound-intent chooser without exposing transport policy.
   ///
@@ -21256,6 +21262,18 @@ abstract class AppLocalizations {
   /// **'Clear'**
   String get hostCustomersClearFilter;
 
+  /// Customers workspace tab for individual CRM contacts.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get hostCustomersViewPeople;
+
+  /// Customers workspace tab for reusable named customer groups.
+  ///
+  /// In en, this message translates to:
+  /// **'Audiences'**
+  String get hostCustomersViewAudiences;
+
   /// Customers-owned saved-audience naming step title.
   ///
   /// In en, this message translates to:
@@ -21280,16 +21298,16 @@ abstract class AppLocalizations {
   /// **'Save and continue to message'**
   String get hostSavedAudienceSaveAndMessage;
 
-  /// Campaign composer empty saved-audience title.
+  /// Empty saved-audience directory or campaign picker title.
   ///
   /// In en, this message translates to:
-  /// **'Create an audience in Customers first'**
+  /// **'No saved audiences yet'**
   String get hostSavedAudiencesEmptyTitle;
 
   /// Explains that audience authoring belongs to Customers.
   ///
   /// In en, this message translates to:
-  /// **'Apply a Customers filter, choose Message these, and save the reusable audience. Sends does not create its own customer filters.'**
+  /// **'Create a reusable customer group here. Messaging can use it later without redefining who belongs in it.'**
   String get hostSavedAudiencesEmptyBody;
 
   /// Saved-audience picker label in campaign composition.
@@ -21304,17 +21322,281 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{{name} · 1 person at last preview} other{{name} · {count} people at last preview}}'**
   String hostSavedAudienceOption({required String name, required int count});
 
-  /// Opens Customers-owned saved-audience management.
+  /// Customers-owned saved-audience directory heading.
   ///
   /// In en, this message translates to:
   /// **'Saved audiences'**
   String get hostSavedAudiencesManage;
 
-  /// Saved-audience management ownership and history explanation.
+  /// Concise Customers versus Messaging ownership explanation above the saved-audience directory.
   ///
   /// In en, this message translates to:
-  /// **'Preview an exact current count or archive a reusable audience. Archived audiences stay attached to historical sends.'**
-  String get hostSavedAudiencesManageBody;
+  /// **'Define groups here. Send from Messaging.'**
+  String get hostSavedAudiencesWorkspaceBody;
+
+  /// Saved-audience name search control.
+  ///
+  /// In en, this message translates to:
+  /// **'Search audiences'**
+  String get hostSavedAudiencesSearch;
+
+  /// Filtered saved-audience directory empty title.
+  ///
+  /// In en, this message translates to:
+  /// **'No audiences match this search'**
+  String get hostSavedAudiencesSearchEmptyTitle;
+
+  /// Filtered saved-audience directory empty guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different audience name.'**
+  String get hostSavedAudiencesSearchEmptyBody;
+
+  /// Single canonical create action in the saved-audience section header.
+  ///
+  /// In en, this message translates to:
+  /// **'New audience'**
+  String get hostSavedAudienceNew;
+
+  /// Creates and exactly previews a new saved audience.
+  ///
+  /// In en, this message translates to:
+  /// **'Create audience'**
+  String get hostSavedAudienceCreate;
+
+  /// Saves and exactly previews edits to a saved audience.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get hostSavedAudienceSaveChanges;
+
+  /// Audience editor ownership explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Name a reusable group and define who belongs in it. Messaging can select this audience, but cannot change its rules.'**
+  String get hostSavedAudienceEditorBody;
+
+  /// Audience editor identity section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience details'**
+  String get hostSavedAudienceDetails;
+
+  /// Audience editor name validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an audience name.'**
+  String get hostSavedAudienceNameRequired;
+
+  /// Audience predicate join field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Match rules'**
+  String get hostSavedAudienceMatch;
+
+  /// Audience definition requires all rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Match every rule'**
+  String get hostSavedAudienceMatchAll;
+
+  /// Audience definition requires any rule.
+  ///
+  /// In en, this message translates to:
+  /// **'Match any rule'**
+  String get hostSavedAudienceMatchAny;
+
+  /// Numbered audience condition section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition {number}'**
+  String hostSavedAudienceCondition({required int number});
+
+  /// Removes one pending audience condition.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hostSavedAudienceRemoveRule;
+
+  /// Adds another pending audience condition.
+  ///
+  /// In en, this message translates to:
+  /// **'Add condition'**
+  String get hostSavedAudienceAddRule;
+
+  /// Audience condition kind picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition type'**
+  String get hostSavedAudienceRuleType;
+
+  /// Computed customer segment condition label.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer segment'**
+  String get hostSavedAudienceRuleSegment;
+
+  /// Organizer tag audience condition label.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tag'**
+  String get hostSavedAudienceRuleTag;
+
+  /// Attendance-count audience condition label.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance count'**
+  String get hostSavedAudienceRuleAttendance;
+
+  /// Last-seen audience condition label.
+  ///
+  /// In en, this message translates to:
+  /// **'Last seen'**
+  String get hostSavedAudienceRuleLastSeen;
+
+  /// Managed campaign eligibility audience condition label.
+  ///
+  /// In en, this message translates to:
+  /// **'Managed WhatsApp eligibility'**
+  String get hostSavedAudienceRuleManagedReach;
+
+  /// Computed segment picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Segment'**
+  String get hostSavedAudienceSegment;
+
+  /// Organizer tag picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag'**
+  String get hostSavedAudienceTag;
+
+  /// Organizer tag picker empty prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a tag'**
+  String get hostSavedAudienceChooseTag;
+
+  /// Attendance condition comparison picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparison'**
+  String get hostSavedAudienceAttendanceComparison;
+
+  /// Inclusive minimum attendance comparison.
+  ///
+  /// In en, this message translates to:
+  /// **'At least'**
+  String get hostSavedAudienceAtLeast;
+
+  /// Inclusive maximum attendance comparison.
+  ///
+  /// In en, this message translates to:
+  /// **'At most'**
+  String get hostSavedAudienceAtMost;
+
+  /// Attendance condition count field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Events attended'**
+  String get hostSavedAudienceEventsAttended;
+
+  /// Attendance count stepper unit.
+  ///
+  /// In en, this message translates to:
+  /// **'events'**
+  String get hostSavedAudienceEventsUnit;
+
+  /// Last-seen condition day field title.
+  ///
+  /// In en, this message translates to:
+  /// **'Last seen within'**
+  String get hostSavedAudienceLastSeenWithin;
+
+  /// Last-seen stepper unit.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get hostSavedAudienceDaysUnit;
+
+  /// Attendance stepper decrement accessibility label.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease event count'**
+  String get hostSavedAudienceDecreaseCount;
+
+  /// Attendance stepper increment accessibility label.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase event count'**
+  String get hostSavedAudienceIncreaseCount;
+
+  /// Last-seen stepper decrement accessibility label.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease day count'**
+  String get hostSavedAudienceDecreaseDays;
+
+  /// Last-seen stepper increment accessibility label.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase day count'**
+  String get hostSavedAudienceIncreaseDays;
+
+  /// Managed campaign condition explanation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligibility'**
+  String get hostSavedAudienceManagedReach;
+
+  /// Managed campaign condition semantics and recheck disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes only customers currently eligible for an organizer-managed WhatsApp campaign. Messaging rechecks this at send time.'**
+  String get hostSavedAudienceManagedReachBody;
+
+  /// Audience condition validation message.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete every audience condition before saving.'**
+  String get hostSavedAudienceCompleteRules;
+
+  /// Saved audience preview section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Current preview'**
+  String get hostSavedAudienceCurrentPreview;
+
+  /// Saved audience preview count and reach row title.
+  ///
+  /// In en, this message translates to:
+  /// **'People and reach'**
+  String get hostSavedAudiencePeople;
+
+  /// Saved audience preview staleness and send-time recheck disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts come from an exact server preview. Messaging checks the audience and each route again before sending.'**
+  String get hostSavedAudiencePreviewDisclosure;
+
+  /// Saved audience archive confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive this audience?'**
+  String get hostSavedAudienceArchiveTitle;
+
+  /// Saved audience archive consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'It will disappear from new sends. Historical sends keep the audience snapshot they used.'**
+  String get hostSavedAudienceArchiveBody;
+
+  /// Missing or archived saved audience detail message.
+  ///
+  /// In en, this message translates to:
+  /// **'This saved audience is unavailable.'**
+  String get hostSavedAudienceNotFound;
 
   /// Recomputes an exact saved-audience preview.
   ///
@@ -21334,11 +21616,35 @@ abstract class AppLocalizations {
   /// **'Not previewed yet'**
   String get hostSavedAudienceNeverPreviewed;
 
-  /// Exact saved-audience preview count.
+  /// Compact exact saved-audience headcount for a directory row.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 person in the exact preview} other{{count} people in the exact preview}}'**
-  String hostSavedAudienceExactCount({required int count});
+  /// **'{count, plural, =1{1 person} other{{count} people}}'**
+  String hostSavedAudiencePeopleCount({required int count});
+
+  /// Full-register reach count for customers with a Catch account.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 IN CATCH} other{{count} IN CATCH}}'**
+  String hostAudienceReachCountInCatch({required int count});
+
+  /// Full-register reach count for managed automatic delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 AUTO} other{{count} AUTO}}'**
+  String hostAudienceReachCountAutomatic({required int count});
+
+  /// Full-register reach count for personal handoff delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 BY HAND} other{{count} BY HAND}}'**
+  String hostAudienceReachCountByHand({required int count});
+
+  /// Full-register reach count for customers with no available route.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 NO REACH} other{{count} NO REACH}}'**
+  String hostAudienceReachCountUnavailable({required int count});
 
   /// Reloads customer history coverage after an organizer import or repair.
   ///

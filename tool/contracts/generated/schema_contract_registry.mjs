@@ -14248,6 +14248,45 @@ export const organizerSavedAudienceDocumentSchema = {
       "minimum": 0,
       "maximum": 2500
     },
+    "lastPreviewReachSummary": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inCatch",
+            "automatic",
+            "byHand",
+            "unavailable"
+          ],
+          "properties": {
+            "inCatch": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "automatic": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "byHand": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "unavailable": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            }
+          }
+        }
+      ]
+    },
     "lastPreviewAt": {
       "anyOf": [
         {
@@ -14344,6 +14383,38 @@ export const organizerSavedAudienceDocumentSchema = {
     }
   },
   "definitions": {
+    "reachSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inCatch",
+        "automatic",
+        "byHand",
+        "unavailable"
+      ],
+      "properties": {
+        "inCatch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "automatic": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "byHand": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "unavailable": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        }
+      }
+    },
     "definition": {
       "type": "object",
       "additionalProperties": false,
@@ -60220,6 +60291,7 @@ export const organizerSavedAudienceCallableResponseSchema = {
     "definitionVersion",
     "revision",
     "lastPreviewMatchCount",
+    "lastPreviewReachSummary",
     "lastPreviewAtMillis",
     "createdAtMillis",
     "updatedAtMillis"
@@ -60404,6 +60476,45 @@ export const organizerSavedAudienceCallableResponseSchema = {
       "minimum": 0,
       "maximum": 2500
     },
+    "lastPreviewReachSummary": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inCatch",
+            "automatic",
+            "byHand",
+            "unavailable"
+          ],
+          "properties": {
+            "inCatch": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "automatic": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "byHand": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            },
+            "unavailable": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2500
+            }
+          }
+        }
+      ]
+    },
     "lastPreviewAtMillis": {
       "type": [
         "integer",
@@ -60459,6 +60570,7 @@ export const listOrganizerSavedAudiencesCallableResponseSchema = {
           "definitionVersion",
           "revision",
           "lastPreviewMatchCount",
+          "lastPreviewReachSummary",
           "lastPreviewAtMillis",
           "createdAtMillis",
           "updatedAtMillis"
@@ -60643,6 +60755,45 @@ export const listOrganizerSavedAudiencesCallableResponseSchema = {
             "minimum": 0,
             "maximum": 2500
           },
+          "lastPreviewReachSummary": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "inCatch",
+                  "automatic",
+                  "byHand",
+                  "unavailable"
+                ],
+                "properties": {
+                  "inCatch": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2500
+                  },
+                  "automatic": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2500
+                  },
+                  "byHand": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2500
+                  },
+                  "unavailable": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2500
+                  }
+                }
+              }
+            ]
+          },
           "lastPreviewAtMillis": {
             "type": [
               "integer",
@@ -60682,6 +60833,7 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
     "audience",
     "coverage",
     "matchCount",
+    "reachSummary",
     "sample",
     "evaluatedAtMillis"
   ],
@@ -60702,6 +60854,7 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
         "definitionVersion",
         "revision",
         "lastPreviewMatchCount",
+        "lastPreviewReachSummary",
         "lastPreviewAtMillis",
         "createdAtMillis",
         "updatedAtMillis"
@@ -60886,6 +61039,45 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
           "minimum": 0,
           "maximum": 2500
         },
+        "lastPreviewReachSummary": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "inCatch",
+                "automatic",
+                "byHand",
+                "unavailable"
+              ],
+              "properties": {
+                "inCatch": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                },
+                "automatic": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                },
+                "byHand": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                },
+                "unavailable": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                }
+              }
+            }
+          ]
+        },
         "lastPreviewAtMillis": {
           "type": [
             "integer",
@@ -60910,6 +61102,38 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 2500
+    },
+    "reachSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inCatch",
+        "automatic",
+        "byHand",
+        "unavailable"
+      ],
+      "properties": {
+        "inCatch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "automatic": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "byHand": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "unavailable": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2500
+        }
+      }
     },
     "sample": {
       "type": "array",

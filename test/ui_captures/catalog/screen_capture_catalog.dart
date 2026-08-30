@@ -4797,6 +4797,10 @@ final _hostInquiryImageDayMessages = <ChatMessage>[
 List<Object> _hostCustomersProviderOverrides() {
   final club = HostOperationsFixtures.primaryClub;
   final request = HostCustomersDirectoryRequest(organizerId: club.id);
+  final audienceEditorRequest = HostCustomersDirectoryRequest(
+    organizerId: club.id,
+    sort: HostCustomerSort.name,
+  );
   return [
     uidProvider.overrideWithValue(
       const AsyncData<String?>(HostOperationsFixtures.hostUid),
@@ -4853,7 +4857,64 @@ List<Object> _hostCustomersProviderOverrides() {
         projectionVersion: 1,
       ),
     ),
+    hostCustomersDirectoryControllerProvider(
+      audienceEditorRequest,
+    ).overrideWithBuild(
+      (ref, notifier) async => const HostCustomersDirectoryState(
+        contacts: [],
+        nextCursor: null,
+        matchCount: 0,
+        matchCountCoverage: HostCustomerMatchCountCoverage.exact,
+        sourceCoverage: HostCustomerDirectoryCoverage.exact,
+        projectionVersion: 1,
+        manualTagVocabulary: [
+          HostCustomerManualTag(tagId: 'tag-runners', label: 'Runners'),
+          HostCustomerManualTag(tagId: 'tag-regulars', label: 'Regulars'),
+        ],
+      ),
+    ),
+    hostAllSavedAudiencesProvider(club.id).overrideWithValue(
+      AsyncData(
+        HostSavedAudiencePage(
+          audiences: [_hostSavedAudienceCapture()],
+          nextCursor: null,
+        ),
+      ),
+    ),
   ];
+}
+
+HostSavedAudience _hostSavedAudienceCapture() {
+  final organizerId = HostOperationsFixtures.primaryClub.id;
+  return HostSavedAudience(
+    organizerId: organizerId,
+    audienceId: 'capture-repeat-runners',
+    name: 'Repeat runners',
+    status: 'active',
+    definition: const HostSavedAudienceDefinition(
+      join: HostSavedAudienceJoin.all,
+      predicates: [
+        HostSavedAudienceComputedSegment(HostAudienceSegment.repeatAttendee),
+        HostSavedAudienceAttendanceCount(
+          operator: HostSavedAudienceAttendanceOperator.atLeast,
+          eventCount: 3,
+        ),
+      ],
+    ),
+    definitionHash: 'capture-repeat-runners-hash',
+    definitionVersion: 1,
+    revision: 2,
+    lastPreviewMatchCount: 24,
+    lastPreviewReachSummary: const HostAudienceReachSummary(
+      inCatch: 14,
+      automatic: 0,
+      byHand: 8,
+      unavailable: 2,
+    ),
+    lastPreviewAt: DateTime(2026, 8, 30, 10),
+    createdAt: DateTime(2026, 8, 28, 10),
+    updatedAt: DateTime(2026, 8, 30, 10),
+  );
 }
 
 class _CaptureHostFormsDirectoryController
@@ -5176,6 +5237,37 @@ List<Object> _hostInboxProviderOverrides({
       HostInboxSurfaceFixtures.club.id,
     ).overrideWithValue(
       AsyncData(_hostMessagingCaptureSetup(HostInboxSurfaceFixtures.club.id)),
+    ),
+    hostSendsProvider(HostInboxSurfaceFixtures.club.id).overrideWithValue(
+      AsyncData(
+        HostSendsPage(
+          organizerId: HostInboxSurfaceFixtures.club.id,
+          sends: const [],
+          nextCursor: null,
+        ),
+      ),
+    ),
+    hostManualSendTasksProvider(
+      HostInboxSurfaceFixtures.club.id,
+    ).overrideWithValue(
+      AsyncData(
+        HostManualSendTaskPage(
+          organizerId: HostInboxSurfaceFixtures.club.id,
+          tasks: const [],
+          nextCursor: null,
+        ),
+      ),
+    ),
+    hostWhatsappThreadsProvider(
+      HostInboxSurfaceFixtures.club.id,
+    ).overrideWithValue(
+      AsyncData(
+        HostWhatsappThreadPage(
+          organizerId: HostInboxSurfaceFixtures.club.id,
+          threads: const [],
+          nextCursor: null,
+        ),
+      ),
     ),
     watchEventParticipationsForEventProvider(
       HostInboxSurfaceFixtures.eventId,
@@ -14898,6 +14990,48 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       child: HostCustomersScreen(
         initialOrganizerId: HostOperationsFixtures.primaryClub.id,
       ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_customers_audiences_populated',
+    routeIds: const <String>['hostCustomersScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ..._hostCustomersProviderOverrides(),
+    ],
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation: '/host/customers?view=audiences',
+      activeIndex: 1,
+      child: HostCustomersScreen(
+        initialOrganizerId: HostOperationsFixtures.primaryClub.id,
+        initialView: HostCustomersView.audiences,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_saved_audience_create',
+    routeIds: const <String>['hostCreateSavedAudienceScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ..._hostCustomersProviderOverrides(),
+    ],
+    builder: (context) => HostSavedAudienceEditorScreen(
+      organizerId: HostOperationsFixtures.primaryClub.id,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_saved_audience_detail',
+    routeIds: const <String>['hostSavedAudienceDetailScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ..._hostCustomersProviderOverrides(),
+    ],
+    builder: (context) => HostSavedAudienceEditorScreen(
+      organizerId: HostOperationsFixtures.primaryClub.id,
+      initialAudience: _hostSavedAudienceCapture(),
     ),
   ),
   ScreenCaptureEntry(

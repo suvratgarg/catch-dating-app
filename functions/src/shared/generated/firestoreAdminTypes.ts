@@ -1908,6 +1908,12 @@ export interface OrganizerSavedAudienceDocument {
   createdByUid: string;
   updatedByUid: string;
   lastPreviewMatchCount: number | null;
+  lastPreviewReachSummary?: null | {
+    inCatch: number;
+    automatic: number;
+    byHand: number;
+    unavailable: number;
+  };
   lastPreviewAt: FirebaseFirestore.Timestamp | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;

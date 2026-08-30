@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
@@ -26,12 +27,16 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
@@ -56,8 +61,12 @@ part 'host_customer_detail_cards.dart';
 part 'host_customer_editor.dart';
 part 'host_customer_editor_sheets.dart';
 part 'host_customers_directory.dart';
+part 'host_saved_audience_editor.dart';
+part 'host_saved_audiences_workspace.dart';
 
-enum _HostCustomersHeaderAction { savedAudiences, reviewDuplicates, export }
+enum HostCustomersView { people, audiences }
+
+enum _HostCustomersHeaderAction { reviewDuplicates, export }
 
 class HostCustomersScreen extends ConsumerStatefulWidget {
   const HostCustomersScreen({
@@ -65,20 +74,24 @@ class HostCustomersScreen extends ConsumerStatefulWidget {
     this.initialOrganizerId,
     this.initialContactId,
     this.initialContactDisplayName,
+    this.initialView = HostCustomersView.people,
   });
 
   final String? initialOrganizerId;
   final String? initialContactId;
   final String? initialContactDisplayName;
+  final HostCustomersView initialView;
 
   @override
   ConsumerState<HostCustomersScreen> createState() =>
       _HostCustomersScreenState();
 }
 
-class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
+class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
+    with SingleTickerProviderStateMixin {
   Timer? _searchDebounce;
   String? _search;
+  String? _audienceSearch;
   HostCustomerFilter _filter = HostCustomerFilter.all;
   HostCustomerManualTag? _manualTag;
   HostCustomerSort _sort = HostCustomerSort.lastSeen;
@@ -86,10 +99,16 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   bool _searchExpanded = false;
   String? _selectedContactId;
   String? _selectedContactDisplayName;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(
+      length: HostCustomersView.values.length,
+      initialIndex: widget.initialView.index,
+      vsync: this,
+    )..addListener(_handleViewChanged);
     _selectedContactId = widget.initialContactId;
     _selectedContactDisplayName = widget.initialContactDisplayName;
   }
@@ -97,6 +116,10 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   @override
   void didUpdateWidget(covariant HostCustomersScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialView != widget.initialView &&
+        _tabController.index != widget.initialView.index) {
+      _tabController.index = widget.initialView.index;
+    }
     if (oldWidget.initialContactId != widget.initialContactId) {
       _selectedContactId = widget.initialContactId;
       if (widget.initialContactDisplayName != null ||
@@ -109,7 +132,17 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
   @override
   void dispose() {
     _searchDebounce?.cancel();
+    _tabController
+      ..removeListener(_handleViewChanged)
+      ..dispose();
     super.dispose();
+  }
+
+  HostCustomersView get _view => HostCustomersView.values[_tabController.index];
+
+  void _handleViewChanged() {
+    if (_tabController.indexIsChanging || !mounted) return;
+    setState(() => _searchExpanded = false);
   }
 
   @override
@@ -151,10 +184,13 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           ? widget.initialOrganizerId
           : null,
     )!;
-    final summary = ref.watch(hostCrmSummaryProvider(selectedClub.id));
-    final messagingSetup = ref.watch(
-      hostMessagingSetupProvider(selectedClub.id),
-    );
+    final peopleView = _view == HostCustomersView.people;
+    final summary = peopleView
+        ? ref.watch(hostCrmSummaryProvider(selectedClub.id))
+        : const AsyncLoading<HostCrmSummary>();
+    final messagingSetup = peopleView
+        ? ref.watch(hostMessagingSetupProvider(selectedClub.id))
+        : const AsyncLoading<HostMessagingSetup>();
     final summaryState = catchAsyncStateFromAsyncValue(summary);
     final messagingSetupState = catchAsyncStateFromAsyncValue(messagingSetup);
     final visibleFilters = hostCustomerFiltersForSmsReadiness(
@@ -170,9 +206,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       manualTagId: _manualTag?.tagId,
       sort: _sort,
     );
-    final directory = ref.watch(
-      hostCustomersDirectoryControllerProvider(request),
-    );
+    final directory = peopleView
+        ? ref.watch(hostCustomersDirectoryControllerProvider(request))
+        : const AsyncLoading<HostCustomersDirectoryState>();
     final directoryState = catchAsyncStateFromAsyncValue(directory).value;
     String? campaignBridgeBlocker;
     if (directoryState != null) {
@@ -188,143 +224,167 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
             HostCustomerDirectoryCoverage.exact,
       );
     }
-    final t = CatchTokens.of(context);
     final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
-    final headerActions = [
-      CatchTopBarPrimaryAction(
-        key: const ValueKey<String>('host-customers-add-customer'),
-        label: context.l10n.hostCustomersAdd,
-        icon: CatchIcons.personAddAlt1Rounded,
-        onPressed: () => _addCustomer(selectedClub, request),
-      ),
-      CatchTopBarMenuAction<_HostCustomersHeaderAction>(
-        tooltip: context.l10n.hostCustomersMoreActions,
-        items: _hostCustomersHeaderActions(
-          context,
-          includeExport: !_exporting,
-          exportEnabled: _manualTag == null,
-          exportSublabel: _manualTag == null
-              ? null
-              : context.l10n.hostCustomersManualTagExportUnavailable,
+    final activeQuery = peopleView ? _search : _audienceSearch;
+    return CatchTabbedScreenScaffold(
+      title: context.l10n.hostNavigationCustomers,
+      actions: peopleView
+          ? [
+              CatchTopBarPrimaryAction(
+                key: const ValueKey<String>('host-customers-add-customer'),
+                label: context.l10n.hostCustomersAdd,
+                icon: CatchIcons.personAddAlt1Rounded,
+                onPressed: () => _addCustomer(selectedClub, request),
+              ),
+              CatchTopBarMenuAction<_HostCustomersHeaderAction>(
+                tooltip: context.l10n.hostCustomersMoreActions,
+                items: _hostCustomersHeaderActions(
+                  context,
+                  includeExport: !_exporting,
+                  exportEnabled: _manualTag == null,
+                  exportSublabel: _manualTag == null
+                      ? null
+                      : context.l10n.hostCustomersManualTagExportUnavailable,
+                ),
+                onSelected: (action) {
+                  if (action == _HostCustomersHeaderAction.reviewDuplicates) {
+                    unawaited(_reviewDuplicates(selectedClub.id));
+                  }
+                  if (action == _HostCustomersHeaderAction.export) {
+                    unawaited(_exportCustomers(selectedClub, effectiveFilter));
+                  }
+                },
+              ),
+            ]
+          : const [],
+      search: CatchTopBarSearch(
+        fieldKey: ValueKey(
+          peopleView ? 'host-customers-search' : 'host-audiences-search',
         ),
-        onSelected: (action) {
-          if (action == _HostCustomersHeaderAction.reviewDuplicates) {
-            unawaited(_reviewDuplicates(selectedClub.id));
-          }
-          if (action == _HostCustomersHeaderAction.savedAudiences) {
-            unawaited(_openSavedAudiences(selectedClub.id));
-          }
-          if (action == _HostCustomersHeaderAction.export) {
-            unawaited(_exportCustomers(selectedClub, effectiveFilter));
+        value: activeQuery ?? '',
+        contract: peopleView
+            ? CatchContractConstraints.listOrganizerContactsCallablePayloadQuery
+            : CatchContractConstraints
+                  .upsertOrganizerSavedAudienceCallablePayloadName,
+        placeholder: peopleView
+            ? context.l10n.hostsHostAudienceSearch
+            : context.l10n.hostSavedAudiencesSearch,
+        tooltip: peopleView
+            ? context.l10n.hostsHostAudienceSearch
+            : context.l10n.hostSavedAudiencesSearch,
+        semanticLabel: peopleView
+            ? context.l10n.hostsHostAudienceSearch
+            : context.l10n.hostSavedAudiencesSearch,
+        expanded: _searchExpanded || activeQuery != null,
+        onExpandedChanged: (expanded) {
+          if (_searchExpanded == expanded) return;
+          setState(() => _searchExpanded = expanded);
+        },
+        onChanged: (value) => _scheduleSearch(_view, value),
+        onSubmitted: (value) => _applySearch(_view, value),
+        onFocusChanged: (focused) {
+          if (!focused && activeQuery == null && _searchExpanded) {
+            setState(() => _searchExpanded = false);
           }
         },
+        textInputAction: TextInputAction.search,
       ),
-    ];
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      appBar: CatchScreenTopBar(
-        context: context,
-        title: context.l10n.hostNavigationCustomers,
-        leadingType: CatchTopBarLeading.none,
-        actions: headerActions,
-        search: CatchTopBarSearch(
-          fieldKey: const ValueKey('host-customers-search'),
-          value: _search ?? '',
-          contract: CatchContractConstraints
-              .listOrganizerContactsCallablePayloadQuery,
-          placeholder: context.l10n.hostsHostAudienceSearch,
-          tooltip: context.l10n.hostsHostAudienceSearch,
-          semanticLabel: context.l10n.hostsHostAudienceSearch,
-          expanded: _searchExpanded || _search != null,
-          onExpandedChanged: (expanded) {
-            if (_searchExpanded == expanded) return;
-            setState(() => _searchExpanded = expanded);
-          },
-          onChanged: _scheduleSearch,
-          onSubmitted: _applySearch,
-          onFocusChanged: (focused) {
-            if (!focused && _search == null && _searchExpanded) {
-              setState(() => _searchExpanded = false);
-            }
-          },
-          textInputAction: TextInputAction.search,
-        ),
+      tabRail: CatchTabControllerRail<HostCustomersView>(
+        controller: _tabController,
+        groupKey: const ValueKey('host-customers-view-tabs'),
+        options: [
+          CatchOption(
+            value: HostCustomersView.people,
+            label: context.l10n.hostCustomersViewPeople,
+            icon: CatchIcons.peopleOutlineRounded,
+          ),
+          CatchOption(
+            value: HostCustomersView.audiences,
+            label: context.l10n.hostCustomersViewAudiences,
+            icon: CatchIcons.groupsOutlined,
+          ),
+        ],
       ),
-      body: CatchMasterDetailLayout(
-        expanded: screenSize.isExpanded,
-        master: SafeArea(
-          top: false,
-          bottom: false,
-          child: CustomScrollView(
-            slivers: [
-              SliverPadding(
-                padding: CatchInsets.pageHorizontal,
-                sliver: SliverList.list(
-                  children: [
-                    HostCustomersSummary(
-                      summary: summary,
-                      onRetry: () => ref.invalidate(
-                        hostCrmSummaryProvider(selectedClub.id),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          CatchMasterDetailLayout(
+            expanded: screenSize.isExpanded,
+            master: CatchTabbedPageScrollView(
+              scrollKey: const PageStorageKey<String>('host-customers-people'),
+              constrainToContentWidth: true,
+              slivers: [
+                SliverPadding(
+                  padding: CatchInsets.pageHorizontal,
+                  sliver: SliverList.list(
+                    children: [
+                      HostCustomersSummary(
+                        summary: summary,
+                        onRetry: () => ref.invalidate(
+                          hostCrmSummaryProvider(selectedClub.id),
+                        ),
+                        directorySummary: directoryState == null
+                            ? null
+                            : HostCustomerFilterSummary(
+                                filter: effectiveFilter,
+                                manualTag: _manualTag,
+                                count: directoryState.matchCount,
+                                countCoverage:
+                                    directoryState.matchCountCoverage,
+                                campaignBlocker: campaignBridgeBlocker,
+                                onMessage: campaignBridgeBlocker == null
+                                    ? () => _saveAndMessageCustomers(
+                                        selectedClub,
+                                        effectiveFilter,
+                                        _manualTag,
+                                      )
+                                    : null,
+                                onOpenMessaging: () =>
+                                    _openMessaging(selectedClub),
+                                onClear:
+                                    effectiveFilter == HostCustomerFilter.all &&
+                                        _manualTag == null
+                                    ? null
+                                    : () => setState(() {
+                                        _filter = HostCustomerFilter.all;
+                                        _manualTag = null;
+                                      }),
+                              ),
                       ),
-                      directorySummary: directoryState == null
-                          ? null
-                          : HostCustomerFilterSummary(
-                              filter: effectiveFilter,
-                              manualTag: _manualTag,
-                              count: directoryState.matchCount,
-                              countCoverage: directoryState.matchCountCoverage,
-                              campaignBlocker: campaignBridgeBlocker,
-                              onMessage: campaignBridgeBlocker == null
-                                  ? () => _saveAndMessageCustomers(
-                                      selectedClub,
-                                      effectiveFilter,
-                                      _manualTag,
-                                    )
-                                  : null,
-                              onOpenMessaging: () =>
-                                  _openMessaging(selectedClub),
-                              onClear:
-                                  effectiveFilter == HostCustomerFilter.all &&
-                                      _manualTag == null
-                                  ? null
-                                  : () => setState(() {
-                                      _filter = HostCustomerFilter.all;
-                                      _manualTag = null;
-                                    }),
-                            ),
-                    ),
-                    gapH16,
-                    HostCustomerDirectoryControls(
-                      sort: _sort,
-                      onSortChanged: (sort) => setState(() => _sort = sort),
-                      onOpenFilters: directoryState == null
-                          ? null
-                          : () => _openFilters(
-                              effectiveFilter,
-                              _manualTag,
-                              directoryState,
-                              summaryState.value?.smsReadiness,
-                            ),
-                    ),
-                    gapH16,
-                    CatchAsyncValueView<HostCustomersDirectoryState>(
-                      value: directory,
-                      onRetry: () => ref.invalidate(
-                        hostCustomersDirectoryControllerProvider(request),
+                      gapH16,
+                      HostCustomerDirectoryControls(
+                        sort: _sort,
+                        onSortChanged: (sort) => setState(() => _sort = sort),
+                        onOpenFilters: directoryState == null
+                            ? null
+                            : () => _openFilters(
+                                effectiveFilter,
+                                _manualTag,
+                                directoryState,
+                                summaryState.value?.smsReadiness,
+                              ),
                       ),
-                      initialLoadTimeout: null,
-                      loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
-                      errorBuilder: (_, error, _) => CatchErrorState.fromError(
-                        error,
-                        context: AppErrorContext.customers,
-                        mode: CatchErrorStateMode.compact,
+                      gapH16,
+                      CatchAsyncValueView<HostCustomersDirectoryState>(
+                        value: directory,
                         onRetry: () => ref.invalidate(
                           hostCustomersDirectoryControllerProvider(request),
                         ),
-                      ),
-                      builder: (context, state) {
-                        return HostCustomersDirectory(
+                        initialLoadTimeout: null,
+                        loadingBuilder: (_) =>
+                            const CatchSkeletonRows(count: 5),
+                        errorBuilder: (_, error, _) =>
+                            CatchErrorState.fromError(
+                              error,
+                              context: AppErrorContext.customers,
+                              mode: CatchErrorStateMode.compact,
+                              onRetry: () => ref.invalidate(
+                                hostCustomersDirectoryControllerProvider(
+                                  request,
+                                ),
+                              ),
+                            ),
+                        builder: (context, state) => HostCustomersDirectory(
                           state: state,
                           hasActiveQuery:
                               _search != null ||
@@ -349,28 +409,34 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                               hostCustomersDirectoryControllerProvider(request),
                             );
                           },
-                        );
-                      },
-                    ),
-                    const CatchScrollTerminalPadding(),
-                  ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+            detail: _selectedContactId == null
+                ? CatchEmptyState(
+                    icon: CatchIcons.personSearchOutlined,
+                    title: context.l10n.hostCustomersSelectCustomerTitle,
+                    message: context.l10n.hostCustomersSelectCustomerBody,
+                  )
+                : HostCustomerDetailScreen(
+                    organizerId: selectedClub.id,
+                    contactId: _selectedContactId!,
+                    initialDisplayName: _selectedContactDisplayName,
+                    embedded: true,
+                  ),
           ),
-        ),
-        detail: _selectedContactId == null
-            ? CatchEmptyState(
-                icon: CatchIcons.personSearchOutlined,
-                title: context.l10n.hostCustomersSelectCustomerTitle,
-                message: context.l10n.hostCustomersSelectCustomerBody,
-              )
-            : HostCustomerDetailScreen(
-                organizerId: selectedClub.id,
-                contactId: _selectedContactId!,
-                initialDisplayName: _selectedContactDisplayName,
-                embedded: true,
-              ),
+          HostSavedAudiencesWorkspace(
+            organizerId: selectedClub.id,
+            query: _audienceSearch,
+            onCreate: () => _openAudienceEditor(selectedClub),
+            onOpen: (audience) =>
+                _openAudienceEditor(selectedClub, audience: audience),
+          ),
+        ],
       ),
     );
   }
@@ -382,11 +448,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     required bool exportEnabled,
     String? exportSublabel,
   }) => [
-    CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.savedAudiences,
-      label: context.l10n.hostSavedAudiencesManage,
-      icon: CatchIcons.groupsOutlined,
-    ),
     CatchActionMenuItem(
       value: _HostCustomersHeaderAction.reviewDuplicates,
       label: context.l10n.hostCustomersReviewDuplicates,
@@ -412,28 +473,46 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     ref.invalidate(hostCrmSummaryProvider(organizerId));
   }
 
-  Future<void> _openSavedAudiences(String organizerId) =>
-      showCatchBottomSheet<void>(
-        context: context,
-        builder: (_) => HostSavedAudiencesSheet(organizerId: organizerId),
-      );
-
-  void _scheduleSearch(String value) {
+  void _scheduleSearch(HostCustomersView view, String value) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(
       CatchMotion.searchDebounce,
-      () => _applySearch(value),
+      () => _applySearch(view, value),
     );
   }
 
-  void _applySearch(String value) {
+  void _applySearch(HostCustomersView view, String value) {
     _searchDebounce?.cancel();
     final normalized = value.trim();
     final nextSearch = normalized.isEmpty ? null : normalized;
-    if (_search == nextSearch) return;
-    if (mounted) {
-      setState(() => _search = nextSearch);
+    if (!mounted) return;
+    switch (view) {
+      case HostCustomersView.people:
+        if (_search == nextSearch) return;
+        setState(() => _search = nextSearch);
+      case HostCustomersView.audiences:
+        if (_audienceSearch == nextSearch) return;
+        setState(() => _audienceSearch = nextSearch);
     }
+  }
+
+  Future<void> _openAudienceEditor(
+    Club club, {
+    HostSavedAudience? audience,
+  }) async {
+    final saved = await context.pushNamed<HostSavedAudience>(
+      audience == null
+          ? Routes.hostCreateSavedAudienceScreen.name
+          : Routes.hostSavedAudienceDetailScreen.name,
+      pathParameters: audience == null
+          ? const {}
+          : {'audienceId': audience.audienceId},
+      queryParameters: {'organizerId': club.id},
+      extra: audience,
+    );
+    if (!mounted || saved == null) return;
+    ref.invalidate(hostSavedAudiencesProvider(club.id));
+    ref.invalidate(hostAllSavedAudiencesProvider(club.id));
   }
 
   Future<void> _openFilters(

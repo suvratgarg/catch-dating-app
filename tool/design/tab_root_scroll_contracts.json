@@ -159,8 +159,22 @@
         {
           "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
           "requires": [
+            {"text": "CatchTabbedScreenScaffold", "minimumOccurrences": 1},
+            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1}
+          ]
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
+          "requires": [
+            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1}
+          ]
+        },
+        {
+          "path": "lib/core/widgets/catch_tabbed_screen.dart",
+          "requires": [
             {"text": "bottom: false", "minimumOccurrences": 1},
-            {"text": "CatchScrollTerminalPadding", "minimumOccurrences": 1}
+            {"text": "if (widget.includeTerminalPadding)", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
           ]
         }
       ]

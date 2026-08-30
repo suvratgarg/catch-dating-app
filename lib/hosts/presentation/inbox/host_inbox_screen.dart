@@ -194,7 +194,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
                   hostFilter: null,
                   hostUnreadCount: 0,
                   onHostFilterChanged: null,
-                  showHostSubtitle: false,
+                  subtitle: isInbox
+                      ? context.l10n.hostInboxSubtitle
+                      : context.l10n.hostSendsSubtitle,
                 ),
               ),
               HostMessagingWorkspaceRail(

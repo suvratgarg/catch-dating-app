@@ -15,6 +15,7 @@ const schemaPreviewOrganizerSavedAudienceCallableResponseSchema = <String, Objec
     'audience',
     'coverage',
     'matchCount',
+    'reachSummary',
     'sample',
     'evaluatedAtMillis',
   ],
@@ -35,6 +36,7 @@ const schemaPreviewOrganizerSavedAudienceCallableResponseSchema = <String, Objec
         'definitionVersion',
         'revision',
         'lastPreviewMatchCount',
+        'lastPreviewReachSummary',
         'lastPreviewAtMillis',
         'createdAtMillis',
         'updatedAtMillis',
@@ -219,6 +221,45 @@ const schemaPreviewOrganizerSavedAudienceCallableResponseSchema = <String, Objec
           'minimum': 0,
           'maximum': 2500,
         },
+        'lastPreviewReachSummary': <String, Object?>{
+          'oneOf': <Object?>[
+            <String, Object?>{
+              'type': 'null',
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'inCatch',
+                'automatic',
+                'byHand',
+                'unavailable',
+              ],
+              'properties': <String, Object?>{
+                'inCatch': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 2500,
+                },
+                'automatic': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 2500,
+                },
+                'byHand': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 2500,
+                },
+                'unavailable': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 2500,
+                },
+              },
+            },
+          ],
+        },
         'lastPreviewAtMillis': <String, Object?>{
           'type': <Object?>[
             'integer',
@@ -243,6 +284,38 @@ const schemaPreviewOrganizerSavedAudienceCallableResponseSchema = <String, Objec
       'type': 'integer',
       'minimum': 0,
       'maximum': 2500,
+    },
+    'reachSummary': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'inCatch',
+        'automatic',
+        'byHand',
+        'unavailable',
+      ],
+      'properties': <String, Object?>{
+        'inCatch': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2500,
+        },
+        'automatic': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2500,
+        },
+        'byHand': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2500,
+        },
+        'unavailable': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2500,
+        },
+      },
     },
     'sample': <String, Object?>{
       'type': 'array',

@@ -2,6 +2,8 @@ import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
+import {resolveIndividualCommunicationPlan} from
+  "../communications/organizerCommunicationPlan";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {ArchiveOrganizerSavedAudienceCallablePayload} from
@@ -132,6 +134,7 @@ export async function upsertOrganizerSavedAudienceHandler(
       createdByUid: existing?.createdByUid ?? actorUid,
       updatedByUid: actorUid,
       lastPreviewMatchCount: null,
+      lastPreviewReachSummary: null,
       lastPreviewAt: null,
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
@@ -223,25 +226,66 @@ export async function previewOrganizerSavedAudienceHandler(
     definition: audience!.definition,
     now,
   });
+  const reachSummary = savedAudienceReachSummary(rows);
   await ref.update({
     lastPreviewMatchCount: rows.length,
+    lastPreviewReachSummary: reachSummary,
     lastPreviewAt: now,
   });
   const refreshed: OrganizerSavedAudienceDocument = {
     ...audience!,
     lastPreviewMatchCount: rows.length,
+    lastPreviewReachSummary: reachSummary,
     lastPreviewAt: now,
   };
   return {
     audience: savedAudienceResponse(refreshed),
     coverage: "exact",
     matchCount: rows.length,
+    reachSummary,
     sample: rows.slice(0, data.sampleLimit ?? 10).map((row) => ({
       contactId: row.contactId,
       displayName: row.contact.displayNameOverride ?? row.contact.displayName,
     })),
     evaluatedAtMillis: now.toMillis(),
   };
+}
+
+/**
+ * Aggregates the shared, server-derived individual communication plan.
+ * Saved-audience UI never reinterprets contact, identity, permission, or
+ * suppression facts locally. Automatic remains zero until the shared plan
+ * exposes a managed campaign route for this intent.
+ */
+export function savedAudienceReachSummary(
+  rows: SavedAudienceEvaluationRow[]
+): {
+  inCatch: number;
+  automatic: number;
+  byHand: number;
+  unavailable: number;
+} {
+  const summary = {inCatch: 0, automatic: 0, byHand: 0, unavailable: 0};
+  for (const row of rows) {
+    if (row.contact.identityState === "merged") {
+      summary.unavailable += 1;
+      continue;
+    }
+    const plan = resolveIndividualCommunicationPlan({
+      contactId: row.contactId,
+      displayName:
+        row.contact.displayNameOverride?.trim() || row.contact.displayName,
+      linkedUid: row.contact.linkedUid,
+      identityState: row.contact.identityState,
+      ambiguousCandidateCount:
+        row.contact.ambiguousCandidateContactIds.length,
+      phoneE164: row.contact.phoneE164,
+      whatsappStatus: row.contact.whatsappStatus,
+      whatsappAdminSuppressed: row.channelState?.adminSuppressed === true,
+    });
+    summary[plan.outcome] += 1;
+  }
+  return summary;
 }
 
 export async function archiveOrganizerSavedAudienceHandler(
@@ -516,6 +560,7 @@ function savedAudienceResponse(
     definitionVersion: audience.definitionVersion,
     revision: audience.revision,
     lastPreviewMatchCount: audience.lastPreviewMatchCount,
+    lastPreviewReachSummary: audience.lastPreviewReachSummary ?? null,
     lastPreviewAtMillis: audience.lastPreviewAt?.toMillis() ?? null,
     createdAtMillis: audience.createdAt.toMillis(),
     updatedAtMillis: audience.updatedAt.toMillis(),

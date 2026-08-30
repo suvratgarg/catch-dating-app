@@ -23,12 +23,29 @@
     "createdByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "updatedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "lastPreviewMatchCount": {"type": ["integer", "null"], "minimum": 0, "maximum": 2500},
+    "lastPreviewReachSummary": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/definitions/reachSummary"}
+      ]
+    },
     "lastPreviewAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "archivedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
   },
   "definitions": {
+    "reachSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inCatch", "automatic", "byHand", "unavailable"],
+      "properties": {
+        "inCatch": {"type": "integer", "minimum": 0, "maximum": 2500},
+        "automatic": {"type": "integer", "minimum": 0, "maximum": 2500},
+        "byHand": {"type": "integer", "minimum": 0, "maximum": 2500},
+        "unavailable": {"type": "integer", "minimum": 0, "maximum": 2500}
+      }
+    },
     "definition": {
       "type": "object",
       "additionalProperties": false,

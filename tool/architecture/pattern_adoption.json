@@ -341,7 +341,7 @@
         },
         {
           "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
-          "role": "Host Customers root screen uses CatchScreenTopBar with the adaptive primary add action and canonical overflow menu action",
+          "role": "Host Customers root screen uses CatchTabbedScreenScaffold for People and Audiences, with the adaptive add-customer and overflow actions restricted to People",
           "status": "aligned"
         },
         {
@@ -2143,6 +2143,8 @@
         "functions/src/organizers/organizerCampaigns.ts",
         "lib/hosts/data/host_crm_repository.dart",
         "lib/hosts/presentation/customers/host_customers_screen.dart",
+        "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
+        "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
         "lib/hosts/presentation/customers/host_customer_editor_sheets.dart",
         "lib/hosts/presentation/inbox/host_campaign_composer.dart",
         "test/hosts/host_crm_repository_test.dart",
@@ -2166,12 +2168,22 @@
         },
         {
           "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
-          "role": "Customers-owned audience creation entry point from exact persistable directory filters",
+          "role": "Customers-owned People and Audiences peer workspace plus the exact persistable-directory-filter bridge into Messaging",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
+          "role": "flat divided saved-audience directory with one explicit create action and full-page detail navigation",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
+          "role": "Customers-owned full-page create, definition edit, exact preview, reach summary, and archive surface",
           "status": "aligned"
         },
         {
           "path": "lib/hosts/presentation/customers/host_customer_editor_sheets.dart",
-          "role": "Customers-owned naming, exact preview, archive and reusable-audience management surface",
+          "role": "bounded naming bridge that persists the current exact People filter before handing composition to Messaging",
           "status": "aligned"
         },
         {
@@ -2181,11 +2193,6 @@
         }
       ],
       "candidateQueue": [
-        {
-          "id": "ARCH-SAVED-AUDIENCE-001-EDIT",
-          "path": "lib/hosts/presentation/customers",
-          "reason": "A later visual builder may edit compound predicates, but it must remain Customers-owned and submit only the same closed typed definition."
-        },
         {
           "id": "ARCH-SAVED-AUDIENCE-001-EVENT-REFERENCE",
           "path": "functions/src/events",

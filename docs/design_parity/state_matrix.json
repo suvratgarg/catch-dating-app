@@ -5047,10 +5047,14 @@
           "routeIds": [
             "hostCustomersScreen",
             "hostAddCustomerScreen",
+            "hostCreateSavedAudienceScreen",
+            "hostSavedAudienceDetailScreen",
             "hostCustomerDetailScreen"
           ],
           "implementationPaths": [
             "lib/hosts/presentation/customers/host_customers_screen.dart",
+            "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
+            "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
             "lib/hosts/presentation/customers/host_customer_editor.dart",
             "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
             "lib/hosts/presentation/customers/host_contact_merge_review.dart",
@@ -5074,11 +5078,15 @@
             "catch.section",
             "catch.skeleton",
             "catch.surface",
+            "catch.tab_rail",
             "catch.top_bar"
           ],
           "captureIds": [
             "host_customers_populated",
+            "host_customers_audiences_populated",
             "host_customer_add",
+            "host_saved_audience_create",
+            "host_saved_audience_detail",
             "host_customer_detail_memory"
           ],
           "designRefs": [
@@ -5343,7 +5351,7 @@
             {
               "id": "customer_saved_audience_manage",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
               "previewIds": [
                 "hostSavedAudiencesStates"
               ],
@@ -5351,7 +5359,10 @@
                 "test/hosts/host_crm_repository_test.dart",
                 "test/hosts/host_operations_customers_tests.dart"
               ],
-              "notes": "The Customers-owned saved-audience sheet renders exact previews, refresh, campaign handoff, and archive actions without moving audience authority into Sends."
+              "captureIds": [
+                "host_customers_audiences_populated"
+              ],
+              "notes": "The Customers-owned Audiences peer workspace renders top-level saved audiences as flat divided rows with one New audience action and stored exact-preview reach context."
             },
             {
               "id": "customer_saved_audience_empty",
@@ -5363,7 +5374,7 @@
               "tests": [
                 "test/hosts/host_operations_customers_tests.dart"
               ],
-              "notes": "The empty management sheet points back to Customers as the creation owner."
+              "notes": "The empty Audiences workspace keeps the single Customers-owned New audience action visible."
             },
             {
               "id": "customer_saved_audience_error",
@@ -5376,6 +5387,48 @@
                 "test/hosts/host_operations_customers_tests.dart"
               ],
               "notes": "A saved-audience load failure uses the shared Customers error surface and route-scoped recovery."
+            },
+            {
+              "id": "customer_saved_audience_create",
+              "kind": "mutation",
+              "status": "captured",
+              "tests": [
+                "test/hosts/host_operations_customers_tests.dart"
+              ],
+              "captureIds": [
+                "host_saved_audience_create"
+              ],
+              "notes": "The full-page create route owns the complete closed predicate vocabulary and one canonical create action."
+            },
+            {
+              "id": "customer_saved_audience_detail",
+              "kind": "populated",
+              "status": "captured",
+              "tests": [
+                "test/hosts/host_operations_customers_tests.dart"
+              ],
+              "captureIds": [
+                "host_saved_audience_detail"
+              ],
+              "notes": "The full-page detail route owns definition edits, exact-preview refresh and the stored reach summary."
+            },
+            {
+              "id": "customer_saved_audience_mutation",
+              "kind": "mutation",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_crm_repository_test.dart"
+              ],
+              "notes": "Create and edit save through optimistic revision fencing and refresh one exact server preview before returning."
+            },
+            {
+              "id": "customer_saved_audience_archive",
+              "kind": "mutation",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/host_crm_repository_test.dart"
+              ],
+              "notes": "Archive is available only from the full-page detail route and requires explicit confirmation."
             },
             {
               "id": "customer_memory_populated",

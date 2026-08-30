@@ -5,7 +5,7 @@
   "description": "Sanitized reusable organizer CRM audience definition.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["organizerId", "audienceId", "scope", "name", "status", "definition", "definitionHash", "definitionVersion", "revision", "lastPreviewMatchCount", "lastPreviewAtMillis", "createdAtMillis", "updatedAtMillis"],
+  "required": ["organizerId", "audienceId", "scope", "name", "status", "definition", "definitionHash", "definitionVersion", "revision", "lastPreviewMatchCount", "lastPreviewReachSummary", "lastPreviewAtMillis", "createdAtMillis", "updatedAtMillis"],
   "properties": {
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "audienceId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
@@ -17,6 +17,12 @@
     "definitionVersion": {"type": "integer", "minimum": 1, "maximum": 1000},
     "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
     "lastPreviewMatchCount": {"type": ["integer", "null"], "minimum": 0, "maximum": 2500},
+    "lastPreviewReachSummary": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "../firestore/organizer_saved_audiences.schema.json#/definitions/reachSummary"}
+      ]
+    },
     "lastPreviewAtMillis": {"type": ["integer", "null"], "minimum": 0},
     "createdAtMillis": {"type": "integer", "minimum": 0},
     "updatedAtMillis": {"type": "integer", "minimum": 0}

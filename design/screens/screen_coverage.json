@@ -249,6 +249,20 @@
       "screenId": "screen.host.customers"
     },
     {
+      "routeId": "hostCreateSavedAudienceScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.customers as the full-page reusable-audience definition authoring route.",
+      "screenId": "screen.host.customers"
+    },
+    {
+      "routeId": "hostSavedAudienceDetailScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.customers as the full-page audience detail, exact-preview, edit, and archive route.",
+      "screenId": "screen.host.customers"
+    },
+    {
       "routeId": "hostFormsScreen",
       "status": "planned",
       "priority": "P1",

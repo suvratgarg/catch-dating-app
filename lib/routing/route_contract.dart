@@ -57,6 +57,14 @@ enum Routes {
   hostEventsScreen('/host/events', AppRouteAudience.host),
   hostCustomersScreen('/host/customers', AppRouteAudience.host),
   hostAddCustomerScreen('/host/customers/new', AppRouteAudience.host),
+  hostCreateSavedAudienceScreen(
+    '/host/customers/audiences/new',
+    AppRouteAudience.host,
+  ),
+  hostSavedAudienceDetailScreen(
+    '/host/customers/audiences/:audienceId',
+    AppRouteAudience.host,
+  ),
   hostFormsScreen('/host/forms', AppRouteAudience.host),
   hostFormTemplatesScreen('/host/forms/new', AppRouteAudience.host),
   hostFormResponseDetailScreen(

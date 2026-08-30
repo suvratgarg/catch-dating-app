@@ -27,6 +27,7 @@ import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
@@ -863,6 +864,9 @@ StatefulShellRoute _hostShellRoute(
             name: Routes.hostCustomersScreen.name,
             builder: (context, state) => HostCustomersScreen(
               initialOrganizerId: state.uri.queryParameters['organizerId'],
+              initialView: state.uri.queryParameters['view'] == 'audiences'
+                  ? HostCustomersView.audiences
+                  : HostCustomersView.people,
               initialContactId: state.uri.queryParameters['contactId'],
               initialContactDisplayName: switch (state.extra) {
                 HostCustomerDetailRouteArguments(:final displayName) =>
@@ -877,6 +881,27 @@ StatefulShellRoute _hostShellRoute(
                 parentNavigatorKey: keys.root,
                 builder: (context, state) => HostAddCustomerScreen(
                   organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                ),
+              ),
+              GoRoute(
+                path: 'audiences/new',
+                name: Routes.hostCreateSavedAudienceScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostSavedAudienceEditorScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                ),
+              ),
+              GoRoute(
+                path: 'audiences/:audienceId',
+                name: Routes.hostSavedAudienceDetailScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostSavedAudienceEditorScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                  audienceId: state.pathParameters['audienceId'],
+                  initialAudience: switch (state.extra) {
+                    HostSavedAudience audience => audience,
+                    _ => null,
+                  },
                 ),
               ),
               GoRoute(

@@ -32,6 +32,7 @@ import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -320,7 +321,7 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 
 @widgetbook.UseCase(
   name: 'Saved audience states',
-  type: HostSavedAudiencesSheet,
+  type: HostSavedAudiencesWorkspace,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostSavedAudiencesStates(BuildContext context) {
@@ -340,6 +341,12 @@ Widget hostSavedAudiencesStates(BuildContext context) {
     definitionVersion: 1,
     revision: 2,
     lastPreviewMatchCount: 24,
+    lastPreviewReachSummary: const HostAudienceReachSummary(
+      inCatch: 14,
+      automatic: 0,
+      byHand: 8,
+      unavailable: 2,
+    ),
     lastPreviewAt: DateTime(2030, 6, 20, 10),
     createdAt: DateTime(2030, 6, 18, 10),
     updatedAt: DateTime(2030, 6, 20, 10),
@@ -348,17 +355,29 @@ Widget hostSavedAudiencesStates(BuildContext context) {
     height: WidgetbookPreviewLayout.feedbackViewportHeight,
     child: ProviderScope(
       overrides: [
-        hostSavedAudiencesProvider(organizerId).overrideWithValue(value),
+        hostAllSavedAudiencesProvider(organizerId).overrideWithValue(value),
       ],
-      child: Scaffold(body: HostSavedAudiencesSheet(organizerId: organizerId)),
+      child: CatchTabbedScreenScaffold(
+        title: 'Customers',
+        tabRail: const PreferredSize(
+          preferredSize: Size.fromHeight(1),
+          child: SizedBox(height: 1),
+        ),
+        body: HostSavedAudiencesWorkspace(
+          organizerId: organizerId,
+          query: null,
+          onCreate: () {},
+          onOpen: (_) {},
+        ),
+      ),
     ),
   );
   return _HostCatalog(
-    title: 'HostSavedAudiencesSheet',
+    title: 'HostSavedAudiencesWorkspace',
     contractId: 'screen.host.customers',
     children: [
       _StateCard(
-        label: 'populated management',
+        label: 'populated divided directory',
         child: frame(
           AsyncData(
             HostSavedAudiencePage(audiences: [audience], nextCursor: null),

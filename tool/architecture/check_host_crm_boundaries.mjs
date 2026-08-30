@@ -97,9 +97,10 @@ export function scanHostCrmBoundaries({root = fromRepo()} = {}) {
   findings.push(...scanFormProvenanceContract(root));
   findings.push(...scanHostCrmCountCopy(root));
   findings.push(...scanApplicationRouteOwnership(root));
+  findings.push(...scanAudienceWorkspacePresentation(root));
   return {
     checkedFiles: presentationFiles.length + backendFiles.length,
-    enforcedBoundaries: 11,
+    enforcedBoundaries: 12,
     findings,
   };
 }
@@ -327,6 +328,75 @@ export function applicationRouteOwnershipFindings({
   return findings;
 }
 
+export function audienceWorkspacePresentationFindings({
+  customersPath,
+  customersSource,
+  workspacePath,
+  workspaceSource,
+  editorSheetsPath,
+  editorSheetsSource,
+  routeContractPath,
+  routeContractSource,
+}) {
+  const findings = [];
+  for (const anchor of [
+    "enum HostCustomersView { people, audiences }",
+    "CatchTabbedScreenScaffold(",
+    "HostSavedAudiencesWorkspace(",
+    "actions: peopleView",
+  ]) {
+    if (!customersSource.includes(anchor)) findings.push({
+      path: customersPath,
+      line: 1,
+      reason: `Customers must keep People and Audiences as peer workspaces: ${anchor}`,
+    });
+  }
+  if (customersSource.includes("savedAudiences") ||
+      customersSource.includes("HostSavedAudiencesSheet")) {
+    findings.push({
+      path: customersPath,
+      line: 1,
+      reason: "Saved audiences must not return to the Customers overflow or a modal workspace.",
+    });
+  }
+
+  const createKey = "ValueKey('host-saved-audience-create')";
+  const createActionCount = workspaceSource.split(createKey).length - 1;
+  if (!workspaceSource.includes("CatchSection.divided(") ||
+      !workspaceSource.includes("CatchField.nav(")) {
+    findings.push({
+      path: workspacePath,
+      line: 1,
+      reason: "The top-level saved-audience directory must use a divided section with navigation rows.",
+    });
+  }
+  if (createActionCount !== 1) {
+    findings.push({
+      path: workspacePath,
+      line: 1,
+      reason: "The Audiences workspace must expose exactly one New audience action.",
+    });
+  }
+  if (editorSheetsSource.includes("class HostSavedAudiencesSheet")) {
+    findings.push({
+      path: editorSheetsPath,
+      line: 1,
+      reason: "Saved-audience management is route-level and must not regain a parallel modal.",
+    });
+  }
+  for (const anchor of [
+    "hostCreateSavedAudienceScreen(\n    '/host/customers/audiences/new'",
+    "hostSavedAudienceDetailScreen(\n    '/host/customers/audiences/:audienceId'",
+  ]) {
+    if (!routeContractSource.includes(anchor)) findings.push({
+      path: routeContractPath,
+      line: 1,
+      reason: "Saved-audience create and detail must remain full-page Customers routes.",
+    });
+  }
+  return findings;
+}
+
 function shellBranchSource(source, navigatorAnchor) {
   const start = source.indexOf(navigatorAnchor);
   if (start < 0) return "";
@@ -381,6 +451,34 @@ function scanApplicationRouteOwnership(root) {
     routeContractSource: fs.readFileSync(routeContractFile, "utf8"),
     routerPath,
     routerSource: fs.readFileSync(routerFile, "utf8"),
+  });
+}
+
+function scanAudienceWorkspacePresentation(root) {
+  const customersPath =
+    "lib/hosts/presentation/customers/host_customers_screen.dart";
+  const workspacePath =
+    "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart";
+  const editorSheetsPath =
+    "lib/hosts/presentation/customers/host_customer_editor_sheets.dart";
+  const routeContractPath = "lib/routing/route_contract.dart";
+  const paths = [
+    customersPath,
+    workspacePath,
+    editorSheetsPath,
+    routeContractPath,
+  ];
+  const missing = paths.filter((item) => !fs.existsSync(path.join(root, item)));
+  if (missing.length > 0) return missing.map(missingFinding);
+  return audienceWorkspacePresentationFindings({
+    customersPath,
+    customersSource: fs.readFileSync(path.join(root, customersPath), "utf8"),
+    workspacePath,
+    workspaceSource: fs.readFileSync(path.join(root, workspacePath), "utf8"),
+    editorSheetsPath,
+    editorSheetsSource: fs.readFileSync(path.join(root, editorSheetsPath), "utf8"),
+    routeContractPath,
+    routeContractSource: fs.readFileSync(path.join(root, routeContractPath), "utf8"),
   });
 }
 

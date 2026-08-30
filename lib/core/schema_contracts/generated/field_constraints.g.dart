@@ -32720,6 +32720,38 @@ abstract final class CatchContractConstraints {
     maximum: 2500,
   );
 
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewReachSummaryAutomatic = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewReachSummary.automatic',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewReachSummaryByHand = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewReachSummary.byHand',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewReachSummaryInCatch = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewReachSummary.inCatch',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewReachSummaryUnavailable = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewReachSummary.unavailable',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
   static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsName = CatchContractFieldConstraints(
     path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.name',
     maxLength: 80,
@@ -47272,6 +47304,38 @@ abstract final class CatchContractConstraints {
     maximum: 2500,
   );
 
+  static const organizerSavedAudienceCallableResponseLastPreviewReachSummaryAutomatic = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.lastPreviewReachSummary.automatic',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const organizerSavedAudienceCallableResponseLastPreviewReachSummaryByHand = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.lastPreviewReachSummary.byHand',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const organizerSavedAudienceCallableResponseLastPreviewReachSummaryInCatch = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.lastPreviewReachSummary.inCatch',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const organizerSavedAudienceCallableResponseLastPreviewReachSummaryUnavailable = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.lastPreviewReachSummary.unavailable',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
   static const organizerSavedAudienceCallableResponseName = CatchContractFieldConstraints(
     path: 'organizerSavedAudienceCallableResponse.name',
     maxLength: 80,
@@ -47453,6 +47517,38 @@ abstract final class CatchContractConstraints {
 
   static const organizerSavedAudienceDocumentLastPreviewMatchCount = CatchContractFieldConstraints(
     path: 'organizerSavedAudienceDocument.lastPreviewMatchCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const organizerSavedAudienceDocumentLastPreviewReachSummaryAutomatic = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.lastPreviewReachSummary.automatic',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const organizerSavedAudienceDocumentLastPreviewReachSummaryByHand = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.lastPreviewReachSummary.byHand',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const organizerSavedAudienceDocumentLastPreviewReachSummaryInCatch = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.lastPreviewReachSummary.inCatch',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const organizerSavedAudienceDocumentLastPreviewReachSummaryUnavailable = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.lastPreviewReachSummary.unavailable',
+    required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 2500,
@@ -49586,6 +49682,38 @@ abstract final class CatchContractConstraints {
     maximum: 2500,
   );
 
+  static const previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewReachSummaryAutomatic = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewReachSummary.automatic',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewReachSummaryByHand = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewReachSummary.byHand',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewReachSummaryInCatch = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewReachSummary.inCatch',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewReachSummaryUnavailable = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewReachSummary.unavailable',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
   static const previewOrganizerSavedAudienceCallableResponseAudienceName = CatchContractFieldConstraints(
     path: 'previewOrganizerSavedAudienceCallableResponse.audience.name',
     maxLength: 80,
@@ -49643,6 +49771,38 @@ abstract final class CatchContractConstraints {
 
   static const previewOrganizerSavedAudienceCallableResponseMatchCount = CatchContractFieldConstraints(
     path: 'previewOrganizerSavedAudienceCallableResponse.matchCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseReachSummaryAutomatic = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.reachSummary.automatic',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseReachSummaryByHand = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.reachSummary.byHand',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseReachSummaryInCatch = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.reachSummary.inCatch',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2500,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseReachSummaryUnavailable = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.reachSummary.unavailable',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
@@ -65659,6 +65819,10 @@ abstract final class CatchContractConstraints {
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definitionVersion': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionVersion,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewAtMillis': listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewAtMillis,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewMatchCount': listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewMatchCount,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewReachSummary.automatic': listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewReachSummaryAutomatic,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewReachSummary.byHand': listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewReachSummaryByHand,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewReachSummary.inCatch': listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewReachSummaryInCatch,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewReachSummary.unavailable': listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewReachSummaryUnavailable,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.name': listOrganizerSavedAudiencesCallableResponseAudiencesItemsName,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.organizerId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsOrganizerId,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.revision': listOrganizerSavedAudiencesCallableResponseAudiencesItemsRevision,
@@ -67683,6 +67847,10 @@ abstract final class CatchContractConstraints {
     'organizerSavedAudienceCallableResponse.definitionVersion': organizerSavedAudienceCallableResponseDefinitionVersion,
     'organizerSavedAudienceCallableResponse.lastPreviewAtMillis': organizerSavedAudienceCallableResponseLastPreviewAtMillis,
     'organizerSavedAudienceCallableResponse.lastPreviewMatchCount': organizerSavedAudienceCallableResponseLastPreviewMatchCount,
+    'organizerSavedAudienceCallableResponse.lastPreviewReachSummary.automatic': organizerSavedAudienceCallableResponseLastPreviewReachSummaryAutomatic,
+    'organizerSavedAudienceCallableResponse.lastPreviewReachSummary.byHand': organizerSavedAudienceCallableResponseLastPreviewReachSummaryByHand,
+    'organizerSavedAudienceCallableResponse.lastPreviewReachSummary.inCatch': organizerSavedAudienceCallableResponseLastPreviewReachSummaryInCatch,
+    'organizerSavedAudienceCallableResponse.lastPreviewReachSummary.unavailable': organizerSavedAudienceCallableResponseLastPreviewReachSummaryUnavailable,
     'organizerSavedAudienceCallableResponse.name': organizerSavedAudienceCallableResponseName,
     'organizerSavedAudienceCallableResponse.organizerId': organizerSavedAudienceCallableResponseOrganizerId,
     'organizerSavedAudienceCallableResponse.revision': organizerSavedAudienceCallableResponseRevision,
@@ -67709,6 +67877,10 @@ abstract final class CatchContractConstraints {
     'organizerSavedAudienceDocument.lastPreviewAt._nanoseconds': organizerSavedAudienceDocumentLastPreviewAtNanoseconds,
     'organizerSavedAudienceDocument.lastPreviewAt._seconds': organizerSavedAudienceDocumentLastPreviewAtSeconds,
     'organizerSavedAudienceDocument.lastPreviewMatchCount': organizerSavedAudienceDocumentLastPreviewMatchCount,
+    'organizerSavedAudienceDocument.lastPreviewReachSummary.automatic': organizerSavedAudienceDocumentLastPreviewReachSummaryAutomatic,
+    'organizerSavedAudienceDocument.lastPreviewReachSummary.byHand': organizerSavedAudienceDocumentLastPreviewReachSummaryByHand,
+    'organizerSavedAudienceDocument.lastPreviewReachSummary.inCatch': organizerSavedAudienceDocumentLastPreviewReachSummaryInCatch,
+    'organizerSavedAudienceDocument.lastPreviewReachSummary.unavailable': organizerSavedAudienceDocumentLastPreviewReachSummaryUnavailable,
     'organizerSavedAudienceDocument.name': organizerSavedAudienceDocumentName,
     'organizerSavedAudienceDocument.organizerId': organizerSavedAudienceDocumentOrganizerId,
     'organizerSavedAudienceDocument.revision': organizerSavedAudienceDocumentRevision,
@@ -68000,6 +68172,10 @@ abstract final class CatchContractConstraints {
     'previewOrganizerSavedAudienceCallableResponse.audience.definitionVersion': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionVersion,
     'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewAtMillis': previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewAtMillis,
     'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewMatchCount': previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewMatchCount,
+    'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewReachSummary.automatic': previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewReachSummaryAutomatic,
+    'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewReachSummary.byHand': previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewReachSummaryByHand,
+    'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewReachSummary.inCatch': previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewReachSummaryInCatch,
+    'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewReachSummary.unavailable': previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewReachSummaryUnavailable,
     'previewOrganizerSavedAudienceCallableResponse.audience.name': previewOrganizerSavedAudienceCallableResponseAudienceName,
     'previewOrganizerSavedAudienceCallableResponse.audience.organizerId': previewOrganizerSavedAudienceCallableResponseAudienceOrganizerId,
     'previewOrganizerSavedAudienceCallableResponse.audience.revision': previewOrganizerSavedAudienceCallableResponseAudienceRevision,
@@ -68009,6 +68185,10 @@ abstract final class CatchContractConstraints {
     'previewOrganizerSavedAudienceCallableResponse.coverage': previewOrganizerSavedAudienceCallableResponseCoverage,
     'previewOrganizerSavedAudienceCallableResponse.evaluatedAtMillis': previewOrganizerSavedAudienceCallableResponseEvaluatedAtMillis,
     'previewOrganizerSavedAudienceCallableResponse.matchCount': previewOrganizerSavedAudienceCallableResponseMatchCount,
+    'previewOrganizerSavedAudienceCallableResponse.reachSummary.automatic': previewOrganizerSavedAudienceCallableResponseReachSummaryAutomatic,
+    'previewOrganizerSavedAudienceCallableResponse.reachSummary.byHand': previewOrganizerSavedAudienceCallableResponseReachSummaryByHand,
+    'previewOrganizerSavedAudienceCallableResponse.reachSummary.inCatch': previewOrganizerSavedAudienceCallableResponseReachSummaryInCatch,
+    'previewOrganizerSavedAudienceCallableResponse.reachSummary.unavailable': previewOrganizerSavedAudienceCallableResponseReachSummaryUnavailable,
     'previewOrganizerSavedAudienceCallableResponse.sample': previewOrganizerSavedAudienceCallableResponseSample,
     'previewOrganizerSavedAudienceCallableResponse.sample.items.contactId': previewOrganizerSavedAudienceCallableResponseSampleItemsContactId,
     'previewOrganizerSavedAudienceCallableResponse.sample.items.displayName': previewOrganizerSavedAudienceCallableResponseSampleItemsDisplayName,

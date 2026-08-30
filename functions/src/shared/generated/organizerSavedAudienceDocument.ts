@@ -58,6 +58,12 @@ export interface OrganizerSavedAudienceDocument {
   createdByUid: string;
   updatedByUid: string;
   lastPreviewMatchCount: number | null;
+  lastPreviewReachSummary?: null | {
+    inCatch: number;
+    automatic: number;
+    byHand: number;
+    unavailable: number;
+  };
   lastPreviewAt: {
     _seconds: number;
     _nanoseconds: number;

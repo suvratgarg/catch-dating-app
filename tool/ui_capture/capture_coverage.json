@@ -650,9 +650,10 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_customers_populated"
+        "host_customers_populated",
+        "host_customers_audiences_populated"
       ],
-      "reason": "The production Customers directory has a deterministic populated full-shell capture aligned with the direct people workspace; broader loading, empty, filtering, pagination, accessibility, and theme states remain future coverage."
+      "reason": "The production Customers destination has deterministic populated full-shell captures for the People and Audiences peer workspaces; broader loading, empty, filtering, pagination, accessibility, and theme states remain future coverage."
     },
     {
       "routeId": "hostAddCustomerScreen",
@@ -662,6 +663,24 @@
         "host_customer_add"
       ],
       "reason": "The full-page Add customer route is captured in light and dark themes with its shared Details and Memory field semantics plus pinned primary action."
+    },
+    {
+      "routeId": "hostCreateSavedAudienceScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": [
+        "host_saved_audience_create"
+      ],
+      "reason": "The Customers-owned full-page audience authoring route has a deterministic capture with the closed predicate vocabulary and canonical save action."
+    },
+    {
+      "routeId": "hostSavedAudienceDetailScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": [
+        "host_saved_audience_detail"
+      ],
+      "reason": "The Customers-owned full-page audience detail and edit route has a deterministic capture with exact-preview reach context and archive ownership."
     },
     {
       "routeId": "hostFormsScreen",

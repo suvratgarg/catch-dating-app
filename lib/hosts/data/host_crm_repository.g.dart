@@ -618,6 +618,108 @@ final class HostSavedAudiencesFamily extends $Family
   String toString() => r'hostSavedAudiencesProvider';
 }
 
+/// Exhaustive saved-audience directory used by the Customers-owned workspace.
+///
+/// The callable remains cursor-paginated; this bounded provider follows those
+/// cursors so client-side name search never silently searches only page one.
+
+@ProviderFor(hostAllSavedAudiences)
+final hostAllSavedAudiencesProvider = HostAllSavedAudiencesFamily._();
+
+/// Exhaustive saved-audience directory used by the Customers-owned workspace.
+///
+/// The callable remains cursor-paginated; this bounded provider follows those
+/// cursors so client-side name search never silently searches only page one.
+
+final class HostAllSavedAudiencesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostSavedAudiencePage>,
+          HostSavedAudiencePage,
+          FutureOr<HostSavedAudiencePage>
+        >
+    with
+        $FutureModifier<HostSavedAudiencePage>,
+        $FutureProvider<HostSavedAudiencePage> {
+  /// Exhaustive saved-audience directory used by the Customers-owned workspace.
+  ///
+  /// The callable remains cursor-paginated; this bounded provider follows those
+  /// cursors so client-side name search never silently searches only page one.
+  HostAllSavedAudiencesProvider._({
+    required HostAllSavedAudiencesFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostAllSavedAudiencesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostAllSavedAudiencesHash();
+
+  @override
+  String toString() {
+    return r'hostAllSavedAudiencesProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostSavedAudiencePage> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostSavedAudiencePage> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostAllSavedAudiences(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostAllSavedAudiencesProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostAllSavedAudiencesHash() =>
+    r'6a79425d905cab583d40aa3a1c2ad0690c59e9b4';
+
+/// Exhaustive saved-audience directory used by the Customers-owned workspace.
+///
+/// The callable remains cursor-paginated; this bounded provider follows those
+/// cursors so client-side name search never silently searches only page one.
+
+final class HostAllSavedAudiencesFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<HostSavedAudiencePage>, String> {
+  HostAllSavedAudiencesFamily._()
+    : super(
+        retry: null,
+        name: r'hostAllSavedAudiencesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Exhaustive saved-audience directory used by the Customers-owned workspace.
+  ///
+  /// The callable remains cursor-paginated; this bounded provider follows those
+  /// cursors so client-side name search never silently searches only page one.
+
+  HostAllSavedAudiencesProvider call(String organizerId) =>
+      HostAllSavedAudiencesProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostAllSavedAudiencesProvider';
+}
+
 @ProviderFor(hostSends)
 final hostSendsProvider = HostSendsFamily._();
 
