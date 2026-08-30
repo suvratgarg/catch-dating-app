@@ -17,6 +17,7 @@ enum HostCustomerTag {
 enum HostCustomerFilter {
   all,
   newToOrganizer,
+  attended,
   firstTime,
   repeat,
   regular,
@@ -31,6 +32,7 @@ enum HostCustomerFilter {
   HostCustomerTag? get tag => switch (this) {
     HostCustomerFilter.all => null,
     HostCustomerFilter.newToOrganizer => HostCustomerTag.newToOrganizer,
+    HostCustomerFilter.attended => null,
     HostCustomerFilter.firstTime => HostCustomerTag.firstTime,
     HostCustomerFilter.repeat => HostCustomerTag.repeat,
     HostCustomerFilter.regular => HostCustomerTag.regular,

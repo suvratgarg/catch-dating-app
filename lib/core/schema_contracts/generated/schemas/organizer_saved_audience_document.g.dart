@@ -95,6 +95,7 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
                     'type': 'string',
                     'enum': <Object?>[
                       'new_to_organizer',
+                      'past_attendee',
                       'first_time_attendee',
                       'repeat_attendee',
                       'regular',
@@ -426,6 +427,7 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
                     'type': 'string',
                     'enum': <Object?>[
                       'new_to_organizer',
+                      'past_attendee',
                       'first_time_attendee',
                       'repeat_attendee',
                       'regular',
@@ -539,6 +541,7 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
               'type': 'string',
               'enum': <Object?>[
                 'new_to_organizer',
+                'past_attendee',
                 'first_time_attendee',
                 'repeat_attendee',
                 'regular',
@@ -647,6 +650,7 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
           'type': 'string',
           'enum': <Object?>[
             'new_to_organizer',
+            'past_attendee',
             'first_time_attendee',
             'repeat_attendee',
             'regular',

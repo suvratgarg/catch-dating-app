@@ -76,8 +76,10 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {organizerContactChannelStateId} from "./organizerCampaignModel";
 import {
+  organizerContactTraitMatchesSegment,
   organizerIdentityEvidenceId,
   organizerIdentityHash,
+  organizerPastAttendeeSegmentId,
 } from "./organizerAudienceModel";
 import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
 import {
@@ -331,11 +333,12 @@ async function exactListContactsMatchCount(params: {
       .get();
     return snapshot.data().count;
   }
-  const snapshot = await params.db.collection("organizerContactTraits")
-    .where("organizerId", "==", params.organizerId)
-    .where("segmentIds", "array-contains", params.segmentId)
-    .count()
-    .get();
+  let query = params.db.collection("organizerContactTraits")
+    .where("organizerId", "==", params.organizerId);
+  query = params.segmentId === organizerPastAttendeeSegmentId ?
+    query.where("attendedEventCount", ">", 0) :
+    query.where("segmentIds", "array-contains", params.segmentId);
+  const snapshot = await query.count().get();
   return snapshot.data().count;
 }
 
@@ -1840,7 +1843,10 @@ export async function exportOrganizerContactsHandler(
     trait: traitSnaps[index].data() as
       OrganizerContactTraitDocument | undefined,
   })).filter((row) => row.trait?.organizerId === data.organizerId &&
-    (!data.segmentId || row.trait!.segmentIds.includes(data.segmentId)))
+    (!data.segmentId || organizerContactTraitMatchesSegment(
+      row.trait!,
+      data.segmentId
+    )))
     .slice(0, maxExportContacts);
   const header = [
     "contact_id", "display_name", "phone_e164", "email",
@@ -2077,9 +2083,14 @@ async function listBoundedFilteredSort(params: {
   if (params.segmentId) {
     candidatesAreTraits = true;
     candidateQuery = params.db.collection("organizerContactTraits")
-      .where("organizerId", "==", params.organizerId)
-      .where("segmentIds", "array-contains", params.segmentId)
-      .orderBy(admin.firestore.FieldPath.documentId());
+      .where("organizerId", "==", params.organizerId);
+    candidateQuery = params.segmentId === organizerPastAttendeeSegmentId ?
+      candidateQuery
+        .where("attendedEventCount", ">", 0)
+        .orderBy("attendedEventCount") :
+      candidateQuery
+        .where("segmentIds", "array-contains", params.segmentId)
+        .orderBy(admin.firestore.FieldPath.documentId());
   } else {
     candidateQuery = params.db.collection("organizerContacts")
       .where("organizerId", "==", params.organizerId)
@@ -2133,7 +2144,8 @@ async function listBoundedFilteredSort(params: {
       (!params.search || contact.data.searchName.startsWith(params.search)) &&
       (!params.manualTagId ||
         (contact.data.manualTagIds ?? []).includes(params.manualTagId)) &&
-      (!params.segmentId || trait?.segmentIds.includes(params.segmentId));
+      (!params.segmentId || (trait !== undefined &&
+        organizerContactTraitMatchesSegment(trait, params.segmentId)));
   });
   eligible.sort((left, right) => compareContactSortRows(
     left,

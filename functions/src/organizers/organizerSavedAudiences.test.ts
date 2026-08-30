@@ -95,6 +95,17 @@ test("any audiences match one predicate without weakening its type", () => {
   }, now), true);
 });
 
+test("past attendees match legacy traits from their attendance count", () => {
+  const candidate = row();
+  assert.equal(candidate.trait.segmentIds.includes("past_attendee"), false);
+  assert.equal(savedAudienceDefinitionMatches(candidate, {
+    join: "all",
+    predicates: [
+      {kind: "computedSegment", segmentId: "past_attendee"},
+    ],
+  }, now), true);
+});
+
 test(
   "named-intent reach fails closed on incomplete evidence or suppression",
   () => {

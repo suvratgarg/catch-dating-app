@@ -22,6 +22,7 @@ export interface OrganizerSavedAudienceCallableResponse {
           kind: "computedSegment";
           segmentId:
             | "new_to_organizer"
+            | "past_attendee"
             | "first_time_attendee"
             | "repeat_attendee"
             | "regular"

@@ -11,6 +11,7 @@ import {
   organizerAudienceContribution,
   organizerContactEventEdge,
   organizerContactId,
+  organizerContactTraitMatchesSegment,
   organizerContactTraits,
 } from "./organizerAudienceModel";
 import {audienceSummaryAfterDelta} from "./organizerAudienceProjection";
@@ -84,10 +85,20 @@ test("traits expose independent attendance and reachability segments", () => {
   assert.equal(traits.noShowCount, 1);
   assert.equal(traits.importedEventCount, 1);
   assert.equal(traits.attendanceRate, 2 / 3);
+  assert.ok(traits.segmentIds.includes("past_attendee"));
   assert.ok(traits.segmentIds.includes("repeat_attendee"));
   assert.ok(traits.segmentIds.includes("lapsed_regular"));
   assert.ok(traits.segmentIds.includes("whatsapp_reachable"));
   assert.ok(!traits.segmentIds.includes("sms_reachable"));
+
+  const legacyTraits = {
+    ...traits,
+    segmentIds: traits.segmentIds.filter((id) => id !== "past_attendee"),
+  };
+  assert.equal(
+    organizerContactTraitMatchesSegment(legacyTraits, "past_attendee"),
+    true,
+  );
 });
 
 test("summary deltas add, update, and remove without negatives", () => {

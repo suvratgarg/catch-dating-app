@@ -210,20 +210,30 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
         ? ref.watch(hostCustomersDirectoryControllerProvider(request))
         : const AsyncLoading<HostCustomersDirectoryState>();
     final directoryState = catchAsyncStateFromAsyncValue(directory).value;
-    String? campaignBridgeBlocker;
-    if (directoryState != null) {
-      campaignBridgeBlocker = hostCampaignBridgeBlocker(
-        hasPersistableAudience:
-            _search == null &&
-            directoryState.matchCount > 0 &&
-            directoryState.matchCountCoverage ==
-                HostCustomerMatchCountCoverage.exact,
-        messagingSetup: messagingSetupState.value,
-        audienceCoverageComplete:
-            directoryState.sourceCoverage ==
-            HostCustomerDirectoryCoverage.exact,
-      );
-    }
+    final campaignAudienceDefinition =
+        hostSavedAudienceDefinitionForCustomerSelection(
+          filter: effectiveFilter,
+          manualTag: _manualTag,
+        );
+    final campaignBridgePhase = directoryState == null
+        ? HostCustomerCampaignBridgePhase.notApplicable
+        : hostCustomerCampaignBridgePhase(
+            hasAudienceDefinition: campaignAudienceDefinition != null,
+            hasActiveSearch: _search != null,
+            directory: directoryState,
+            messagingSetup: messagingSetupState,
+          );
+    final campaignBridgeBlocker = switch (campaignBridgePhase) {
+      HostCustomerCampaignBridgePhase.noReachableRecipients =>
+        HostCampaignBlockers.noReachableRecipients,
+      HostCustomerCampaignBridgePhase.audienceCoveragePartial =>
+        HostCampaignBlockers.audienceCoveragePartial,
+      HostCustomerCampaignBridgePhase.providerUnavailable =>
+        HostCampaignBlockers.providerSetupRequired,
+      HostCustomerCampaignBridgePhase.senderSetupRequired =>
+        HostCampaignBlockers.senderInactive,
+      _ => null,
+    };
     final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
     final activeQuery = peopleView ? _search : _audienceSearch;
     return CatchTabbedScreenScaffold(
@@ -323,6 +333,23 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                         onRetry: () => ref.invalidate(
                           hostCrmSummaryProvider(selectedClub.id),
                         ),
+                        selectedFilter:
+                            _manualTag == null &&
+                                const {
+                                  HostCustomerFilter.all,
+                                  HostCustomerFilter.attended,
+                                  HostCustomerFilter.repeat,
+                                }.contains(effectiveFilter)
+                            ? effectiveFilter
+                            : null,
+                        onFilterSelected: (selectedFilter) => setState(() {
+                          _filter =
+                              selectedFilter == effectiveFilter &&
+                                  selectedFilter != HostCustomerFilter.all
+                              ? HostCustomerFilter.all
+                              : selectedFilter;
+                          _manualTag = null;
+                        }),
                         directorySummary: directoryState == null
                             ? null
                             : HostCustomerFilterSummary(
@@ -332,15 +359,26 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                                 countCoverage:
                                     directoryState.matchCountCoverage,
                                 campaignBlocker: campaignBridgeBlocker,
-                                onMessage: campaignBridgeBlocker == null
+                                onMessage:
+                                    campaignBridgePhase ==
+                                            HostCustomerCampaignBridgePhase
+                                                .ready &&
+                                        campaignAudienceDefinition != null
                                     ? () => _saveAndMessageCustomers(
                                         selectedClub,
                                         effectiveFilter,
                                         _manualTag,
+                                        campaignAudienceDefinition,
                                       )
                                     : null,
-                                onOpenMessaging: () =>
-                                    _openMessaging(selectedClub),
+                                onReviewSenderSetup:
+                                    campaignBridgePhase ==
+                                        HostCustomerCampaignBridgePhase
+                                            .senderSetupRequired
+                                    ? () => _reviewWhatsappSenderSetup(
+                                        selectedClub,
+                                      )
+                                    : null,
                                 onClear:
                                     effectiveFilter == HostCustomerFilter.all &&
                                         _manualTag == null
@@ -546,26 +584,15 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     Club club,
     HostCustomerFilter filter,
     HostCustomerManualTag? manualTag,
+    HostSavedAudienceDefinition definition,
   ) async {
     final label = manualTag?.label ?? _customerFilterLabel(context, filter);
-    final segment = hostAudienceSegmentForCustomerFilter(filter);
-    final predicate = manualTag != null
-        ? HostSavedAudienceManualTag(manualTag.tagId)
-        : segment != null
-        ? HostSavedAudienceComputedSegment(segment)
-        : const HostSavedAudienceAttendanceCount(
-            operator: HostSavedAudienceAttendanceOperator.atLeast,
-            eventCount: 0,
-          );
     final audience = await showCatchBottomSheet<HostSavedAudience>(
       context: context,
       builder: (_) => HostSaveAudienceSheet(
         organizerId: club.id,
         suggestedName: label,
-        definition: HostSavedAudienceDefinition(
-          join: HostSavedAudienceJoin.all,
-          predicates: [predicate],
-        ),
+        definition: definition,
       ),
     );
     if (!mounted || audience == null) return;
@@ -580,10 +607,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     );
   }
 
-  void _openMessaging(Club club) => context.goNamed(
-    Routes.hostInboxScreen.name,
-    queryParameters: {'workspace': HostMessagingWorkspace.campaigns.name},
-    extra: club,
+  void _reviewWhatsappSenderSetup(Club club) => context.pushNamed(
+    Routes.hostOrganizerMessagingScreen.name,
+    pathParameters: {'clubId': club.id},
   );
 
   Future<void> _addCustomer(

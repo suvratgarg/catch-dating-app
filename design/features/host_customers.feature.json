@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-30",
+  "updated": "2026-08-31",
   "id": "feature.host_customers",
   "name": "Host Customers",
   "owner": "hosts",
@@ -13,7 +13,7 @@
       "runtime": "flutter",
       "authority": {"registry": "flutter_screens", "id": "screen.host.customers"},
       "actionScope": {
-        "included": "People/Audiences peer navigation, customer directory recovery, shared organizer selection, view-aware debounced search, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, People-only header actions and export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account Catch chat creation, editable personal WhatsApp app handoff for contacts with a valid phone, a flat divided saved-audience directory with one New audience action, full-page create/detail/edit/archive routes for the closed audience predicate vocabulary, exact preview and server-derived reach summaries, persisting an eligible exact People filter before routing it into the Messaging composer, and opening Messaging for blocked or unpersistable views without claiming the full directory is sendable.",
+          "included": "People/Audiences peer navigation, customer directory recovery, shared organizer selection, view-aware debounced search, accessible selected Contacts/Attended/Repeat summary filters backed by the canonical server directory, server-backed Last seen, Most attended, and Name sorting with ordering-bound cursors, exact-or-qualified result counts, grouped computed-segment and organizer-tag filters, pagination, People-only header actions and export excluding notes, organizer-only manual contact creation, private author-stamped note append/edit, bounded manual-tag vocabulary assignment, per-person Campaign and Announcement delivery history, evidence-bearing manager merge review with durable Different people decisions, receipt-specific unmerge from survivor detail, rename/suppression/removal controls, complete event evidence, customer and event detail routing, verified-account Catch chat creation, editable personal WhatsApp app handoff for contacts with a valid phone, a flat divided saved-audience directory with one New audience action, full-page create/detail/edit/archive routes for the closed audience predicate vocabulary, exact preview and server-derived reach summaries, persisting an eligible exact People filter before routing it into the Messaging composer, and opening the dedicated WhatsApp Business setup route only when an otherwise eligible audience is blocked by organizer sender readiness.",
         "excluded": [
           "High-spender segmentation remains excluded until completed non-refunded payment totals are projected into indexed organizer-contact traits."
         ]
@@ -229,7 +229,7 @@
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "organizerId", "filter"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["customers_populated", "customers_filtered_empty"]}],
-          "description": "Filters the directory by either one server-backed computed segment or one organizer-owned manual tag, never conflating their namespaces or visual treatment."
+          "description": "Filters the directory by either a selected Contacts/Attended/Repeat summary control, one grouped server-backed computed segment, or one organizer-owned manual tag. Contacts clears segmentation, Attended means at least one attendance, and Repeat means at least two; no client combines independently paginated segments."
         },
         {
           "id": "sort_customers",
@@ -250,13 +250,13 @@
           "description": "Persists an eligible exact customer filter as a Customers-owned saved audience, then routes its identifier into the Messaging Sends composer."
         },
         {
-          "id": "open_messaging_workspace",
+          "id": "review_whatsapp_sender_setup",
           "owner": "customers_screen",
-          "codeValue": "_openMessaging",
+          "codeValue": "_reviewWhatsappSenderSetup",
           "cardinality": "singleton",
           "scopeKeys": ["viewerUid", "organizerId", "filter", "campaignBlocker"],
           "outcomes": [{"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.host.inbox"}}],
-          "description": "Opens the Messaging workspace for an unpersistable or blocked customer view instead of claiming every displayed customer is sendable."
+          "description": "Opens the selected organizer's dedicated WhatsApp Business setup route only for an otherwise eligible audience blocked by sender readiness; it never substitutes a generic Messaging-tab shortcut for an unavailable audience action."
         },
         {
           "id": "load_more",
@@ -429,16 +429,16 @@
       "scenarioOverrides": {
         "customers_loading": {"dimensions": {"load": "loading"}},
         "customers_error": {"dimensions": {"load": "error"}, "actionCases": [{"id": "recovery", "enabledActions": ["retry_directory"]}]},
-        "customers_empty": {"dimensions": {"directory": "empty"}, "actionCases": [{"id": "first_customer", "enabledActions": ["switch_organizer", "create_customer", "open_messaging_workspace"]}]},
-        "customers_populated": {"actionCases": [{"id": "directory", "enabledActions": ["switch_organizer", "search_customers", "open_customer_filters", "filter_customers", "sort_customers", "review_duplicate_customers", "load_more", "export_customers", "create_customer", "open_customer", "manage_customer", "open_messaging_workspace"]}]},
-        "customers_filtered_empty": {"dimensions": {"directory": "filtered_empty"}, "actionCases": [{"id": "adjust", "enabledActions": ["search_customers", "filter_customers", "sort_customers", "open_messaging_workspace"]}]},
+        "customers_empty": {"dimensions": {"directory": "empty"}, "actionCases": [{"id": "first_customer", "enabledActions": ["switch_organizer", "create_customer"]}]},
+        "customers_populated": {"actionCases": [{"id": "directory", "enabledActions": ["switch_organizer", "search_customers", "open_customer_filters", "filter_customers", "sort_customers", "review_duplicate_customers", "load_more", "export_customers", "create_customer", "open_customer", "manage_customer"]}]},
+        "customers_filtered_empty": {"dimensions": {"directory": "filtered_empty"}, "actionCases": [{"id": "adjust", "enabledActions": ["search_customers", "filter_customers", "sort_customers"]}]},
         "customers_paginating": {"dimensions": {"directory": "paginating"}, "actionCases": [{"id": "pending", "disabledActions": ["load_more"]}]},
         "customer_sorted_most_attended": {"dimensions": {"sort": "most_attended"}, "actionCases": [{"id": "sort", "enabledActions": ["sort_customers", "open_customer"]}]},
         "customer_sorted_name": {"dimensions": {"sort": "name"}, "actionCases": [{"id": "sort", "enabledActions": ["sort_customers", "open_customer"]}]},
         "customer_filter_sheet": {"dimensions": {"filter_sheet": "open"}, "actionCases": [{"id": "choose", "enabledActions": ["filter_customers"]}]},
-        "customer_filter_manual_tag": {"dimensions": {"filter_sheet": "open", "tags": "assigned"}, "actionCases": [{"id": "choose_manual", "enabledActions": ["filter_customers", "message_filtered_customers"], "disabledActions": ["open_messaging_workspace"]}]},
-        "customer_campaign_bridge_ready": {"dimensions": {"campaign_bridge": "ready"}, "actionCases": [{"id": "message", "enabledActions": ["message_filtered_customers"], "disabledActions": ["open_messaging_workspace"]}]},
-        "customer_campaign_bridge_blocked": {"dimensions": {"campaign_bridge": "blocked"}, "actionCases": [{"id": "explain_and_open", "enabledActions": ["open_messaging_workspace"], "disabledActions": ["message_filtered_customers"]}]},
+        "customer_filter_manual_tag": {"dimensions": {"filter_sheet": "open", "tags": "assigned"}, "actionCases": [{"id": "choose_manual", "enabledActions": ["filter_customers", "message_filtered_customers"]}]},
+        "customer_campaign_bridge_ready": {"dimensions": {"campaign_bridge": "ready"}, "actionCases": [{"id": "message", "enabledActions": ["message_filtered_customers"]}]},
+        "customer_campaign_bridge_blocked": {"dimensions": {"campaign_bridge": "blocked"}, "actionCases": [{"id": "explain_and_recover_sender", "enabledActions": ["review_whatsapp_sender_setup"], "disabledActions": ["message_filtered_customers"]}]},
         "customer_saved_audience_manage": {"dimensions": {"view": "audiences", "audience_directory": "populated"}, "actionCases": [{"id": "directory", "enabledActions": ["switch_customers_view", "search_saved_audiences", "open_saved_audience_create", "open_saved_audience_detail"]}]},
         "customer_saved_audience_empty": {"dimensions": {"view": "audiences", "audience_directory": "empty"}, "actionCases": [{"id": "first_audience", "enabledActions": ["switch_customers_view", "open_saved_audience_create"]}]},
         "customer_saved_audience_error": {"dimensions": {"view": "audiences", "load": "error"}, "actionCases": [{"id": "recovery", "enabledActions": ["switch_customers_view"]}]},

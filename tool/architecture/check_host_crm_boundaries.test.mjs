@@ -3,11 +3,48 @@ import test from "node:test";
 import {
   applicationRouteOwnershipFindings,
   audienceWorkspacePresentationFindings,
+  customerMessagingHandoffFindings,
   hostCrmCountCopyFindings,
   manualSendContractFindings,
   scanBackendFile,
   scanPresentationFile,
 } from "./check_host_crm_boundaries.mjs";
+
+test("flags generic or context-free Customers messaging handoffs", () => {
+  const findings = customerMessagingHandoffFindings({
+    customersPath: "customers.dart",
+    customersSource: [
+      "onOpenMessaging: () {},",
+      "context.goNamed(",
+      "  Routes.hostInboxScreen.name,",
+      "  queryParameters: {'workspace': HostMessagingWorkspace.campaigns.name},",
+      ");",
+    ].join("\n"),
+  });
+
+  assert.ok(findings.some((item) => /generic Messaging handoff/u.test(item.reason)));
+  assert.ok(findings.some((item) => /saved-audience id/u.test(item.reason)));
+});
+
+test("accepts audience-bound compose and dedicated sender recovery", () => {
+  const findings = customerMessagingHandoffFindings({
+    customersPath: "customers.dart",
+    customersSource: [
+      "onReviewSenderSetup: review,",
+      "context.goNamed(",
+      "  Routes.hostInboxScreen.name,",
+      "  queryParameters: {",
+      "    'workspace': HostMessagingWorkspace.campaigns.name,",
+      "    'compose': '1',",
+      "    'audienceId': audience.audienceId,",
+      "  },",
+      ");",
+      "context.pushNamed(Routes.hostOrganizerMessagingScreen.name);",
+    ].join("\n"),
+  });
+
+  assert.deepEqual(findings, []);
+});
 
 test("flags modal, contained, or duplicate saved-audience presentation", () => {
   const findings = audienceWorkspacePresentationFindings({

@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 3.7.7
-updated: 2026-08-29
+version: 3.7.8
+updated: 2026-08-31
 owner: recursive_audit_loop
 status: active
 ---
@@ -1094,7 +1094,8 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `HostCustomersScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Canonical Host CRM tab with People and Audiences peer workspaces. People follows the shell-selected organizer and owns summary, Filters/Sort, reviewed segments, search, server-backed ordering, export, manual add, cursor pagination, duplicate review, and customer detail routing. Audiences owns reusable group discovery and authoring. The top-bar Add customer action is People-only; audience creation has one explicit in-workspace action. Direct “Message these” actions require an exact persistable view, while Messaging owns sender and send operations. |
+| `HostCustomersScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Canonical Host CRM tab with People and Audiences peer workspaces. People follows the shell-selected organizer and owns summary, Filters/Sort, reviewed segments, search, server-backed ordering, export, manual add, cursor pagination, duplicate review, and customer detail routing. Contacts, Attended, and Repeat summary tiles are selected controls that switch the same server-backed directory filter; reselecting Attended or Repeat returns to Contacts. Audiences owns reusable group discovery and authoring. The top-bar Add customer action is People-only; audience creation has one explicit in-workspace action. Direct “Message these” actions require an exact persistable view, while Messaging owns sender and send operations. |
+| `HostCustomerFilterSummary` | `lib/hosts/presentation/customers/host_customers_directory.dart` | Flat active-view summary nested under the CRM facts. Only a scoped exact segment or organizer tag can expose **Message these N**, and that action persists a saved audience before compose. Blocked views show their reason without a generic Messaging shortcut; an actionable inactive sender alone exposes **Set up WhatsApp Business** and opens the dedicated setup route. |
 | `HostSavedAudiencesWorkspace` | `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart` | First-class Customers/Audiences directory. Loads the organizer's complete bounded saved-audience set, searches names locally, and renders top-level entities as flat `CatchField.nav` rows in one `CatchSection.divided`. It exposes exactly one New audience action and shows stored exact-preview count plus server-derived reach buckets without becoming a send composer. |
 | `HostSavedAudienceEditorScreen` | `lib/hosts/presentation/customers/host_saved_audience_editor.dart` | Full-page create/detail/edit route for a versioned saved-audience definition. Supports the complete closed predicate vocabulary, exact preview refresh, optimistic update revisions, and archive confirmation. Definition authoring remains in Customers; the screen never owns message content, channel selection, or dispatch. |
 | `HostFormsScreen` | `lib/hosts/presentation/forms/host_forms_screen.dart` | Canonical direct Host Forms destination. Uses `CatchTabbedScreenScaffold` for pinned Forms / Responses peer tabs, one view-aware expanding top-bar search, independent tab scroll state, Forms-only creation, flat divided form rows, and scalar lifecycle/response option groups without moving Forms into Organizer or representing peer views as filter chips. |
@@ -1114,7 +1115,7 @@ Widgetbook callers.
 | `HostCustomerAttendanceCard` | `lib/hosts/presentation/customers/host_customer_detail_cards.dart` | Provider-free attended, expected, and attendance-rate stat rail built from `CatchSection` and `CatchStatColumn`. |
 | `HostCustomerRevenueCard` | `lib/hosts/presentation/customers/host_customer_detail_cards.dart` | Provider-free multi-currency customer revenue presentation with exact source breakdowns for Catch-confirmed payments, provider-confirmed orders, organizer imports, and organizer estimates. It preserves exact/partial coverage without requiring a Catch UID for organizer-owned financial facts. |
 | `HostCustomerAttendanceHistory` | `lib/hosts/presentation/customers/host_customer_detail_cards.dart` | Provider-free operational event history with canonical event labels, Catch-native/external/legacy origin, provider, status, checked-in truth, per-event revenue provenance, and shared-order allocation kept distinct. |
-| `HostCustomersSummary` | `lib/hosts/presentation/customers/host_customers_directory.dart` | Provider-free async CRM overview for contacts, past attendees, repeat attendees, WhatsApp-ready contacts, imported/linked source coverage, and an optional active-directory summary/action slot inside the same surface. |
+| `HostCustomersSummary` | `lib/hosts/presentation/customers/host_customers_directory.dart` | Provider-free async CRM overview whose Contacts, Attended, and Repeat metric boxes are full-tile accessible filters with semantic selected/focus/resting borders. It also presents WhatsApp-ready contacts, imported/linked source coverage, and an optional active-directory summary/action slot in the same composition. |
 
 ### StatefulWidget
 

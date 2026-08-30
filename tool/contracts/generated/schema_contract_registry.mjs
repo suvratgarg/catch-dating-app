@@ -13481,6 +13481,7 @@ export const organizerContactDocumentSchema = {
                 "type": "string",
                 "enum": [
                   "new_to_organizer",
+                  "past_attendee",
                   "first_time_attendee",
                   "repeat_attendee",
                   "regular",
@@ -13554,6 +13555,7 @@ export const organizerContactDocumentSchema = {
               "type": "string",
               "enum": [
                 "new_to_organizer",
+                "past_attendee",
                 "first_time_attendee",
                 "repeat_attendee",
                 "regular",
@@ -14120,6 +14122,7 @@ export const organizerSavedAudienceDocumentSchema = {
                     "type": "string",
                     "enum": [
                       "new_to_organizer",
+                      "past_attendee",
                       "first_time_attendee",
                       "repeat_attendee",
                       "regular",
@@ -14451,6 +14454,7 @@ export const organizerSavedAudienceDocumentSchema = {
                     "type": "string",
                     "enum": [
                       "new_to_organizer",
+                      "past_attendee",
                       "first_time_attendee",
                       "repeat_attendee",
                       "regular",
@@ -14564,6 +14568,7 @@ export const organizerSavedAudienceDocumentSchema = {
               "type": "string",
               "enum": [
                 "new_to_organizer",
+                "past_attendee",
                 "first_time_attendee",
                 "repeat_attendee",
                 "regular",
@@ -14672,6 +14677,7 @@ export const organizerSavedAudienceDocumentSchema = {
           "type": "string",
           "enum": [
             "new_to_organizer",
+            "past_attendee",
             "first_time_attendee",
             "repeat_attendee",
             "regular",
@@ -16102,6 +16108,7 @@ export const organizerContactTraitDocumentSchema = {
         "type": "string",
         "enum": [
           "new_to_organizer",
+          "past_attendee",
           "first_time_attendee",
           "repeat_attendee",
           "regular",
@@ -16175,6 +16182,7 @@ export const organizerContactTraitDocumentSchema = {
       "type": "string",
       "enum": [
         "new_to_organizer",
+        "past_attendee",
         "first_time_attendee",
         "repeat_attendee",
         "regular",
@@ -60056,6 +60064,7 @@ export const upsertOrganizerSavedAudienceCallablePayloadSchema = {
                     "type": "string",
                     "enum": [
                       "new_to_organizer",
+                      "past_attendee",
                       "first_time_attendee",
                       "repeat_attendee",
                       "regular",
@@ -60358,6 +60367,7 @@ export const organizerSavedAudienceCallableResponseSchema = {
                     "type": "string",
                     "enum": [
                       "new_to_organizer",
+                      "past_attendee",
                       "first_time_attendee",
                       "repeat_attendee",
                       "regular",
@@ -60637,6 +60647,7 @@ export const listOrganizerSavedAudiencesCallableResponseSchema = {
                           "type": "string",
                           "enum": [
                             "new_to_organizer",
+                            "past_attendee",
                             "first_time_attendee",
                             "repeat_attendee",
                             "regular",
@@ -60921,6 +60932,7 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
                         "type": "string",
                         "enum": [
                           "new_to_organizer",
+                          "past_attendee",
                           "first_time_attendee",
                           "repeat_attendee",
                           "regular",
@@ -70837,6 +70849,7 @@ export const listOrganizerContactsCallablePayloadSchema = {
           "type": "string",
           "enum": [
             "new_to_organizer",
+            "past_attendee",
             "first_time_attendee",
             "repeat_attendee",
             "regular",
@@ -85611,6 +85624,7 @@ export const listOrganizerContactsCallableResponseSchema = {
               "type": "string",
               "enum": [
                 "new_to_organizer",
+                "past_attendee",
                 "first_time_attendee",
                 "repeat_attendee",
                 "regular",
@@ -85833,6 +85847,7 @@ export const listOrganizerContactsCallableResponseSchema = {
             "type": "string",
             "enum": [
               "new_to_organizer",
+              "past_attendee",
               "first_time_attendee",
               "repeat_attendee",
               "regular",
@@ -86297,6 +86312,7 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "type": "string",
             "enum": [
               "new_to_organizer",
+              "past_attendee",
               "first_time_attendee",
               "repeat_attendee",
               "regular",
@@ -88663,6 +88679,7 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "type": "string",
             "enum": [
               "new_to_organizer",
+              "past_attendee",
               "first_time_attendee",
               "repeat_attendee",
               "regular",
@@ -89659,6 +89676,7 @@ export const exportOrganizerContactsCallablePayloadSchema = {
           "type": "string",
           "enum": [
             "new_to_organizer",
+            "past_attendee",
             "first_time_attendee",
             "repeat_attendee",
             "regular",

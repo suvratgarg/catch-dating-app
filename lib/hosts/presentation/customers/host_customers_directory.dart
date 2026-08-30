@@ -121,7 +121,7 @@ class HostCustomerFilterSummary extends StatelessWidget {
     required this.countCoverage,
     required this.campaignBlocker,
     required this.onMessage,
-    required this.onOpenMessaging,
+    required this.onReviewSenderSetup,
     this.onClear,
   });
 
@@ -131,7 +131,7 @@ class HostCustomerFilterSummary extends StatelessWidget {
   final HostCustomerMatchCountCoverage countCoverage;
   final String? campaignBlocker;
   final VoidCallback? onMessage;
-  final VoidCallback onOpenMessaging;
+  final VoidCallback? onReviewSenderSetup;
   final VoidCallback? onClear;
 
   @override
@@ -175,19 +175,25 @@ class HostCustomerFilterSummary extends StatelessWidget {
                   color: CatchTokens.of(context).warning,
                 ),
               ),
-            CatchButton(
-              key: const ValueKey('host-customers-messaging-action'),
-              label: onMessage == null
-                  ? context.l10n.hostCustomersOpenMessaging
-                  : countCoverage == HostCustomerMatchCountCoverage.exact
-                  ? context.l10n.hostCustomersMessageThese(count: count)
-                  : context.l10n.hostCustomersMessageTheseAtLeast(count: count),
-              variant: onMessage == null
-                  ? CatchButtonVariant.secondary
-                  : CatchButtonVariant.primary,
-              size: CatchButtonSize.sm,
-              onPressed: onMessage ?? onOpenMessaging,
-            ),
+            if (onMessage case final message?)
+              CatchButton(
+                key: const ValueKey('host-customers-messaging-action'),
+                label: countCoverage == HostCustomerMatchCountCoverage.exact
+                    ? context.l10n.hostCustomersMessageThese(count: count)
+                    : context.l10n.hostCustomersMessageTheseAtLeast(
+                        count: count,
+                      ),
+                size: CatchButtonSize.sm,
+                onPressed: message,
+              )
+            else if (onReviewSenderSetup case final review?)
+              CatchButton(
+                key: const ValueKey('host-customers-sender-setup-action'),
+                label: context.l10n.hostCustomersSetUpWhatsappBusiness,
+                variant: CatchButtonVariant.secondary,
+                size: CatchButtonSize.sm,
+                onPressed: review,
+              ),
           ],
         ),
       ],
@@ -437,11 +443,15 @@ class HostCustomersSummary extends StatelessWidget {
     super.key,
     required this.summary,
     required this.onRetry,
+    required this.selectedFilter,
+    required this.onFilterSelected,
     this.directorySummary,
   });
 
   final AsyncValue<HostCrmSummary> summary;
   final VoidCallback onRetry;
+  final HostCustomerFilter? selectedFilter;
+  final ValueChanged<HostCustomerFilter> onFilterSelected;
   final Widget? directorySummary;
 
   @override
@@ -459,32 +469,31 @@ class HostCustomersSummary extends StatelessWidget {
     builder: (context, value) {
       final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
       String countLabel(int count) => value.truncated ? '$count+' : '$count';
-      final stats = <({String label, String value})>[
+      final stats = <({HostCustomerFilter filter, String label, String value})>[
         (
+          filter: HostCustomerFilter.all,
           value: countLabel(value.contactCount),
           label: context.l10n.hostsHostAudienceContacts,
         ),
         (
+          filter: HostCustomerFilter.attended,
           value: countLabel(value.pastAttendeeCount),
           label: context.l10n.hostsHostAudienceAttended,
         ),
         (
+          filter: HostCustomerFilter.repeat,
           value: countLabel(value.repeatAttendeeCount),
           label: context.l10n.hostsHostAudienceRepeat,
         ),
       ];
       final statTiles = <Widget>[
         for (final stat in stats)
-          CatchSurface(
-            tone: CatchSurfaceTone.transparent,
-            radius: CatchRadius.md,
-            padding: CatchInsets.cardContent,
-            borderRole: CatchBorderRole.boundary,
-            child: CatchStatColumn(
-              value: stat.value,
-              label: stat.label,
-              monoValue: true,
-            ),
+          _HostCustomerSummaryFilterTile(
+            key: ValueKey('host-customers-summary-${stat.filter.name}'),
+            value: stat.value,
+            label: stat.label,
+            selected: selectedFilter == stat.filter,
+            onTap: () => onFilterSelected(stat.filter),
           ),
       ];
       return Column(
@@ -538,12 +547,73 @@ class HostCustomersSummary extends StatelessWidget {
   );
 }
 
+class _HostCustomerSummaryFilterTile extends StatefulWidget {
+  const _HostCustomerSummaryFilterTile({
+    super.key,
+    required this.value,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String value;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  State<_HostCustomerSummaryFilterTile> createState() =>
+      _HostCustomerSummaryFilterTileState();
+}
+
+class _HostCustomerSummaryFilterTileState
+    extends State<_HostCustomerSummaryFilterTile> {
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final border = _focused
+        ? CatchBorder.resolve(t, CatchBorderRole.focus)
+        : widget.selected
+        ? CatchBorder.resolve(t, CatchBorderRole.selected)
+        : CatchBorder.interactive(t, CatchInteractiveBorderState.resting);
+    return Semantics(
+      button: true,
+      selected: widget.selected,
+      label: '${widget.label}, ${widget.value}',
+      onTap: widget.onTap,
+      child: ExcludeSemantics(
+        child: CatchSurface(
+          tone: CatchSurfaceTone.transparent,
+          backgroundColor: widget.selected
+              ? t.ink.withValues(alpha: CatchOpacity.controlOverlayHover)
+              : null,
+          radius: CatchRadius.md,
+          padding: CatchInsets.cardContent,
+          borderSpec: border,
+          onTap: widget.onTap,
+          onFocusChange: (focused) {
+            if (_focused != focused) setState(() => _focused = focused);
+          },
+          child: CatchStatColumn(
+            value: widget.value,
+            label: widget.label,
+            monoValue: true,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 String _customerFilterLabel(
   BuildContext context,
   HostCustomerFilter filter,
 ) => switch (filter) {
   HostCustomerFilter.all => context.l10n.hostsHostAudienceAll,
   HostCustomerFilter.newToOrganizer => context.l10n.hostsHostAudienceSegmentNew,
+  HostCustomerFilter.attended => context.l10n.hostsHostAudienceAttended,
   HostCustomerFilter.firstTime =>
     context.l10n.hostsHostAudienceSegmentFirstTime,
   HostCustomerFilter.repeat => context.l10n.hostsHostAudienceSegmentRepeat,

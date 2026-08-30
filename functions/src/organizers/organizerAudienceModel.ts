@@ -8,8 +8,9 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 
 export const organizerAudienceProjectionVersion = 1;
-export const organizerAudienceDefinitionVersion = 2;
+export const organizerAudienceDefinitionVersion = 3;
 export const organizerIdentityHashVersion = "hmac-sha256-v1" as const;
+export const organizerPastAttendeeSegmentId = "past_attendee" as const;
 
 export type OrganizerIdentityKind =
   OrganizerContactIdentityLinkDocument["kind"];
@@ -18,6 +19,22 @@ export interface OrganizerIdentityEvidence {
   kind: OrganizerIdentityKind;
   identityHash: string;
   confidence: OrganizerContactIdentityLinkDocument["confidence"];
+}
+
+/**
+ * Matches a computed CRM segment while preserving pre-v3 trait compatibility.
+ *
+ * `past_attendee` was added after existing traits had already been projected,
+ * so its numeric source fact remains authoritative until every document is
+ * naturally recomputed. Other segments continue to use their stored ids.
+ */
+export function organizerContactTraitMatchesSegment(
+  trait: OrganizerContactTraitDocument,
+  segmentId: OrganizerContactTraitDocument["segmentIds"][number]
+): boolean {
+  return segmentId === organizerPastAttendeeSegmentId ?
+    trait.attendedEventCount > 0 :
+    trait.segmentIds.includes(segmentId);
 }
 
 /** Creates a stable, opaque contact id without using raw attendee PII. */
@@ -196,6 +213,7 @@ export function organizerContactTraits(params: {
     .at(-1)!;
   const segmentIds: OrganizerContactTraitDocument["segmentIds"] = [];
   if (attended.length === 0) segmentIds.push("new_to_organizer");
+  if (attended.length >= 1) segmentIds.push(organizerPastAttendeeSegmentId);
   if (attended.length === 1) segmentIds.push("first_time_attendee");
   if (attended.length >= 2) segmentIds.push("repeat_attendee");
 

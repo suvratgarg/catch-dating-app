@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_customers_controller.g.dart';
@@ -100,25 +102,108 @@ HostAudienceQuery _queryFor(
 
 HostAudienceSegment? hostAudienceSegmentForCustomerFilter(
   HostCustomerFilter filter,
-) => switch (filter.tag) {
-  null => null,
-  HostCustomerTag.newToOrganizer => HostAudienceSegment.newToOrganizer,
-  HostCustomerTag.firstTime => HostAudienceSegment.firstTimeAttendee,
-  HostCustomerTag.repeat => HostAudienceSegment.repeatAttendee,
-  HostCustomerTag.regular => HostAudienceSegment.regular,
-  HostCustomerTag.atRisk => HostAudienceSegment.lapsedRegular,
-  HostCustomerTag.reliable => HostAudienceSegment.reliableAttendee,
-  HostCustomerTag.needsConfirmation => HostAudienceSegment.needsConfirmation,
-  HostCustomerTag.advocate => HostAudienceSegment.advocate,
-  HostCustomerTag.highImpactAdvocate => HostAudienceSegment.highImpactAdvocate,
-  HostCustomerTag.whatsappReachable => HostAudienceSegment.whatsappReachable,
-  HostCustomerTag.smsReachable => HostAudienceSegment.smsReachable,
+) => switch (filter) {
+  HostCustomerFilter.all => null,
+  HostCustomerFilter.newToOrganizer => HostAudienceSegment.newToOrganizer,
+  HostCustomerFilter.attended => HostAudienceSegment.pastAttendee,
+  HostCustomerFilter.firstTime => HostAudienceSegment.firstTimeAttendee,
+  HostCustomerFilter.repeat => HostAudienceSegment.repeatAttendee,
+  HostCustomerFilter.regular => HostAudienceSegment.regular,
+  HostCustomerFilter.atRisk => HostAudienceSegment.lapsedRegular,
+  HostCustomerFilter.reliable => HostAudienceSegment.reliableAttendee,
+  HostCustomerFilter.needsConfirmation => HostAudienceSegment.needsConfirmation,
+  HostCustomerFilter.advocate => HostAudienceSegment.advocate,
+  HostCustomerFilter.highImpactAdvocate =>
+    HostAudienceSegment.highImpactAdvocate,
+  HostCustomerFilter.whatsappReachable => HostAudienceSegment.whatsappReachable,
+  HostCustomerFilter.smsReachable => HostAudienceSegment.smsReachable,
 };
+
+HostSavedAudienceDefinition? hostSavedAudienceDefinitionForCustomerSelection({
+  required HostCustomerFilter filter,
+  required HostCustomerManualTag? manualTag,
+}) {
+  if (manualTag != null) {
+    return HostSavedAudienceDefinition(
+      join: HostSavedAudienceJoin.all,
+      predicates: [HostSavedAudienceManualTag(manualTag.tagId)],
+    );
+  }
+  if (filter == HostCustomerFilter.attended) {
+    return const HostSavedAudienceDefinition(
+      join: HostSavedAudienceJoin.all,
+      predicates: [
+        HostSavedAudienceAttendanceCount(
+          operator: HostSavedAudienceAttendanceOperator.atLeast,
+          eventCount: 1,
+        ),
+      ],
+    );
+  }
+  final segment = hostAudienceSegmentForCustomerFilter(filter);
+  if (segment == null) return null;
+  return HostSavedAudienceDefinition(
+    join: HostSavedAudienceJoin.all,
+    predicates: [HostSavedAudienceComputedSegment(segment)],
+  );
+}
+
+enum HostCustomerCampaignBridgePhase {
+  notApplicable,
+  checkingSetup,
+  setupUnavailable,
+  noReachableRecipients,
+  audienceCoveragePartial,
+  providerUnavailable,
+  senderSetupRequired,
+  ready,
+}
+
+HostCustomerCampaignBridgePhase hostCustomerCampaignBridgePhase({
+  required bool hasAudienceDefinition,
+  required bool hasActiveSearch,
+  required HostCustomersDirectoryState directory,
+  required CatchAsyncState<HostMessagingSetup> messagingSetup,
+}) {
+  if (!hasAudienceDefinition || hasActiveSearch) {
+    return HostCustomerCampaignBridgePhase.notApplicable;
+  }
+  if (directory.matchCount <= 0 ||
+      directory.matchCountCoverage != HostCustomerMatchCountCoverage.exact) {
+    return HostCustomerCampaignBridgePhase.noReachableRecipients;
+  }
+  if (directory.sourceCoverage != HostCustomerDirectoryCoverage.exact) {
+    return HostCustomerCampaignBridgePhase.audienceCoveragePartial;
+  }
+  if (!messagingSetup.hasData) {
+    return messagingSetup.hasError
+        ? HostCustomerCampaignBridgePhase.setupUnavailable
+        : HostCustomerCampaignBridgePhase.checkingSetup;
+  }
+  final blocker = hostCampaignBridgeBlocker(
+    hasPersistableAudience: true,
+    messagingSetup: messagingSetup.value,
+    audienceCoverageComplete: true,
+  );
+  return switch (blocker) {
+    null => HostCustomerCampaignBridgePhase.ready,
+    HostCampaignBlockers.providerSetupRequired =>
+      HostCustomerCampaignBridgePhase.providerUnavailable,
+    HostCampaignBlockers.senderInactive =>
+      HostCustomerCampaignBridgePhase.senderSetupRequired,
+    HostCampaignBlockers.noReachableRecipients =>
+      HostCustomerCampaignBridgePhase.noReachableRecipients,
+    HostCampaignBlockers.audienceCoveragePartial =>
+      HostCustomerCampaignBridgePhase.audienceCoveragePartial,
+    _ => HostCustomerCampaignBridgePhase.setupUnavailable,
+  };
+}
 
 HostCustomerFilter hostCustomerFilterForAudienceSegment(
   HostAudienceSegment segment,
 ) => switch (segment) {
   HostAudienceSegment.newToOrganizer => HostCustomerFilter.newToOrganizer,
+  HostAudienceSegment.pastAttendee => HostCustomerFilter.attended,
   HostAudienceSegment.firstTimeAttendee => HostCustomerFilter.firstTime,
   HostAudienceSegment.repeatAttendee => HostCustomerFilter.repeat,
   HostAudienceSegment.regular => HostCustomerFilter.regular,
@@ -150,6 +235,7 @@ hostCustomerFilterGroupsForSmsReadiness(HostCrmChannelReadiness? smsReadiness) {
   return {
     HostCustomerFilterGroup.attendance: [
       HostCustomerFilter.newToOrganizer,
+      HostCustomerFilter.attended,
       HostCustomerFilter.firstTime,
       HostCustomerFilter.repeat,
       HostCustomerFilter.regular,
@@ -212,6 +298,7 @@ HostCustomerManualTag _directoryManualTag(HostManualTag tag) =>
 
 HostCustomerTag? _customerTag(HostAudienceSegment segment) => switch (segment) {
   HostAudienceSegment.newToOrganizer => HostCustomerTag.newToOrganizer,
+  HostAudienceSegment.pastAttendee => null,
   HostAudienceSegment.firstTimeAttendee => HostCustomerTag.firstTime,
   HostAudienceSegment.repeatAttendee => HostCustomerTag.repeat,
   HostAudienceSegment.regular => HostCustomerTag.regular,

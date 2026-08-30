@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
@@ -18,7 +19,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -86,6 +86,7 @@ import '../test_pump_helpers.dart';
 part 'host_operations_state_events_tests.dart';
 part 'host_operations_club_workspace_tests.dart';
 part 'host_operations_customers_tests.dart';
+part 'host_operations_customer_summary_filters_tests.dart';
 part 'host_operations_saved_audience_failure_tests.dart';
 part 'host_operations_customer_editor_tests.dart';
 part 'host_operations_customer_communications_tests.dart';
@@ -107,6 +108,7 @@ void main() {
   _registerHostOperationsStateEventsTests();
   _registerHostOperationsClubWorkspaceTests();
   _registerHostOperationsCustomersTests();
+  _registerHostOperationsCustomerSummaryFiltersTests();
   _registerHostOperationsSavedAudienceFailureTests();
   _registerHostOperationsCustomerEditorTests();
   _registerHostOperationsCustomerCommunicationsTests();
@@ -209,6 +211,12 @@ Future<void> _pumpHostScreen(
           'Messaging ${state.uri.queryParameters['workspace']} '
           '${state.uri.queryParameters['segment']}',
         ),
+      ),
+      GoRoute(
+        path: Routes.hostOrganizerMessagingScreen.path,
+        name: Routes.hostOrganizerMessagingScreen.name,
+        builder: (_, state) =>
+            Text('Messaging setup ${state.pathParameters['clubId']}'),
       ),
       GoRoute(
         path: Routes.hostClubDetailScreen.path,

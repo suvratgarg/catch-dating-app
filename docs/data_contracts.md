@@ -837,6 +837,12 @@ safety reports and inferred social desirability are prohibited CRM inputs.
 An `advocate` has at least one verified referred registration or check-in. A
 `high_impact_advocate` has at least three referred verified check-ins in the
 trailing 365 days; raw link opens and share-button taps never qualify.
+`past_attendee` is the canonical broad attendance segment for at least one
+checked-in event; `repeat_attendee` begins at two. New definition-v3 trait rows
+store both the broad and applicable narrower segment. Directory, export, and
+saved-audience evaluation still resolve `past_attendee` from
+`attendedEventCount > 0`, so older trait rows remain correct before they are
+recomputed and clients never union independently paginated segment results.
 Trait and summary writes use exactly-once TTL receipts, so retries cannot
 double-count an organizer. The dry-run-first organizer-audience backfill uses
 the same production projector and marks a summary `exact` only after every

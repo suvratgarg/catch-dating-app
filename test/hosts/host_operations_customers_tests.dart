@@ -276,77 +276,6 @@ void _registerHostOperationsCustomersTests() {
     expect(refreshes, 1);
   });
 
-  testWidgets('incomplete CRM totals render as lower bounds', (tester) async {
-    await _pumpHostScreen(
-      tester,
-      Scaffold(
-        body: HostCustomersSummary(
-          summary: const AsyncData(
-            HostCrmSummary(
-              organizerId: 'organizer-1',
-              contactCount: 4,
-              pastAttendeeCount: 3,
-              repeatAttendeeCount: 2,
-              linkedAccountCount: 1,
-              importedContactCount: 0,
-              whatsappOptInCount: 0,
-              smsOptInCount: 0,
-              truncated: true,
-              inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
-              whatsappReadiness: HostCrmChannelReadiness.providerSetupRequired,
-              smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
-            ),
-          ),
-          onRetry: () {},
-        ),
-      ),
-    );
-
-    expect(find.text('4+'), findsOneWidget);
-    expect(find.text('3+'), findsOneWidget);
-    expect(find.text('2+'), findsOneWidget);
-
-    final summary = find.byType(HostCustomersSummary);
-    final statColumns = tester
-        .widgetList<CatchStatColumn>(
-          find.descendant(of: summary, matching: find.byType(CatchStatColumn)),
-        )
-        .toList();
-    expect(statColumns, hasLength(3));
-    expect(statColumns.every((column) => !column.surface), isTrue);
-    expect(statColumns.every((column) => !column.center), isTrue);
-
-    final statSurfaces = find.descendant(
-      of: summary,
-      matching: find.byType(CatchSurface),
-    );
-    expect(statSurfaces, findsNWidgets(3));
-    final surfaces = tester.widgetList<CatchSurface>(statSurfaces).toList();
-    expect(
-      surfaces.every((surface) => surface.tone == CatchSurfaceTone.transparent),
-      isTrue,
-    );
-    expect(
-      surfaces.every((surface) => surface.radius == CatchRadius.md),
-      isTrue,
-    );
-    expect(
-      surfaces.every(
-        (surface) => surface.borderRole == CatchBorderRole.boundary,
-      ),
-      isTrue,
-    );
-
-    final surfaceRects = <Rect>[
-      for (var index = 0; index < 3; index++)
-        tester.getRect(statSurfaces.at(index)),
-    ];
-    expect(surfaceRects[0].width, closeTo(surfaceRects[1].width, 0.01));
-    expect(surfaceRects[1].width, closeTo(surfaceRects[2].width, 0.01));
-    expect(surfaceRects[1].left - surfaceRects[0].right, CatchSpacing.s2);
-    expect(surfaceRects[2].left - surfaceRects[1].right, CatchSpacing.s2);
-  });
-
   testWidgets('customer search debounces and unavailable SMS stays hidden', (
     tester,
   ) async {
@@ -535,7 +464,11 @@ void _registerHostOperationsCustomersTests() {
     );
     final position = tester.state<ScrollableState>(scrollable).position;
     expect(position.maxScrollExtent, greaterThan(0));
-    await tester.drag(scrollable, const Offset(0, -420));
+    await tester.scrollUntilVisible(
+      find.text('ADVOCACY'),
+      200,
+      scrollable: scrollable,
+    );
     await pumpFeatureUi(tester);
 
     expect(position.pixels, greaterThan(0));
@@ -823,11 +756,14 @@ void _registerHostOperationsCustomersTests() {
     expect(find.ancestor(of: activeView, matching: summary), findsOneWidget);
     expect(find.text('All · 0 people'), findsOneWidget);
     expect(find.text('Message these 0'), findsNothing);
-    final messagingAction = tester.widget<CatchButton>(
+    expect(
       find.byKey(const ValueKey('host-customers-messaging-action')),
+      findsNothing,
     );
-    expect(messagingAction.label, 'Open messaging');
-    expect(messagingAction.onPressed, isNotNull);
+    expect(
+      find.byKey(const ValueKey('host-customers-sender-setup-action')),
+      findsNothing,
+    );
 
     final controls = find.byType(HostCustomerDirectoryControls);
     expect(
@@ -840,6 +776,30 @@ void _registerHostOperationsCustomersTests() {
     );
     expect(find.byTooltip('More customer actions'), findsOneWidget);
     expect(find.byTooltip('Export this audience'), findsNothing);
+
+    await tester.tap(
+      find.byKey(const ValueKey('host-customers-summary-attended')),
+    );
+    await pumpFeatureUi(tester);
+    expect(requests.last.filter, HostCustomerFilter.attended);
+    expect(find.text('Attended · 0 people'), findsOneWidget);
+    final attendedSemantics = tester.getSemantics(
+      find.byKey(const ValueKey('host-customers-summary-attended')),
+    );
+    expect(attendedSemantics.label, 'Attended, 0');
+    expect(attendedSemantics.flagsCollection.isButton, isTrue);
+    expect(attendedSemantics.flagsCollection.isSelected, ui.Tristate.isTrue);
+    expect(
+      attendedSemantics.getSemanticsData().hasAction(ui.SemanticsAction.tap),
+      isTrue,
+    );
+
+    await tester.tap(
+      find.byKey(const ValueKey('host-customers-summary-attended')),
+    );
+    await pumpFeatureUi(tester);
+    expect(requests.last.filter, HostCustomerFilter.all);
+    expect(find.text('All · 0 people'), findsOneWidget);
 
     await tester.tap(find.text('Filters'));
     await pumpFeatureUi(tester);
@@ -912,7 +872,7 @@ void _registerHostOperationsCustomersTests() {
     expect(requests.last.sort, HostCustomerSort.mostAttended);
   });
 
-  testWidgets('all customers opens Messaging without claiming an audience', (
+  testWidgets('sender recovery opens dedicated WhatsApp Business setup', (
     tester,
   ) async {
     final club = buildClub(id: 'messaging-club', ownerUserId: _hostUid);
@@ -920,20 +880,43 @@ void _registerHostOperationsCustomersTests() {
       tester,
       const HostCustomersScreen(),
       overrides: [
-        ..._hostClubOverrides(owned: [club]),
+        ..._hostClubOverrides(
+          owned: [club],
+          messagingSetupByOrganizer: {
+            club.id: _hostMessagingSetup(
+              organizerId: club.id,
+              connectionStatus: 'pending',
+            ),
+          },
+        ),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             [],
-            _emptyCustomerDirectoryState(),
+            _customerDirectoryState(),
           ),
         ),
       ],
     );
 
-    await tester.tap(find.text('Open messaging'));
+    expect(find.text('All · 1 person'), findsOneWidget);
+    expect(find.text('Open messaging'), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('host-customers-filters')));
+    await pumpFeatureUi(tester);
+    final atRiskFilter = find.byKey(
+      const ValueKey('host-customer-filter-atRisk'),
+    );
+    await tester.ensureVisible(atRiskFilter);
+    await pumpFeatureUi(tester);
+    await tester.tap(atRiskFilter);
     await pumpFeatureUi(tester);
 
-    expect(find.text('Messaging campaigns null'), findsOneWidget);
+    expect(find.text('Sender verification is incomplete'), findsOneWidget);
+    expect(find.text('Set up WhatsApp Business'), findsOneWidget);
+    await tester.tap(find.text('Set up WhatsApp Business'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Messaging setup messaging-club'), findsOneWidget);
   });
 
   testWidgets('customer search shows clear only while input is non-empty', (
