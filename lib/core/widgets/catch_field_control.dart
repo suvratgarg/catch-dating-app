@@ -332,6 +332,11 @@ class _CatchFieldChoiceChipState extends State<CatchFieldChoiceChip> {
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(CatchRadius.pill),
+        ),
+        // Paint stateful strokes above the fill so selected/focus emphasis can
+        // change width without changing the chip's measured height or wrap.
+        foregroundDecoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
           border: border.all,
         ),
         child: Row(

@@ -1641,6 +1641,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
@@ -2073,6 +2074,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),

@@ -781,7 +781,7 @@ void _registerExploreDiscoveryWidgetsTests() {
           .first,
     );
     expect(searchShell.backgroundColor, Colors.transparent);
-    expect(searchShell.borderColor, Colors.transparent);
+    expect(searchShell.borderSpec?.color, Colors.transparent);
     expect(tester.widget<Icon>(searchIcon).color, CatchTokens.dark.ink);
 
     for (final icon in [

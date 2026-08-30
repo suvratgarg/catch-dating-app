@@ -858,7 +858,13 @@ void main() {
     await tester.pump();
 
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
-    expect(surface.borderColor, CatchTokens.editorialLight.primary);
+    expect(
+      surface.borderSpec?.side,
+      CatchBorder.resolve(
+        CatchTokens.editorialLight,
+        CatchBorderRole.focus,
+      ).side,
+    );
     expect(
       surface.boxShadow,
       CatchElevation.focusRing(CatchTokens.editorialLight),
@@ -955,7 +961,10 @@ void main() {
     final decoration = surface.foregroundDecoration! as BoxDecoration;
     expect(
       decoration.border,
-      Border.all(color: CatchTokens.editorialLight.ink),
+      CatchBorder.resolve(
+        CatchTokens.editorialLight,
+        CatchBorderRole.focus,
+      ).all,
     );
 
     await tester.pumpWidget(
@@ -978,7 +987,10 @@ void main() {
     final errorDecoration = errorSurface.foregroundDecoration! as BoxDecoration;
     expect(
       errorDecoration.border,
-      Border.all(color: CatchTokens.editorialLight.danger),
+      CatchBorder.resolve(
+        CatchTokens.editorialLight,
+        CatchBorderRole.danger,
+      ).all,
     );
   });
 
@@ -1182,7 +1194,13 @@ void main() {
       ),
     );
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
-    expect(surface.borderColor, CatchTokens.editorialLight.danger);
+    expect(
+      surface.borderSpec?.side,
+      CatchBorder.resolve(
+        CatchTokens.editorialLight,
+        CatchBorderRole.danger,
+      ).side,
+    );
     expect(surface.boxShadow, isNull);
   });
 }
