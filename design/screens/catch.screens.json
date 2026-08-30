@@ -24969,8 +24969,8 @@
       "priority": "P1",
       "status": "in_progress",
       "routes": [
-        {"id": "hostApplicationsScreen", "path": "/host/customers/applications", "role": "host"},
-        {"id": "hostApplicationDetailScreen", "path": "/host/customers/applications/:applicationId", "role": "host"}
+        {"id": "hostApplicationsScreen", "path": "/host/forms/applications", "role": "host"},
+        {"id": "hostApplicationDetailScreen", "path": "/host/forms/applications/:applicationId", "role": "host"}
       ],
       "source": {
         "file": "lib/hosts/presentation/applications/host_applications_screen.dart",

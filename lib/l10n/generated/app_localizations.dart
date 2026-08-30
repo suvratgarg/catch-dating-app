@@ -367,48 +367,6 @@ abstract class AppLocalizations {
   /// **'Reload messages'**
   String get chatsChatScreenCatcherrorstateReloadMessages;
 
-  /// Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'New blast'**
-  String get chatsChatInboxScreenTextNewBlast;
-
-  /// Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Broadcast sending is not connected yet. Use this as the review surface for audience and template states.'**
-  String get chatsChatInboxScreenTextBroadcastSendingIsNot;
-
-  /// Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Reminder'**
-  String get chatsChatInboxScreenTextReminder;
-
-  /// Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'See you tonight at 8. Doors open at 7:45.'**
-  String get chatsChatInboxScreenTextSeeYouTonightAt;
-
-  /// Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Meeting point'**
-  String get chatsChatInboxScreenTextMeetingPoint;
-
-  /// Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Share arrival notes, parking, or table details.'**
-  String get chatsChatInboxScreenTextShareArrivalNotesParking;
-
-  /// Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (subtitle).
-  ///
-  /// In en, this message translates to:
-  /// **'Reminders, the meeting point, changes'**
-  String get chatsChatsListBodySubtitleRemindersTheMeetingPoint;
-
   /// Product copy used by lib/chats/presentation/widgets/chat_event_context_header.dart (title).
   ///
   /// In en, this message translates to:
@@ -5690,12 +5648,6 @@ abstract class AppLocalizations {
   /// **'Photos'**
   String get userProfileProfileTabSkeletonTitlePhotos;
 
-  /// Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Send broadcast'**
-  String get chatsChatInboxScreenLabelSendBroadcast;
-
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).
   ///
   /// In en, this message translates to:
@@ -6409,20 +6361,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Host event'**
   String get hostsHostEventToolsLabelHostEvent;
-
-  /// Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No {audienceLabel}s yet'**
-  String chatsChatsListBodyTitleNoAudiencelabelSYet({
-    required Object audienceLabel,
-  });
-
-  /// Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Message {countLabel}'**
-  String chatsChatsListBodyTitleMessageCountlabel({required Object countLabel});
 
   /// Product copy used by lib/chats/presentation/widgets/chat_event_context_header.dart (Text).
   ///
@@ -13130,29 +13068,6 @@ abstract class AppLocalizations {
   /// **'Use the shared moment'**
   String get eventSuccessEventSuccessConversationCueCopyTitleUseTheSharedMoment;
 
-  /// Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'attendee'**
-  String get chatsChatsListBodyVisiblecopyAttendee;
-
-  /// Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'1 {audienceLabel}'**
-  String chatsChatsListBodyVisiblecopy1Audiencelabel({
-    required Object audienceLabel,
-  });
-
-  /// Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{audienceCount} {audienceLabel}s'**
-  String chatsChatsListBodyVisiblecopyAudiencecountAudiencelabelS({
-    required Object audienceCount,
-    required Object audienceLabel,
-  });
-
   /// Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (visibleCopy).
   ///
   /// In en, this message translates to:
@@ -15336,12 +15251,6 @@ abstract class AppLocalizations {
     required Object shortDateLabel,
     required Object compactTimeRangeLabel,
   });
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{name} attendee'**
-  String hostsHostInboxScreenVisiblecopyNameAttendee({required Object name});
 
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (visibleCopy).
   ///
@@ -19796,12 +19705,6 @@ abstract class AppLocalizations {
   /// **'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.'**
   String get hostsHostAudienceContactConsentPaused;
 
-  /// Eligible WhatsApp delivery explanation.
-  ///
-  /// In en, this message translates to:
-  /// **'Only the person-verified number and active organizer consent can receive a campaign.'**
-  String get hostsHostAudienceContactConsentActive;
-
   /// New-to-organizer audience segment label.
   ///
   /// In en, this message translates to:
@@ -21101,7 +21004,7 @@ abstract class AppLocalizations {
   /// Recipient count in a Sends row.
   ///
   /// In en, this message translates to:
-  /// **'{count} people'**
+  /// **'{count, plural, =1{1 person} other{{count} people}}'**
   String hostSendsRecipients({required int count});
 
   /// Announcement partial failure status.
@@ -21133,30 +21036,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.'**
   String get hostInboxAnnouncementDisclosure;
-
-  /// Closed event-announcement state.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch announcement · event delivery has closed'**
-  String get hostInboxAnnouncementClosed;
-
-  /// Backend-gated event-announcement state.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch announcement · backend preflight required'**
-  String get hostInboxAnnouncementBackendRequired;
-
-  /// Empty event-announcement audience state.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch announcement · no eligible recipients yet'**
-  String get hostInboxAnnouncementNoRecipients;
-
-  /// Available event-announcement delivery summary.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch announcement · Activity plus optional push'**
-  String get hostInboxAnnouncementAvailable;
 
   /// Sends a free-form WhatsApp service reply.
   ///
@@ -21229,12 +21108,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not saved'**
   String get hostCustomersNotSaved;
-
-  /// Customer event-history status for a completed check-in.
-  ///
-  /// In en, this message translates to:
-  /// **'Checked in'**
-  String get hostCustomersCheckedIn;
 
   /// Adds an organizer CRM contact with optional contact details and a private note.
   ///
@@ -21410,7 +21283,7 @@ abstract class AppLocalizations {
   /// Saved-audience picker option with the explicitly stale last exact preview count.
   ///
   /// In en, this message translates to:
-  /// **'{name} · {count} people at last preview'**
+  /// **'{count, plural, =1{{name} · 1 person at last preview} other{{name} · {count} people at last preview}}'**
   String hostSavedAudienceOption({required String name, required int count});
 
   /// Opens Customers-owned saved-audience management.
@@ -21458,13 +21331,13 @@ abstract class AppLocalizations {
   /// Starts a campaign for the exact number of customers in the active segment.
   ///
   /// In en, this message translates to:
-  /// **'Message these {count}'**
+  /// **'{count, plural, =1{Message this person} other{Message these {count} people}}'**
   String hostCustomersMessageThese({required int count});
 
   /// Starts a campaign for a lower-bound number of customers in the active segment.
   ///
   /// In en, this message translates to:
-  /// **'Message these {count}+'**
+  /// **'{count, plural, =1{Message at least 1 person} other{Message at least {count} people}}'**
   String hostCustomersMessageTheseAtLeast({required int count});
 
   /// Grouped customer filter sheet title.
@@ -21521,7 +21394,7 @@ abstract class AppLocalizations {
   /// Lower-bound number of people matching a customer audience query.
   ///
   /// In en, this message translates to:
-  /// **'{count}+ people'**
+  /// **'{count, plural, =1{At least 1 person} other{At least {count} people}}'**
   String hostCustomersPeopleCountAtLeast({required int count});
 
   /// Explainable alias for the versioned lapsed-regular segment.
@@ -21761,36 +21634,6 @@ abstract class AppLocalizations {
   /// **'Estimated by your team'**
   String get hostCustomersRevenueSourceEstimate;
 
-  /// Shared-order allocation note on one customer event.
-  ///
-  /// In en, this message translates to:
-  /// **'allocated from a shared order'**
-  String get hostCustomersRevenueSharedOrder;
-
-  /// Catch-native event origin label.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch-hosted'**
-  String get hostCustomersEventOriginCatch;
-
-  /// External companion event origin label.
-  ///
-  /// In en, this message translates to:
-  /// **'Externally hosted'**
-  String get hostCustomersEventOriginExternal;
-
-  /// Legacy event origin label when no provenance snapshot exists.
-  ///
-  /// In en, this message translates to:
-  /// **'Event origin unavailable'**
-  String get hostCustomersEventOriginUnknown;
-
-  /// Intent-aware communication options heading for one customer.
-  ///
-  /// In en, this message translates to:
-  /// **'Ways to message'**
-  String get hostCustomersMessageOptions;
-
   /// Loading state for the server-derived customer communication plan.
   ///
   /// In en, this message translates to:
@@ -21808,24 +21651,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try checking again.'**
   String get hostCustomersMessageOptionsRetry;
-
-  /// Consequence-labelled managed Catch conversation action.
-  ///
-  /// In en, this message translates to:
-  /// **'Message in Catch'**
-  String get hostCustomersMessageInCatch;
-
-  /// Explains the managed Catch conversation consequence.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch sends and keeps the conversation here.'**
-  String get hostCustomersMessageInCatchBody;
-
-  /// Consequence-labelled external handoff action.
-  ///
-  /// In en, this message translates to:
-  /// **'You press send'**
-  String get hostCustomersMessageByHand;
 
   /// Communication-plan blocker for missing participant permission.
   ///
@@ -22154,18 +21979,6 @@ abstract class AppLocalizations {
     required String date,
   });
 
-  /// Customer event history heading.
-  ///
-  /// In en, this message translates to:
-  /// **'Past attendance'**
-  String get hostCustomersEventHistory;
-
-  /// Customer with no checked-in event history.
-  ///
-  /// In en, this message translates to:
-  /// **'No checked-in events yet.'**
-  String get hostCustomersNoAttendance;
-
   /// Organizer-authored manual-tag group, visually separate from computed audience segments.
   ///
   /// In en, this message translates to:
@@ -22322,53 +22135,11 @@ abstract class AppLocalizations {
   /// **'The customer details are available. Try reloading to restore note history.'**
   String get hostCustomersNotesUnavailableBody;
 
-  /// Per-person campaign delivery history heading.
-  ///
-  /// In en, this message translates to:
-  /// **'Messages sent'**
-  String get hostCustomersSendHistory;
-
-  /// Empty per-person campaign history state.
-  ///
-  /// In en, this message translates to:
-  /// **'No campaign messages sent yet.'**
-  String get hostCustomersNoSends;
-
-  /// Bounded per-person campaign history notice.
-  ///
-  /// In en, this message translates to:
-  /// **'Only the 100 newest campaign deliveries are shown.'**
-  String get hostCustomersSendsTruncated;
-
-  /// Localized optional send-history failure title.
-  ///
-  /// In en, this message translates to:
-  /// **'Message history could not be loaded'**
-  String get hostCustomersSendsUnavailableTitle;
-
-  /// Localized optional send-history failure guidance.
-  ///
-  /// In en, this message translates to:
-  /// **'The customer details are available. Try reloading to restore message history.'**
-  String get hostCustomersSendsUnavailableBody;
-
-  /// Organizer campaign delivery state shown on contact detail.
-  ///
-  /// In en, this message translates to:
-  /// **'{status, select, pending{Pending} sending{Sending} suppressed{Suppressed} accepted{Accepted} sent{Sent} delivered{Delivered} read{Read} failed{Failed} replied{Replied} optedOut{Opted out} other{Unknown}}'**
-  String hostCustomersSendStatus({required String status});
-
   /// Customer messaging, consent, and removal controls heading.
   ///
   /// In en, this message translates to:
   /// **'Controls'**
   String get hostCustomersControls;
-
-  /// Per-customer organizer campaign delivery toggle.
-  ///
-  /// In en, this message translates to:
-  /// **'Organizer messages'**
-  String get hostCustomersOrganizerMessages;
 
   /// Customers directory sort menu group label.
   ///
@@ -22670,12 +22441,6 @@ abstract class AppLocalizations {
   /// **'Application not found'**
   String get hostApplicationNotFound;
 
-  /// Customers header action opening the application review queue.
-  ///
-  /// In en, this message translates to:
-  /// **'Review applications'**
-  String get hostApplicationsOpen;
-
   /// Application queue spreadsheet import action.
   ///
   /// In en, this message translates to:
@@ -22739,7 +22504,7 @@ abstract class AppLocalizations {
   /// Application import result summary.
   ///
   /// In en, this message translates to:
-  /// **'Imported {created} and skipped {skipped}.'**
+  /// **'{created, plural, =1{Imported 1 application} other{Imported {created} applications}} · {skipped, plural, =1{skipped 1} other{skipped {skipped}}}.'**
   String hostApplicationsImportComplete({
     required int created,
     required int skipped,
@@ -23412,7 +23177,7 @@ abstract class AppLocalizations {
   /// Form-level responses tab with submission count.
   ///
   /// In en, this message translates to:
-  /// **'Responses {count}'**
+  /// **'{count, plural, =1{Responses · 1} other{Responses · {count}}}'**
   String hostFormResponsesTab({required int count});
 
   /// Primary heading for the compact form builder outline.
@@ -25023,7 +24788,7 @@ abstract class AppLocalizations {
   /// One source-link form funnel summary.
   ///
   /// In en, this message translates to:
-  /// **'{opens} opens · {starts} starts · {submissions} submissions'**
+  /// **'{opens, plural, =1{1 open} other{{opens} opens}} · {starts, plural, =1{1 start} other{{starts} starts}} · {submissions, plural, =1{1 submission} other{{submissions} submissions}}'**
   String hostFormAnalyticsSourceSummary({
     required int opens,
     required int starts,

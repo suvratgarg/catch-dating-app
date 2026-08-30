@@ -27,7 +27,7 @@ void main() {
     await _pumpBuilder(tester);
 
     expect(find.text('Build'), findsOneWidget);
-    expect(find.text('Responses 2'), findsOneWidget);
+    expect(find.text('Responses · 2'), findsOneWidget);
     expect(find.text('DRAFT · 2 QUESTIONS'), findsOneWidget);
     expect(find.text('Questions'), findsWidgets);
     expect(find.text('What do you need to know?'), findsNothing);

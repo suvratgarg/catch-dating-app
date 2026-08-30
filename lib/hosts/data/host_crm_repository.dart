@@ -24,6 +24,14 @@ enum HostAudiencePermissionStatus { unknown, optedIn, optedOut }
 
 enum HostCommunicationIntent { individualConversation }
 
+final class _HostCommunicationContactTarget {
+  const _HostCommunicationContactTarget({required this.contactId});
+
+  final String contactId;
+
+  Map<String, Object?> toJson() => {'kind': 'contact', 'contactId': contactId};
+}
+
 enum HostCommunicationOutcome { inCatch, automatic, byHand, unavailable }
 
 enum HostCommunicationRouteId {
@@ -2799,7 +2807,7 @@ class HostCrmRepository {
     payload: ResolveOrganizerCommunicationPlanCallableRequest(
       organizerId: organizerId,
       intent: HostCommunicationIntent.individualConversation.name,
-      target: {'kind': 'contact', 'contactId': contactId},
+      target: _HostCommunicationContactTarget(contactId: contactId).toJson(),
     ).toJson(),
     action: 'resolve organizer customer communication plan',
     parse: HostCommunicationPlan.fromCallableData,

@@ -4,9 +4,9 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "e943e2b651a7f12a825a87a957a072092f1d2ece8a6080422e4434c5858e2bfa",
-    "routeContractSha256": "312b5e9d128a5ccbc42ff67f61870881d76deb8757846f3bf9bccc8f4af333d9",
-    "goRouteCount": 65,
+    "normalizedFileSha256": "f36e67f067005cfd02afaad5219007a115fd77659cf7000a086152e063bb7620",
+    "routeContractSha256": "667c3ef34394b4239b08f8eb60531153d41e7db8ed0114064d324562e6afa6d9",
+    "goRouteCount": 67,
     "shellBranchCount": 9,
     "enumRouteCount": 65,
     "referencedRouteCount": 65,
@@ -565,25 +565,25 @@
     },
     {
       "id": "hostApplicationsScreen",
-      "path": "/host/customers/applications",
+      "path": "/host/forms/applications",
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "runtimePath": "/host/customers/applications",
-      "runtimeParentId": "hostCustomersScreen",
+      "runtimePath": "/host/forms/applications",
+      "runtimeParentId": "hostFormsScreen",
       "runtimePathExpression": "'applications'",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
       "id": "hostApplicationDetailScreen",
-      "path": "/host/customers/applications/:applicationId",
+      "path": "/host/forms/applications/:applicationId",
       "pathParameters": [
         "applicationId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/customers/applications/:applicationId",
+      "runtimePath": "/host/forms/applications/:applicationId",
       "runtimeParentId": "hostApplicationsScreen",
       "runtimePathExpression": "':applicationId'",
       "runtimePathMatchesEnum": true,

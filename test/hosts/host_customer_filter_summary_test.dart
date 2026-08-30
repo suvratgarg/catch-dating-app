@@ -36,7 +36,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('Message these 12'));
+    await tester.tap(find.text('Message these 12 people'));
 
     expect(messagesStarted, 1);
   });
@@ -60,7 +60,7 @@ void main() {
     final button = tester.widget<CatchButton>(
       find.byKey(const ValueKey('host-customers-message-segment')),
     );
-    expect(button.label, 'Message these 12+');
+    expect(button.label, 'Message at least 12 people');
     expect(button.onPressed, isNull);
     expect(find.text('Sender verification is incomplete'), findsOneWidget);
   });

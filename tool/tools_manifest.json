@@ -1111,7 +1111,7 @@
       "command": "node tool/architecture/check_host_crm_boundaries.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Enforces corrected Host CRM ownership, provenance, consent, communication-plan, saved-audience, and manual-handoff boundaries.",
+      "description": "Enforces corrected Host CRM ownership, application routing, provenance, consent, communication-plan, saved-audience, manual-handoff, and count-copy boundaries.",
       "checks": [
         "node --check tool/architecture/check_host_crm_boundaries.mjs",
         "node --test tool/architecture/check_host_crm_boundaries.test.mjs",
@@ -1129,7 +1129,9 @@
           "flags host-visible communication route pickers",
           "flags unreviewed permission-authority access",
           "flags direct contact creation outside canonical projection owners",
-          "flags provider delivery states on manual handoffs"
+          "flags provider delivery states on manual handoffs",
+          "flags visible Host CRM counts without ICU plurals",
+          "flags application queue ownership under Customers"
         ]
       }
     },

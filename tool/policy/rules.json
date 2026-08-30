@@ -3218,6 +3218,9 @@
         "lib/hosts/presentation/customers/**",
         "lib/hosts/presentation/inbox/**",
         "lib/hosts/presentation/host_audience_controller.dart",
+        "lib/l10n/app_en.arb",
+        "lib/routing/go_router.dart",
+        "lib/routing/route_contract.dart",
         "functions/src/events/eventAttendees.ts",
         "functions/src/organizers/organizerAudienceProjection.ts",
         "functions/src/organizers/organizerCampaign*.ts",
@@ -3232,7 +3235,7 @@
         "contracts/firestore/organizer_manual_send_tasks.schema.json",
         "tool/architecture/check_host_crm_boundaries.mjs"
       ],
-      "instruction": "Keep contact identity, immutable provenance, participant-controlled communication permission, organizer suppression, host intent, server-resolved route, manual work, and provider delivery evidence as separate authorities. Customers owns durable saved audiences and person actions; Messaging consumes audience references and owns Sends/Inbox composition. Host Forms may append source-backed contact provenance or prepare reviewed work but ordinary form consent never grants marketing permission and automations never dispatch outreach. External handoff may record only device acceptance and explicit host assertions, never delivery or read state.",
+      "instruction": "Keep contact identity, immutable provenance, participant-controlled communication permission, organizer suppression, host intent, server-resolved route, manual work, and provider delivery evidence as separate authorities. Customers owns durable saved audiences and person actions; Messaging consumes audience references and owns Sends/Inbox composition. Host Forms owns application and response work queues, including their canonical routes; legacy Customers application links redirect to Forms. Host Forms may append source-backed contact provenance or prepare reviewed work but ordinary form consent never grants marketing permission and automations never dispatch outreach. External handoff may record only device acceptance and explicit host assertions, never delivery or read state. Visible Host CRM counts use ICU plural ownership.",
       "sunset_when": [
         "Never; these are permanent consent, evidence, and product-ownership boundaries"
       ],
@@ -3292,6 +3295,6 @@
       ]
     }
   },
-  "version": "2.11.0",
+  "version": "2.11.1",
   "updated": "2026-08-30"
 }

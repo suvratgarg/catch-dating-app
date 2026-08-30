@@ -681,8 +681,9 @@ void main() {
     testWidgets(
       'opens a booked event from the agenda and back returns to calendar',
       (tester) async {
+        final referenceNow = DateTime(2026, 8, 20, 9);
         final event = buildEvent(
-          startTime: DateTime.now().add(const Duration(days: 2, hours: 7)),
+          startTime: referenceNow.add(const Duration(days: 2, hours: 7)),
           meetingPoint: 'Carter Road Promenade',
           bookedCount: 1,
         );
@@ -694,7 +695,8 @@ void main() {
             GoRoute(
               path: app_router.Routes.calendarScreen.path,
               name: app_router.Routes.calendarScreen.name,
-              builder: (context, state) => const CalendarScreen(),
+              builder: (context, state) =>
+                  CalendarScreen(referenceNow: referenceNow),
             ),
             GoRoute(
               path: app_router.Routes.calendarEventDetailScreen.path,
@@ -763,7 +765,7 @@ void main() {
         );
         await _pumpRouterFrame(tester);
 
-        expect(find.text(_monthYearLabel(DateTime.now())), findsOneWidget);
+        expect(find.text(_monthYearLabel(referenceNow)), findsOneWidget);
         expect(_routerPath(router), app_router.Routes.calendarScreen.path);
 
         await _scrollCalendarDown(tester);
@@ -780,7 +782,7 @@ void main() {
 
         expect(_routerPath(router), app_router.Routes.calendarScreen.path);
         expect(find.byType(EventDetailScreen), findsNothing);
-        expect(find.text(_monthYearLabel(DateTime.now())), findsOneWidget);
+        expect(find.text(_monthYearLabel(referenceNow)), findsOneWidget);
       },
     );
   });

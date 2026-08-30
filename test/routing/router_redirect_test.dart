@@ -166,11 +166,35 @@ void main() {
       expect(Routes.hostHomeScreen.path, '/host');
       expect(Routes.hostEventsScreen.path, '/host/events');
       expect(Routes.hostCustomersScreen.path, '/host/customers');
+      expect(Routes.hostFormsScreen.path, '/host/forms');
+      expect(Routes.hostApplicationsScreen.path, '/host/forms/applications');
+      expect(
+        Routes.hostApplicationDetailScreen.path,
+        '/host/forms/applications/:applicationId',
+      );
       expect(
         Routes.hostCustomerDetailScreen.path,
         '/host/customers/:contactId',
       );
       expect(hostHomeLegacyRedirect(), Routes.hostEventsScreen.path);
+    });
+
+    test('legacy application links redirect into Forms ownership', () {
+      expect(
+        hostApplicationsLegacyRedirect(
+          Uri.parse('/host/customers/applications?organizerId=organizer-1'),
+        ),
+        '/host/forms/applications?organizerId=organizer-1',
+      );
+      expect(
+        hostApplicationsLegacyRedirect(
+          Uri.parse(
+            '/host/customers/applications/application-1?organizerId=organizer-1',
+          ),
+          applicationId: 'application-1',
+        ),
+        '/host/forms/applications/application-1?organizerId=organizer-1',
+      );
     });
 
     test('organizer settings spokes use canonical top-level routes', () {

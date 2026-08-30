@@ -161,31 +161,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatsChatScreenCatcherrorstateReloadMessages => 'Reload messages';
 
   @override
-  String get chatsChatInboxScreenTextNewBlast => 'New blast';
-
-  @override
-  String get chatsChatInboxScreenTextBroadcastSendingIsNot =>
-      'Broadcast sending is not connected yet. Use this as the review surface for audience and template states.';
-
-  @override
-  String get chatsChatInboxScreenTextReminder => 'Reminder';
-
-  @override
-  String get chatsChatInboxScreenTextSeeYouTonightAt =>
-      'See you tonight at 8. Doors open at 7:45.';
-
-  @override
-  String get chatsChatInboxScreenTextMeetingPoint => 'Meeting point';
-
-  @override
-  String get chatsChatInboxScreenTextShareArrivalNotesParking =>
-      'Share arrival notes, parking, or table details.';
-
-  @override
-  String get chatsChatsListBodySubtitleRemindersTheMeetingPoint =>
-      'Reminders, the meeting point, changes';
-
-  @override
   String get chatsChatEventContextHeaderTitleTheSameEvent => 'the same event';
 
   @override
@@ -3282,9 +3257,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userProfileProfileTabSkeletonTitlePhotos => 'Photos';
 
   @override
-  String get chatsChatInboxScreenLabelSendBroadcast => 'Send broadcast';
-
-  @override
   String get clubsClubDetailSkeletonTitleAbout => 'About';
 
   @override
@@ -3676,20 +3648,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventToolsLabelHostEvent => 'Host event';
-
-  @override
-  String chatsChatsListBodyTitleNoAudiencelabelSYet({
-    required Object audienceLabel,
-  }) {
-    return 'No ${audienceLabel}s yet';
-  }
-
-  @override
-  String chatsChatsListBodyTitleMessageCountlabel({
-    required Object countLabel,
-  }) {
-    return 'Message $countLabel';
-  }
 
   @override
   String chatsChatEventContextHeaderTextTitleDate({
@@ -8298,24 +8256,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use the shared moment';
 
   @override
-  String get chatsChatsListBodyVisiblecopyAttendee => 'attendee';
-
-  @override
-  String chatsChatsListBodyVisiblecopy1Audiencelabel({
-    required Object audienceLabel,
-  }) {
-    return '1 $audienceLabel';
-  }
-
-  @override
-  String chatsChatsListBodyVisiblecopyAudiencecountAudiencelabelS({
-    required Object audienceCount,
-    required Object audienceLabel,
-  }) {
-    return '$audienceCount ${audienceLabel}s';
-  }
-
-  @override
   String get chatsChatShareCardVisiblecopyCatchChatCardPng =>
       'catch-chat-card.png';
 
@@ -9802,11 +9742,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object compactTimeRangeLabel,
   }) {
     return '$title · $shortDateLabel · $compactTimeRangeLabel';
-  }
-
-  @override
-  String hostsHostInboxScreenVisiblecopyNameAttendee({required Object name}) {
-    return '$name attendee';
   }
 
   @override
@@ -12695,10 +12630,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.';
 
   @override
-  String get hostsHostAudienceContactConsentActive =>
-      'Only the person-verified number and active organizer consent can receive a campaign.';
-
-  @override
   String get hostsHostAudienceSegmentNew => 'New to your audience';
 
   @override
@@ -13523,7 +13454,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostSendsRecipients({required int count}) {
-    return '$count people';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -13552,22 +13489,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostInboxAnnouncementDisclosure =>
       'Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.';
-
-  @override
-  String get hostInboxAnnouncementClosed =>
-      'Catch announcement · event delivery has closed';
-
-  @override
-  String get hostInboxAnnouncementBackendRequired =>
-      'Catch announcement · backend preflight required';
-
-  @override
-  String get hostInboxAnnouncementNoRecipients =>
-      'Catch announcement · no eligible recipients yet';
-
-  @override
-  String get hostInboxAnnouncementAvailable =>
-      'Catch announcement · Activity plus optional push';
 
   @override
   String get hostInboxWhatsappReply => 'Reply';
@@ -13608,9 +13529,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersNotSaved => 'Not saved';
-
-  @override
-  String get hostCustomersCheckedIn => 'Checked in';
 
   @override
   String get hostCustomersAdd => 'Add customer';
@@ -13711,7 +13629,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostSavedAudienceOption({required String name, required int count}) {
-    return '$name · $count people at last preview';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$name · $count people at last preview',
+      one: '$name · 1 person at last preview',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -13746,12 +13670,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostCustomersMessageThese({required int count}) {
-    return 'Message these $count';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Message these $count people',
+      one: 'Message this person',
+    );
+    return '$_temp0';
   }
 
   @override
   String hostCustomersMessageTheseAtLeast({required int count}) {
-    return 'Message these $count+';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Message at least $count people',
+      one: 'Message at least 1 person',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -13794,7 +13730,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostCustomersPeopleCountAtLeast({required int count}) {
-    return '$count+ people';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'At least $count people',
+      one: 'At least 1 person',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -13955,21 +13897,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersRevenueSourceEstimate => 'Estimated by your team';
 
   @override
-  String get hostCustomersRevenueSharedOrder => 'allocated from a shared order';
-
-  @override
-  String get hostCustomersEventOriginCatch => 'Catch-hosted';
-
-  @override
-  String get hostCustomersEventOriginExternal => 'Externally hosted';
-
-  @override
-  String get hostCustomersEventOriginUnknown => 'Event origin unavailable';
-
-  @override
-  String get hostCustomersMessageOptions => 'Ways to message';
-
-  @override
   String get hostCustomersMessageOptionsLoading =>
       'Checking what is available now…';
 
@@ -13979,16 +13906,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersMessageOptionsRetry => 'Try checking again.';
-
-  @override
-  String get hostCustomersMessageInCatch => 'Message in Catch';
-
-  @override
-  String get hostCustomersMessageInCatchBody =>
-      'Catch sends and keeps the conversation here.';
-
-  @override
-  String get hostCustomersMessageByHand => 'You press send';
 
   @override
   String get hostCustomersMessagePermissionRequired =>
@@ -14249,12 +14166,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostCustomersEventHistory => 'Past attendance';
-
-  @override
-  String get hostCustomersNoAttendance => 'No checked-in events yet.';
-
-  @override
   String get hostCustomersFilterGroupYourTags => 'Your tags';
 
   @override
@@ -14344,46 +14255,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'The customer details are available. Try reloading to restore note history.';
 
   @override
-  String get hostCustomersSendHistory => 'Messages sent';
-
-  @override
-  String get hostCustomersNoSends => 'No campaign messages sent yet.';
-
-  @override
-  String get hostCustomersSendsTruncated =>
-      'Only the 100 newest campaign deliveries are shown.';
-
-  @override
-  String get hostCustomersSendsUnavailableTitle =>
-      'Message history could not be loaded';
-
-  @override
-  String get hostCustomersSendsUnavailableBody =>
-      'The customer details are available. Try reloading to restore message history.';
-
-  @override
-  String hostCustomersSendStatus({required String status}) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'pending': 'Pending',
-      'sending': 'Sending',
-      'suppressed': 'Suppressed',
-      'accepted': 'Accepted',
-      'sent': 'Sent',
-      'delivered': 'Delivered',
-      'read': 'Read',
-      'failed': 'Failed',
-      'replied': 'Replied',
-      'optedOut': 'Opted out',
-      'other': 'Unknown',
-    });
-    return '$_temp0';
-  }
-
-  @override
   String get hostCustomersControls => 'Controls';
-
-  @override
-  String get hostCustomersOrganizerMessages => 'Organizer messages';
 
   @override
   String get hostCustomersSort => 'Sort customers';
@@ -14604,9 +14476,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationNotFound => 'Application not found';
 
   @override
-  String get hostApplicationsOpen => 'Review applications';
-
-  @override
   String get hostApplicationsImport => 'Import responses';
 
   @override
@@ -14660,7 +14529,19 @@ class AppLocalizationsEn extends AppLocalizations {
     required int created,
     required int skipped,
   }) {
-    return 'Imported $created and skipped $skipped.';
+    String _temp0 = intl.Intl.pluralLogic(
+      created,
+      locale: localeName,
+      other: 'Imported $created applications',
+      one: 'Imported 1 application',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      skipped,
+      locale: localeName,
+      other: 'skipped $skipped',
+      one: 'skipped 1',
+    );
+    return '$_temp0 · $_temp1.';
   }
 
   @override
@@ -15054,7 +14935,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostFormResponsesTab({required int count}) {
-    return 'Responses $count';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Responses · $count',
+      one: 'Responses · 1',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -15939,7 +15826,25 @@ class AppLocalizationsEn extends AppLocalizations {
     required int starts,
     required int submissions,
   }) {
-    return '$opens opens · $starts starts · $submissions submissions';
+    String _temp0 = intl.Intl.pluralLogic(
+      opens,
+      locale: localeName,
+      other: '$opens opens',
+      one: '1 open',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      starts,
+      locale: localeName,
+      other: '$starts starts',
+      one: '1 start',
+    );
+    String _temp2 = intl.Intl.pluralLogic(
+      submissions,
+      locale: localeName,
+      other: '$submissions submissions',
+      one: '1 submission',
+    );
+    return '$_temp0 · $_temp1 · $_temp2';
   }
 
   @override

@@ -135,6 +135,17 @@ String? hostOrganizerAudienceRedirect(Uri uri) {
   ).toString();
 }
 
+@visibleForTesting
+String hostApplicationsLegacyRedirect(Uri uri, {String? applicationId}) {
+  final path = applicationId == null
+      ? Routes.hostApplicationsScreen.path
+      : Routes.hostApplicationDetailScreen.path.replaceFirst(
+          ':applicationId',
+          applicationId,
+        );
+  return uri.replace(path: path).toString();
+}
+
 Event? _eventDetailInitialEvent(GoRouterState state) {
   return switch (state.extra) {
     EventDetailRouteExtra(:final initialEvent) => initialEvent,
@@ -861,24 +872,16 @@ StatefulShellRoute _hostShellRoute(
             ),
             routes: [
               GoRoute(
-                path: 'applications',
-                name: Routes.hostApplicationsScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostApplicationsScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                path: 'applications/:applicationId',
+                redirect: (context, state) => hostApplicationsLegacyRedirect(
+                  state.uri,
+                  applicationId: state.pathParameters['applicationId'],
                 ),
-                routes: [
-                  GoRoute(
-                    path: ':applicationId',
-                    name: Routes.hostApplicationDetailScreen.name,
-                    parentNavigatorKey: keys.root,
-                    builder: (context, state) => HostApplicationDetailScreen(
-                      organizerId:
-                          state.uri.queryParameters['organizerId'] ?? '',
-                      applicationId: state.pathParameters['applicationId']!,
-                    ),
-                  ),
-                ],
+              ),
+              GoRoute(
+                path: 'applications',
+                redirect: (context, state) =>
+                    hostApplicationsLegacyRedirect(state.uri),
               ),
               GoRoute(
                 path: ':contactId',
@@ -912,6 +915,26 @@ StatefulShellRoute _hostShellRoute(
               initialFormId: state.uri.queryParameters['formId'],
             ),
             routes: [
+              GoRoute(
+                path: 'applications',
+                name: Routes.hostApplicationsScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostApplicationsScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                ),
+                routes: [
+                  GoRoute(
+                    path: ':applicationId',
+                    name: Routes.hostApplicationDetailScreen.name,
+                    parentNavigatorKey: keys.root,
+                    builder: (context, state) => HostApplicationDetailScreen(
+                      organizerId:
+                          state.uri.queryParameters['organizerId'] ?? '',
+                      applicationId: state.pathParameters['applicationId']!,
+                    ),
+                  ),
+                ],
+              ),
               GoRoute(
                 path: 'new',
                 name: Routes.hostFormTemplatesScreen.name,

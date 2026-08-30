@@ -95,9 +95,11 @@ export function scanHostCrmBoundaries({root = fromRepo()} = {}) {
 
   findings.push(...scanManualSendContract(root));
   findings.push(...scanFormProvenanceContract(root));
+  findings.push(...scanHostCrmCountCopy(root));
+  findings.push(...scanApplicationRouteOwnership(root));
   return {
     checkedFiles: presentationFiles.length + backendFiles.length,
-    enforcedBoundaries: 9,
+    enforcedBoundaries: 11,
     findings,
   };
 }
@@ -243,6 +245,95 @@ export function manualSendContractFindings({relativePath, schema}) {
   }];
 }
 
+export function hostCrmCountCopyFindings({relativePath, catalog}) {
+  const findings = [];
+  const keyPattern = /^(?:hostCustomers|hostSavedAudience|hostSends|hostForm|hostApplications)/u;
+  const countNamePattern = /(?:count|opens|starts|submissions|created|skipped)$/iu;
+  for (const [metadataKey, metadata] of Object.entries(catalog)) {
+    if (!metadataKey.startsWith("@") || !keyPattern.test(metadataKey.slice(1)) ||
+        !metadata || typeof metadata !== "object") continue;
+    const key = metadataKey.slice(1);
+    const value = catalog[key];
+    if (typeof value !== "string") continue;
+    for (const [placeholder, contract] of Object.entries(
+      metadata.placeholders ?? {}
+    )) {
+      if (contract?.type !== "int" || !countNamePattern.test(placeholder)) {
+        continue;
+      }
+      if (!value.includes(`{${placeholder}, plural,`)) {
+        findings.push({
+          path: relativePath,
+          line: 1,
+          reason: `${key}.${placeholder} is a visible CRM count without ICU plural ownership.`,
+        });
+      }
+    }
+  }
+  return findings;
+}
+
+export function applicationRouteOwnershipFindings({
+  routeContractPath,
+  routeContractSource,
+  routerPath,
+  routerSource,
+}) {
+  const findings = [];
+  const expectedListPath =
+    "hostApplicationsScreen('/host/forms/applications'";
+  const expectedDetailPath =
+    "'/host/forms/applications/:applicationId'";
+  if (!routeContractSource.includes(expectedListPath) ||
+      !routeContractSource.includes(expectedDetailPath) ||
+      routeContractSource.includes("/host/customers/applications")) {
+    findings.push({
+      path: routeContractPath,
+      line: 1,
+      reason: "Applications and application detail routes must be canonically Forms-owned.",
+    });
+  }
+
+  const customersBranch = shellBranchSource(
+    routerSource,
+    "navigatorKey: keys.hostCustomers"
+  );
+  const formsBranch = shellBranchSource(
+    routerSource,
+    "navigatorKey: keys.hostForms"
+  );
+  const applicationsRoute = "name: Routes.hostApplicationsScreen.name";
+  const applicationDetailRoute =
+    "name: Routes.hostApplicationDetailScreen.name";
+  const formsOwnBothRoutes = formsBranch.includes(applicationsRoute) &&
+    formsBranch.includes(applicationDetailRoute) &&
+    !customersBranch.includes(applicationsRoute) &&
+    !customersBranch.includes(applicationDetailRoute);
+  if (!formsOwnBothRoutes) {
+    findings.push({
+      path: routerPath,
+      line: 1,
+      reason: "Named application routes must be mounted in the Forms shell branch.",
+    });
+  }
+
+  if (!customersBranch.includes("hostApplicationsLegacyRedirect")) {
+    findings.push({
+      path: routerPath,
+      line: 1,
+      reason: "Legacy Customers application links must redirect to Forms ownership.",
+    });
+  }
+  return findings;
+}
+
+function shellBranchSource(source, navigatorAnchor) {
+  const start = source.indexOf(navigatorAnchor);
+  if (start < 0) return "";
+  const end = source.indexOf("StatefulShellBranch(", start);
+  return source.slice(start, end < 0 ? source.length : end);
+}
+
 function scanManualSendContract(root) {
   const relativePath =
     "contracts/firestore/organizer_manual_send_tasks.schema.json";
@@ -256,6 +347,41 @@ function scanManualSendContract(root) {
   } catch {
     return [{path: relativePath, line: 1, reason: "Manual-send schema is invalid JSON."}];
   }
+}
+
+function scanHostCrmCountCopy(root) {
+  const relativePath = "lib/l10n/app_en.arb";
+  const file = path.join(root, relativePath);
+  if (!fs.existsSync(file)) return [missingFinding(relativePath)];
+  try {
+    return hostCrmCountCopyFindings({
+      relativePath,
+      catalog: JSON.parse(fs.readFileSync(file, "utf8")),
+    });
+  } catch {
+    return [{path: relativePath, line: 1, reason: "English locale catalog is invalid JSON."}];
+  }
+}
+
+function scanApplicationRouteOwnership(root) {
+  const routeContractPath = "lib/routing/route_contract.dart";
+  const routerPath = "lib/routing/go_router.dart";
+  const routeContractFile = path.join(root, routeContractPath);
+  const routerFile = path.join(root, routerPath);
+  if (!fs.existsSync(routeContractFile) || !fs.existsSync(routerFile)) {
+    return [
+      ...(!fs.existsSync(routeContractFile)
+        ? [missingFinding(routeContractPath)]
+        : []),
+      ...(!fs.existsSync(routerFile) ? [missingFinding(routerPath)] : []),
+    ];
+  }
+  return applicationRouteOwnershipFindings({
+    routeContractPath,
+    routeContractSource: fs.readFileSync(routeContractFile, "utf8"),
+    routerPath,
+    routerSource: fs.readFileSync(routerFile, "utf8"),
+  });
 }
 
 function scanFormProvenanceContract(root) {

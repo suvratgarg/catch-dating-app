@@ -376,55 +376,6 @@
     "x-owner": "product",
     "x-surface": "chats.presentation.chat_screen"
   },
-  "chatsChatInboxScreenTextNewBlast": "New blast",
-  "@chatsChatInboxScreenTextNewBlast": {
-    "description": "Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.chat_inbox_screen"
-  },
-  "chatsChatInboxScreenTextBroadcastSendingIsNot": "Broadcast sending is not connected yet. Use this as the review surface for audience and template states.",
-  "@chatsChatInboxScreenTextBroadcastSendingIsNot": {
-    "description": "Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.chat_inbox_screen"
-  },
-  "chatsChatInboxScreenTextReminder": "Reminder",
-  "@chatsChatInboxScreenTextReminder": {
-    "description": "Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.chat_inbox_screen"
-  },
-  "chatsChatInboxScreenTextSeeYouTonightAt": "See you tonight at 8. Doors open at 7:45.",
-  "@chatsChatInboxScreenTextSeeYouTonightAt": {
-    "description": "Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.chat_inbox_screen"
-  },
-  "chatsChatInboxScreenTextMeetingPoint": "Meeting point",
-  "@chatsChatInboxScreenTextMeetingPoint": {
-    "description": "Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.chat_inbox_screen"
-  },
-  "chatsChatInboxScreenTextShareArrivalNotesParking": "Share arrival notes, parking, or table details.",
-  "@chatsChatInboxScreenTextShareArrivalNotesParking": {
-    "description": "Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.chat_inbox_screen"
-  },
-  "chatsChatsListBodySubtitleRemindersTheMeetingPoint": "Reminders, the meeting point, changes",
-  "@chatsChatsListBodySubtitleRemindersTheMeetingPoint": {
-    "description": "Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (subtitle).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.widgets.chats_list_body"
-  },
   "chatsChatEventContextHeaderTitleTheSameEvent": "the same event",
   "@chatsChatEventContextHeaderTitleTheSameEvent": {
     "description": "Product copy used by lib/chats/presentation/widgets/chat_event_context_header.dart (title).",
@@ -6450,13 +6401,6 @@
     "x-owner": "product",
     "x-surface": "user_profile.presentation.widgets.profile_tab_skeleton"
   },
-  "chatsChatInboxScreenLabelSendBroadcast": "Send broadcast",
-  "@chatsChatInboxScreenLabelSendBroadcast": {
-    "description": "Product copy used by lib/chats/presentation/inbox/chat_inbox_screen.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.chat_inbox_screen"
-  },
   "clubsClubDetailSkeletonTitleAbout": "About",
   "@clubsClubDetailSkeletonTitleAbout": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).",
@@ -7296,26 +7240,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_event_tools"
-  },
-  "chatsChatsListBodyTitleNoAudiencelabelSYet": "No {audienceLabel}s yet",
-  "@chatsChatsListBodyTitleNoAudiencelabelSYet": {
-    "description": "Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (title).",
-    "placeholders": {
-      "audienceLabel": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.widgets.chats_list_body"
-  },
-  "chatsChatsListBodyTitleMessageCountlabel": "Message {countLabel}",
-  "@chatsChatsListBodyTitleMessageCountlabel": {
-    "description": "Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (title).",
-    "placeholders": {
-      "countLabel": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.widgets.chats_list_body"
   },
   "chatsChatEventContextHeaderTextTitleDate": "{title} · {date}",
   "@chatsChatEventContextHeaderTextTitleDate": {
@@ -15185,34 +15109,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
-  "chatsChatsListBodyVisiblecopyAttendee": "attendee",
-  "@chatsChatsListBodyVisiblecopyAttendee": {
-    "description": "Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.widgets.chats_list_body"
-  },
-  "chatsChatsListBodyVisiblecopy1Audiencelabel": "1 {audienceLabel}",
-  "@chatsChatsListBodyVisiblecopy1Audiencelabel": {
-    "description": "Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (visibleCopy).",
-    "placeholders": {
-      "audienceLabel": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.widgets.chats_list_body"
-  },
-  "chatsChatsListBodyVisiblecopyAudiencecountAudiencelabelS": "{audienceCount} {audienceLabel}s",
-  "@chatsChatsListBodyVisiblecopyAudiencecountAudiencelabelS": {
-    "description": "Product copy used by lib/chats/presentation/inbox/widgets/chats_list_body.dart (visibleCopy).",
-    "placeholders": {
-      "audienceCount": {},
-      "audienceLabel": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.inbox.widgets.chats_list_body"
-  },
   "chatsChatShareCardVisiblecopyCatchChatCardPng": "catch-chat-card.png",
   "@chatsChatShareCardVisiblecopyCatchChatCardPng": {
     "description": "Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (visibleCopy).",
@@ -17736,16 +17632,6 @@
       "title": {},
       "shortDateLabel": {},
       "compactTimeRangeLabel": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
-  "hostsHostInboxScreenVisiblecopyNameAttendee": "{name} attendee",
-  "@hostsHostInboxScreenVisiblecopyNameAttendee": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (visibleCopy).",
-    "placeholders": {
-      "name": {}
     },
     "x-audience": "host",
     "x-owner": "product",
@@ -21146,8 +21032,6 @@
   "@hostsHostAudienceContactEmail": {"description": "Contact email label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
   "hostsHostAudienceContactConsentPaused": "Your team has paused WhatsApp campaigns to this person. Their own opt-out remains authoritative.",
   "@hostsHostAudienceContactConsentPaused": {"description": "Organizer-suppressed WhatsApp delivery explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
-  "hostsHostAudienceContactConsentActive": "Only the person-verified number and active organizer consent can receive a campaign.",
-  "@hostsHostAudienceContactConsentActive": {"description": "Eligible WhatsApp delivery explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
   "hostsHostAudienceSegmentNew": "New to your audience",
   "@hostsHostAudienceSegmentNew": {"description": "New-to-organizer audience segment label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
   "hostsHostAudienceSegmentFirstTime": "First-time attendees",
@@ -21574,7 +21458,7 @@
   "@hostSendsCampaignType": {"description": "Typed label for a WhatsApp campaign row.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostSendsAnnouncementType": "Announcement",
   "@hostSendsAnnouncementType": {"description": "Typed label for an event announcement row.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
-  "hostSendsRecipients": "{count} people",
+  "hostSendsRecipients": "{count, plural, =1{1 person} other{{count} people}}",
   "@hostSendsRecipients": {"description": "Recipient count in a Sends row.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostSendsPartial": "Some deliveries need attention",
   "@hostSendsPartial": {"description": "Announcement partial failure status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
@@ -21586,14 +21470,6 @@
   "@hostInboxCatchChatPreview": {"description": "Explicit channel/sender prefix for a Catch inquiry row.", "placeholders": {"details": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxAnnouncementDisclosure": "Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.",
   "@hostInboxAnnouncementDisclosure": {"description": "Delivery disclosure in the event announcement composer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
-  "hostInboxAnnouncementClosed": "Catch announcement · event delivery has closed",
-  "@hostInboxAnnouncementClosed": {"description": "Closed event-announcement state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
-  "hostInboxAnnouncementBackendRequired": "Catch announcement · backend preflight required",
-  "@hostInboxAnnouncementBackendRequired": {"description": "Backend-gated event-announcement state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
-  "hostInboxAnnouncementNoRecipients": "Catch announcement · no eligible recipients yet",
-  "@hostInboxAnnouncementNoRecipients": {"description": "Empty event-announcement audience state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
-  "hostInboxAnnouncementAvailable": "Catch announcement · Activity plus optional push",
-  "@hostInboxAnnouncementAvailable": {"description": "Available event-announcement delivery summary.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxWhatsappReply": "Reply",
   "@hostInboxWhatsappReply": {"description": "Sends a free-form WhatsApp service reply.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxWhatsappReplyHint": "Write a WhatsApp reply",
@@ -21618,8 +21494,6 @@
   "@hostCustomersEditDetails": {"description": "Opens editable organizer-entered customer contact details.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersNotSaved": "Not saved",
   "@hostCustomersNotSaved": {"description": "Empty value shown for a non-editable customer contact field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersCheckedIn": "Checked in",
-  "@hostCustomersCheckedIn": {"description": "Customer event-history status for a completed check-in.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersAdd": "Add customer",
   "@hostCustomersAdd": {"description": "Adds an organizer CRM contact with optional contact details and a private note.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersAddTitle": "Add a customer",
@@ -21676,7 +21550,7 @@
   "@hostSavedAudiencesEmptyBody": {"description": "Explains that audience authoring belongs to Customers.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostSavedAudienceFieldLabel": "Saved audience",
   "@hostSavedAudienceFieldLabel": {"description": "Saved-audience picker label in campaign composition.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
-  "hostSavedAudienceOption": "{name} · {count} people at last preview",
+  "hostSavedAudienceOption": "{count, plural, =1{{name} · 1 person at last preview} other{{name} · {count} people at last preview}}",
   "@hostSavedAudienceOption": {"description": "Saved-audience picker option with the explicitly stale last exact preview count.", "placeholders": {"name": {"type": "String"}, "count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostSavedAudiencesManage": "Saved audiences",
   "@hostSavedAudiencesManage": {"description": "Opens Customers-owned saved-audience management.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
@@ -21692,9 +21566,9 @@
   "@hostSavedAudienceExactCount": {"description": "Exact saved-audience preview count.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersCoverageRefresh": "Check again",
   "@hostCustomersCoverageRefresh": {"description": "Reloads customer history coverage after an organizer import or repair.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersMessageThese": "Message these {count}",
+  "hostCustomersMessageThese": "{count, plural, =1{Message this person} other{Message these {count} people}}",
   "@hostCustomersMessageThese": {"description": "Starts a campaign for the exact number of customers in the active segment.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersMessageTheseAtLeast": "Message these {count}+",
+  "hostCustomersMessageTheseAtLeast": "{count, plural, =1{Message at least 1 person} other{Message at least {count} people}}",
   "@hostCustomersMessageTheseAtLeast": {"description": "Starts a campaign for a lower-bound number of customers in the active segment.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersFilterSheetTitle": "Filter customers",
   "@hostCustomersFilterSheetTitle": {"description": "Grouped customer filter sheet title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
@@ -21712,7 +21586,7 @@
   "@hostCustomersFilterOption": {"description": "Customer filter chip with its server-backed match count.", "placeholders": {"label": {"type": "String"}, "countLabel": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersPeopleCount": "{count, plural, =1{1 person} other{{count} people}}",
   "@hostCustomersPeopleCount": {"description": "Exact number of people matching a customer audience query.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersPeopleCountAtLeast": "{count}+ people",
+  "hostCustomersPeopleCountAtLeast": "{count, plural, =1{At least 1 person} other{At least {count} people}}",
   "@hostCustomersPeopleCountAtLeast": {"description": "Lower-bound number of people matching a customer audience query.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersFilterAtRisk": "At risk",
   "@hostCustomersFilterAtRisk": {"description": "Explainable alias for the versioned lapsed-regular segment.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
@@ -21792,28 +21666,12 @@
   "@hostCustomersRevenueSourceImport": {"description": "Organizer-imported revenue provenance label.", "x-audience": "host", "x-owner": "legal", "x-surface": "hosts.presentation.customers"},
   "hostCustomersRevenueSourceEstimate": "Estimated by your team",
   "@hostCustomersRevenueSourceEstimate": {"description": "Organizer-entered unverified revenue provenance label.", "x-audience": "host", "x-owner": "legal", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersRevenueSharedOrder": "allocated from a shared order",
-  "@hostCustomersRevenueSharedOrder": {"description": "Shared-order allocation note on one customer event.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersEventOriginCatch": "Catch-hosted",
-  "@hostCustomersEventOriginCatch": {"description": "Catch-native event origin label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersEventOriginExternal": "Externally hosted",
-  "@hostCustomersEventOriginExternal": {"description": "External companion event origin label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersEventOriginUnknown": "Event origin unavailable",
-  "@hostCustomersEventOriginUnknown": {"description": "Legacy event origin label when no provenance snapshot exists.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersMessageOptions": "Ways to message",
-  "@hostCustomersMessageOptions": {"description": "Intent-aware communication options heading for one customer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersMessageOptionsLoading": "Checking what is available now…",
   "@hostCustomersMessageOptionsLoading": {"description": "Loading state for the server-derived customer communication plan.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersMessageOptionsUnavailable": "Messaging options unavailable",
   "@hostCustomersMessageOptionsUnavailable": {"description": "Failure or unsupported state for the server-derived customer communication plan.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersMessageOptionsRetry": "Try checking again.",
   "@hostCustomersMessageOptionsRetry": {"description": "Retry prompt for customer communication-plan loading.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersMessageInCatch": "Message in Catch",
-  "@hostCustomersMessageInCatch": {"description": "Consequence-labelled managed Catch conversation action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersMessageInCatchBody": "Catch sends and keeps the conversation here.",
-  "@hostCustomersMessageInCatchBody": {"description": "Explains the managed Catch conversation consequence.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersMessageByHand": "You press send",
-  "@hostCustomersMessageByHand": {"description": "Consequence-labelled external handoff action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersMessagePermissionRequired": "This person has not granted permission for this kind of message.",
   "@hostCustomersMessagePermissionRequired": {"description": "Communication-plan blocker for missing participant permission.", "x-audience": "host", "x-owner": "legal", "x-surface": "hosts.presentation.customers"},
   "hostCustomersMessageSenderUnavailable": "Sending setup is not available for this route yet.",
@@ -21918,10 +21776,6 @@
   "@hostCustomersTimelineManagedWhatsapp": {"description": "Managed WhatsApp thread message timeline title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersTimelineDirection": "{direction, select, inbound{From customer} outbound{From your team} other{Message}} · {date}",
   "@hostCustomersTimelineDirection": {"description": "Direction and date for one observed conversation message.", "placeholders": {"direction": {"type": "String"}, "date": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersEventHistory": "Past attendance",
-  "@hostCustomersEventHistory": {"description": "Customer event history heading.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersNoAttendance": "No checked-in events yet.",
-  "@hostCustomersNoAttendance": {"description": "Customer with no checked-in event history.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersFilterGroupYourTags": "Your tags",
   "@hostCustomersFilterGroupYourTags": {"description": "Organizer-authored manual-tag group, visually separate from computed audience segments.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersManualTagExportUnavailable": "Clear the manual tag filter to export.",
@@ -21974,22 +21828,8 @@
   "@hostCustomersNotesUnavailableTitle": {"description": "Localized optional note-history failure title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersNotesUnavailableBody": "The customer details are available. Try reloading to restore note history.",
   "@hostCustomersNotesUnavailableBody": {"description": "Localized optional note-history failure guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersSendHistory": "Messages sent",
-  "@hostCustomersSendHistory": {"description": "Per-person campaign delivery history heading.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersNoSends": "No campaign messages sent yet.",
-  "@hostCustomersNoSends": {"description": "Empty per-person campaign history state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersSendsTruncated": "Only the 100 newest campaign deliveries are shown.",
-  "@hostCustomersSendsTruncated": {"description": "Bounded per-person campaign history notice.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersSendsUnavailableTitle": "Message history could not be loaded",
-  "@hostCustomersSendsUnavailableTitle": {"description": "Localized optional send-history failure title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersSendsUnavailableBody": "The customer details are available. Try reloading to restore message history.",
-  "@hostCustomersSendsUnavailableBody": {"description": "Localized optional send-history failure guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersSendStatus": "{status, select, pending{Pending} sending{Sending} suppressed{Suppressed} accepted{Accepted} sent{Sent} delivered{Delivered} read{Read} failed{Failed} replied{Replied} optedOut{Opted out} other{Unknown}}",
-  "@hostCustomersSendStatus": {"description": "Organizer campaign delivery state shown on contact detail.", "placeholders": {"status": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersControls": "Controls",
   "@hostCustomersControls": {"description": "Customer messaging, consent, and removal controls heading.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersOrganizerMessages": "Organizer messages",
-  "@hostCustomersOrganizerMessages": {"description": "Per-customer organizer campaign delivery toggle.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersSort": "Sort customers",
   "@hostCustomersSort": {"description": "Customers directory sort menu group label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersSortControl": "Sort: {label}",
@@ -22088,8 +21928,6 @@
   "hostApplicationNotFound": "Application not found",
   "@hostApplicationNotFound": {"description": "Application detail missing-state title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "@hostApplicationsTitle": {"description": "Host application review queue title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsOpen": "Review applications",
-  "@hostApplicationsOpen": {"description": "Customers header action opening the application review queue.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostApplicationsImport": "Import responses",
   "@hostApplicationsImport": {"description": "Application queue spreadsheet import action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsSort": "Sort applications",
@@ -22110,7 +21948,7 @@
   "@hostApplicationsImportMissingName": {"description": "Application import requires a safe queue identity.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsImportNoRows": "The spreadsheet does not contain any application rows.",
   "@hostApplicationsImportNoRows": {"description": "Empty application spreadsheet error.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsImportComplete": "Imported {created} and skipped {skipped}.",
+  "hostApplicationsImportComplete": "{created, plural, =1{Imported 1 application} other{Imported {created} applications}} · {skipped, plural, =1{skipped 1} other{skipped {skipped}}}.",
   "@hostApplicationsImportComplete": {"description": "Application import result summary.", "placeholders": {"created": {"type": "int"}, "skipped": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsConsentCopy": "I agree to share these submitted answers with this organizer for application review.",
   "@hostApplicationsConsentCopy": {"description": "Default participant consent copy for imported-form versions that may later accept native submissions.", "x-audience": "shared", "x-owner": "legal", "x-surface": "applications.form"},
@@ -22332,7 +22170,7 @@
   "@hostFormBuilderTitle": {"description": "Fallback form builder route title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormBuildTab": "Build",
   "@hostFormBuildTab": {"description": "Form-level tab for editing the form.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostFormResponsesTab": "Responses {count}",
+  "hostFormResponsesTab": "{count, plural, =1{Responses · 1} other{Responses · {count}}}",
   "@hostFormResponsesTab": {"description": "Form-level responses tab with submission count.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormQuestionsTitle": "Questions",
   "@hostFormQuestionsTitle": {"description": "Primary heading for the compact form builder outline.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
@@ -22866,7 +22704,7 @@
   "@hostFormResponseFilteredTo": {"description": "Explains a form-scoped response inbox.", "placeholders": {"formTitle": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormResponseClearFormFilter": "Show all",
   "@hostFormResponseClearFormFilter": {"description": "Clears the response inbox form filter.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostFormAnalyticsSourceSummary": "{opens} opens · {starts} starts · {submissions} submissions",
+  "hostFormAnalyticsSourceSummary": "{opens, plural, =1{1 open} other{{opens} opens}} · {starts, plural, =1{1 start} other{{starts} starts}} · {submissions, plural, =1{1 submission} other{{submissions} submissions}}",
   "@hostFormAnalyticsSourceSummary": {"description": "One source-link form funnel summary.", "placeholders": {"opens": {"type": "int"}, "starts": {"type": "int"}, "submissions": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormAnalyticsQuestionSummary": "{count, plural, =1{1 answer} other{{count} answers}}",
   "@hostFormAnalyticsQuestionSummary": {"description": "Question aggregate response count.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},

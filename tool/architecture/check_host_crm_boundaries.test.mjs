@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  applicationRouteOwnershipFindings,
+  hostCrmCountCopyFindings,
   manualSendContractFindings,
   scanBackendFile,
   scanPresentationFile,
@@ -80,4 +82,36 @@ test("flags provider delivery states on manual handoffs", () => {
     schema: {definitions: {status: {enum: ["queued", "delivered", "read"]}}},
   });
   assert.match(findings[0].reason, /delivered\/read states are forbidden/u);
+});
+
+test("flags visible Host CRM counts without ICU plurals", () => {
+  const findings = hostCrmCountCopyFindings({
+    relativePath: "lib/l10n/app_en.arb",
+    catalog: {
+      hostSendsRecipients: "{count} people",
+      "@hostSendsRecipients": {
+        placeholders: {count: {type: "int"}},
+      },
+    },
+  });
+  assert.match(findings[0].reason, /without ICU plural ownership/u);
+});
+
+test("flags application queue ownership under Customers", () => {
+  const findings = applicationRouteOwnershipFindings({
+    routeContractPath: "lib/routing/route_contract.dart",
+    routeContractSource:
+      "hostApplicationsScreen('/host/customers/applications'",
+    routerPath: "lib/routing/go_router.dart",
+    routerSource: [
+      "navigatorKey: keys.hostCustomers",
+      "name: Routes.hostApplicationsScreen.name",
+      "name: Routes.hostApplicationDetailScreen.name",
+      "navigatorKey: keys.hostForms",
+      "navigatorKey: keys.hostInbox",
+    ].join("\n"),
+  });
+  assert.ok(findings.some((item) => /canonically Forms-owned/u.test(item.reason)));
+  assert.ok(findings.some((item) => /Forms shell branch/u.test(item.reason)));
+  assert.ok(findings.some((item) => /Legacy Customers/u.test(item.reason)));
 });

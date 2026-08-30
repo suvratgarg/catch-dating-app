@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.18.0
+version: 1.18.1
 updated: 2026-08-30
 owner: app_architecture
 status: active
@@ -2288,9 +2288,12 @@ definition mutations in Customers, prevents presentation-layer transport
 pickers, keeps manual handoff work in Sends, reviews every permission-authority
 collection consumer, confines canonical collection writes, preserves Host Form
 provenance for both new and matched contacts, and rejects provider delivery or
-read claims on manual handoffs. The scanner is deliberately narrower than a
-global “reachable” enum: `HostCommunicationPlan` remains the server-derived,
-intent-specific authority.
+read claims on manual handoffs. It pins the Applications list and detail routes
+to the Forms shell while requiring redirects for legacy Customers URLs. It also
+requires ICU plural ownership for
+visible CRM counts across Forms, Customers, saved audiences, and Sends. The
+scanner is deliberately narrower than a global “reachable” enum:
+`HostCommunicationPlan` remains the server-derived, intent-specific authority.
 
 ### Installable App Target Contract
 
