@@ -792,6 +792,47 @@ void _registerHostOperationsCustomersTests() {
     expect(functions.upsertCalls.last['expectedRevision'], 1);
   });
 
+  testWidgets('saved audience create retry reuses its request identity', (
+    tester,
+  ) async {
+    const organizerId = 'organizer-1';
+    final functions = _SavedAudienceEditorTestFunctions(failFirstUpsert: true);
+
+    await _pumpHostScreen(
+      tester,
+      const HostSavedAudienceEditorScreen(organizerId: organizerId),
+      overrides: [
+        hostCrmRepositoryProvider.overrideWithValue(
+          HostCrmRepository(functions),
+        ),
+        hostCustomersDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostCustomersDirectoryController(
+            [],
+            _customerDirectoryState(),
+          ),
+        ),
+      ],
+    );
+
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-saved-audience-name')),
+        matching: find.byType(TextField),
+      ),
+      'Friday regulars',
+    );
+    await tester.tap(find.byKey(const ValueKey('host-saved-audience-save')));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(const ValueKey('host-saved-audience-save')));
+    await pumpFeatureUi(tester);
+
+    expect(functions.upsertCalls, hasLength(2));
+    expect(
+      functions.upsertCalls.last['requestId'],
+      functions.upsertCalls.first['requestId'],
+    );
+  });
+
   testWidgets('customer detail failure names the customer, not organizer', (
     tester,
   ) async {
@@ -1218,6 +1259,9 @@ void _registerHostOperationsCustomersTests() {
 
 class _SavedAudienceEditorTestFunctions extends Fake
     implements FirebaseFunctions {
+  _SavedAudienceEditorTestFunctions({this.failFirstUpsert = false});
+
+  final bool failFirstUpsert;
   final List<Map<Object?, Object?>> upsertCalls = [];
   final List<Map<Object?, Object?>> previewCalls = [];
 
@@ -1238,6 +1282,9 @@ class _SavedAudienceEditorTestCallable extends Fake implements HttpsCallable {
     switch (name) {
       case 'upsertOrganizerSavedAudience':
         owner.upsertCalls.add(payload);
+        if (owner.failFirstUpsert && owner.upsertCalls.length == 1) {
+          throw StateError('upsert response unavailable');
+        }
         return _SavedAudienceEditorCallableResult<T>(
           _savedAudienceEditorResponse() as T,
         );

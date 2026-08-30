@@ -76,6 +76,7 @@ class _HostSavedAudienceEditorFormState
   late HostSavedAudienceJoin _join;
   late List<_AudienceRuleDraft> _rules;
   HostSavedAudience? _audience;
+  String? _pendingCreateRequestId;
   bool _busy = false;
 
   @override
@@ -273,11 +274,14 @@ class _HostSavedAudienceEditorFormState
     setState(() => _busy = true);
     try {
       final controller = ref.read(hostAudienceControllerProvider);
+      final requestId = _audience == null
+          ? _pendingCreateRequestId ??= _newSavedAudienceRequestId()
+          : _newSavedAudienceRequestId();
       final saved = await controller.saveAudience(
         organizerId: widget.organizerId,
         audienceId: _audience?.audienceId,
         expectedRevision: _audience?.revision,
-        requestId: '${DateTime.now().microsecondsSinceEpoch}-audience-editor',
+        requestId: requestId,
         name: _nameController.text.trim(),
         definition: HostSavedAudienceDefinition(
           join: _join,
@@ -285,7 +289,10 @@ class _HostSavedAudienceEditorFormState
         ),
       );
       if (!mounted) return;
-      setState(() => _audience = saved);
+      setState(() {
+        _audience = saved;
+        _pendingCreateRequestId = null;
+      });
       ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
       ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
       final preview = await controller.previewAudience(
@@ -364,6 +371,9 @@ class _HostSavedAudienceEditorFormState
     }
   }
 }
+
+String _newSavedAudienceRequestId() =>
+    '${DateTime.now().microsecondsSinceEpoch}-audience-editor';
 
 class _HostSavedAudienceRuleSection extends StatelessWidget {
   const _HostSavedAudienceRuleSection({
