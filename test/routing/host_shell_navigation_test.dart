@@ -248,6 +248,21 @@ void main() {
       );
       expect(activeTab.bottomBarPlacement, expectedPlacement);
       expect(activeTab.bottomOverlayInset, tabBarFloats ? greaterThan(0) : 0);
+      expect(
+        find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+        tabBarFloats ? findsOneWidget : findsNothing,
+      );
+      expect(
+        find.byKey(const ValueKey('catch_tab_bar.anchored_chrome')),
+        tabBarFloats ? findsNothing : findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+          matching: find.byType(BackdropFilter),
+        ),
+        tabBarFloats ? findsOneWidget : findsNothing,
+      );
 
       final editor = find.byKey(editorKey);
       await tester.tap(editor);
@@ -313,6 +328,14 @@ void main() {
             .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
             .bottomBarPlacement,
         expectedPlacement,
+      );
+      expect(
+        find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+        tabBarFloats ? findsOneWidget : findsNothing,
+      );
+      expect(
+        find.byKey(const ValueKey('catch_tab_bar.anchored_chrome')),
+        tabBarFloats ? findsNothing : findsOneWidget,
       );
     },
     variant: const TargetPlatformVariant({
