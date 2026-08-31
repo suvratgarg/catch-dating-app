@@ -1,6 +1,6 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 1.0.0
+version: 1.1.0
 updated: 2026-08-31
 owner: product_design_parity
 status: active
@@ -75,21 +75,21 @@ following corrected visual-evidence foundations:
 
 These are baseline facts to preserve, not work to reproduce.
 
-The current authoritative global destinations remain:
-
-```text
-Events · Customers · Forms · Messaging · Organizer
-```
-
-The studied alternative:
+The corrective rollout now adopts these authoritative global destinations:
 
 ```text
 Today · Events · Audience · Inbox · Organizer
 ```
 
-is a product and route-authority proposal. It must not be smuggled into a
-styling slice. The shell decision remains its own late rollout item after the
-underlying compositions prove their value.
+The pre-correction shell:
+
+```text
+Events · Customers · Forms · Messaging · Organizer
+```
+
+remains a compatibility concern, not a competing product authority. Existing
+deep links must redirect into the new hierarchy without losing identifiers,
+queries, drafts, or Back behavior.
 
 ## Global acceptance contract
 
@@ -142,6 +142,42 @@ contract:
 | S7 | Live workspace stage/roster/command composition | `complete` |
 | S8 | Global shell, naming, and Forms placement product decision | `complete` |
 | S9 | Cross-surface state, accessibility, and visual-regression hardening | `complete` |
+
+## Corrective rollout checklist
+
+This checklist supersedes the S8 decision below. It exists because the first
+rollout treated an approved product direction as an unresolved research
+question and therefore preserved the wrong top-level hierarchy.
+
+| Item | Delivery unit | Status |
+|---|---|---|
+| C0 | Reopen the tracker and pin the approved Host IA and chrome invariants | `complete` |
+| C1 | Preserve the original adaptive Catch bottom navigation and add an iOS regression | `pending` |
+| C2 | Add a real Today destination and make Events the event inventory | `pending` |
+| C3 | Consolidate People, Audiences, Forms, and Responses under Audience | `pending` |
+| C4 | Rename the global Messaging destination to Inbox; migrate contracts, captures, and owner docs | `pending` |
+
+### Approved information architecture
+
+- **Today** is the operational home: the next or live event, time-sensitive
+  attention, and the safest immediate action across the organizer's events.
+- **Events** is the durable event inventory and entry point for creation,
+  lifecycle history, rehearsal, and event workspaces.
+- **Audience** owns people, saved audiences, forms, and responses as one
+  participant-relationship area. Form builders and deep response routes remain
+  focused routes within that authority rather than global destinations.
+- **Inbox** owns conversations and outbound sends. The short shell label does
+  not remove the Sends peer workspace inside it.
+- **Organizer** retains profile, venue, staff, payout, and settings authority.
+
+### Navigation chrome invariant
+
+The rollout must retain the existing platform-adaptive `CatchTabBar` rather
+than replace it with the flat fixed bar shown in reference renders. Compact
+iOS keeps the floating frosted Catch pill and body extension; compact Android
+keeps the existing anchored platform treatment; medium and expanded widths
+keep the existing rail and sidebar. The same five branch states must survive
+all placements.
 
 ## T0 — Persistent rollout contract
 
@@ -408,11 +444,12 @@ information architecture.
   contracts, captures, copy, tests, and shell behavior in one bounded migration.
 - No implementation maintains two competing global authorities.
 
-### Decision
+### Superseded decision
 
-Selected option 3: **retain Forms globally and keep Today within Events**. The
-visible shell remains `Events · Customers · Forms · Messaging · Organizer`.
-No route or label migration is warranted by current product evidence.
+The initial rollout selected option 3 and retained
+`Events · Customers · Forms · Messaging · Organizer`. Product review rejected
+that conclusion. C0-C4 replace it with option 2; this text remains only to make
+the correction and its scope reviewable in Git.
 
 - `/host` already redirects to Events, whose operational spotlight, attention
   queue, and lifecycle list provide the time-sensitive Today composition.
@@ -431,9 +468,9 @@ No route or label migration is warranted by current product evidence.
   frequency study or exported usage result. A future migration therefore needs
   new product evidence, not a reference-image preference.
 
-The existing Host shell coverage gate now pins the selected IA owners and
-labels, and a runtime regression proves an in-progress Forms draft survives a
-compact-to-expanded reflow and branch round trip.
+The shell coverage gate and runtime state-preservation test created for this
+decision must be migrated in C3-C4 so they enforce the approved hierarchy
+instead of perpetuating this superseded one.
 
 ## S9 — Cross-surface hardening
 
@@ -497,8 +534,7 @@ For every item:
 
 ## Handoff state
 
-The bounded rollout is complete through S9. Review the nine product slices as
-one Host-system proposal, but retain their commit boundaries during review so
-any disputed composition or information-architecture decision can be revised
-without undoing unrelated surfaces. The next gate is human runtime review and
-integration; this tracker does not claim merge, deployment, or distribution.
+The original bounded rollout is complete through S9. The corrective rollout
+is active: C0 is complete and C1 is next. No corrected shell source, migration,
+deployment, or distribution claim is made until C1-C4 are complete and
+committed independently.
