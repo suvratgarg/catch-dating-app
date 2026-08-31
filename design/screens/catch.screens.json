@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-08-30",
+  "updated": "2026-08-31",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -13182,7 +13182,7 @@
             "symbol": "EventSuccessController"
           }
         ],
-        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests opens HostEventRosterDrawer while other aliases cannot override lifecycle relevance. The shared CatchTopBar contains only event title and lifecycle subtitle. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterDrawer is a lazy overlay that preserves the underlying workspace element and exposes the roster in every phase. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
+        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests opens HostEventRosterDrawer while other aliases cannot override lifecycle relevance. The shared CatchTopBar keeps event title and lifecycle subtitle as the subject, with one durable Guest roster action. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterDrawer is a lazy viewport-edge overlay that preserves the underlying workspace element, exposes the roster in every phase, and can hand off to the current event-scoped Inbox route. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
       },
       "designRefs": [
         {
@@ -14380,8 +14380,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows only event title and lifecycle subtitle. HostEventRosterDrawer overlays an operational roster without replacing the workspace. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
-        "targetLayout": "Keep HostEventManageRouteScreen as the ARCH-SCREEN-001C route shell for aliases, loading/access/error, and deep-link inputs. Continue moving roster/private-access/invite-link/Event Success/report display waves and typed callbacks into provider-free adapters without reintroducing a persistent section picker or duplicating the lifecycle resolver.",
+        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows event title, lifecycle subtitle, and one durable Guest roster action. HostEventRosterDrawer overlays an operational roster from the real viewport edge without replacing the bounded workspace; its Message guests action hands off to the existing event-scoped Host Inbox. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
+        "targetLayout": "Keep HostEventManageRouteScreen as the ARCH-SCREEN-001C route shell for aliases, loading/access/error, deep-link inputs, and event-scoped navigation effects. Continue moving roster/private-access/invite-link/Event Success/report display waves and typed callbacks into provider-free adapters without reintroducing a persistent section picker, inventing event-scoped Forms, or duplicating the lifecycle resolver.",
         "sections": [
           {
             "id": "section.host.event_manage_route_adapter",

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.18.2
+version: 1.18.3
 updated: 2026-08-31
 owner: app_architecture
 status: active
@@ -3158,15 +3158,17 @@ Defined variant:
   `HostEventManageRouteScreen` keeps canonical route ids/aliases, uid/club/event
   loading, missing-resource/error branches, host access gating, retry
   invalidation, and initial alias/deep-link inputs. `HostEventManageScreenState`
-  resolves the phase from event time/status; the guest roster is a lazy overlay
-  drawer that preserves the underlying workspace element and maps old Guests
-  deep links to an initially-open drawer. Preparation owns stable event details,
+  resolves the phase from event time/status; the top bar exposes one durable
+  Guest roster action and the roster is a lazy, full-viewport-edge overlay that
+  preserves the bounded underlying workspace element and maps old Guests deep
+  links to an initially-open drawer. Preparation owns stable event details,
   website registration, imported/manual/provider guest sources, private invite
   access, temporary event-staff access, Event Success setup, and host actions.
   The roster drawer owns guest status, search/filter, claims, attendance, and
-  reporting; setup-only import, forwarding, provider, registration, and staff
-  controls must not appear there. Live Operations may expose the single urgent
-  Add walk-in escape hatch, while Recap keeps the roster read-only. Provider-free
+  reporting plus a route-owned handoff to the existing event-scoped Host Inbox;
+  setup-only import, forwarding, provider, registration, and staff controls
+  must not appear there. Live Operations may expose the single urgent Add
+  walk-in escape hatch, while Recap keeps the roster read-only. Provider-free
   preparation, roster, private-access, invite-link, Event Success, recap, and
   host-action sections retain explicit display state and typed callbacks. Do
   not move solved route loading/access work into the workspace adapter, and do

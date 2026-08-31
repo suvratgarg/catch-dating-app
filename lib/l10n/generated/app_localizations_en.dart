@@ -12646,9 +12646,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceRemoveAction => 'Remove customer';
 
   @override
-  String get hostsHostAudienceContactName => 'Name shown to your team';
-
-  @override
   String get hostsHostAudienceContactNameHelp =>
       'This does not alter the guest’s Catch profile or verified contact details.';
 
@@ -14703,6 +14700,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventRosterDrawerClose => 'Close guest roster';
+
+  @override
+  String get hostsHostEventRosterDrawerMessageGuests => 'Message guests';
 
   @override
   String get hostApplicationsTitle => 'Applications';

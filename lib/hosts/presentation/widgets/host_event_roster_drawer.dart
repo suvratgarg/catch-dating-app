@@ -13,8 +13,10 @@ import 'package:flutter/material.dart';
 ///
 /// The roster remains reachable without competing with the event's
 /// lifecycle-owned primary workspace. Its panel overlays rather than rebuilds
-/// the runtime, so opening it cannot reset live controls. A caller that owns a
-/// more contextual roster entry point can hide the edge handle.
+/// the runtime, so opening it cannot reset live controls. The overlay is rooted
+/// at the real viewport edge while the primary workspace keeps its bounded
+/// reading lane. A caller that owns a more contextual roster entry point can
+/// hide the edge handle.
 class HostEventRosterDrawer extends StatefulWidget {
   const HostEventRosterDrawer({
     super.key,
@@ -24,6 +26,7 @@ class HostEventRosterDrawer extends StatefulWidget {
     required this.body,
     required this.roster,
     this.showHandle = true,
+    this.onMessageGuests,
   });
 
   final bool open;
@@ -32,6 +35,7 @@ class HostEventRosterDrawer extends StatefulWidget {
   final Widget body;
   final Widget roster;
   final bool showHandle;
+  final VoidCallback? onMessageGuests;
 
   @override
   State<HostEventRosterDrawer> createState() => _HostEventRosterDrawerState();
@@ -53,7 +57,7 @@ class _HostEventRosterDrawerState extends State<HostEventRosterDrawer> {
     final t = CatchTokens.of(context);
 
     return CatchSceneViewport(
-      maxWidth: CatchLayout.maxContentWidth,
+      maxWidth: double.infinity,
       builder: (context, viewport) {
         final handleWidth = CatchLayout.hostRosterDrawerHandleWidth;
         final drawerWidth = CatchLayout.hostRosterDrawerWidthFor(
@@ -64,9 +68,18 @@ class _HostEventRosterDrawerState extends State<HostEventRosterDrawer> {
         );
 
         return Stack(
-          clipBehavior: Clip.none,
           children: [
-            Positioned.fill(child: widget.body),
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: CatchLayout.maxContentWidth,
+                  ),
+                  child: SizedBox.expand(child: widget.body),
+                ),
+              ),
+            ),
             Positioned.fill(
               child: IgnorePointer(
                 ignoring: !widget.open,
@@ -98,6 +111,7 @@ class _HostEventRosterDrawerState extends State<HostEventRosterDrawer> {
                   child: HostEventRosterPanel(
                     bookedCount: widget.bookedCount,
                     onClose: () => widget.onOpenChanged(false),
+                    onMessageGuests: widget.onMessageGuests,
                     child: _hasOpened ? widget.roster : const SizedBox.shrink(),
                   ),
                 ),
@@ -213,11 +227,13 @@ class HostEventRosterPanel extends StatelessWidget {
     required this.bookedCount,
     required this.onClose,
     required this.child,
+    this.onMessageGuests,
   });
 
   final int bookedCount;
   final VoidCallback onClose;
   final Widget child;
+  final VoidCallback? onMessageGuests;
 
   @override
   Widget build(BuildContext context) {
@@ -262,6 +278,16 @@ class HostEventRosterPanel extends StatelessWidget {
                       ),
                     ),
                     gapW12,
+                    if (onMessageGuests != null) ...[
+                      CatchIconButton.icon(
+                        icon: CatchIcons.forumOutlined,
+                        tooltip: context
+                            .l10n
+                            .hostsHostEventRosterDrawerMessageGuests,
+                        onTap: onMessageGuests,
+                      ),
+                      gapW8,
+                    ],
                     CatchIconButton.icon(
                       icon: CatchIcons.closeRounded,
                       tooltip: context.l10n.hostsHostEventRosterDrawerClose,

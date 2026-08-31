@@ -1,6 +1,6 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 0.4.0
+version: 0.5.0
 updated: 2026-08-31
 owner: product_design_parity
 status: active
@@ -136,8 +136,8 @@ contract:
 | S1 | Customers/People directory reference composition | `complete` |
 | S2 | Customer record detail and adaptive selected-record composition | `complete` |
 | S3 | Create Event essentials hierarchy and adaptive flow composition | `complete` |
-| S4 | Durable Event workspace composition and route-state contract | `in_progress` |
-| S5 | Forms library and builder studio composition | `pending` |
+| S4 | Durable Event workspace composition and route-state contract | `complete` |
+| S5 | Forms library and builder studio composition | `in_progress` |
 | S6 | Messaging Inbox list/thread composition | `pending` |
 | S7 | Live workspace stage/roster/command composition | `pending` |
 | S8 | Global shell, naming, and Forms placement product decision | `pending` |
@@ -281,15 +281,18 @@ operation and recap without duplicating existing lifecycle authorities.
 ### Included
 
 - Overview and lifecycle-owned workspace hierarchy.
-- Guests, Messages, Forms, and Run entry points where current capabilities and
-  permissions support them.
-- Compact menu/pushed-route behavior and wide persistent workspace navigation.
+- Guests, event-scoped Inbox, Rehearsal, and Run entry points where current
+  capabilities and permissions support them.
+- Compact and wide overlay-roster behavior that preserves the one lifecycle
+  workspace and its underlying element.
 - URL/deep-link/back/resize state.
 
 ### Excluded
 
 - New lifecycle phases or backend permissions.
 - Duplicate attendance, Event Success, messaging, or Forms implementations.
+- Event-scoped Forms until a real event/form relationship and route exist.
+- Persistent mode navigation that competes with lifecycle relevance.
 - Shell destination changes.
 
 ### Acceptance
@@ -449,7 +452,7 @@ For every item:
 
 ## Handoff state
 
-The active production item is **S4 — Durable Event workspace**. Start from the
-current event detail and manage routes, then inspect their full route aliases,
-lifecycle policies, permissions, overview, guests, messaging, Forms, Run,
-loading, failure, and adaptive-layout owners before editing.
+The active production item is **S5 — Forms library and builder studio**. Start
+from the current Forms routes and builder controller, then inspect their full
+peer navigation, query, template, draft, conflict, undo, publish, response,
+authorization, loading, failure, and adaptive-layout owners before editing.

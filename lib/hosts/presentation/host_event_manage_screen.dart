@@ -493,13 +493,21 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             icon: CatchIcons.arrowBackIosNewRounded,
             onPressed: onBackToSuccess,
           ),
+          actions: [
+            CatchTopBarPrimaryAction(
+              label: context.l10n.hostsHostEventRosterDrawerTitle,
+              icon: CatchIcons.groupsRounded,
+              onPressed: () => _setRosterOpen(true, screenState.phase),
+            ),
+          ],
           divider: scrolledUnder,
         ),
         body: HostEventRosterDrawer(
           open: _rosterOpen,
           bookedCount: bookedCount,
-          showHandle: screenState.phase != HostEventWorkspacePhase.runtime,
+          showHandle: false,
           onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
+          onMessageGuests: () => _openEventMessages(club, event),
           body: workspaceBody,
           roster: ListView(
             key: const ValueKey<String>('host_event_roster_drawer.scroll'),
@@ -523,6 +531,14 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               HostEventWorkspacePhase.runtime => HostEventManageSection.live,
               HostEventWorkspacePhase.recap => HostEventManageSection.report,
             },
+    );
+  }
+
+  void _openEventMessages(Club club, Event event) {
+    context.pushNamed(
+      Routes.hostInboxScreen.name,
+      queryParameters: {'eventId': event.id},
+      extra: club,
     );
   }
 

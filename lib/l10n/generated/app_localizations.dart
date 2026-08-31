@@ -19732,12 +19732,6 @@ abstract class AppLocalizations {
   /// **'Remove customer'**
   String get hostsHostAudienceRemoveAction;
 
-  /// Organizer-local audience contact name field.
-  ///
-  /// In en, this message translates to:
-  /// **'Name shown to your team'**
-  String get hostsHostAudienceContactName;
-
   /// Organizer-local audience contact name disclosure.
   ///
   /// In en, this message translates to:
@@ -22803,6 +22797,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close guest roster'**
   String get hostsHostEventRosterDrawerClose;
+
+  /// Action that opens this event's scoped Host Inbox from the guest roster.
+  ///
+  /// In en, this message translates to:
+  /// **'Message guests'**
+  String get hostsHostEventRosterDrawerMessageGuests;
 
   /// Host application review queue title.
   ///

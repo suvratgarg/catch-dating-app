@@ -289,6 +289,7 @@ void main() {
       tester.widget<Icon>(find.byIcon(CatchIcons.settingsOutlined)).size,
       CatchIcon.md,
     );
+    expect(find.bySemanticsLabel('Settings'), findsOneWidget);
   });
 
   testWidgets(
