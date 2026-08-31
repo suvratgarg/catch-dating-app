@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.18.6
+version: 1.18.7
 updated: 2026-08-31
 owner: app_architecture
 status: active
@@ -584,6 +584,49 @@ system.
 The consolidated Events route remains canonical. Responsive work must not
 recreate the retired Today destination or split operational shortcuts away from
 the lifecycle list.
+
+**Primary Host information architecture decision**
+
+The selected global contract is **Forms global; Today within Events**. Its
+visible destinations remain `Events · Customers · Forms · Messaging ·
+Organizer` on compact, medium, and expanded shells. This is a product-authority
+decision, not a preference for the current labels:
+
+- Events owns the operational spotlight, attention queue, schedule, history,
+  and lifecycle entry points. That composition is the Catch equivalent of a
+  Today overview; `/host` remains a compatibility redirect to `/host/events`
+  rather than a sixth or replacement destination.
+- Customers owns both People and Audiences. Renaming the global destination to
+  Audience would hide person-level CRM, imports, identity, consent, memory, and
+  customer-detail work behind one of its peer workspace names.
+- Forms remains global because templates, responses, applications, builder,
+  preview, share, analytics, and automations form an independent intake system.
+  Event and customer records may link to those objects, but do not acquire
+  their route or work-queue authority.
+- Messaging remains the global label for `/host/inbox` because the destination
+  contains the peer Inbox and Sends workspaces. Inbox is the correct local
+  label for conversations, but it would under-describe campaigns, event
+  announcements, follower updates, and manual send work at the global level.
+- Organizer remains the identity, team, defaults, provider, payout, and
+  settings authority.
+
+The decision follows platform guidance that primary navigation represents a
+small number of persistent, peer top-level areas and preserves state within
+each area: [Apple tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars)
+and [Android layout and navigation patterns](https://developer.android.com/design/ui/mobile/guides/layout-and-content/layout-and-nav-patterns).
+Airbnb's current Host guidance uses Today for an overview of upcoming
+reservations while keeping Calendar and Listings as distinct work domains
+([Airbnb Host dashboards](https://www.airbnb.com/help/article/3116)); Catch
+already places the analogous overview inside Events. Clear, destination-shaped
+labels also retain stronger information scent than a conceptual label whose
+scope is only one child workspace
+([Nielsen Norman Group](https://www.nngroup.com/articles/3-ia-mistakes/)).
+
+No verified Host route-frequency study or usage export is present in the
+repository. Therefore a future global migration requires new product evidence,
+an explicit route/state compatibility plan, and a coordinated update to the
+shell manifest, routes, copy, tests, contracts, and captures. Reference images
+alone cannot reopen or bypass this boundary.
 
 **Architecture boundaries**
 

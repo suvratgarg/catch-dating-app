@@ -54,6 +54,34 @@ export function validateHostShellCoverage({
   if (routes.length !== 5) {
     errors.push(`expected five primary Host routes, found ${routes.length}`);
   }
+  const informationArchitecture = manifest?.informationArchitectureDecision;
+  if (
+    informationArchitecture?.selectedOption !==
+    "forms-global-today-within-events"
+  ) {
+    errors.push(
+      "information architecture must keep Forms global and Today within Events",
+    );
+  }
+  const declaredLabels = routes.map((route) => route.label);
+  if (
+    JSON.stringify(informationArchitecture?.primaryLabels) !==
+    JSON.stringify(declaredLabels)
+  ) {
+    errors.push(
+      `primary labels ${JSON.stringify(declaredLabels)} do not match the information architecture decision`,
+    );
+  }
+  for (const [ownerKey, expectedRouteId] of Object.entries({
+    todayOwnerRouteId: "hostEventsScreen",
+    formsOwnerRouteId: "hostFormsScreen",
+    audiencesOwnerRouteId: "hostCustomersScreen",
+    inboxWorkspaceOwnerRouteId: "hostInboxScreen",
+  })) {
+    if (informationArchitecture?.[ownerKey] !== expectedRouteId) {
+      errors.push(`${ownerKey} must remain ${expectedRouteId}`);
+    }
+  }
 
   const routeIds = new Set();
   const inventoryById = new Map(
@@ -122,7 +150,7 @@ function checkHostShellCoverage() {
     return;
   }
   console.log(
-    `Host shell coverage is current: ${manifest.primaryRoutes.length} ordered destinations, routes, sources, and canonical captures.`,
+    `Host shell coverage is current: ${manifest.primaryRoutes.length} ordered destinations, information-architecture owners, routes, sources, and canonical captures.`,
   );
 }
 

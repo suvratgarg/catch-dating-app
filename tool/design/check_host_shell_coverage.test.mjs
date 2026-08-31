@@ -12,10 +12,12 @@ const destinations = [
   "hostInbox",
   "hostOrganizer",
 ];
+const labels = ["Events", "Customers", "Forms", "Messaging", "Organizer"];
 const primaryRoutes = destinations.map((destination, index) => ({
   destination,
   routeId: `${destination}Screen`,
   path: `/host/${destination.slice(4).toLowerCase()}`,
+  label: labels[index],
   source: `lib/${destination}.dart`,
   captureId: `capture-${index}`,
 }));
@@ -33,6 +35,14 @@ function fixture() {
     manifest: {
       $schema: "catch.host-shell-coverage/v2",
       updated: "2026-08-29",
+      informationArchitectureDecision: {
+        selectedOption: "forms-global-today-within-events",
+        primaryLabels: primaryRoutes.map((route) => route.label),
+        todayOwnerRouteId: "hostEventsScreen",
+        formsOwnerRouteId: "hostFormsScreen",
+        audiencesOwnerRouteId: "hostCustomersScreen",
+        inboxWorkspaceOwnerRouteId: "hostInboxScreen",
+      },
       primaryRoutes,
       legacyRoutes: [
         {
@@ -85,4 +95,30 @@ test("rejects a retired primary route and missing canonical capture", () => {
   assert.ok(errors.some((error) => error.includes("destination order")));
   assert.ok(errors.some((error) => error.includes("retired hostHomeScreen")));
   assert.ok(errors.some((error) => error.includes("does not own capture-1")));
+});
+
+test("rejects a competing Today route and a contextual Forms owner", () => {
+  const input = fixture();
+  input.manifest.informationArchitectureDecision = {
+    ...input.manifest.informationArchitectureDecision,
+    selectedOption: "today-global-forms-contextual",
+    todayOwnerRouteId: "hostHomeScreen",
+    formsOwnerRouteId: "hostCustomersScreen",
+  };
+  const errors = validateHostShellCoverage(input);
+  assert.ok(
+    errors.some((error) =>
+      error.includes("keep Forms global and Today within Events"),
+    ),
+  );
+  assert.ok(
+    errors.some((error) =>
+      error.includes("todayOwnerRouteId must remain hostEventsScreen"),
+    ),
+  );
+  assert.ok(
+    errors.some((error) =>
+      error.includes("formsOwnerRouteId must remain hostFormsScreen"),
+    ),
+  );
 });

@@ -1,6 +1,6 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 0.8.0
+version: 0.9.0
 updated: 2026-08-31
 owner: product_design_parity
 status: active
@@ -140,8 +140,8 @@ contract:
 | S5 | Forms library and builder studio composition | `complete` |
 | S6 | Messaging Inbox list/thread composition | `complete` |
 | S7 | Live workspace stage/roster/command composition | `complete` |
-| S8 | Global shell, naming, and Forms placement product decision | `in_progress` |
-| S9 | Cross-surface state, accessibility, and visual-regression hardening | `pending` |
+| S8 | Global shell, naming, and Forms placement product decision | `complete` |
+| S9 | Cross-surface state, accessibility, and visual-regression hardening | `in_progress` |
 
 ## T0 — Persistent rollout contract
 
@@ -408,6 +408,33 @@ information architecture.
   contracts, captures, copy, tests, and shell behavior in one bounded migration.
 - No implementation maintains two competing global authorities.
 
+### Decision
+
+Selected option 3: **retain Forms globally and keep Today within Events**. The
+visible shell remains `Events · Customers · Forms · Messaging · Organizer`.
+No route or label migration is warranted by current product evidence.
+
+- `/host` already redirects to Events, whose operational spotlight, attention
+  queue, and lifecycle list provide the time-sensitive Today composition.
+- Customers is the truthful parent of People and Audiences; Audience cannot
+  replace its person-level CRM meaning.
+- Forms owns a standalone route family for templates, responses, applications,
+  builder, preview, share, analytics, and automations. Contextual links may
+  point into it, but do not replace its global authority.
+- Messaging truthfully contains the peer Inbox and Sends workspaces; Inbox
+  alone would hide outbound work.
+- Apple and Android guidance supports a small set of persistent peer
+  destinations with adaptive bottom/rail/sidebar placement and retained state.
+  Airbnb's Today pattern is an overview of active reservations, which maps to
+  Catch's existing Events composition rather than proving a second route.
+- The repository contains route analytics instrumentation but no verified Host
+  frequency study or exported usage result. A future migration therefore needs
+  new product evidence, not a reference-image preference.
+
+The existing Host shell coverage gate now pins the selected IA owners and
+labels, and a runtime regression proves an in-progress Forms draft survives a
+compact-to-expanded reflow and branch round trip.
+
 ## S9 — Cross-surface hardening
 
 ### Goal
@@ -452,11 +479,9 @@ For every item:
 
 ## Handoff state
 
-The active production item is **S8 — Global shell and Forms placement
-decision**. Start from `HostAppShell`, the five `StatefulShellBranch` owners,
-route aliases, deep links, notification destinations, and state-restoration
-tests. Gather current repository and professional-product evidence for Today
-frequency, Forms frequency, Audience naming, and Inbox naming before changing
-source. The current `Events · Customers · Forms · Messaging · Organizer`
-authority stays intact until one option has an exact compatibility plan and
-enough product evidence to justify migration.
+The active production item is **S9 — Cross-surface hardening**. Start from the
+new compact, medium, and expanded reference compositions delivered in S1-S7.
+Exercise their longest truthful copy, text scaling, light/dark themes, reduced
+motion, keyboard/pointer/focus behavior, resize continuity, route state, and
+bounded visual comparisons. Promote only repeated deterministic failures into
+shared contracts; do not refresh a visual baseline to conceal a regression.

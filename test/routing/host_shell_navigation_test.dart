@@ -321,6 +321,90 @@ void main() {
     }),
   );
 
+  testWidgets(
+    'Forms branch draft survives destination changes and shell reflow',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 844);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final router = GoRouter(
+        initialLocation: '/host/forms',
+        routes: [
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) =>
+                HostAppShell(navigationShell: navigationShell),
+            branches: [
+              _branch('/host/events', 'EVENTS BODY'),
+              _branch('/host/customers', 'CUSTOMERS BODY'),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/host/forms',
+                    builder: (context, state) => const _FormsDraftBody(),
+                  ),
+                ],
+              ),
+              _branch('/host/inbox', 'INBOX BODY'),
+              _branch('/host/organizer', 'ORGANIZER BODY'),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(_uid)),
+            hostOperableClubsProvider(
+              _uid,
+            ).overrideWithValue(AsyncData([_organizer])),
+            totalUnreadCountProvider(_uid).overrideWithValue(0),
+            appConnectivityProvider.overrideWith(
+              (ref) => Stream.value(const [ConnectivityResult.wifi]),
+            ),
+            appShellFcmInitializationProvider(
+              _uid,
+              router,
+            ).overrideWith((ref) async {}),
+            errorLoggerProvider.overrideWithValue(ErrorLogger()),
+            appAnalyticsProvider.overrideWithValue(AppAnalytics()),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await pumpFeatureUi(tester);
+
+      const draftKey = ValueKey<String>('host-shell-forms-draft');
+      final draft = find.byKey(draftKey);
+      final draftElement = tester.element(draft);
+      await tester.enterText(draft, 'Member application');
+
+      await tester.tap(find.bySemanticsLabel(RegExp('Events')));
+      await pumpFeatureUi(tester);
+      expect(find.text('EVENTS BODY'), findsOneWidget);
+
+      tester.view.physicalSize = const Size(1024, 900);
+      await tester.pump();
+      expect(
+        find.byKey(const ValueKey('app_shell.navigation.sidebar')),
+        findsOneWidget,
+      );
+
+      await tester.tap(
+        find.byKey(const ValueKey('app_shell.navigation.destination.2')),
+      );
+      await pumpFeatureUi(tester);
+      expect(tester.element(draft), same(draftElement));
+      expect(find.text('Member application'), findsOneWidget);
+    },
+  );
+
   for (final scenario in const [
     (
       width: 599.0,
@@ -483,5 +567,30 @@ StatefulShellBranch _branch(String path, String label) {
         builder: (context, state) => Scaffold(body: Center(child: Text(label))),
       ),
     ],
+  );
+}
+
+class _FormsDraftBody extends StatefulWidget {
+  const _FormsDraftBody();
+
+  @override
+  State<_FormsDraftBody> createState() => _FormsDraftBodyState();
+}
+
+class _FormsDraftBodyState extends State<_FormsDraftBody> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: TextField(
+      key: const ValueKey<String>('host-shell-forms-draft'),
+      controller: _controller,
+    ),
   );
 }
