@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-30",
+  "updated": "2026-08-31",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -708,9 +708,12 @@
     },
     {
       "routeId": "hostFormBuilderScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The responsive builder is implemented; compact and expanded editing, undo, logic, validation, conflict, and publish capture states remain planned."
+      "captureIds": [
+        "host_form_builder_draft"
+      ],
+      "reason": "The responsive draft builder has a deterministic capture for compact and expanded composition; undo, logic, validation, conflict, and post-publication states remain in the focused capture queue."
     },
     {
       "routeId": "hostFormPreviewScreen",

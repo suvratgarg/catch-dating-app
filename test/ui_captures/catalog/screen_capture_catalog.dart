@@ -153,6 +153,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
@@ -4937,6 +4938,157 @@ class _CaptureHostFormResponsesController extends HostFormResponsesController {
     return const HostFormResponsesState(responses: [], nextCursor: null);
   }
 }
+
+class _CaptureHostFormEditorController extends HostFormEditorController {
+  @override
+  Future<HostFormEditorState> build(String organizerId, String formId) async =>
+      HostFormEditorState(
+        editor: HostFormEditor(
+          form: _hostFormBuilderAuditSummary(organizerId, formId),
+          definition: HostFormDefinition.fromMap(
+            _hostFormBuilderAuditDefinition(),
+          ),
+          validationIssues: const [],
+        ),
+        canUndo: true,
+      );
+}
+
+HostFormSummary _hostFormBuilderAuditSummary(
+  String organizerId,
+  String formId,
+) => HostFormSummary(
+  organizerId: organizerId,
+  formId: formId,
+  title: 'Saturday Social application',
+  description: 'A concise application for the next Saturday Social.',
+  purpose: HostFormPurpose.application,
+  status: HostFormLifecycleStatus.draft,
+  templateId: 'event_application',
+  publicFormId: 'public-$formId',
+  defaultTargetKind: HostFormTargetKind.organizer,
+  defaultTargetId: organizerId,
+  activeVersionId: null,
+  draftRevision: 4,
+  publishedVersion: 0,
+  submittedResponseCount: 0,
+  consequences: const HostFormConsequences(
+    coverage: HostFormConsequenceCoverage.exact,
+    identityPolicy: HostFormIdentityPolicy.emailOrPhoneVerified,
+    enabledAutomationActionKinds: {
+      HostFormAutomationActionKind.createCrmContact,
+    },
+  ),
+  updatedAt: DateTime(2026, 8, 31, 8, 45),
+  publishedAt: null,
+  lastResponseAt: null,
+);
+
+Map<String, Object?> _hostFormBuilderAuditDefinition() => {
+  'schemaVersion': 1,
+  'title': 'Saturday Social application',
+  'description': 'A concise application for the next Saturday Social.',
+  'purpose': 'application',
+  'identityPolicy': 'emailOrPhoneVerified',
+  'sections': [
+    {
+      'sectionId': 'about_you',
+      'title': 'About you',
+      'description': 'The essentials we need to review your application.',
+      'pageBreak': false,
+      'questions': [
+        _hostFormBuilderAuditQuestion(
+          id: 'full_name',
+          label: 'Full name',
+          kind: 'shortText',
+          canonicalFieldId: 'fullName',
+        ),
+        _hostFormBuilderAuditQuestion(
+          id: 'phone_number',
+          label: 'Phone number',
+          kind: 'phone',
+          canonicalFieldId: 'phoneNumber',
+        ),
+      ],
+    },
+    {
+      'sectionId': 'intent',
+      'title': 'What brings you here?',
+      'description': null,
+      'pageBreak': false,
+      'questions': [
+        _hostFormBuilderAuditQuestion(
+          id: 'looking_for',
+          label: 'What are you hoping to find?',
+          kind: 'longText',
+          required: false,
+        ),
+      ],
+    },
+  ],
+  'logicRules': <Object?>[],
+  'appearance': {
+    'preset': 'editorial',
+    'logoAssetId': null,
+    'coverAssetId': null,
+    'activityKind': null,
+  },
+  'availability': {
+    'opensAt': null,
+    'closesAt': null,
+    'responseLimit': null,
+    'closedMessage': null,
+  },
+  'consent': {
+    'consentCopy':
+        'I consent to this information being used for this application.',
+    'consentVersion': 'v1',
+    'retentionCopy':
+        'Responses are retained for the application review period.',
+  },
+  'completion': {
+    'title': 'Application received',
+    'message': 'We will be in touch after the review.',
+    'actionKind': 'none',
+    'actionLabel': null,
+    'actionUrl': null,
+  },
+};
+
+Map<String, Object?> _hostFormBuilderAuditQuestion({
+  required String id,
+  required String label,
+  required String kind,
+  String? canonicalFieldId,
+  bool required = true,
+}) => {
+  'questionId': id,
+  'key': id,
+  'label': label,
+  'helpText': null,
+  'kind': kind,
+  'required': required,
+  'options': <Object?>[],
+  'canonicalFieldId': canonicalFieldId,
+  'privacyClass': canonicalFieldId == null ? 'organizerCustom' : 'contact',
+  'prefillPolicy': 'never',
+  'hostPresentation': 'detailOnly',
+  'validation': {
+    'minLength': null,
+    'maxLength': null,
+    'minNumber': null,
+    'maxNumber': null,
+    'earliestDate': null,
+    'latestDate': null,
+    'minSelections': null,
+    'maxSelections': null,
+    'maxFileCount': null,
+    'maxFileSizeBytes': null,
+    'allowedMimeTypes': <Object?>[],
+    'patternPreset': null,
+    'customError': null,
+  },
+};
 
 final List<HostFormSummary> _hostFormsAuditForms = [
   _hostFormsAuditSummary(
@@ -15134,6 +15286,21 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       child: HostFormsScreen(
         initialOrganizerId: HostOperationsFixtures.primaryClub.id,
       ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_form_builder_draft',
+    routeIds: const <String>['hostFormBuilderScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: [
+      hostFormEditorControllerProvider(
+        HostOperationsFixtures.primaryClub.id,
+        'saturday-social-application',
+      ).overrideWith(() => _CaptureHostFormEditorController()),
+    ],
+    builder: (context) => HostFormBuilderScreen(
+      organizerId: HostOperationsFixtures.primaryClub.id,
+      formId: 'saturday-social-application',
     ),
   ),
   ScreenCaptureEntry(

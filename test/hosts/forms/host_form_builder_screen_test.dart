@@ -94,6 +94,28 @@ void main() {
   });
 
   testWidgets(
+    'tablet builder keeps three panes and publish in the command bar',
+    (tester) async {
+      await _pumpBuilder(tester, size: const Size(1024, 1366));
+
+      expect(find.text('Outline'), findsOneWidget);
+      expect(find.text('SECTION 1'), findsOneWidget);
+      expect(find.byType(CatchBottomAction), findsNothing);
+      final publishAction = find.byType(CatchTopBarPrimaryAction);
+      expect(publishAction, findsOneWidget);
+      expect(
+        tester.widget<CatchTopBarPrimaryAction>(publishAction).label,
+        'Review & publish',
+      );
+
+      await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+      await pumpFeatureUi(tester);
+      expect(find.text('Preview'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'question editor stays focused and settings remain directly reachable',
     (tester) async {
       await _pumpBuilder(tester);
@@ -349,9 +371,10 @@ Future<void> _pumpBuilder(
   double textScale = 1,
   bool disableAnimations = false,
   ThemeData? theme,
+  Size size = const Size(390, 844),
 }) async {
   tester.view.devicePixelRatio = 1;
-  tester.view.physicalSize = const Size(390, 844);
+  tester.view.physicalSize = size;
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
   final summary = _summaryMap();

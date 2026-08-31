@@ -2162,9 +2162,16 @@ abstract final class CatchLayout {
   static const double tabbedPageMaxExtent =
       maxContentWidth + pageBodyHorizontalGutters;
 
+  /// Reading lane for the Host Forms directory on capable widths. Forms rows
+  /// carry lifecycle, response, and consequence summaries that need more room
+  /// than prose while remaining visibly one bounded list.
+  static const double hostFormsDirectoryMaxContentWidth = 840;
+  static const double hostFormsDirectoryPageMaxExtent =
+      hostFormsDirectoryMaxContentWidth + pageBodyHorizontalGutters;
+
   /// Width at which the Host form builder can fit outline, preview, and
   /// inspector panes without compressing any one pane below its useful size.
-  static const double formBuilderExpandedBreakpoint = 1040;
+  static const double formBuilderExpandedBreakpoint = 960;
 
   /// Navigation outline width in the expanded Host form builder.
   static const double formBuilderOutlineWidth = 260;

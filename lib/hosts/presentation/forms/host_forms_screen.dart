@@ -381,6 +381,7 @@ class _HostFormsLibraryPage extends ConsumerWidget {
     return CatchTabbedPageScrollView(
       scrollKey: const PageStorageKey<String>('host-forms-library'),
       constrainToContentWidth: true,
+      maxContentExtent: CatchLayout.hostFormsDirectoryPageMaxExtent,
       slivers: [
         SliverPadding(
           padding: CatchInsets.pageBody.copyWith(bottom: 0),

@@ -1,6 +1,6 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 0.5.0
+version: 0.6.0
 updated: 2026-08-31
 owner: product_design_parity
 status: active
@@ -137,8 +137,8 @@ contract:
 | S2 | Customer record detail and adaptive selected-record composition | `complete` |
 | S3 | Create Event essentials hierarchy and adaptive flow composition | `complete` |
 | S4 | Durable Event workspace composition and route-state contract | `complete` |
-| S5 | Forms library and builder studio composition | `in_progress` |
-| S6 | Messaging Inbox list/thread composition | `pending` |
+| S5 | Forms library and builder studio composition | `complete` |
+| S6 | Messaging Inbox list/thread composition | `in_progress` |
 | S7 | Live workspace stage/roster/command composition | `pending` |
 | S8 | Global shell, naming, and Forms placement product decision | `pending` |
 | S9 | Cross-surface state, accessibility, and visual-regression hardening | `pending` |
@@ -452,7 +452,8 @@ For every item:
 
 ## Handoff state
 
-The active production item is **S5 — Forms library and builder studio**. Start
-from the current Forms routes and builder controller, then inspect their full
-peer navigation, query, template, draft, conflict, undo, publish, response,
-authorization, loading, failure, and adaptive-layout owners before editing.
+The active production item is **S6 — Messaging Inbox**. Start from
+`HostInboxScreen`, `HostMessagingWorkspace`, and their route/query scope, then
+inspect the complete list/thread composition plus selection, draft, search,
+resize, back-navigation, authorization, loading, failure, and delivery-state
+owners before editing.

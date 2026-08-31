@@ -284,7 +284,7 @@
       "routeId": "hostFormBuilderScreen",
       "status": "planned",
       "priority": "P1",
-      "reason": "The responsive outline, canvas, inspector, preview, validation, and lifecycle workspace is implemented; capture-backed builder state coverage remains planned."
+      "reason": "The responsive outline, canvas, inspector, preview, validation, and lifecycle workspace is implemented and its deterministic draft composition is captured; a dedicated screen.host.forms contract and lifecycle-state capture set remain planned."
     },
     {
       "routeId": "hostFormPreviewScreen",

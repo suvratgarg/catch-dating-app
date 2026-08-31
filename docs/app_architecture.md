@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.18.3
+version: 1.18.4
 updated: 2026-08-31
 owner: app_architecture
 status: active
@@ -853,9 +853,12 @@ For `NestedScrollView` plus pinned tab rows:
 - Body padding belongs to the tab body, not to the pinned tab row.
 - Route-owned tab pages use `CatchTabbedPageScrollView`. Box-content pages opt
   into `constrainToContentWidth`; it preserves the canonical 600 px content
-  lane plus page gutters only when the viewport has surplus width. Phone-width
-  pages remain direct slivers. Full-bleed or intrinsically sliver-native pages
-  such as embedded Club Preview leave the option false.
+  lane plus page gutters only when the viewport has surplus width. A page may
+  supply a larger semantic `maxContentExtent` when its records carry multiple
+  operational columns or summaries; this changes only the centered lane, not
+  scroll ownership. Phone-width pages remain direct slivers. Full-bleed or
+  intrinsically sliver-native pages such as embedded Club Preview leave the
+  option false.
 - The overlap injector and terminal-padding sliver remain full-viewport even
   when page content is width constrained.
 - If a tab body contains an independently scrollable child and its top gap must
@@ -910,6 +913,7 @@ feature-local `Center`/`ConstrainedBox` wrappers or box the Preview slivers.
 | Map-heavy screens | Audit before migrating. Stable map viewport may matter more than sliver composition. |
 | Attendance sheet | Keep box-based while it remains a modal/sheet. |
 | Create event, onboarding, auth | Do not migrate just for consistency. |
+| Host Forms | Keep Forms / Responses as peer pages in the direct Forms destination. The Forms directory uses an 840 px operational content lane on capable widths so lifecycle, response, and consequence summaries remain legible. The builder stays single-task on phone and uses outline / respondent preview / inspector panes from 960 px; phone publication stays in `CatchBottomAction`, while tablet and desktop publication belongs in the top command bar rather than a full-viewport footer. |
 
 ### Design Tooling And Component Contracts
 

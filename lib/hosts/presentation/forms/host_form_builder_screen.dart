@@ -40,7 +40,7 @@ import 'package:go_router/go_router.dart';
 
 enum _BuilderView { build, responses }
 
-enum _BuilderAction { undo, redo, share, pause, resume, archive }
+enum _BuilderAction { preview, undo, redo, share, pause, resume, archive }
 
 enum _SectionAction { edit, moveUp, moveDown, remove }
 
@@ -126,24 +126,49 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                 onChanged: (view) => setState(() => _view = view),
               ),
         actions: [
-          if (_view == _BuilderView.build && !commandCenter)
+          if (_view == _BuilderView.build && !commandCenter && compact)
             CatchIconAction(
               icon: CatchIcons.visibilityOutlined,
               tooltip: context.l10n.hostFormPreview,
               onPressed: editorValue == null ? null : _openPreview,
             ),
+          if (_view == _BuilderView.build &&
+              !commandCenter &&
+              !compact &&
+              editorValue != null &&
+              editorValue.editor.form.status !=
+                  HostFormLifecycleStatus.archived)
+            CatchTopBarPrimaryAction(
+              label:
+                  editorValue.editor.form.status ==
+                      HostFormLifecycleStatus.published
+                  ? context.l10n.hostFormReviewPublishChanges
+                  : context.l10n.hostFormReviewPublish,
+              icon: CatchIcons.checkCircleOutlineRounded,
+              onPressed: editorValue.operationInProgress
+                  ? null
+                  : () => _reviewAndPublish(notifier, editorValue),
+            ),
           if (editorValue != null &&
-              _builderActions(context, editorValue).isNotEmpty)
+              _builderActions(
+                context,
+                editorValue,
+                includePreview: !compact,
+              ).isNotEmpty)
             CatchActionMenu<_BuilderAction>(
               tooltip: context.l10n.hostFormsActions,
-              items: _builderActions(context, editorValue),
+              items: _builderActions(
+                context,
+                editorValue,
+                includePreview: !compact,
+              ),
               onSelected: (action) => _runBuilderAction(notifier, action),
             ),
         ],
       ),
       bottomNavigationBar: _HostFormBuilderBottomAction(
         state: editorValue,
-        visible: _view == _BuilderView.build && !commandCenter,
+        visible: compact && _view == _BuilderView.build && !commandCenter,
         onReviewAndPublish: editorValue == null
             ? null
             : () => _reviewAndPublish(notifier, editorValue),
@@ -252,10 +277,17 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
 
   List<CatchActionMenuItem<_BuilderAction>> _builderActions(
     BuildContext context,
-    HostFormEditorState state,
-  ) {
+    HostFormEditorState state, {
+    required bool includePreview,
+  }) {
     final status = state.editor.form.status;
     return [
+      if (includePreview)
+        CatchActionMenuItem(
+          value: _BuilderAction.preview,
+          label: context.l10n.hostFormPreview,
+          icon: CatchIcons.visibilityOutlined,
+        ),
       if (state.canUndo)
         CatchActionMenuItem(
           value: _BuilderAction.undo,
@@ -307,6 +339,8 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     _BuilderAction action,
   ) async {
     switch (action) {
+      case _BuilderAction.preview:
+        _openPreview();
       case _BuilderAction.undo:
         notifier.undo();
       case _BuilderAction.redo:
@@ -429,6 +463,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
       _BuilderAction.pause => HostFormLifecycleAction.pause,
       _BuilderAction.resume => HostFormLifecycleAction.resume,
       _BuilderAction.archive => HostFormLifecycleAction.archive,
+      _BuilderAction.preview ||
       _BuilderAction.undo ||
       _BuilderAction.redo ||
       _BuilderAction.share => throw StateError('Expected a lifecycle action.'),
