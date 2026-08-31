@@ -7434,6 +7434,7 @@
             "host_manage_attendance_mutation_pending",
             "host_manage_attendance_mutation_error",
             "host_live_console",
+            "host_live_console_wide",
             "host_manage_live_unavailable",
             "host_manage_live_plan_loading",
             "host_manage_live_plan_error",
@@ -7633,6 +7634,7 @@
                 "host_manage_setup_private_access",
                 "host_manage_attendance_roster",
                 "host_live_console",
+                "host_live_console_wide",
                 "host_post_event_report"
               ],
               "widgetbook": [
@@ -7810,7 +7812,8 @@
                 "test/hosts/host_create_event_screen_test.dart"
               ],
               "captureIds": [
-                "host_live_console"
+                "host_live_console",
+                "host_live_console_wide"
               ],
               "previewIds": [
                 "HostEventManageRouteScreen/Route and section states"
@@ -7835,7 +7838,7 @@
               "id": "live_event_success_ready",
               "kind": "populated",
               "status": "captured",
-              "notes": "Saved live plans load roster, assignments, preferences, rotation assignments, wingman requests, reveal, and override states through EventSuccessHostSection. The host_live_console capture covers the compact saved live baseline; dedicated captures now cover active wingman requests, assigned micro-pods, guided rotations, check-in QR, conversation cues, revealed partner round, and host-edited micro-pod overrides. Compact step-count semantics remain a product-model follow-up only if kept.",
+              "notes": "Saved live plans load roster, assignments, preferences, rotation assignments, wingman requests, reveal, and override states through EventSuccessHostSection. host_live_console and host_live_console_wide cover the compact and wide saved-live baseline; dedicated captures cover active wingman requests, assigned micro-pods, guided rotations, check-in QR, conversation cues, revealed partner round, and host-edited micro-pod overrides. Compact step-count semantics remain a product-model follow-up only if kept.",
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
@@ -7844,6 +7847,7 @@
               ],
               "captureIds": [
                 "host_live_console",
+                "host_live_console_wide",
                 "host_manage_live_wingman_requests",
                 "host_manage_live_micro_pods_assigned",
                 "host_manage_live_guided_rotations_assigned",

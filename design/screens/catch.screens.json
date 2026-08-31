@@ -13319,6 +13319,11 @@
           "notes": "Deterministic Direction 3 capture renders canonical Host Manage chrome plus a dark, roster-agnostic current-beat stage, acknowledged persistence, next beat, external operational-attendee count, flat Guests and Help & fallback rows, Previous, and one pinned primary action. The fixture has 24 imported eventAttendees, 18 checked in, zero Consumer participations, and no profile dependency."
         },
         {
+          "id": "host_live_console_wide",
+          "status": "captured",
+          "notes": "Deterministic 1024x1366 capture proves the same live state reflows into a dominant command stage with one adjacent 360 px supporting-operations lane while the Guest roster remains an overlay."
+        },
+        {
           "id": "host_post_event_report",
           "status": "captured",
           "notes": "Deterministic post-event capture renders Host Manage report mode with participation table and Event Success scorecard."
@@ -13472,6 +13477,7 @@
             "host_manage_setup_private_access",
             "host_manage_attendance_roster",
             "host_live_console",
+            "host_live_console_wide",
             "host_post_event_report"
           ],
           "notes": "Lifecycle-owned workspaces replace the top-level section picker. Legacy aliases remain covered for deep-link compatibility.",
@@ -13666,13 +13672,14 @@
           "kind": "populated",
           "status": "captured",
           "captureIds": [
-            "host_live_console"
+            "host_live_console",
+            "host_live_console_wide"
           ],
-          "source": "Live Operations renders EventSuccessHostSection with initialTab live inside the canonical route. Direction 3 fills the bounded route body with the Quiet Command Console, keeps the roster behind the persistent edge drawer, derives counts from eventAttendees, and keeps the primary action pinned while Previous remains an explicit prior-step action rather than claiming revisioned undo.",
+          "source": "Live Operations renders EventSuccessHostSection with initialTab live inside the canonical route. Direction 3 fills the bounded route body with the Quiet Command Console, keeps the roster behind the persistent edge drawer, derives counts from eventAttendees, and keeps the primary action pinned while Previous remains an explicit prior-step action rather than claiming revisioned undo. At a capable local width, the same typed live state reflows into a dominant command stage and one supporting-operations lane.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
-          "nextAction": "Direction 3 bounded online reference is implemented and captured. Promotion remains gated by authoritative offline queue/replay, revisioned undo, single-writer fencing, venue readability, and target-Host comprehension evidence.",
+          "nextAction": "Direction 3 compact and wide online references are implemented and captured. Promotion remains gated by authoritative offline queue/replay, revisioned undo, single-writer fencing, venue readability, and target-Host comprehension evidence.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ]
@@ -13768,6 +13775,7 @@
           ],
           "captureIds": [
             "host_live_console",
+            "host_live_console_wide",
             "host_manage_live_wingman_requests",
             "host_manage_live_micro_pods_assigned",
             "host_manage_live_guided_rotations_assigned",

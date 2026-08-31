@@ -1020,6 +1020,7 @@
         "host_manage_attendance_mutation_pending",
         "host_manage_attendance_mutation_error",
         "host_live_console",
+        "host_live_console_wide",
         "host_live_room_workspace",
         "host_manage_live_unavailable",
         "host_manage_live_plan_loading",
@@ -1043,7 +1044,7 @@
         "host_manage_reduced_motion",
         "host_manage_light_dark"
       ],
-      "reason": "Host app manage route now has deterministic captures for route loading/error/offline/not-found, initial-event fallback, unauthorized access, attendance loading/error/empty, attendee profile loading/error, filtered roster empty, private-access loading/error/offline/missing-code, invite-link loading/error/offline/empty/disabled-row/long-label-source, invite-link mutation pending/error, private-link share pending/error, edit/cancel/delete host actions, setup/private access, full/waitlist apron, attendance roster, attendance mutation pending/error, live console, live unavailable/no saved guide, live Event Success plan loading/error/offline, live wingman requests, assigned micro-pods, assigned guided rotations, check-in QR, conversation cues, revealed partner round, host-edited micro-pod override, report workspace, report scorecard loading/error/offline, report export pending/error, cancelled event, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are invite reference-specific variants, compact step-count semantics if product keeps them, modal Event Success override editor sheets if contractual, and reference-specific variants."
+      "reason": "Host app manage route now has deterministic captures for route loading/error/offline/not-found, initial-event fallback, unauthorized access, attendance loading/error/empty, attendee profile loading/error, filtered roster empty, private-access loading/error/offline/missing-code, invite-link loading/error/offline/empty/disabled-row/long-label-source, invite-link mutation pending/error, private-link share pending/error, edit/cancel/delete host actions, setup/private access, full/waitlist apron, attendance roster, attendance mutation pending/error, compact and wide live consoles, live unavailable/no saved guide, live Event Success plan loading/error/offline, live wingman requests, assigned micro-pods, assigned guided rotations, check-in QR, conversation cues, revealed partner round, host-edited micro-pod override, report workspace, report scorecard loading/error/offline, report export pending/error, cancelled event, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are invite reference-specific variants, compact step-count semantics if product keeps them, modal Event Success override editor sheets if contractual, and reference-specific variants."
     },
     {
       "routeId": "hostAppEditEventScreen",

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.18.5
+version: 1.18.6
 updated: 2026-08-31
 owner: app_architecture
 status: active
@@ -579,7 +579,7 @@ system.
 | Inbox | event scope and conversation list, pushed thread | conversation list plus selected thread | event/audience navigation, conversation list, and thread/detail at sufficiently wide local width |
 | Organizer | top tabs and one form lane | rail plus secondary organizer navigation and one content pane | secondary navigation, editor, and preview or insights pane |
 | Create Event | current paged wizard and bottom actions | step rail plus focused form; optional summary pane in landscape | step rail, approximately 640 px form lane, live cover/summary preview, compact sticky actions |
-| Manage Event | one lifecycle-owned Preparation, Live Operations, or Recap workspace plus an overlay guest-roster drawer; Live may switch locally between Now and Room while Guests opens that drawer | the same lifecycle workspace with a wider overlay roster | lifecycle workspace, wide overlay roster, and context-appropriate commands without persistent top-level mode navigation |
+| Manage Event | one lifecycle-owned Preparation, Live Operations, or Recap workspace plus an overlay guest-roster drawer; Live may switch locally between Now and Room while Guests opens that drawer | the same lifecycle workspace; a capable local Live width keeps the command stage and supporting operations concurrent | bounded lifecycle workspace, command stage plus supporting operations, wide overlay roster, and no persistent top-level mode navigation |
 
 The consolidated Events route remains canonical. Responsive work must not
 recreate the retired Today destination or split operational shortcuts away from
@@ -3182,7 +3182,15 @@ Defined variant:
   reporting plus a route-owned handoff to the existing event-scoped Host Inbox;
   setup-only import, forwarding, provider, registration, and staff controls
   must not appear there. Live Operations may expose the single urgent Add
-  walk-in escape hatch, while Recap keeps the roster read-only. Provider-free
+  walk-in escape hatch, while Recap keeps the roster read-only. The compact
+  Live Now console remains one scrollable command flow with a pinned action.
+  At the named local supporting-pane breakpoint, the same typed state reflows
+  into a dominant command stage and one 360 px supporting-operations lane;
+  Guests, fallback help, exclusion warnings, and current-step controls move to
+  that lane while the revision-fenced Previous/Continue region stays attached
+  to the stage. Text scale 1.4 and above returns to the single-column flow.
+  The roster remains the existing viewport-edge overlay rather than becoming a
+  third persistent data pane. Provider-free
   preparation, roster, private-access, invite-link, Event Success, recap, and
   host-action sections retain explicit display state and typed callbacks. Do
   not move solved route loading/access work into the workspace adapter, and do

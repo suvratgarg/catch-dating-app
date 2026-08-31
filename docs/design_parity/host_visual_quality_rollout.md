@@ -1,6 +1,6 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 0.7.0
+version: 0.8.0
 updated: 2026-08-31
 owner: product_design_parity
 status: active
@@ -139,8 +139,8 @@ contract:
 | S4 | Durable Event workspace composition and route-state contract | `complete` |
 | S5 | Forms library and builder studio composition | `complete` |
 | S6 | Messaging Inbox list/thread composition | `complete` |
-| S7 | Live workspace stage/roster/command composition | `in_progress` |
-| S8 | Global shell, naming, and Forms placement product decision | `pending` |
+| S7 | Live workspace stage/roster/command composition | `complete` |
+| S8 | Global shell, naming, and Forms placement product decision | `in_progress` |
 | S9 | Cross-surface state, accessibility, and visual-regression hardening | `pending` |
 
 ## T0 — Persistent rollout contract
@@ -452,9 +452,11 @@ For every item:
 
 ## Handoff state
 
-The active production item is **S7 — Live workspace**. Start from the routed
-`HostEventLiveScreen` and its event-lifecycle owner, then read the complete
-stage, roster, sync-confidence, offline/retry, role/permission, command, and
-responsive supporting-pane owners before editing. Preserve the preparation,
-live-operations, and recap boundaries already established by the Event
-workspace instead of introducing a parallel mode authority.
+The active production item is **S8 — Global shell and Forms placement
+decision**. Start from `HostAppShell`, the five `StatefulShellBranch` owners,
+route aliases, deep links, notification destinations, and state-restoration
+tests. Gather current repository and professional-product evidence for Today
+frequency, Forms frequency, Audience naming, and Inbox naming before changing
+source. The current `Events · Customers · Forms · Messaging · Organizer`
+authority stays intact until one option has an exact compatibility plan and
+enough product evidence to justify migration.

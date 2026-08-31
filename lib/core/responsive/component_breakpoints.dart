@@ -66,4 +66,8 @@ abstract final class ComponentBreakpoints {
   /// Create Event adds a source-backed consequence pane only after the rail,
   /// capped form lane, gutters, and pane can coexist without compression.
   static const double hostCreateEventConsequencePaneBreakpoint = 1180.0;
+
+  /// The live Host Event workspace places time-sensitive supporting controls
+  /// beside the command stage only when both lanes retain operational width.
+  static const double hostEventLiveSupportingPaneBreakpoint = 900.0;
 }

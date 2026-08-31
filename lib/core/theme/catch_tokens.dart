@@ -2169,6 +2169,14 @@ abstract final class CatchLayout {
   static const double hostFormsDirectoryPageMaxExtent =
       hostFormsDirectoryMaxContentWidth + pageBodyHorizontalGutters;
 
+  /// Bounded command workspace for a live Host Event on tablet and desktop.
+  /// The stage remains dominant while one supporting operations pane can stay
+  /// visible without turning the runtime into a dashboard.
+  static const double hostEventLiveWorkspaceMaxContentWidth = 1040;
+
+  /// Supporting operations lane beside the live command stage.
+  static const double hostEventLiveSupportingPaneWidth = 360;
+
   /// Width at which the Host form builder can fit outline, preview, and
   /// inspector panes without compressing any one pane below its useful size.
   static const double formBuilderExpandedBreakpoint = 960;

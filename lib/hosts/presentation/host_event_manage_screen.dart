@@ -508,6 +508,9 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           showHandle: false,
           onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
           onMessageGuests: () => _openEventMessages(club, event),
+          bodyMaxWidth: screenState.phase == HostEventWorkspacePhase.runtime
+              ? CatchLayout.hostEventLiveWorkspaceMaxContentWidth
+              : CatchLayout.maxContentWidth,
           body: workspaceBody,
           roster: ListView(
             key: const ValueKey<String>('host_event_roster_drawer.scroll'),

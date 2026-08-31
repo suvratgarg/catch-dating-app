@@ -191,4 +191,43 @@ void main() {
     expect(identical(workspaceElement, tester.element(workspace)), isTrue);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('live workspace can opt into the wider bounded body lane', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 1000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: HostEventRosterDrawer(
+            open: false,
+            bookedCount: 3,
+            bodyMaxWidth: CatchLayout.hostEventLiveWorkspaceMaxContentWidth,
+            onOpenChanged: (_) {},
+            body: const SizedBox.expand(
+              key: ValueKey<String>('live-workspace'),
+            ),
+            roster: const SizedBox.shrink(),
+          ),
+        ),
+      ),
+    );
+
+    final workspaceRect = tester.getRect(
+      find.byKey(const ValueKey<String>('live-workspace')),
+    );
+    expect(
+      workspaceRect.width,
+      CatchLayout.hostEventLiveWorkspaceMaxContentWidth,
+    );
+    expect(workspaceRect.center.dx, 720);
+    expect(tester.takeException(), isNull);
+  });
 }

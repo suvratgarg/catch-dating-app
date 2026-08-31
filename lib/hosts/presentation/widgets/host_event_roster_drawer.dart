@@ -25,6 +25,7 @@ class HostEventRosterDrawer extends StatefulWidget {
     required this.onOpenChanged,
     required this.body,
     required this.roster,
+    this.bodyMaxWidth = CatchLayout.maxContentWidth,
     this.showHandle = true,
     this.onMessageGuests,
   });
@@ -34,6 +35,7 @@ class HostEventRosterDrawer extends StatefulWidget {
   final ValueChanged<bool> onOpenChanged;
   final Widget body;
   final Widget roster;
+  final double bodyMaxWidth;
   final bool showHandle;
   final VoidCallback? onMessageGuests;
 
@@ -73,9 +75,7 @@ class _HostEventRosterDrawerState extends State<HostEventRosterDrawer> {
               child: Align(
                 alignment: Alignment.topCenter,
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: CatchLayout.maxContentWidth,
-                  ),
+                  constraints: BoxConstraints(maxWidth: widget.bodyMaxWidth),
                   child: SizedBox.expand(child: widget.body),
                 ),
               ),

@@ -13448,6 +13448,45 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'host_live_console_wide',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.auditTablet,
+    providerOverrides: [
+      uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => Stream.value(_captureViewer),
+      ),
+      watchEventProvider(
+        _hostLiveReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveReferenceEvent)),
+      eventParticipationRepositoryProvider.overrideWithValue(
+        _hostLiveReferenceParticipationRepository,
+      ),
+      watchEventAttendeesProvider(_hostLiveReferenceEvent.id).overrideWith(
+        (ref) => Stream.value(_hostLiveReferenceOperationalAttendees),
+      ),
+      publicProfileRepositoryProvider.overrideWithValue(
+        _hostLiveReferencePublicProfileRepository,
+      ),
+      watchEventSuccessPlanProvider(
+        _hostLiveReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveReferencePlan)),
+      watchEventSuccessScorecardProvider(
+        _hostLiveReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(null)),
+      ..._hostEventSuccessProviderOverrides,
+    ],
+    builder: (context) => HostEventManageScreen(
+      club: _hostLiveReferenceClub,
+      event: _hostLiveReferenceEvent,
+      onBackToSuccess: () {},
+      initialSection: HostEventManageSection.live,
+      referenceNow: _hostLiveReferenceEvent.startTime.add(
+        const Duration(minutes: 30),
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'host_live_room_workspace',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
