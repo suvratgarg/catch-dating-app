@@ -140,6 +140,19 @@
       ]
     },
     {
+      "branchKey": "keys.hostToday",
+      "routeName": "Routes.hostTodayScreen.name",
+      "owners": [
+        {
+          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+          "requires": [
+            {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+          ]
+        }
+      ]
+    },
+    {
       "branchKey": "keys.hostEvents",
       "routeName": "Routes.hostEventsScreen.name",
       "owners": [
@@ -153,8 +166,8 @@
       ]
     },
     {
-      "branchKey": "keys.hostCustomers",
-      "routeName": "Routes.hostCustomersScreen.name",
+      "branchKey": "keys.hostAudience",
+      "routeName": "Routes.hostAudienceScreen.name",
       "owners": [
         {
           "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
@@ -176,13 +189,7 @@
             {"text": "if (widget.includeTerminalPadding)", "minimumOccurrences": 1},
             {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
           ]
-        }
-      ]
-    },
-    {
-      "branchKey": "keys.hostForms",
-      "routeName": "Routes.hostFormsScreen.name",
-      "owners": [
+        },
         {
           "path": "lib/hosts/presentation/forms/host_forms_screen.dart",
           "requires": [

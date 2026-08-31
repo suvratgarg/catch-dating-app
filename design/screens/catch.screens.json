@@ -8557,11 +8557,16 @@
           ],
           "owner": "registered screen state controller and Catch state surfaces"
         },
-  "name": "Host Events",
+  "name": "Host Today and Events",
       "owner": "hosts",
       "priority": "P1",
       "status": "in_progress",
       "routes": [
+    {
+          "id": "hostTodayScreen",
+          "path": "/host/today",
+          "role": "primary"
+        },
     {
           "id": "hostEventsScreen",
           "path": "/host/events",
@@ -14920,23 +14925,30 @@
       "topBar": {
         "role": "shell",
         "expression": "CatchScreenHeaderTitle.block + CatchScreenTopBar",
-        "owner": "HostCustomersScreen, HostAddCustomerScreen, HostSavedAudienceEditorScreen, and HostCustomerDetailScreen",
-        "reason": "The Customers destination uses People and Audiences peer tabs. Add customer is explicitly People-only; Audiences exposes one in-workspace New audience action. Route-level customer and audience editors own compact back titles."
+        "owner": "HostCustomersScreen, HostFormsScreen, HostAddCustomerScreen, HostSavedAudienceEditorScreen, and HostCustomerDetailScreen",
+        "reason": "The Audience destination uses People, Audiences, Forms, and Responses peer tabs. Add customer is explicitly People-only; Audiences exposes one in-workspace New audience action. Route-level customer, audience, and form editors own compact back titles."
       },
       "statePolicy": {
         "requiredStates": ["data", "empty", "error", "loading", "mutation", "offline", "permission"],
         "owner": "HostCustomersDirectoryController, HostCustomersController, hostAllSavedAudiencesProvider, HostAudienceController, and hostAudienceContactDetailProvider"
       },
-      "name": "Host Customers",
+      "name": "Host Audience",
       "owner": "hosts",
       "priority": "P1",
       "status": "in_progress",
       "routes": [
-        {"id": "hostCustomersScreen", "path": "/host/customers", "role": "primary"},
-        {"id": "hostAddCustomerScreen", "path": "/host/customers/new", "role": "host"},
-        {"id": "hostCreateSavedAudienceScreen", "path": "/host/customers/audiences/new", "role": "host"},
-        {"id": "hostSavedAudienceDetailScreen", "path": "/host/customers/audiences/:audienceId", "role": "host"},
-        {"id": "hostCustomerDetailScreen", "path": "/host/customers/:contactId", "role": "host"}
+        {"id": "hostAudienceScreen", "path": "/host/audience", "role": "primary"},
+        {"id": "hostAddCustomerScreen", "path": "/host/audience/people/new", "role": "host"},
+        {"id": "hostCreateSavedAudienceScreen", "path": "/host/audience/audiences/new", "role": "host"},
+        {"id": "hostSavedAudienceDetailScreen", "path": "/host/audience/audiences/:audienceId", "role": "host"},
+        {"id": "hostFormTemplatesScreen", "path": "/host/audience/forms/new", "role": "host"},
+        {"id": "hostFormResponseDetailScreen", "path": "/host/audience/responses/:responseId", "role": "host"},
+        {"id": "hostFormBuilderScreen", "path": "/host/audience/forms/:formId", "role": "host"},
+        {"id": "hostFormPreviewScreen", "path": "/host/audience/forms/:formId/preview", "role": "host"},
+        {"id": "hostFormShareScreen", "path": "/host/audience/forms/:formId/share", "role": "host"},
+        {"id": "hostFormAnalyticsScreen", "path": "/host/audience/forms/:formId/analytics", "role": "host"},
+        {"id": "hostFormAutomationsScreen", "path": "/host/audience/forms/:formId/automations", "role": "host"},
+        {"id": "hostCustomerDetailScreen", "path": "/host/audience/people/:contactId", "role": "host"}
       ],
       "source": {
         "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
@@ -14957,7 +14969,7 @@
           {"file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersController"},
           {"file": "lib/hosts/presentation/host_audience_controller.dart", "symbol": "HostAudienceController"}
         ],
-        "notes": "Customers is the sole organizer CRM destination and follows the shell-selected organizer. People owns normalized customer search, computed segments, organizer tag vocabulary, server cursor, id de-duplication, export, contact administration and customer detail. Its Contacts, Attended, and Repeat summary boxes are accessible selected controls over the same server-backed directory; Attended is the canonical at-least-one segment and is never a client union. Audiences is a peer workspace that owns the complete bounded saved-audience directory, full-page create/detail/edit/archive flows, exact previews and server-derived reach summaries. Its top-level entities render as divided rows with one New audience action; audience authoring is not hidden in overflow or duplicated in a modal. Messaging selects saved audience ids and never authors a competing filter expression."
+        "notes": "Audience is the sole organizer CRM and intake destination and follows the shell-selected organizer. People owns normalized customer search, computed segments, organizer tag vocabulary, server cursor, id de-duplication, export, contact administration and customer detail. Audiences owns reusable saved groups. Forms and Responses own intake definition and response review without becoming shell destinations. Inbox selects saved audience ids and never authors a competing filter expression."
       },
       "designRefs": [
         {
@@ -25053,8 +25065,8 @@
       "priority": "P1",
       "status": "in_progress",
       "routes": [
-        {"id": "hostApplicationsScreen", "path": "/host/forms/applications", "role": "host"},
-        {"id": "hostApplicationDetailScreen", "path": "/host/forms/applications/:applicationId", "role": "host"}
+        {"id": "hostApplicationsScreen", "path": "/host/audience/applications", "role": "host"},
+        {"id": "hostApplicationDetailScreen", "path": "/host/audience/applications/:applicationId", "role": "host"}
       ],
       "source": {
         "file": "lib/hosts/presentation/applications/host_applications_screen.dart",

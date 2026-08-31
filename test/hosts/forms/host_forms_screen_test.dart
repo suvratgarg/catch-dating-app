@@ -28,7 +28,7 @@ void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   testWidgets(
-    'Forms and Responses use pinned tabs and one view-aware header search',
+    'Audience Forms and Responses use shared tabs and view-aware search',
     (tester) async {
       final formRequests = <HostFormListRequest>[];
       final responseRequests = <HostFormResponseListRequest>[];
@@ -59,9 +59,11 @@ void main() {
       final scaffold = find.byType(CatchTabbedScreenScaffold);
       expect(scaffold, findsOneWidget);
       expect(
-        find.byKey(const ValueKey('host-forms-view-tabs')),
+        find.byKey(const ValueKey('host-audience-view-tabs')),
         findsOneWidget,
       );
+      expect(find.text('People'), findsOneWidget);
+      expect(find.text('Audiences'), findsOneWidget);
       expect(find.text('Forms'), findsWidgets);
       expect(find.text('Responses'), findsOneWidget);
       expect(find.byKey(const ValueKey('host-forms-create')), findsOneWidget);

@@ -3,14 +3,14 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-31",
-  "sourceDigest": "sha256:1f0dfe6b71d4ab7e467722ec9eabd2cbd6505c7c0d7865c51031db3aa88b83b6",
+  "sourceDigest": "sha256:0b571987a8c839ee3600498124aa97f227e62f348eb037b8c4b8075255e549bb",
   "resolvedDigest": "sha256:e105a762b27c5b17cd3d9c814b70d3104d2507bcc24f7f911c0ce2aa9716dfe2",
   "feature": {
     "id": "feature.host_customers",
-    "name": "Host Customers",
+    "name": "Host Audience CRM",
     "owner": "hosts",
     "status": "active",
-    "description": "Makes Customers the sole Host CRM owner through first-class People and Audiences peer workspaces. People owns server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration and customer detail. Audiences owns reusable group discovery, full-page definition authoring, exact previews and archive. Messaging consumes saved-audience identifiers for sends without recreating audience logic."
+    "description": "Makes Audience the sole Host CRM and intake destination. This contract owns its People and Audiences modes; Forms and Responses are peer modes in the same destination with their own focused evidence. People owns server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration and customer detail. Audiences owns reusable group discovery, full-page definition authoring, exact previews and archive. Inbox consumes saved-audience identifiers for sends without recreating audience logic."
   },
   "coverage": {
     "surfaces": 1,
@@ -421,7 +421,7 @@
         {
           "id": "switch_customers_view",
           "owner": "customers_screen",
-          "codeValue": "HostCustomersView",
+          "codeValue": "HostAudienceView",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
@@ -437,7 +437,7 @@
               ]
             }
           ],
-          "description": "Switches the canonical Customers destination between its People and Audiences peer responsibilities without changing organizer scope.",
+          "description": "Switches the canonical Audience destination between its People and Audiences CRM responsibilities without changing organizer scope.",
           "implementationStatus": "implemented"
         },
         {
@@ -5753,28 +5753,63 @@
           "owner": "hosts",
           "routes": [
             {
-              "id": "hostCustomersScreen",
-              "path": "/host/customers",
+              "id": "hostAudienceScreen",
+              "path": "/host/audience",
               "role": "primary"
             },
             {
               "id": "hostAddCustomerScreen",
-              "path": "/host/customers/new",
+              "path": "/host/audience/people/new",
               "role": "host"
             },
             {
               "id": "hostCreateSavedAudienceScreen",
-              "path": "/host/customers/audiences/new",
+              "path": "/host/audience/audiences/new",
               "role": "host"
             },
             {
               "id": "hostSavedAudienceDetailScreen",
-              "path": "/host/customers/audiences/:audienceId",
+              "path": "/host/audience/audiences/:audienceId",
+              "role": "host"
+            },
+            {
+              "id": "hostFormTemplatesScreen",
+              "path": "/host/audience/forms/new",
+              "role": "host"
+            },
+            {
+              "id": "hostFormResponseDetailScreen",
+              "path": "/host/audience/responses/:responseId",
+              "role": "host"
+            },
+            {
+              "id": "hostFormBuilderScreen",
+              "path": "/host/audience/forms/:formId",
+              "role": "host"
+            },
+            {
+              "id": "hostFormPreviewScreen",
+              "path": "/host/audience/forms/:formId/preview",
+              "role": "host"
+            },
+            {
+              "id": "hostFormShareScreen",
+              "path": "/host/audience/forms/:formId/share",
+              "role": "host"
+            },
+            {
+              "id": "hostFormAnalyticsScreen",
+              "path": "/host/audience/forms/:formId/analytics",
+              "role": "host"
+            },
+            {
+              "id": "hostFormAutomationsScreen",
+              "path": "/host/audience/forms/:formId/automations",
               "role": "host"
             },
             {
               "id": "hostCustomerDetailScreen",
-              "path": "/host/customers/:contactId",
+              "path": "/host/audience/people/:contactId",
               "role": "host"
             }
           ]

@@ -20,13 +20,13 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -34,8 +34,6 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-enum _HostFormsView { forms, responses }
 
 enum _HostFormRowAction {
   analytics,
@@ -69,7 +67,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   String? _query;
   String? _responseQuery;
   HostFormLifecycleStatus? _status;
-  late _HostFormsView _view;
+  late HostAudienceView _view;
   late final TabController _tabController;
   String? _responseFormId;
 
@@ -77,14 +75,21 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   void initState() {
     super.initState();
     _view = widget.initialResponses
-        ? _HostFormsView.responses
-        : _HostFormsView.forms;
+        ? HostAudienceView.responses
+        : HostAudienceView.forms;
     _tabController = TabController(
-      length: _HostFormsView.values.length,
-      initialIndex: _view.index,
+      length: 2,
+      initialIndex: _view == HostAudienceView.forms ? 0 : 1,
       vsync: this,
     )..addListener(_handleTabChanged);
     _responseFormId = widget.initialFormId;
+  }
+
+  @override
+  void didUpdateWidget(covariant HostFormsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialResponses == widget.initialResponses) return;
+    _tabController.animateTo(widget.initialResponses ? 1 : 0);
   }
 
   @override
@@ -109,7 +114,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       );
     }
     if (uidState.isLoading) {
-      return HostLoadingScreen(title: context.l10n.hostNavigationForms);
+      return HostLoadingScreen(title: context.l10n.hostNavigationAudience);
     }
     if (uid == null) return const HostAuthRequiredScreen();
 
@@ -123,7 +128,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       );
     }
     if (clubsState.isLoading) {
-      return HostLoadingScreen(title: context.l10n.hostNavigationForms);
+      return HostLoadingScreen(title: context.l10n.hostNavigationAudience);
     }
     final clubs = clubsState.value ?? const <Club>[];
     if (clubs.isEmpty) {
@@ -143,13 +148,13 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       query: _query,
     );
     final directory = ref.watch(hostFormsDirectoryControllerProvider(request));
-    final activeSearchIsForms = _view == _HostFormsView.forms;
+    final activeSearchIsForms = _view == HostAudienceView.forms;
     final searchPlaceholder = activeSearchIsForms
         ? context.l10n.hostFormsSearch
         : context.l10n.hostFormResponsesSearch;
 
     return CatchTabbedScreenScaffold(
-      title: context.l10n.hostNavigationForms,
+      title: context.l10n.hostNavigationAudience,
       actions: activeSearchIsForms
           ? [
               CatchTopBarPrimaryAction(
@@ -174,19 +179,16 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         onChanged: (value) => _scheduleSearch(_view, value),
         onSubmitted: (value) => _applySearch(_view, value),
       ),
-      tabRail: CatchTabControllerRail<_HostFormsView>(
-        controller: _tabController,
-        groupKey: const ValueKey('host-forms-view-tabs'),
-        options: [
-          CatchOption(
-            value: _HostFormsView.forms,
-            label: context.l10n.hostFormsViewForms,
+      tabRail: PreferredSize(
+        preferredSize: const Size.fromHeight(CatchLayout.tabRailHeight),
+        child: AnimatedBuilder(
+          animation: _tabController.animation!,
+          builder: (context, _) => HostAudienceTabRail(
+            selected: _view,
+            selectionPosition: _tabController.animation!.value + 2,
+            onChanged: (view) => _selectAudienceView(view, selectedClub.id),
           ),
-          CatchOption(
-            value: _HostFormsView.responses,
-            label: context.l10n.hostFormsViewResponses,
-          ),
-        ],
+        ),
       ),
       body: TabBarView(
         controller: _tabController,
@@ -226,7 +228,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     );
   }
 
-  void _scheduleSearch(_HostFormsView view, String value) {
+  void _scheduleSearch(HostAudienceView view, String value) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(
       CatchMotion.searchDebounce,
@@ -234,28 +236,44 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     );
   }
 
-  void _applySearch(_HostFormsView view, String value) {
+  void _applySearch(HostAudienceView view, String value) {
     if (!mounted) return;
     final normalized = value.trim();
     setState(() {
       final query = normalized.isEmpty ? null : normalized;
       switch (view) {
-        case _HostFormsView.forms:
+        case HostAudienceView.forms:
           _query = query;
-        case _HostFormsView.responses:
+        case HostAudienceView.responses:
           _responseQuery = query;
+        case HostAudienceView.people:
+        case HostAudienceView.audiences:
+          return;
       }
     });
   }
 
   void _handleTabChanged() {
-    final nextView = _HostFormsView.values[_tabController.index];
+    final nextView = _tabController.index == 0
+        ? HostAudienceView.forms
+        : HostAudienceView.responses;
     if (nextView == _view) return;
     _searchDebounce?.cancel();
     setState(() {
       _view = nextView;
-      if (nextView == _HostFormsView.responses) _responseFormId = null;
+      if (nextView == HostAudienceView.responses) _responseFormId = null;
     });
+  }
+
+  void _selectAudienceView(HostAudienceView view, String organizerId) {
+    if (view == HostAudienceView.forms || view == HostAudienceView.responses) {
+      _tabController.animateTo(view == HostAudienceView.forms ? 0 : 1);
+      return;
+    }
+    context.goNamed(
+      Routes.hostAudienceScreen.name,
+      queryParameters: {'view': view.name, 'organizerId': organizerId},
+    );
   }
 
   void _openTemplates(String organizerId) {
@@ -649,7 +667,7 @@ class HostFormsNoOrganizer extends StatelessWidget {
           slivers: [
             SliverToBoxAdapter(
               child: CatchScreenHeaderTitle.block(
-                title: context.l10n.hostNavigationForms,
+                title: context.l10n.hostNavigationAudience,
               ),
             ),
             CatchSliverEmptyState(

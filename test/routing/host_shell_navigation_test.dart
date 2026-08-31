@@ -353,7 +353,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
 
       final router = GoRouter(
-        initialLocation: '/host/forms',
+        initialLocation: '/host/audience?view=forms',
         routes: [
           StatefulShellRoute.indexedStack(
             builder: (context, state, navigationShell) =>
@@ -365,11 +365,6 @@ void main() {
                 routes: [
                   GoRoute(
                     path: '/host/audience',
-                    builder: (context, state) =>
-                        const Scaffold(body: Text('AUDIENCE BODY')),
-                  ),
-                  GoRoute(
-                    path: '/host/forms',
                     builder: (context, state) => const _FormsDraftBody(),
                   ),
                 ],

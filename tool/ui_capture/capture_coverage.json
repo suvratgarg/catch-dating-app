@@ -618,8 +618,9 @@
     },
     {
       "routeId": "hostHomeScreen",
-      "status": "captured",
+      "status": "alias",
       "priority": "P1",
+      "canonicalRouteId": "hostTodayScreen",
       "captureIds": [
         "host_home_dashboard",
         "host_home_switcher_cohost",
@@ -637,7 +638,16 @@
         "host_home_reduced_motion",
         "host_home_light_dark"
       ],
-      "reason": "The retired Host home identity redirects to Events. Its historical capture set remains useful regression coverage for owner/co-host switching, long selected-organizer labels, signed-out access, loading/error/offline, empty organizers/events, text scale 2.0, reduced motion, and paired light/dark output; it is not a persistent shell destination."
+      "reason": "The retired Host root redirects to Today. Its historical capture set remains useful regression coverage and the current dashboard capture also proves the canonical Today destination."
+    },
+    {
+      "routeId": "hostTodayScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": [
+        "host_home_dashboard"
+      ],
+      "reason": "The first-class Today branch has a deterministic full-shell capture of its cross-event operational spotlight and later schedule."
     },
     {
       "routeId": "hostEventsScreen",
@@ -649,14 +659,15 @@
       "reason": "The first-class Host Events branch is captured through the real five-destination Host shell and compared against the pinned full-shell Events source reference."
     },
     {
-      "routeId": "hostCustomersScreen",
+      "routeId": "hostAudienceScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
         "host_customers_populated",
-        "host_customers_audiences_populated"
+        "host_customers_audiences_populated",
+        "host_forms_populated"
       ],
-      "reason": "The production Customers destination has deterministic populated full-shell captures for the People and Audiences peer workspaces; broader loading, empty, filtering, pagination, accessibility, and theme states remain future coverage."
+      "reason": "The production Audience destination has deterministic full-shell captures for People, Audiences, and Forms within one four-mode workspace; broader response, loading, accessibility, and theme states remain future coverage."
     },
     {
       "routeId": "hostAddCustomerScreen",
@@ -684,15 +695,6 @@
         "host_saved_audience_detail"
       ],
       "reason": "The Customers-owned full-page audience detail and edit route has a deterministic capture with exact-preview reach context and archive ownership."
-    },
-    {
-      "routeId": "hostFormsScreen",
-      "status": "captured",
-      "priority": "P1",
-      "captureIds": [
-        "host_forms_populated"
-      ],
-      "reason": "The production Forms library has a deterministic populated full-shell capture; empty, loading, pagination, response-inbox, accessibility, and theme states remain future coverage."
     },
     {
       "routeId": "hostFormTemplatesScreen",
@@ -759,6 +761,20 @@
         "host_customer_detail_memory"
       ],
       "reason": "The nested production customer detail has a deterministic identity, organizer-memory, exact-revenue, event-history, campaign-delivery, and controls capture; alternate identity, coverage, accessibility, and theme variants remain planned."
+    },
+    {
+      "routeId": "hostCustomersLegacyScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "Legacy Customers links redirect to Audience while preserving their deep-link state."
+    },
+    {
+      "routeId": "hostFormsLegacyScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "Legacy Forms links redirect to Audience while preserving their deep-link state."
     },
     {
       "routeId": "hostOperatorEventScreen",

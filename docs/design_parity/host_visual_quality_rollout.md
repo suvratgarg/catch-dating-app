@@ -154,8 +154,8 @@ question and therefore preserved the wrong top-level hierarchy.
 | C0 | Reopen the tracker and pin the approved Host IA and chrome invariants | `complete` |
 | C1 | Preserve the original adaptive Catch bottom navigation and add an iOS regression | `complete` |
 | C2 | Add a real Today destination and make Events the event inventory | `complete` |
-| C3 | Consolidate People, Audiences, Forms, and Responses under Audience | `pending` |
-| C4 | Rename the global Messaging destination to Inbox; migrate contracts, captures, and owner docs | `pending` |
+| C3 | Consolidate People, Audiences, Forms, and Responses under Audience | `complete` |
+| C4 | Rename the global Messaging destination to Inbox; migrate contracts, captures, and owner docs | `in_progress` |
 
 ### Approved information architecture
 

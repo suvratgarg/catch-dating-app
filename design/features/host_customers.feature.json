@@ -3,10 +3,10 @@
   "version": 2,
   "updated": "2026-08-31",
   "id": "feature.host_customers",
-  "name": "Host Customers",
+  "name": "Host Audience CRM",
   "owner": "hosts",
   "status": "active",
-  "description": "Makes Customers the sole Host CRM owner through first-class People and Audiences peer workspaces. People owns server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration and customer detail. Audiences owns reusable group discovery, full-page definition authoring, exact previews and archive. Messaging consumes saved-audience identifiers for sends without recreating audience logic.",
+  "description": "Makes Audience the sole Host CRM and intake destination. This contract owns its People and Audiences modes; Forms and Responses are peer modes in the same destination with their own focused evidence. People owns server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration and customer detail. Audiences owns reusable group discovery, full-page definition authoring, exact previews and archive. Inbox consumes saved-audience identifiers for sends without recreating audience logic.",
   "surfaces": [
     {
       "id": "host_flutter",
@@ -126,11 +126,11 @@
         {
           "id": "switch_customers_view",
           "owner": "customers_screen",
-          "codeValue": "HostCustomersView",
+          "codeValue": "HostAudienceView",
           "cardinality": "singleton",
           "scopeKeys": ["viewerUid", "organizerId", "view"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["customers_populated", "customer_saved_audience_manage"]}],
-          "description": "Switches the canonical Customers destination between its People and Audiences peer responsibilities without changing organizer scope."
+          "description": "Switches the canonical Audience destination between its People and Audiences CRM responsibilities without changing organizer scope."
         },
         {
           "id": "search_saved_audiences",

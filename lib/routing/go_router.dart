@@ -43,6 +43,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_det
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_share_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_templates_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_operator_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -125,11 +126,30 @@ HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
 }
 
 @visibleForTesting
+Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
+  final view = hostAudienceViewFromName(uri.queryParameters['view']);
+  return switch (view) {
+    HostAudienceView.forms || HostAudienceView.responses => HostFormsScreen(
+      initialOrganizerId: uri.queryParameters['organizerId'],
+      initialResponses: view == HostAudienceView.responses,
+      initialFormId: uri.queryParameters['formId'],
+    ),
+    HostAudienceView.people ||
+    HostAudienceView.audiences => HostCustomersScreen(
+      initialOrganizerId: uri.queryParameters['organizerId'],
+      initialView: view,
+      initialContactId: uri.queryParameters['contactId'],
+      initialContactDisplayName: initialContactDisplayName,
+    ),
+  };
+}
+
+@visibleForTesting
 String? hostOrganizerAudienceRedirect(Uri uri) {
   if (uri.queryParameters['tab'] != 'audience') return null;
   final clubId = uri.queryParameters['clubId']?.trim();
   return Uri(
-    path: Routes.hostCustomersScreen.path,
+    path: Routes.hostAudienceScreen.path,
     queryParameters: {
       if (clubId != null && clubId.isNotEmpty) 'organizerId': clubId,
     },
@@ -144,6 +164,49 @@ String hostApplicationsLegacyRedirect(Uri uri, {String? applicationId}) {
           ':applicationId',
           applicationId,
         );
+  return uri.replace(path: path).toString();
+}
+
+@visibleForTesting
+String hostCustomersLegacyRedirect(Uri uri) {
+  final suffix = uri.path.substring(
+    Routes.hostCustomersLegacyScreen.path.length,
+  );
+  final path = switch (suffix) {
+    '' => Routes.hostAudienceScreen.path,
+    '/new' => Routes.hostAddCustomerScreen.path,
+    '/audiences/new' => Routes.hostCreateSavedAudienceScreen.path,
+    final value when value.startsWith('/audiences/') =>
+      '${Routes.hostAudienceScreen.path}$value',
+    final value when value.startsWith('/applications') =>
+      '${Routes.hostAudienceScreen.path}$value',
+    final value => '${Routes.hostAudienceScreen.path}/people$value',
+  };
+  return uri.replace(path: path).toString();
+}
+
+@visibleForTesting
+String hostFormsLegacyRedirect(Uri uri) {
+  final suffix = uri.path.substring(Routes.hostFormsLegacyScreen.path.length);
+  if (suffix.isEmpty) {
+    final requestedView = uri.queryParameters['view'] == 'responses'
+        ? HostAudienceView.responses
+        : HostAudienceView.forms;
+    return uri
+        .replace(
+          path: Routes.hostAudienceScreen.path,
+          queryParameters: {...uri.queryParameters, 'view': requestedView.name},
+        )
+        .toString();
+  }
+  final path = switch (suffix) {
+    '/new' => Routes.hostFormTemplatesScreen.path,
+    final value when value.startsWith('/responses/') =>
+      '${Routes.hostAudienceScreen.path}$value',
+    final value when value.startsWith('/applications') =>
+      '${Routes.hostAudienceScreen.path}$value',
+    final value => '${Routes.hostAudienceScreen.path}/forms$value',
+  };
   return uri.replace(path: path).toString();
 }
 
@@ -828,98 +891,224 @@ String? hostOrganizerIndexRedirect(Uri uri) {
   ).toString();
 }
 
-GoRoute _hostFormsRoute(_RouterNavigatorKeys keys) => GoRoute(
-  path: Routes.hostFormsScreen.path,
-  name: Routes.hostFormsScreen.name,
-  builder: (context, state) => HostFormsScreen(
-    initialOrganizerId: state.uri.queryParameters['organizerId'],
-    initialResponses: state.uri.queryParameters['view'] == 'responses',
-    initialFormId: state.uri.queryParameters['formId'],
-  ),
-  routes: [
-    GoRoute(
-      path: 'applications',
-      name: Routes.hostApplicationsScreen.name,
-      parentNavigatorKey: keys.root,
-      builder: (context, state) => HostApplicationsScreen(
-        organizerId: state.uri.queryParameters['organizerId'] ?? '',
-      ),
-      routes: [
-        GoRoute(
-          path: ':applicationId',
-          name: Routes.hostApplicationDetailScreen.name,
-          parentNavigatorKey: keys.root,
-          builder: (context, state) => HostApplicationDetailScreen(
-            organizerId: state.uri.queryParameters['organizerId'] ?? '',
-            applicationId: state.pathParameters['applicationId']!,
-          ),
+GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
+  return GoRoute(
+    path: Routes.hostAudienceScreen.path,
+    name: Routes.hostAudienceScreen.name,
+    builder: (context, state) => hostAudienceScreenForUri(
+      state.uri,
+      initialContactDisplayName: switch (state.extra) {
+        HostCustomerDetailRouteArguments(:final displayName) => displayName,
+        _ => null,
+      },
+    ),
+    routes: [
+      GoRoute(
+        path: 'applications',
+        name: Routes.hostApplicationsScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostApplicationsScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
-      ],
-    ),
-    GoRoute(
-      path: 'new',
-      name: Routes.hostFormTemplatesScreen.name,
-      parentNavigatorKey: keys.root,
-      builder: (context, state) => HostFormTemplatesScreen(
-        organizerId: state.uri.queryParameters['organizerId'] ?? '',
+        routes: [
+          GoRoute(
+            path: ':applicationId',
+            name: Routes.hostApplicationDetailScreen.name,
+            parentNavigatorKey: keys.root,
+            builder: (context, state) => HostApplicationDetailScreen(
+              organizerId: state.uri.queryParameters['organizerId'] ?? '',
+              applicationId: state.pathParameters['applicationId']!,
+            ),
+          ),
+        ],
       ),
-    ),
-    GoRoute(
-      path: 'responses/:responseId',
-      name: Routes.hostFormResponseDetailScreen.name,
-      parentNavigatorKey: keys.root,
-      builder: (context, state) => HostFormResponseDetailScreen(
-        organizerId: state.uri.queryParameters['organizerId'] ?? '',
-        responseId: state.pathParameters['responseId']!,
+      GoRoute(
+        path: 'people/new',
+        name: Routes.hostAddCustomerScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostAddCustomerScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+        ),
       ),
-    ),
-    GoRoute(
-      path: ':formId/preview',
-      name: Routes.hostFormPreviewScreen.name,
-      parentNavigatorKey: keys.root,
-      builder: (context, state) => HostFormPreviewScreen(
-        organizerId: state.uri.queryParameters['organizerId'] ?? '',
-        formId: state.pathParameters['formId']!,
+      GoRoute(
+        path: 'audiences/new',
+        name: Routes.hostCreateSavedAudienceScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostSavedAudienceEditorScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+        ),
       ),
-    ),
-    GoRoute(
-      path: ':formId/share',
-      name: Routes.hostFormShareScreen.name,
-      parentNavigatorKey: keys.root,
-      builder: (context, state) => HostFormShareScreen(
-        organizerId: state.uri.queryParameters['organizerId'] ?? '',
-        formId: state.pathParameters['formId']!,
+      GoRoute(
+        path: 'audiences/:audienceId',
+        name: Routes.hostSavedAudienceDetailScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostSavedAudienceEditorScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+          audienceId: state.pathParameters['audienceId'],
+          initialAudience: switch (state.extra) {
+            HostSavedAudience audience => audience,
+            _ => null,
+          },
+        ),
       ),
-    ),
-    GoRoute(
-      path: ':formId/analytics',
-      name: Routes.hostFormAnalyticsScreen.name,
-      parentNavigatorKey: keys.root,
-      builder: (context, state) => HostFormAnalyticsScreen(
-        organizerId: state.uri.queryParameters['organizerId'] ?? '',
-        formId: state.pathParameters['formId']!,
+      GoRoute(
+        path: 'forms/new',
+        name: Routes.hostFormTemplatesScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostFormTemplatesScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+        ),
       ),
-    ),
-    GoRoute(
-      path: ':formId/automations',
-      name: Routes.hostFormAutomationsScreen.name,
-      parentNavigatorKey: keys.root,
-      builder: (context, state) => HostFormAutomationsScreen(
-        organizerId: state.uri.queryParameters['organizerId'] ?? '',
-        formId: state.pathParameters['formId']!,
+      GoRoute(
+        path: 'responses/:responseId',
+        name: Routes.hostFormResponseDetailScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostFormResponseDetailScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+          responseId: state.pathParameters['responseId']!,
+        ),
       ),
-    ),
-    GoRoute(
-      path: ':formId',
-      name: Routes.hostFormBuilderScreen.name,
-      parentNavigatorKey: keys.root,
-      builder: (context, state) => HostFormBuilderScreen(
-        organizerId: state.uri.queryParameters['organizerId'] ?? '',
-        formId: state.pathParameters['formId']!,
+      GoRoute(
+        path: 'forms/:formId/preview',
+        name: Routes.hostFormPreviewScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostFormPreviewScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+          formId: state.pathParameters['formId']!,
+        ),
       ),
-    ),
-  ],
-);
+      GoRoute(
+        path: 'forms/:formId/share',
+        name: Routes.hostFormShareScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostFormShareScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+          formId: state.pathParameters['formId']!,
+        ),
+      ),
+      GoRoute(
+        path: 'forms/:formId/analytics',
+        name: Routes.hostFormAnalyticsScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostFormAnalyticsScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+          formId: state.pathParameters['formId']!,
+        ),
+      ),
+      GoRoute(
+        path: 'forms/:formId/automations',
+        name: Routes.hostFormAutomationsScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostFormAutomationsScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+          formId: state.pathParameters['formId']!,
+        ),
+      ),
+      GoRoute(
+        path: 'forms/:formId',
+        name: Routes.hostFormBuilderScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostFormBuilderScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+          formId: state.pathParameters['formId']!,
+        ),
+      ),
+      GoRoute(
+        path: 'people/:contactId',
+        name: Routes.hostCustomerDetailScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostCustomerDetailScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+          contactId: state.pathParameters['contactId']!,
+          initialDisplayName: switch (state.extra) {
+            HostCustomerDetailRouteArguments(:final displayName) => displayName,
+            _ => null,
+          },
+        ),
+      ),
+    ],
+  );
+}
+
+GoRoute _hostCustomersLegacyRoute() {
+  return GoRoute(
+    path: Routes.hostCustomersLegacyScreen.path,
+    name: Routes.hostCustomersLegacyScreen.name,
+    redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
+    routes: [
+      GoRoute(
+        path: 'new',
+        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: 'audiences/new',
+        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: 'audiences/:audienceId',
+        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: 'applications',
+        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: 'applications/:applicationId',
+        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: ':contactId',
+        redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
+      ),
+    ],
+  );
+}
+
+GoRoute _hostFormsLegacyRoute() {
+  return GoRoute(
+    path: Routes.hostFormsLegacyScreen.path,
+    name: Routes.hostFormsLegacyScreen.name,
+    redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
+    routes: [
+      GoRoute(
+        path: 'new',
+        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: 'responses/:responseId',
+        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: 'applications',
+        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: 'applications/:applicationId',
+        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: ':formId/preview',
+        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: ':formId/share',
+        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: ':formId/analytics',
+        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: ':formId/automations',
+        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: ':formId',
+        redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
+      ),
+    ],
+  );
+}
 
 StatefulShellRoute _hostShellRoute(
   AppAnalytics analytics,
@@ -968,80 +1157,9 @@ StatefulShellRoute _hostShellRoute(
         navigatorKey: keys.hostAudience,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
-          GoRoute(
-            path: Routes.hostCustomersScreen.path,
-            name: Routes.hostCustomersScreen.name,
-            builder: (context, state) => HostCustomersScreen(
-              initialOrganizerId: state.uri.queryParameters['organizerId'],
-              initialView: state.uri.queryParameters['view'] == 'audiences'
-                  ? HostCustomersView.audiences
-                  : HostCustomersView.people,
-              initialContactId: state.uri.queryParameters['contactId'],
-              initialContactDisplayName: switch (state.extra) {
-                HostCustomerDetailRouteArguments(:final displayName) =>
-                  displayName,
-                _ => null,
-              },
-            ),
-            routes: [
-              GoRoute(
-                path: 'new',
-                name: Routes.hostAddCustomerScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostAddCustomerScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                ),
-              ),
-              GoRoute(
-                path: 'audiences/new',
-                name: Routes.hostCreateSavedAudienceScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostSavedAudienceEditorScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                ),
-              ),
-              GoRoute(
-                path: 'audiences/:audienceId',
-                name: Routes.hostSavedAudienceDetailScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostSavedAudienceEditorScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                  audienceId: state.pathParameters['audienceId'],
-                  initialAudience: switch (state.extra) {
-                    HostSavedAudience audience => audience,
-                    _ => null,
-                  },
-                ),
-              ),
-              GoRoute(
-                path: 'applications/:applicationId',
-                redirect: (context, state) => hostApplicationsLegacyRedirect(
-                  state.uri,
-                  applicationId: state.pathParameters['applicationId'],
-                ),
-              ),
-              GoRoute(
-                path: 'applications',
-                redirect: (context, state) =>
-                    hostApplicationsLegacyRedirect(state.uri),
-              ),
-              GoRoute(
-                path: ':contactId',
-                name: Routes.hostCustomerDetailScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostCustomerDetailScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                  contactId: state.pathParameters['contactId']!,
-                  initialDisplayName: switch (state.extra) {
-                    HostCustomerDetailRouteArguments(:final displayName) =>
-                      displayName,
-                    _ => null,
-                  },
-                ),
-              ),
-            ],
-          ),
-          _hostFormsRoute(keys),
+          _hostAudienceRoute(keys),
+          _hostCustomersLegacyRoute(),
+          _hostFormsLegacyRoute(),
         ],
       ),
       StatefulShellBranch(

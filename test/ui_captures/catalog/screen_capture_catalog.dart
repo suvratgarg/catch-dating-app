@@ -157,6 +157,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_scre
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
@@ -2746,11 +2747,7 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
     Widget builder(BuildContext context, GoRouterState state) =>
         index == widget.activeIndex ? widget.child : const SizedBox.shrink();
     return StatefulShellBranch(
-      routes: [
-        GoRoute(path: '/host/audience', builder: builder),
-        GoRoute(path: '/host/customers', builder: builder),
-        GoRoute(path: '/host/forms', builder: builder),
-      ],
+      routes: [GoRoute(path: '/host/audience', builder: builder)],
     );
   }
 
@@ -15304,15 +15301,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_customers_populated',
-    routeIds: const <String>['hostCustomersScreen'],
+    routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ..._hostCustomersProviderOverrides(),
     ],
     builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/customers',
-      activeIndex: 1,
+      initialLocation: '/host/audience',
+      activeIndex: 2,
       child: HostCustomersScreen(
         initialOrganizerId: HostOperationsFixtures.primaryClub.id,
       ),
@@ -15320,18 +15317,18 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_customers_audiences_populated',
-    routeIds: const <String>['hostCustomersScreen'],
+    routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ..._hostCustomersProviderOverrides(),
     ],
     builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/customers?view=audiences',
-      activeIndex: 1,
+      initialLocation: '/host/audience?view=audiences',
+      activeIndex: 2,
       child: HostCustomersScreen(
         initialOrganizerId: HostOperationsFixtures.primaryClub.id,
-        initialView: HostCustomersView.audiences,
+        initialView: HostAudienceView.audiences,
       ),
     ),
   ),
@@ -15362,7 +15359,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_forms_populated',
-    routeIds: const <String>['hostFormsScreen'],
+    routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
@@ -15382,7 +15379,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
     ],
     builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/forms',
+      initialLocation: '/host/audience?view=forms',
       activeIndex: 2,
       child: HostFormsScreen(
         initialOrganizerId: HostOperationsFixtures.primaryClub.id,
@@ -15423,8 +15420,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ).overrideWithValue(AsyncData(_hostCustomerMemoryCommunicationPlan())),
     ],
     builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/customers',
-      activeIndex: 1,
+      initialLocation: '/host/audience',
+      activeIndex: 2,
       child: HostCustomerDetailScreen(
         organizerId: HostOperationsFixtures.primaryClub.id,
         contactId: 'capture-customer-ananya',

@@ -173,7 +173,7 @@ class HostCustomersNoOrganizer extends StatelessWidget {
         slivers: [
           SliverToBoxAdapter(
             child: CatchScreenHeaderTitle.block(
-              title: context.l10n.hostNavigationCustomers,
+              title: context.l10n.hostNavigationAudience,
             ),
           ),
           CatchSliverEmptyState(

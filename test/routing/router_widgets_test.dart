@@ -6,8 +6,11 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -152,6 +155,34 @@ Future<void> _settleRoute(WidgetTester tester) async {
 }
 
 void main() {
+  test('host Audience route resolves all four peer workspaces', () {
+    final audiences =
+        app_router.hostAudienceScreenForUri(
+              Uri.parse(
+                '/host/audience?view=audiences&organizerId=organizer-1&contactId=contact-1',
+              ),
+            )
+            as HostCustomersScreen;
+    final forms =
+        app_router.hostAudienceScreenForUri(
+              Uri.parse('/host/audience?view=forms&organizerId=organizer-1'),
+            )
+            as HostFormsScreen;
+    final responses =
+        app_router.hostAudienceScreenForUri(
+              Uri.parse(
+                '/host/audience?view=responses&organizerId=organizer-1&formId=form-1',
+              ),
+            )
+            as HostFormsScreen;
+
+    expect(audiences.initialView, HostAudienceView.audiences);
+    expect(audiences.initialContactId, 'contact-1');
+    expect(forms.initialResponses, isFalse);
+    expect(responses.initialResponses, isTrue);
+    expect(responses.initialFormId, 'form-1');
+  });
+
   test('host inbox route restores the campaigns saved audience', () {
     final screen = app_router.hostInboxScreenForUri(
       Uri.parse(

@@ -349,7 +349,7 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      const HostCustomersScreen(initialView: HostCustomersView.audiences),
+      const HostCustomersScreen(initialView: HostAudienceView.audiences),
       overrides: [
         ..._hostClubOverrides(owned: [club]),
         hostCustomersDirectoryControllerProvider.overrideWith2(
@@ -1060,7 +1060,7 @@ void _registerHostOperationsCustomersTests() {
     final header = find.byType(CatchScreenHeaderTitle);
     final titleFinder = find.descendant(
       of: header,
-      matching: find.text('Customers'),
+      matching: find.text('Audience'),
     );
     final title = tester.widget<Text>(titleFinder);
     final intrinsicTitle = TextPainter(

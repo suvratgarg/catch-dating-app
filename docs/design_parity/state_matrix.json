@@ -4704,6 +4704,7 @@
           "routeId": "hostHomeScreen",
           "routeIds": [
             "hostHomeScreen",
+            "hostTodayScreen",
             "hostEventsScreen"
           ],
           "implementationPaths": [
@@ -5050,13 +5051,20 @@
           ]
         },
         {
-          "id": "host.customers",
-          "routeId": "hostCustomersScreen",
+          "id": "host.audience",
+          "routeId": "hostAudienceScreen",
           "routeIds": [
-            "hostCustomersScreen",
+            "hostAudienceScreen",
             "hostAddCustomerScreen",
             "hostCreateSavedAudienceScreen",
             "hostSavedAudienceDetailScreen",
+            "hostFormTemplatesScreen",
+            "hostFormResponseDetailScreen",
+            "hostFormBuilderScreen",
+            "hostFormPreviewScreen",
+            "hostFormShareScreen",
+            "hostFormAnalyticsScreen",
+            "hostFormAutomationsScreen",
             "hostCustomerDetailScreen"
           ],
           "implementationPaths": [

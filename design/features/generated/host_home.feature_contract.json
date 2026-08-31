@@ -1699,6 +1699,11 @@
           "owner": "hosts",
           "routes": [
             {
+              "id": "hostTodayScreen",
+              "path": "/host/today",
+              "role": "primary"
+            },
+            {
               "id": "hostEventsScreen",
               "path": "/host/events",
               "role": "primary"
