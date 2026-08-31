@@ -162,8 +162,9 @@ void main() {
   });
 
   group('Host organizer routes', () {
-    test('legacy Host root redirects to consolidated Events', () {
+    test('legacy Host root redirects to Today', () {
       expect(Routes.hostHomeScreen.path, '/host');
+      expect(Routes.hostTodayScreen.path, '/host/today');
       expect(Routes.hostEventsScreen.path, '/host/events');
       expect(Routes.hostCustomersScreen.path, '/host/customers');
       expect(Routes.hostAddCustomerScreen.path, '/host/customers/new');
@@ -185,7 +186,7 @@ void main() {
         Routes.hostCustomerDetailScreen.path,
         '/host/customers/:contactId',
       );
-      expect(hostHomeLegacyRedirect(), Routes.hostEventsScreen.path);
+      expect(hostHomeLegacyRedirect(), Routes.hostTodayScreen.path);
     });
 
     test('legacy application links redirect into Forms ownership', () {
@@ -327,7 +328,7 @@ void main() {
 
       expect(
         container.read(initialAppLocationProvider),
-        Routes.hostEventsScreen.path,
+        Routes.hostTodayScreen.path,
       );
     });
 
@@ -365,7 +366,7 @@ void main() {
           location: '/auth?from=%2Fclubs',
           matchedLocation: Routes.authScreen.path,
         ),
-        Routes.hostEventsScreen.path,
+        Routes.hostTodayScreen.path,
       );
     });
 

@@ -54,6 +54,7 @@ enum Routes {
   paymentHistoryScreen('/payment-history', AppRouteAudience.consumer),
   paymentConfirmationScreen('/payment-confirmation', AppRouteAudience.consumer),
   hostHomeScreen('/host', AppRouteAudience.host),
+  hostTodayScreen('/host/today', AppRouteAudience.host),
   hostEventsScreen('/host/events', AppRouteAudience.host),
   hostCustomersScreen('/host/customers', AppRouteAudience.host),
   hostAddCustomerScreen('/host/customers/new', AppRouteAudience.host),

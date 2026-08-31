@@ -7,12 +7,14 @@ class HostEventsScaffold extends ConsumerStatefulWidget {
     required this.currentUid,
     this.initialClubId,
     this.now,
+    this.surface = HostOperationsSurface.today,
   });
 
   final List<Club> clubs;
   final String currentUid;
   final String? initialClubId;
   final DateTime? now;
+  final HostOperationsSurface surface;
 
   @override
   ConsumerState<HostEventsScaffold> createState() => _HostEventsScaffoldState();
@@ -88,7 +90,9 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
                 slivers: [
                   SliverToBoxAdapter(
                     child: CatchScreenHeaderTitle.block(
-                      title: context.l10n.hostsHostEventsListTextEvents,
+                      title: widget.surface == HostOperationsSurface.today
+                          ? context.l10n.hostNavigationToday
+                          : context.l10n.hostsHostEventsListTextEvents,
                     ),
                   ),
                   CatchSliverEmptyState(
@@ -117,6 +121,7 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
                 onOpenTask: _openAttentionTask,
                 now: _clockNow,
                 sessionBoundary: _timelineBoundary,
+                surface: widget.surface,
               ),
       ),
     );

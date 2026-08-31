@@ -511,9 +511,9 @@ enum AppShellNavigationDestination {
   consumerExplore,
   consumerChats,
   consumerProfile,
+  hostToday,
   hostEvents,
-  hostCustomers,
-  hostForms,
+  hostAudience,
   hostInbox,
   hostOrganizer;
 
@@ -524,9 +524,9 @@ enum AppShellNavigationDestination {
     AppShellNavigationDestination.consumerChats => l10n.consumerNavigationChats,
     AppShellNavigationDestination.consumerProfile =>
       l10n.consumerNavigationProfile,
+    AppShellNavigationDestination.hostToday => l10n.hostNavigationToday,
     AppShellNavigationDestination.hostEvents => l10n.hostNavigationEvents,
-    AppShellNavigationDestination.hostCustomers => l10n.hostNavigationCustomers,
-    AppShellNavigationDestination.hostForms => l10n.hostNavigationForms,
+    AppShellNavigationDestination.hostAudience => l10n.hostNavigationAudience,
     AppShellNavigationDestination.hostInbox => l10n.hostNavigationInbox,
     AppShellNavigationDestination.hostOrganizer => l10n.hostNavigationOrganizer,
   };

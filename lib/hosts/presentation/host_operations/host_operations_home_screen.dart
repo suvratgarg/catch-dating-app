@@ -1,10 +1,16 @@
 part of '../host_operations_screen.dart';
 
 class HostOperationsHomeScreen extends ConsumerWidget {
-  const HostOperationsHomeScreen({super.key, this.initialClubId, this.now});
+  const HostOperationsHomeScreen({
+    super.key,
+    this.initialClubId,
+    this.now,
+    this.surface = HostOperationsSurface.today,
+  });
 
   final String? initialClubId;
   final DateTime? now;
+  final HostOperationsSurface surface;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,7 +30,9 @@ class HostOperationsHomeScreen extends ConsumerWidget {
     return switch (routeState.status) {
       HostHomeRouteStatus.authRequired => const HostAuthRequiredScreen(),
       HostHomeRouteStatus.loading => HostLoadingScreen(
-        title: context.l10n.hostsHostOperationsHomeScreenTitleHostEvents,
+        title: surface == HostOperationsSurface.today
+            ? context.l10n.hostNavigationToday
+            : context.l10n.hostsHostOperationsHomeScreenTitleHostEvents,
       ),
       HostHomeRouteStatus.error => CatchErrorScaffold.fromError(
         routeState.error!,
@@ -43,12 +51,14 @@ class HostOperationsHomeScreen extends ConsumerWidget {
         currentUid: routeState.uid!,
         initialClubId: initialClubId,
         now: now,
+        surface: surface,
       ),
       HostHomeRouteStatus.loaded => HostEventsScaffold(
         clubs: routeState.clubs,
         currentUid: routeState.uid!,
         initialClubId: initialClubId,
         now: now,
+        surface: surface,
       ),
     };
   }

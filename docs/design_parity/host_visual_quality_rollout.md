@@ -153,7 +153,7 @@ question and therefore preserved the wrong top-level hierarchy.
 |---|---|---|
 | C0 | Reopen the tracker and pin the approved Host IA and chrome invariants | `complete` |
 | C1 | Preserve the original adaptive Catch bottom navigation and add an iOS regression | `complete` |
-| C2 | Add a real Today destination and make Events the event inventory | `pending` |
+| C2 | Add a real Today destination and make Events the event inventory | `complete` |
 | C3 | Consolidate People, Audiences, Forms, and Responses under Audience | `pending` |
 | C4 | Rename the global Messaging destination to Inbox; migrate contracts, captures, and owner docs | `pending` |
 
@@ -535,9 +535,13 @@ For every item:
 ## Handoff state
 
 The original bounded rollout is complete through S9. The corrective rollout
-is active: C0-C1 are complete and C2 is next. The shared `CatchTabBar` required
+is active: C0-C2 are complete and C3 is next. The shared `CatchTabBar` required
 no runtime restoration because it remained identical to the pre-rollout
-source. The Host shell regression now explicitly pins its floating, blurred
-iOS chrome and its existing anchored Android adaptation across keyboard
-transitions. No corrected route migration, deployment, or distribution claim
-is made until C2-C4 are complete and committed independently.
+source. Today now owns the live/next-event spotlight, cross-event attention,
+and a bounded later-event preview; Events owns the complete schedule and
+history without duplicating the operational hero. `/host` and Host startup now
+resolve to `/host/today`. The five shell branches already share one Audience
+navigator for the legacy Customers and Forms roots so the migration never
+ships a temporary sixth destination. No canonical Audience route migration,
+deployment, or distribution claim is made until C3-C4 are complete and
+committed independently.

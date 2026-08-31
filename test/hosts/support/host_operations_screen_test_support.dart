@@ -6,7 +6,7 @@ Finder _hostEventsScrollable() => find.descendant(
 );
 
 void registerHostEventEntryTests() {
-  testWidgets('Host events has no create-club header and opens event manage', (
+  testWidgets('Host Today has no create-club header and opens event manage', (
     tester,
   ) async {
     final club = buildClub(id: 'club-host', ownerUserId: _hostUid);
@@ -32,7 +32,7 @@ void registerHostEventEntryTests() {
       ],
     );
 
-    expect(find.text('Events'), findsWidgets);
+    expect(find.text('Today'), findsOneWidget);
     expect(find.byTooltip('Create organizer'), findsNothing);
     expect(find.byTooltip('Switch organizer'), findsNothing);
     expect(find.text('Create event'), findsOneWidget);
@@ -45,15 +45,13 @@ void registerHostEventEntryTests() {
     expect(
       find.descendant(
         of: find.byType(CatchScreenHeaderTitle),
-        matching: find.byKey(
-          const ValueKey<String>('host-events-create-event'),
-        ),
+        matching: find.byKey(const ValueKey<String>('host-today-create-event')),
       ),
       findsOneWidget,
     );
     expect(find.text('Use guest list'), findsNothing);
     await tester.tap(
-      find.byKey(const ValueKey<String>('host-events-create-event')),
+      find.byKey(const ValueKey<String>('host-today-create-event')),
     );
     await pumpFeatureUi(tester);
     expect(find.text('Sell tickets with Catch'), findsOneWidget);
@@ -95,7 +93,7 @@ void registerHostEventEntryTests() {
     expect(find.text('Section setup'), findsOneWidget);
   });
 
-  testWidgets('Host events resumes a loaded draft without a second lookup', (
+  testWidgets('Host Today resumes a loaded draft without a second lookup', (
     tester,
   ) async {
     final club = buildClub(id: 'draft-club', ownerUserId: _hostUid);
@@ -123,7 +121,7 @@ void registerHostEventEntryTests() {
     );
 
     await tester.tap(
-      find.byKey(const ValueKey<String>('host-events-create-event')),
+      find.byKey(const ValueKey<String>('host-today-create-event')),
     );
     await pumpFeatureUi(tester);
     expect(find.text('Continue draft'), findsOneWidget);

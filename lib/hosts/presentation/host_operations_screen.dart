@@ -122,4 +122,6 @@ part 'host_operations/host_route_providers.dart';
 
 enum HostTeamMode { edit, preview }
 
+enum HostOperationsSurface { today, events }
+
 const _hostClubTabRailKey = ValueKey('host-club-tab-rail');

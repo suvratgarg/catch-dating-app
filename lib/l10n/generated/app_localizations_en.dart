@@ -46,16 +46,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consumerNavigationProfile => 'You';
 
   @override
+  String get hostNavigationToday => 'Today';
+
+  @override
   String get hostNavigationEvents => 'Events';
 
   @override
   String get hostNavigationCustomers => 'Customers';
 
   @override
+  String get hostNavigationAudience => 'Audience';
+
+  @override
   String get hostNavigationInbox => 'Messaging';
 
   @override
   String get hostNavigationOrganizer => 'Organizer';
+
+  @override
+  String get hostTodayEmptyTitle => 'You’re all caught up';
+
+  @override
+  String get hostTodayEmptyBody =>
+      'No live or upcoming events need your attention.';
+
+  @override
+  String get hostTodayViewAllEvents => 'View all events';
+
+  @override
+  String get hostTodayLater => 'Later';
 
   @override
   String hostInboxUnreadCount({required int count}) {

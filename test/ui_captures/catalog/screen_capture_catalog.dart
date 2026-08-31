@@ -2718,9 +2718,9 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
           builder: (context, state, navigationShell) =>
               HostAppShell(navigationShell: navigationShell),
           branches: [
-            _branch('/host/events', 0),
-            _branch('/host/customers', 1),
-            _branch('/host/forms', 2),
+            _branch('/host/today', 0),
+            _branch('/host/events', 1),
+            _audienceBranch(2),
             _branch('/host/inbox', 3),
             _branch('/host/organizer', 4),
           ],
@@ -2738,6 +2738,18 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
               ? widget.child
               : const SizedBox.shrink(),
         ),
+      ],
+    );
+  }
+
+  StatefulShellBranch _audienceBranch(int index) {
+    Widget builder(BuildContext context, GoRouterState state) =>
+        index == widget.activeIndex ? widget.child : const SizedBox.shrink();
+    return StatefulShellBranch(
+      routes: [
+        GoRoute(path: '/host/audience', builder: builder),
+        GoRoute(path: '/host/customers', builder: builder),
+        GoRoute(path: '/host/forms', builder: builder),
       ],
     );
   }
@@ -9916,7 +9928,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_home_dashboard',
-    routeIds: const <String>['hostHomeScreen'],
+    routeIds: const <String>['hostHomeScreen', 'hostTodayScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
@@ -9931,7 +9943,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
     ],
     builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/events',
+      initialLocation: '/host/today',
       activeIndex: 0,
       child: HostOperationsHomeScreen(
         initialClubId: 'host-home-reference-bandra-social',
@@ -9959,10 +9971,11 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) => _HostRoutedShellCapture(
       initialLocation: '/host/events',
-      activeIndex: 0,
+      activeIndex: 1,
       child: HostOperationsHomeScreen(
         initialClubId: _hostEventsReferenceClub.id,
         now: _hostEventsReferenceNow,
+        surface: HostOperationsSurface.events,
       ),
     ),
   ),

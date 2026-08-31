@@ -9,6 +9,7 @@ class HostEventsClubCard extends ConsumerWidget {
     required this.onOpenTask,
     required this.now,
     required this.sessionBoundary,
+    this.surface = HostOperationsSurface.today,
   });
 
   final Club club;
@@ -17,6 +18,7 @@ class HostEventsClubCard extends ConsumerWidget {
   final HostHomeOpenTaskCallback onOpenTask;
   final DateTime now;
   final DateTime sessionBoundary;
+  final HostOperationsSurface surface;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,7 +42,9 @@ class HostEventsClubCard extends ConsumerWidget {
     final workspaceState = buildHostEventsWorkspaceState(
       eventsState,
       now: now,
-      featuredEventId: overviewState.event?.id,
+      featuredEventId: surface == HostOperationsSurface.today
+          ? overviewState.event?.id
+          : null,
       hasMoreActive: timeline?.hasMoreActive ?? false,
       hasMorePast: timeline?.hasMorePast ?? false,
       loadingMoreActive: timeline?.loadingMoreActive ?? false,
@@ -60,13 +64,26 @@ class HostEventsClubCard extends ConsumerWidget {
       repeatSource: workspaceState.repeatSource,
     );
 
+    void onRetryEvents() =>
+        ref.invalidate(hostEventsTimelineControllerProvider(request));
+    if (surface == HostOperationsSurface.today) {
+      return HostTodayClubSection(
+        club: club,
+        state: workspaceState,
+        entryState: entryState,
+        overviewState: overviewState,
+        onRetryEvents: onRetryEvents,
+        onEventEntrySelected: onEventEntrySelected,
+        onManageEvent: onManageEvent,
+        onOpenTask: onOpenTask,
+        now: now,
+      );
+    }
     return HostEventsClubSection(
       club: club,
       state: workspaceState,
       entryState: entryState,
-      overviewState: overviewState,
-      onRetryEvents: () =>
-          ref.invalidate(hostEventsTimelineControllerProvider(request)),
+      onRetryEvents: onRetryEvents,
       onLoadMoreActive: () => ref
           .read(hostEventsTimelineControllerProvider(request).notifier)
           .loadMoreActive(),
@@ -78,9 +95,150 @@ class HostEventsClubCard extends ConsumerWidget {
           .retryPast(),
       onEventEntrySelected: onEventEntrySelected,
       onManageEvent: onManageEvent,
-      onOpenTask: onOpenTask,
-      now: now,
     );
+  }
+}
+
+class HostTodayClubSection extends StatelessWidget {
+  const HostTodayClubSection({
+    super.key,
+    required this.club,
+    required this.state,
+    required this.entryState,
+    required this.overviewState,
+    required this.onRetryEvents,
+    required this.onEventEntrySelected,
+    required this.onManageEvent,
+    required this.onOpenTask,
+    required this.now,
+  });
+
+  final Club club;
+  final HostEventsWorkspaceState state;
+  final HostEventEntryState entryState;
+  final HostEventsOverviewState overviewState;
+  final VoidCallback onRetryEvents;
+  final HostEventEntryCallback onEventEntrySelected;
+  final HostHomeManageEventCallback onManageEvent;
+  final HostHomeOpenTaskCallback onOpenTask;
+  final DateTime now;
+
+  @override
+  Widget build(BuildContext context) {
+    final laterRows = state.activeSections
+        .expand((section) => section.rows)
+        .take(2)
+        .toList(growable: false);
+    return CustomScrollView(
+      key: const ValueKey<String>('host-today-scroll-view'),
+      slivers: [
+        SliverToBoxAdapter(
+          child: CatchScreenHeaderTitle.block(
+            title: context.l10n.hostNavigationToday,
+            actions: [
+              CatchTopBarPrimaryAction(
+                key: const ValueKey<String>('host-today-create-event'),
+                label: context.l10n.hostsHostEventsListLabelNewEvent,
+                icon: CatchIcons.addRounded,
+                onPressed: () => _showEventEntrySheet(context),
+              ),
+            ],
+          ),
+        ),
+        switch (overviewState.status) {
+          HostEventsOverviewStatus.loading => const SliverPadding(
+            padding: CatchInsets.pageHorizontal,
+            sliver: SliverToBoxAdapter(
+              child: CatchSkeletonRows(
+                leading: CatchSkeletonRowLeading.mediaTile,
+                count: 4,
+              ),
+            ),
+          ),
+          HostEventsOverviewStatus.error => SliverPadding(
+            padding: CatchInsets.pageHorizontal,
+            sliver: SliverToBoxAdapter(
+              child: CatchInlineErrorState.fromError(
+                overviewState.error!,
+                context: AppErrorContext.event,
+                onRetry: onRetryEvents,
+              ),
+            ),
+          ),
+          HostEventsOverviewStatus.empty => CatchSliverEmptyState(
+            icon: CatchIcons.eventBusy,
+            title: context.l10n.hostTodayEmptyTitle,
+            message: context.l10n.hostTodayEmptyBody,
+            action: CatchButton(
+              label: state.pastSections.isEmpty
+                  ? context.l10n.hostsHostEventsListLabelNewEvent
+                  : context.l10n.hostTodayViewAllEvents,
+              size: CatchButtonSize.sm,
+              onPressed: state.pastSections.isEmpty
+                  ? () => _showEventEntrySheet(context)
+                  : () => context.goNamed(Routes.hostEventsScreen.name),
+            ),
+          ),
+          HostEventsOverviewStatus.content => SliverPadding(
+            padding: CatchInsets.pageHorizontal,
+            sliver: SliverList.list(
+              children: [
+                gapH20,
+                HostEventsOverviewSection(
+                  club: club,
+                  state: overviewState,
+                  onManageEvent: onManageEvent,
+                  onOpenTask: onOpenTask,
+                  now: now,
+                ),
+                if (laterRows.isNotEmpty) ...[
+                  gapH24,
+                  CatchSection.plain(
+                    title: context.l10n.hostTodayLater,
+                    titleColor: CatchTokens.of(context).ink3,
+                    child: Column(
+                      children: [
+                        for (final row in laterRows) ...[
+                          HostEventLifecycleRow(
+                            key: ValueKey<String>(
+                              'host-today-event-${row.event.id}',
+                            ),
+                            data: row,
+                            onPressed: () => onManageEvent(club, row.event),
+                          ),
+                          gapH10,
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+                gapH12,
+                Align(
+                  child: CatchButton(
+                    key: const ValueKey<String>('host-today-view-events'),
+                    label: context.l10n.hostTodayViewAllEvents,
+                    variant: CatchButtonVariant.secondary,
+                    size: CatchButtonSize.sm,
+                    onPressed: () =>
+                        context.goNamed(Routes.hostEventsScreen.name),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        },
+        const CatchSliverTerminalPadding(),
+      ],
+    );
+  }
+
+  Future<void> _showEventEntrySheet(BuildContext context) async {
+    final intent = await showHostEventEntrySheet(
+      context: context,
+      state: entryState,
+    );
+    if (intent == null || !context.mounted) return;
+    onEventEntrySelected(club, entryState, intent);
   }
 }
 
@@ -90,29 +248,23 @@ class HostEventsClubSection extends StatelessWidget {
     required this.club,
     required this.state,
     required this.entryState,
-    required this.overviewState,
     required this.onLoadMoreActive,
     required this.onLoadMorePast,
     required this.onRetryPast,
     required this.onEventEntrySelected,
     required this.onManageEvent,
-    required this.onOpenTask,
-    required this.now,
     this.onRetryEvents,
   });
 
   final Club club;
   final HostEventsWorkspaceState state;
   final HostEventEntryState entryState;
-  final HostEventsOverviewState overviewState;
   final VoidCallback? onRetryEvents;
   final VoidCallback onLoadMoreActive;
   final VoidCallback onLoadMorePast;
   final VoidCallback onRetryPast;
   final HostEventEntryCallback onEventEntrySelected;
   final HostHomeManageEventCallback onManageEvent;
-  final HostHomeOpenTaskCallback onOpenTask;
-  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
@@ -132,28 +284,7 @@ class HostEventsClubSection extends StatelessWidget {
             ],
           ),
         ),
-        SliverPadding(
-          padding: CatchInsets.pageHorizontal,
-          sliver: SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (overviewState.status ==
-                    HostEventsOverviewStatus.content) ...[
-                  gapH20,
-                  HostEventsOverviewSection(
-                    club: club,
-                    state: overviewState,
-                    onManageEvent: onManageEvent,
-                    onOpenTask: onOpenTask,
-                    now: now,
-                  ),
-                ],
-                gapH14,
-              ],
-            ),
-          ),
-        ),
+        const SliverToBoxAdapter(child: gapH14),
         switch (state.status) {
           HostEventsWorkspaceStatus.loading => const SliverPadding(
             padding: CatchInsets.pageHorizontal,

@@ -96,6 +96,14 @@
     "x-surface": "consumer.navigation",
     "x-max-chars": 16
   },
+  "hostNavigationToday": "Today",
+  "@hostNavigationToday": {
+    "description": "Host bottom navigation label for the operational home.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.navigation",
+    "x-max-chars": 16
+  },
   "hostNavigationEvents": "Events",
   "@hostNavigationEvents": {
     "description": "Host bottom navigation label for the event-management tab.",
@@ -107,6 +115,14 @@
   "hostNavigationCustomers": "Customers",
   "@hostNavigationCustomers": {
     "description": "Host bottom navigation label for the organizer CRM directory.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.navigation",
+    "x-max-chars": 16
+  },
+  "hostNavigationAudience": "Audience",
+  "@hostNavigationAudience": {
+    "description": "Host bottom navigation label for people, saved audiences, forms, and responses.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "host.navigation",
@@ -127,6 +143,34 @@
     "x-owner": "product",
     "x-surface": "host.navigation",
     "x-max-chars": 16
+  },
+  "hostTodayEmptyTitle": "You’re all caught up",
+  "@hostTodayEmptyTitle": {
+    "description": "Today workspace title when no live or upcoming event needs attention.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.today"
+  },
+  "hostTodayEmptyBody": "No live or upcoming events need your attention.",
+  "@hostTodayEmptyBody": {
+    "description": "Today workspace guidance when no live or upcoming event needs attention.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.today"
+  },
+  "hostTodayViewAllEvents": "View all events",
+  "@hostTodayViewAllEvents": {
+    "description": "Opens the full Host Events inventory from Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.today"
+  },
+  "hostTodayLater": "Later",
+  "@hostTodayLater": {
+    "description": "Today workspace section for the next events after the operational spotlight.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.today"
   },
   "hostInboxUnreadCount": "{count, plural, =0{Unread} =1{Unread · 1} other{Unread · {count}}}",
   "@hostInboxUnreadCount": {

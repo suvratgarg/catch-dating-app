@@ -265,9 +265,9 @@ class _RouterNavigatorKeys {
   final explore = GlobalKey<NavigatorState>();
   final chats = GlobalKey<NavigatorState>();
   final profile = GlobalKey<NavigatorState>();
+  final hostToday = GlobalKey<NavigatorState>();
   final hostEvents = GlobalKey<NavigatorState>();
-  final hostCustomers = GlobalKey<NavigatorState>();
-  final hostForms = GlobalKey<NavigatorState>();
+  final hostAudience = GlobalKey<NavigatorState>();
   final hostInbox = GlobalKey<NavigatorState>();
   final hostOrganizer = GlobalKey<NavigatorState>();
 }
@@ -817,7 +817,7 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
 }
 
 @visibleForTesting
-String hostHomeLegacyRedirect() => Routes.hostEventsScreen.path;
+String hostHomeLegacyRedirect() => Routes.hostTodayScreen.path;
 
 @visibleForTesting
 String? hostOrganizerIndexRedirect(Uri uri) {
@@ -827,6 +827,99 @@ String? hostOrganizerIndexRedirect(Uri uri) {
     queryParameters: uri.queryParameters.isEmpty ? null : uri.queryParameters,
   ).toString();
 }
+
+GoRoute _hostFormsRoute(_RouterNavigatorKeys keys) => GoRoute(
+  path: Routes.hostFormsScreen.path,
+  name: Routes.hostFormsScreen.name,
+  builder: (context, state) => HostFormsScreen(
+    initialOrganizerId: state.uri.queryParameters['organizerId'],
+    initialResponses: state.uri.queryParameters['view'] == 'responses',
+    initialFormId: state.uri.queryParameters['formId'],
+  ),
+  routes: [
+    GoRoute(
+      path: 'applications',
+      name: Routes.hostApplicationsScreen.name,
+      parentNavigatorKey: keys.root,
+      builder: (context, state) => HostApplicationsScreen(
+        organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      ),
+      routes: [
+        GoRoute(
+          path: ':applicationId',
+          name: Routes.hostApplicationDetailScreen.name,
+          parentNavigatorKey: keys.root,
+          builder: (context, state) => HostApplicationDetailScreen(
+            organizerId: state.uri.queryParameters['organizerId'] ?? '',
+            applicationId: state.pathParameters['applicationId']!,
+          ),
+        ),
+      ],
+    ),
+    GoRoute(
+      path: 'new',
+      name: Routes.hostFormTemplatesScreen.name,
+      parentNavigatorKey: keys.root,
+      builder: (context, state) => HostFormTemplatesScreen(
+        organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: 'responses/:responseId',
+      name: Routes.hostFormResponseDetailScreen.name,
+      parentNavigatorKey: keys.root,
+      builder: (context, state) => HostFormResponseDetailScreen(
+        organizerId: state.uri.queryParameters['organizerId'] ?? '',
+        responseId: state.pathParameters['responseId']!,
+      ),
+    ),
+    GoRoute(
+      path: ':formId/preview',
+      name: Routes.hostFormPreviewScreen.name,
+      parentNavigatorKey: keys.root,
+      builder: (context, state) => HostFormPreviewScreen(
+        organizerId: state.uri.queryParameters['organizerId'] ?? '',
+        formId: state.pathParameters['formId']!,
+      ),
+    ),
+    GoRoute(
+      path: ':formId/share',
+      name: Routes.hostFormShareScreen.name,
+      parentNavigatorKey: keys.root,
+      builder: (context, state) => HostFormShareScreen(
+        organizerId: state.uri.queryParameters['organizerId'] ?? '',
+        formId: state.pathParameters['formId']!,
+      ),
+    ),
+    GoRoute(
+      path: ':formId/analytics',
+      name: Routes.hostFormAnalyticsScreen.name,
+      parentNavigatorKey: keys.root,
+      builder: (context, state) => HostFormAnalyticsScreen(
+        organizerId: state.uri.queryParameters['organizerId'] ?? '',
+        formId: state.pathParameters['formId']!,
+      ),
+    ),
+    GoRoute(
+      path: ':formId/automations',
+      name: Routes.hostFormAutomationsScreen.name,
+      parentNavigatorKey: keys.root,
+      builder: (context, state) => HostFormAutomationsScreen(
+        organizerId: state.uri.queryParameters['organizerId'] ?? '',
+        formId: state.pathParameters['formId']!,
+      ),
+    ),
+    GoRoute(
+      path: ':formId',
+      name: Routes.hostFormBuilderScreen.name,
+      parentNavigatorKey: keys.root,
+      builder: (context, state) => HostFormBuilderScreen(
+        organizerId: state.uri.queryParameters['organizerId'] ?? '',
+        formId: state.pathParameters['formId']!,
+      ),
+    ),
+  ],
+);
 
 StatefulShellRoute _hostShellRoute(
   AppAnalytics analytics,
@@ -841,6 +934,21 @@ StatefulShellRoute _hostShellRoute(
     ),
     branches: [
       StatefulShellBranch(
+        navigatorKey: keys.hostToday,
+        observers: [AnalyticsRouteObserver(analytics)],
+        routes: [
+          GoRoute(
+            path: Routes.hostTodayScreen.path,
+            name: Routes.hostTodayScreen.name,
+            builder: (context, state) => HostOperationsHomeScreen(
+              initialClubId:
+                  state.uri.queryParameters['organizerId'] ??
+                  state.uri.queryParameters['clubId'],
+            ),
+          ),
+        ],
+      ),
+      StatefulShellBranch(
         navigatorKey: keys.hostEvents,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
@@ -851,12 +959,13 @@ StatefulShellRoute _hostShellRoute(
               initialClubId:
                   state.uri.queryParameters['organizerId'] ??
                   state.uri.queryParameters['clubId'],
+              surface: HostOperationsSurface.events,
             ),
           ),
         ],
       ),
       StatefulShellBranch(
-        navigatorKey: keys.hostCustomers,
+        navigatorKey: keys.hostAudience,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
           GoRoute(
@@ -932,106 +1041,7 @@ StatefulShellRoute _hostShellRoute(
               ),
             ],
           ),
-        ],
-      ),
-      StatefulShellBranch(
-        navigatorKey: keys.hostForms,
-        observers: [AnalyticsRouteObserver(analytics)],
-        routes: [
-          GoRoute(
-            path: Routes.hostFormsScreen.path,
-            name: Routes.hostFormsScreen.name,
-            builder: (context, state) => HostFormsScreen(
-              initialOrganizerId: state.uri.queryParameters['organizerId'],
-              initialResponses:
-                  state.uri.queryParameters['view'] == 'responses',
-              initialFormId: state.uri.queryParameters['formId'],
-            ),
-            routes: [
-              GoRoute(
-                path: 'applications',
-                name: Routes.hostApplicationsScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostApplicationsScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                ),
-                routes: [
-                  GoRoute(
-                    path: ':applicationId',
-                    name: Routes.hostApplicationDetailScreen.name,
-                    parentNavigatorKey: keys.root,
-                    builder: (context, state) => HostApplicationDetailScreen(
-                      organizerId:
-                          state.uri.queryParameters['organizerId'] ?? '',
-                      applicationId: state.pathParameters['applicationId']!,
-                    ),
-                  ),
-                ],
-              ),
-              GoRoute(
-                path: 'new',
-                name: Routes.hostFormTemplatesScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostFormTemplatesScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                ),
-              ),
-              GoRoute(
-                path: 'responses/:responseId',
-                name: Routes.hostFormResponseDetailScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostFormResponseDetailScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                  responseId: state.pathParameters['responseId']!,
-                ),
-              ),
-              GoRoute(
-                path: ':formId/preview',
-                name: Routes.hostFormPreviewScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostFormPreviewScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                  formId: state.pathParameters['formId']!,
-                ),
-              ),
-              GoRoute(
-                path: ':formId/share',
-                name: Routes.hostFormShareScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostFormShareScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                  formId: state.pathParameters['formId']!,
-                ),
-              ),
-              GoRoute(
-                path: ':formId/analytics',
-                name: Routes.hostFormAnalyticsScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostFormAnalyticsScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                  formId: state.pathParameters['formId']!,
-                ),
-              ),
-              GoRoute(
-                path: ':formId/automations',
-                name: Routes.hostFormAutomationsScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostFormAutomationsScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                  formId: state.pathParameters['formId']!,
-                ),
-              ),
-              GoRoute(
-                path: ':formId',
-                name: Routes.hostFormBuilderScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostFormBuilderScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                  formId: state.pathParameters['formId']!,
-                ),
-              ),
-            ],
-          ),
+          _hostFormsRoute(keys),
         ],
       ),
       StatefulShellBranch(
@@ -1098,12 +1108,12 @@ String _initialLocationFromPlatform() {
           routePath == Routes.loadingScreen.path) {
         return defaultRouteName;
       }
-      return Routes.hostEventsScreen.path;
+      return Routes.hostTodayScreen.path;
     }
     return defaultRouteName;
   }
   return AppConfig.appRole.isHost
-      ? Routes.hostEventsScreen.path
+      ? Routes.hostTodayScreen.path
       : Routes.startScreen.path;
 }
 
@@ -1278,7 +1288,7 @@ String? _pendingDestination({
 String _resumeDestination(Uri uri) {
   final from = _sanitizeFrom(uri.queryParameters[_fromQueryParam]);
   final defaultPath = AppConfig.appRole.isHost
-      ? Routes.hostEventsScreen.path
+      ? Routes.hostTodayScreen.path
       : Routes.dashboardScreen.path;
   if (from == null) return defaultPath;
 

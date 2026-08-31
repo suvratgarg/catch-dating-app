@@ -166,6 +166,12 @@ abstract class AppLocalizations {
   /// **'You'**
   String get consumerNavigationProfile;
 
+  /// Host bottom navigation label for the operational home.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get hostNavigationToday;
+
   /// Host bottom navigation label for the event-management tab.
   ///
   /// In en, this message translates to:
@@ -178,6 +184,12 @@ abstract class AppLocalizations {
   /// **'Customers'**
   String get hostNavigationCustomers;
 
+  /// Host bottom navigation label for people, saved audiences, forms, and responses.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience'**
+  String get hostNavigationAudience;
+
   /// Host bottom navigation label for conversations, broadcasts, and campaigns.
   ///
   /// In en, this message translates to:
@@ -189,6 +201,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Organizer'**
   String get hostNavigationOrganizer;
+
+  /// Today workspace title when no live or upcoming event needs attention.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re all caught up'**
+  String get hostTodayEmptyTitle;
+
+  /// Today workspace guidance when no live or upcoming event needs attention.
+  ///
+  /// In en, this message translates to:
+  /// **'No live or upcoming events need your attention.'**
+  String get hostTodayEmptyBody;
+
+  /// Opens the full Host Events inventory from Today.
+  ///
+  /// In en, this message translates to:
+  /// **'View all events'**
+  String get hostTodayViewAllEvents;
+
+  /// Today workspace section for the next events after the operational spotlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get hostTodayLater;
 
   /// Host inbox filter label showing the number of unread attendee inquiries.
   ///

@@ -234,6 +234,13 @@ List<AppShellNavigationItem> _hostNavigationItems({
   required String? organizerSemanticHint,
 }) => [
   AppShellNavigationItem(
+    destination: AppShellNavigationDestination.hostToday,
+    materialIcon: CatchIcons.tabHome,
+    materialSelectedIcon: CatchIcons.tabHomeFilled,
+    cupertinoIcon: CatchIcons.tabHome,
+    cupertinoSelectedIcon: CatchIcons.tabHomeFilled,
+  ),
+  AppShellNavigationItem(
     destination: AppShellNavigationDestination.hostEvents,
     materialIcon: CatchIcons.tabEvents,
     materialSelectedIcon: CatchIcons.tabEventsFilled,
@@ -241,18 +248,11 @@ List<AppShellNavigationItem> _hostNavigationItems({
     cupertinoSelectedIcon: CatchIcons.tabEventsFilled,
   ),
   AppShellNavigationItem(
-    destination: AppShellNavigationDestination.hostCustomers,
+    destination: AppShellNavigationDestination.hostAudience,
     materialIcon: CatchIcons.tabCustomers,
     materialSelectedIcon: CatchIcons.tabCustomersFilled,
     cupertinoIcon: CatchIcons.tabCustomers,
     cupertinoSelectedIcon: CatchIcons.tabCustomersFilled,
-  ),
-  AppShellNavigationItem(
-    destination: AppShellNavigationDestination.hostForms,
-    materialIcon: CatchIcons.tabForms,
-    materialSelectedIcon: CatchIcons.tabFormsFilled,
-    cupertinoIcon: CatchIcons.tabForms,
-    cupertinoSelectedIcon: CatchIcons.tabFormsFilled,
   ),
   AppShellNavigationItem(
     destination: AppShellNavigationDestination.hostInbox,

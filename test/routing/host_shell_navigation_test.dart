@@ -39,15 +39,15 @@ void main() {
     tester,
   ) async {
     final router = GoRouter(
-      initialLocation: '/host/events',
+      initialLocation: '/host/today',
       routes: [
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) =>
               HostAppShell(navigationShell: navigationShell),
           branches: [
+            _branch('/host/today', 'TODAY BODY'),
             _branch('/host/events', 'EVENTS BODY'),
-            _branch('/host/customers', 'CUSTOMERS BODY'),
-            _branch('/host/forms', 'FORMS BODY'),
+            _branch('/host/audience', 'AUDIENCE BODY'),
             _branch('/host/inbox', 'INBOX BODY'),
             _branch('/host/organizer', 'ORGANIZER BODY'),
           ],
@@ -85,14 +85,14 @@ void main() {
     expect(
       navigationBar.items!.map((item) => item.destination),
       orderedEquals(const [
+        AppShellNavigationDestination.hostToday,
         AppShellNavigationDestination.hostEvents,
-        AppShellNavigationDestination.hostCustomers,
-        AppShellNavigationDestination.hostForms,
+        AppShellNavigationDestination.hostAudience,
         AppShellNavigationDestination.hostInbox,
         AppShellNavigationDestination.hostOrganizer,
       ]),
     );
-    expect(find.text('EVENTS BODY'), findsOneWidget);
+    expect(find.text('TODAY BODY'), findsOneWidget);
     expect(
       find.byKey(const ValueKey<String>('host-organizer-navigation-avatar')),
       findsOneWidget,
@@ -133,13 +133,13 @@ void main() {
       find.byKey(const ValueKey('app_shell.navigation.destination.1')),
     );
     await pumpFeatureUi(tester);
-    expect(find.text('CUSTOMERS BODY'), findsOneWidget);
+    expect(find.text('EVENTS BODY'), findsOneWidget);
 
     await tester.tap(
       find.byKey(const ValueKey('app_shell.navigation.destination.2')),
     );
     await pumpFeatureUi(tester);
-    expect(find.text('FORMS BODY'), findsOneWidget);
+    expect(find.text('AUDIENCE BODY'), findsOneWidget);
 
     await tester.tap(
       find.byKey(const ValueKey('app_shell.navigation.destination.3')),
@@ -169,7 +169,7 @@ void main() {
       addTearDown(tester.view.resetViewInsets);
 
       final router = GoRouter(
-        initialLocation: '/host/events',
+        initialLocation: '/host/today',
         routes: [
           StatefulShellRoute.indexedStack(
             builder: (context, state, navigationShell) =>
@@ -178,7 +178,7 @@ void main() {
               StatefulShellBranch(
                 routes: [
                   GoRoute(
-                    path: '/host/events',
+                    path: '/host/today',
                     builder: (context, state) => Scaffold(
                       body: TextField(
                         key: editorKey,
@@ -189,8 +189,8 @@ void main() {
                   ),
                 ],
               ),
-              _branch('/host/customers', 'CUSTOMERS BODY'),
-              _branch('/host/forms', 'FORMS BODY'),
+              _branch('/host/events', 'EVENTS BODY'),
+              _branch('/host/audience', 'AUDIENCE BODY'),
               _branch('/host/inbox', 'INBOX BODY'),
               _branch('/host/organizer', 'ORGANIZER BODY'),
             ],
@@ -345,7 +345,7 @@ void main() {
   );
 
   testWidgets(
-    'Forms branch draft survives destination changes and shell reflow',
+    'Audience Forms draft survives destination changes and shell reflow',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(390, 844);
@@ -359,10 +359,15 @@ void main() {
             builder: (context, state, navigationShell) =>
                 HostAppShell(navigationShell: navigationShell),
             branches: [
+              _branch('/host/today', 'TODAY BODY'),
               _branch('/host/events', 'EVENTS BODY'),
-              _branch('/host/customers', 'CUSTOMERS BODY'),
               StatefulShellBranch(
                 routes: [
+                  GoRoute(
+                    path: '/host/audience',
+                    builder: (context, state) =>
+                        const Scaffold(body: Text('AUDIENCE BODY')),
+                  ),
                   GoRoute(
                     path: '/host/forms',
                     builder: (context, state) => const _FormsDraftBody(),
@@ -480,15 +485,15 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
 
       final router = GoRouter(
-        initialLocation: '/host/events',
+        initialLocation: '/host/today',
         routes: [
           StatefulShellRoute.indexedStack(
             builder: (context, state, navigationShell) =>
                 HostAppShell(navigationShell: navigationShell),
             branches: [
+              _branch('/host/today', 'TODAY BODY'),
               _branch('/host/events', 'EVENTS BODY'),
-              _branch('/host/customers', 'CUSTOMERS BODY'),
-              _branch('/host/forms', 'FORMS BODY'),
+              _branch('/host/audience', 'AUDIENCE BODY'),
               _branch('/host/inbox', 'INBOX BODY'),
               _branch('/host/organizer', 'ORGANIZER BODY'),
             ],
@@ -568,9 +573,9 @@ void main() {
               : CatchLayout.appShellRailWidth,
         );
         final expectedLabels = [
+          'Today',
           'Events',
-          'Customers',
-          'Forms',
+          'Audience',
           'Messaging',
           'Organizer',
         ];
@@ -585,9 +590,9 @@ void main() {
           expect(semantics.properties.selected, index == 0);
         }
       } else {
+        expect(find.bySemanticsLabel(RegExp('Today')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Events')), findsOneWidget);
-        expect(find.bySemanticsLabel(RegExp('Customers')), findsOneWidget);
-        expect(find.bySemanticsLabel(RegExp('Forms')), findsOneWidget);
+        expect(find.bySemanticsLabel(RegExp('Audience')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Messaging')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Organizer')), findsOneWidget);
       }
