@@ -17,6 +17,7 @@ checks in one durable matrix.
 
 | File | Purpose |
 |---|---|
+| `host_visual_quality_rollout.md` | Authored execution tracker for the Host phone/tablet/desktop visual-quality rollout. Defines bounded slices, acceptance, exclusions, authority order, and the commit-after-item rule without storing run evidence. |
 | `host_shell_route_ui_audit.md` | Extensible route-by-checklist audit matrix for the Host shell destinations, with source-backed findings and reproducible compact, medium, expanded, and 200% text-scale captures. Add a destination by appending one column. |
 | `claude_widgetbook_inventory.md` | Persistent inventory comparison between the Claude Design export, local Widgetbook, local component contracts, and foundation token/style sources. |
 | `comprehensive_todo.md` | Canonical execution checklist for remaining design-parity work across sources of truth, state contracts, Widgetbook, captures, pixel comparison, composition, tokens, features, drift prevention, and pass cadence. |
