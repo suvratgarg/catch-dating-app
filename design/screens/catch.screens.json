@@ -15354,6 +15354,11 @@
           "notes": "Full-shell production capture renders selected-event Booked rows and the roster-backed broadcast card. It replaces the retired All/Unread fixture; a fresh reference comparison is pending."
         },
         {
+          "id": "host_inbox_thread_selected",
+          "status": "captured",
+          "notes": "Tablet full-shell capture proves route-body-aware list/thread adjacency, visible selected-row state, event context, message history, and the embedded reply composer."
+        },
+        {
           "id": "host_messaging_campaigns",
           "status": "captured",
           "notes": "Historical full-shell capture of the former Campaigns workspace with embedded WhatsApp sender setup. Retained as prior-state evidence; it is not the active Sends baseline."
@@ -15498,9 +15503,13 @@
           "id": "populated_queries",
           "kind": "populated",
           "status": "captured",
-          "source": "Host Inbox renders attendee-query rows plus a host broadcast card for host-mode conversations.",
+          "source": "Host Inbox renders attendee-query rows plus a host broadcast card for host-mode conversations. At capable route-body widths, CatchAdaptiveMasterDetailLayout keeps a semantic selected row beside a thread keyed by match id.",
           "tests": [
-            "test/chats/chat_inbox_screen_test.dart"
+            "test/chats/chat_inbox_screen_test.dart",
+            "test/chats/chat_conversations_list_test.dart",
+            "test/chats/chat_screen_test.dart",
+            "test/core/catch_master_detail_layout_test.dart",
+            "test/hosts/host_inbox_screen_test.dart"
           ],
           "nextAction": "The fresh 2026-07-10 production full-shell Inbox comparison is 17.62% mismatch / 31.90 meanDelta. Mismatch is within its 18% ceiling, but meanDelta remains above 18; keep HOST-V2-INBOX-PARITY-001 open alongside live production delivery proof.",
           "previewIds": [
@@ -15508,6 +15517,7 @@
           ],
           "captureIds": [
             "host_inbox_queries",
+            "host_inbox_thread_selected",
             "host_inbox_text_scale_2",
             "host_inbox_light_dark"
           ]
@@ -15968,7 +15978,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostInboxScreen presents the product title Messaging and follows the shell-selected organizer. Its header names the selected responsibility: Inbox owns one-to-one conversations and replies, while Sends owns outbound intent, manual handoff work, delivery history, and route-specific reports. Inbox watches the organizer's events, personal inquiry previews, selected Event or General scope, and search. Sends consumes Customers-owned saved audiences or Events-owned audience references without redefining either authority. HostInboxViewModel keeps organizer, Event/General, Booked/Prospective, and thread-count boundaries explicit.",
+        "currentLayout": "HostInboxScreen presents the product title Messaging and follows the shell-selected organizer. Its header names the selected responsibility: Inbox owns one-to-one conversations and replies, while Sends owns outbound intent, manual handoff work, delivery history, and route-specific reports. Inbox watches the organizer's events, personal inquiry previews, selected Event or General scope, and search. CatchAdaptiveMasterDetailLayout measures the route body after shell chrome, keeps compact navigation pushed, and presents a 360 px index beside a keyed selected thread at 720 px or wider; the route retains per-thread drafts across resize. Sends consumes Customers-owned saved audiences or Events-owned audience references without redefining either authority and keeps its operational content in an 840 px lane. HostInboxViewModel keeps organizer, Event/General, Booked/Prospective, and thread-count boundaries explicit.",
         "targetLayout": "Keep Messaging as a Host-owned communication area with first-class Inbox and Sends workspaces. Preserve organizer and event provenance, reuse shared header and row primitives, and keep event announcements as Activity plus push rather than chat fan-out. The campaigns query value remains a compatibility wire detail, never the visible workspace label.",
         "sections": [
           {
@@ -15997,7 +16007,7 @@
               "search",
               "unread_filter"
             ],
-            "migration": "HostInboxScreen owns selected-organizer resolution, Inbox/Sends switching, workspace-specific explanatory copy, search-action visibility, typed Host chat routing, and workspace-specific retry behavior. HostInboxViewModel owns organizer-scoped inquiry projection and HostAudienceController retains campaign mutations.",
+            "migration": "HostInboxScreen owns selected-organizer resolution, route-synchronized Inbox/Sends switching, workspace-specific explanatory copy, search-action visibility, actual-body-width list/thread selection, keyed embedded-thread and per-thread draft state, typed Host chat routing, and workspace-specific retry behavior. HostInboxViewModel owns organizer-scoped inquiry projection and HostAudienceController retains campaign mutations.",
             "previewIds": [
               "HostInboxScreen/Event-scoped states"
             ]

@@ -5366,13 +5366,14 @@ List<Object> _hostInboxProviderOverrides({
   AsyncValue<String?> uid = const AsyncData<String?>(
     HostInboxSurfaceFixtures.hostUid,
   ),
+  bool includeUid = true,
   AsyncValue<ChatsListViewModel>? viewModel,
   AsyncValue<List<Club>>? clubs,
   AsyncValue<List<Event>>? events,
   AsyncValue<List<EventParticipation>>? participations,
 }) {
   return [
-    uidProvider.overrideWithValue(uid),
+    if (includeUid) uidProvider.overrideWithValue(uid),
     hostOperableClubsProvider(
       HostInboxSurfaceFixtures.hostUid,
     ).overrideWithValue(
@@ -5432,6 +5433,54 @@ List<Object> _hostInboxProviderOverrides({
     ),
   ];
 }
+
+final _hostInboxSelectedPreview =
+    HostInboxSurfaceFixtures.allThreads.conversations.first;
+final _hostInboxSelectedMessages = <ChatMessage>[
+  MatchesChatSurfaceFixtures.message(
+    id: 'host-inbox-selected-message-1',
+    senderId: HostInboxSurfaceFixtures.bookedOneUid,
+    text: 'See you tonight! Is the entrance beside the blue team board?',
+    sentAt: HostInboxSurfaceFixtures.now.subtract(const Duration(minutes: 24)),
+  ),
+  MatchesChatSurfaceFixtures.message(
+    id: 'host-inbox-selected-message-2',
+    senderId: HostInboxSurfaceFixtures.hostUid,
+    text: 'Yes. Head upstairs and we will meet you by the board.',
+    sentAt: HostInboxSurfaceFixtures.now.subtract(const Duration(minutes: 18)),
+  ),
+];
+
+List<Object> _hostInboxSelectedThreadOverrides() => [
+  ..._hostInboxProviderOverrides(includeUid: false),
+  ..._hostChatProviderOverrides(
+    uid: HostInboxSurfaceFixtures.hostUid,
+    match: _hostInboxSelectedPreview.match,
+    matchId: _hostInboxSelectedPreview.matchId,
+    messages: _hostInboxSelectedMessages,
+    includeEvent: false,
+    includeClub: false,
+  ),
+  watchClubProvider(
+    HostInboxSurfaceFixtures.club.id,
+  ).overrideWith((ref) => Stream<Club?>.value(HostInboxSurfaceFixtures.club)),
+  watchEventProvider(
+    HostInboxSurfaceFixtures.event.id,
+  ).overrideWith((ref) => Stream<Event?>.value(HostInboxSurfaceFixtures.event)),
+  watchPublicProfileProvider(
+    HostInboxSurfaceFixtures.bookedOneUid,
+  ).overrideWith(
+    (ref) => Stream<PublicProfile?>.value(
+      const PublicProfile(
+        uid: HostInboxSurfaceFixtures.bookedOneUid,
+        name: 'Dev Patel',
+        age: 30,
+        gender: Gender.man,
+        city: 'Mumbai',
+      ),
+    ),
+  ),
+];
 
 List<Object> _hostChatProviderOverrides({
   String? uid = MatchesChatSurfaceFixtures.hostUid,
@@ -15348,6 +15397,30 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         initialScope: const HostInboxScope.event(
           HostInboxSurfaceFixtures.eventId,
         ),
+        broadcastEnabled: true,
+        syncSelectionToRoute: false,
+        now: HostInboxSurfaceFixtures.now,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_inbox_thread_selected',
+    routeIds: const <String>['hostInboxScreen'],
+    device: CaptureDevice.auditTablet,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostInboxSurfaceFixtures.hostUid),
+      ..._hostInboxSelectedThreadOverrides(),
+    ],
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation:
+          '/host/inbox?eventId=${HostInboxSurfaceFixtures.eventId}'
+          '&threadId=${_hostInboxSelectedPreview.matchId}',
+      activeIndex: 3,
+      child: HostInboxScreen(
+        initialScope: const HostInboxScope.event(
+          HostInboxSurfaceFixtures.eventId,
+        ),
+        initialThreadId: _hostInboxSelectedPreview.matchId,
         broadcastEnabled: true,
         syncSelectionToRoute: false,
         now: HostInboxSurfaceFixtures.now,

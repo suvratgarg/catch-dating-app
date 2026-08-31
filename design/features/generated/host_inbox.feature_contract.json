@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-30",
   "sourceDigest": "sha256:0bee6826fc8ca234592441ea4ddc63b28b52c5e93285ae2cb8aa78d40c1afd54",
-  "resolvedDigest": "sha256:0b948cf0b4ff9bbea50fe1d40ccaeb3e4e604eb890a564856355855cfd912e7e",
+  "resolvedDigest": "sha256:5edb591c95ff9d0526ce6908f80c897eb15397d705a05e244bf658ead058d678",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Messaging",
@@ -18,9 +18,9 @@
     "scenarios": 42,
     "actionCases": 46,
     "actions": 21,
-    "captures": 19,
+    "captures": 20,
     "previews": 3,
-    "testFiles": 12,
+    "testFiles": 15,
     "evidenceExceptions": 44
   },
   "surfaces": [
@@ -230,9 +230,9 @@
         "scenarios": 42,
         "actionCases": 46,
         "actions": 21,
-        "captures": 19,
+        "captures": 20,
         "previews": 3,
-        "testFiles": 12,
+        "testFiles": 15,
         "evidenceExceptions": 44
       },
       "dimensions": {
@@ -1438,6 +1438,7 @@
           "evidence": {
             "captureIds": [
               "host_inbox_queries",
+              "host_inbox_thread_selected",
               "host_inbox_text_scale_2",
               "host_inbox_light_dark"
             ],
@@ -1445,7 +1446,11 @@
               "HostInboxScreen/Event-scoped states"
             ],
             "tests": [
-              "test/chats/chat_inbox_screen_test.dart"
+              "test/chats/chat_inbox_screen_test.dart",
+              "test/chats/chat_conversations_list_test.dart",
+              "test/chats/chat_screen_test.dart",
+              "test/core/catch_master_detail_layout_test.dart",
+              "test/hosts/host_inbox_screen_test.dart"
             ]
           },
           "actionCases": [

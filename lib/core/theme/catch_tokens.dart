@@ -2693,6 +2693,15 @@ abstract final class CatchLayout {
   static const double appShellLargeTextRailWidth = 168.0;
   static const double appShellSidebarWidth = 240.0;
   static const double masterDetailIndexPaneWidth = 360.0;
+
+  /// Minimum width inside the Messaging route body that can hold the
+  /// canonical conversation index and an equally usable thread pane. This is
+  /// intentionally measured after shell navigation has taken its width.
+  static const double hostMessagingSplitViewMinWidth =
+      masterDetailIndexPaneWidth * 2;
+  static const double hostMessagingSendsMaxContentWidth = 840.0;
+  static const double hostMessagingSendsPageMaxExtent =
+      hostMessagingSendsMaxContentWidth + pageBodyHorizontalGutters;
   static const double hostCreateEventStepRailWidth = 240.0;
   static const double hostCreateEventConsequencePaneWidth = 320.0;
   static const double hostCreateEventFormLaneMaxWidth = 680.0;

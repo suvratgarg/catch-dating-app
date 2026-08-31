@@ -6,10 +6,12 @@ import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -143,6 +145,7 @@ void main() {
         previews: [preview],
         participations: const [],
         now: now,
+        routeWidth: 1200,
       ),
     );
     await pumpFeatureUi(tester);
@@ -153,6 +156,39 @@ void main() {
     );
     expect(find.text('Select a conversation'), findsOneWidget);
     expect(find.text('Expanded Guest'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('split view uses route-body width after shell chrome', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final preview = _preview(
+      uid: 'constrained-guest',
+      name: 'Constrained Guest',
+      eventIds: const [],
+    );
+
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: [preview],
+        participations: const [],
+        now: now,
+        routeWidth: 700,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.byKey(const ValueKey('catch-master-detail-divider')),
+      findsNothing,
+    );
+    expect(find.text('Select a conversation'), findsNothing);
+    expect(find.text('Constrained Guest'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -193,6 +229,34 @@ void main() {
     await tester.tap(find.text('Send an event announcement'));
     await pumpFeatureUi(tester);
     expect(find.text('New broadcast'), findsOneWidget);
+  });
+
+  testWidgets('wide Sends keeps its operational content in a bounded lane', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: const [],
+        participations: const [],
+        now: now,
+        initialWorkspace: HostMessagingWorkspace.campaigns,
+        routeWidth: 1200,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    final lane = tester.widget<CatchSliverContentWidth>(
+      find.byType(CatchSliverContentWidth),
+    );
+    expect(lane.maxExtent, CatchLayout.hostMessagingSendsPageMaxExtent);
+    expect(find.text('Outbound delivery and history.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('keeps WhatsApp threads inside the existing Inbox scopes', (
@@ -664,12 +728,20 @@ Widget _app({
   List<HostManualSendTask> manualSendTasks = const [],
   AsyncValue<HostWhatsappThreadPage>? whatsappThreadsValue,
   int remainingFollowerQuota = 3,
+  double routeWidth = 390,
 }) {
   final club = club_test.buildClub(id: event?.clubId ?? 'club-1');
   final inbox = ChatsListViewModel(
     newMatches: const [],
     conversations: previews,
     totalThreadCount: previews.length,
+  );
+  final screen = HostInboxScreen(
+    initialScope: initialScope,
+    initialWorkspace: initialWorkspace,
+    initialSavedAudienceId: initialSavedAudienceId,
+    syncSelectionToRoute: false,
+    now: now,
   );
   return ProviderScope(
     overrides: [
@@ -736,12 +808,9 @@ Widget _app({
     ],
     child: MaterialApp(
       theme: AppTheme.light,
-      home: HostInboxScreen(
-        initialScope: initialScope,
-        initialWorkspace: initialWorkspace,
-        initialSavedAudienceId: initialSavedAudienceId,
-        syncSelectionToRoute: false,
-        now: now,
+      home: Align(
+        alignment: Alignment.topLeft,
+        child: SizedBox(width: routeWidth, height: 900, child: screen),
       ),
     ),
   );

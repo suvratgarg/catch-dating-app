@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.18.4
+version: 1.18.5
 updated: 2026-08-31
 owner: app_architecture
 status: active
@@ -2214,7 +2214,17 @@ The Host Messaging contract is:
   inquiries and reply-capable conversations. Sends owns outbound intent
   selection, event-announcement composition, mixed outbound history,
   follower-update composition and organizer campaign lifecycle; sender setup
-  stays on the dedicated organizer messaging route;
+  stays on the dedicated organizer messaging route. Workspace changes update
+  the compatibility route query when route synchronization is enabled;
+- Inbox decides list/thread adjacency from the width available inside the route
+  body after shell navigation, not from the global window. At 720 px or wider
+  it uses the canonical 360 px index beside a selected thread; narrower bodies
+  keep the pushed-thread flow. The index owns visible and semantic selection,
+  while each embedded `ChatScreen` is keyed by thread id and reports its draft
+  to the route so switching or resizing cannot leak or discard thread state;
+- Sends keeps its operational slivers inside an 840 px content lane on wide
+  bodies so intent controls, manual work, history, and empty states retain one
+  shared reading axis;
 - an explicit selected Event or explicit General scope; General is never an
   event-id sentinel;
 - personal two-party contacted-host inquiry threads, separated by event;

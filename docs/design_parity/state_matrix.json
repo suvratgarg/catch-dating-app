@@ -8620,7 +8620,9 @@
             "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
             "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
+            "lib/chats/presentation/chat_screen.dart",
             "lib/core/widgets/catch_person_row.dart",
+            "lib/core/widgets/catch_master_detail_layout.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "lib/events/data/event_repository.dart",
             "lib/events/data/event_participation_repository.dart"
@@ -8639,6 +8641,7 @@
             "host_inbox_offline",
             "host_inbox_empty",
             "host_inbox_queries",
+            "host_inbox_thread_selected",
             "host_messaging_campaigns",
             "host_inbox_prospective",
             "host_inbox_general",
@@ -8736,15 +8739,20 @@
               "id": "populated_queries",
               "kind": "populated",
               "status": "captured",
-              "notes": "Host Inbox renders the selected event, Booked/Prospective personal inquiry rows, and roster-backed broadcast card inside the production HostAppShell. The fresh 2026-07-11 strict comparison passes at 7.34% mismatch / 7.62 meanDelta. HOST-V2-INBOX-PARITY-001 remains active only because production callable/IAM and delivery proof are external and not yet recorded.",
+              "notes": "Host Inbox renders the selected event, Booked/Prospective personal inquiry rows, and roster-backed broadcast card inside the production HostAppShell. At capable route-body widths it keeps a semantic selected row beside a keyed thread and retains per-thread drafts across resize. The fresh 2026-07-11 strict comparison passes at 7.34% mismatch / 7.62 meanDelta. HOST-V2-INBOX-PARITY-001 remains active only because production callable/IAM and delivery proof are external and not yet recorded.",
               "tests": [
-                "test/chats/chat_inbox_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart",
+                "test/chats/chat_conversations_list_test.dart",
+                "test/chats/chat_screen_test.dart",
+                "test/core/catch_master_detail_layout_test.dart",
+                "test/hosts/host_inbox_screen_test.dart"
               ],
               "previewIds": [
                 "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_queries",
+                "host_inbox_thread_selected",
                 "host_inbox_text_scale_2",
                 "host_inbox_light_dark"
               ]

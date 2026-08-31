@@ -319,6 +319,7 @@ Future<void> pumpConsumerMatchChat(
   FakeConversationRepository? conversationRepository,
   FakeSafetyRepository? safetyRepository,
   String? initialDraftText,
+  ValueChanged<String>? onDraftChanged,
 }) async {
   final effectiveConversationRepository =
       conversationRepository ?? FakeConversationRepository();
@@ -347,6 +348,7 @@ Future<void> pumpConsumerMatchChat(
           matchId: 'match-1',
           otherProfile: otherProfile,
           initialDraftText: initialDraftText,
+          onDraftChanged: onDraftChanged,
         ),
       ),
     ),
@@ -1350,6 +1352,23 @@ void main() {
         tester.widget<TextField>(find.byType(TextField)).controller?.text,
         'Holding this draft for review.',
       );
+    });
+
+    testWidgets('reports draft changes to an adaptive workspace owner', (
+      tester,
+    ) async {
+      final drafts = <String>[];
+      await pumpConsumerMatchChat(
+        tester,
+        initialDraftText: 'Earlier draft',
+        onDraftChanged: drafts.add,
+      );
+
+      await tester.enterText(find.byType(TextField), 'Draft after resize');
+      await tester.pump();
+
+      expect(drafts, isNotEmpty);
+      expect(drafts.last, 'Draft after resize');
     });
 
     testWidgets('resets unread once the uid becomes available after mount', (
