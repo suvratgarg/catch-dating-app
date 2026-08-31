@@ -40,6 +40,11 @@ void _registerHostOperationsCustomersTests() {
 
     final name = tester.widget<Text>(find.text('Ananya Rao'));
     final metadata = tester.widget<Text>(find.text('8 events attended'));
+    final avatar = tester.widget<CatchPersonAvatar>(
+      find.descendant(of: row, matching: find.byType(CatchPersonAvatar)),
+    );
+    expect(avatar.size, CatchSpacing.s10);
+    expect(tester.getSize(row).height, greaterThanOrEqualTo(72));
     expect(
       name.style!.fontWeight!.value,
       greaterThan(metadata.style!.fontWeight!.value),
@@ -753,7 +758,7 @@ void _registerHostOperationsCustomersTests() {
       findsOneWidget,
     );
     final activeView = find.byType(HostCustomerFilterSummary);
-    expect(find.ancestor(of: activeView, matching: summary), findsOneWidget);
+    expect(find.ancestor(of: activeView, matching: summary), findsNothing);
     expect(find.text('All · 0 people'), findsOneWidget);
     expect(find.text('Message these 0'), findsNothing);
     expect(
@@ -870,6 +875,66 @@ void _registerHostOperationsCustomersTests() {
     await pumpFeatureUi(tester);
     expect(find.text('Most attended'), findsOneWidget);
     expect(requests.last.sort, HostCustomerSort.mostAttended);
+  });
+
+  testWidgets('compact customer overview keeps metrics and tools in one flow', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final club = buildClub(id: 'compact-overview-club', ownerUserId: _hostUid);
+
+    await _pumpHostScreen(
+      tester,
+      const HostCustomersScreen(),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        hostCustomersDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostCustomersDirectoryController(
+            [],
+            _customerDirectoryState(),
+          ),
+        ),
+      ],
+    );
+
+    final summary = find.byType(HostCustomersSummary);
+    final metricSurfaces = tester
+        .widgetList<CatchSurface>(
+          find.descendant(of: summary, matching: find.byType(CatchSurface)),
+        )
+        .toList();
+    expect(metricSurfaces, hasLength(3));
+    expect(
+      metricSurfaces.every((surface) => surface.borderSpec == null),
+      isTrue,
+    );
+
+    final countRect = tester.getRect(find.text('All · 1 person'));
+    final filtersRect = tester.getRect(
+      find.byKey(const ValueKey('host-customers-filters')),
+    );
+    final sortRect = tester.getRect(
+      find.byKey(const ValueKey('host-customers-sort')),
+    );
+    expect(
+      (countRect.center.dy - filtersRect.center.dy).abs(),
+      lessThanOrEqualTo(CatchSpacing.s10),
+    );
+    expect(filtersRect.center.dy, closeTo(sortRect.center.dy, 0.5));
+    expect(
+      find.ancestor(
+        of: find.byKey(const ValueKey('host-customers-filters')),
+        matching: find.byType(HostCustomerFilterSummary),
+      ),
+      findsOneWidget,
+    );
+
+    final customerRow = find.byType(HostCustomerRow);
+    expect(tester.getTopLeft(customerRow).dy, lessThanOrEqualTo(380));
+    expect(tester.getSize(customerRow).height, greaterThanOrEqualTo(72));
   });
 
   testWidgets('sender recovery opens dedicated WhatsApp Business setup', (

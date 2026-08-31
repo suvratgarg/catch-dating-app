@@ -236,6 +236,20 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     };
     final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
     final activeQuery = peopleView ? _search : _audienceSearch;
+    final directoryControls = HostCustomerDirectoryControls(
+      sort: _sort,
+      shrinkWrap: true,
+      condensed: screenSize.isCompact || screenSize.isExpanded,
+      onSortChanged: (sort) => setState(() => _sort = sort),
+      onOpenFilters: directoryState == null
+          ? null
+          : () => _openFilters(
+              effectiveFilter,
+              _manualTag,
+              directoryState,
+              summaryState.value?.smsReadiness,
+            ),
+    );
     return CatchTabbedScreenScaffold(
       title: context.l10n.hostNavigationCustomers,
       actions: peopleView
@@ -350,59 +364,50 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                               : selectedFilter;
                           _manualTag = null;
                         }),
-                        directorySummary: directoryState == null
-                            ? null
-                            : HostCustomerFilterSummary(
-                                filter: effectiveFilter,
-                                manualTag: _manualTag,
-                                count: directoryState.matchCount,
-                                countCoverage:
-                                    directoryState.matchCountCoverage,
-                                campaignBlocker: campaignBridgeBlocker,
-                                onMessage:
-                                    campaignBridgePhase ==
-                                            HostCustomerCampaignBridgePhase
-                                                .ready &&
-                                        campaignAudienceDefinition != null
-                                    ? () => _saveAndMessageCustomers(
-                                        selectedClub,
-                                        effectiveFilter,
-                                        _manualTag,
-                                        campaignAudienceDefinition,
-                                      )
-                                    : null,
-                                onReviewSenderSetup:
-                                    campaignBridgePhase ==
-                                        HostCustomerCampaignBridgePhase
-                                            .senderSetupRequired
-                                    ? () => _reviewWhatsappSenderSetup(
-                                        selectedClub,
-                                      )
-                                    : null,
-                                onClear:
-                                    effectiveFilter == HostCustomerFilter.all &&
-                                        _manualTag == null
-                                    ? null
-                                    : () => setState(() {
-                                        _filter = HostCustomerFilter.all;
-                                        _manualTag = null;
-                                      }),
-                              ),
                       ),
                       gapH16,
-                      HostCustomerDirectoryControls(
-                        sort: _sort,
-                        onSortChanged: (sort) => setState(() => _sort = sort),
-                        onOpenFilters: directoryState == null
-                            ? null
-                            : () => _openFilters(
-                                effectiveFilter,
-                                _manualTag,
-                                directoryState,
-                                summaryState.value?.smsReadiness,
-                              ),
-                      ),
-                      gapH16,
+                      const CatchDivider.section(),
+                      gapH12,
+                      if (directoryState == null)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: directoryControls,
+                        )
+                      else
+                        HostCustomerFilterSummary(
+                          filter: effectiveFilter,
+                          manualTag: _manualTag,
+                          count: directoryState.matchCount,
+                          countCoverage: directoryState.matchCountCoverage,
+                          campaignBlocker: campaignBridgeBlocker,
+                          onMessage:
+                              campaignBridgePhase ==
+                                      HostCustomerCampaignBridgePhase.ready &&
+                                  campaignAudienceDefinition != null
+                              ? () => _saveAndMessageCustomers(
+                                  selectedClub,
+                                  effectiveFilter,
+                                  _manualTag,
+                                  campaignAudienceDefinition,
+                                )
+                              : null,
+                          onReviewSenderSetup:
+                              campaignBridgePhase ==
+                                  HostCustomerCampaignBridgePhase
+                                      .senderSetupRequired
+                              ? () => _reviewWhatsappSenderSetup(selectedClub)
+                              : null,
+                          onClear:
+                              effectiveFilter == HostCustomerFilter.all &&
+                                  _manualTag == null
+                              ? null
+                              : () => setState(() {
+                                  _filter = HostCustomerFilter.all;
+                                  _manualTag = null;
+                                }),
+                          trailing: directoryControls,
+                        ),
+                      gapH12,
                       CatchAsyncValueView<HostCustomersDirectoryState>(
                         value: directory,
                         onRetry: () => ref.invalidate(

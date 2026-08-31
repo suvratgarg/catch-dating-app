@@ -1,6 +1,6 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 0.1.0
+version: 0.2.0
 updated: 2026-08-31
 owner: product_design_parity
 status: active
@@ -133,7 +133,7 @@ contract:
 | Item | Delivery unit | Status |
 |---|---|---|
 | T0 | Establish this persistent rollout contract and clean-worktree baseline | `complete` |
-| S1 | Customers/People directory reference composition | `pending` |
+| S1 | Customers/People directory reference composition | `complete` |
 | S2 | Customer record detail and adaptive selected-record composition | `pending` |
 | S3 | Create Event essentials hierarchy and adaptive flow composition | `pending` |
 | S4 | Durable Event workspace composition and route-state contract | `pending` |
@@ -449,7 +449,8 @@ For every item:
 
 ## Handoff state
 
-The first pending production item is **S1 — Customers/People directory
-reference composition**. Start by capturing current `origin/main` at the
-canonical People fixture and inspecting the complete route, typed state,
-toolbar, summary, directory, tests, and screen contracts before editing.
+The first pending production item is **S2 — Customer record detail and
+adaptive selection**. Start from the current pushed detail route and expanded
+master-detail seam, then inspect the complete identity, memory, activity,
+communication, loading, failure, mutation, selection, and route-state owners
+before editing.

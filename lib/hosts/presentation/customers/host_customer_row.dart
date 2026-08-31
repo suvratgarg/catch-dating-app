@@ -52,10 +52,10 @@ class HostCustomerRow extends StatelessWidget {
             child: Row(
               children: [
                 CatchPersonAvatar(
-                  size: CatchSpacing.s7,
+                  size: CatchSpacing.s10,
                   name: contact.displayName,
                 ),
-                gapW12,
+                gapW16,
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
