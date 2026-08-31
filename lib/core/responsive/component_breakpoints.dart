@@ -58,4 +58,12 @@ abstract final class ComponentBreakpoints {
   /// Host roster boards use person rows instead of the three-column table
   /// below this local width.
   static const double hostRosterTableCompactBreakpoint = 600.0;
+
+  /// Create Event gains a persistent step/status rail only when the remaining
+  /// form lane can still preserve the compact form contract.
+  static const double hostCreateEventStepRailBreakpoint = 840.0;
+
+  /// Create Event adds a source-backed consequence pane only after the rail,
+  /// capped form lane, gutters, and pane can coexist without compression.
+  static const double hostCreateEventConsequencePaneBreakpoint = 1180.0;
 }

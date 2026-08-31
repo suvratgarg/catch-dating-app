@@ -284,6 +284,7 @@ void main() {
     final now = DateTime(2026, 8, 19, 9);
     final review = CreateEventWizardReviewState.resolve(
       activeSteps: steps,
+      name: 'Sunday social run',
       activityKind: ActivityKind.socialRun,
       customActivityLabel: '',
       distance: '5',
@@ -323,8 +324,48 @@ void main() {
       CatchFormStepStatus.optional,
     ]);
 
+    final missingName = CreateEventWizardReviewState.resolve(
+      activeSteps: steps,
+      name: '  ',
+      activityKind: ActivityKind.socialRun,
+      customActivityLabel: '',
+      distance: '5',
+      pace: PaceLevel.moderate,
+      externalBookingMode: false,
+      externalEventUrl: '',
+      hasStartingPoint: true,
+      meetingPoint: 'Saket sports complex',
+      scheduleState: CreateEventScheduleState(
+        selectedDate: DateTime(2026, 8, 20),
+        selectedStartTime: const TimeOfDay(hour: 7, minute: 0),
+      ),
+      now: now,
+      capacity: '20',
+      price: '0',
+      currencyCode: 'INR',
+      admissionPreset: EventAdmissionPreset.openCapacity,
+      inviteCode: '',
+      cohortCapsEnabled: false,
+      maxMen: '',
+      maxWomen: '',
+      crossPathsPairInventoryEnabled: false,
+      crossPathsPairCapacity: '2',
+      dynamicPricingEnabled: false,
+      dynamicPricingStep: '',
+      dynamicPricingMax: '',
+      minAge: '',
+      maxAge: '',
+    );
+
+    expect(missingName.canSubmit, isFalse);
+    expect(
+      missingName.items.first.status,
+      CatchFormStepStatus.needsInformation,
+    );
+
     final incomplete = CreateEventWizardReviewState.resolve(
       activeSteps: steps,
+      name: '',
       activityKind: ActivityKind.socialRun,
       customActivityLabel: '',
       distance: '',
@@ -362,6 +403,7 @@ void main() {
   test('external event review requires draft roster reattachment', () {
     final review = CreateEventWizardReviewState.resolve(
       activeSteps: steps,
+      name: 'Sunday dinner',
       activityKind: ActivityKind.dinner,
       customActivityLabel: '',
       distance: '',

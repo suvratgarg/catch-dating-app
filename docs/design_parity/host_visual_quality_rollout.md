@@ -1,6 +1,6 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 0.3.0
+version: 0.4.0
 updated: 2026-08-31
 owner: product_design_parity
 status: active
@@ -135,8 +135,8 @@ contract:
 | T0 | Establish this persistent rollout contract and clean-worktree baseline | `complete` |
 | S1 | Customers/People directory reference composition | `complete` |
 | S2 | Customer record detail and adaptive selected-record composition | `complete` |
-| S3 | Create Event essentials hierarchy and adaptive flow composition | `in_progress` |
-| S4 | Durable Event workspace composition and route-state contract | `pending` |
+| S3 | Create Event essentials hierarchy and adaptive flow composition | `complete` |
+| S4 | Durable Event workspace composition and route-state contract | `in_progress` |
 | S5 | Forms library and builder studio composition | `pending` |
 | S6 | Messaging Inbox list/thread composition | `pending` |
 | S7 | Live workspace stage/roster/command composition | `pending` |
@@ -449,8 +449,7 @@ For every item:
 
 ## Handoff state
 
-The first pending production item is **S2 — Customer record detail and
-adaptive selection**. Start from the current pushed detail route and expanded
-master-detail seam, then inspect the complete identity, memory, activity,
-communication, loading, failure, mutation, selection, and route-state owners
-before editing.
+The active production item is **S4 — Durable Event workspace**. Start from the
+current event detail and manage routes, then inspect their full route aliases,
+lifecycle policies, permissions, overview, guests, messaging, Forms, Run,
+loading, failure, and adaptive-layout owners before editing.

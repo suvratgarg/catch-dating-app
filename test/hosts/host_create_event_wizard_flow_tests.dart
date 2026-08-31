@@ -44,6 +44,75 @@ void _registerCreateEventWizardFlowTests() {
     );
   });
 
+  testWidgets('puts viable event fields before optional media on phone', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 3000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await _pumpCreateEventFlow(tester);
+    await _openCreateEventFlow(tester);
+
+    final nameRect = tester.getRect(find.byKey(CreateEventFormKeys.name));
+    final mediaRect = tester.getRect(
+      find.byKey(const ValueKey('create_event.add_event_photos')),
+    );
+    expect(nameRect.top, lessThan(mediaRect.top));
+    expect(
+      find.byKey(const ValueKey('host-create-event-step-rail')),
+      findsNothing,
+    );
+  });
+
+  testWidgets('wide create flow adds rail, capped form, and consequence pane', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 1000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await _pumpCreateEventFlow(tester);
+    await _openCreateEventFlow(tester);
+
+    final rail = find.byKey(const ValueKey('host-create-event-step-rail'));
+    final lane = find.byKey(const ValueKey('host-create-event-form-lane'));
+    final consequence = find.byKey(
+      const ValueKey('host-create-event-consequence-pane'),
+    );
+    expect(rail, findsOneWidget);
+    expect(lane, findsOneWidget);
+    expect(consequence, findsOneWidget);
+    expect(
+      tester.getSize(lane).width,
+      lessThanOrEqualTo(CatchLayout.hostCreateEventFormLaneMaxWidth),
+    );
+    expect(tester.getRect(rail).right, lessThan(tester.getRect(lane).left));
+    expect(
+      tester.getRect(lane).right,
+      lessThan(tester.getRect(consequence).left),
+    );
+
+    await tester.tap(find.byKey(const ValueKey('catch-form-step-overview-1')));
+    await _pumpTestAnimation(tester);
+    expect(find.text('Meeting location'), findsWidgets);
+
+    tester.view.physicalSize = const Size(1024, 1000);
+    await tester.pump();
+    expect(rail, findsOneWidget);
+    expect(lane, findsOneWidget);
+    expect(consequence, findsNothing);
+    expect(find.text('Meeting location'), findsWidgets);
+
+    tester.view.physicalSize = const Size(430, 1000);
+    await tester.pump();
+    expect(rail, findsNothing);
+    expect(consequence, findsNothing);
+    expect(find.text('Meeting location'), findsWidgets);
+  });
+
   testWidgets(
     'external guest-list creation preserves the mapped source and removes Catch payment policy',
     (tester) async {
