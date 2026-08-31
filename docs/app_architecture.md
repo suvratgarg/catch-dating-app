@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.18.7
+version: 1.18.8
 updated: 2026-08-31
 owner: app_architecture
 status: active
@@ -3461,6 +3461,13 @@ roles, and explicit leading/action slots. Sliver screens pass
 screens use `CatchScreenTopBar(...)`, which wraps `CatchTopBar` while preserving
 search, leading, action, safe-area, and padding configuration.
 
+The app-bar wrapper's preferred size must reserve the same title, eyebrow,
+subtitle, and action line counts that `CatchScreenHeaderTitle` renders. At a
+text scale of 1.5 or greater the supporting subtitle may use two lines, so
+`CatchScreenTopBar.heightFor` must budget two scaled supporting line heights.
+Keep this invariant in the shared primitive and its focused widget test rather
+than compensating with route-owned fixed heights.
+
 Top-bar action slots accept only the top-bar action family. Use
 `CatchTopBarPrimaryAction` for a primary root-screen action: it renders the
 canonical 40 px bordered icon target on compact phones and preserves the
@@ -3490,6 +3497,7 @@ const CatchScreenHeaderTitle.block({
 @override
 Widget build(BuildContext context) {
   final t = CatchTokens.of(context);
+  final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
 
   return Row(
     children: [
@@ -3515,9 +3523,9 @@ Widget build(BuildContext context) {
             ),
             if (subtitle != null) ...[
               const SizedBox(height: CatchGaps.headerTitleToSubtitle),
-              Text(
-                subtitle!,
-                maxLines: 1,
+            Text(
+              subtitle!,
+              maxLines: largeText ? 2 : 1,
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),

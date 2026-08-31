@@ -3,12 +3,12 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 68,
-    "captures": 636,
+    "captures": 639,
     "statusCounts": {
       "excluded": 2,
-      "captured": 44,
+      "captured": 45,
       "alias": 7,
-      "planned": 15
+      "planned": 14
     }
   },
   "profile": {
@@ -6540,6 +6540,23 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "host_live_console_wide",
+      "routes": [
+        "hostAppEventManageScreen"
+      ],
+      "device": "audit-tablet-1024x1366",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_live_console_wide.png",
+        "dark": "dark/host_live_console_wide.png"
+      },
+      "whatItIs": "Host Live Console Wide",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "host_live_room_workspace",
       "routes": [
         "hostAppEventManageScreen"
@@ -8912,6 +8929,23 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "host_form_builder_draft",
+      "routes": [
+        "hostFormBuilderScreen"
+      ],
+      "device": "audit-desktop-1440x1000",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_builder_draft.png",
+        "dark": "dark/host_form_builder_draft.png"
+      },
+      "whatItIs": "Host Form Builder Draft",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "host_customer_detail_memory",
       "routes": [
         "hostCustomerDetailScreen"
@@ -8943,6 +8977,23 @@
         "dark": "dark/host_inbox_queries.png"
       },
       "whatItIs": "Host Inbox Queries",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_thread_selected",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "audit-tablet-1024x1366",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_thread_selected.png",
+        "dark": "dark/host_inbox_thread_selected.png"
+      },
+      "whatItIs": "Host Inbox Thread Selected",
       "keepChangeNotes": ""
     },
     {

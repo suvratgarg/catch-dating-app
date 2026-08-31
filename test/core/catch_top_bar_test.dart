@@ -135,6 +135,44 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets(
+    'CatchScreenTopBar reserves two subtitle lines at large text with search',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrapScreenTopBar(
+          title: 'Messaging',
+          subtitle:
+              'Guest conversations, event announcements, and campaign work',
+          textScale: 1.5,
+          search: const CatchTopBarSearch(
+            placeholder: 'Search conversations',
+            tooltip: 'Search conversations',
+          ),
+        ),
+      );
+
+      expect(find.text('Messaging'), findsOneWidget);
+      expect(
+        find.text(
+          'Guest conversations, event announcements, and campaign work',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester
+            .widget<Text>(
+              find.text(
+                'Guest conversations, event announcements, and campaign work',
+              ),
+            )
+            .maxLines,
+        2,
+      );
+      expect(find.byIcon(CatchIcons.search), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('CatchScreenHeaderTitle supports reviewed two-line titles', (
     tester,
   ) async {

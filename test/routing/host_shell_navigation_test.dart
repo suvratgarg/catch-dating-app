@@ -435,6 +435,13 @@ void main() {
       sidebar: true,
     ),
     (
+      width: 840.0,
+      textScale: 2.0,
+      chromeKey: 'app_shell.navigation.sidebar',
+      sideNavigation: true,
+      sidebar: true,
+    ),
+    (
       width: 700.0,
       textScale: 2.0,
       chromeKey: 'app_shell.navigation.rail',
@@ -517,6 +524,12 @@ void main() {
         find.text('Catch Host'),
         scenario.sidebar ? findsOneWidget : findsNothing,
       );
+      if (scenario.sidebar) {
+        expect(
+          tester.widget<Text>(find.text('Catch Host')).maxLines,
+          scenario.textScale >= 1.6 ? 2 : 1,
+        );
+      }
       final navigationBar = tester.widget<AppShellNavigationBar>(
         find.byType(AppShellNavigationBar),
       );

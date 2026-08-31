@@ -164,7 +164,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
     final t = CatchTokens.of(context);
     final hasEyebrow = eyebrow != null && eyebrow!.isNotEmpty;
     final hasSubtitle = subtitle != null && subtitle!.isNotEmpty;
-    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
 
     final titleStack = Column(
       mainAxisSize: MainAxisSize.min,
@@ -357,7 +357,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     TextStyle? titleStyle,
   }) {
     final textScaler = MediaQuery.textScalerOf(context);
-    final largeText = textScaler.scale(1) >= 1.6;
+    final largeText = textScaler.scale(1) >= 1.5;
     final resolvedPadding = CatchInsets.screenTitleBlock.resolve(
       Directionality.of(context),
     );
@@ -374,7 +374,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     if (hasSubtitle) {
       textHeight +=
           CatchGaps.headerTitleToSubtitle +
-          lineHeight(CatchTextStyles.supporting(context));
+          lineHeight(CatchTextStyles.supporting(context)) * (largeText ? 2 : 1);
     }
     if (largeText && hasActions) {
       textHeight += CatchLayout.topBarLargeTextActionReserve;
@@ -401,7 +401,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
     return CatchTopBar(
       titleWidget: CatchScreenHeaderTitle(
         title: title,

@@ -1,6 +1,6 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 0.9.0
+version: 1.0.0
 updated: 2026-08-31
 owner: product_design_parity
 status: active
@@ -141,7 +141,7 @@ contract:
 | S6 | Messaging Inbox list/thread composition | `complete` |
 | S7 | Live workspace stage/roster/command composition | `complete` |
 | S8 | Global shell, naming, and Forms placement product decision | `complete` |
-| S9 | Cross-surface state, accessibility, and visual-regression hardening | `in_progress` |
+| S9 | Cross-surface state, accessibility, and visual-regression hardening | `complete` |
 
 ## T0 — Persistent rollout contract
 
@@ -458,6 +458,24 @@ Turn proven visual and interaction invariants into durable product quality.
 - New generic primitives based on visual similarity alone.
 - A tracked run ledger or replacement evidence registry.
 
+### Outcome
+
+- `CatchScreenTopBar` now reserves the same two supporting-copy lines that its
+  title stack renders from 1.5x text scale, including search-enabled headers.
+- Expanded shell identity can use two lines at large text instead of clipping
+  the Host product name.
+- Demand-pricing consequence copy keeps the same four-line budget as the
+  adjacent Cross Paths policy explanation.
+- Shared tests pin subtitle geometry, shell identity wrapping, compact through
+  expanded branch continuity, Forms draft preservation, and the policy-copy
+  contract.
+- The reference set now has reviewed light/dark phone and desktop compositions
+  at 2.0x text scale, a phone pass at 1.5x, and the registered reduced-motion
+  Event and Inbox states. These remain review artifacts rather than product
+  authority or tracked pass receipts.
+- Component context, Claude handoff projection, design-sync manifest, and the
+  pinned Host source-pack digest are current with the implemented contracts.
+
 ## Per-item completion loop
 
 For every item:
@@ -479,9 +497,8 @@ For every item:
 
 ## Handoff state
 
-The active production item is **S9 — Cross-surface hardening**. Start from the
-new compact, medium, and expanded reference compositions delivered in S1-S7.
-Exercise their longest truthful copy, text scaling, light/dark themes, reduced
-motion, keyboard/pointer/focus behavior, resize continuity, route state, and
-bounded visual comparisons. Promote only repeated deterministic failures into
-shared contracts; do not refresh a visual baseline to conceal a regression.
+The bounded rollout is complete through S9. Review the nine product slices as
+one Host-system proposal, but retain their commit boundaries during review so
+any disputed composition or information-architecture decision can be revised
+without undoing unrelated surfaces. The next gate is human runtime review and
+integration; this tracker does not claim merge, deployment, or distribution.

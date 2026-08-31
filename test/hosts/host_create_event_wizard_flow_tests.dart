@@ -113,6 +113,33 @@ void _registerCreateEventWizardFlowTests() {
     expect(find.text('Meeting location'), findsWidgets);
   });
 
+  testWidgets('demand pricing preserves four lines for consequence copy', (
+    tester,
+  ) async {
+    await _pumpCreateEventFlow(tester);
+    await _openCreateEventFlow(tester);
+
+    for (var step = 0; step < 3; step += 1) {
+      await _tapPrimaryButton(tester, 'Next');
+      await _pumpTestAnimation(tester);
+    }
+
+    expect(find.text('Event policy'), findsOneWidget);
+    await _openCatchField(tester, 'Admission format');
+    await tester.tap(
+      find.byKey(const ValueKey('catch-field-option-card-Balanced singles')),
+    );
+    await _pumpTestAnimation(tester);
+    expect(
+      tester
+          .widget<CatchField>(
+            find.byKey(CreateEventFormKeys.dynamicPricingToggle),
+          )
+          .bodyMaxLines,
+      4,
+    );
+  });
+
   testWidgets(
     'external guest-list creation preserves the mapped source and removes Catch payment policy',
     (tester) async {

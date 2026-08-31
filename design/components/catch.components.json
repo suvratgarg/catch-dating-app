@@ -6607,10 +6607,11 @@
             "id": "catch.top_bar.screen_top_bar",
             "symbol": "CatchScreenTopBar",
             "file": "lib/core/widgets/catch_top_bar.dart",
-            "summary": "Root-screen app-bar wrapper that composes CatchScreenHeaderTitle inside CatchTopBar while preserving actions, leading, safe area, padding, bottom, and expanding search configuration.",
+            "summary": "Root-screen app-bar wrapper that composes CatchScreenHeaderTitle inside CatchTopBar while preserving actions, leading, safe area, padding, bottom, expanding search configuration, and natural two-line subtitle height at large text.",
             "states": [
               "root-title",
               "with-subtitle",
+              "large-text-subtitle",
               "with-search",
               "with-leading",
               "with-actions"

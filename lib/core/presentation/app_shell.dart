@@ -345,7 +345,7 @@ class AppShellSideNavigation extends StatelessWidget {
                         ),
                         child: Text(
                           title,
-                          maxLines: 1,
+                          maxLines: largeText ? 2 : 1,
                           overflow: TextOverflow.ellipsis,
                           style: CatchTextStyles.headlineS(
                             context,
