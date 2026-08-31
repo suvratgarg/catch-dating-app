@@ -37,13 +37,23 @@ void _registerHostOperationsCustomerEditorTests() {
       findsNothing,
     );
 
-    for (final key in const [
-      ValueKey('host-customer-name-field'),
-      ValueKey('host-customer-phone-field'),
-      ValueKey('host-customer-email-field'),
-    ]) {
-      expect(tester.widget<CatchField>(find.byKey(key)).onTap, isNull);
-    }
+    expect(
+      find.byKey(const ValueKey('host-customer-name-field')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey('host-customer-phone-summary')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('host-customer-email-summary')),
+      findsOneWidget,
+    );
+    final avatar = tester.widget<CatchPersonAvatar>(
+      find.byType(CatchPersonAvatar),
+    );
+    expect(avatar.size, CatchSpacing.s16);
+    expect(find.text('Regulars'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
     await tester.pump();

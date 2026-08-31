@@ -1,6 +1,6 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 0.2.0
+version: 0.3.0
 updated: 2026-08-31
 owner: product_design_parity
 status: active
@@ -134,8 +134,8 @@ contract:
 |---|---|---|
 | T0 | Establish this persistent rollout contract and clean-worktree baseline | `complete` |
 | S1 | Customers/People directory reference composition | `complete` |
-| S2 | Customer record detail and adaptive selected-record composition | `pending` |
-| S3 | Create Event essentials hierarchy and adaptive flow composition | `pending` |
+| S2 | Customer record detail and adaptive selected-record composition | `complete` |
+| S3 | Create Event essentials hierarchy and adaptive flow composition | `in_progress` |
 | S4 | Durable Event workspace composition and route-state contract | `pending` |
 | S5 | Forms library and builder studio composition | `pending` |
 | S6 | Messaging Inbox list/thread composition | `pending` |
