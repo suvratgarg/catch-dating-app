@@ -6,13 +6,13 @@ import {
 } from "./check_host_shell_coverage.mjs";
 
 const destinations = [
+  "hostToday",
   "hostEvents",
-  "hostCustomers",
-  "hostForms",
+  "hostAudience",
   "hostInbox",
   "hostOrganizer",
 ];
-const labels = ["Events", "Customers", "Forms", "Messaging", "Organizer"];
+const labels = ["Today", "Events", "Audience", "Inbox", "Organizer"];
 const primaryRoutes = destinations.map((destination, index) => ({
   destination,
   routeId: `${destination}Screen`,
@@ -36,11 +36,11 @@ function fixture() {
       $schema: "catch.host-shell-coverage/v2",
       updated: "2026-08-29",
       informationArchitectureDecision: {
-        selectedOption: "forms-global-today-within-events",
+        selectedOption: "today-events-audience-inbox-organizer",
         primaryLabels: primaryRoutes.map((route) => route.label),
-        todayOwnerRouteId: "hostEventsScreen",
-        formsOwnerRouteId: "hostFormsScreen",
-        audiencesOwnerRouteId: "hostCustomersScreen",
+        todayOwnerRouteId: "hostTodayScreen",
+        formsOwnerRouteId: "hostAudienceScreen",
+        audiencesOwnerRouteId: "hostAudienceScreen",
         inboxWorkspaceOwnerRouteId: "hostInboxScreen",
       },
       primaryRoutes,
@@ -48,7 +48,17 @@ function fixture() {
         {
           routeId: "hostHomeScreen",
           status: "redirect",
-          canonicalRouteId: "hostEventsScreen",
+          canonicalRouteId: "hostTodayScreen",
+        },
+        {
+          routeId: "hostCustomersLegacyScreen",
+          status: "redirect",
+          canonicalRouteId: "hostAudienceScreen",
+        },
+        {
+          routeId: "hostFormsLegacyScreen",
+          status: "redirect",
+          canonicalRouteId: "hostAudienceScreen",
         },
       ],
     },
@@ -97,28 +107,28 @@ test("rejects a retired primary route and missing canonical capture", () => {
   assert.ok(errors.some((error) => error.includes("does not own capture-1")));
 });
 
-test("rejects a competing Today route and a contextual Forms owner", () => {
+test("rejects the retired shell IA and its split Forms owner", () => {
   const input = fixture();
   input.manifest.informationArchitectureDecision = {
     ...input.manifest.informationArchitectureDecision,
-    selectedOption: "today-global-forms-contextual",
-    todayOwnerRouteId: "hostHomeScreen",
-    formsOwnerRouteId: "hostCustomersScreen",
+    selectedOption: "forms-global-today-within-events",
+    todayOwnerRouteId: "hostEventsScreen",
+    formsOwnerRouteId: "hostFormsScreen",
   };
   const errors = validateHostShellCoverage(input);
   assert.ok(
     errors.some((error) =>
-      error.includes("keep Forms global and Today within Events"),
+      error.includes("remain Today, Events, Audience, Inbox, Organizer"),
     ),
   );
   assert.ok(
     errors.some((error) =>
-      error.includes("todayOwnerRouteId must remain hostEventsScreen"),
+      error.includes("todayOwnerRouteId must remain hostTodayScreen"),
     ),
   );
   assert.ok(
     errors.some((error) =>
-      error.includes("formsOwnerRouteId must remain hostFormsScreen"),
+      error.includes("formsOwnerRouteId must remain hostAudienceScreen"),
     ),
   );
 });

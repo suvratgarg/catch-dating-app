@@ -58,7 +58,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostNavigationAudience => 'Audience';
 
   @override
-  String get hostNavigationInbox => 'Messaging';
+  String get hostNavigationInbox => 'Inbox';
 
   @override
   String get hostNavigationOrganizer => 'Organizer';

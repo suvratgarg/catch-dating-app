@@ -128,7 +128,7 @@
     "x-surface": "host.navigation",
     "x-max-chars": 16
   },
-  "hostNavigationInbox": "Messaging",
+  "hostNavigationInbox": "Inbox",
   "@hostNavigationInbox": {
     "description": "Host bottom navigation label for conversations, broadcasts, and campaigns.",
     "x-audience": "host",
@@ -414,7 +414,7 @@
   },
   "hostInboxTitle": "Messaging",
   "@hostInboxTitle": {
-    "description": "Host messaging screen heading.",
+    "description": "Host messaging screen heading above the Inbox and Sends modes.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "host.inbox",

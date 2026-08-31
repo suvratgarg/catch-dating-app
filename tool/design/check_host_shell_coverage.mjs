@@ -57,10 +57,10 @@ export function validateHostShellCoverage({
   const informationArchitecture = manifest?.informationArchitectureDecision;
   if (
     informationArchitecture?.selectedOption !==
-    "forms-global-today-within-events"
+    "today-events-audience-inbox-organizer"
   ) {
     errors.push(
-      "information architecture must keep Forms global and Today within Events",
+      "information architecture must remain Today, Events, Audience, Inbox, Organizer",
     );
   }
   const declaredLabels = routes.map((route) => route.label);
@@ -73,9 +73,9 @@ export function validateHostShellCoverage({
     );
   }
   for (const [ownerKey, expectedRouteId] of Object.entries({
-    todayOwnerRouteId: "hostEventsScreen",
-    formsOwnerRouteId: "hostFormsScreen",
-    audiencesOwnerRouteId: "hostCustomersScreen",
+    todayOwnerRouteId: "hostTodayScreen",
+    formsOwnerRouteId: "hostAudienceScreen",
+    audiencesOwnerRouteId: "hostAudienceScreen",
     inboxWorkspaceOwnerRouteId: "hostInboxScreen",
   })) {
     if (informationArchitecture?.[ownerKey] !== expectedRouteId) {
@@ -124,9 +124,23 @@ export function validateHostShellCoverage({
   );
   if (
     legacyHome?.status !== "redirect" ||
-    legacyHome?.canonicalRouteId !== "hostEventsScreen"
+    legacyHome?.canonicalRouteId !== "hostTodayScreen"
   ) {
-    errors.push("hostHomeScreen must remain a redirect to hostEventsScreen");
+    errors.push("hostHomeScreen must remain a redirect to hostTodayScreen");
+  }
+  for (const [legacyRouteId, canonicalRouteId] of Object.entries({
+    hostCustomersLegacyScreen: "hostAudienceScreen",
+    hostFormsLegacyScreen: "hostAudienceScreen",
+  })) {
+    const legacyRoute = (manifest?.legacyRoutes ?? []).find(
+      (route) => route.routeId === legacyRouteId,
+    );
+    if (
+      legacyRoute?.status !== "redirect" ||
+      legacyRoute?.canonicalRouteId !== canonicalRouteId
+    ) {
+      errors.push(`${legacyRouteId} must remain a redirect to ${canonicalRouteId}`);
+    }
   }
   return errors;
 }

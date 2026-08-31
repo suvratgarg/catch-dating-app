@@ -574,39 +574,37 @@ system.
 
 | Surface | Compact phone | Medium tablet | Expanded web or Mac window |
 |---|---|---|---|
-| Events | consolidated hero, attention queue, lifecycle list, full-screen Manage | rail plus event list and persistent selected-event summary where selection exists | operational command centre with event index, selected status/tasks, and compact quick actions |
-| Customers | search/filter directory, pushed customer detail | directory plus selected customer detail | filter/index pane, durable customer detail, history/actions pane when useful |
+| Today | live-or-next event spotlight and urgent cross-event work | rail plus operational spotlight and adjacent next actions | cross-event command centre with current event, attention, and compact quick actions |
+| Events | lifecycle inventory and full-screen Manage | rail plus event list and persistent selected-event summary where selection exists | bounded event index, selected status/tasks, and lifecycle actions |
+| Audience | People, Audiences, Forms, or Responses as one selected mode; pushed detail/editor | selected mode plus durable customer/form context where useful | filter/index pane, durable detail, and history/actions pane at capable local widths |
 | Inbox | event scope and conversation list, pushed thread | conversation list plus selected thread | event/audience navigation, conversation list, and thread/detail at sufficiently wide local width |
 | Organizer | top tabs and one form lane | rail plus secondary organizer navigation and one content pane | secondary navigation, editor, and preview or insights pane |
 | Create Event | current paged wizard and bottom actions | step rail plus focused form; optional summary pane in landscape | step rail, approximately 640 px form lane, live cover/summary preview, compact sticky actions |
 | Manage Event | one lifecycle-owned Preparation, Live Operations, or Recap workspace plus an overlay guest-roster drawer; Live may switch locally between Now and Room while Guests opens that drawer | the same lifecycle workspace; a capable local Live width keeps the command stage and supporting operations concurrent | bounded lifecycle workspace, command stage plus supporting operations, wide overlay roster, and no persistent top-level mode navigation |
 
-The consolidated Events route remains canonical. Responsive work must not
-recreate the retired Today destination or split operational shortcuts away from
-the lifecycle list.
+Today and Events remain separate canonical destinations. Responsive work must
+not collapse the cross-event operational home back into the durable event
+inventory or recreate Forms as a top-level destination.
 
 **Primary Host information architecture decision**
 
-The selected global contract is **Forms global; Today within Events**. Its
-visible destinations remain `Events · Customers · Forms · Messaging ·
-Organizer` on compact, medium, and expanded shells. This is a product-authority
-decision, not a preference for the current labels:
+The selected global contract is
+`Today · Events · Audience · Inbox · Organizer` on compact, medium, and
+expanded shells. This is a product-authority decision, not a reference-render
+preference:
 
-- Events owns the operational spotlight, attention queue, schedule, history,
-  and lifecycle entry points. That composition is the Catch equivalent of a
-  Today overview; `/host` remains a compatibility redirect to `/host/events`
-  rather than a sixth or replacement destination.
-- Customers owns both People and Audiences. Renaming the global destination to
-  Audience would hide person-level CRM, imports, identity, consent, memory, and
-  customer-detail work behind one of its peer workspace names.
-- Forms remains global because templates, responses, applications, builder,
-  preview, share, analytics, and automations form an independent intake system.
-  Event and customer records may link to those objects, but do not acquire
-  their route or work-queue authority.
-- Messaging remains the global label for `/host/inbox` because the destination
-  contains the peer Inbox and Sends workspaces. Inbox is the correct local
-  label for conversations, but it would under-describe campaigns, event
-  announcements, follower updates, and manual send work at the global level.
+- Today owns the live-or-next event, time-sensitive attention, and safest
+  immediate actions across the organizer's events. `/host` redirects to
+  `/host/today`.
+- Events owns the durable event inventory, creation, schedule, history,
+  rehearsal, and lifecycle entry points.
+- Audience owns four peer modes: People, Audiences, Forms, and Responses.
+  Person-level CRM and intake keep their focused controllers and deep routes;
+  they no longer compete as global destinations.
+- Inbox owns the peer Inbox and Sends workspaces at `/host/inbox`. The short
+  destination label includes conversations, campaigns, event announcements,
+  follower updates, and manual send work without exposing the implementation
+  term Messaging as shell information architecture.
 - Organizer remains the identity, team, defaults, provider, payout, and
   settings authority.
 
@@ -614,19 +612,18 @@ The decision follows platform guidance that primary navigation represents a
 small number of persistent, peer top-level areas and preserves state within
 each area: [Apple tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars)
 and [Android layout and navigation patterns](https://developer.android.com/design/ui/mobile/guides/layout-and-content/layout-and-nav-patterns).
-Airbnb's current Host guidance uses Today for an overview of upcoming
-reservations while keeping Calendar and Listings as distinct work domains
-([Airbnb Host dashboards](https://www.airbnb.com/help/article/3116)); Catch
-already places the analogous overview inside Events. Clear, destination-shaped
-labels also retain stronger information scent than a conceptual label whose
-scope is only one child workspace
+Airbnb's Host guidance uses Today for an overview of upcoming reservations
+while keeping Calendar and Listings as distinct work domains
+([Airbnb Host dashboards](https://www.airbnb.com/help/article/3116)). Catch
+uses the same separation between immediate operations and durable inventory.
+Clear, destination-shaped labels also retain stronger information scent
 ([Nielsen Norman Group](https://www.nngroup.com/articles/3-ia-mistakes/)).
 
 No verified Host route-frequency study or usage export is present in the
-repository. Therefore a future global migration requires new product evidence,
-an explicit route/state compatibility plan, and a coordinated update to the
-shell manifest, routes, copy, tests, contracts, and captures. Reference images
-alone cannot reopen or bypass this boundary.
+repository. Therefore any future change to this global contract requires new
+product evidence, an explicit route/state compatibility plan, and a
+coordinated update to the shell manifest, routes, copy, tests, contracts, and
+captures. Reference images alone cannot reopen or bypass this boundary.
 
 **Architecture boundaries**
 
@@ -682,11 +679,11 @@ splits a section or teaches `CatchField` about the viewport.
 1. Foundation: adaptive Host bottom/rail/sidebar shell, shared geometry,
    current-branch preservation, exact 599/600/839/840 boundary tests, and
    phone/tablet/desktop Widgetbook states. This is the reference slice.
-2. Events reference workspace: keep the existing typed lifecycle state and
-   callbacks, then add medium and expanded provider-free compositions with no
-   data-layer changes.
-3. Customers and Inbox: introduce URL-backed master-detail selection and
-   preserve full-screen compact routes.
+2. Today and Events reference workspaces: keep the existing typed operational
+   and lifecycle state and callbacks, then add medium and expanded
+   provider-free compositions with no data-layer changes.
+3. Audience and Inbox: introduce URL-backed master-detail selection and
+   preserve full-screen compact routes and focused editors.
 4. Organizer, Create Event, and Manage Event: recompose the existing state and
    controllers into multi-pane workspaces, retaining local component
    breakpoints for forms and roster tables.
@@ -2118,17 +2115,18 @@ Rules:
   evidence and remaining TestFlight/Play work live in
   `docs/release_operations.md`.
 
-### Host Customers CRM, Provider, Staff, And Offline Boundaries
+### Host Audience CRM, Provider, Staff, And Offline Boundaries
 
 - `HostCrmRepository` is the single Flutter Functions facade for organizer
   customer summary, directory/detail, contact controls/export, Meta sender
-  setup and campaign lifecycle. The top-level Customers branch owns peer People
-  and Audiences workspaces: People owns the organizer CRM directory and customer
-  detail, while Audiences owns reusable definition authoring and exact previews.
-  The top-level Messaging branch owns the Inbox and Sends workspaces, including
-  sender setup and campaign lifecycle. Messaging and Organizer must not mount a
-  second audience builder, and event-manage widgets must not read restricted CRM
-  collections directly.
+  setup and campaign lifecycle. The top-level Audience branch owns peer People,
+  Audiences, Forms, and Responses workspaces: People owns the organizer CRM
+  directory and customer detail; Audiences owns reusable definition authoring
+  and exact previews; Forms and Responses own intake and review. The top-level
+  Inbox branch owns the Inbox and Sends workspaces, including sender setup and
+  campaign lifecycle. Inbox and Organizer must not mount a second audience
+  builder, and event-manage widgets must not read restricted CRM collections
+  directly.
 - A CRM contact, identity link, communication permission, communication route,
   saved audience, send attempt, and delivery receipt are different authorities.
   No screen or repository model may collapse one into another. A linked Catch
@@ -2150,14 +2148,14 @@ Rules:
   permission receipt. Unchecked input, ordinary form consent, imports, roster
   writes, manager entry, tags, applications, and merges never grant or revoke
   permission by inference.
-- Customers owns durable reusable CRM audiences. Event announcement workflows
-  own event-scoped audiences such as Booked and Prospective. Messaging consumes
+- Audience owns durable reusable CRM audiences. Event announcement workflows
+  own event-scoped audiences such as Booked and Prospective. Inbox consumes
   either a saved audience id or an event-scoped audience reference and must not
   grow a second audience-builder or reinterpret CRM predicates locally.
-- Customers may hand a scoped, exact computed segment or organizer tag to
-  Messaging only after persisting it as a saved audience and carrying that
+- Audience may hand a scoped, exact computed segment or organizer tag to Inbox
+  only after persisting it as a saved audience and carrying that
   audience id into compose. An unscoped, searched, partial, empty, or otherwise
-  blocked customer view never gets a generic Messaging shortcut. When an
+  blocked customer view never gets a generic Inbox shortcut. When an
   eligible view is blocked by organizer sender readiness, its recovery action
   opens the dedicated WhatsApp Business setup route; environment/provider
   unavailability remains explanatory and non-actionable.
@@ -2241,14 +2239,15 @@ and initialization complete.
 - Host, web, and desktop retain their existing startup behavior unless their
   role-specific owner explicitly adopts a different boot composition.
 
-Host Messaging is the reference for sharing foundations without sharing product
+Host Inbox is the reference for sharing foundations without sharing product
 composition. Consumer `/chats` owns `ChatsListScreen`; the compatibility route
-`/host/inbox` owns `HostInboxScreen` and presents the product label Messaging.
+`/host/inbox` owns `HostInboxScreen`; its shell label is Inbox while the local
+screen heading Messaging names the combined Inbox and Sends modes.
 They may reuse `ChatConversationsList`, `CatchPersonRow`, search state, inquiry
 repositories, and routing contracts, but the consumer screen must not remain
 the Host route dispatcher.
 
-The Host Messaging contract is:
+The Host Inbox contract is:
 
 - every workspace follows `hostOrganizerSelectionProvider`; Inbox events,
   inquiry previews, WhatsApp sender setup, and campaigns must all resolve from

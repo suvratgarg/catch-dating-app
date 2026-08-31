@@ -571,7 +571,7 @@ void main() {
           'Today',
           'Events',
           'Audience',
-          'Messaging',
+          'Inbox',
           'Organizer',
         ];
         for (final (index, label) in expectedLabels.indexed) {
@@ -588,7 +588,7 @@ void main() {
         expect(find.bySemanticsLabel(RegExp('Today')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Events')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Audience')), findsOneWidget);
-        expect(find.bySemanticsLabel(RegExp('Messaging')), findsOneWidget);
+        expect(find.bySemanticsLabel(RegExp('Inbox')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Organizer')), findsOneWidget);
       }
     });

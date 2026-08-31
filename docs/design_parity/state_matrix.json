@@ -8992,7 +8992,7 @@
               "tests": [
                 "test/hosts/host_crm_repository_test.dart"
               ],
-              "notes": "Active campaigns expose authoritative dispatch status and cancellation through the Messaging workspace."
+              "notes": "Active campaigns expose authoritative dispatch status and cancellation through the Inbox destination's Sends workspace."
             },
             {
               "id": "search_collapsed",

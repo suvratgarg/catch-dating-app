@@ -1,9 +1,9 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 1.1.0
+version: 1.2.0
 updated: 2026-08-31
 owner: product_design_parity
-status: active
+status: complete
 ---
 
 # Host Visual Quality Rollout
@@ -155,7 +155,7 @@ question and therefore preserved the wrong top-level hierarchy.
 | C1 | Preserve the original adaptive Catch bottom navigation and add an iOS regression | `complete` |
 | C2 | Add a real Today destination and make Events the event inventory | `complete` |
 | C3 | Consolidate People, Audiences, Forms, and Responses under Audience | `complete` |
-| C4 | Rename the global Messaging destination to Inbox; migrate contracts, captures, and owner docs | `in_progress` |
+| C4 | Rename the global Messaging destination to Inbox; migrate contracts, captures, and owner docs | `complete` |
 
 ### Approved information architecture
 
@@ -534,14 +534,17 @@ For every item:
 
 ## Handoff state
 
-The original bounded rollout is complete through S9. The corrective rollout
-is active: C0-C2 are complete and C3 is next. The shared `CatchTabBar` required
-no runtime restoration because it remained identical to the pre-rollout
-source. Today now owns the live/next-event spotlight, cross-event attention,
-and a bounded later-event preview; Events owns the complete schedule and
-history without duplicating the operational hero. `/host` and Host startup now
-resolve to `/host/today`. The five shell branches already share one Audience
-navigator for the legacy Customers and Forms roots so the migration never
-ships a temporary sixth destination. No canonical Audience route migration,
-deployment, or distribution claim is made until C3-C4 are complete and
-committed independently.
+The original bounded rollout is complete through S9, and the corrective
+rollout is complete through C4. The shared `CatchTabBar` required no runtime
+restoration because it remained identical to the pre-rollout source; dedicated
+tests now pin the floating frosted iOS treatment, anchored Android treatment,
+and keyboard continuity. Today owns the live/next-event spotlight,
+cross-event attention, and a bounded later-event preview; Events owns the
+complete schedule and history without duplicating the operational hero.
+`/host` and Host startup resolve to `/host/today`. One Audience branch owns
+People, Audiences, Forms, and Responses, while legacy Customers and Forms deep
+links redirect into that branch without losing nested path or query state.
+The shell label is Inbox; the route retains Messaging as its local title above
+the Inbox and Sends modes. These statements describe committed rollout source
+and local verification only; no merge, deployment, or distribution claim is
+made here.

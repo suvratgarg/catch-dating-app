@@ -193,7 +193,7 @@ abstract class AppLocalizations {
   /// Host bottom navigation label for conversations, broadcasts, and campaigns.
   ///
   /// In en, this message translates to:
-  /// **'Messaging'**
+  /// **'Inbox'**
   String get hostNavigationInbox;
 
   /// Host bottom navigation label for organizer identity and settings.
@@ -388,7 +388,7 @@ abstract class AppLocalizations {
   /// **'Chats'**
   String get consumerChatsTitle;
 
-  /// Host messaging screen heading.
+  /// Host messaging screen heading above the Inbox and Sends modes.
   ///
   /// In en, this message translates to:
   /// **'Messaging'**

@@ -13,25 +13,34 @@
   "responsiveContract": {
     "compact": "<600: bottom navigation; icon-only with semantic labels at large text",
     "medium": "600-839: labelled rail; 168 px at large text",
-    "expanded": ">=840: 240 px sidebar; Customers and Messaging may compose master-detail panes",
+    "expanded": ">=840: 240 px sidebar; Audience and Inbox may compose master-detail panes",
     "masterDetailIndexPaneWidth": 360
   },
   "informationArchitectureDecision": {
-    "selectedOption": "forms-global-today-within-events",
+    "selectedOption": "today-events-audience-inbox-organizer",
     "primaryLabels": [
+      "Today",
       "Events",
-      "Customers",
-      "Forms",
-      "Messaging",
+      "Audience",
+      "Inbox",
       "Organizer"
     ],
-    "todayOwnerRouteId": "hostEventsScreen",
-    "formsOwnerRouteId": "hostFormsScreen",
-    "audiencesOwnerRouteId": "hostCustomersScreen",
+    "todayOwnerRouteId": "hostTodayScreen",
+    "formsOwnerRouteId": "hostAudienceScreen",
+    "audiencesOwnerRouteId": "hostAudienceScreen",
     "inboxWorkspaceOwnerRouteId": "hostInboxScreen",
     "rationaleOwner": "docs/app_architecture.md"
   },
   "primaryRoutes": [
+    {
+      "destination": "hostToday",
+      "routeId": "hostTodayScreen",
+      "path": "/host/today",
+      "label": "Today",
+      "widget": "HostOperationsHomeScreen",
+      "source": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
+      "captureId": "host_home_dashboard"
+    },
     {
       "destination": "hostEvents",
       "routeId": "hostEventsScreen",
@@ -42,28 +51,19 @@
       "captureId": "host_home_events_list"
     },
     {
-      "destination": "hostCustomers",
-      "routeId": "hostCustomersScreen",
-      "path": "/host/customers",
-      "label": "Customers",
-      "widget": "HostCustomersScreen",
-      "source": "lib/hosts/presentation/customers/host_customers_screen.dart",
+      "destination": "hostAudience",
+      "routeId": "hostAudienceScreen",
+      "path": "/host/audience",
+      "label": "Audience",
+      "widget": "HostCustomersScreen + HostFormsScreen",
+      "source": "lib/hosts/presentation/host_audience_view.dart",
       "captureId": "host_customers_populated"
-    },
-    {
-      "destination": "hostForms",
-      "routeId": "hostFormsScreen",
-      "path": "/host/forms",
-      "label": "Forms",
-      "widget": "HostFormsScreen",
-      "source": "lib/hosts/presentation/forms/host_forms_screen.dart",
-      "captureId": "host_forms_populated"
     },
     {
       "destination": "hostInbox",
       "routeId": "hostInboxScreen",
       "path": "/host/inbox",
-      "label": "Messaging",
+      "label": "Inbox",
       "widget": "HostInboxScreen",
       "source": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
       "captureId": "host_inbox_queries"
@@ -83,7 +83,19 @@
       "routeId": "hostHomeScreen",
       "path": "/host",
       "status": "redirect",
-      "canonicalRouteId": "hostEventsScreen"
+      "canonicalRouteId": "hostTodayScreen"
+    },
+    {
+      "routeId": "hostCustomersLegacyScreen",
+      "path": "/host/customers",
+      "status": "redirect",
+      "canonicalRouteId": "hostAudienceScreen"
+    },
+    {
+      "routeId": "hostFormsLegacyScreen",
+      "path": "/host/forms",
+      "status": "redirect",
+      "canonicalRouteId": "hostAudienceScreen"
     }
   ],
   "notes": [
