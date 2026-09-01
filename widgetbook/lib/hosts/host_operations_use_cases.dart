@@ -1431,6 +1431,15 @@ Widget hostClubsRouteStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Loading, auth, error, and empty',
+  type: HostOrganizerStateScaffold,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostOrganizerStateScaffoldStates(BuildContext context) {
+  return hostClubsRouteStates(context);
+}
+
+@widgetbook.UseCase(
   name: 'Insights scorecard states',
   type: HostClubInsightsPane,
   path: '[P1 product surfaces]/Host operations',

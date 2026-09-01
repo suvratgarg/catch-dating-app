@@ -1,5 +1,64 @@
 part of '../host_operations_screen.dart';
 
+List<CatchOption<HostClubTab>> _hostClubTabOptions(BuildContext context) => [
+  CatchOption(
+    value: HostClubTab.edit,
+    label: context.l10n.hostsHostClubsScaffoldLabelEdit,
+  ),
+  CatchOption(
+    value: HostClubTab.insights,
+    label: context.l10n.hostsHostClubsScaffoldLabelInsights,
+  ),
+  CatchOption(
+    value: HostClubTab.preview,
+    label: context.l10n.hostsHostClubsScaffoldLabelPreview,
+  ),
+];
+
+/// Organizer route-state adapter that preserves the loaded workspace chrome.
+///
+/// Loading, auth, error, and no-organizer states replace only the tab body;
+/// the route title, pinned peer rail, semantic body rhythm, responsive content
+/// lane, scroll ownership, and shell terminal clearance stay on the canonical
+/// tabbed-screen path.
+class HostOrganizerStateScaffold extends StatelessWidget {
+  const HostOrganizerStateScaffold({
+    super.key,
+    required this.selectedTab,
+    required this.scrollKey,
+    required this.slivers,
+    this.actions = const <Widget>[],
+  }) : assert(slivers.length > 0);
+
+  final HostClubTab selectedTab;
+  final PageStorageKey<String> scrollKey;
+  final List<Widget> slivers;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchTabbedScreenScaffold(
+      title: context.l10n.hostNavigationOrganizer,
+      titleMaxLines: 2,
+      rowCrossAxisAlignment: CrossAxisAlignment.start,
+      actions: actions,
+      tabRail: CatchTabRail<HostClubTab>(
+        groupKey: _hostClubTabRailKey,
+        selected: selectedTab,
+        selectionPosition: selectedTab.index.toDouble(),
+        options: _hostClubTabOptions(context),
+      ),
+      semanticsLabel: context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
+      body: CatchTabbedPageScrollView(
+        scrollKey: scrollKey,
+        bodyLayout: CatchScreenBodyLayout.standard,
+        constrainToContentWidth: true,
+        slivers: slivers,
+      ),
+    );
+  }
+}
+
 class HostClubsScaffold extends ConsumerStatefulWidget {
   const HostClubsScaffold({
     super.key,
@@ -93,13 +152,10 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       return CatchMutationErrorListener(
         mutation: AuthSessionController.signOutMutation,
         errorContext: AppErrorContext.auth,
-        child: CatchRootScreenScaffold(
-          header: CatchScreenHeaderTitle.block(
-            eyebrow: context.l10n.hostsHostClubsScaffoldKickerHostClubs,
-            title: state.title(context.l10n),
-            actions: [signOutAction],
-          ),
-          bodyLayout: CatchScreenBodyLayout.standard,
+        child: HostOrganizerStateScaffold(
+          selectedTab: _selectedTab,
+          scrollKey: const PageStorageKey<String>('host-organizer-empty-state'),
+          actions: [signOutAction],
           slivers: [
             CatchSliverEmptyState(
               icon: CatchIcons.groupsOutlined,
@@ -131,20 +187,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
         tabRail: CatchTabControllerRail<HostClubTab>(
           controller: _tabController,
           groupKey: _hostClubTabRailKey,
-          options: [
-            CatchOption(
-              value: HostClubTab.edit,
-              label: context.l10n.hostsHostClubsScaffoldLabelEdit,
-            ),
-            CatchOption(
-              value: HostClubTab.insights,
-              label: context.l10n.hostsHostClubsScaffoldLabelInsights,
-            ),
-            CatchOption(
-              value: HostClubTab.preview,
-              label: context.l10n.hostsHostClubsScaffoldLabelPreview,
-            ),
-          ],
+          options: _hostClubTabOptions(context),
         ),
         semanticsLabel:
             context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,

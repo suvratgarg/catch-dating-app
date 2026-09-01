@@ -360,6 +360,96 @@ void _registerCatchPrimitivesSearchMenuTests() {
     expect(find.text('Loading custom state'), findsOneWidget);
   });
 
+  testWidgets('CatchAsyncValueView keeps custom error ownership on timeout', (
+    tester,
+  ) async {
+    const initialLoadTimeout = Duration(milliseconds: 10);
+    var retryCount = 0;
+    await tester.pumpWidget(
+      _wrap(
+        CatchAsyncValueView<int>(
+          value: const AsyncLoading<int>(),
+          initialLoadTimeout: initialLoadTimeout,
+          onRetry: () => retryCount += 1,
+          builder: (context, value) => Text('$value'),
+          loadingBuilder: (_) => const Text('Loading route state'),
+          errorBuilderWithRetry: (context, error, stackTrace, onRetry) =>
+              TextButton(
+                onPressed: onRetry,
+                child: const Text('Retry route-owned timeout'),
+              ),
+        ),
+      ),
+    );
+
+    expect(find.text('Loading route state'), findsOneWidget);
+    await pumpFeatureUiFor(
+      tester,
+      initialLoadTimeout + const Duration(milliseconds: 1),
+    );
+
+    expect(find.text('Retry route-owned timeout'), findsOneWidget);
+    expect(find.byType(CatchErrorState), findsNothing);
+
+    await tester.tap(find.text('Retry route-owned timeout'));
+    await tester.pump();
+
+    expect(retryCount, 1);
+    expect(find.text('Loading route state'), findsOneWidget);
+  });
+
+  testWidgets(
+    'CatchAsyncValueSliver keeps custom error ownership on timeout retry',
+    (tester) async {
+      const initialLoadTimeout = Duration(milliseconds: 10);
+      var retryCount = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                CatchAsyncValueSliver<int>(
+                  value: const AsyncLoading<int>(),
+                  initialLoadTimeout: initialLoadTimeout,
+                  onRetry: () => retryCount += 1,
+                  builder: (context, value) =>
+                      SliverToBoxAdapter(child: Text('$value')),
+                  sliverLoadingBuilder: (_) => const SliverToBoxAdapter(
+                    child: Text('Loading sliver state'),
+                  ),
+                  sliverErrorBuilderWithRetry:
+                      (context, error, stackTrace, onRetry) =>
+                          SliverToBoxAdapter(
+                            child: TextButton(
+                              onPressed: onRetry,
+                              child: const Text('Retry sliver timeout'),
+                            ),
+                          ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Loading sliver state'), findsOneWidget);
+      await pumpFeatureUiFor(
+        tester,
+        initialLoadTimeout + const Duration(milliseconds: 1),
+      );
+
+      expect(find.text('Retry sliver timeout'), findsOneWidget);
+      expect(find.byType(CatchSliverErrorState), findsNothing);
+
+      await tester.tap(find.text('Retry sliver timeout'));
+      await tester.pump();
+
+      expect(retryCount, 1);
+      expect(find.text('Loading sliver state'), findsOneWidget);
+    },
+  );
+
   testWidgets('CatchAsyncScreenLoading uses shared screen body and skeletons', (
     tester,
   ) async {

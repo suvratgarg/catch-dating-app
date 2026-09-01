@@ -1417,7 +1417,7 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "role": "pinned peer-tab adopter with standard Edit and Insights bodies and an explicit full-bleed Preview body",
+          "role": "pinned peer-tab adopter whose route states retain the same shell, with standard Edit and Insights bodies and an explicit full-bleed Preview body",
           "status": "aligned"
         },
         {
@@ -1460,7 +1460,7 @@
         },
         {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-          "role": "aligned four-page adopter with independent per-club offsets and a direct embedded read-only Club Detail preview",
+          "role": "aligned three-page adopter with independent per-club offsets and a direct embedded read-only Club Detail preview",
           "status": "aligned"
         },
         {

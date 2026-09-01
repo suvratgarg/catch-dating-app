@@ -97,6 +97,13 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(loadedHeader.eyebrow, isNull);
     expect(loadedHeader.subtitle, isNull);
     expect(loadedHeader.leading, isNull);
+    final publicationSection = find.byWidgetPredicate(
+      (widget) => widget is CatchSection && widget.title == 'Public visibility',
+    );
+    expect(
+      tester.getRect(publicationSection).top - tester.getRect(tabRail).bottom,
+      closeTo(CatchInsets.pageBody.top, 0.5),
+    );
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsNothing,

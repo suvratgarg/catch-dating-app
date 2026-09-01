@@ -326,12 +326,30 @@
       "routeName": "Routes.hostOrganizerScreen.name",
       "owners": [
         {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
+          "requires": [
+            {"text": "CatchAsyncValueView<String?>", "minimumOccurrences": 1},
+            {"text": "errorBuilderWithRetry:", "minimumOccurrences": 2},
+            {"text": "HostOrganizerStateScaffold", "minimumOccurrences": 5},
+            {"text": "CatchSliverStateViewport", "minimumOccurrences": 2},
+            {"text": "CatchSliverErrorState", "minimumOccurrences": 3}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"},
+            {"text": "HostLoadingScreen"},
+            {"text": "HostAuthRequiredScreen("}
+          ]
+        },
+        {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
           "requires": [
-            {"text": "CatchTabbedScreenScaffold", "minimumOccurrences": 1},
-            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1},
-            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 2},
+            {"text": "CatchTabbedScreenScaffold", "minimumOccurrences": 2},
+            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 4},
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 3},
             {"text": "bodyLayout: CatchScreenBodyLayout.fullBleed", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchRootScreenScaffold"}
           ]
         },
         {

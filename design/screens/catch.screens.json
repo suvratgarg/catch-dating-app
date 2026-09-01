@@ -9719,8 +9719,8 @@
           "id": "uid_missing",
           "kind": "permission",
           "status": "captured",
-          "source": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry.",
-          "nextAction": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry. Host Clubs now has a deterministic signed-out/access capture.",
+          "source": "Null uid renders CatchSliverErrorState inside the canonical Organizer tabbed state scaffold with Sign in required copy and auth route retry.",
+          "nextAction": "Keep the deterministic signed-out/access capture synced with the canonical Organizer title and pinned peer rail.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -9732,8 +9732,8 @@
           "id": "host_clubs_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "_hostClubsForUserProvider loading renders _HostLoadingScreen with HostRouteLoadingBody, preserving host shell and tab-rail skeleton chrome.",
-          "nextAction": "Keep loading capture synced with any future HostRouteLoadingBody visual edits.",
+          "source": "Authentication or organizer loading renders HostRouteLoadingBody inside CatchSliverStateViewport while HostOrganizerStateScaffold preserves the canonical Organizer title, pinned peer rail, body rhythm, and terminal clearance.",
+          "nextAction": "Keep loading capture synced with HostRouteLoadingBody and Organizer tabbed-state geometry.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -9745,8 +9745,8 @@
           "id": "host_clubs_error",
           "kind": "error",
           "status": "captured",
-          "source": "Hosted or owned club stream errors become CatchErrorScaffold.fromError with AppErrorContext.club and retry invalidation.",
-          "nextAction": "Keep generic and offline load-error captures synced with AppErrorMessage copy.",
+          "source": "Authentication and organizer stream errors become CatchSliverErrorState inside HostOrganizerStateScaffold with typed error context and retry invalidation.",
+          "nextAction": "Keep generic and offline load-error captures synced with AppErrorMessage copy and Organizer tabbed-state geometry.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -9759,8 +9759,8 @@
           "id": "no_host_clubs",
           "kind": "empty",
           "status": "captured",
-          "source": "No hosted or owned clubs renders HostEmptyActionCard with No host clubs yet copy.",
-          "nextAction": "Decide whether this route should expose create-club directly or defer to host setup routes.",
+          "source": "No hosted or owned clubs renders CatchSliverEmptyState inside HostOrganizerStateScaffold with the direct create-organizer action.",
+          "nextAction": "Keep the empty capture synced with the canonical Organizer title, pinned peer rail, and create-organizer action.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -10099,7 +10099,7 @@
           "id": "preview_tab",
           "kind": "populated",
           "status": "captured",
-          "source": "_HostClubPreviewPane renders club description and receives a typed public-preview route callback from _HostClubsScaffold.",
+          "source": "HostClubsScaffold composes ClubDetailReadOnlyPreviewSliver, the same read-only public-profile projection used by the club-detail surface.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -10421,7 +10421,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostClubsScreen resolves auth and host club streams, _HostClubsScaffold owns selected-club and tab state, HostClubEditTab composes Media, Identity, Contact, and Club settings, and four top-level spoke screens own Event defaults, Live event guide, Host team, and owner-only Payments. HostClubDefaultsSaver serializes optimistic defaults mutations.",
+        "currentLayout": "HostClubsScreen resolves auth and host club streams, HostClubsScaffold owns selected-club and tab state, HostClubEditTab composes Media, Identity, Contact, and Club settings, and four top-level spoke screens own Event defaults, Live event guide, Host team, and owner-only Payments. HostClubDefaultsSaver serializes optimistic defaults mutations.",
         "targetLayout": "Keep Host Clubs as a thin route adapter over provider-free tab and spoke sections, with repository writes owned by controllers and one canonical CatchSection/CatchField composition per concern.",
         "sections": [
           {
@@ -10451,7 +10451,7 @@
               "owner_role",
               "cohost_role"
             ],
-            "migration": "HostClubsScreenState now owns selected-club, tab, and owner/co-host role capability display state; HostClubInsightsState owns analytics query state; _HostClubsScaffold owns public-preview route callbacks. Continue extracting retry intents, inline edit patches, and mutation state into testable adapters.",
+            "migration": "HostClubsScreenState owns selected-club, tab, and owner/co-host role capability display state; HostClubInsightsState owns analytics query state; HostClubsScaffold owns the embedded public-preview composition. Continue extracting retry intents, inline edit patches, and mutation state into testable adapters.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -10507,7 +10507,9 @@
               "long_club_name",
               "owner",
               "host_team",
-              "hidden_in_organizer_mode"
+              "loading",
+              "error",
+              "empty"
             ],
             "migration": "HostClubsScreenState owns the selected club and picker visibility while HostClubsScaffold composes the shared CatchTabbedScreenScaffold with settings and club-switcher actions.",
             "previewIds": [
@@ -10526,20 +10528,19 @@
               "file": "lib/core/widgets/catch_tab_rail.dart",
               "symbol": "CatchTabRail"
             },
-            "currentOwner": "_HostClubsScaffold",
+            "currentOwner": "HostClubsScaffold",
             "targetOwner": "shared CatchTabRail",
             "dependencies": [
               "catch.tab_rail"
             ],
             "states": [
-              "organizer",
               "edit",
               "insights",
               "preview",
               "long_labels",
               "text_scale"
             ],
-            "migration": "Keep tab selection as screen state and route visual review through HostClubsScreen states plus the shared CatchTabRail primitive. The Organizer tab is the default route state and does not render the AppBar tab rail until the host switches into another tab.",
+            "migration": "Keep Edit as the default route tab and selection as screen state. Loaded and route-level loading, auth, error, and empty branches retain the same pinned Edit, Insights, and Preview rail through CatchTabbedScreenScaffold and the shared CatchTabRail primitive.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -10557,7 +10558,7 @@
               "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
               "symbol": "HostClubEditTab"
             },
-            "currentOwner": "_HostClubsScaffold",
+            "currentOwner": "HostClubsScaffold",
             "targetOwner": "HostClubEditTab",
             "dependencies": [
               "catch.badge",
@@ -10729,7 +10730,7 @@
               "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
               "symbol": "HostClubInsightsPane"
             },
-            "currentOwner": "_HostClubsScaffold",
+            "currentOwner": "HostClubsScaffold",
             "targetOwner": "provider-free analytics section plus HostAnalytics controller adapter",
             "dependencies": [
               "catch.badge",
@@ -10793,14 +10794,14 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostEmptyActionCard"
+              "CatchSliverEmptyState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_empty_action_card.dart",
-              "symbol": "HostEmptyActionCard"
+              "file": "lib/core/widgets/catch_empty_state.dart",
+              "symbol": "CatchSliverEmptyState"
             },
-            "currentOwner": "_HostClubsScaffold + HostEmptyActionCard",
-            "targetOwner": "shared host empty action card",
+            "currentOwner": "HostOrganizerStateScaffold + CatchSliverEmptyState",
+            "targetOwner": "canonical Organizer state shell plus shared sliver empty state",
             "dependencies": [
               "catch.button",
               "catch.surface"
@@ -10809,7 +10810,7 @@
               "no_host_clubs",
               "access_required"
             ],
-            "migration": "Keep no-clubs copy/action availability in the route call site while sharing HostEmptyActionCard for the visual shell.",
+            "migration": "Keep no-organizer copy and create action at the route call site while HostOrganizerStateScaffold preserves the same title, tab rail, standard body rhythm, and terminal clearance as loaded Organizer content.",
             "previewIds": [
               "HostClubsScreen/Route states",
               "CatchEmptyState/Action card states"
@@ -10821,16 +10822,16 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostAccessState",
-              "HostLoadingState",
-              "HostErrorState"
+              "HostOrganizerStateScaffold",
+              "CatchSliverStateViewport",
+              "CatchSliverErrorState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
-              "symbol": "HostAuthRequiredScreen"
+              "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
+              "symbol": "HostClubsScreen"
             },
-            "currentOwner": "HostClubsScreen",
-            "targetOwner": "provider-free host route state sections",
+            "currentOwner": "HostClubsScreen + HostOrganizerStateScaffold",
+            "targetOwner": "canonical tabbed route state composition",
             "dependencies": [
               "catch.surface"
             ],
@@ -10840,7 +10841,7 @@
               "error",
               "offline"
             ],
-            "migration": "Keep retry/navigation intents in the adapter and add deterministic access/loading/error/offline captures for Host Clubs.",
+            "migration": "Retry and sign-in navigation intents stay in HostClubsScreen while HostOrganizerStateScaffold owns the provider-free title, pinned rail, body rhythm, and terminal clearance shared by access, loading, error, and offline branches.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]

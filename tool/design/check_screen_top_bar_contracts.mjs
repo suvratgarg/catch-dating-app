@@ -56,7 +56,6 @@ const validTitlePolicies = new Set(["sharedRoute", "routeOrIdentity"]);
 const canonicalWorkspaceOwners = new Set([
   "CatchTopBar",
   "CatchScreenTopBar",
-  "HostOperationsTopBar",
 ]);
 const rawHeroExpressions = new Set([
   "SliverAppBar",
