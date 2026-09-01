@@ -1,6 +1,41 @@
 part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsClubWorkspaceTests() {
+  testWidgets('Host Today keeps root composition for auth and route errors', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        uidProvider.overrideWithValue(const AsyncData<String?>(null)),
+      ],
+    );
+
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+    expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchErrorScaffold), findsNothing);
+    expect(find.text('Today'), findsOneWidget);
+    expect(find.text('Sign in required'), findsOneWidget);
+
+    await _pumpHostScreen(
+      tester,
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        uidProvider.overrideWithValue(
+          AsyncError<String?>(StateError('auth failed'), StackTrace.current),
+        ),
+      ],
+    );
+
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+    expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchErrorScaffold), findsNothing);
+    expect(find.text('Today'), findsOneWidget);
+  });
+
   testWidgets('Host Today uses real countdown and routes cross-event tasks', (
     tester,
   ) async {

@@ -98,11 +98,19 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
     );
 
     return switch (routeState.status) {
-      HostTodayRouteStatus.authRequired => CatchErrorScaffold(
-        title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
-        message: context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
-        retryLabel: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
-        onRetry: () => context.go(Routes.authScreen.path),
+      HostTodayRouteStatus.authRequired => CatchRootScreenScaffold(
+        header: HostTodayHeader(now: _clockNow),
+        bodyLayout: CatchScreenBodyLayout.standard,
+        slivers: [
+          CatchSliverErrorState(
+            title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+            message:
+                context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
+            retryLabel:
+                context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+            onRetry: () => context.go(Routes.authScreen.path),
+          ),
+        ],
       ),
       HostTodayRouteStatus.loading => CatchRootScreenScaffold(
         header: HostTodayHeader(now: _clockNow),
@@ -113,18 +121,24 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
           ),
         ],
       ),
-      HostTodayRouteStatus.error => CatchErrorScaffold.fromError(
-        routeState.error!,
-        context: routeState.errorContext,
-        onRetry: () {
-          final currentUid = routeState.uid;
-          if (routeState.errorContext == AppErrorContext.auth ||
-              currentUid == null) {
-            ref.invalidate(uidProvider);
-            return;
-          }
-          ref.invalidate(hostOperableClubsProvider(currentUid));
-        },
+      HostTodayRouteStatus.error => CatchRootScreenScaffold(
+        header: HostTodayHeader(now: _clockNow),
+        bodyLayout: CatchScreenBodyLayout.standard,
+        slivers: [
+          CatchSliverErrorState.fromError(
+            routeState.error!,
+            context: routeState.errorContext,
+            onRetry: () {
+              final currentUid = routeState.uid;
+              if (routeState.errorContext == AppErrorContext.auth ||
+                  currentUid == null) {
+                ref.invalidate(uidProvider);
+                return;
+              }
+              ref.invalidate(hostOperableClubsProvider(currentUid));
+            },
+          ),
+        ],
       ),
       HostTodayRouteStatus.empty => HostTodayOrganizerEmptyState(
         onCreateOrganizer: () =>
