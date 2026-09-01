@@ -388,7 +388,7 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "bash tool/widget_cleanup_scan.sh"
       ],
-      "notes": "This pattern separates root screen voice chrome from compact navigation chrome. CatchScreenHeaderTitle owns Archivo headline typography for root titles plus optional mono eyebrow, subtitle, leading, action, material, and padding slots. CatchScreenTopBar wraps CatchTopBar when a root-like app bar also needs safe-area, action, or expanding-search behavior. Do not recreate feature-local title widgets for Home, Explore, Chats, Profile, Activity, or Settings; pass feature data and actions into the shared header slots. The screen-top-bar contract gate inventories every compact and identity app bar, exact raw media-hero exception, feature-owned Screen/Scaffold/Header/TopBar/HeaderContent class including delegated State bodies, and shell-covering editor launcher. Every discovered surface in an aligned adopter path must retain a canonical root owner, so one correct header cannot hide a second drifting implementation."
+      "notes": "This pattern separates the 32px root headline hierarchy from compact route chrome while both use Archivo through distinct semantic roles. CatchScreenHeaderTitle owns headline typography for root titles plus optional mono eyebrow, subtitle, leading, action, material, and padding slots. CatchScreenTopBar wraps CatchTopBar when a root-like app bar also needs safe-area, action, or expanding-search behavior. Do not recreate feature-local title widgets for Home, Explore, Chats, Profile, Activity, or Settings; pass feature data and actions into the shared header slots. The screen-top-bar contract gate inventories every compact and identity app bar, exact raw media-hero exception, feature-owned Screen/Scaffold/Header/TopBar/HeaderContent class including delegated State bodies, and shell-covering editor launcher. Every discovered surface in an aligned adopter path must retain a canonical root owner, so one correct header cannot hide a second drifting implementation."
     },
     {
       "id": "ARCH-ROUTE-CHROME-001",
@@ -397,6 +397,7 @@
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-route-chrome-001-pushed-route-chrome",
       "prototypeFiles": [
         "lib/core/widgets/catch_route_scaffold.dart",
+        "lib/core/theme/catch_text_styles.dart",
         "test/core/catch_top_bar_test.dart"
       ],
       "adopters": [
@@ -427,7 +428,22 @@
         },
         {
           "path": "lib/hosts/presentation/host_event_manage_screen.dart",
-          "role": "Host event workspace with scroll-derived compact chrome",
+          "role": "Host event workspace using primitive-owned Archivo route-title, multiline, and scroll-under chrome",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
+          "role": "Host rehearsal launcher using the shared Archivo compact route-title role and scroll-derived divider",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
+          "role": "Host rehearsal workspace using semantic title and kicker inputs without a feature-local title widget",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
+          "role": "Host form editor delegating compact title typography to the shared route-title role",
           "status": "aligned"
         },
         {
@@ -458,12 +474,12 @@
       ],
       "requiredBackPropagation": "When pushed-route surface, divider, title, or back semantics change, update CatchRouteScaffold, every aligned Consumer and Host adopter, the top-bar manifest, focused widget tests, and the owning executable checks together.",
       "requiredChecks": [
-        "flutter test test/core/catch_top_bar_test.dart test/events/saved_events_screen_test.dart test/reviews/reviews_widgets_test.dart test/payments/payment_history_screen_test.dart test/safety/settings_screen_test.dart test/chats/chat_screen_test.dart",
-        "flutter test test/hosts/host_create_event_screen_test.dart test/hosts/host_operations_screen_test.dart",
+        "flutter test test/core/catch_text_styles_test.dart test/core/catch_top_bar_test.dart test/events/saved_events_screen_test.dart test/reviews/reviews_widgets_test.dart test/payments/payment_history_screen_test.dart test/safety/settings_screen_test.dart test/chats/chat_screen_test.dart",
+        "flutter test test/event_rehearsal/host_event_rehearsal_screen_test.dart test/hosts/forms/host_form_builder_screen_test.dart test/hosts/host_create_event_screen_test.dart test/hosts/host_operations_screen_test.dart",
         "node tool/run.mjs check design:screen-top-bar-contracts",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
-      "notes": "Root tab titles remain scroll content under ARCH-SCREEN-CHROME-001. This exhibit owns pushed-route surface and divider behavior only."
+      "notes": "Root tab titles remain scroll content under ARCH-SCREEN-CHROME-001. This exhibit owns pushed-route surface, divider, and compact title typography. Root and route titles share Archivo through separate headline and routeTitle roles; identity names remain platform function text. Compact and workspace adopters pass semantic title stack inputs instead of feature-local title widgets."
     },
     {
       "id": "ARCH-UI-STATE-001",
@@ -1406,7 +1422,7 @@
         },
         {
           "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
-          "role": "pushed-route adopter retaining compact route-title typography while delegating section rhythm and responsive columns to CatchResponsiveSectionPage",
+          "role": "pushed-route adopter using shared Archivo compact route-title typography while delegating section rhythm and responsive columns to CatchResponsiveSectionPage",
           "status": "aligned"
         }
       ],
@@ -1420,7 +1436,7 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs"
       ],
-      "notes": "Features select semantic body roles and provide header/body/state content. The composition owners—not each screen—translate those choices into page padding, one scroll owner, responsive lanes, interaction planes, and shell-aware terminal geometry. Pushed routes remain a separate compact-title hierarchy."
+      "notes": "Features select semantic body roles and provide header/body/state content. The composition owners—not each screen—translate those choices into page padding, one scroll owner, responsive lanes, interaction planes, and shell-aware terminal geometry. Pushed routes remain a separate compact-title hierarchy while sharing the Archivo family through CatchTextStyles.routeTitle."
     },
     {
       "id": "ARCH-TABBED-SCREEN-001",

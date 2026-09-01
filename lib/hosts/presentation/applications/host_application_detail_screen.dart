@@ -38,6 +38,9 @@ class _HostApplicationDetailScreenState
         title:
             detailState.value?.applicantDisplayName ??
             context.l10n.hostApplicationsTitle,
+        titleRole: detailState.value == null
+            ? CatchTopBarTitleRole.route
+            : CatchTopBarTitleRole.identity,
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),

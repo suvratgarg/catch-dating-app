@@ -25,6 +25,12 @@ part 'catch_top_bar_components.dart';
 
 enum CatchTopBarLeading { auto, back, close, none }
 
+/// Semantic typography for a compact [CatchTopBar] string title.
+///
+/// Route labels use Catch's Archivo voice. Identity is the narrow exception
+/// for user-authored names that must remain in the platform function family.
+enum CatchTopBarTitleRole { route, identity }
+
 /// Immutable expanding-search contract shared by both Catch top bars.
 ///
 /// Copy and interaction text are required so a top bar cannot silently fall
@@ -442,8 +448,11 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     super.key,
     this.title,
     this.subtitle,
+    this.eyebrow,
     this.kicker,
     this.large,
+    this.titleRole = CatchTopBarTitleRole.route,
+    this.titleMaxLines,
     this.titleWidget,
     this.titleWidgetIncludesSupplementalText = false,
     this.leading,
@@ -466,7 +475,8 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.bottom,
     this.trailing,
     this.search,
-  }) : identityName = null,
+  }) : assert(eyebrow == null || kicker == null),
+       identityName = null,
        identityPhotoUrl = null,
        onIdentityTap = null;
 
@@ -496,16 +506,22 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.trailing,
   }) : title = null,
        subtitle = null,
+       eyebrow = null,
        kicker = null,
        large = false,
+       titleRole = CatchTopBarTitleRole.identity,
+       titleMaxLines = 1,
        titleWidget = null,
        titleWidgetIncludesSupplementalText = false,
        search = null;
 
   final String? title;
   final String? subtitle;
+  final String? eyebrow;
   final String? kicker;
   final bool? large;
+  final CatchTopBarTitleRole titleRole;
+  final int? titleMaxLines;
   final Widget? titleWidget;
   final bool titleWidgetIncludesSupplementalText;
   final String? identityName;
@@ -538,6 +554,27 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   );
 
   bool get isLarge => large ?? (kicker != null && kicker!.isNotEmpty);
+
+  /// Preferred height for a compact operational workspace title stack.
+  ///
+  /// The workspace screens still use compact route typography, but may need a
+  /// kicker and several title lines at large text sizes. Keeping this resolver
+  /// here prevents feature screens from restating the route-title style merely
+  /// to calculate their app-bar height.
+  static double workspaceHeightFor({
+    required BuildContext context,
+    bool hasEyebrow = false,
+    bool hasSubtitle = false,
+    int titleMaxLines = 1,
+    bool hasActions = false,
+  }) => CatchScreenTopBar.heightFor(
+    context: context,
+    hasEyebrow: hasEyebrow,
+    hasSubtitle: hasSubtitle,
+    titleMaxLines: titleMaxLines,
+    hasActions: hasActions,
+    titleStyle: CatchTextStyles.routeTitle(context),
+  );
 
   @override
   State<CatchTopBar> createState() => _CatchTopBarState();
@@ -649,6 +686,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
 
   Widget _buildTitleBlock(BuildContext context) {
     final t = CatchTokens.of(context);
+    final hasEyebrow = widget.eyebrow != null && widget.eyebrow!.isNotEmpty;
     final hasKicker = widget.kicker != null && widget.kicker!.isNotEmpty;
     final hasSubtitle = widget.subtitle != null && widget.subtitle!.isNotEmpty;
     final titleWidgetOwnsSupplementalText =
@@ -660,12 +698,19 @@ class _CatchTopBarState extends State<CatchTopBar> {
         hasKicker &&
         !titleWidgetOwnsSupplementalText &&
         !collapseSupplementalText;
+    final showEyebrow =
+        hasEyebrow &&
+        !titleWidgetOwnsSupplementalText &&
+        !collapseSupplementalText;
     final showSubtitle =
         hasSubtitle && !titleWidgetOwnsSupplementalText && textScale < 1.4;
     final hiddenTextLabel =
         widget.title != null &&
-            ((hasKicker && !showKicker) || (hasSubtitle && !showSubtitle))
+            ((hasEyebrow && !showEyebrow) ||
+                (hasKicker && !showKicker) ||
+                (hasSubtitle && !showSubtitle))
         ? [
+            if (hasEyebrow && !showEyebrow) widget.eyebrow!,
             if (hasKicker && !showKicker) widget.kicker!,
             widget.title!,
             if (hasSubtitle && !showSubtitle) widget.subtitle!,
@@ -686,15 +731,35 @@ class _CatchTopBarState extends State<CatchTopBar> {
             : Text(
                 widget.title!,
                 semanticsLabel: hiddenTextLabel,
-                maxLines: widget.isLarge && !collapseSupplementalText ? 2 : 1,
+                maxLines:
+                    widget.titleMaxLines ??
+                    (widget.isLarge && !collapseSupplementalText ? 2 : 1),
                 overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.titleL(context, color: t.ink),
+                style: widget.isLarge
+                    ? CatchTextStyles.titleL(context, color: t.ink)
+                    : switch (widget.titleRole) {
+                        CatchTopBarTitleRole.route =>
+                          CatchTextStyles.routeTitle(context, color: t.ink),
+                        CatchTopBarTitleRole.identity => CatchTextStyles.titleL(
+                          context,
+                          color: t.ink,
+                        ),
+                      },
               ));
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (showEyebrow) ...[
+          Text(
+            widget.eyebrow!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.monoLabel(context, color: t.ink3),
+          ),
+          gapH2,
+        ],
         if (showKicker) ...[CatchKicker(label: widget.kicker!), gapH6],
         titleWidget,
         if (showSubtitle) ...[

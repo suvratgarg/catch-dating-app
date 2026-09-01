@@ -6473,7 +6473,7 @@
       "name": "CatchTopBar",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical app-bar primitive for compact/large title chrome, back/close leading, trailing actions, and expanding search.",
+      "summary": "Canonical app-bar primitive for semantic compact/large title chrome, back/close leading, trailing actions, and expanding search.",
       "dart": {
         "symbol": "CatchTopBar",
         "file": "lib/core/widgets/catch_top_bar.dart",
@@ -6512,10 +6512,33 @@
             "dartType": "String?"
           },
           {
+            "name": "eyebrow",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
             "name": "kicker",
             "type": "string",
             "required": false,
             "dartType": "String?"
+          },
+          {
+            "name": "titleRole",
+            "type": "enum",
+            "required": false,
+            "default": "route",
+            "dartType": "CatchTopBarTitleRole",
+            "values": [
+              "route",
+              "identity"
+            ]
+          },
+          {
+            "name": "titleMaxLines",
+            "type": "number",
+            "required": false,
+            "dartType": "int?"
           },
           {
             "name": "identityName",
@@ -6620,6 +6643,7 @@
           }
         ],
         "tokens": [
+          "font.family.voice",
           "space.s0",
           "space.micro3",
           "space.micro6",
@@ -6639,6 +6663,8 @@
           "CatchKicker",
           "CatchPersonAvatar",
           "CatchTextStyles.headline",
+          "CatchTextStyles.monoLabel",
+          "CatchTextStyles.routeTitle",
           "CatchTextStyles.titleL",
           "CatchTextStyles.appBarSubtitle",
           "CatchCollapsedSliverTitle",
@@ -6823,6 +6849,9 @@
         "notes": [
           "Use this primitive for route chrome before creating local AppBar variants.",
           "Use CatchScreenHeaderTitle or CatchScreenTopBar for root screen headers that need the main tab Archivo title voice.",
+          "Generic compact and workspace route labels use CatchTextStyles.routeTitle; pass title, eyebrow or kicker, subtitle, and titleMaxLines instead of a local titleWidget or style.",
+          "Title-case eyebrow copy uses the untracked CatchTextStyles.monoLabel role; uppercase kicker copy uses CatchKicker. Workspace bars pin large: false so the route-title family cannot drift.",
+          "Use CatchTopBarTitleRole.identity only for a registered user-authored name; controls and identity names remain in the platform function family.",
           "Use CatchTopBarPrimaryAction when a root-screen primary action must compact from a labelled button to the canonical icon target; never pass CatchButton directly to an actions slot.",
           "Large mode is implied by a non-empty kicker unless explicitly overridden.",
           "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",

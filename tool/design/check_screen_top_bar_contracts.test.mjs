@@ -96,6 +96,115 @@ test("flags geometry overrides on compact route bars", () => {
   assert.ok(hasFinding(result, "compact-chrome-geometry-override"));
 });
 
+test("flags a compact route that bypasses the shared title widget", () => {
+  const root = fixtureRoot({
+    source: `
+      CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          titleWidget: Text(
+            'Dress rehearsal',
+            style: CatchTextStyles.titleL(context),
+          ),
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
+        body: ListView(),
+      );
+    `,
+    contract: compactContract({
+      leading: "back",
+      surface: "CatchRouteScaffold",
+    }),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(hasFinding(result, "route-title-widget-bypass"));
+});
+
+test("flags a workspace route that bypasses the shared title widget", () => {
+  const root = fixtureRoot({
+    source: `
+      CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          titleWidget: PrivateWorkspaceTitle(),
+          divider: scrolledUnder,
+        ),
+        body: ListView(),
+      );
+    `,
+    contract: workspaceContract(),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(hasFinding(result, "route-title-widget-bypass"));
+});
+
+test("flags a workspace route that can enter large title mode", () => {
+  const root = fixtureRoot({
+    source: `
+      CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: 'Sunday Evening Run',
+          eyebrow: 'Event preparation',
+          divider: scrolledUnder,
+        ),
+        body: ListView(),
+      );
+    `,
+    contract: workspaceContract(),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(hasFinding(result, "route-title-large-mode-bypass"));
+});
+
+test("requires identity typography to be registered as a title policy", () => {
+  const root = fixtureRoot({
+    source: `Scaffold(appBar: CatchTopBar(
+      title: profile.name,
+      titleRole: CatchTopBarTitleRole.identity,
+    ));`,
+    contract: compactContract(),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(hasFinding(result, "route-title-role-override"));
+});
+
+test("accepts a registered route-or-identity title", () => {
+  const root = fixtureRoot({
+    source: `Scaffold(appBar: CatchTopBar(
+      title: profile?.name ?? 'Profile',
+      titleRole: profile == null
+          ? CatchTopBarTitleRole.route
+          : CatchTopBarTitleRole.identity,
+    ));`,
+    contract: compactContract({titlePolicy: "routeOrIdentity"}),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.deepEqual(result.findings, []);
+});
+
+test("flags an identity title policy without a route fallback", () => {
+  const root = fixtureRoot({
+    source: `Scaffold(appBar: CatchTopBar(
+      title: profile.name,
+      titleRole: CatchTopBarTitleRole.identity,
+    ));`,
+    contract: compactContract({titlePolicy: "routeOrIdentity"}),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(hasFinding(result, "missing-route-title-fallback"));
+});
+
 test("flags a route contract that drops its canonical surface", () => {
   const root = fixtureRoot({
     source: `
@@ -765,7 +874,12 @@ function screenContract({
   };
 }
 
-function compactContract({expression = "CatchTopBar", leading, surface} = {}) {
+function compactContract({
+  expression = "CatchTopBar",
+  leading,
+  surface,
+  titlePolicy,
+} = {}) {
   return {
     path: "lib/calendar/calendar_screen.dart",
     role: "compact",
@@ -773,6 +887,18 @@ function compactContract({expression = "CatchTopBar", leading, surface} = {}) {
     owner: "CatchTopBar",
     ...(leading == null ? {} : {leading}),
     ...(surface == null ? {} : {surface}),
+    ...(titlePolicy == null ? {} : {titlePolicy}),
+  };
+}
+
+function workspaceContract() {
+  return {
+    path: "lib/calendar/calendar_screen.dart",
+    role: "workspace",
+    expression: "CatchTopBar",
+    owner: "CatchTopBar",
+    surface: "CatchRouteScaffold",
+    reason: "The route owns a responsive operational workspace header.",
   };
 }
 

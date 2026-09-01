@@ -90,6 +90,9 @@ class _HostEventRehearsalScreenState
         guestLinkMutation.isPending ||
         exportMutation.isPending ||
         shareMutation.isPending;
+    final topBarTitleMaxLines = MediaQuery.textScalerOf(context).scale(1) >= 1.4
+        ? 3
+        : 1;
     return CatchMutationErrorListeners(
       mutations: [
         EventRehearsalController.setupMutation,
@@ -106,22 +109,18 @@ class _HostEventRehearsalScreenState
       child: CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           large: false,
-          height: MediaQuery.textScalerOf(context).scale(1) >= 1.4
-              ? CatchScreenTopBar.heightFor(
-                  context: context,
-                  hasEyebrow: true,
-                  titleMaxLines: 3,
-                  titleStyle: CatchTextStyles.titleL(context),
-                )
-              : CatchLayout.browseHeaderHeight,
+          height: CatchTopBar.workspaceHeightFor(
+            context: context,
+            hasEyebrow: true,
+            titleMaxLines: topBarTitleMaxLines,
+          ),
           allowContentHeightExpansion: true,
           contentCrossAxisAlignment: CrossAxisAlignment.start,
-          titleWidget: _HostRuntimeTopBarTitle(
-            eyebrow: context.l10n.hostEventRehearsalManageSubtitle,
-            title:
-                rehearsalAsync.asData?.value.session.setup.title ??
-                context.l10n.hostEventRehearsalTitle,
-          ),
+          eyebrow: context.l10n.hostEventRehearsalManageSubtitle,
+          title:
+              rehearsalAsync.asData?.value.session.setup.title ??
+              context.l10n.hostEventRehearsalTitle,
+          titleMaxLines: topBarTitleMaxLines,
           leadingType: CatchTopBarLeading.back,
           leading: CatchIconAction(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
@@ -632,38 +631,6 @@ class _HostEventRehearsalScreenState
     } on Object {
       // The mutation listener owns user-visible action failure.
     }
-  }
-}
-
-class _HostRuntimeTopBarTitle extends StatelessWidget {
-  const _HostRuntimeTopBarTitle({required this.eyebrow, required this.title});
-
-  final String eyebrow;
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          eyebrow,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.kicker(context, color: t.ink3),
-        ),
-        gapH2,
-        Text(
-          title,
-          maxLines: largeText ? 3 : 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.titleL(context, color: t.ink),
-        ),
-      ],
-    );
   }
 }
 

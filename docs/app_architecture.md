@@ -2632,7 +2632,10 @@ Every handwritten `Scaffold.appBar` is registered by exact file, role,
 expression, and canonical owner in
 `tool/design/screen_top_bar_contracts.json`. Root and root-like destinations
 use `CatchScreenTopBar`, compact detail/edit/utility routes use `CatchTopBar`,
-and identity routes use `CatchTopBar.identity`. A canonical call elsewhere in
+and avatar-backed identity routes use `CatchTopBar.identity`. Generic compact
+route labels resolve through `CatchTextStyles.routeTitle`; a user-authored name
+must opt into `CatchTopBarTitleRole.identity` under a registered title policy.
+A canonical call elsewhere in
 the file cannot bless helper-owned or raw chrome inside the actual `appBar`
 value.
 
@@ -2651,6 +2654,16 @@ routes. The route supplies a `CatchTopBar` builder and body; the shell alone
 owns surface color and the scroll-under divider. Loading, empty, error, and
 content branches retain the same title voice and back behavior instead of
 building competing scaffolds.
+
+The primitive owns the compact title role: `CatchTextStyles.routeTitle` is
+Archivo at 20/700/1.16, while the root `CatchScreenHeaderTitle` remains Archivo
+at the larger headline scale. Route and workspace screens pass semantic
+`title`, title-case `eyebrow` (untracked `monoLabel`) or uppercase `kicker`,
+`subtitle`, and `titleMaxLines` inputs; a feature-local `titleWidget` or raw
+title style is a contract failure. Workspace bars pin `large: false` so this
+path cannot silently resolve back to `titleL`. Identity names remain a
+registered semantic exception in the platform function family, with an
+explicit route-title fallback while identity data is unavailable.
 
 The adopters are Saved Events, Review History, Payment History, Settings, Chat
 Detail, Host Event Manage, Host Event Edit, Host team, every Host organizer
@@ -3549,8 +3562,8 @@ action lists and simple local action-list variables.
 
 Do not use bare `CatchTopBar(title: ...)` for these root headers. That compact
 route-title path intentionally remains available for detail, edit, lab, and
-utility screens where the title is functional navigation chrome rather than the
-root screen voice.
+utility screens. It shares the Archivo family but remains a separate compact
+hierarchy from the 32px root headline.
 
 ```dart
 const CatchScreenHeaderTitle.block({

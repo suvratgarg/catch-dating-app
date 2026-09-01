@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -30,15 +31,80 @@ void main() {
     expect(tester.getSize(find.byType(CatchTopBar)).height, 56);
     expect(
       tester.widget<Text>(find.text('Settings')).style,
-      CatchTextStyles.titleL(
+      CatchTextStyles.routeTitle(
         tester.element(find.text('Settings')),
         color: CatchTokens.of(tester.element(find.text('Settings'))).ink,
       ),
     );
+    final titleStyle = tester.widget<Text>(find.text('Settings')).style!;
+    expect(titleStyle.fontFamily, CatchFonts.voiceFamily);
+    expect(titleStyle.fontSize, 20);
+    expect(titleStyle.fontWeight, FontWeight.w700);
+    expect(titleStyle.height, 1.16);
     expect(find.byType(CatchIconButton), findsNothing);
     expect(
       _topBarMaterial(tester).color,
       AppTheme.light.scaffoldBackgroundColor,
+    );
+  });
+
+  testWidgets('CatchTopBar keeps identity-name titles in the function family', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchTopBar(
+          title: 'Aarav Shah',
+          titleRole: CatchTopBarTitleRole.identity,
+          showBackButton: false,
+        ),
+      ),
+    );
+
+    final titleContext = tester.element(find.text('Aarav Shah'));
+    expect(
+      tester.widget<Text>(find.text('Aarav Shah')).style,
+      CatchTextStyles.titleL(
+        titleContext,
+        color: CatchTokens.of(titleContext).ink,
+      ),
+    );
+  });
+
+  testWidgets('CatchTopBar preserves title-case workspace eyebrows', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchTopBar(
+          title: 'Sunday Evening Run',
+          eyebrow: 'Event preparation',
+          showBackButton: false,
+        ),
+      ),
+    );
+
+    expect(find.text('Event preparation'), findsOneWidget);
+    expect(find.text('EVENT PREPARATION'), findsNothing);
+    expect(
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).isLarge,
+      isFalse,
+    );
+    final eyebrowContext = tester.element(find.text('Event preparation'));
+    expect(
+      tester.widget<Text>(find.text('Event preparation')).style,
+      CatchTextStyles.monoLabel(
+        eyebrowContext,
+        color: CatchTokens.of(eyebrowContext).ink3,
+      ),
+    );
+    final titleContext = tester.element(find.text('Sunday Evening Run'));
+    expect(
+      tester.widget<Text>(find.text('Sunday Evening Run')).style,
+      CatchTextStyles.routeTitle(
+        titleContext,
+        color: CatchTokens.of(titleContext).ink,
+      ),
     );
   });
 
@@ -536,6 +602,14 @@ void main() {
     expect(find.text('Tonight near you'), findsOneWidget);
     expect(_topBarMaterial(tester).color, CatchTokens.editorialLight.surface);
     expect(find.byIcon(CatchIcons.close), findsOneWidget);
+    final titleContext = tester.element(find.text('Discover'));
+    expect(
+      tester.widget<Text>(find.text('Discover')).style,
+      CatchTextStyles.titleL(
+        titleContext,
+        color: CatchTokens.of(titleContext).ink,
+      ),
+    );
 
     await tester.tap(find.byIcon(CatchIcons.close));
     await tester.pump();

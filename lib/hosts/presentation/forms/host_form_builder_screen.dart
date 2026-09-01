@@ -91,15 +91,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
 
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        title: commandCenter || compact ? null : title,
-        titleWidget: compact && !commandCenter
-            ? Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.sectionTitle(context),
-              )
-            : null,
+        title: commandCenter ? null : title,
         subtitle: commandCenter || editorValue == null
             ? null
             : _saveLabel(context, editorValue),

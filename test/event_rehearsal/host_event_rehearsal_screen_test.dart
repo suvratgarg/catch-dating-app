@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
@@ -30,6 +32,21 @@ void main() {
 
     expect(find.text('Dress rehearsal'), findsWidgets);
     expect(find.byType(CatchTopBar), findsOneWidget);
+    final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    expect(topBar.title, 'Dress rehearsal');
+    expect(topBar.titleWidget, isNull);
+    final titleFinder = find.descendant(
+      of: find.byType(CatchTopBar),
+      matching: find.text('Dress rehearsal'),
+    );
+    final titleContext = tester.element(titleFinder);
+    expect(
+      tester.widget<Text>(titleFinder).style,
+      CatchTextStyles.routeTitle(
+        titleContext,
+        color: CatchTokens.of(titleContext).ink,
+      ),
+    );
     expect(find.byType(CatchScreenHeaderTitle), findsNothing);
     expect(find.byType(CatchResponsiveSectionPage), findsOneWidget);
     expect(
@@ -71,6 +88,21 @@ void main() {
 
     expect(find.text('Courtyard practice'), findsOneWidget);
     expect(find.text('REHEARSAL'), findsOneWidget);
+    final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    expect(topBar.title, 'Courtyard practice');
+    expect(topBar.titleWidget, isNull);
+    final titleFinder = find.descendant(
+      of: find.byType(CatchTopBar),
+      matching: find.text('Courtyard practice'),
+    );
+    final titleContext = tester.element(titleFinder);
+    expect(
+      tester.widget<Text>(titleFinder).style,
+      CatchTextStyles.routeTitle(
+        titleContext,
+        color: CatchTokens.of(titleContext).ink,
+      ),
+    );
     expect(find.text('Synthetic guests'), findsOneWidget);
     expect(find.text('Setup'), findsNothing);
     expect(find.text('Report'), findsNothing);

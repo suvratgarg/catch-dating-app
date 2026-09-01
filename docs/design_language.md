@@ -133,8 +133,8 @@ Three roles, no competition:
 
 | Role | Family | Use |
 |---|---|---|
-| **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | brand moments, screen/event/club display titles, and the welcome reel |
-| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | prose, bios, descriptions, names, buttons, nav, inputs, and dense UI controls |
+| **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | brand moments, root headlines, compact route titles, event/club display titles, and the welcome reel |
+| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | prose, bios, descriptions, user-authored names, buttons, navigation controls, inputs, and dense UI controls |
 | **Data** | **IBM Plex Mono** | time, price, counts, OTP digits, kickers, and explicit uppercase labels |
 
 **Why Archivo:** the current direction is typographic, restrained, and non-serif. Archivo
@@ -167,6 +167,12 @@ These map onto the existing `CatchTextStyles` roles — display/title styles mov
 Archivo, sentence/data roles to untracked IBM Plex Mono, explicit caps roles to tracked
 IBM Plex Mono, and names/controls/prose to the platform system font. App UI calls semantic
 `CatchTextStyles` roles; `CatchFonts` is an internal theme implementation detail.
+
+Route hierarchy is size and composition, not a competing font family. Root-screen
+titles use `CatchTextStyles.headline` (Archivo, 32/600/1.04); compact pushed-route
+labels use `CatchTextStyles.routeTitle` (Archivo, 20/700/1.16). A route whose title
+becomes a user-authored person name selects the semantic identity title role and
+stays in the platform family. Feature screens do not restate these styles.
 
 ---
 

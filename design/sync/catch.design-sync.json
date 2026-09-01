@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "45a14b817547b3a80c18a601dffe10a4afa824377c181342a0a903b7ecf73c28",
+  "sourceDigest": "e4d82d166ace5e2e8999a6022d9fe74ac440cd628651d8351e17277110a06897",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "45a14b817547b3a80c18a601dffe10a4afa824377c181342a0a903b7ecf73c28",
-    "contractDigest": "45a14b817547b3a80c18a601dffe10a4afa824377c181342a0a903b7ecf73c28"
+    "digest": "e4d82d166ace5e2e8999a6022d9fe74ac440cd628651d8351e17277110a06897",
+    "contractDigest": "e4d82d166ace5e2e8999a6022d9fe74ac440cd628651d8351e17277110a06897"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "e824a4ff8c42b33384f3479d936f658ef0189e8c68f80163815e66a91f48511f",
+    "handoffRequestDigest": "4e37fff2cfdcba5cc7a6a8fed8a6ce4259c133b66823593770872b18a5f427b6",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1360,8 +1360,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 11,
-      "figmaExpectedPropertyDigest": "b5bef6d835542cfa6f0e72df20fcb634dc2ef3996a2cde36503111e814e2c1d7",
+      "figmaExpectedPropertyCount": 14,
+      "figmaExpectedPropertyDigest": "7d36b08f1eb4d15ccb0659356d5d590028bd3bf4ef6a195d4090165e34a5f479",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1369,7 +1369,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "6e5523cc65f24c41b00bc2fd6e37ae419a1d7c568ef7bf398954c6e1938f7f53"
+      "contractDigest": "8d3e44c8774526333163322aca913af86540ec556c92e42f05500c952b6cb17e"
     },
     {
       "contractId": "catch.privacy_badge",
