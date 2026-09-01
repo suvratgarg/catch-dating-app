@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.8.0
+version: 3.8.1
 updated: 2026-09-02
 owner: recursive_audit_loop
 status: active
@@ -591,7 +591,7 @@ Widgetbook callers.
 | `ChatsListScreen` | `lib/chats/presentation/inbox/chat_inbox_screen.dart:16` | Consumer Chats route shell. Builds the shared consumer list display state and retains a legacy direct Host branch only as supporting migration coverage; `/host/inbox` no longer routes here. |
 | `HostInboxScreen` | `lib/hosts/presentation/inbox/host_inbox_screen.dart:47` | Canonical Host Inbox route at `/host/inbox`. Follows the shell-selected organizer and exposes route-synchronized Inbox / Sends workspaces. Inbox resolves explicit Event or General scope, composes Booked/Prospective segments from `HostInboxViewModel`, and keeps roster-backed announcement counts independent from personal Catch inquiry thread counts. It uses route-body-aware list/thread adjacency at capable widths, owns the selected row and keyed embedded thread, and retains drafts per thread across detail disposal and resize. Sends keeps its intent, manual-work, history, and empty-state slivers in a bounded 840 px operational lane; sender setup remains on the dedicated organizer messaging route. |
 | `HostWhatsappThreadRow` / `HostWhatsappThreadSheet` | `lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart` | Provider-free WhatsApp Inbox facet and manager-authorized thread sheet. The row stacks and truncates identity plus channel metadata so it remains valid in the 360 px master pane; the sheet renders the 12-month message history, shows the server-supplied 24-hour service-window state before input, disables the composer outside that window, and uses the latest inbound timestamp as an optimistic reply guard. |
-| `ChatsBrowseHeader` | `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart` | Stateful shared title/search content for Consumer Chats and Host Inbox. Its required `ChatsBrowsePresentation` makes route copy and semantics explicit instead of consulting global app configuration. Consumer Chats keeps it in scroll-owned root title content; Host Inbox supplies a workspace-specific subtitle above the Inbox / Sends selector so one-to-one replies stay visibly separate from outbound delivery. It owns only local search-open focus state; Host workspace, event scope, and Booked/Prospective controls live in `HostInboxScreen`. |
+| `ChatsBrowseHeader` | `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart` | Stateful shared title/search content for Consumer Chats and Host Messaging. Its required `ChatsBrowsePresentation` makes route copy and semantics explicit instead of consulting global app configuration. Consumer Chats keeps it in scroll-owned root title content. Host Inbox deliberately omits a subtitle; Sends supplies its distinct outbound-delivery subtitle above the shared Inbox / Sends selector. It owns only local search-open focus state; Host workspace, event scope, and Booked/Prospective controls live in `HostInboxScreen`. |
 
 ### ConsumerWidget
 
