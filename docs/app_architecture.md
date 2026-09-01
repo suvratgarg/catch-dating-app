@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.19.0
+version: 1.20.0
 updated: 2026-09-01
 owner: app_architecture
 status: active
@@ -193,6 +193,15 @@ lib/hosts/
   inbox/{domain,data,presentation}
   organizer/{domain,data,presentation}
 ```
+
+The reviewed responsibility source for those five destinations is
+`design/features/host_feature_responsibilities.json`. It generates a local
+`README.md` at each target root and cross-checks the Host shell order, typed
+routes, existing feature-contract action owners, Dart symbols, specialist data
+contracts, and focused tests. Edit the machine-readable source and regenerate;
+do not hand-maintain five summaries. A generated README may name legacy current
+roots while a destination is migrating, but that status is not permission to
+add new destination-owned behavior to the legacy aggregate.
 
 Only create a layer when the destination has an owner for it. Shared event,
 organizer, roster, or shell behavior must live with its real authority and may
@@ -2367,16 +2376,18 @@ route.
 Conversely, provider-backed routes are unavailable until their sender,
 template, permission and provider health gates pass.
 
-Host Forms remains a general intake system. `HostFormPurpose` is useful internal
-classification, but list and publish-review copy must describe actual
-consequences: whether a response can create or update a CRM contact, which
-identity evidence it requests, whether participant permission is requested,
-and which review queue receives the result. Form automations may create or
-propose CRM, tag, application, attendee, team-notification, webhook, and
-campaign-draft work. They must not silently dispatch participant or customer
-outreach. Applications and form responses remain Forms-owned work queues;
-Customers may link to a person's application history but does not own the
-application queue.
+Host Forms remains the Audience destination's general intake system.
+`HostFormPurpose` is useful internal classification, but list and
+publish-review copy must describe actual consequences: whether a response can
+create or update a CRM contact, which identity evidence it requests, whether
+participant permission is requested, and which review queue receives the
+result. Form automations may create or propose CRM, tag, application, attendee,
+team-notification, webhook, and campaign-draft work. They must not silently
+dispatch participant or customer outreach. Audience owns the Forms,
+Applications, and Responses workspaces and their canonical routes; the Forms
+domain retains response/application semantics and mutation ownership. A person
+record may link to application history, but neither the People workspace nor a
+separate global Forms destination owns the application queue.
 
 Customer detail is the organizer CRM hub. Identity, editable organizer-owned
 contact facts, provenance, permission explanation, current communication plan,
@@ -2394,7 +2405,8 @@ pickers, keeps manual handoff work in Sends, reviews every permission-authority
 collection consumer, confines canonical collection writes, preserves Host Form
 provenance for both new and matched contacts, and rejects provider delivery or
 read claims on manual handoffs. It pins the Applications list and detail routes
-to the Forms shell while requiring redirects for legacy Customers URLs. It also
+to the Audience shell while requiring redirects for legacy Customers and Forms
+URLs. It also
 requires ICU plural ownership for
 visible CRM counts across Forms, Customers, saved audiences, and Sends. The
 scanner is deliberately narrower than a global “reachable” enum:

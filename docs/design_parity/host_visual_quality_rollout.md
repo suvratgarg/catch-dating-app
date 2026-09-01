@@ -1,6 +1,6 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 1.4.0
+version: 1.5.0
 updated: 2026-09-01
 owner: product_design_parity
 status: active
@@ -191,7 +191,7 @@ instead of silently deriving them from incomplete fields.
 | B0 | Add the exhaustive policy catalog, evaluated projection/callable schemas, generated contract outputs, rules, indexes, fixtures, and owner documentation | `complete` |
 | B1 | Implement the manager-authorized read-through reconciler for every source-ready server kind, with bounded fail-closed scans and resolution tests | `complete` |
 | B2 | Replace Today’s event-only derivation with the callable projection plus the local attendance outbox merge; preserve Dress Rehearsal as a shortcut | `complete` |
-| B3 | Add machine-readable responsibility contracts for the five top-level Host features and generate their local overview Markdown plus a drift check | `pending` |
+| B3 | Add machine-readable responsibility contracts for the five top-level Host features and generate their local overview Markdown plus a drift check | `complete` |
 | B4 | Align Today’s compact and wide visual states with the approved renders, run runtime captures, and close the first tab | `pending` |
 
 ### A1 boundary
@@ -621,6 +621,10 @@ provider and form-automation failures, payout readiness, deterministic
 resolution, and fail-closed source caps. B2 consumes the callable through a
 Today-owned repository, strictly parses exhaustive coverage, merges normalized
 local attendance retry/conflict work, and preserves event content while naming
-an incomplete attention source instead of showing a false all-clear. B3 is
-next: generate the five feature-responsibility overviews from machine-readable
-contracts and enforce drift. A3-A5 remain intentionally pending.
+an incomplete attention source instead of showing a false all-clear. B3 now
+defines and schema-validates exactly five destination owners, generates a local
+overview at each target root, and checks shell order, typed routes, feature
+actions, code symbols, data contracts, dependencies, and focused tests for
+drift. B4 is next: align Today's compact and wide runtime compositions with the
+approved visual direction and capture them for review. A3-A5 remain
+intentionally pending.

@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-01",
-  "sourceDigest": "sha256:dd7453bbf779c981105425d6e6d0706953f528af905e6d904e83d4a27ea32750",
+  "sourceDigest": "sha256:fe9e1372737ec531f8160a8a20c4e4a9ede5d12ce0c1a96c11fdf526b55d833c",
   "resolvedDigest": "sha256:d886d1e2ce6f3c1260c1d2b9ac739eb2211bad752a988f381ee8cfd56ae758ef",
   "feature": {
     "id": "feature.host_home",
@@ -61,15 +61,21 @@
             "symbol": "HostTodayBody"
           },
           {
-            "id": "today_attention",
+            "id": "today_attention_model",
             "language": "dart",
             "file": "lib/hosts/today/domain/host_attention_item.dart",
-            "symbol": "HostAttentionPolicy"
+            "symbol": "HostAttentionProjection"
+          },
+          {
+            "id": "today_attention_repository",
+            "language": "dart",
+            "file": "lib/hosts/today/data/host_attention_repository.dart",
+            "symbol": "HostAttentionRepository"
           },
           {
             "id": "today_feed",
             "language": "dart",
-            "file": "lib/hosts/today/data/host_today_feed_controller.dart",
+            "file": "lib/hosts/today/presentation/host_today_feed_controller.dart",
             "symbol": "HostTodayFeedController"
           },
           {
@@ -87,7 +93,7 @@
           {
             "id": "events_timeline",
             "language": "dart",
-            "file": "lib/hosts/events/data/host_events_timeline_controller.dart",
+            "file": "lib/hosts/events/presentation/host_events_timeline_controller.dart",
             "symbol": "HostEventsTimelineController"
           },
           {
@@ -108,10 +114,15 @@
           "catch.top_bar"
         ],
         "dataContracts": [
+          "contracts/callable_responses/list_organizer_attention_items_response.schema.json",
+          "contracts/callables/list_organizer_attention_items_payload.schema.json",
+          "contracts/catalogs/host_attention_policies.json",
           "contracts/firestore/clubs.schema.json",
           "contracts/firestore/events.schema.json",
+          "contracts/firestore/organizer_attention_items.schema.json",
           "contracts/firestore/organizer_team_memberships.schema.json",
-          "contracts/firestore/organizers.schema.json"
+          "contracts/firestore/organizers.schema.json",
+          "contracts/shared/host_attention_common.schema.json"
         ]
       },
       "coverage": {
@@ -467,9 +478,51 @@
                 "registry": "flutter_screens",
                 "id": "screen.host.event.manage"
               }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.applications"
+              }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.clubs"
+              }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.customers"
+              }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.inbox"
+              }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.event.rehearsal"
+              }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.home"
+              }
             }
           ],
-          "description": "Routes a truthful event-attention task to the matching guests or setup section of Host Event Manage.",
+          "description": "Routes an authoritative attention item through its typed destination to Event Manage, Applications, Payouts, Audience, Inbox, Dress Rehearsal, or Events.",
           "implementationStatus": "implemented"
         },
         {

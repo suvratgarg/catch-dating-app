@@ -8581,7 +8581,7 @@
         "primary": "HostTodayFeedController + HostEventsTimelineController",
         "files": [
           {
-            "file": "lib/hosts/today/data/host_today_feed_controller.dart",
+            "file": "lib/hosts/today/presentation/host_today_feed_controller.dart",
             "symbol": "HostTodayFeedController"
           },
           {
@@ -8601,7 +8601,7 @@
             "symbol": "EventRepository"
           },
           {
-            "file": "lib/hosts/events/data/host_events_timeline_controller.dart",
+            "file": "lib/hosts/events/presentation/host_events_timeline_controller.dart",
             "symbol": "HostEventsTimelineController"
           }
         ],
