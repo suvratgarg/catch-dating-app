@@ -271,6 +271,41 @@ void _registerHostOperationsClubWorkspaceTests() {
 
   registerHostEventEntryTests();
 
+  testWidgets('Host Events keeps root composition for auth and route errors', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      HostEventsScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        uidProvider.overrideWithValue(const AsyncData<String?>(null)),
+      ],
+    );
+
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+    expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchErrorScaffold), findsNothing);
+    expect(find.text('Events'), findsOneWidget);
+    expect(find.text('Sign in required'), findsOneWidget);
+
+    await _pumpHostScreen(
+      tester,
+      HostEventsScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        uidProvider.overrideWithValue(
+          AsyncError<String?>(StateError('auth failed'), StackTrace.current),
+        ),
+      ],
+    );
+
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+    expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchErrorScaffold), findsNothing);
+    expect(find.text('Events'), findsOneWidget);
+  });
+
   testWidgets('Host events centers its canonical empty-state primitive', (
     tester,
   ) async {

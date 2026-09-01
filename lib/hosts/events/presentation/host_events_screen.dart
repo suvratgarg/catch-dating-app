@@ -57,15 +57,25 @@ class HostEventsScreen extends ConsumerWidget {
     );
 
     return switch (routeState.status) {
-      HostEventsRouteStatus.authRequired => CatchErrorScaffold(
-        title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
-        message: context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
-        retryLabel: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
-        onRetry: () => context.go(Routes.authScreen.path),
+      HostEventsRouteStatus.authRequired => CatchRootScreenScaffold(
+        header: CatchScreenHeaderTitle.block(
+          title: context.l10n.hostsHostEventsListTextEvents,
+        ),
+        bodyLayout: CatchScreenBodyLayout.standard,
+        slivers: [
+          CatchSliverErrorState(
+            title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+            message:
+                context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
+            retryLabel:
+                context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+            onRetry: () => context.go(Routes.authScreen.path),
+          ),
+        ],
       ),
       HostEventsRouteStatus.loading => CatchRootScreenScaffold(
         header: CatchScreenHeaderTitle.block(
-          title: context.l10n.hostsHostOperationsHomeScreenTitleHostEvents,
+          title: context.l10n.hostsHostEventsListTextEvents,
         ),
         bodyLayout: CatchScreenBodyLayout.standard,
         slivers: const [
@@ -74,18 +84,26 @@ class HostEventsScreen extends ConsumerWidget {
           ),
         ],
       ),
-      HostEventsRouteStatus.error => CatchErrorScaffold.fromError(
-        routeState.error!,
-        context: routeState.errorContext,
-        onRetry: () {
-          final currentUid = routeState.uid;
-          if (routeState.errorContext == AppErrorContext.auth ||
-              currentUid == null) {
-            ref.invalidate(uidProvider);
-            return;
-          }
-          ref.invalidate(hostOperableClubsProvider(currentUid));
-        },
+      HostEventsRouteStatus.error => CatchRootScreenScaffold(
+        header: CatchScreenHeaderTitle.block(
+          title: context.l10n.hostsHostEventsListTextEvents,
+        ),
+        bodyLayout: CatchScreenBodyLayout.standard,
+        slivers: [
+          CatchSliverErrorState.fromError(
+            routeState.error!,
+            context: routeState.errorContext,
+            onRetry: () {
+              final currentUid = routeState.uid;
+              if (routeState.errorContext == AppErrorContext.auth ||
+                  currentUid == null) {
+                ref.invalidate(uidProvider);
+                return;
+              }
+              ref.invalidate(hostOperableClubsProvider(currentUid));
+            },
+          ),
+        ],
       ),
       HostEventsRouteStatus.empty ||
       HostEventsRouteStatus.loaded => HostEventsRouteScaffold(
