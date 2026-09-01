@@ -65,6 +65,6 @@
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
     "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
     "resolvedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "x-catch-ownership": "server-only"},
-    "purgeAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-firestore-ttl": true, "x-catch-ownership": "server-only"}
+    "purgeAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "x-firestore-ttl": true, "x-catch-ownership": "server-only"}
   }
 }

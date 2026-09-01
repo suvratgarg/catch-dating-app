@@ -38,5 +38,5 @@
   "createdAt": {"_seconds": 1788264000, "_nanoseconds": 0},
   "updatedAt": {"_seconds": 1788264000, "_nanoseconds": 0},
   "resolvedAt": null,
-  "purgeAt": {"_seconds": 1791115200, "_nanoseconds": 0}
+  "purgeAt": null
 }

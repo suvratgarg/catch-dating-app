@@ -10,6 +10,7 @@
       "enum": [
         "eventLiveOperations",
         "eventWaitlistReview",
+        "eventJoinRequestReview",
         "applicationReview",
         "providerSyncFailure",
         "formAutomationFailure",
@@ -33,6 +34,7 @@
       "type": "string",
       "enum": [
         "events",
+        "eventParticipations",
         "organizerApplications",
         "providerSyncRuns",
         "organizerFormAutomationRuns",

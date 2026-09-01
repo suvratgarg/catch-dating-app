@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.39.0
+version: 1.40.0
 updated: 2026-09-01
 owner: recursive_audit_loop
 status: active
@@ -71,7 +71,8 @@ The catalog distinguishes four delivery modes:
 `organizerAttentionItems/{attentionId}` is a server-only evaluated projection.
 It stores stable source provenance and revision, open/resolved lifecycle,
 urgency, consequence, deadline, destination, display-safe context, policy and
-resolution versions, and TTL cleanup. It never embeds prose predicates or
+resolution versions. Open rows use a null TTL; resolved rows receive bounded
+cleanup. It never embeds prose predicates or
 becomes the source of the underlying event, application, form, provider, or
 payout state. Direct client reads and writes are denied.
 
@@ -83,9 +84,10 @@ callable must never label a truncated scan exhaustive. The response also
 contains one coverage row per catalog kind so clients and tests can distinguish
 complete server coverage, required local merging, shortcuts, and missing truth.
 
-The source-ready server kinds are live-event operations, waitlist review,
-application review, provider-sync failure, form-automation failure, and payout
-setup. Attendance retry/conflict work is merged from the local Host outbox.
+The source-ready server kinds are live-event operations, ordinary waitlist
+review, manual join-request review, application review, provider-sync failure,
+form-automation failure, and payout setup. Attendance retry/conflict work is
+merged from the local Host outbox.
 Dress Rehearsal is a Today shortcut. Event Success readiness, room-layout
 requirements, staffing requirements, generic form-response review, Inbox reply
 obligation, and post-event reconciliation stay blocked until their owning

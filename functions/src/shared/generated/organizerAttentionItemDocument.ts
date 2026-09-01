@@ -12,6 +12,7 @@ export interface OrganizerAttentionItemDocument {
   kind:
     | "eventLiveOperations"
     | "eventWaitlistReview"
+    | "eventJoinRequestReview"
     | "applicationReview"
     | "providerSyncFailure"
     | "formAutomationFailure"
@@ -27,6 +28,7 @@ export interface OrganizerAttentionItemDocument {
   scope: "organizer" | "event" | "application" | "form" | "thread" | "account";
   sourceOwner:
     | "events"
+    | "eventParticipations"
     | "organizerApplications"
     | "providerSyncRuns"
     | "organizerFormAutomationRuns"
@@ -122,11 +124,8 @@ export interface OrganizerAttentionItemDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
-  /**
-   * Serialized Firestore Timestamp fixture shape.
-   */
   purgeAt: {
     _seconds: number;
     _nanoseconds: number;
-  };
+  } | null;
 }

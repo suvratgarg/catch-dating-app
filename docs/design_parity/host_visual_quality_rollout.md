@@ -189,7 +189,7 @@ instead of silently deriving them from incomplete fields.
 | Item | Delivery unit | Status |
 |---|---|---|
 | B0 | Add the exhaustive policy catalog, evaluated projection/callable schemas, generated contract outputs, rules, indexes, fixtures, and owner documentation | `complete` |
-| B1 | Implement the manager-authorized read-through reconciler for every source-ready server kind, with bounded fail-closed scans and resolution tests | `pending` |
+| B1 | Implement the manager-authorized read-through reconciler for every source-ready server kind, with bounded fail-closed scans and resolution tests | `complete` |
 | B2 | Replace Today’s event-only derivation with the callable projection plus the local attendance outbox merge; preserve Dress Rehearsal as a shortcut | `pending` |
 | B3 | Add machine-readable responsibility contracts for the five top-level Host features and generate their local overview Markdown plus a drift check | `pending` |
 | B4 | Align Today’s compact and wide visual states with the approved renders, run runtime captures, and close the first tab | `pending` |
@@ -614,6 +614,10 @@ are direct route-owned vertical slices with separate screen state, view models,
 and controllers. Today owns a bounded feed over the shared event repository;
 Events owns the full timeline and inventory. Dress Rehearsal is a dedicated
 Today action, and the legacy combined Home compatibility surface is gone. B0
-now defines the source-backed attention contract; B1 is next and implements
-the server reconciler before Flutter consumes it. A3-A5 remain intentionally
-pending.
+now defines the source-backed attention contract. B1 implements the manager-
+authorized read-through reconciler, including canonical and legacy event
+ownership, ordinary waitlists, explicit manual join requests, applications,
+provider and form-automation failures, payout readiness, deterministic
+resolution, and fail-closed source caps. B2 is next and replaces Today’s
+event-only local derivation with that projection plus the local attendance
+outbox. A3-A5 remain intentionally pending.

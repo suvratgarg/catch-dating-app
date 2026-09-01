@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.32.0
+version: 1.33.0
 updated: 2026-09-01
 owner: recursive_audit_loop
 status: active
@@ -154,6 +154,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | Function | Type | Initiator | Writes | Notes |
 |---|---|---|---|---|
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with generated Ajv contract validators; owns complex profile edits after initial create; rate-limited at 60/minute. Verified phone is excluded from the patch contract and initial profile creation must match the Firebase Auth phone claim. |
+| `listOrganizerAttentionItems` | Callable | Host Today | Reads bounded canonical event, participation, application, provider-sync, form-automation, organizer, and payout-account facts; reconciles `organizerAttentionItems` | App-Check-protected, rate-limited, manager-only read-through projection. It resolves stale rows before returning at most 400 open items ordered by urgency and deadline, fails closed on every over-cap source, merges legacy `clubId` and canonical `organizerId` ownership, and returns explicit coverage for client-local, shortcut-only, and missing-truth kinds. |
 | `createEventRehearsal` / `getEventRehearsalBootstrap` / `updateEventRehearsalSetup` | Callable | Flutter `EventRehearsalRepository` | `eventRehearsals`, synthetic `eventRehearsalActors`; creation may read one authorized `events` source | App-Check-protected organizer-manager boundary. Creation enforces five active sessions and 50 actors, snapshots only safe source fields or a sample, and initializes a 24-hour deterministic room. Setup is revision-fenced and freezes after start. No production collection is written. |
 | `controlEventRehearsal` / `controlEventRehearsalSpatial` / `injectEventRehearsalBehavior` / `completeEventRehearsal` | Callable | Flutter Host rehearsal console | Rehearsal session, synthetic actors, idempotent `eventRehearsalActions` | Revision-fenced virtual-clock and Room-placement reducers with a shared 500-action cap and stable client-action deduplication. They cover lifecycle/step/time controls, table move/confirm/release, and late/no-show/leave/return/walk-in/claim/opt-out/keep-apart/disconnect behavior. Advanced transport/data faults require internal/admin authorization. |
 | `resetEventRehearsal` / `rotateEventRehearsalGuestLink` / `exportEventRehearsalReproduction` | Callable | Flutter Host rehearsal recap and guest-link controls | Rehearsal-only reset/fork/link generation; bounded read-only reproduction export | Reset reproduces the current seed, fork creates a new room without changing the source, link rotation invalidates prior browser slots, and export returns only bounded rehearsal setup, actor, revision, and action evidence. |

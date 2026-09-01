@@ -674,6 +674,9 @@
       "owner": "Host Today read-through attention reconciliation",
       "read": "server only; managers receive a bounded sanitized callable projection",
       "write": "server only; source-owned read-through reconciliation",
+      "exportedFunctions": [
+        "listOrganizerAttentionItems"
+      ],
       "migrationNotes": [
         "The projection stores evaluated provenance, deadlines, destination, and resolution state; executable trigger and permission policy remains versioned in contracts/catalogs/host_attention_policies.json.",
         "The list callable reconciles authoritative source collections before returning supported items and fails closed rather than returning a partial source scan.",

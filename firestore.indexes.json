@@ -646,6 +646,39 @@
       ]
     },
     {
+      "collectionGroup": "organizerApplications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "reviewStatus", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "eventParticipations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "hostApprovalStatus", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "eventParticipations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "clubId", "mode": "ASCENDING"},
+        {"fieldPath": "hostApprovalStatus", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "providerSyncRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "expiresAt", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerCampaigns",
       "queryScope": "COLLECTION",
       "fields": [
@@ -720,6 +753,16 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "endTime", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "clubId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "endTime", "mode": "ASCENDING"},
         {"fieldPath": "__name__", "mode": "ASCENDING"}

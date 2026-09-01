@@ -18,6 +18,7 @@ export interface ListOrganizerAttentionItemsCallableResponse {
     kind:
       | "eventLiveOperations"
       | "eventWaitlistReview"
+      | "eventJoinRequestReview"
       | "applicationReview"
       | "providerSyncFailure"
       | "formAutomationFailure"
@@ -39,6 +40,7 @@ export interface ListOrganizerAttentionItemsCallableResponse {
       | "account";
     sourceOwner:
       | "events"
+      | "eventParticipations"
       | "organizerApplications"
       | "providerSyncRuns"
       | "organizerFormAutomationRuns"
@@ -96,13 +98,14 @@ export interface ListOrganizerAttentionItemsCallableResponse {
     expiresAtMillis: number | null;
   }[];
   /**
-   * @minItems 14
-   * @maxItems 14
+   * @minItems 15
+   * @maxItems 15
    */
   coverage: {
     kind:
       | "eventLiveOperations"
       | "eventWaitlistReview"
+      | "eventJoinRequestReview"
       | "applicationReview"
       | "providerSyncFailure"
       | "formAutomationFailure"

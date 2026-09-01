@@ -1982,6 +1982,7 @@ export interface OrganizerAttentionItemDocument {
   kind:
     | "eventLiveOperations"
     | "eventWaitlistReview"
+    | "eventJoinRequestReview"
     | "applicationReview"
     | "providerSyncFailure"
     | "formAutomationFailure"
@@ -1997,6 +1998,7 @@ export interface OrganizerAttentionItemDocument {
   scope: "organizer" | "event" | "application" | "form" | "thread" | "account";
   sourceOwner:
     | "events"
+    | "eventParticipations"
     | "organizerApplications"
     | "providerSyncRuns"
     | "organizerFormAutomationRuns"
@@ -2056,7 +2058,7 @@ export interface OrganizerAttentionItemDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   resolvedAt: FirebaseFirestore.Timestamp | null;
-  purgeAt: FirebaseFirestore.Timestamp;
+  purgeAt: FirebaseFirestore.Timestamp | null;
 }
 
 /**

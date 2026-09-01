@@ -15257,6 +15257,7 @@ export const organizerAttentionItemDocumentSchema: Record<string, unknown> = {
       "enum": [
         "eventLiveOperations",
         "eventWaitlistReview",
+        "eventJoinRequestReview",
         "applicationReview",
         "providerSyncFailure",
         "formAutomationFailure",
@@ -15289,6 +15290,7 @@ export const organizerAttentionItemDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "enum": [
         "events",
+        "eventParticipations",
         "organizerApplications",
         "providerSyncRuns",
         "organizerFormAutomationRuns",
@@ -15660,24 +15662,31 @@ export const organizerAttentionItemDocumentSchema: Record<string, unknown> = {
       "x-catch-ownership": "server-only"
     },
     "purgeAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
         },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
+        {
+          "type": "null"
         }
-      },
+      ],
       "x-firestore-ttl": true,
       "x-catch-ownership": "server-only"
     }
@@ -85496,6 +85505,7 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
             "enum": [
               "eventLiveOperations",
               "eventWaitlistReview",
+              "eventJoinRequestReview",
               "applicationReview",
               "providerSyncFailure",
               "formAutomationFailure",
@@ -85526,6 +85536,7 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
             "type": "string",
             "enum": [
               "events",
+              "eventParticipations",
               "organizerApplications",
               "providerSyncRuns",
               "organizerFormAutomationRuns",
@@ -85738,8 +85749,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
     },
     "coverage": {
       "type": "array",
-      "minItems": 14,
-      "maxItems": 14,
+      "minItems": 15,
+      "maxItems": 15,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -85754,6 +85765,7 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
             "enum": [
               "eventLiveOperations",
               "eventWaitlistReview",
+              "eventJoinRequestReview",
               "applicationReview",
               "providerSyncFailure",
               "formAutomationFailure",
@@ -102656,7 +102668,7 @@ export const hostAttentionPolicyCatalog = {
       "resolutionPredicate": "Waitlisted count reaches zero, event leaves the horizon, event ends, or event is cancelled.",
       "permissionPredicate": "Caller is a canonical manager of the event organizer.",
       "consequence": "risksGuestExperience",
-      "dueAtPolicy": "Event startTime minus 24 hours, clamped to openedAt.",
+      "dueAtPolicy": "Event startTime minus 24 hours. A newly discovered overdue item retains this original deadline.",
       "expiresAtPolicy": "Event endTime.",
       "destination": {
         "route": "hostEventManage",
@@ -102666,6 +102678,27 @@ export const hostAttentionPolicyCatalog = {
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
       "readinessReason": "Waitlist count and admission policy are canonical event projections."
+    },
+    {
+      "kind": "eventJoinRequestReview",
+      "scope": "event",
+      "sourceOwner": "eventParticipations",
+      "sourceIdPolicy": "Canonical event id grouping pending manual-approval participation edges.",
+      "sourceRevisionPolicy": "SHA-256 fingerprint of the sorted pending participation ids, request timestamps, and event schedule.",
+      "triggerPredicate": "An active request-to-join event starts inside the Today horizon and has one or more waitlisted participation edges with hostApprovalStatus pending.",
+      "resolutionPredicate": "Every request is approved, declined, cancelled, or otherwise leaves pending; or the event ends or is cancelled.",
+      "permissionPredicate": "Caller is a canonical manager of the event organizer.",
+      "consequence": "delaysResponse",
+      "dueAtPolicy": "Earliest pending request time plus 24 hours.",
+      "expiresAtPolicy": "Event endTime.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "guests"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "Manual approval is explicit on both the event policy and canonical participation workflow edge."
     },
     {
       "kind": "applicationReview",
@@ -102692,10 +102725,10 @@ export const hostAttentionPolicyCatalog = {
       "kind": "providerSyncFailure",
       "scope": "event",
       "sourceOwner": "providerSyncRuns",
-      "sourceIdPolicy": "Latest provider sync run for an organizer and event.",
-      "sourceRevisionPolicy": "Latest run id plus inputHash, status, and completion time.",
-      "triggerPredicate": "The latest provider sync run for the event is partial or failed.",
-      "resolutionPredicate": "A newer sync run for the event completes successfully or the source expires.",
+      "sourceIdPolicy": "Latest terminal provider sync run for an organizer and event.",
+      "sourceRevisionPolicy": "Latest terminal run id plus inputHash, status, and completion time.",
+      "triggerPredicate": "The latest terminal provider sync run for the event is partial or failed; a running retry does not hide the unresolved terminal result.",
+      "resolutionPredicate": "A newer terminal sync run for the event completes successfully or the source expires.",
       "permissionPredicate": "Caller is a canonical manager of the provider connection organizer.",
       "consequence": "requiresReconciliation",
       "dueAtPolicy": "Latest failed or partial run completion time, otherwise start time.",
@@ -102713,10 +102746,10 @@ export const hostAttentionPolicyCatalog = {
       "kind": "formAutomationFailure",
       "scope": "form",
       "sourceOwner": "organizerFormAutomationRuns",
-      "sourceIdPolicy": "Latest automation run for an organizer, form, and rule.",
-      "sourceRevisionPolicy": "Latest run id plus rule revision, status, and update time.",
-      "triggerPredicate": "The latest run for a form rule is partiallyFailed or failed.",
-      "resolutionPredicate": "A newer run for the same form rule succeeds or the rule is disabled or removed.",
+      "sourceIdPolicy": "Latest terminal automation run for an enabled organizer, form, rule, and current rule revision.",
+      "sourceRevisionPolicy": "Latest terminal run id plus rule revision, status, and update time.",
+      "triggerPredicate": "The latest terminal run for the current revision of an enabled form rule is partiallyFailed or failed; a running retry does not hide the unresolved terminal result.",
+      "resolutionPredicate": "A newer terminal run for the same current form-rule revision succeeds, or the rule is revised, disabled, or removed.",
       "permissionPredicate": "Caller is a canonical manager of the form organizer.",
       "consequence": "degradesAutomation",
       "dueAtPolicy": "Latest failed run updatedAt.",
@@ -102740,8 +102773,8 @@ export const hostAttentionPolicyCatalog = {
       "resolutionPredicate": "The required owner account is fully enabled, all paid events leave the horizon, or the organizer ownership changes.",
       "permissionPredicate": "Caller is a canonical organizer manager; payout setup remains owner-only at the destination.",
       "consequence": "risksRevenue",
-      "dueAtPolicy": "Earliest paid event startTime minus 72 hours, clamped to openedAt.",
-      "expiresAtPolicy": "Earliest affected paid event endTime.",
+      "dueAtPolicy": "Earliest paid event startTime minus 72 hours. A newly discovered overdue item retains this original deadline.",
+      "expiresAtPolicy": "Latest affected paid event endTime.",
       "destination": {
         "route": "hostOrganizerPayments",
         "section": null
