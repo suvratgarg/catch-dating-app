@@ -148,6 +148,9 @@
           "requires": [
             {"text": "CatchRootScreenScaffold", "minimumOccurrences": 1},
             {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"}
           ]
         },
         {
@@ -184,6 +187,9 @@
           "requires": [
             {"text": "CatchRootScreenScaffold", "minimumOccurrences": 1},
             {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"}
           ]
         },
         {

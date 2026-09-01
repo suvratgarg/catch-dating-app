@@ -71,6 +71,35 @@ test("flags a root screen that bypasses semantic composition", () => {
   );
 });
 
+test("flags a state branch that escapes an otherwise valid root owner", () => {
+  const root = fixtureRoot({
+    ownerSource: `
+      return switch (state) {
+        ScreenState.loaded => CatchRootScreenScaffold(
+          bodyLayout: CatchScreenBodyLayout.standard,
+        ),
+        ScreenState.error => CatchErrorScaffold(),
+      };
+    `,
+    requires: [
+      {text: "CatchRootScreenScaffold", minimumOccurrences: 1},
+      {
+        text: "bodyLayout: CatchScreenBodyLayout.standard",
+        minimumOccurrences: 1,
+      },
+    ],
+    forbids: [{text: "CatchErrorScaffold"}],
+  });
+  const result = checkTabRootScrollContracts({root});
+  assert.ok(
+    result.findings.some(
+      (finding) =>
+        finding.code === "forbidden-text" &&
+        finding.message.includes("CatchErrorScaffold"),
+    ),
+  );
+});
+
 test("accepts lifecycle-owned StatefulShellBranch key member access", () => {
   const root = fixtureRoot({
     ownerSource:
