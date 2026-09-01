@@ -2,7 +2,6 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -83,16 +82,20 @@ HostTodayState buildHostTodayState(
           return a.startTime.compareTo(b.startTime);
         });
   final featuredEvent = activeEvents.firstOrNull;
-  if (featuredEvent == null) {
+  final attentionItems = (data?.attentionItems ?? const [])
+      .map((item) => HostTodayAttentionData.fromItem(item, l10n))
+      .toList(growable: false);
+  final attentionIssues =
+      data?.attentionIssues ?? const <HostTodayAttentionIssue>[];
+  if (featuredEvent == null &&
+      attentionItems.isEmpty &&
+      attentionIssues.isEmpty) {
     return HostTodayState(
       status: HostTodayStatus.empty,
       hasPastEvents: data?.hasPastEvents ?? false,
     );
   }
 
-  final attentionItems = HostAttentionPolicy.forEvents(activeEvents, now: now)
-      .map((item) => HostTodayAttentionData.fromItem(item, l10n))
-      .toList(growable: false);
   final laterEvents = activeEvents
       .skip(1)
       .take(2)
@@ -103,6 +106,9 @@ HostTodayState buildHostTodayState(
     status: HostTodayStatus.content,
     featuredEvent: featuredEvent,
     attentionItems: List<HostTodayAttentionData>.unmodifiable(attentionItems),
+    attentionIssues: List<HostTodayAttentionIssue>.unmodifiable(
+      attentionIssues,
+    ),
     laterEvents: List<HostTodayEventRowData>.unmodifiable(laterEvents),
     hasPastEvents: data?.hasPastEvents ?? false,
   );

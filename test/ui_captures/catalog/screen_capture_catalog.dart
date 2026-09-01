@@ -172,6 +172,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
+import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -2934,16 +2935,64 @@ class _CaptureHostTodayFeedController extends HostTodayFeedController {
   @override
   Future<HostTodayFeedData> build(HostTodayFeedRequest request) async {
     final events = eventsByOrganizer[request.organizerId] ?? const <Event>[];
+    final activeEvents = events
+        .where((event) => event.endTime.isAfter(request.sessionBoundary))
+        .toList(growable: false);
     return HostTodayFeedData(
-      activeEvents: events
-          .where((event) => event.endTime.isAfter(request.sessionBoundary))
-          .toList(growable: false),
+      activeEvents: activeEvents,
       pastEvents: events
           .where((event) => !event.endTime.isAfter(request.sessionBoundary))
           .toList(growable: false),
+      attentionItems: _captureTodayAttentionItems(
+        activeEvents,
+        request.sessionBoundary,
+      ),
+      localAttendanceMerged: true,
     );
   }
 }
+
+List<HostAttentionItem> _captureTodayAttentionItems(
+  Iterable<Event> events,
+  DateTime now,
+) => [
+  for (final event in events)
+    if (event.waitlistCount > 0 &&
+        !event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired)
+      HostAttentionItem(
+        id: 'capture-attention-${event.id}',
+        kind: HostAttentionKind.eventWaitlistReview,
+        scope: HostAttentionScope.event,
+        sourceOwner: HostAttentionSourceOwner.events,
+        sourceId: event.id,
+        sourceRevision: 'capture-${event.waitlistCount}',
+        eventId: event.id,
+        status: HostAttentionStatus.open,
+        consequence: HostAttentionConsequence.risksGuestExperience,
+        blocking: false,
+        urgency: event.startTime.difference(now) <= const Duration(hours: 24)
+            ? HostAttentionUrgency.immediate
+            : event.startTime.difference(now) <= const Duration(hours: 72)
+            ? HostAttentionUrgency.soon
+            : HostAttentionUrgency.upcoming,
+        destination: HostAttentionDestination(
+          route: HostAttentionDestinationRoute.hostEventManage,
+          section: 'guests',
+          eventId: event.id,
+        ),
+        context: HostAttentionContext(
+          eventName: event.title,
+          count: event.waitlistCount,
+        ),
+        dedupeKey: 'eventWaitlistReview:${event.id}',
+        policyVersion: 1,
+        resolutionVersion: 1,
+        assignedHostUid: null,
+        openedAt: now,
+        dueAt: event.startTime.subtract(const Duration(hours: 24)),
+        expiresAt: event.endTime,
+      ),
+];
 
 class _CaptureHostEventsTimelineController
     extends HostEventsTimelineController {

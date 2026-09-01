@@ -197,9 +197,8 @@ class HostAttendanceOutbox {
   final HostAttendanceOutboxStore _store;
   final HostAttendanceMutator _attendees;
 
-  Future<HostAttendanceOutboxSummary> loadForEvent({
+  Future<HostAttendanceOutboxSummary> loadAll({
     required String accountId,
-    required String eventId,
     DateTime? now,
   }) async {
     final normalized = _normalize(
@@ -208,7 +207,18 @@ class HostAttendanceOutbox {
     );
     await _store.save(accountId, normalized);
     return HostAttendanceOutboxSummary(
-      normalized
+      List<HostAttendanceOutboxEntry>.unmodifiable(normalized),
+    );
+  }
+
+  Future<HostAttendanceOutboxSummary> loadForEvent({
+    required String accountId,
+    required String eventId,
+    DateTime? now,
+  }) async {
+    final normalized = await loadAll(accountId: accountId, now: now);
+    return HostAttendanceOutboxSummary(
+      normalized.entries
           .where((entry) => entry.eventId == eventId)
           .toList(growable: false),
     );

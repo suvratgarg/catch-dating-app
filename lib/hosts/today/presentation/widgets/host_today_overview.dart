@@ -1,9 +1,11 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -19,38 +21,42 @@ class HostTodayOverview extends StatelessWidget {
     super.key,
     required this.state,
     required this.now,
+    required this.onRetry,
     required this.onOpenEvent,
     required this.onOpenAttention,
   });
 
   final HostTodayState state;
   final DateTime now;
+  final VoidCallback onRetry;
   final ValueChanged<Event> onOpenEvent;
   final ValueChanged<HostAttentionItem> onOpenAttention;
 
   @override
   Widget build(BuildContext context) {
-    final event = state.featuredEvent!;
+    final event = state.featuredEvent;
     final attentionItems = state.attentionItems;
     final heroTaskCount = attentionItems
-        .where((data) => data.item.event.id == event.id)
+        .where((data) => data.item.eventId == event?.id)
         .length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HostTodayEventSpotlight(
-          event: event,
-          now: now,
-          taskCount: heroTaskCount,
-          onPressed: () => onOpenEvent(event),
-        ),
-        gapH24,
+        if (event != null) ...[
+          HostTodayEventSpotlight(
+            event: event,
+            now: now,
+            taskCount: heroTaskCount,
+            onPressed: () => onOpenEvent(event),
+          ),
+          gapH24,
+        ],
         CatchSection.plain(
           title: context.l10n.hostsHostTodayTitleNeedsYou,
           count: attentionItems.isEmpty ? null : attentionItems.length,
           titleColor: CatchTokens.of(context).ink3,
-          child: attentionItems.isEmpty
+          child: attentionItems.isEmpty && state.attentionIssues.isEmpty
               ? Text(
                   context.l10n.hostsHostTodayTextNothingNeedsYouRight,
                   style: CatchTextStyles.supporting(context),
@@ -58,6 +64,14 @@ class HostTodayOverview extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    for (final issue in state.attentionIssues) ...[
+                      CatchInlineErrorState.fromError(
+                        issue.error,
+                        context: AppErrorContext.event,
+                        onRetry: onRetry,
+                      ),
+                      gapH12,
+                    ],
                     for (final data in attentionItems) ...[
                       HostTodayAttentionCard(
                         data: data,

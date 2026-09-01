@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-31",
+  "updated": "2026-09-01",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -4713,6 +4713,8 @@
             "lib/hosts/events/presentation/host_events_state.dart",
             "lib/hosts/events/presentation/host_events_view_model.dart",
             "lib/hosts/events/presentation/host_events_timeline_controller.dart",
+            "lib/hosts/data/host_attendance_outbox.dart",
+            "lib/hosts/today/data/host_attention_repository.dart",
             "lib/hosts/today/domain/host_attention_item.dart",
             "lib/hosts/today/presentation/host_today_feed_controller.dart",
             "lib/hosts/today/presentation/host_today_screen.dart",

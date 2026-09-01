@@ -36,7 +36,10 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.text('STARTS IN 5H'), findsOneWidget);
     expect(find.text('Review waitlist'), findsOneWidget);
-    expect(find.textContaining('3 waiting · 20 spots open'), findsOneWidget);
+    expect(
+      find.text('3 people are waiting for ${later.title}.'),
+      findsOneWidget,
+    );
     expect(find.text('Check host setup'), findsNothing);
     expect(
       tester

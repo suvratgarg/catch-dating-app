@@ -115,6 +115,7 @@ class HostTodayBody extends StatelessWidget {
                 HostTodayOverview(
                   state: state,
                   now: now,
+                  onRetry: onRetry,
                   onOpenEvent: onOpenEvent,
                   onOpenAttention: onOpenAttention,
                 ),

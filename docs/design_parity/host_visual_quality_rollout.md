@@ -1,6 +1,6 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 1.3.0
+version: 1.4.0
 updated: 2026-09-01
 owner: product_design_parity
 status: active
@@ -190,7 +190,7 @@ instead of silently deriving them from incomplete fields.
 |---|---|---|
 | B0 | Add the exhaustive policy catalog, evaluated projection/callable schemas, generated contract outputs, rules, indexes, fixtures, and owner documentation | `complete` |
 | B1 | Implement the manager-authorized read-through reconciler for every source-ready server kind, with bounded fail-closed scans and resolution tests | `complete` |
-| B2 | Replace Today’s event-only derivation with the callable projection plus the local attendance outbox merge; preserve Dress Rehearsal as a shortcut | `pending` |
+| B2 | Replace Today’s event-only derivation with the callable projection plus the local attendance outbox merge; preserve Dress Rehearsal as a shortcut | `complete` |
 | B3 | Add machine-readable responsibility contracts for the five top-level Host features and generate their local overview Markdown plus a drift check | `pending` |
 | B4 | Align Today’s compact and wide visual states with the approved renders, run runtime captures, and close the first tab | `pending` |
 
@@ -203,7 +203,7 @@ instead of silently deriving them from incomplete fields.
 - The supported queue is exhaustive inside a named seven-day horizon and is
   ordered by immediate, soon, then upcoming urgency; facts outside that window
   stay in Events until they become time-sensitive.
-- The Events timeline provider lives in `lib/hosts/events/data/` and is consumed
+- The Events timeline controller lives in `lib/hosts/events/presentation/` and is consumed
   only by the Events inventory. Today owns a separate bounded feed controller
   over the shared Event repository, so top-level features do not consume each
   other's screen controllers.
@@ -618,6 +618,9 @@ now defines the source-backed attention contract. B1 implements the manager-
 authorized read-through reconciler, including canonical and legacy event
 ownership, ordinary waitlists, explicit manual join requests, applications,
 provider and form-automation failures, payout readiness, deterministic
-resolution, and fail-closed source caps. B2 is next and replaces Today’s
-event-only local derivation with that projection plus the local attendance
-outbox. A3-A5 remain intentionally pending.
+resolution, and fail-closed source caps. B2 consumes the callable through a
+Today-owned repository, strictly parses exhaustive coverage, merges normalized
+local attendance retry/conflict work, and preserves event content while naming
+an incomplete attention source instead of showing a false all-clear. B3 is
+next: generate the five feature-responsibility overviews from machine-readable
+contracts and enforce drift. A3-A5 remain intentionally pending.

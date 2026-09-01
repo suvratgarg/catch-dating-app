@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -36,6 +37,7 @@ class HostTodayState {
     required this.status,
     this.featuredEvent,
     this.attentionItems = const <HostTodayAttentionData>[],
+    this.attentionIssues = const <HostTodayAttentionIssue>[],
     this.laterEvents = const <HostTodayEventRowData>[],
     this.hasPastEvents = false,
     this.error,
@@ -45,6 +47,7 @@ class HostTodayState {
   final HostTodayStatus status;
   final Event? featuredEvent;
   final List<HostTodayAttentionData> attentionItems;
+  final List<HostTodayAttentionIssue> attentionIssues;
   final List<HostTodayEventRowData> laterEvents;
   final bool hasPastEvents;
   final Object? error;
@@ -65,23 +68,91 @@ class HostTodayAttentionData {
     HostAttentionItem item,
     AppLocalizations l10n,
   ) {
-    final event = item.event;
+    final eventName =
+        item.context.eventName ?? l10n.hostTodayAttentionFallbackEvent;
+    final subjectLabel =
+        item.context.subjectLabel ?? l10n.hostTodayAttentionFallbackSubject;
+    final count = item.context.count ?? 0;
     return switch (item.kind) {
-      HostAttentionKind.reviewWaitlist => HostTodayAttentionData(
+      HostAttentionKind.eventLiveOperations => HostTodayAttentionData(
+        item: item,
+        title: l10n.hostTodayAttentionLiveTitle,
+        body: l10n.hostTodayAttentionLiveBody(eventName: eventName),
+        primaryActionLabel: l10n.hostTodayAttentionOpenLive,
+        icon: CatchIcons.eventLive,
+      ),
+      HostAttentionKind.eventWaitlistReview => HostTodayAttentionData(
         item: item,
         title: l10n.hostsHostHomeScreenStateTitleReviewWaitlist,
-        body: l10n
-            .hostsHostHomeScreenStateBodyTitleWaitlistcountWaitingAvailability(
-              title: event.title,
-              waitlistCount: event.waitlistCount,
-              availability: event.spotsRemaining > 0
-                  ? l10n.hostsHostHomeScreenStateVisiblecopySpotsremainingSpotsOpen(
-                      spotsRemaining: event.spotsRemaining,
-                    )
-                  : l10n.hostsHostHomeScreenStateVisiblecopyEventFull,
-            ),
+        body: l10n.hostTodayAttentionWaitlistBody(
+          count: count,
+          eventName: eventName,
+        ),
         primaryActionLabel: l10n.hostsHostHomeScreenStateVisiblecopyReview,
         icon: CatchIcons.personSearchOutlined,
+      ),
+      HostAttentionKind.eventJoinRequestReview => HostTodayAttentionData(
+        item: item,
+        title: l10n.hostTodayAttentionJoinTitle,
+        body: l10n.hostTodayAttentionJoinBody(
+          count: count,
+          eventName: eventName,
+        ),
+        primaryActionLabel: l10n.hostTodayAttentionReview,
+        icon: CatchIcons.howToRegOutlined,
+      ),
+      HostAttentionKind.applicationReview => HostTodayAttentionData(
+        item: item,
+        title: l10n.hostTodayAttentionApplicationTitle,
+        body: l10n.hostTodayAttentionApplicationBody(
+          subjectLabel: subjectLabel,
+        ),
+        primaryActionLabel: l10n.hostTodayAttentionReview,
+        icon: CatchIcons.factCheckOutlined,
+      ),
+      HostAttentionKind.providerSyncFailure => HostTodayAttentionData(
+        item: item,
+        title: l10n.hostTodayAttentionProviderTitle,
+        body: l10n.hostTodayAttentionProviderBody(eventName: eventName),
+        primaryActionLabel: l10n.hostTodayAttentionReview,
+        icon: CatchIcons.syncAltRounded,
+      ),
+      HostAttentionKind.formAutomationFailure => HostTodayAttentionData(
+        item: item,
+        title: l10n.hostTodayAttentionAutomationTitle,
+        body: l10n.hostTodayAttentionAutomationBody(subjectLabel: subjectLabel),
+        primaryActionLabel: l10n.hostTodayAttentionFix,
+        icon: CatchIcons.ruleOutlined,
+      ),
+      HostAttentionKind.payoutSetup => HostTodayAttentionData(
+        item: item,
+        title: l10n.hostTodayAttentionPayoutTitle,
+        body: l10n.hostTodayAttentionPayoutBody(
+          count: count,
+          provider: item.context.provider ?? subjectLabel,
+        ),
+        primaryActionLabel: l10n.hostTodayAttentionSetUpPayouts,
+        icon: CatchIcons.paymentsOutlined,
+      ),
+      HostAttentionKind.attendanceSync => HostTodayAttentionData(
+        item: item,
+        title: l10n.hostTodayAttentionAttendanceTitle,
+        body: l10n.hostTodayAttentionAttendanceBody(eventName: eventName),
+        primaryActionLabel: l10n.hostTodayAttentionReviewAttendance,
+        icon: CatchIcons.factCheckOutlined,
+      ),
+      HostAttentionKind.dressRehearsal ||
+      HostAttentionKind.eventSuccessPreparation ||
+      HostAttentionKind.roomLayoutSetup ||
+      HostAttentionKind.eventStaffing ||
+      HostAttentionKind.formResponseReview ||
+      HostAttentionKind.inboxReply ||
+      HostAttentionKind.postEventReconciliation => HostTodayAttentionData(
+        item: item,
+        title: l10n.hostTodayAttentionGenericTitle,
+        body: l10n.hostTodayAttentionGenericBody,
+        primaryActionLabel: l10n.hostTodayAttentionOpen,
+        icon: CatchIcons.infoOutlineRounded,
       ),
     };
   }

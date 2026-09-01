@@ -458,6 +458,9 @@ List _hostClubOverrides({
     eventRepositoryProvider.overrideWithValue(
       _FixedHostEventRepository(timelineEventsByOrganizer),
     ),
+    hostTodayFeedControllerProvider.overrideWith2(
+      (_) => _FixedHostTodayFeedController(timelineEventsByOrganizer),
+    ),
     hostEventsTimelineControllerProvider.overrideWith2(
       (_) => _FixedHostEventsTimelineController(timelineEventsByOrganizer),
     ),
@@ -554,6 +557,73 @@ class _FixedHostEventRepository extends Fake implements EventRepository {
     );
   }
 }
+
+class _FixedHostTodayFeedController extends HostTodayFeedController {
+  _FixedHostTodayFeedController(this.eventsByOrganizer);
+
+  final Map<String, List<Event>> eventsByOrganizer;
+
+  @override
+  Future<HostTodayFeedData> build(HostTodayFeedRequest request) async {
+    final events = eventsByOrganizer[request.organizerId] ?? const <Event>[];
+    final activeEvents = events
+        .where((event) => event.endTime.isAfter(request.sessionBoundary))
+        .toList(growable: false);
+    return HostTodayFeedData(
+      activeEvents: activeEvents,
+      pastEvents: events
+          .where((event) => !event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+      attentionItems: _fixedAttentionItems(
+        activeEvents,
+        request.sessionBoundary,
+      ),
+      localAttendanceMerged: true,
+    );
+  }
+}
+
+List<HostAttentionItem> _fixedAttentionItems(
+  Iterable<Event> events,
+  DateTime now,
+) => [
+  for (final event in events)
+    if (event.waitlistCount > 0 &&
+        !event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired)
+      HostAttentionItem(
+        id: 'attention-${event.id}',
+        kind: HostAttentionKind.eventWaitlistReview,
+        scope: HostAttentionScope.event,
+        sourceOwner: HostAttentionSourceOwner.events,
+        sourceId: event.id,
+        sourceRevision: 'fixture-${event.waitlistCount}',
+        eventId: event.id,
+        status: HostAttentionStatus.open,
+        consequence: HostAttentionConsequence.risksGuestExperience,
+        blocking: false,
+        urgency: event.startTime.difference(now) <= const Duration(hours: 24)
+            ? HostAttentionUrgency.immediate
+            : event.startTime.difference(now) <= const Duration(hours: 72)
+            ? HostAttentionUrgency.soon
+            : HostAttentionUrgency.upcoming,
+        destination: HostAttentionDestination(
+          route: HostAttentionDestinationRoute.hostEventManage,
+          section: 'guests',
+          eventId: event.id,
+        ),
+        context: HostAttentionContext(
+          eventName: event.title,
+          count: event.waitlistCount,
+        ),
+        dedupeKey: 'eventWaitlistReview:${event.id}',
+        policyVersion: 1,
+        resolutionVersion: 1,
+        assignedHostUid: null,
+        openedAt: now,
+        dueAt: event.startTime.subtract(const Duration(hours: 24)),
+        expiresAt: event.endTime,
+      ),
+];
 
 class _FixedHostEventsTimelineController extends HostEventsTimelineController {
   _FixedHostEventsTimelineController(this.eventsByOrganizer);

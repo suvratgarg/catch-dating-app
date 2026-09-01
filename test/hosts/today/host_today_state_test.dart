@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
@@ -63,7 +62,7 @@ void main() {
     expect(loaded.organizers.single.id, 'club-1');
   });
 
-  test('Today prioritizes live work and derives every supported task', () {
+  test('Today prioritizes live work and maps the projected queue', () {
     final now = DateTime(2026, 6, 15, 12);
     final live = buildEvent(
       id: 'live',
@@ -86,6 +85,21 @@ void main() {
         HostTodayFeedData(
           activeEvents: [later, next, live],
           pastEvents: const [],
+          attentionItems: [
+            _attentionItem(
+              now,
+              eventId: next.id,
+              eventName: next.title,
+              count: 6,
+            ),
+            _attentionItem(
+              now,
+              eventId: later.id,
+              eventName: later.title,
+              count: 2,
+              urgency: HostAttentionUrgency.soon,
+            ),
+          ],
         ),
       ),
       now: now,
@@ -95,14 +109,14 @@ void main() {
     expect(state.status, HostTodayStatus.content);
     expect(state.featuredEvent, live);
     expect(state.laterEvents.map((row) => row.event.id), ['next', 'later']);
-    expect(state.attentionItems.map((data) => data.item.event.id), [
+    expect(state.attentionItems.map((data) => data.item.eventId), [
       'next',
       'later',
     ]);
     expect(state.attentionItems.first.title, 'Review waitlist');
     expect(
-      state.attentionItems.first.item.destination,
-      HostAttentionDestination.guests,
+      state.attentionItems.first.item.destination.route,
+      HostAttentionDestinationRoute.hostEventManage,
     );
     expect(state.attentionItems.map((data) => data.item.urgency), [
       HostAttentionUrgency.immediate,
@@ -110,68 +124,100 @@ void main() {
     ]);
   });
 
-  test('Today attention is exhaustive only inside the seven-day horizon', () {
+  test('Today keeps non-event attention visible without a spotlight', () {
     final now = DateTime(2026, 6, 15, 12);
-    final today = buildEvent(
-      id: 'today',
-      startTime: now.add(const Duration(hours: 4)),
-      waitlistedCount: 1,
+    final application = _attentionItem(
+      now,
+      kind: HostAttentionKind.applicationReview,
+      scope: HostAttentionScope.application,
+      sourceOwner: HostAttentionSourceOwner.organizerApplications,
+      eventId: null,
+      subjectLabel: 'Asha Singh',
+      route: HostAttentionDestinationRoute.hostApplications,
+      applicationId: 'application-1',
     );
-    final soon = buildEvent(
-      id: 'soon',
-      startTime: now.add(const Duration(hours: 48)),
-      waitlistedCount: 2,
-    );
-    final upcoming = buildEvent(
-      id: 'upcoming',
-      startTime: now.add(const Duration(days: 6)),
-      waitlistedCount: 3,
-    );
-    final later = buildEvent(
-      id: 'later',
-      startTime: now.add(const Duration(days: 8)),
-      waitlistedCount: 4,
-    );
-
-    final items = HostAttentionPolicy.forEvents([
-      later,
-      upcoming,
-      soon,
-      today,
-    ], now: now);
-
-    expect(items.map((item) => item.event.id), ['today', 'soon', 'upcoming']);
-    expect(items.map((item) => item.urgency), [
-      HostAttentionUrgency.immediate,
-      HostAttentionUrgency.soon,
-      HostAttentionUrgency.upcoming,
-    ]);
-  });
-
-  test('Today suppresses unsupported manual-approval waitlist work', () {
-    final now = DateTime(2026, 6, 15, 12);
-    final approval =
-        buildEvent(
-          id: 'approval',
-          startTime: DateTime(2026, 6, 16, 18),
-          waitlistedCount: 3,
-        ).copyWith(
-          eventPolicy: EventPolicyBundle.requestToJoinEvent(
-            capacityLimit: 20,
-            basePriceInPaise: 0,
-          ),
-        );
 
     final state = buildHostTodayState(
       CatchAsyncState<HostTodayFeedData>.data(
-        HostTodayFeedData(activeEvents: [approval], pastEvents: const []),
+        HostTodayFeedData(
+          activeEvents: const [],
+          pastEvents: const [],
+          attentionItems: [application],
+        ),
       ),
       now: now,
       l10n: _l10n,
     );
 
-    expect(state.featuredEvent, approval);
+    expect(state.status, HostTodayStatus.content);
+    expect(state.featuredEvent, isNull);
+    expect(state.attentionItems.single.title, 'Review application');
+    expect(
+      state.attentionItems.single.body,
+      'Asha Singh is waiting for a decision.',
+    );
+  });
+
+  test('Today has display copy for every deliverable attention kind', () {
+    final now = DateTime(2026, 6, 15, 12);
+    final kinds = [
+      HostAttentionKind.eventLiveOperations,
+      HostAttentionKind.eventWaitlistReview,
+      HostAttentionKind.eventJoinRequestReview,
+      HostAttentionKind.applicationReview,
+      HostAttentionKind.providerSyncFailure,
+      HostAttentionKind.formAutomationFailure,
+      HostAttentionKind.payoutSetup,
+      HostAttentionKind.attendanceSync,
+    ];
+
+    final data = [
+      for (final kind in kinds)
+        HostTodayAttentionData.fromItem(
+          _attentionItem(
+            now,
+            kind: kind,
+            eventId: 'event-1',
+            eventName: 'Sunday Run',
+            subjectLabel: 'Asha Singh',
+            count: 3,
+            provider: 'razorpay',
+          ),
+          _l10n,
+        ),
+    ];
+
+    expect(data.map((item) => item.title).toSet(), hasLength(kinds.length));
+    expect(data.every((item) => item.body.isNotEmpty), isTrue);
+    expect(data.every((item) => item.primaryActionLabel.isNotEmpty), isTrue);
+  });
+
+  test('Today preserves partial attention failures beside event content', () {
+    final now = DateTime(2026, 6, 15, 12);
+    final event = buildEvent(startTime: now.add(const Duration(hours: 4)));
+    final error = StateError('attention failed');
+    final issue = HostTodayAttentionIssue(
+      source: HostTodayAttentionIssueSource.serverProjection,
+      error: error,
+      stackTrace: StackTrace.current,
+    );
+
+    final state = buildHostTodayState(
+      CatchAsyncState<HostTodayFeedData>.data(
+        HostTodayFeedData(
+          activeEvents: [event],
+          pastEvents: const [],
+          attentionIssues: [issue],
+        ),
+      ),
+      now: now,
+      l10n: _l10n,
+    );
+
+    expect(state.status, HostTodayStatus.content);
+    expect(state.featuredEvent, event);
     expect(state.attentionItems, isEmpty);
+    expect(state.attentionIssues.single.error, error);
   });
 
   test('Today maps loading, error, and empty history context', () {
@@ -215,3 +261,52 @@ void main() {
     expect(emptyState.hasPastEvents, isTrue);
   });
 }
+
+HostAttentionItem _attentionItem(
+  DateTime now, {
+  HostAttentionKind kind = HostAttentionKind.eventWaitlistReview,
+  HostAttentionScope scope = HostAttentionScope.event,
+  HostAttentionSourceOwner sourceOwner = HostAttentionSourceOwner.events,
+  required String? eventId,
+  String? eventName,
+  String? subjectLabel,
+  int? count,
+  String? provider,
+  HostAttentionUrgency urgency = HostAttentionUrgency.immediate,
+  HostAttentionDestinationRoute route =
+      HostAttentionDestinationRoute.hostEventManage,
+  String? applicationId,
+}) => HostAttentionItem(
+  id: 'attention-${kind.name}-$eventId',
+  kind: kind,
+  scope: scope,
+  sourceOwner: sourceOwner,
+  sourceId: eventId ?? applicationId ?? 'source-1',
+  sourceRevision: 'revision-1',
+  eventId: eventId,
+  status: HostAttentionStatus.open,
+  consequence: HostAttentionConsequence.delaysResponse,
+  blocking: false,
+  urgency: urgency,
+  destination: HostAttentionDestination(
+    route: route,
+    section: route == HostAttentionDestinationRoute.hostEventManage
+        ? 'guests'
+        : null,
+    eventId: eventId,
+    applicationId: applicationId,
+  ),
+  context: HostAttentionContext(
+    eventName: eventName,
+    subjectLabel: subjectLabel,
+    count: count,
+    provider: provider,
+  ),
+  dedupeKey: '${kind.name}:${eventId ?? applicationId}',
+  policyVersion: 1,
+  resolutionVersion: 1,
+  assignedHostUid: null,
+  openedAt: now,
+  dueAt: now,
+  expiresAt: null,
+);

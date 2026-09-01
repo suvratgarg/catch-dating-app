@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.40.0
+version: 1.41.0
 updated: 2026-09-01
 owner: recursive_audit_loop
 status: active
@@ -87,7 +87,16 @@ complete server coverage, required local merging, shortcuts, and missing truth.
 The source-ready server kinds are live-event operations, ordinary waitlist
 review, manual join-request review, application review, provider-sync failure,
 form-automation failure, and payout setup. Attendance retry/conflict work is
-merged from the local Host outbox.
+merged from the local Host outbox. Flutter consumes the callable through
+`HostAttentionRepository`, parses the closed item and coverage vocabularies
+into typed domain values, verifies the requested organizer, and rejects any
+response that does not contain every catalog kind exactly once. The Today feed
+then merges every normalized `HostAttendanceOutbox` row, deduplicates and sorts
+the combined queue by urgency, blocking consequence, deadline, and stable id.
+The active-event feed remains usable when either optional attention source
+fails, but the presentation receives a source-specific issue and must not claim
+that the organizer has no outstanding work.
+
 Dress Rehearsal is a Today shortcut. Event Success readiness, room-layout
 requirements, staffing requirements, generic form-response review, Inbox reply
 obligation, and post-event reconciliation stay blocked until their owning

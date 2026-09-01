@@ -284,17 +284,66 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
   }
 
   void _openAttention(Club organizer, HostAttentionItem item) {
-    context.pushNamed(
-      Routes.hostAppEventManageScreen.name,
-      pathParameters: {'clubId': organizer.id, 'eventId': item.event.id},
-      queryParameters: {
-        'section': switch (item.destination) {
-          HostAttentionDestination.guests => 'guests',
-          HostAttentionDestination.setup => 'setup',
-        },
-      },
-      extra: item.event,
-    );
+    final destination = item.destination;
+    switch (destination.route) {
+      case HostAttentionDestinationRoute.hostEventManage:
+        final eventId = destination.eventId ?? item.eventId;
+        if (eventId == null) return;
+        context.pushNamed(
+          Routes.hostAppEventManageScreen.name,
+          pathParameters: {'clubId': organizer.id, 'eventId': eventId},
+          queryParameters: {'section': destination.section ?? 'setup'},
+        );
+        return;
+      case HostAttentionDestinationRoute.hostApplications:
+        final applicationId = destination.applicationId;
+        context.pushNamed(
+          applicationId == null
+              ? Routes.hostApplicationsScreen.name
+              : Routes.hostApplicationDetailScreen.name,
+          pathParameters: {'applicationId': ?applicationId},
+          queryParameters: {'organizerId': organizer.id},
+        );
+        return;
+      case HostAttentionDestinationRoute.hostOrganizerPayments:
+        context.pushNamed(
+          Routes.hostClubPaymentsScreen.name,
+          queryParameters: {'clubId': organizer.id},
+        );
+        return;
+      case HostAttentionDestinationRoute.hostAudienceForms:
+        final formId = destination.formId;
+        if (formId != null && destination.section == 'automations') {
+          context.pushNamed(
+            Routes.hostFormAutomationsScreen.name,
+            pathParameters: {'formId': formId},
+            queryParameters: {'organizerId': organizer.id},
+          );
+          return;
+        }
+        context.goNamed(
+          Routes.hostAudienceScreen.name,
+          queryParameters: {
+            'organizerId': organizer.id,
+            'view': destination.section == 'responses' ? 'responses' : 'forms',
+            'formId': ?formId,
+          },
+        );
+        return;
+      case HostAttentionDestinationRoute.hostInbox:
+        context.goNamed(
+          Routes.hostInboxScreen.name,
+          queryParameters: {'threadId': ?destination.threadId},
+          extra: organizer,
+        );
+        return;
+      case HostAttentionDestinationRoute.hostDressRehearsal:
+        _startRehearsal(organizer);
+        return;
+      case HostAttentionDestinationRoute.hostEvents:
+        context.goNamed(Routes.hostEventsScreen.name);
+        return;
+    }
   }
 }
 
@@ -335,6 +384,7 @@ class HostTodayLoadedRoute extends ConsumerWidget {
     )!;
     final request = HostTodayFeedRequest(
       organizerId: organizer.id,
+      accountId: uid,
       sessionBoundary: sessionBoundary,
     );
     final feedState = catchAsyncStateFromAsyncValue(
