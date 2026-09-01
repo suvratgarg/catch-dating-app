@@ -137,7 +137,7 @@ import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
-import 'package:catch_dating_app/hosts/events/data/host_events_timeline_controller.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
@@ -172,7 +172,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
-import 'package:catch_dating_app/hosts/today/data/host_today_feed_controller.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';

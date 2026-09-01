@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
-import 'package:catch_dating_app/hosts/today/data/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';

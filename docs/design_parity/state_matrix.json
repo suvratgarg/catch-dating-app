@@ -4712,8 +4712,9 @@
             "lib/hosts/events/presentation/host_events_screen.dart",
             "lib/hosts/events/presentation/host_events_state.dart",
             "lib/hosts/events/presentation/host_events_view_model.dart",
-            "lib/hosts/events/data/host_events_timeline_controller.dart",
+            "lib/hosts/events/presentation/host_events_timeline_controller.dart",
             "lib/hosts/today/domain/host_attention_item.dart",
+            "lib/hosts/today/presentation/host_today_feed_controller.dart",
             "lib/hosts/today/presentation/host_today_screen.dart",
             "lib/hosts/today/presentation/host_today_state.dart",
             "lib/hosts/today/presentation/host_today_view_model.dart",
@@ -4977,6 +4978,18 @@
               "previewIds": [
                 "hostHomeRouteStates",
                 "HostEventLifecycleRow/Exact catalog"
+              ]
+            },
+            {
+              "id": "dress_rehearsal_action",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart"
+              ],
+              "notes": "HostTodayScreen owns the dedicated Dress Rehearsal callback and pushes hostEventRehearsalStartScreen for the selected organizer. Event creation does not expose rehearsal as a creation intent.",
+              "previewIds": [
+                "hostHomeRouteStates"
               ]
             },
             {

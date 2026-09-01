@@ -26,8 +26,8 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/dra
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
-import 'package:catch_dating_app/hosts/today/data/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
