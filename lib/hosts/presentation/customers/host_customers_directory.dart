@@ -164,31 +164,31 @@ class _HostCustomerDirectorySortControl extends StatelessWidget {
 }
 
 class HostCustomersNoOrganizer extends StatelessWidget {
-  const HostCustomersNoOrganizer({super.key});
+  const HostCustomersNoOrganizer({
+    super.key,
+    this.selected = HostAudienceView.people,
+    this.onChanged,
+  });
+
+  final HostAudienceView selected;
+  final ValueChanged<HostAudienceView>? onChanged;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: CatchScreenHeaderTitle.block(
-              title: context.l10n.hostNavigationAudience,
-            ),
-          ),
-          CatchSliverEmptyState(
-            icon: CatchIcons.groupsOutlined,
-            title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
-            message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-            action: CatchButton(
-              label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-              onPressed: () =>
-                  context.pushNamed(Routes.hostCreateClubScreen.name),
-            ),
-          ),
-        ],
+  Widget build(BuildContext context) => HostAudienceStateScaffold(
+    selected: selected,
+    scrollKey: const PageStorageKey<String>('host-customers-no-organizer'),
+    onChanged: onChanged,
+    slivers: [
+      CatchSliverEmptyState(
+        icon: CatchIcons.groupsOutlined,
+        title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
+        message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+        action: CatchButton(
+          label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+          onPressed: () => context.pushNamed(Routes.hostCreateClubScreen.name),
+        ),
       ),
-    ),
+    ],
   );
 }
 

@@ -1,6 +1,113 @@
 part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsCustomersTests() {
+  testWidgets('Host Customers keeps Audience composition across route states', (
+    tester,
+  ) async {
+    for (final view in [HostAudienceView.people, HostAudienceView.audiences]) {
+      final screen = HostCustomersScreen(initialView: view);
+
+      await _pumpHostScreen(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncLoading<String?>()),
+          hostOperableClubsProvider(
+            _hostUid,
+          ).overrideWithValue(const AsyncLoading<List<Club>>()),
+        ],
+        settle: false,
+        resetProviderScope: true,
+      );
+      _expectAudienceStateOwner(tester, selected: view);
+      expect(find.byType(HostRouteLoadingBody), findsOneWidget);
+      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+
+      await _pumpHostScreen(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(
+            AsyncError<String?>(StateError('uid failed'), StackTrace.current),
+          ),
+          hostOperableClubsProvider(
+            _hostUid,
+          ).overrideWithValue(const AsyncLoading<List<Club>>()),
+        ],
+        settle: false,
+        resetProviderScope: true,
+      );
+      _expectAudienceStateOwner(tester, selected: view);
+      expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+
+      await _pumpHostScreen(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>(null)),
+          hostOperableClubsProvider(
+            _hostUid,
+          ).overrideWithValue(const AsyncLoading<List<Club>>()),
+        ],
+        settle: false,
+        resetProviderScope: true,
+      );
+      _expectAudienceStateOwner(tester, selected: view);
+      expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+      expect(find.text('Sign in required'), findsOneWidget);
+
+      await _pumpHostScreen(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>(_hostUid)),
+          hostOperableClubsProvider(
+            _hostUid,
+          ).overrideWithValue(const AsyncLoading<List<Club>>()),
+        ],
+        settle: false,
+        resetProviderScope: true,
+      );
+      _expectAudienceStateOwner(tester, selected: view);
+      expect(find.byType(HostRouteLoadingBody), findsOneWidget);
+      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+
+      await _pumpHostScreen(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>(_hostUid)),
+          hostOperableClubsProvider(_hostUid).overrideWithValue(
+            AsyncError<List<Club>>(
+              StateError('clubs failed'),
+              StackTrace.current,
+            ),
+          ),
+        ],
+        settle: false,
+        resetProviderScope: true,
+      );
+      _expectAudienceStateOwner(tester, selected: view);
+      expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+
+      await _pumpHostScreen(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>(_hostUid)),
+          hostOperableClubsProvider(
+            _hostUid,
+          ).overrideWithValue(const AsyncData<List<Club>>([])),
+        ],
+        settle: false,
+        resetProviderScope: true,
+      );
+      _expectAudienceStateOwner(tester, selected: view);
+      expect(find.byType(HostCustomersNoOrganizer), findsOneWidget);
+      expect(find.byType(CatchSliverEmptyState), findsOneWidget);
+    }
+  });
+
   testWidgets('customer rows preserve hierarchy, tag, and disclosure', (
     tester,
   ) async {
@@ -1246,4 +1353,31 @@ void _registerHostOperationsCustomersTests() {
       findsOneWidget,
     );
   });
+}
+
+void _expectAudienceStateOwner(
+  WidgetTester tester, {
+  required HostAudienceView selected,
+}) {
+  expect(find.byType(HostAudienceStateScaffold), findsOneWidget);
+  expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
+  expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
+  expect(find.byType(HostAudienceTabRail), findsOneWidget);
+  expect(find.byType(CatchErrorScaffold), findsNothing);
+  expect(find.byType(HostLoadingScreen), findsNothing);
+  expect(find.byType(HostAuthRequiredScreen), findsNothing);
+  expect(
+    tester
+        .widget<HostAudienceTabRail>(find.byType(HostAudienceTabRail))
+        .selected,
+    selected,
+  );
+  expect(
+    tester
+        .widget<CatchTabbedPageScrollView>(
+          find.byType(CatchTabbedPageScrollView),
+        )
+        .bodyLayout,
+    CatchScreenBodyLayout.standard,
+  );
 }

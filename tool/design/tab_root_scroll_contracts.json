@@ -216,13 +216,29 @@
           "requires": [
             {"text": "CatchTabbedScreenScaffold", "minimumOccurrences": 1},
             {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1},
-            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1}
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1},
+            {"text": "HostAudienceStateScaffold", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"},
+            {"text": "HostLoadingScreen("},
+            {"text": "HostAuthRequiredScreen("},
+            {"text": "return Scaffold("},
+            {"text": "=> Scaffold("}
           ]
         },
         {
           "path": "lib/hosts/presentation/customers/host_customers_directory.dart",
           "requires": [
-            {"text": "CatchSection.fieldRows", "minimumOccurrences": 1}
+            {"text": "CatchSection.fieldRows", "minimumOccurrences": 1},
+            {"text": "Widget build(BuildContext context) => HostAudienceStateScaffold(", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"},
+            {"text": "HostLoadingScreen("},
+            {"text": "HostAuthRequiredScreen("},
+            {"text": "return Scaffold("},
+            {"text": "=> Scaffold("}
           ]
         },
         {
@@ -252,10 +268,35 @@
           ]
         },
         {
+          "path": "lib/hosts/presentation/host_audience_view.dart",
+          "requires": [
+            {"text": "class HostAudienceStateScaffold", "minimumOccurrences": 1},
+            {"text": "return CatchTabbedScreenScaffold(", "minimumOccurrences": 1},
+            {"text": "tabRail: HostAudienceTabRail(", "minimumOccurrences": 1},
+            {"text": "body: CatchTabbedPageScrollView(", "minimumOccurrences": 1},
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"},
+            {"text": "HostLoadingScreen("},
+            {"text": "HostAuthRequiredScreen("},
+            {"text": "return Scaffold("},
+            {"text": "=> Scaffold("}
+          ]
+        },
+        {
           "path": "lib/hosts/presentation/forms/host_forms_screen.dart",
           "requires": [
             {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 2},
-            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 2}
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 2},
+            {"text": "HostAudienceStateScaffold", "minimumOccurrences": 2}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"},
+            {"text": "HostLoadingScreen("},
+            {"text": "HostAuthRequiredScreen("},
+            {"text": "return Scaffold("},
+            {"text": "=> Scaffold("}
           ]
         }
       ]

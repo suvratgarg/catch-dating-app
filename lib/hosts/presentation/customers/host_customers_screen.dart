@@ -50,6 +50,7 @@ import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -152,31 +153,76 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final uid = uidState.value;
     if (uidState.hasError) {
-      return CatchErrorScaffold.fromError(
-        uidState.error!,
-        context: AppErrorContext.auth,
-        onRetry: () => ref.invalidate(uidProvider),
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-customers-route-state'),
+        slivers: [
+          CatchSliverErrorState.fromError(
+            uidState.error!,
+            context: AppErrorContext.auth,
+            onRetry: () => ref.invalidate(uidProvider),
+          ),
+        ],
       );
     }
     if (uidState.isLoading) {
-      return HostLoadingScreen(title: context.l10n.hostNavigationAudience);
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-customers-route-state'),
+        slivers: const [
+          CatchSliverStateViewport(
+            child: HostRouteLoadingBody(padding: EdgeInsets.zero),
+          ),
+        ],
+      );
     }
-    if (uid == null) return const HostAuthRequiredScreen();
+    if (uid == null) {
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-customers-route-state'),
+        slivers: [
+          CatchSliverErrorState(
+            title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+            message:
+                context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
+            retryLabel:
+                context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+            onRetry: () => context.go(Routes.authScreen.path),
+          ),
+        ],
+      );
+    }
 
     final clubsAsync = ref.watch(hostOperableClubsProvider(uid));
     final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
     if (clubsState.hasError) {
-      return CatchErrorScaffold.fromError(
-        clubsState.error!,
-        context: AppErrorContext.club,
-        onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-customers-route-state'),
+        slivers: [
+          CatchSliverErrorState.fromError(
+            clubsState.error!,
+            context: AppErrorContext.club,
+            onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
+          ),
+        ],
       );
     }
     if (clubsState.isLoading) {
-      return HostLoadingScreen(title: context.l10n.hostNavigationAudience);
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-customers-route-state'),
+        slivers: const [
+          CatchSliverStateViewport(
+            child: HostRouteLoadingBody(padding: EdgeInsets.zero),
+          ),
+        ],
+      );
     }
     final clubs = clubsState.value ?? const <Club>[];
-    if (clubs.isEmpty) return const HostCustomersNoOrganizer();
+    if (clubs.isEmpty) {
+      return HostCustomersNoOrganizer(selected: _view);
+    }
     final selectedOrganizerId = ref.watch(hostOrganizerSelectionProvider(uid));
     final selectedClub = resolveSelectedHostOrganizer(
       clubs,

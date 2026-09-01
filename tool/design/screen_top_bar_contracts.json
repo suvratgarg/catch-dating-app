@@ -55,10 +55,9 @@
       "branchKey": "keys.hostAudience",
       "routeName": "Routes.hostAudienceScreen.name",
       "surfaces": [
+        {"path": "lib/hosts/presentation/host_audience_view.dart", "symbol": "HostAudienceStateScaffold", "owner": "CatchTabbedScreenScaffold"},
         {"path": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "_HostCustomersScreenState", "owner": "CatchTabbedScreenScaffold"},
-        {"path": "lib/hosts/presentation/customers/host_customers_directory.dart", "symbol": "HostCustomersNoOrganizer", "owner": "CatchScreenHeaderTitle.block"},
-        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "owner": "CatchTabbedScreenScaffold"},
-        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "HostFormsNoOrganizer", "owner": "CatchScreenHeaderTitle.block"}
+        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "owner": "CatchTabbedScreenScaffold"}
       ]
     },
     {

@@ -183,6 +183,7 @@ Future<void> _pumpHostScreen(
   Widget child, {
   List overrides = const [],
   bool settle = true,
+  bool resetProviderScope = false,
 }) async {
   final router = GoRouter(
     initialLocation: '/',
@@ -287,6 +288,7 @@ Future<void> _pumpHostScreen(
 
   await tester.pumpWidget(
     ProviderScope(
+      key: resetProviderScope ? UniqueKey() : null,
       overrides: overrides.cast(),
       child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     ),
