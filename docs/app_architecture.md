@@ -3596,9 +3596,9 @@ Current Host adopters:
 - `lib/hosts/today/presentation/host_today_view_model.dart`
 - `lib/hosts/today/presentation/widgets/host_today_body.dart`
 - `test/hosts/today/host_today_state_test.dart`
-- `lib/hosts/presentation/host_home_screen_state.dart` (transitional Events
-  state until the Events vertical-slice migration completes)
-- `lib/hosts/presentation/host_operations/host_events_list.dart`
+- `lib/hosts/events/presentation/host_events_state.dart`
+- `lib/hosts/events/presentation/host_events_view_model.dart`
+- `lib/hosts/events/presentation/widgets/host_events_list.dart`
 - `test/hosts/host_operations_screen_test.dart`
 
 `HostTodayState` and `HostTodayAttentionData` apply the boundary to the

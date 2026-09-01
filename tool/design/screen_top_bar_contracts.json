@@ -47,8 +47,8 @@
       "branchKey": "keys.hostEvents",
       "routeName": "Routes.hostEventsScreen.name",
       "surfaces": [
-        {"path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart", "symbol": "_HostEventsScaffoldState", "owner": "CatchScreenHeaderTitle.block"},
-        {"path": "lib/hosts/presentation/host_operations/host_events_list.dart", "symbol": "HostEventsClubSection", "owner": "CatchScreenHeaderTitle.block"}
+        {"path": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "HostEventsRouteScaffold", "owner": "CatchScreenHeaderTitle.block"},
+        {"path": "lib/hosts/events/presentation/widgets/host_events_list.dart", "symbol": "HostEventsClubSection", "owner": "CatchScreenHeaderTitle.block"}
       ]
     },
     {
@@ -141,6 +141,13 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
+    },
+    {
+      "path": "lib/hosts/events/presentation/host_events_screen.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar",
+      "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",

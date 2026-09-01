@@ -2,15 +2,15 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 
-HostHomeRouteState buildHostHomeRouteState({
+HostEventsRouteState buildHostEventsRouteState({
   required CatchAsyncState<String?> uid,
-  CatchAsyncState<List<Club>>? clubs,
+  CatchAsyncState<List<Club>>? organizers,
 }) {
   if (uid.hasError) {
-    return HostHomeRouteState(
-      status: HostHomeRouteStatus.error,
+    return HostEventsRouteState(
+      status: HostEventsRouteStatus.error,
       error: uid.error,
       stackTrace: uid.stackTrace,
       errorContext: AppErrorContext.auth,
@@ -20,41 +20,37 @@ HostHomeRouteState buildHostHomeRouteState({
   final currentUid = uid.value;
   if (currentUid == null) {
     return uid.isLoading
-        ? const HostHomeRouteState(status: HostHomeRouteStatus.loading)
-        : const HostHomeRouteState(status: HostHomeRouteStatus.authRequired);
+        ? const HostEventsRouteState(status: HostEventsRouteStatus.loading)
+        : const HostEventsRouteState(
+            status: HostEventsRouteStatus.authRequired,
+          );
   }
 
-  final clubValue = clubs;
-  if (clubValue == null) {
-    return HostHomeRouteState(
-      status: HostHomeRouteStatus.loading,
+  final organizerValue = organizers;
+  if (organizerValue == null || organizerValue.isLoading) {
+    return HostEventsRouteState(
+      status: HostEventsRouteStatus.loading,
       uid: currentUid,
     );
   }
-  if (clubValue.hasError) {
-    return HostHomeRouteState(
-      status: HostHomeRouteStatus.error,
+  if (organizerValue.hasError) {
+    return HostEventsRouteState(
+      status: HostEventsRouteStatus.error,
       uid: currentUid,
-      error: clubValue.error,
-      stackTrace: clubValue.stackTrace,
-    );
-  }
-  if (clubValue.isLoading) {
-    return HostHomeRouteState(
-      status: HostHomeRouteStatus.loading,
-      uid: currentUid,
+      error: organizerValue.error,
+      stackTrace: organizerValue.stackTrace,
     );
   }
 
-  final resolvedClubs = List<Club>.unmodifiable(
-    clubValue.value ?? const <Club>[],
+  final resolvedOrganizers = List<Club>.unmodifiable(
+    organizerValue.value ?? const <Club>[],
   );
-  return HostHomeRouteState(
-    status: resolvedClubs.isEmpty
-        ? HostHomeRouteStatus.empty
-        : HostHomeRouteStatus.loaded,
+  return HostEventsRouteState(
+    status: resolvedOrganizers.isEmpty
+        ? HostEventsRouteStatus.empty
+        : HostEventsRouteStatus.loaded,
     uid: currentUid,
-    clubs: resolvedClubs,
+    organizers: resolvedOrganizers,
   );
 }
 

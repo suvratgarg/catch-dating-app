@@ -175,7 +175,7 @@ removed by the item that owns its destination.
 |---|---|---|
 | A0 | Pin feature-first destination ownership, migration order, exclusions, and completion rules | `complete` |
 | A1 | Extract Today into its own vertical slice and move Dress Rehearsal out of the create-event chooser | `complete` |
-| A2 | Extract the Events inventory, timeline state, and route screen into `lib/hosts/events/`; retire the legacy Home compatibility surface | `pending` |
+| A2 | Extract the Events inventory, timeline state, and route screen into `lib/hosts/events/`; retire the legacy Home compatibility surface | `complete` |
 | A3 | Extract Audience ownership, including People, Audiences, Forms, and Responses, without reviving a Forms destination | `pending` |
 | A4 | Extract Inbox ownership and its Inbox/Sends modes while preserving conversation and composer state | `pending` |
 | A5 | Extract Organizer ownership, then reduce `lib/hosts/presentation/` to intentional shared Host presentation seams | `pending` |
@@ -189,14 +189,15 @@ removed by the item that owns its destination.
 - The supported queue is exhaustive inside a named seven-day horizon and is
   ordered by immediate, soon, then upcoming urgency; facts outside that window
   stay in Events until they become time-sensitive.
-- The event timeline provider moved to `lib/hosts/events/data/` because both
-  Today and the Events inventory consume it; Today data no longer imports a
-  legacy presentation layer.
+- The Events timeline provider lives in `lib/hosts/events/data/` and is consumed
+  only by the Events inventory. Today owns a separate bounded feed controller
+  over the shared Event repository, so top-level features do not consume each
+  other's screen controllers.
 - Dress Rehearsal is a dedicated Today action and is absent from the
   create-event chooser. Creating and rehearsing are separate intents.
-- `HostOperationsHomeScreen(surface: today)` remains only as a bounded test and
-  preview compatibility adapter until A2 removes the surface enum and legacy
-  combined home.
+- A2 removed `HostOperationsHomeScreen`, `HostOperationsSurface`, and the
+  combined Home compatibility path. `/host/events` now constructs
+  `HostEventsScreen` directly.
 - A1 deliberately does not reorganize the Events presentation tree, Audience,
   Inbox, Organizer, or the shared shell.
 

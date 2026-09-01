@@ -144,97 +144,62 @@ void _registerHostOperationsStateEventsTests() {
     expect(switchedClub.rangePreset, HostClubInsightsRangePreset.twelveMonths);
   });
 
-  test('HostHomeScreenState resolves selected club and host role', () {
-    final ownedClub = buildClub(
-      id: 'owned-club',
-      name: 'Owner Club',
-      ownerUserId: _hostUid,
-    );
-    final cohostClub = buildClub(
-      id: 'cohost-club',
-      name: 'Co-host Club',
-      hostUserId: 'owner-2',
-      hostUserIds: const [_hostUid],
-    );
-
-    final state = HostHomeScreenState.resolve(
-      clubs: [ownedClub, cohostClub],
-      currentUid: _hostUid,
-      selectedClubId: cohostClub.id,
-    );
-
-    expect(state.selectedClub, cohostClub);
-    expect(state.selectedClubIsOwner, isFalse);
-    expect(state.showClubPicker, isTrue);
-
-    final ownerState = state.selectClubIndex(0);
-    expect(ownerState.selectedClub, ownedClub);
-    expect(ownerState.selectedClubIsOwner, isTrue);
-
-    final clampedState = HostHomeScreenState.resolve(
-      clubs: [ownedClub],
-      currentUid: _hostUid,
-      selectedClubIndex: 99,
-    );
-    expect(clampedState.selectedClub, ownedClub);
-  });
-
-  test('HostHomeRouteState maps auth and club async branches', () {
+  test('HostEventsRouteState maps auth and organizer async branches', () {
     final club = buildClub(id: 'owned-club', ownerUserId: _hostUid);
     final stackTrace = StackTrace.current;
     final authError = StateError('auth failed');
     final clubsError = StateError('clubs failed');
 
     expect(
-      buildHostHomeRouteState(
+      buildHostEventsRouteState(
         uid: const CatchAsyncState<String?>.data(null),
       ).status,
-      HostHomeRouteStatus.authRequired,
+      HostEventsRouteStatus.authRequired,
     );
     expect(
-      buildHostHomeRouteState(
+      buildHostEventsRouteState(
         uid: const CatchAsyncState<String?>.loading(),
       ).status,
-      HostHomeRouteStatus.loading,
+      HostEventsRouteStatus.loading,
     );
 
-    final authErrorState = buildHostHomeRouteState(
+    final authErrorState = buildHostEventsRouteState(
       uid: CatchAsyncState<String?>.error(authError, stackTrace),
     );
-    expect(authErrorState.status, HostHomeRouteStatus.error);
+    expect(authErrorState.status, HostEventsRouteStatus.error);
     expect(authErrorState.error, authError);
     expect(authErrorState.errorContext, AppErrorContext.auth);
 
     expect(
-      buildHostHomeRouteState(
+      buildHostEventsRouteState(
         uid: const CatchAsyncState<String?>.data(_hostUid),
-        clubs: const CatchAsyncState<List<Club>>.loading(),
+        organizers: const CatchAsyncState<List<Club>>.loading(),
       ).status,
-      HostHomeRouteStatus.loading,
+      HostEventsRouteStatus.loading,
     );
 
-    final clubsErrorState = buildHostHomeRouteState(
+    final clubsErrorState = buildHostEventsRouteState(
       uid: const CatchAsyncState<String?>.data(_hostUid),
-      clubs: CatchAsyncState<List<Club>>.error(clubsError, stackTrace),
+      organizers: CatchAsyncState<List<Club>>.error(clubsError, stackTrace),
     );
-    expect(clubsErrorState.status, HostHomeRouteStatus.error);
+    expect(clubsErrorState.status, HostEventsRouteStatus.error);
     expect(clubsErrorState.uid, _hostUid);
     expect(clubsErrorState.error, clubsError);
     expect(clubsErrorState.errorContext, AppErrorContext.club);
 
-    final emptyState = buildHostHomeRouteState(
+    final emptyState = buildHostEventsRouteState(
       uid: const CatchAsyncState<String?>.data(_hostUid),
-      clubs: const CatchAsyncState<List<Club>>.data([]),
+      organizers: const CatchAsyncState<List<Club>>.data([]),
     );
-    expect(emptyState.status, HostHomeRouteStatus.empty);
+    expect(emptyState.status, HostEventsRouteStatus.empty);
     expect(emptyState.uid, _hostUid);
 
-    final loadedState = buildHostHomeRouteState(
+    final loadedState = buildHostEventsRouteState(
       uid: const CatchAsyncState<String?>.data(_hostUid),
-      clubs: CatchAsyncState<List<Club>>.data([club]),
+      organizers: CatchAsyncState<List<Club>>.data([club]),
     );
-    expect(loadedState.status, HostHomeRouteStatus.loaded);
-    expect(loadedState.clubs, [club]);
+    expect(loadedState.status, HostEventsRouteStatus.loaded);
+    expect(loadedState.organizers, [club]);
   });
 
   testWidgets('Host clubs shows loading while uid resolves', (tester) async {

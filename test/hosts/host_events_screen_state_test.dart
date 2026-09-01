@@ -2,8 +2,8 @@ import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 

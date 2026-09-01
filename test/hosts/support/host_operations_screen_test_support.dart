@@ -18,7 +18,7 @@ void registerHostEventEntryTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
         ..._hostClubOverrides(
           owned: [club],
@@ -105,7 +105,7 @@ void registerHostEventEntryTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
         ..._hostClubOverrides(owned: [club]),
         watchEventsForClubProvider(
@@ -136,7 +136,7 @@ void registerHostEventEntryTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
         ..._hostClubOverrides(
           owned: [club],
@@ -455,6 +455,9 @@ List _hostClubOverrides({
     ...hosted.map((club) => club.id),
   };
   return [
+    eventRepositoryProvider.overrideWithValue(
+      _FixedHostEventRepository(timelineEventsByOrganizer),
+    ),
     hostEventsTimelineControllerProvider.overrideWith2(
       (_) => _FixedHostEventsTimelineController(timelineEventsByOrganizer),
     ),
@@ -510,6 +513,46 @@ List _hostClubOverrides({
         ),
       ),
   ];
+}
+
+class _FixedHostEventRepository extends Fake implements EventRepository {
+  _FixedHostEventRepository(this.eventsByOrganizer);
+
+  final Map<String, List<Event>> eventsByOrganizer;
+
+  @override
+  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchActiveEventsPage({
+    required String organizerId,
+    required DateTime sessionBoundary,
+    DocumentSnapshot<Event>? startAfter,
+    int limit = ReadLimitPolicy.directoryPage,
+  }) async {
+    final events = eventsByOrganizer[organizerId] ?? const <Event>[];
+    return CursorPage(
+      items: events
+          .where((event) => event.endTime.isAfter(sessionBoundary))
+          .take(limit)
+          .toList(growable: false),
+      hasMore: false,
+    );
+  }
+
+  @override
+  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchPastEventsPage({
+    required String organizerId,
+    required DateTime sessionBoundary,
+    DocumentSnapshot<Event>? startAfter,
+    int limit = ReadLimitPolicy.directoryPage,
+  }) async {
+    final events = eventsByOrganizer[organizerId] ?? const <Event>[];
+    return CursorPage(
+      items: events
+          .where((event) => !event.endTime.isAfter(sessionBoundary))
+          .take(limit)
+          .toList(growable: false),
+      hasMore: false,
+    );
+  }
 }
 
 class _FixedHostEventsTimelineController extends HostEventsTimelineController {

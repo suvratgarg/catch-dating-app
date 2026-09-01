@@ -18,7 +18,6 @@ import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -53,10 +52,8 @@ import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventSuccessDefaultsPanel;
-import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
@@ -64,23 +61,12 @@ import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_whatsapp_embedded_signup.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
-import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
-import 'package:catch_dating_app/hosts/events/data/host_events_timeline_controller.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_defaults_saver.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_club_publication_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
@@ -88,9 +74,7 @@ import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.da
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -98,15 +82,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+export 'package:catch_dating_app/hosts/events/presentation/host_events_screen.dart';
+export 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
+export 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
 export 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
 
-part 'host_operations/host_operations_home_screen.dart';
 part 'host_operations/host_clubs_screen.dart';
 part 'host_operations/host_auth_required_screen.dart';
 part 'host_operations/host_loading_screen.dart';
-part 'host_operations/host_events_scaffold.dart';
 part 'host_operations/host_clubs_scaffold.dart';
-part 'host_operations/host_events_list.dart';
 part 'host_operations/host_organizer.dart';
 part 'host_operations/host_audience.dart';
 part 'host_operations/host_club_edit_tab.dart';
@@ -119,7 +103,5 @@ part 'host_operations/host_analytics.dart';
 part 'host_operations/host_route_providers.dart';
 
 enum HostTeamMode { edit, preview }
-
-enum HostOperationsSurface { today, events }
 
 const _hostClubTabRailKey = ValueKey('host-club-tab-rail');

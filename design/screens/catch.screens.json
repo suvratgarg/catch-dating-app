@@ -8574,19 +8574,19 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
-        "symbol": "HostOperationsHomeScreen"
+        "file": "lib/hosts/events/presentation/host_events_screen.dart",
+        "symbol": "HostEventsScreen"
       },
       "stateController": {
-        "primary": "uidProvider + _hostClubsForUserProvider + hostEventsTimelineControllerProvider",
+        "primary": "HostTodayFeedController + HostEventsTimelineController",
         "files": [
           {
-            "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
-            "symbol": "HostOperationsHomeScreen"
+            "file": "lib/hosts/today/data/host_today_feed_controller.dart",
+            "symbol": "HostTodayFeedController"
           },
           {
-            "file": "lib/hosts/presentation/host_home_screen_state.dart",
-            "symbol": "HostHomeRouteState"
+            "file": "lib/hosts/events/presentation/host_events_state.dart",
+            "symbol": "HostEventsRouteState"
           },
           {
             "file": "lib/clubs/data/clubs_repository.dart",
@@ -8606,7 +8606,7 @@
           }
         ],
         "mutationOwners": [],
-    "notes": "HostTodayScreen directly owns /host/today auth and organizer resolution, minute clock, Today feed projection, event-entry state, and typed navigation. HostTodayState owns live-first spotlight, event-identified attention, and bounded Later display state; HostAttentionPolicy owns task qualification. HostEventsTimelineController is shared Events data for Today and the transitional Events inventory. HostOperationsHomeScreen and HostEventsScaffold retain only Events presentation ownership until the Events vertical-slice migration completes."
+    "notes": "HostTodayScreen and HostEventsScreen are independent route edges with separate route state and controllers. Today owns its bounded command-centre feed, live-first spotlight, event-identified attention, and Later projection. Events owns paginated schedule/history inventory through HostEventsTimelineController. Both consume shared event and organizer repositories without importing each other's presentation controller."
       },
       "designRefs": [
         {
@@ -8933,7 +8933,7 @@
           "id": "create_event_action",
           "kind": "populated",
           "status": "tested",
-          "source": "_HostEventsScaffold owns the typed Add event callback and pushes hostCreateEventScreen with selected club id plus club extra.",
+          "source": "HostEventsRouteScaffold owns the typed Add event callback and pushes hostCreateEventScreen with selected organizer id plus organizer extra.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -8946,7 +8946,7 @@
           "id": "manage_event_navigation",
           "kind": "populated",
           "status": "tested",
-      "source": "HostTodayScreen and HostEventsScaffold each own lifecycle-aware event callbacks at their respective route edges and push hostAppEventManageScreen with clubId, eventId, event extra, and live/setup/report section; provider-free Today and Events widgets pass taps through instead of reading GoRouter.",
+      "source": "HostTodayScreen and HostEventsRouteScaffold each own lifecycle-aware event callbacks at their independent route edges and push hostAppEventManageScreen with organizer id, event id, event extra, and live/setup/report section; provider-free Today and Events widgets pass taps through instead of reading GoRouter.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -9023,7 +9023,7 @@
       ],
       "composition": {
     "currentLayout": "HostTodayScreen is the direct Today route edge and delegates provider-free command-centre composition to HostTodayBody and HostTodayOverview. HostAttentionPolicy derives supported work from backend event facts. HostEventsClubCard independently maps HostEventsTimelineController into HostEventsWorkspaceState and the Events inventory; it no longer composes the Today spotlight or attention queue.",
-    "targetLayout": "Keep Today as the independent cross-event command centre and Events as the durable lifecycle inventory. Complete the Events vertical-slice migration, then split this transitional combined authority without changing the shell destinations or duplicating either projection.",
+    "targetLayout": "Keep Today as the independent cross-event command centre and Events as the durable lifecycle inventory. Their separate route, state, view-model, and controller boundaries must remain explicit while shared event facts stay repository-owned.",
         "sections": [
           {
             "id": "section.host.home_screen_adapter",
@@ -9034,11 +9034,11 @@
               "HostHomeScreenState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
-              "symbol": "HostOperationsHomeScreen"
+              "file": "lib/hosts/events/presentation/host_events_screen.dart",
+              "symbol": "HostEventsScreen"
             },
-            "currentOwner": "HostHomeRouteState + HostOperationsHomeScreen",
-            "targetOwner": "HostHomeRouteState provider/controller adapter",
+            "currentOwner": "HostTodayScreen + HostEventsScreen with independent route state",
+            "targetOwner": "independent top-level destination adapters",
             "dependencies": [
               "catch.top_bar",
               "catch.surface"
@@ -9051,7 +9051,7 @@
               "loaded_club",
               "event_loading"
             ],
-        "migration": "Today route ownership has moved to HostTodayScreen, HostTodayRouteState, HostTodayState, and HostAttentionPolicy. This legacy adapter now serves only Events plus bounded Today test/preview compatibility and will be removed when the Events presentation vertical slice is complete.",
+        "migration": "Complete. Today owns HostTodayScreen, HostTodayRouteState, HostTodayState, HostTodayFeedController, and HostAttentionPolicy. Events owns HostEventsScreen, HostEventsRouteState, HostEventsWorkspaceState, and HostEventsTimelineController. The combined Home adapter and surface enum are removed.",
             "previewIds": [
               "hostHomeRouteStates"
             ]
@@ -9098,7 +9098,7 @@
               "EventManagementList"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+              "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
               "symbol": "HostEventsClubSection"
             },
             "currentOwner": "HostEventsClubCard adapter + HostEventsWorkspaceState + HostEventsClubSection",
@@ -9136,7 +9136,7 @@
               "ManageEventRow"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+              "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
               "symbol": "HostEventLifecycleRow"
             },
             "currentOwner": "HostEventLifecycleRow",
@@ -9169,7 +9169,7 @@
               "file": "lib/hosts/presentation/widgets/host_empty_action_card.dart",
               "symbol": "HostEmptyActionCard"
             },
-            "currentOwner": "_HostEventsScaffold + HostEmptyActionCard",
+            "currentOwner": "HostEventsRouteScaffold + CatchSliverEmptyState",
             "targetOwner": "shared host empty action card",
             "dependencies": [
               "catch.button",
@@ -9197,10 +9197,10 @@
               "HostErrorState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
-              "symbol": "HostAuthRequiredScreen"
+              "file": "lib/hosts/events/presentation/host_events_screen.dart",
+              "symbol": "HostEventsScreen"
             },
-            "currentOwner": "HostOperationsHomeScreen",
+            "currentOwner": "HostTodayScreen + HostEventsScreen",
             "targetOwner": "provider-free host route state sections",
             "dependencies": [
               "catch.surface"
@@ -9232,7 +9232,7 @@
         {
           "id": "DS-HOST-HOME-003",
           "status": "closed",
-          "nextAction": "HostHomeRouteState maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches. HostEventsTimelineController owns schedule/history pagination and partial recovery; HostEventsWorkspaceState maps loading/error/empty/populated branches and render-ready rows; HostEventsClubSection renders New/Repeat actions, groups, pagination, and lifecycle rows while HostEventsClubCard remains the narrow provider adapter."
+          "nextAction": "Closed. HostTodayRouteState and HostEventsRouteState independently map auth and organizer branches. HostTodayFeedController owns the bounded command-centre feed; HostEventsTimelineController owns schedule/history pagination and partial recovery; HostEventsWorkspaceState maps inventory branches and render-ready rows."
         },
         {
           "id": "DS-HOST-HOME-004",

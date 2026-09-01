@@ -4709,7 +4709,9 @@
           ],
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
-            "lib/hosts/presentation/host_home_screen_state.dart",
+            "lib/hosts/events/presentation/host_events_screen.dart",
+            "lib/hosts/events/presentation/host_events_state.dart",
+            "lib/hosts/events/presentation/host_events_view_model.dart",
             "lib/hosts/events/data/host_events_timeline_controller.dart",
             "lib/hosts/today/domain/host_attention_item.dart",
             "lib/hosts/today/presentation/host_today_screen.dart",
@@ -4958,7 +4960,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "_HostEventsScaffold owns the typed Add event callback and pushes hostCreateEventScreen with selected club id plus club extra. HostEventsClubCard receives the callback instead of constructing route parameters locally.",
+              "notes": "HostEventsRouteScaffold owns the typed Add event callback and pushes hostCreateEventScreen with selected organizer id plus organizer extra. HostEventsClubCard receives the callback instead of constructing route parameters locally.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -4971,7 +4973,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "HostEventsScaffold owns one lifecycle-aware event callback and pushes hostAppEventManageScreen with clubId, eventId, event extra, and live/setup/report section. HostEventOperationalSpotlight and HostEventLifecycleRow remain provider/router-free and delegate taps to their parent.",
+              "notes": "HostEventsRouteScaffold owns one lifecycle-aware event callback and pushes hostAppEventManageScreen with organizer id, event id, event extra, and live/setup/report section. HostEventLifecycleRow remains provider/router-free and delegates taps to its parent.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "HostEventLifecycleRow/Exact catalog"

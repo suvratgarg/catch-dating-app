@@ -172,6 +172,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
+import 'package:catch_dating_app/hosts/today/data/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
@@ -2847,6 +2848,9 @@ List<Object> _hostOperationsProviderOverrides({
   };
 
   return [
+    hostTodayFeedControllerProvider.overrideWith2(
+      (_) => _CaptureHostTodayFeedController(timelineEventsByOrganizer),
+    ),
     hostEventsTimelineControllerProvider.overrideWith2(
       (_) => _CaptureHostEventsTimelineController(timelineEventsByOrganizer),
     ),
@@ -2920,6 +2924,25 @@ List<Object> _hostOperationsProviderOverrides({
           ),
         ),
   ];
+}
+
+class _CaptureHostTodayFeedController extends HostTodayFeedController {
+  _CaptureHostTodayFeedController(this.eventsByOrganizer);
+
+  final Map<String, List<Event>> eventsByOrganizer;
+
+  @override
+  Future<HostTodayFeedData> build(HostTodayFeedRequest request) async {
+    final events = eventsByOrganizer[request.organizerId] ?? const <Event>[];
+    return HostTodayFeedData(
+      activeEvents: events
+          .where((event) => event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+      pastEvents: events
+          .where((event) => !event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+    );
+  }
 }
 
 class _CaptureHostEventsTimelineController
@@ -9970,10 +9993,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _HostRoutedShellCapture(
       initialLocation: '/host/events',
       activeIndex: 1,
-      child: HostOperationsHomeScreen(
-        initialClubId: _hostEventsReferenceClub.id,
+      child: HostEventsScreen(
+        initialOrganizerId: _hostEventsReferenceClub.id,
         now: _hostEventsReferenceNow,
-        surface: HostOperationsSurface.events,
       ),
     ),
   ),

@@ -162,7 +162,7 @@
       "routeName": "Routes.hostEventsScreen.name",
       "owners": [
         {
-          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+          "path": "lib/hosts/events/presentation/host_events_screen.dart",
           "requires": [
             {"text": "bottom: false", "minimumOccurrences": 1},
             {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}

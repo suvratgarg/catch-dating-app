@@ -3,14 +3,14 @@
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-01",
-  "sourceDigest": "sha256:11e8bb687decce8cbfb3f13c8c6bd0dbbfa0b9021bab464320bc40654fb21a15",
+  "sourceDigest": "sha256:dd7453bbf779c981105425d6e6d0706953f528af905e6d904e83d4a27ea32750",
   "resolvedDigest": "sha256:d886d1e2ce6f3c1260c1d2b9ac739eb2211bad752a988f381ee8cfd56ae758ef",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Transitional contract covering the independently routed Host Today command centre and the Events inventory while the Events presentation vertical slice is extracted. Today owns operational spotlight, attention policy, and Dress Rehearsal entry; Events owns paginated schedule and history plus create, repeat, and manage navigation."
+    "description": "Contract covering the independently routed Host Today command centre and Host Events inventory. Today owns operational spotlight, attention policy, and Dress Rehearsal entry through its bounded feed controller; Events owns its route state, paginated schedule and history controller, create and repeat entry, and lifecycle-aware manage navigation."
   },
   "coverage": {
     "surfaces": 1,
@@ -43,10 +43,10 @@
         ],
         "actionOwners": [
           {
-            "id": "route_screen",
+            "id": "events_route",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
-            "symbol": "HostOperationsHomeScreen"
+            "file": "lib/hosts/events/presentation/host_events_screen.dart",
+            "symbol": "HostEventsScreen"
           },
           {
             "id": "today_route",
@@ -75,13 +75,13 @@
           {
             "id": "workspace",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-            "symbol": "HostEventsScaffold"
+            "file": "lib/hosts/events/presentation/host_events_screen.dart",
+            "symbol": "HostEventsRouteScaffold"
           },
           {
             "id": "events_list",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+            "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
             "symbol": "HostEventsClubCard"
           },
           {
@@ -89,12 +89,6 @@
             "language": "dart",
             "file": "lib/hosts/events/data/host_events_timeline_controller.dart",
             "symbol": "HostEventsTimelineController"
-          },
-          {
-            "id": "auth_required",
-            "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
-            "symbol": "HostAuthRequiredScreen"
           },
           {
             "id": "host_shell",
@@ -182,7 +176,7 @@
       "actions": [
         {
           "id": "sign_in",
-          "owner": "auth_required",
+          "owner": "today_route",
           "codeValue": "go",
           "cardinality": "singleton",
           "scopeKeys": [
@@ -203,7 +197,7 @@
         },
         {
           "id": "retry_host_home",
-          "owner": "route_screen",
+          "owner": "events_route",
           "codeValue": "invalidate",
           "cardinality": "singleton",
           "scopeKeys": [

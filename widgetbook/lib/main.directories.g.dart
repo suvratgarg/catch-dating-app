@@ -7752,7 +7752,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostEventsScaffold',
+                name: 'HostEventsScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by host home route states',

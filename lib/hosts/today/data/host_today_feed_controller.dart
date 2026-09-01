@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/events/data/host_events_timeline_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -14,11 +14,6 @@ class HostTodayFeedRequest {
 
   final String organizerId;
   final DateTime sessionBoundary;
-
-  HostEventsTimelineRequest get timelineRequest => HostEventsTimelineRequest(
-    organizerId: organizerId,
-    sessionBoundary: sessionBoundary,
-  );
 
   @override
   bool operator ==(Object other) =>
@@ -47,19 +42,36 @@ class HostTodayFeedData {
 class HostTodayFeedController extends _$HostTodayFeedController {
   @override
   Future<HostTodayFeedData> build(HostTodayFeedRequest request) async {
-    final timeline = await ref.watch(
-      hostEventsTimelineControllerProvider(request.timelineRequest).future,
+    final repository = ref.watch(eventRepositoryProvider);
+    final activePage = await repository.fetchActiveEventsPage(
+      organizerId: request.organizerId,
+      sessionBoundary: request.sessionBoundary,
     );
+    final pastEvents = await _fetchPastEvents(repository, request);
     return HostTodayFeedData(
-      activeEvents: timeline.activeEvents,
-      pastEvents: timeline.pastEvents,
+      activeEvents: activePage.items,
+      pastEvents: pastEvents,
     );
   }
 
+  Future<List<Event>> _fetchPastEvents(
+    EventRepository repository,
+    HostTodayFeedRequest request,
+  ) async {
+    try {
+      final page = await repository.fetchPastEventsPage(
+        organizerId: request.organizerId,
+        sessionBoundary: request.sessionBoundary,
+      );
+      return page.items;
+    } on Object {
+      // History only enables the optional Repeat action. Today remains useful
+      // when that secondary query is unavailable.
+      return const <Event>[];
+    }
+  }
+
   void retry() {
-    ref.invalidate(
-      hostEventsTimelineControllerProvider(request.timelineRequest),
-    );
     ref.invalidateSelf();
   }
 }

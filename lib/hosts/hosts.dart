@@ -14,6 +14,8 @@ export 'data/host_profile_repository.dart';
 export 'domain/host_attendance_window.dart';
 export 'domain/host_profile.dart';
 export 'domain/host_report_export.dart';
+export 'events/presentation/host_events_screen.dart'; // public-api: route entry point exposed to app routing
+export 'events/presentation/host_events_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/club_management/create/create_club_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/club_management/create/create_club_draft_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/club_management/create/create_club_screen.dart'; // public-api: route entry point exposed to app routing
@@ -39,7 +41,6 @@ export 'presentation/host_event_booking_controller.dart'; // public-api: command
 export 'presentation/host_event_manage_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/host_event_manage_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/host_event_manage_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
-export 'presentation/host_home_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/host_operations_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/host_organizer_selection_controller.dart'; // public-api: Host-shell organizer identity state seam
 export 'presentation/host_profile_controller.dart'; // public-api: command seam for route-owned actions

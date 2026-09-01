@@ -1145,11 +1145,10 @@ StatefulShellRoute _hostShellRoute(
           GoRoute(
             path: Routes.hostEventsScreen.path,
             name: Routes.hostEventsScreen.name,
-            builder: (context, state) => HostOperationsHomeScreen(
-              initialClubId:
+            builder: (context, state) => HostEventsScreen(
+              initialOrganizerId:
                   state.uri.queryParameters['organizerId'] ??
                   state.uri.queryParameters['clubId'],
-              surface: HostOperationsSurface.events,
             ),
           ),
         ],

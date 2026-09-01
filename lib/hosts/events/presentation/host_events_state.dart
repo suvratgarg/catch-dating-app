@@ -6,72 +6,27 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
-typedef HostHomeCreateEventCallback = void Function(Club club);
-typedef HostHomeRepeatEventCallback = void Function(Club club, Event event);
-typedef HostHomeManageEventCallback = void Function(Club club, Event event);
+typedef HostEventsManageEventCallback = void Function(Club club, Event event);
 
-enum HostHomeRouteStatus { authRequired, loading, error, empty, loaded }
+enum HostEventsRouteStatus { authRequired, loading, error, empty, loaded }
 
 @immutable
-class HostHomeRouteState {
-  const HostHomeRouteState({
+class HostEventsRouteState {
+  const HostEventsRouteState({
     required this.status,
     this.uid,
-    this.clubs = const [],
+    this.organizers = const <Club>[],
     this.error,
     this.stackTrace,
     this.errorContext = AppErrorContext.club,
   });
 
-  final HostHomeRouteStatus status;
+  final HostEventsRouteStatus status;
   final String? uid;
-  final List<Club> clubs;
+  final List<Club> organizers;
   final Object? error;
   final StackTrace? stackTrace;
   final AppErrorContext errorContext;
-}
-
-@immutable
-class HostHomeScreenState {
-  const HostHomeScreenState._({
-    required this.clubs,
-    required this.currentUid,
-    required this.selectedClubIndex,
-  });
-
-  factory HostHomeScreenState.resolve({
-    required List<Club> clubs,
-    required String currentUid,
-    int selectedClubIndex = 0,
-    String? selectedClubId,
-  }) {
-    return HostHomeScreenState._(
-      clubs: List<Club>.unmodifiable(clubs),
-      currentUid: currentUid,
-      selectedClubIndex: _resolveSelectedClubIndex(
-        clubs: clubs,
-        selectedClubIndex: selectedClubIndex,
-        selectedClubId: selectedClubId,
-      ),
-    );
-  }
-
-  final List<Club> clubs;
-  final String currentUid;
-  final int selectedClubIndex;
-
-  bool get hasClubs => clubs.isNotEmpty;
-  bool get showClubPicker => clubs.length > 1;
-  Club? get selectedClub => hasClubs ? clubs[selectedClubIndex] : null;
-  bool get selectedClubIsOwner => selectedClub?.isOwnedBy(currentUid) ?? false;
-
-  HostHomeScreenState selectClubIndex(int index) {
-    return HostHomeScreenState.resolve(
-      clubs: clubs,
-      currentUid: currentUid,
-      selectedClubIndex: index,
-    );
-  }
 }
 
 enum HostEventsWorkspaceStatus { loading, error, empty, populated }
@@ -281,20 +236,4 @@ bool _canRepeatEvent(Event event) => CreateEventPrefill.canRepeat(event);
 String _monthSectionLabel(DateTime date, DateTime now) {
   final month = EventFormatters.longMonth(date);
   return date.year == now.year ? month : '$month ${date.year}';
-}
-
-int _resolveSelectedClubIndex({
-  required List<Club> clubs,
-  required int selectedClubIndex,
-  String? selectedClubId,
-}) {
-  if (clubs.isEmpty) return 0;
-  final selectedId = selectedClubId;
-  if (selectedId != null) {
-    final index = clubs.indexWhere((club) => club.id == selectedId);
-    if (index != -1) return index;
-  }
-  if (selectedClubIndex < 0) return 0;
-  if (selectedClubIndex >= clubs.length) return clubs.length - 1;
-  return selectedClubIndex;
 }

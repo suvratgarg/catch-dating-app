@@ -340,8 +340,8 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "role": "Host Events root shell delegates title ownership to CatchScreenHeaderTitle while its club section supplies the adaptive primary create action",
+          "path": "lib/hosts/events/presentation/host_events_screen.dart",
+          "role": "Host Events route delegates title ownership to CatchScreenHeaderTitle while its organizer section supplies the adaptive primary create action",
           "status": "aligned"
         },
         {
@@ -499,8 +499,8 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_home_view_model.dart",
-          "role": "transitional provider-free Host Events route and inventory workspace builders consuming CatchAsyncState with error-before-loading precedence until the Events vertical-slice migration completes",
+          "path": "lib/hosts/events/presentation/host_events_view_model.dart",
+          "role": "provider-free Host Events route and inventory workspace builders consuming CatchAsyncState with error-before-loading precedence",
           "providerFree": true,
           "status": "aligned"
         },
@@ -853,8 +853,8 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_home_screen_state.dart",
-          "role": "transitional provider-free Host Events route, selected-organizer, and inventory lifecycle display states including exact lifecycle boundaries, month grouping, repeat availability, and render-ready row data",
+          "path": "lib/hosts/events/presentation/host_events_state.dart",
+          "role": "provider-free Host Events route and inventory lifecycle display states including exact lifecycle boundaries, month grouping, repeat availability, and render-ready row data",
           "providerFree": true,
           "status": "aligned"
         },
@@ -1337,8 +1337,8 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "role": "host Today and Events ListView terminals",
+          "path": "lib/hosts/events/presentation/host_events_screen.dart",
+          "role": "host Events scroll terminal",
           "status": "aligned"
         },
         {

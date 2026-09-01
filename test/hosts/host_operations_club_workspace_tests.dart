@@ -20,7 +20,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: now),
+      HostTodayScreen(now: now),
       overrides: [
         ..._hostClubOverrides(
           owned: [club],
@@ -65,7 +65,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: now),
+      HostTodayScreen(now: now),
       overrides: [
         ..._hostClubOverrides(
           owned: [club],
@@ -107,7 +107,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       tester,
       MediaQuery(
         data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-        child: HostOperationsHomeScreen(now: now),
+        child: HostTodayScreen(now: now),
       ),
       overrides: [
         ..._hostClubOverrides(
@@ -145,10 +145,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(
-        now: DateTime(2026, 6, 15, 12),
-        surface: HostOperationsSurface.events,
-      ),
+      HostEventsScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
         ..._hostClubOverrides(owned: [club]),
         watchEventsForClubProvider(
@@ -216,7 +213,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: now, surface: HostOperationsSurface.events),
+      HostEventsScreen(now: now),
       overrides: [
         ..._hostClubOverrides(
           owned: [club],
@@ -394,7 +391,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
         ..._hostClubOverrides(
           owned: [ownedClub],

@@ -410,7 +410,7 @@ Widget hostSavedAudiencesStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostEventsScaffold,
+  type: HostEventsScreen,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -6734,6 +6734,9 @@ class _HostShellScope extends StatelessWidget {
       for (final club in effectiveOwnedClubs) club.id: club,
     };
     final overrides = [
+      hostTodayFeedControllerProvider.overrideWith2(
+        (_) => _WidgetbookHostTodayFeedController(clubEventStreams),
+      ),
       hostEventsTimelineControllerProvider.overrideWith2(
         (_) => _WidgetbookHostEventsTimelineController(clubEventStreams),
       ),
@@ -6829,6 +6832,32 @@ class _HostShellScope extends StatelessWidget {
   }
 }
 
+class _WidgetbookHostTodayFeedController extends HostTodayFeedController {
+  _WidgetbookHostTodayFeedController(this.eventStreamsByOrganizer);
+
+  final Map<String, Stream<List<Event>>> eventStreamsByOrganizer;
+
+  @override
+  Future<HostTodayFeedData> build(HostTodayFeedRequest request) async {
+    final events = await _readWidgetbookEvents(
+      ref,
+      eventStreamsByOrganizer[request.organizerId] ??
+          Stream<List<Event>>.value(
+            HostOperationsFixtures.eventsByClub[request.organizerId] ??
+                const [],
+          ),
+    );
+    return HostTodayFeedData(
+      activeEvents: events
+          .where((event) => event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+      pastEvents: events
+          .where((event) => !event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+    );
+  }
+}
+
 class _WidgetbookHostEventsTimelineController
     extends HostEventsTimelineController {
   _WidgetbookHostEventsTimelineController(this.eventStreamsByOrganizer);
@@ -6844,20 +6873,7 @@ class _WidgetbookHostEventsTimelineController
         Stream<List<Event>>.value(
           HostOperationsFixtures.eventsByClub[request.organizerId] ?? const [],
         );
-    final completer = Completer<List<Event>>();
-    late final StreamSubscription<List<Event>> subscription;
-    subscription = stream.listen(
-      (events) {
-        if (!completer.isCompleted) completer.complete(events);
-        unawaited(subscription.cancel());
-      },
-      onError: (Object error, StackTrace stackTrace) {
-        if (!completer.isCompleted) completer.completeError(error, stackTrace);
-        unawaited(subscription.cancel());
-      },
-    );
-    ref.onDispose(() => unawaited(subscription.cancel()));
-    final events = await completer.future;
+    final events = await _readWidgetbookEvents(ref, stream);
     return HostEventsTimelineData(
       activeEvents: events
           .where((event) => event.endTime.isAfter(request.sessionBoundary))
@@ -6871,6 +6887,26 @@ class _WidgetbookHostEventsTimelineController
       hasMorePast: false,
     );
   }
+}
+
+Future<List<Event>> _readWidgetbookEvents(
+  Ref ref,
+  Stream<List<Event>> stream,
+) async {
+  final completer = Completer<List<Event>>();
+  late final StreamSubscription<List<Event>> subscription;
+  subscription = stream.listen(
+    (events) {
+      if (!completer.isCompleted) completer.complete(events);
+      unawaited(subscription.cancel());
+    },
+    onError: (Object error, StackTrace stackTrace) {
+      if (!completer.isCompleted) completer.completeError(error, stackTrace);
+      unawaited(subscription.cancel());
+    },
+  );
+  ref.onDispose(() => unawaited(subscription.cancel()));
+  return completer.future;
 }
 
 enum _HostClubsMutationPreviewMode {
