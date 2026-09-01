@@ -56,6 +56,7 @@ export function planFirebaseDeployTargets(
   targetsCsv,
   {functionTargets = []} = {},
 ) {
+  const enabledFunctionTargets = new Set(functionTargets);
   const selected = new Set();
   const exactFunctions = new Set();
   let deployAllFunctions = false;
@@ -72,6 +73,11 @@ export function planFirebaseDeployTargets(
     } else if (target.startsWith("functions:")) {
       if (!firebaseTargetPattern.test(target) || target === "functions:") {
         rejectUnsafeTarget(target);
+      }
+      if (!enabledFunctionTargets.has(target)) {
+        throw new Error(
+          `Firebase Function deploy target is not enabled by source policy: ${target}`,
+        );
       }
       exactFunctions.add(target);
       selected.add("functions");

@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.2.0
-updated: 2026-08-20
+version: 2.3.0
+updated: 2026-09-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -68,20 +68,47 @@ installation; do not move this gate into Firebase predeploy hooks.
 
 Repository checks prove the authored Functions package, not what a Firebase
 project currently exposes. After every Functions deployment, the safe deploy
-wrapper compares the live inventory with `functions/src/index.ts` and confirms
-that every literal `defineSecret()` name exists in the selected project:
+wrapper compares the live inventory with the deployment-eligible exports
+derived from `functions/src/index.ts` and confirms that every literal
+`defineSecret()` name exists in the selected project:
 
 ```sh
 node tool/firebase/check_deploy_parity.mjs --env staging
 node tool/firebase/check_deploy_parity.mjs --env prod --json
 ```
 
-Missing repository exports or declared secret names fail the deployment.
-Environment-only Functions are counted but ignored because installed Firebase
-Extensions legitimately own exports that are absent from this repository. The
-check uses only `firebase functions:list` and Secret Manager resource-name
-metadata; it never requests a secret version or payload. Authentication,
-authorization, tooling, and malformed-metadata failures fail closed.
+Missing deployment-eligible exports or declared secret names fail the
+deployment. Environment-only Functions are counted but ignored because
+installed Firebase Extensions legitimately own exports that are absent from
+this repository. The check uses only `firebase functions:list` and Secret
+Manager resource-name metadata; it never requests a secret version or payload.
+Authentication, authorization, tooling, and malformed-metadata failures fail
+closed.
+
+### Dormant scheduled Functions
+
+Catch's bounded deployment policy in
+`tool/firebase/list_firebase_function_targets.mjs` keeps the following recurring
+Functions implemented and testable but excludes them from logical and exact
+Function deployment plans:
+
+- `dispatchPendingOrganizerFollowerUpdates`
+- `dispatchScheduledOrganizerCampaigns`
+- `expireCrossPathsInvitations`
+- `expireCrossPathsPairHolds`
+- `expireEventRehearsals`
+- `expireEventWaitlistOffers`
+- `reconcileRazorpayOrders`
+- `sendEventReminders`
+
+They were undeployed from dev, staging, and production on 2026-09-02 after live
+queries found no pending campaigns, delivery operations, rehearsal sessions,
+payment reconciliation, waitlist offers, invitations, pair holds, or future
+active events. Re-enabling one is a deliberate source-policy change: prove the
+corresponding live workload, define its environment scope and monthly budget,
+run its focused Functions tests, deploy dev then staging then production, and
+verify both the Function and Scheduler job after each environment. Do not use a
+bare Firebase CLI deployment to bypass this gate.
 
 ## Firebase Rules Deployment Drift
 
@@ -971,9 +998,10 @@ before publishing its first checkpoint, recovery starts the same verified
 package at stage one; otherwise it restores the matching environment/project
 checkpoint. Successful, neutral, skipped, or nonterminal runs cannot authorize
 recovery. A source fix needs a new PR, CI run, and package; do not use recovery
-to rebuild or redeploy mutable workspace state. The logical
-`functions` target still expands to explicit callable names so non-interactive
-promotion does not prompt to delete unrelated legacy live functions.
+to rebuild or redeploy mutable workspace state. The logical `functions` target
+still expands to explicit deployment-eligible Function names so non-interactive
+promotion does not prompt to delete unrelated legacy live functions or recreate
+a dormant scheduled Function.
 
 ## Exact-Artifact Promotion And Resume
 
@@ -1341,10 +1369,11 @@ its durable retry scheduler is new and must be proved explicitly:
 `./tool/deploy_firebase_targets.sh` is the bounded stage executor beneath
 Delivery and an operator-only recovery helper. It plans selected targets in the
 same index → Functions → Firestore-rules → Storage-rules order regardless of
-the caller's CSV order. The logical `functions` target expands current exports
-from `functions/src/index.ts` into explicit `functions:<name>` targets. The
-executor promotes those exact targets in sequential batches of ten with a
-short cooldown because Firebase CLI otherwise fans out up to forty mutations,
+the caller's CSV order. The logical `functions` target expands
+deployment-eligible exports from `functions/src/index.ts` into explicit
+`functions:<name>` targets. The executor promotes those exact targets in
+sequential batches of ten with a short cooldown because Firebase CLI otherwise
+fans out up to forty mutations,
 which can exceed regional Cloud Functions mutation and temporary Cloud Run CPU
 quotas for this repository's large function inventory. This
 keeps legacy live Functions, such as old run/run-club callables, deployed until
