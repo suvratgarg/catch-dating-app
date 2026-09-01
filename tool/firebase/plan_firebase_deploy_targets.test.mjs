@@ -11,6 +11,11 @@ import {
   planFirebaseDeployGroups,
   planFirebaseDeployTargets,
 } from "./plan_firebase_deploy_targets.mjs";
+import {
+  dormantFirebaseFunctionTargets,
+  listFirebaseFunctionExports,
+  listFirebaseFunctionTargets,
+} from "./list_firebase_function_targets.mjs";
 
 const exportsList = [
   "functions:createEvent",
@@ -82,7 +87,7 @@ test("indexes always precede Functions and rules", () => {
   );
 });
 
-test("logical functions expands all source exports", () => {
+test("logical functions expands all enabled source exports", () => {
   const [plan] = planFirebaseDeployTargets("functions", {
     functionTargets: exportsList,
   });
@@ -91,7 +96,37 @@ test("logical functions expands all source exports", () => {
   assert.equal(plan.deployOnly.split(",").length, 3);
 });
 
-test("large Function deployments are split into quota-safe exact batches", () => {
+test("dormant scheduled Functions cannot enter logical or exact deploy plans", () => {
+  const sourceExports = new Set(listFirebaseFunctionExports());
+  const enabledTargets = listFirebaseFunctionTargets();
+  const enabledTargetSet = new Set(enabledTargets);
+
+  assert.equal(dormantFirebaseFunctionTargets.length, 8);
+  for (const target of dormantFirebaseFunctionTargets) {
+    assert.equal(
+      sourceExports.has(target), true, `${target} must remain implemented`,
+    );
+    assert.equal(
+      enabledTargetSet.has(target), false, `${target} must remain dormant`,
+    );
+  }
+
+  const [logicalPlan] = planFirebaseDeployTargets("functions", {
+    functionTargets: enabledTargets,
+  });
+  const plannedTargets = new Set(logicalPlan.deployOnly.split(","));
+  for (const target of dormantFirebaseFunctionTargets) {
+    assert.equal(plannedTargets.has(target), false);
+  }
+  assert.throws(
+    () => planFirebaseDeployTargets(dormantFirebaseFunctionTargets[0], {
+      functionTargets: enabledTargets,
+    }),
+    /not enabled by source policy/u,
+  );
+});
+
+test("large Function deployments are split into quota-safe exact batches", (t) => {
   const targets = Array.from(
     {length: firebaseFunctionDeployBatchSize * 2 + 1},
     (_, index) => `functions:function${index}`,
@@ -100,10 +135,21 @@ test("large Function deployments are split into quota-safe exact batches", () =>
   assert.deepEqual(batches.map((batch) => batch.split(",").length), [10, 10, 1]);
   assert.deepEqual(batches.flatMap((batch) => batch.split(",")), targets);
 
+  const sourceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-firebase-source-"));
+  t.after(() => fs.rmSync(sourceRoot, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(sourceRoot, "functions/src"), {recursive: true});
+  fs.writeFileSync(
+    path.join(sourceRoot, "functions/src/index.ts"),
+    `export {${targets.map((target) => target.replace("functions:", "")).join(",")}} from "./batch";\n`,
+  );
+
   const cli = spawnSync(
     process.execPath,
     [cliPath, targets.join(","), "--function-batches"],
-    {encoding: "utf8"},
+    {
+      encoding: "utf8",
+      env: {...process.env, CATCH_FIREBASE_SOURCE_ROOT: sourceRoot},
+    },
   );
   assert.equal(cli.status, 0, cli.stderr);
   const cliBatches = cli.stdout.trim().split("\n");
