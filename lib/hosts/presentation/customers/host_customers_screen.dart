@@ -332,126 +332,120 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
             expanded: screenSize.isExpanded,
             master: CatchTabbedPageScrollView(
               scrollKey: const PageStorageKey<String>('host-customers-people'),
+              bodyLayout: CatchScreenBodyLayout.standard,
               constrainToContentWidth: true,
               slivers: [
-                SliverPadding(
-                  padding: CatchInsets.pageHorizontal,
-                  sliver: SliverList.list(
-                    children: [
-                      HostCustomersSummary(
-                        summary: summary,
-                        onRetry: () => ref.invalidate(
-                          hostCrmSummaryProvider(selectedClub.id),
-                        ),
-                        selectedFilter:
-                            _manualTag == null &&
-                                const {
-                                  HostCustomerFilter.all,
-                                  HostCustomerFilter.attended,
-                                  HostCustomerFilter.repeat,
-                                }.contains(effectiveFilter)
-                            ? effectiveFilter
-                            : null,
-                        onFilterSelected: (selectedFilter) => setState(() {
-                          _filter =
-                              selectedFilter == effectiveFilter &&
-                                  selectedFilter != HostCustomerFilter.all
-                              ? HostCustomerFilter.all
-                              : selectedFilter;
-                          _manualTag = null;
-                        }),
+                SliverList.list(
+                  children: [
+                    HostCustomersSummary(
+                      summary: summary,
+                      onRetry: () => ref.invalidate(
+                        hostCrmSummaryProvider(selectedClub.id),
                       ),
-                      gapH16,
-                      const CatchDivider.section(),
-                      gapH12,
-                      if (directoryState == null)
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: directoryControls,
-                        )
-                      else
-                        HostCustomerFilterSummary(
-                          filter: effectiveFilter,
-                          manualTag: _manualTag,
-                          count: directoryState.matchCount,
-                          countCoverage: directoryState.matchCountCoverage,
-                          campaignBlocker: campaignBridgeBlocker,
-                          onMessage:
-                              campaignBridgePhase ==
-                                      HostCustomerCampaignBridgePhase.ready &&
-                                  campaignAudienceDefinition != null
-                              ? () => _saveAndMessageCustomers(
-                                  selectedClub,
-                                  effectiveFilter,
-                                  _manualTag,
-                                  campaignAudienceDefinition,
-                                )
-                              : null,
-                          onReviewSenderSetup:
-                              campaignBridgePhase ==
-                                  HostCustomerCampaignBridgePhase
-                                      .senderSetupRequired
-                              ? () => _reviewWhatsappSenderSetup(selectedClub)
-                              : null,
-                          onClear:
-                              effectiveFilter == HostCustomerFilter.all &&
-                                  _manualTag == null
-                              ? null
-                              : () => setState(() {
-                                  _filter = HostCustomerFilter.all;
-                                  _manualTag = null;
-                                }),
-                          trailing: directoryControls,
-                        ),
-                      gapH12,
-                      CatchAsyncValueView<HostCustomersDirectoryState>(
-                        value: directory,
+                      selectedFilter:
+                          _manualTag == null &&
+                              const {
+                                HostCustomerFilter.all,
+                                HostCustomerFilter.attended,
+                                HostCustomerFilter.repeat,
+                              }.contains(effectiveFilter)
+                          ? effectiveFilter
+                          : null,
+                      onFilterSelected: (selectedFilter) => setState(() {
+                        _filter =
+                            selectedFilter == effectiveFilter &&
+                                selectedFilter != HostCustomerFilter.all
+                            ? HostCustomerFilter.all
+                            : selectedFilter;
+                        _manualTag = null;
+                      }),
+                    ),
+                    gapH16,
+                    const CatchDivider.section(),
+                    gapH12,
+                    if (directoryState == null)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: directoryControls,
+                      )
+                    else
+                      HostCustomerFilterSummary(
+                        filter: effectiveFilter,
+                        manualTag: _manualTag,
+                        count: directoryState.matchCount,
+                        countCoverage: directoryState.matchCountCoverage,
+                        campaignBlocker: campaignBridgeBlocker,
+                        onMessage:
+                            campaignBridgePhase ==
+                                    HostCustomerCampaignBridgePhase.ready &&
+                                campaignAudienceDefinition != null
+                            ? () => _saveAndMessageCustomers(
+                                selectedClub,
+                                effectiveFilter,
+                                _manualTag,
+                                campaignAudienceDefinition,
+                              )
+                            : null,
+                        onReviewSenderSetup:
+                            campaignBridgePhase ==
+                                HostCustomerCampaignBridgePhase
+                                    .senderSetupRequired
+                            ? () => _reviewWhatsappSenderSetup(selectedClub)
+                            : null,
+                        onClear:
+                            effectiveFilter == HostCustomerFilter.all &&
+                                _manualTag == null
+                            ? null
+                            : () => setState(() {
+                                _filter = HostCustomerFilter.all;
+                                _manualTag = null;
+                              }),
+                        trailing: directoryControls,
+                      ),
+                    gapH12,
+                    CatchAsyncValueView<HostCustomersDirectoryState>(
+                      value: directory,
+                      onRetry: () => ref.invalidate(
+                        hostCustomersDirectoryControllerProvider(request),
+                      ),
+                      initialLoadTimeout: null,
+                      loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
+                      errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                        error,
+                        context: AppErrorContext.customers,
+                        mode: CatchErrorStateMode.compact,
                         onRetry: () => ref.invalidate(
                           hostCustomersDirectoryControllerProvider(request),
                         ),
-                        initialLoadTimeout: null,
-                        loadingBuilder: (_) =>
-                            const CatchSkeletonRows(count: 5),
-                        errorBuilder: (_, error, _) =>
-                            CatchErrorState.fromError(
-                              error,
-                              context: AppErrorContext.customers,
-                              mode: CatchErrorStateMode.compact,
-                              onRetry: () => ref.invalidate(
-                                hostCustomersDirectoryControllerProvider(
-                                  request,
-                                ),
-                              ),
-                            ),
-                        builder: (context, state) => HostCustomersDirectory(
-                          state: state,
-                          hasActiveQuery:
-                              _search != null ||
-                              effectiveFilter != HostCustomerFilter.all ||
-                              _manualTag != null,
-                          onCustomerSelected: (contact) =>
-                              _openCustomer(selectedClub, contact),
-                          onLoadMore: state.canLoadMore
-                              ? () => ref
-                                    .read(
-                                      hostCustomersDirectoryControllerProvider(
-                                        request,
-                                      ).notifier,
-                                    )
-                                    .loadMore()
-                              : null,
-                          onRefreshCoverage: () {
-                            ref.invalidate(
-                              hostCrmSummaryProvider(selectedClub.id),
-                            );
-                            ref.invalidate(
-                              hostCustomersDirectoryControllerProvider(request),
-                            );
-                          },
-                        ),
                       ),
-                    ],
-                  ),
+                      builder: (context, state) => HostCustomersDirectory(
+                        state: state,
+                        hasActiveQuery:
+                            _search != null ||
+                            effectiveFilter != HostCustomerFilter.all ||
+                            _manualTag != null,
+                        onCustomerSelected: (contact) =>
+                            _openCustomer(selectedClub, contact),
+                        onLoadMore: state.canLoadMore
+                            ? () => ref
+                                  .read(
+                                    hostCustomersDirectoryControllerProvider(
+                                      request,
+                                    ).notifier,
+                                  )
+                                  .loadMore()
+                            : null,
+                        onRefreshCoverage: () {
+                          ref.invalidate(
+                            hostCrmSummaryProvider(selectedClub.id),
+                          );
+                          ref.invalidate(
+                            hostCustomersDirectoryControllerProvider(request),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

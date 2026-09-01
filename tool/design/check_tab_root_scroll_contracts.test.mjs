@@ -27,6 +27,50 @@ test("accepts a tab root that delegates scroll ownership to the shared shell", (
   assert.deepEqual(result.findings, []);
 });
 
+test("accepts a root screen with an explicit semantic body role", () => {
+  const root = fixtureRoot({
+    ownerSource: `
+      CatchRootScreenScaffold(
+        bodyLayout: CatchScreenBodyLayout.standard,
+        slivers: const [SliverToBoxAdapter(child: Text("Body"))],
+      );
+    `,
+    requires: [
+      {text: "CatchRootScreenScaffold", minimumOccurrences: 1},
+      {
+        text: "bodyLayout: CatchScreenBodyLayout.standard",
+        minimumOccurrences: 1,
+      },
+    ],
+    forbids: [{text: "CustomScrollView("}],
+  });
+  const result = checkTabRootScrollContracts({root});
+  assert.deepEqual(result.findings, []);
+});
+
+test("flags a root screen that bypasses semantic composition", () => {
+  const root = fixtureRoot({
+    ownerSource: "SafeArea(child: CustomScrollView());",
+    requires: [
+      {text: "CatchRootScreenScaffold", minimumOccurrences: 1},
+      {
+        text: "bodyLayout: CatchScreenBodyLayout.standard",
+        minimumOccurrences: 1,
+      },
+    ],
+    forbids: [{text: "CustomScrollView("}],
+  });
+  const result = checkTabRootScrollContracts({root});
+  assert.ok(
+    result.findings.some(
+      (finding) => finding.code === "missing-required-text",
+    ),
+  );
+  assert.ok(
+    result.findings.some((finding) => finding.code === "forbidden-text"),
+  );
+});
+
 test("accepts lifecycle-owned StatefulShellBranch key member access", () => {
   const root = fixtureRoot({
     ownerSource:
@@ -117,6 +161,7 @@ function fixtureRoot({
     {text: "bottom: false", minimumOccurrences: 1},
     {text: "CatchSliverTerminalPadding", minimumOccurrences: 1},
   ],
+  forbids = [],
 }) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-tab-root-"));
   write(
@@ -156,6 +201,7 @@ function fixtureRoot({
             {
               path: "lib/home/home_screen.dart",
               requires,
+              forbids,
             },
           ],
         },

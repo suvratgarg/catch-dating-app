@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
@@ -206,19 +207,17 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
           ),
           CatchTabbedPageScrollView(
             scrollKey: const PageStorageKey<String>('host-forms-responses'),
+            bodyLayout: CatchScreenBodyLayout.standard,
             constrainToContentWidth: true,
             slivers: [
-              SliverPadding(
-                padding: CatchInsets.pageBody.copyWith(bottom: 0),
-                sliver: SliverToBoxAdapter(
-                  child: HostFormResponsesPanel(
-                    organizerId: selectedClub.id,
-                    query: _responseQuery,
-                    formId: _responseFormId,
-                    onClearFormFilter: () => setState(() {
-                      _responseFormId = null;
-                    }),
-                  ),
+              SliverToBoxAdapter(
+                child: HostFormResponsesPanel(
+                  organizerId: selectedClub.id,
+                  query: _responseQuery,
+                  formId: _responseFormId,
+                  onClearFormFilter: () => setState(() {
+                    _responseFormId = null;
+                  }),
                 ),
               ),
             ],
@@ -398,136 +397,132 @@ class _HostFormsLibraryPage extends ConsumerWidget {
     final tokens = CatchTokens.of(context);
     return CatchTabbedPageScrollView(
       scrollKey: const PageStorageKey<String>('host-forms-library'),
+      bodyLayout: CatchScreenBodyLayout.standard,
       constrainToContentWidth: true,
       maxContentExtent: CatchLayout.hostFormsDirectoryPageMaxExtent,
       slivers: [
-        SliverPadding(
-          padding: CatchInsets.pageBody.copyWith(bottom: 0),
-          sliver: SliverList.list(
-            children: [
-              Text(
-                context.l10n.hostFormsSubtitle,
-                style: CatchTextStyles.supporting(context, color: tokens.ink2),
-              ),
-              gapH16,
-              CatchOptionGroup<HostFormLifecycleStatus?>(
-                options: [
+        SliverList.list(
+          children: [
+            Text(
+              context.l10n.hostFormsSubtitle,
+              style: CatchTextStyles.supporting(context, color: tokens.ink2),
+            ),
+            gapH16,
+            CatchOptionGroup<HostFormLifecycleStatus?>(
+              options: [
+                CatchOption(
+                  value: null,
+                  label: context.l10n.hostFormsFilterAll,
+                ),
+                for (final candidate in HostFormLifecycleStatus.values)
                   CatchOption(
-                    value: null,
-                    label: context.l10n.hostFormsFilterAll,
+                    value: candidate,
+                    label: hostFormStatusLabel(context, candidate),
                   ),
-                  for (final candidate in HostFormLifecycleStatus.values)
-                    CatchOption(
-                      value: candidate,
-                      label: hostFormStatusLabel(context, candidate),
-                    ),
-                ],
-                selected: status,
-                contractExemption:
-                    'The lifecycle rail maps All to no status and every other '
-                    'option to one item in the statuses array contract.',
-                onChanged: onStatusChanged,
-                scrollable: true,
-                showDivider: false,
-              ),
-              gapH16,
-              CatchAsyncValueView<HostFormsDirectoryState>(
-                value: directory,
+              ],
+              selected: status,
+              contractExemption:
+                  'The lifecycle rail maps All to no status and every other '
+                  'option to one item in the statuses array contract.',
+              onChanged: onStatusChanged,
+              scrollable: true,
+              showDivider: false,
+            ),
+            gapH16,
+            CatchAsyncValueView<HostFormsDirectoryState>(
+              value: directory,
+              onRetry: () =>
+                  ref.invalidate(hostFormsDirectoryControllerProvider(request)),
+              initialLoadTimeout: null,
+              loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
+              errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                error,
+                context: AppErrorContext.forms,
+                mode: CatchErrorStateMode.compact,
                 onRetry: () => ref.invalidate(
                   hostFormsDirectoryControllerProvider(request),
                 ),
-                initialLoadTimeout: null,
-                loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
-                errorBuilder: (_, error, _) => CatchErrorState.fromError(
-                  error,
-                  context: AppErrorContext.forms,
-                  mode: CatchErrorStateMode.compact,
-                  onRetry: () => ref.invalidate(
-                    hostFormsDirectoryControllerProvider(request),
-                  ),
-                ),
-                builder: (context, state) {
-                  if (state.forms.isEmpty) {
-                    final unfiltered = query == null && status == null;
-                    return CatchEmptyState(
-                      icon: CatchIcons.descriptionOutlined,
-                      title: unfiltered
-                          ? context.l10n.hostFormsEmptyTitle
-                          : context.l10n.hostFormsNoMatchesTitle,
-                      message: unfiltered
-                          ? context.l10n.hostFormsEmptyBody
-                          : context.l10n.hostFormsNoMatchesBody,
-                      action: unfiltered
-                          ? CatchButton(
-                              label: context.l10n.hostFormsCreate,
-                              size: CatchButtonSize.sm,
-                              onPressed: onCreate,
-                            )
-                          : null,
-                    );
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      CatchSection.fieldRows(
-                        children: [
-                          for (final form in state.forms)
-                            CatchField.nav(
-                              key: ValueKey('host-form-${form.formId}'),
-                              title: form.title,
-                              body: _hostFormSummaryBody(context, form),
-                              valueText: AppTimeFormatters.compactRelativeTime(
-                                form.lastResponseAt ?? form.updatedAt,
-                              ),
-                              onTap: () => onOpenForm(form),
-                              action: CatchActionMenu<_HostFormRowAction>(
-                                tooltip: context.l10n.hostFormsActions,
-                                items: _hostFormRowActions(context, form),
-                                onSelected: (action) =>
-                                    onRowAction(action, form),
-                              ),
-                            ),
-                        ],
-                      ),
-                      if (state.canLoadMore) ...[
-                        gapH16,
-                        CatchButton(
-                          label: context.l10n.hostFormsLoadMore,
-                          variant: CatchButtonVariant.secondary,
-                          isLoading: state.loadingMore,
-                          fullWidth: true,
-                          onPressed: state.loadingMore
-                              ? null
-                              : () => ref
-                                    .read(
-                                      hostFormsDirectoryControllerProvider(
-                                        request,
-                                      ).notifier,
-                                    )
-                                    .loadMore(),
-                        ),
-                      ],
-                      if (state.loadMoreError case final error?) ...[
-                        gapH12,
-                        CatchErrorState.fromError(
-                          error,
-                          context: AppErrorContext.forms,
-                          mode: CatchErrorStateMode.compact,
-                          onRetry: () => ref
-                              .read(
-                                hostFormsDirectoryControllerProvider(
-                                  request,
-                                ).notifier,
-                              )
-                              .loadMore(),
-                        ),
-                      ],
-                    ],
-                  );
-                },
               ),
-            ],
-          ),
+              builder: (context, state) {
+                if (state.forms.isEmpty) {
+                  final unfiltered = query == null && status == null;
+                  return CatchEmptyState(
+                    icon: CatchIcons.descriptionOutlined,
+                    title: unfiltered
+                        ? context.l10n.hostFormsEmptyTitle
+                        : context.l10n.hostFormsNoMatchesTitle,
+                    message: unfiltered
+                        ? context.l10n.hostFormsEmptyBody
+                        : context.l10n.hostFormsNoMatchesBody,
+                    action: unfiltered
+                        ? CatchButton(
+                            label: context.l10n.hostFormsCreate,
+                            size: CatchButtonSize.sm,
+                            onPressed: onCreate,
+                          )
+                        : null,
+                  );
+                }
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    CatchSection.fieldRows(
+                      children: [
+                        for (final form in state.forms)
+                          CatchField.nav(
+                            key: ValueKey('host-form-${form.formId}'),
+                            title: form.title,
+                            body: _hostFormSummaryBody(context, form),
+                            valueText: AppTimeFormatters.compactRelativeTime(
+                              form.lastResponseAt ?? form.updatedAt,
+                            ),
+                            onTap: () => onOpenForm(form),
+                            action: CatchActionMenu<_HostFormRowAction>(
+                              tooltip: context.l10n.hostFormsActions,
+                              items: _hostFormRowActions(context, form),
+                              onSelected: (action) => onRowAction(action, form),
+                            ),
+                          ),
+                      ],
+                    ),
+                    if (state.canLoadMore) ...[
+                      gapH16,
+                      CatchButton(
+                        label: context.l10n.hostFormsLoadMore,
+                        variant: CatchButtonVariant.secondary,
+                        isLoading: state.loadingMore,
+                        fullWidth: true,
+                        onPressed: state.loadingMore
+                            ? null
+                            : () => ref
+                                  .read(
+                                    hostFormsDirectoryControllerProvider(
+                                      request,
+                                    ).notifier,
+                                  )
+                                  .loadMore(),
+                      ),
+                    ],
+                    if (state.loadMoreError case final error?) ...[
+                      gapH12,
+                      CatchErrorState.fromError(
+                        error,
+                        context: AppErrorContext.forms,
+                        mode: CatchErrorStateMode.compact,
+                        onRetry: () => ref
+                            .read(
+                              hostFormsDirectoryControllerProvider(
+                                request,
+                              ).notifier,
+                            )
+                            .loadMore(),
+                      ),
+                    ],
+                  ],
+                );
+              },
+            ),
+          ],
         ),
       ],
     );
@@ -658,33 +653,24 @@ class HostFormsNoOrganizer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: CatchScreenHeaderTitle.block(
-                title: context.l10n.hostNavigationAudience,
-              ),
-            ),
-            CatchSliverEmptyState(
-              icon: CatchIcons.descriptionOutlined,
-              title: context.l10n.hostFormsNoOrganizerTitle,
-              message: context.l10n.hostFormsNoOrganizerBody,
-              action: CatchButton(
-                label: context.l10n.hostFormsCreateOrganizer,
-                size: CatchButtonSize.sm,
-                onPressed: () =>
-                    context.pushNamed(Routes.hostCreateClubScreen.name),
-              ),
-            ),
-            const CatchSliverTerminalPadding(),
-          ],
-        ),
+    return CatchRootScreenScaffold(
+      header: CatchScreenHeaderTitle.block(
+        title: context.l10n.hostNavigationAudience,
       ),
+      bodyLayout: CatchScreenBodyLayout.standard,
+      slivers: [
+        CatchSliverEmptyState(
+          icon: CatchIcons.descriptionOutlined,
+          title: context.l10n.hostFormsNoOrganizerTitle,
+          message: context.l10n.hostFormsNoOrganizerBody,
+          action: CatchButton(
+            label: context.l10n.hostFormsCreateOrganizer,
+            size: CatchButtonSize.sm,
+            onPressed: () =>
+                context.pushNamed(Routes.hostCreateClubScreen.name),
+          ),
+        ),
+      ],
     );
   }
 }

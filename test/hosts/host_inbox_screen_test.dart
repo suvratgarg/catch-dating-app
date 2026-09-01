@@ -96,7 +96,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
-    expect(find.text('One-to-one conversations and replies.'), findsOneWidget);
+    expect(find.text('One-to-one conversations and replies.'), findsNothing);
     expect(find.text('Inbox'), findsOneWidget);
     expect(find.text('Sends'), findsOneWidget);
     expect(find.byType(HostInboxScopeSelector), findsOneWidget);

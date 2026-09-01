@@ -73,7 +73,7 @@
       "routeName": "Routes.hostOrganizerScreen.name",
       "surfaces": [
         {"path": "lib/core/widgets/catch_tabbed_screen.dart", "symbol": "CatchTabbedScreenScaffold", "owner": "CatchScreenHeaderTitle.block"},
-        {"path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "_HostClubsScaffoldState", "owner": "CatchScreenTopBar"}
+        {"path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "_HostClubsScaffoldState", "owner": "CatchTabbedScreenScaffold"}
       ]
     }
   ],
@@ -141,13 +141,6 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
-    },
-    {
-      "path": "lib/hosts/events/presentation/host_events_screen.dart",
-      "role": "screen",
-      "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar",
-      "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
@@ -306,13 +299,6 @@
       "leading": "back"
     },
     {
-      "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-      "role": "screen",
-      "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar",
-      "reason": "Host Clubs uses the canonical screen title bar directly for the empty branch and delegates populated workspace chrome to CatchTabbedScreenScaffold."
-    },
-    {
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
       "role": "compact",
       "expression": "CatchTopBar",
@@ -322,13 +308,6 @@
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar",
-      "surface": "CatchRouteScaffold"
-    },
-    {
-      "path": "lib/hosts/today/presentation/host_today_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",

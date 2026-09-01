@@ -19,6 +19,7 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget {
     final audiences = ref.watch(hostAllSavedAudiencesProvider(organizerId));
     return CatchTabbedPageScrollView(
       scrollKey: const PageStorageKey<String>('host-customers-audiences'),
+      bodyLayout: CatchScreenBodyLayout.standard,
       constrainToContentWidth: true,
       onRefresh: () async {
         ref.invalidate(hostSavedAudiencesProvider(organizerId));
@@ -26,84 +27,77 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget {
         await ref.read(hostAllSavedAudiencesProvider(organizerId).future);
       },
       slivers: [
-        SliverPadding(
-          padding: CatchInsets.pageBody.copyWith(bottom: 0),
-          sliver: SliverList.list(
-            children: [
-              Text(
-                context.l10n.hostSavedAudiencesWorkspaceBody,
-                style: CatchTextStyles.proseM(
-                  context,
-                  color: CatchTokens.of(context).ink2,
-                ),
+        SliverList.list(
+          children: [
+            Text(
+              context.l10n.hostSavedAudiencesWorkspaceBody,
+              style: CatchTextStyles.proseM(
+                context,
+                color: CatchTokens.of(context).ink2,
               ),
-              gapH24,
-              CatchAsyncValueView<HostSavedAudiencePage>(
-                value: audiences,
+            ),
+            gapH24,
+            CatchAsyncValueView<HostSavedAudiencePage>(
+              value: audiences,
+              onRetry: () =>
+                  ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+              initialLoadTimeout: null,
+              loadingBuilder: (_) => const CatchSkeletonRows(count: 4),
+              errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                error,
+                context: AppErrorContext.customers,
+                mode: CatchErrorStateMode.compact,
                 onRetry: () =>
                     ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
-                initialLoadTimeout: null,
-                loadingBuilder: (_) => const CatchSkeletonRows(count: 4),
-                errorBuilder: (_, error, _) => CatchErrorState.fromError(
-                  error,
-                  context: AppErrorContext.customers,
-                  mode: CatchErrorStateMode.compact,
-                  onRetry: () => ref.invalidate(
-                    hostAllSavedAudiencesProvider(organizerId),
-                  ),
-                ),
-                builder: (context, page) {
-                  final visible = _matchingSavedAudiences(
-                    page.audiences,
-                    query,
-                  );
-                  return CatchSection.divided(
-                    key: const ValueKey('host-saved-audiences-directory'),
-                    first: true,
-                    title: context.l10n.hostSavedAudiencesManage,
-                    count: visible.length,
-                    trailing: CatchTextButton(
-                      key: const ValueKey('host-saved-audience-create'),
-                      label: context.l10n.hostSavedAudienceNew,
-                      onPressed: onCreate,
-                    ),
-                    children: visible.isEmpty
-                        ? [
-                            CatchEmptyState(
-                              icon: CatchIcons.groupsOutlined,
-                              title: query == null
-                                  ? context.l10n.hostSavedAudiencesEmptyTitle
-                                  : context
-                                        .l10n
-                                        .hostSavedAudiencesSearchEmptyTitle,
-                              message: query == null
-                                  ? context.l10n.hostSavedAudiencesEmptyBody
-                                  : context
-                                        .l10n
-                                        .hostSavedAudiencesSearchEmptyBody,
-                              layout: CatchEmptyStateLayout.inline,
-                            ),
-                          ]
-                        : [
-                            for (final audience in visible)
-                              CatchField.nav(
-                                key: ValueKey(
-                                  'host-saved-audience-${audience.audienceId}',
-                                ),
-                                title: audience.name,
-                                body: _savedAudienceDirectoryBody(
-                                  context,
-                                  audience,
-                                ),
-                                emphasis: CatchFieldEmphasis.title,
-                                onTap: () => onOpen(audience),
-                              ),
-                          ],
-                  );
-                },
               ),
-            ],
-          ),
+              builder: (context, page) {
+                final visible = _matchingSavedAudiences(page.audiences, query);
+                return CatchSection.divided(
+                  key: const ValueKey('host-saved-audiences-directory'),
+                  first: true,
+                  title: context.l10n.hostSavedAudiencesManage,
+                  count: visible.length,
+                  trailing: CatchTextButton(
+                    key: const ValueKey('host-saved-audience-create'),
+                    label: context.l10n.hostSavedAudienceNew,
+                    onPressed: onCreate,
+                  ),
+                  children: visible.isEmpty
+                      ? [
+                          CatchEmptyState(
+                            icon: CatchIcons.groupsOutlined,
+                            title: query == null
+                                ? context.l10n.hostSavedAudiencesEmptyTitle
+                                : context
+                                      .l10n
+                                      .hostSavedAudiencesSearchEmptyTitle,
+                            message: query == null
+                                ? context.l10n.hostSavedAudiencesEmptyBody
+                                : context
+                                      .l10n
+                                      .hostSavedAudiencesSearchEmptyBody,
+                            layout: CatchEmptyStateLayout.inline,
+                          ),
+                        ]
+                      : [
+                          for (final audience in visible)
+                            CatchField.nav(
+                              key: ValueKey(
+                                'host-saved-audience-${audience.audienceId}',
+                              ),
+                              title: audience.name,
+                              body: _savedAudienceDirectoryBody(
+                                context,
+                                audience,
+                              ),
+                              emphasis: CatchFieldEmphasis.title,
+                              onTap: () => onOpen(audience),
+                            ),
+                        ],
+                );
+              },
+            ),
+          ],
         ),
       ],
     );

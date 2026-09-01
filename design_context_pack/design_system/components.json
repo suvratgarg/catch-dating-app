@@ -7106,7 +7106,7 @@
       "name": "CatchScreenBody",
       "status": "active",
       "kind": "pattern",
-      "summary": "Standard non-sliver screen body wrapper that owns page gutters, vertical padding, and optional scrolling.",
+      "summary": "Screen-composition family that owns root and tab body roles, page gutters, vertical rhythm, scrolling, responsive width, and shell clearance.",
       "dart": {
         "symbol": "CatchScreenBody",
         "file": "lib/core/widgets/catch_section_layout.dart",
@@ -7199,11 +7199,54 @@
           "CatchSpacing.screenPb",
           "CatchPageBody",
           "CatchSliverPageBody",
+          "CatchSliverScreenBody",
+          "CatchRootScreenScaffold",
+          "CatchRootScreenScrollView",
+          "CatchTabbedPageScrollView",
           "CatchFormStepBody",
           "CatchResponsiveSectionPage"
         ],
         "goldens": [],
         "members": [
+          {
+            "id": "catch.screen_body.root_screen_scaffold",
+            "symbol": "CatchRootScreenScaffold",
+            "summary": "Root-title screen owner for surface, safe area, one sliver scroll view, semantic body geometry, refresh, field obstruction, responsive width, and terminal shell clearance.",
+            "states": [
+              "standard",
+              "compact",
+              "full-bleed",
+              "responsive-width",
+              "floating-bottom-navigation",
+              "side-navigation"
+            ],
+            "file": "lib/core/widgets/catch_screen_scaffold.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.sliver_screen_body",
+            "symbol": "CatchSliverScreenBody",
+            "summary": "Semantic sliver body used by root and nested-tab scroll owners; resolves the required standard, compact, or full-bleed role and optional content-width lane.",
+            "states": [
+              "standard",
+              "compact",
+              "full-bleed",
+              "responsive-width"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
           {
             "id": "catch.screen_body.form_step_body",
             "symbol": "CatchFormStepBody",
@@ -7296,6 +7339,7 @@
         ],
         "notes": [
           "Use for regular non-sliver route bodies before composing ad hoc page padding.",
+          "Root title destinations use CatchRootScreenScaffold or CatchRootScreenScrollView and declare a semantic body role; pinned peer-tab destinations declare the same role through CatchTabbedPageScrollView.",
           "Screens may override top/bottom rhythm but should not hand-roll the horizontal gutter.",
           "Use CatchResponsiveSectionPage when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
           "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding."

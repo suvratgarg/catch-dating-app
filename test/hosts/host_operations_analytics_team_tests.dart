@@ -80,18 +80,13 @@ void _registerHostOperationsAnalyticsTeamTests() {
     }
 
     expectSharedChrome();
-    final editBodyPadding = tester
-        .widgetList<Padding>(
-          find.ancestor(
-            of: find.byType(HostClubEditTab),
-            matching: find.byType(Padding),
-          ),
-        )
-        .where(
-          (padding) =>
-              padding.padding == CatchInsets.pageBody.copyWith(bottom: 0),
-        );
-    expect(editBodyPadding, hasLength(1));
+    final editBody = tester.widget<CatchSliverScreenBody>(
+      find.ancestor(
+        of: find.byType(HostClubEditTab),
+        matching: find.byType(CatchSliverScreenBody),
+      ),
+    );
+    expect(editBody.layout, CatchScreenBodyLayout.standard);
     final loadedHeader = tester.widget<CatchScreenHeaderTitle>(
       find.byWidgetPredicate(
         (widget) =>

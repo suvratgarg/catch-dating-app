@@ -212,6 +212,93 @@ class CatchSliverPageBody extends StatelessWidget {
   }
 }
 
+/// Semantic body geometry for root and nested-tab screen scroll owners.
+///
+/// The screen family, rather than a feature, resolves these roles to concrete
+/// insets. [standard] is the normal title-to-content rhythm, [compact] is for
+/// dense chrome whose first child already carries some hierarchy, and
+/// [fullBleed] is reserved for intrinsically edge-owned slivers such as maps,
+/// media previews, and conversation lists.
+enum CatchScreenBodyLayout { standard, compact, fullBleed }
+
+/// Canonical sliver body shared by root screens and nested tab pages.
+///
+/// It owns one semantic body inset, the page interaction plane used by field
+/// rows, and the optional responsive content-width clamp. Terminal clearance
+/// remains a sibling owned by the enclosing scroll view so it always spans the
+/// physical viewport.
+class CatchSliverScreenBody extends StatelessWidget {
+  const CatchSliverScreenBody({
+    super.key,
+    required this.layout,
+    required this.slivers,
+    this.constrainToContentWidth = false,
+    this.maxContentExtent = CatchLayout.tabbedPageMaxExtent,
+  }) : assert(slivers.length > 0),
+       assert(maxContentExtent > 0);
+
+  final CatchScreenBodyLayout layout;
+  final List<Widget> slivers;
+  final bool constrainToContentWidth;
+  final double maxContentExtent;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget body = SliverMainAxisGroup(slivers: slivers);
+    final padding = switch (layout) {
+      CatchScreenBodyLayout.standard => CatchInsets.pageBody.copyWith(
+        bottom: 0,
+      ),
+      CatchScreenBodyLayout.compact => CatchInsets.pageBodyCompact.copyWith(
+        bottom: 0,
+      ),
+      CatchScreenBodyLayout.fullBleed => null,
+    };
+    if (padding != null) {
+      body = CatchSliverPageBody(padding: padding, sliver: body);
+    }
+    if (constrainToContentWidth) {
+      body = CatchSliverContentWidth(maxExtent: maxContentExtent, sliver: body);
+    }
+    return body;
+  }
+}
+
+/// Centers one sliver around a semantic content lane on wide viewports while
+/// leaving compact layouts direct and full width.
+class CatchSliverContentWidth extends StatelessWidget {
+  const CatchSliverContentWidth({
+    super.key,
+    required this.sliver,
+    this.maxExtent = CatchLayout.tabbedPageMaxExtent,
+  }) : assert(maxExtent > 0);
+
+  final Widget sliver;
+  final double maxExtent;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverLayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.crossAxisExtent <= maxExtent) return sliver;
+        return SliverCrossAxisGroup(
+          slivers: [
+            const SliverCrossAxisExpanded(
+              flex: 1,
+              sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
+            ),
+            SliverConstrainedCrossAxis(maxExtent: maxExtent, sliver: sliver),
+            const SliverCrossAxisExpanded(
+              flex: 1,
+              sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 /// Box-native terminal clearance for root scroll views.
 class CatchScrollTerminalPadding extends StatelessWidget {
   const CatchScrollTerminalPadding({

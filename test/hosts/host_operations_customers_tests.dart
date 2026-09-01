@@ -10,7 +10,6 @@ void _registerHostOperationsCustomersTests() {
       Scaffold(
         body: HostCustomerRow(
           contact: _customerDirectoryContact(),
-          divider: true,
           onTap: () => tapped = true,
         ),
       ),
@@ -22,13 +21,19 @@ void _registerHostOperationsCustomersTests() {
       findsOne,
     );
     expect(
-      find.descendant(of: row, matching: find.text('8 events attended')),
+      find.descendant(
+        of: row,
+        matching: find.textContaining('8 events attended'),
+      ),
       findsOne,
     );
-    expect(find.descendant(of: row, matching: find.text('Regulars')), findsOne);
+    expect(
+      find.descendant(of: row, matching: find.textContaining('Regulars')),
+      findsOne,
+    );
     expect(
       find.descendant(of: row, matching: find.byType(CatchField)),
-      findsNothing,
+      findsOneWidget,
     );
     expect(
       find.descendant(
@@ -39,7 +44,9 @@ void _registerHostOperationsCustomersTests() {
     );
 
     final name = tester.widget<Text>(find.text('Ananya Rao'));
-    final metadata = tester.widget<Text>(find.text('8 events attended'));
+    final metadata = tester.widget<Text>(
+      find.textContaining('8 events attended'),
+    );
     final avatar = tester.widget<CatchPersonAvatar>(
       find.descendant(of: row, matching: find.byType(CatchPersonAvatar)),
     );
@@ -172,7 +179,6 @@ void _registerHostOperationsCustomersTests() {
       Scaffold(
         body: HostCustomerRow(
           contact: _customerDirectoryContact(hasAmbiguousIdentity: true),
-          divider: false,
           onTap: () {},
         ),
       ),
@@ -193,26 +199,30 @@ void _registerHostOperationsCustomersTests() {
     );
   });
 
-  testWidgets('customer directory uses flat divided rows', (tester) async {
+  testWidgets('customer directory uses approved full-bleed field rows', (
+    tester,
+  ) async {
     await _pumpHostScreen(
       tester,
       Scaffold(
-        body: HostCustomersDirectory(
-          state: HostCustomersDirectoryState(
-            contacts: [
-              _customerDirectoryContact(),
-              _customerDirectoryContact(),
-            ],
-            nextCursor: null,
-            matchCount: 2,
-            matchCountCoverage: HostCustomerMatchCountCoverage.exact,
-            sourceCoverage: HostCustomerDirectoryCoverage.exact,
-            projectionVersion: 1,
+        body: CatchPageBody(
+          child: HostCustomersDirectory(
+            state: HostCustomersDirectoryState(
+              contacts: [
+                _customerDirectoryContact(),
+                _customerDirectoryContact(),
+              ],
+              nextCursor: null,
+              matchCount: 2,
+              matchCountCoverage: HostCustomerMatchCountCoverage.exact,
+              sourceCoverage: HostCustomerDirectoryCoverage.exact,
+              projectionVersion: 1,
+            ),
+            hasActiveQuery: false,
+            onCustomerSelected: (_) {},
+            onLoadMore: null,
+            onRefreshCoverage: () {},
           ),
-          hasActiveQuery: false,
-          onCustomerSelected: (_) {},
-          onLoadMore: null,
-          onRefreshCoverage: () {},
         ),
       ),
     );
@@ -227,23 +237,21 @@ void _registerHostOperationsCustomersTests() {
     );
     expect(
       find.descendant(of: frame, matching: find.byType(CatchDivider)),
-      findsOneWidget,
+      findsNWidgets(2),
     );
 
     final row = find.byType(HostCustomerRow).first;
     final gesture = await tester.startGesture(tester.getCenter(row));
     await tester.pump();
-    expect(
-      tester
-          .widget<ColoredBox>(
-            find.descendant(
-              of: row,
-              matching: find.byKey(CatchRowPressSurface.overlayKey),
-            ),
-          )
-          .color,
-      isNot(Colors.transparent),
+    final overlay = tester.widget<AnimatedContainer>(
+      find.descendant(
+        of: row,
+        matching: find.byKey(CatchField.pressOverlayKey),
+      ),
     );
+    final decoration = overlay.decoration! as BoxDecoration;
+    expect(decoration.color, isNot(Colors.transparent));
+    expect(decoration.borderRadius, BorderRadius.zero);
     await gesture.up();
   });
 
@@ -306,6 +314,13 @@ void _registerHostOperationsCustomersTests() {
     expect(search.placeholder, 'Search by name');
     expect(find.text('SMS reachable'), findsNothing);
     expect(requests.last.search, isNull);
+    final body = tester.widget<CatchSliverScreenBody>(
+      find.ancestor(
+        of: find.byType(HostCustomersDirectory),
+        matching: find.byType(CatchSliverScreenBody),
+      ),
+    );
+    expect(body.layout, CatchScreenBodyLayout.standard);
 
     await tester.tap(searchFinder);
     await pumpFeatureUi(tester);

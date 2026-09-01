@@ -23,7 +23,7 @@ void main() {
       expect(find.byType(SliverConstrainedCrossAxis), findsOneWidget);
       expect(
         tester.getSize(find.byKey(const ValueKey('tabbed-page-frame'))).width,
-        CatchLayout.maxContentWidth + CatchInsets.pageBody.horizontal,
+        CatchLayout.maxContentWidth,
       );
       final contentRect = tester.getRect(
         find.byKey(const ValueKey('tabbed-page-content')),
@@ -34,7 +34,7 @@ void main() {
   );
 
   testWidgets(
-    'CatchTabbedPageScrollView leaves sliver-native pages full bleed by default',
+    'CatchTabbedPageScrollView keeps standard gutters without a width clamp',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(1000, 800);
@@ -48,7 +48,7 @@ void main() {
       expect(find.byType(SliverConstrainedCrossAxis), findsNothing);
       expect(
         tester.getSize(find.byKey(const ValueKey('tabbed-page-frame'))).width,
-        1000,
+        1000 - CatchInsets.pageBody.horizontal,
       );
     },
   );
@@ -100,21 +100,17 @@ Widget _wrap({required bool constrainToContentWidth}) {
       ),
       body: CatchTabbedPageScrollView(
         scrollKey: const PageStorageKey<String>('tabbed-page-test'),
+        bodyLayout: CatchScreenBodyLayout.standard,
         constrainToContentWidth: constrainToContentWidth,
-        slivers: [
+        slivers: const [
           SliverToBoxAdapter(
             child: SizedBox(
-              key: const ValueKey('tabbed-page-frame'),
+              key: ValueKey('tabbed-page-frame'),
               width: double.infinity,
               height: 80,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: CatchInsets.pageBody.left,
-                ),
-                child: const SizedBox(
-                  key: ValueKey('tabbed-page-content'),
-                  width: double.infinity,
-                ),
+              child: SizedBox(
+                key: ValueKey('tabbed-page-content'),
+                width: double.infinity,
               ),
             ),
           ),

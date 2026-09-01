@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.8.5
-updated: 2026-08-29
+version: 1.8.6
+updated: 2026-09-01
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -306,6 +306,13 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
   vertical content has actually scrolled beneath the compact bar. Root tab
   titles are scroll content rather than fixed app bars.
+- Root title screens route through `CatchRootScreenScaffold` (or its
+  parent-scaffold `CatchRootScreenScrollView` variant), and pinned peer-tab
+  screens route through `CatchTabbedScreenScaffold` plus
+  `CatchTabbedPageScrollView`. Every body declares `standard`, `compact`, or
+  `fullBleed` geometry through `CatchScreenBodyLayout`; feature screens do not
+  reconstruct title gaps, page gutters, terminal navigation clearance,
+  responsive content lanes, or state-viewport placement.
 - Compact route bars use the default `CatchTopBar` geometry. Feature screens do
   not override height, safe-area, alignment, gutter, or content padding. A
   detail route whose title is loaded asynchronously carries the known subject

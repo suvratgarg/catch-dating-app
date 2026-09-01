@@ -90,6 +90,46 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Section live'), findsOneWidget);
   });
 
+  testWidgets(
+    'Host Today error stays in the root state viewport without a club subtitle',
+    (tester) async {
+      final club = buildClub(
+        id: 'today-error-club',
+        name: 'Saket Run Club',
+        ownerUserId: _hostUid,
+      );
+
+      await _pumpHostScreen(
+        tester,
+        HostTodayBody(
+          organizer: club,
+          state: HostTodayState(
+            status: HostTodayStatus.error,
+            error: StateError('Event not found'),
+          ),
+          now: DateTime(2026, 6, 15, 12),
+          onRetry: () {},
+          onOpenEvent: (_) {},
+          onOpenAttention: (_) {},
+          onViewEvents: () {},
+          onStartRehearsal: () {},
+        ),
+      );
+
+      expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+      expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.text('Saket Run Club'), findsNothing);
+      expect(
+        find.ancestor(
+          of: find.byType(CatchErrorBody),
+          matching: find.byType(Center),
+        ),
+        findsNothing,
+      );
+    },
+  );
+
   testWidgets('Host Today spotlight reflows at 200 percent text', (
     tester,
   ) async {
@@ -231,6 +271,46 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(
       tester.getCenter(content).dy,
       closeTo(tester.getCenter(emptyState).dy, 0.5),
+    );
+  });
+
+  testWidgets('Host events past-only history starts at standard body rhythm', (
+    tester,
+  ) async {
+    final now = DateTime(2026, 6, 15, 12);
+    final club = buildClub(id: 'history-only-club', ownerUserId: _hostUid);
+    final past = buildEvent(
+      id: 'history-only-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 5, 27, 9),
+      endTime: DateTime(2026, 5, 27, 10),
+    );
+
+    await _pumpHostScreen(
+      tester,
+      HostEventsScreen(now: now),
+      overrides: [
+        ..._hostClubOverrides(
+          owned: [club],
+          timelineEventsByOrganizer: {
+            club.id: [past],
+          },
+        ),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(AsyncData<List<Event>>([past])),
+      ],
+    );
+
+    expect(find.text('SCHEDULE'), findsNothing);
+    final headerRect = tester.getRect(find.byType(CatchScreenHeaderTitle));
+    final historyRect = tester.getRect(find.text('HISTORY'));
+    expect(
+      historyRect.top - headerRect.bottom,
+      closeTo(
+        CatchInsets.pageBody.top + CatchInsets.hostEventSectionLabel.top,
+        0.5,
+      ),
     );
   });
 

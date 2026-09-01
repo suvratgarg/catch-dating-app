@@ -10,8 +10,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
@@ -104,12 +104,14 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
         retryLabel: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
         onRetry: () => context.go(Routes.authScreen.path),
       ),
-      HostTodayRouteStatus.loading => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-          title: context.l10n.hostNavigationToday,
-          divider: scrolledUnder,
-        ),
-        body: const SafeArea(child: HostRouteLoadingBody()),
+      HostTodayRouteStatus.loading => CatchRootScreenScaffold(
+        header: HostTodayHeader(now: _clockNow),
+        bodyLayout: CatchScreenBodyLayout.standard,
+        slivers: const [
+          CatchSliverStateViewport(
+            child: HostRouteLoadingBody(padding: EdgeInsets.zero),
+          ),
+        ],
       ),
       HostTodayRouteStatus.error => CatchErrorScaffold.fromError(
         routeState.error!,
@@ -276,23 +278,16 @@ class HostTodayLoadedRoute extends ConsumerWidget {
       l10n: context.l10n,
     );
 
-    return Scaffold(
-      backgroundColor: CatchTokens.of(context).bg,
-      body: SafeArea(
-        bottom: false,
-        child: HostTodayBody(
-          organizer: organizer,
-          state: todayState,
-          now: clockNow,
-          onRetry: () => ref
-              .read(hostTodayFeedControllerProvider(request).notifier)
-              .retry(),
-          onOpenEvent: (event) => onOpenEvent(organizer, event),
-          onOpenAttention: (item) => onOpenAttention(organizer, item),
-          onViewEvents: onViewEvents,
-          onStartRehearsal: () => onStartRehearsal(organizer),
-        ),
-      ),
+    return HostTodayBody(
+      organizer: organizer,
+      state: todayState,
+      now: clockNow,
+      onRetry: () =>
+          ref.read(hostTodayFeedControllerProvider(request).notifier).retry(),
+      onOpenEvent: (event) => onOpenEvent(organizer, event),
+      onOpenAttention: (item) => onOpenAttention(organizer, item),
+      onViewEvents: onViewEvents,
+      onStartRehearsal: () => onStartRehearsal(organizer),
     );
   }
 }
@@ -307,28 +302,22 @@ class HostTodayOrganizerEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: CatchTokens.of(context).bg,
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            const SliverToBoxAdapter(child: HostTodayHeader()),
-            CatchSliverEmptyState(
-              icon: CatchIcons.groupsOutlined,
-              title:
-                  context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
-              message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-              action: CatchButton(
-                label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-                icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                size: CatchButtonSize.sm,
-                onPressed: onCreateOrganizer,
-              ),
-            ),
-          ],
+    return CatchRootScreenScaffold(
+      header: const HostTodayHeader(),
+      bodyLayout: CatchScreenBodyLayout.standard,
+      slivers: [
+        CatchSliverEmptyState(
+          icon: CatchIcons.groupsOutlined,
+          title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
+          message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+          action: CatchButton(
+            label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+            icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+            size: CatchButtonSize.sm,
+            onPressed: onCreateOrganizer,
+          ),
         ),
-      ),
+      ],
     );
   }
 }

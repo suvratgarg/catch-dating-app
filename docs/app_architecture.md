@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.20.0
+version: 1.21.0
 updated: 2026-09-01
 owner: app_architecture
 status: active
@@ -479,7 +479,7 @@ Screen composition should be predictable:
 ```text
 <Feature>Screen
   -> mutation listener(s), if actions can fail transiently
-  -> Scaffold / SafeArea / route chrome
+  -> one approved screen-family owner
   -> one scroll owner or one body shell
   -> CatchAsyncValueView / CatchAsyncValueSliver / typed UI-state adapter
   -> <Feature>Body / sliver body / state-specific widgets
@@ -495,6 +495,41 @@ If a parent owns a `CustomScrollView`, async loading/error/empty/data branches
 should usually be sliver-native. Box widgets can still be used at composition
 boundaries through `SliverToBoxAdapter`, but growing repeated content should use
 lazy slivers.
+
+### Exhibit ARCH-SCREEN-COMPOSITION-001: Semantic Screen Composition
+
+<!-- exhibit-freshness: ARCH-SCREEN-COMPOSITION-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+
+Screen composition is a closed family, not a per-feature assembly exercise:
+
+- A root shell destination uses `CatchRootScreenScaffold`, or
+  `CatchRootScreenScrollView` when an adaptive parent already owns the
+  `Scaffold`. It provides a scroll-content header, an explicit
+  `CatchScreenBodyLayout`, and body slivers. The owner supplies the safe area,
+  single scroll view, semantic body gutter, optional responsive content lane,
+  field-obstruction scope, refresh wrapper, and terminal shell clearance.
+- A root destination with pinned peer tabs uses `CatchTabbedScreenScaffold`
+  and one `CatchTabbedPageScrollView` per page. Every page must declare
+  `bodyLayout`; overlap injection, restoration, focus isolation, body geometry,
+  refresh, and terminal clearance remain shared mechanics.
+- A section-composed page without root-title chrome uses
+  `CatchResponsiveSectionPage`; master-detail workspaces use
+  `CatchAdaptiveMasterDetailLayout` at their actual responsive boundary.
+- A pushed utility or detail route uses `CatchRouteScaffold` with its compact
+  `CatchTopBar`. A pushed route must not be restyled to resemble a root title.
+
+`CatchScreenBodyLayout.standard` is the normal title/tab-to-content rhythm,
+`compact` is reserved for dense chrome whose first child already carries
+hierarchy, and `fullBleed` is for intrinsically edge-owned slivers such as a
+conversation list or embedded preview. Feature code selects a role; it does
+not restate its `EdgeInsets`, title gap, terminal spacer, or field interaction
+plane. Loading, error, empty, and populated branches of one destination use the
+same family owner so state changes cannot move the screen geometry.
+
+The contract manifest at `tool/design/tab_root_scroll_contracts.json` records
+every shell branch and its real composition owners. Its scanner rejects an
+unregistered branch, missing semantic owner/body role, forbidden raw root
+composition, and raw sliver empty/error viewport ownership.
 
 ## App Shell Chrome Policy
 
@@ -920,7 +955,9 @@ For `NestedScrollView` plus pinned tab rows:
 - Each tab body starts with the matching `SliverOverlapInjector`.
 - Body padding belongs to the tab body, not to the pinned tab row.
 - Route-owned tab pages use `CatchTabbedPageScrollView`. Box-content pages opt
-  into `constrainToContentWidth`; it preserves the canonical 600 px content
+  into an explicit `bodyLayout` and may opt into `constrainToContentWidth`; the
+  body role owns title/tab-to-content rhythm and page gutters, while the width
+  option preserves the canonical 600 px content
   lane plus page gutters only when the viewport has surplus width. A page may
   supply a larger semantic `maxContentExtent` when its records carry multiple
   operational columns or summaries; this changes only the centered lane, not
@@ -953,19 +990,21 @@ preview under one route-owned tab shell:
 ```dart
 CatchTabbedPageScrollView(
   scrollKey: editScrollKey,
+  bodyLayout: CatchScreenBodyLayout.standard,
   constrainToContentWidth: true,
   slivers: editSlivers,
 )
 
 CatchTabbedPageScrollView(
   scrollKey: previewScrollKey,
+  bodyLayout: CatchScreenBodyLayout.fullBleed,
   slivers: previewSlivers, // Full-bleed and sliver-native.
 )
 ```
 
 `CatchTabbedPageScrollView` owns overlap injection, focus isolation, independent
-offset restoration, and terminal clearance. Feature pages own their slivers,
-refresh policy, controllers, and typed tab state. Do not reintroduce
+offset restoration, semantic body geometry, and terminal clearance. Feature
+pages own their slivers, refresh policy, controllers, and typed tab state. Do not reintroduce
 feature-local `Center`/`ConstrainedBox` wrappers or box the Preview slivers.
 
 ### Current Screen Layout Decisions

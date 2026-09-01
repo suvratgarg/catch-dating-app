@@ -882,6 +882,65 @@ void _registerCatchPrimitivesSearchMenuTests() {
     },
   );
 
+  testWidgets(
+    'CatchMenuAnchor constrains a long lower menu to anchor-relative space',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(400, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: AppShellActiveTab(
+            index: 0,
+            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomOverlayInset: 100,
+            child: Scaffold(
+              body: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 120),
+                  child: SizedBox(
+                    width: 320,
+                    child: CatchMenuAnchor<int>(
+                      items: [
+                        for (var index = 0; index < 20; index++)
+                          CatchMenuItem(value: index, label: 'Option $index'),
+                      ],
+                      builder: (context, controller, child) => ElevatedButton(
+                        onPressed: controller.open,
+                        child: const Text('Open lower long menu'),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open lower long menu'));
+      await pumpFeatureUi(tester);
+
+      final menu = find.byType(CatchMenu<int>);
+      expect(menu, findsOneWidget);
+      final menuRect = tester.getRect(menu);
+      expect(menuRect.top, greaterThanOrEqualTo(CatchLayout.menuViewportInset));
+      expect(menuRect.bottom, lessThanOrEqualTo(700));
+      final scrollable = find.descendant(
+        of: menu,
+        matching: find.byType(Scrollable),
+      );
+      expect(
+        tester.state<ScrollableState>(scrollable).position.maxScrollExtent,
+        greaterThan(0),
+      );
+    },
+  );
+
   testWidgets('CatchMenuAnchor flips short menus flush above their trigger', (
     tester,
   ) async {

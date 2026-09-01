@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
@@ -27,12 +29,18 @@ void main() {
     await tester.pump();
 
     expect(find.text('Dress rehearsal'), findsWidgets);
+    expect(find.byType(CatchTopBar), findsOneWidget);
+    expect(find.byType(CatchScreenHeaderTitle), findsNothing);
+    expect(find.byType(CatchResponsiveSectionPage), findsOneWidget);
     expect(
       find.textContaining('No real guests, messages, payments'),
       findsOneWidget,
     );
     expect(find.text('Smooth run'), findsOneWidget);
-    await tester.drag(find.byType(ListView), const Offset(0, -500));
+    await tester.drag(
+      find.byType(SingleChildScrollView),
+      const Offset(0, -500),
+    );
     await tester.pump();
     expect(find.text('Create rehearsal'), findsOneWidget);
   });

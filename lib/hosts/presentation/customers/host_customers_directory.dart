@@ -498,14 +498,13 @@ class HostCustomersDirectory extends StatelessWidget {
             layout: CatchEmptyStateLayout.inline,
           )
         else
-          CatchSection.divided(
+          CatchSection.fieldRows(
             key: const ValueKey('host-customers-directory-list'),
             first: true,
             children: [
               for (final contact in contacts)
                 HostCustomerRow(
                   contact: contact,
-                  divider: false,
                   onTap: () => onCustomerSelected(contact),
                 ),
             ],
