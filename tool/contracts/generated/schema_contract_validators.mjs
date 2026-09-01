@@ -37,6 +37,7 @@ import {
   organizerContactTagVocabularyDocumentSchema,
   organizerSavedAudienceDocumentSchema,
   organizerManualSendTaskDocumentSchema,
+  organizerAttentionItemDocumentSchema,
   organizerContactIdentityLinkDocumentSchema,
   organizerContactIdentityClaimDocumentSchema,
   organizerContactEventEdgeDocumentSchema,
@@ -403,6 +404,8 @@ import {
   importOrganizerApplicationsCallableResponseSchema,
   listOrganizerApplicationsCallablePayloadSchema,
   listOrganizerApplicationsCallableResponseSchema,
+  listOrganizerAttentionItemsCallablePayloadSchema,
+  listOrganizerAttentionItemsCallableResponseSchema,
   getOrganizerApplicationDetailCallablePayloadSchema,
   getOrganizerApplicationDetailCallableResponseSchema,
   reviewOrganizerApplicationCallablePayloadSchema,
@@ -581,6 +584,7 @@ export const validateOrganizerContactNoteDocument = ajv.compile(organizerContact
 export const validateOrganizerContactTagVocabularyDocument = ajv.compile(organizerContactTagVocabularyDocumentSchema);
 export const validateOrganizerSavedAudienceDocument = ajv.compile(organizerSavedAudienceDocumentSchema);
 export const validateOrganizerManualSendTaskDocument = ajv.compile(organizerManualSendTaskDocumentSchema);
+export const validateOrganizerAttentionItemDocument = ajv.compile(organizerAttentionItemDocumentSchema);
 export const validateOrganizerContactIdentityLinkDocument = ajv.compile(organizerContactIdentityLinkDocumentSchema);
 export const validateOrganizerContactIdentityClaimDocument = ajv.compile(organizerContactIdentityClaimDocumentSchema);
 export const validateOrganizerContactEventEdgeDocument = ajv.compile(organizerContactEventEdgeDocumentSchema);
@@ -947,6 +951,8 @@ export const validateImportOrganizerApplicationsCallablePayload = ajv.compile(im
 export const validateImportOrganizerApplicationsCallableResponse = ajv.compile(importOrganizerApplicationsCallableResponseSchema);
 export const validateListOrganizerApplicationsCallablePayload = ajv.compile(listOrganizerApplicationsCallablePayloadSchema);
 export const validateListOrganizerApplicationsCallableResponse = ajv.compile(listOrganizerApplicationsCallableResponseSchema);
+export const validateListOrganizerAttentionItemsCallablePayload = ajv.compile(listOrganizerAttentionItemsCallablePayloadSchema);
+export const validateListOrganizerAttentionItemsCallableResponse = ajv.compile(listOrganizerAttentionItemsCallableResponseSchema);
 export const validateGetOrganizerApplicationDetailCallablePayload = ajv.compile(getOrganizerApplicationDetailCallablePayloadSchema);
 export const validateGetOrganizerApplicationDetailCallableResponse = ajv.compile(getOrganizerApplicationDetailCallableResponseSchema);
 export const validateReviewOrganizerApplicationCallablePayload = ajv.compile(reviewOrganizerApplicationCallablePayloadSchema);

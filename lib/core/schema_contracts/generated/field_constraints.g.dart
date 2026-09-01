@@ -30403,6 +30403,282 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listOrganizerAttentionItemsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseCoverage = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.coverage',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 14,
+    maxItems: 14,
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseCoverageItemsKind = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.coverage.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventLiveOperations', 'eventWaitlistReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseCoverageItemsReason = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.coverage.items.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseCoverageItemsState = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.coverage.items.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['complete', 'clientMergeRequired', 'shortcutOnly', 'blockedMissingTruth'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseGeneratedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.generatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseHorizonEndsAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.horizonEndsAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItems = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 400,
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsAssignedHostUid = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.assignedHostUid',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsAttentionId = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.attentionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsBlocking = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.blocking',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsConsequence = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.consequence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['blocksLiveOperation', 'risksGuestExperience', 'risksRevenue', 'delaysResponse', 'degradesAutomation', 'requiresReconciliation', 'preparationIncomplete', 'informational'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsContextCount = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.context.count',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsContextErrorCode = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.context.errorCode',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsContextEventName = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.context.eventName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsContextProvider = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.context.provider',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsContextSubjectLabel = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.context.subjectLabel',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsDedupeKey = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.dedupeKey',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsDestinationApplicationId = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.destination.applicationId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsDestinationEventId = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.destination.eventId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsDestinationFormId = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.destination.formId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsDestinationRoute = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.destination.route',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostEventManage', 'hostApplications', 'hostOrganizerPayments', 'hostAudienceForms', 'hostInbox', 'hostDressRehearsal', 'hostEvents'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsDestinationSection = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.destination.section',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsDestinationThreadId = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.destination.threadId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsDueAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.dueAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsEventId = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.eventId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.expiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsKind = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventLiveOperations', 'eventWaitlistReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsOpenedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.openedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsPolicyVersion = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.policyVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsResolutionVersion = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.resolutionVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsScope = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.scope',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'application', 'form', 'thread', 'account'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsSourceId = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.sourceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsSourceOwner = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.sourceOwner',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['events', 'organizerApplications', 'providerSyncRuns', 'organizerFormAutomationRuns', 'hostPaymentAccounts', 'hostAttendanceOutbox', 'eventSuccessPlans', 'eventRehearsals', 'eventStaffGrants', 'organizerFormResponses', 'organizerWhatsappThreads', 'eventAttendees'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsSourceRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.sourceRevision',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.status',
+    required: true,
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseItemsItemsUrgency = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.items.items.urgency',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['immediate', 'soon', 'upcoming'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerAttentionItemsCallableResponsePolicyVersion = CatchContractFieldConstraints(
+    path: 'listOrganizerAttentionItemsCallableResponse.policyVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
   static const listOrganizerCampaignsCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'listOrganizerCampaignsCallablePayload.cursor',
     maxLength: 1000,
@@ -35820,6 +36096,307 @@ abstract final class CatchContractConstraints {
     path: 'organizerApplicationSourceMappingDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerAttentionItemDocumentActionExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.actionExpiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerAttentionItemDocumentActionExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.actionExpiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerAttentionItemDocumentAssignedHostUid = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.assignedHostUid',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentAttentionId = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.attentionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentBlocking = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.blocking',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerAttentionItemDocumentConsequence = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.consequence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['blocksLiveOperation', 'risksGuestExperience', 'risksRevenue', 'delaysResponse', 'degradesAutomation', 'requiresReconciliation', 'preparationIncomplete', 'informational'],
+  );
+
+  static const organizerAttentionItemDocumentContextCount = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.context.count',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const organizerAttentionItemDocumentContextErrorCode = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.context.errorCode',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentContextEventName = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.context.eventName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentContextProvider = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.context.provider',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentContextSubjectLabel = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.context.subjectLabel',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerAttentionItemDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerAttentionItemDocumentDedupeKey = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.dedupeKey',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentDestinationApplicationId = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.destination.applicationId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentDestinationEventId = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.destination.eventId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentDestinationFormId = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.destination.formId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentDestinationRoute = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.destination.route',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostEventManage', 'hostApplications', 'hostOrganizerPayments', 'hostAudienceForms', 'hostInbox', 'hostDressRehearsal', 'hostEvents'],
+  );
+
+  static const organizerAttentionItemDocumentDestinationSection = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.destination.section',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentDestinationThreadId = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.destination.threadId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentDueAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.dueAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerAttentionItemDocumentDueAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.dueAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerAttentionItemDocumentEventId = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.eventId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentKind = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventLiveOperations', 'eventWaitlistReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation'],
+  );
+
+  static const organizerAttentionItemDocumentOpenedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.openedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerAttentionItemDocumentOpenedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.openedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerAttentionItemDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentPolicyVersion = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.policyVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const organizerAttentionItemDocumentPurgeAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.purgeAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerAttentionItemDocumentPurgeAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.purgeAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerAttentionItemDocumentResolutionVersion = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.resolutionVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const organizerAttentionItemDocumentResolvedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.resolvedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerAttentionItemDocumentResolvedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.resolvedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerAttentionItemDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.schemaVersion',
+    required: true,
+  );
+
+  static const organizerAttentionItemDocumentScope = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.scope',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'application', 'form', 'thread', 'account'],
+  );
+
+  static const organizerAttentionItemDocumentSourceId = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.sourceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentSourceOwner = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.sourceOwner',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['events', 'organizerApplications', 'providerSyncRuns', 'organizerFormAutomationRuns', 'hostPaymentAccounts', 'hostAttendanceOutbox', 'eventSuccessPlans', 'eventRehearsals', 'eventStaffGrants', 'organizerFormResponses', 'organizerWhatsappThreads', 'eventAttendees'],
+  );
+
+  static const organizerAttentionItemDocumentSourceRevision = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.sourceRevision',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerAttentionItemDocumentSourceUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.sourceUpdatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerAttentionItemDocumentSourceUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.sourceUpdatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerAttentionItemDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['open', 'resolved', 'expired', 'superseded'],
+  );
+
+  static const organizerAttentionItemDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerAttentionItemDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerAttentionItemDocumentUrgency = CatchContractFieldConstraints(
+    path: 'organizerAttentionItemDocument.urgency',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['immediate', 'soon', 'upcoming'],
   );
 
   static const organizerAudienceProjectionReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -65506,6 +66083,45 @@ abstract final class CatchContractConstraints {
     'listOrganizerApplicationsCallableResponse.applications.items.targetKind': listOrganizerApplicationsCallableResponseApplicationsItemsTargetKind,
     'listOrganizerApplicationsCallableResponse.nextCursor': listOrganizerApplicationsCallableResponseNextCursor,
     'listOrganizerApplicationsCallableResponse.organizerId': listOrganizerApplicationsCallableResponseOrganizerId,
+    'listOrganizerAttentionItemsCallablePayload.organizerId': listOrganizerAttentionItemsCallablePayloadOrganizerId,
+    'listOrganizerAttentionItemsCallableResponse.coverage': listOrganizerAttentionItemsCallableResponseCoverage,
+    'listOrganizerAttentionItemsCallableResponse.coverage.items.kind': listOrganizerAttentionItemsCallableResponseCoverageItemsKind,
+    'listOrganizerAttentionItemsCallableResponse.coverage.items.reason': listOrganizerAttentionItemsCallableResponseCoverageItemsReason,
+    'listOrganizerAttentionItemsCallableResponse.coverage.items.state': listOrganizerAttentionItemsCallableResponseCoverageItemsState,
+    'listOrganizerAttentionItemsCallableResponse.generatedAtMillis': listOrganizerAttentionItemsCallableResponseGeneratedAtMillis,
+    'listOrganizerAttentionItemsCallableResponse.horizonEndsAtMillis': listOrganizerAttentionItemsCallableResponseHorizonEndsAtMillis,
+    'listOrganizerAttentionItemsCallableResponse.items': listOrganizerAttentionItemsCallableResponseItems,
+    'listOrganizerAttentionItemsCallableResponse.items.items.assignedHostUid': listOrganizerAttentionItemsCallableResponseItemsItemsAssignedHostUid,
+    'listOrganizerAttentionItemsCallableResponse.items.items.attentionId': listOrganizerAttentionItemsCallableResponseItemsItemsAttentionId,
+    'listOrganizerAttentionItemsCallableResponse.items.items.blocking': listOrganizerAttentionItemsCallableResponseItemsItemsBlocking,
+    'listOrganizerAttentionItemsCallableResponse.items.items.consequence': listOrganizerAttentionItemsCallableResponseItemsItemsConsequence,
+    'listOrganizerAttentionItemsCallableResponse.items.items.context.count': listOrganizerAttentionItemsCallableResponseItemsItemsContextCount,
+    'listOrganizerAttentionItemsCallableResponse.items.items.context.errorCode': listOrganizerAttentionItemsCallableResponseItemsItemsContextErrorCode,
+    'listOrganizerAttentionItemsCallableResponse.items.items.context.eventName': listOrganizerAttentionItemsCallableResponseItemsItemsContextEventName,
+    'listOrganizerAttentionItemsCallableResponse.items.items.context.provider': listOrganizerAttentionItemsCallableResponseItemsItemsContextProvider,
+    'listOrganizerAttentionItemsCallableResponse.items.items.context.subjectLabel': listOrganizerAttentionItemsCallableResponseItemsItemsContextSubjectLabel,
+    'listOrganizerAttentionItemsCallableResponse.items.items.dedupeKey': listOrganizerAttentionItemsCallableResponseItemsItemsDedupeKey,
+    'listOrganizerAttentionItemsCallableResponse.items.items.destination.applicationId': listOrganizerAttentionItemsCallableResponseItemsItemsDestinationApplicationId,
+    'listOrganizerAttentionItemsCallableResponse.items.items.destination.eventId': listOrganizerAttentionItemsCallableResponseItemsItemsDestinationEventId,
+    'listOrganizerAttentionItemsCallableResponse.items.items.destination.formId': listOrganizerAttentionItemsCallableResponseItemsItemsDestinationFormId,
+    'listOrganizerAttentionItemsCallableResponse.items.items.destination.route': listOrganizerAttentionItemsCallableResponseItemsItemsDestinationRoute,
+    'listOrganizerAttentionItemsCallableResponse.items.items.destination.section': listOrganizerAttentionItemsCallableResponseItemsItemsDestinationSection,
+    'listOrganizerAttentionItemsCallableResponse.items.items.destination.threadId': listOrganizerAttentionItemsCallableResponseItemsItemsDestinationThreadId,
+    'listOrganizerAttentionItemsCallableResponse.items.items.dueAtMillis': listOrganizerAttentionItemsCallableResponseItemsItemsDueAtMillis,
+    'listOrganizerAttentionItemsCallableResponse.items.items.eventId': listOrganizerAttentionItemsCallableResponseItemsItemsEventId,
+    'listOrganizerAttentionItemsCallableResponse.items.items.expiresAtMillis': listOrganizerAttentionItemsCallableResponseItemsItemsExpiresAtMillis,
+    'listOrganizerAttentionItemsCallableResponse.items.items.kind': listOrganizerAttentionItemsCallableResponseItemsItemsKind,
+    'listOrganizerAttentionItemsCallableResponse.items.items.openedAtMillis': listOrganizerAttentionItemsCallableResponseItemsItemsOpenedAtMillis,
+    'listOrganizerAttentionItemsCallableResponse.items.items.policyVersion': listOrganizerAttentionItemsCallableResponseItemsItemsPolicyVersion,
+    'listOrganizerAttentionItemsCallableResponse.items.items.resolutionVersion': listOrganizerAttentionItemsCallableResponseItemsItemsResolutionVersion,
+    'listOrganizerAttentionItemsCallableResponse.items.items.scope': listOrganizerAttentionItemsCallableResponseItemsItemsScope,
+    'listOrganizerAttentionItemsCallableResponse.items.items.sourceId': listOrganizerAttentionItemsCallableResponseItemsItemsSourceId,
+    'listOrganizerAttentionItemsCallableResponse.items.items.sourceOwner': listOrganizerAttentionItemsCallableResponseItemsItemsSourceOwner,
+    'listOrganizerAttentionItemsCallableResponse.items.items.sourceRevision': listOrganizerAttentionItemsCallableResponseItemsItemsSourceRevision,
+    'listOrganizerAttentionItemsCallableResponse.items.items.status': listOrganizerAttentionItemsCallableResponseItemsItemsStatus,
+    'listOrganizerAttentionItemsCallableResponse.items.items.urgency': listOrganizerAttentionItemsCallableResponseItemsItemsUrgency,
+    'listOrganizerAttentionItemsCallableResponse.organizerId': listOrganizerAttentionItemsCallableResponseOrganizerId,
+    'listOrganizerAttentionItemsCallableResponse.policyVersion': listOrganizerAttentionItemsCallableResponsePolicyVersion,
     'listOrganizerCampaignsCallablePayload.cursor': listOrganizerCampaignsCallablePayloadCursor,
     'listOrganizerCampaignsCallablePayload.limit': listOrganizerCampaignsCallablePayloadLimit,
     'listOrganizerCampaignsCallablePayload.organizerId': listOrganizerCampaignsCallablePayloadOrganizerId,
@@ -66245,6 +66861,50 @@ abstract final class CatchContractConstraints {
     'organizerApplicationSourceMappingDocument.sourceKind': organizerApplicationSourceMappingDocumentSourceKind,
     'organizerApplicationSourceMappingDocument.updatedAt._nanoseconds': organizerApplicationSourceMappingDocumentUpdatedAtNanoseconds,
     'organizerApplicationSourceMappingDocument.updatedAt._seconds': organizerApplicationSourceMappingDocumentUpdatedAtSeconds,
+    'organizerAttentionItemDocument.actionExpiresAt._nanoseconds': organizerAttentionItemDocumentActionExpiresAtNanoseconds,
+    'organizerAttentionItemDocument.actionExpiresAt._seconds': organizerAttentionItemDocumentActionExpiresAtSeconds,
+    'organizerAttentionItemDocument.assignedHostUid': organizerAttentionItemDocumentAssignedHostUid,
+    'organizerAttentionItemDocument.attentionId': organizerAttentionItemDocumentAttentionId,
+    'organizerAttentionItemDocument.blocking': organizerAttentionItemDocumentBlocking,
+    'organizerAttentionItemDocument.consequence': organizerAttentionItemDocumentConsequence,
+    'organizerAttentionItemDocument.context.count': organizerAttentionItemDocumentContextCount,
+    'organizerAttentionItemDocument.context.errorCode': organizerAttentionItemDocumentContextErrorCode,
+    'organizerAttentionItemDocument.context.eventName': organizerAttentionItemDocumentContextEventName,
+    'organizerAttentionItemDocument.context.provider': organizerAttentionItemDocumentContextProvider,
+    'organizerAttentionItemDocument.context.subjectLabel': organizerAttentionItemDocumentContextSubjectLabel,
+    'organizerAttentionItemDocument.createdAt._nanoseconds': organizerAttentionItemDocumentCreatedAtNanoseconds,
+    'organizerAttentionItemDocument.createdAt._seconds': organizerAttentionItemDocumentCreatedAtSeconds,
+    'organizerAttentionItemDocument.dedupeKey': organizerAttentionItemDocumentDedupeKey,
+    'organizerAttentionItemDocument.destination.applicationId': organizerAttentionItemDocumentDestinationApplicationId,
+    'organizerAttentionItemDocument.destination.eventId': organizerAttentionItemDocumentDestinationEventId,
+    'organizerAttentionItemDocument.destination.formId': organizerAttentionItemDocumentDestinationFormId,
+    'organizerAttentionItemDocument.destination.route': organizerAttentionItemDocumentDestinationRoute,
+    'organizerAttentionItemDocument.destination.section': organizerAttentionItemDocumentDestinationSection,
+    'organizerAttentionItemDocument.destination.threadId': organizerAttentionItemDocumentDestinationThreadId,
+    'organizerAttentionItemDocument.dueAt._nanoseconds': organizerAttentionItemDocumentDueAtNanoseconds,
+    'organizerAttentionItemDocument.dueAt._seconds': organizerAttentionItemDocumentDueAtSeconds,
+    'organizerAttentionItemDocument.eventId': organizerAttentionItemDocumentEventId,
+    'organizerAttentionItemDocument.kind': organizerAttentionItemDocumentKind,
+    'organizerAttentionItemDocument.openedAt._nanoseconds': organizerAttentionItemDocumentOpenedAtNanoseconds,
+    'organizerAttentionItemDocument.openedAt._seconds': organizerAttentionItemDocumentOpenedAtSeconds,
+    'organizerAttentionItemDocument.organizerId': organizerAttentionItemDocumentOrganizerId,
+    'organizerAttentionItemDocument.policyVersion': organizerAttentionItemDocumentPolicyVersion,
+    'organizerAttentionItemDocument.purgeAt._nanoseconds': organizerAttentionItemDocumentPurgeAtNanoseconds,
+    'organizerAttentionItemDocument.purgeAt._seconds': organizerAttentionItemDocumentPurgeAtSeconds,
+    'organizerAttentionItemDocument.resolutionVersion': organizerAttentionItemDocumentResolutionVersion,
+    'organizerAttentionItemDocument.resolvedAt._nanoseconds': organizerAttentionItemDocumentResolvedAtNanoseconds,
+    'organizerAttentionItemDocument.resolvedAt._seconds': organizerAttentionItemDocumentResolvedAtSeconds,
+    'organizerAttentionItemDocument.schemaVersion': organizerAttentionItemDocumentSchemaVersion,
+    'organizerAttentionItemDocument.scope': organizerAttentionItemDocumentScope,
+    'organizerAttentionItemDocument.sourceId': organizerAttentionItemDocumentSourceId,
+    'organizerAttentionItemDocument.sourceOwner': organizerAttentionItemDocumentSourceOwner,
+    'organizerAttentionItemDocument.sourceRevision': organizerAttentionItemDocumentSourceRevision,
+    'organizerAttentionItemDocument.sourceUpdatedAt._nanoseconds': organizerAttentionItemDocumentSourceUpdatedAtNanoseconds,
+    'organizerAttentionItemDocument.sourceUpdatedAt._seconds': organizerAttentionItemDocumentSourceUpdatedAtSeconds,
+    'organizerAttentionItemDocument.status': organizerAttentionItemDocumentStatus,
+    'organizerAttentionItemDocument.updatedAt._nanoseconds': organizerAttentionItemDocumentUpdatedAtNanoseconds,
+    'organizerAttentionItemDocument.updatedAt._seconds': organizerAttentionItemDocumentUpdatedAtSeconds,
+    'organizerAttentionItemDocument.urgency': organizerAttentionItemDocumentUrgency,
     'organizerAudienceProjectionReceiptDocument.createdAt._nanoseconds': organizerAudienceProjectionReceiptDocumentCreatedAtNanoseconds,
     'organizerAudienceProjectionReceiptDocument.createdAt._seconds': organizerAudienceProjectionReceiptDocumentCreatedAtSeconds,
     'organizerAudienceProjectionReceiptDocument.eventId': organizerAudienceProjectionReceiptDocumentEventId,

@@ -180,6 +180,20 @@ removed by the item that owns its destination.
 | A4 | Extract Inbox ownership and its Inbox/Sends modes while preserving conversation and composer state | `pending` |
 | A5 | Extract Organizer ownership, then reduce `lib/hosts/presentation/` to intentional shared Host presentation seams | `pending` |
 
+## Today attention-system checklist
+
+This is the data and architecture gate before visual closeout of the first tab.
+It keeps queue policy out of widgets and makes unsupported archetypes visible
+instead of silently deriving them from incomplete fields.
+
+| Item | Delivery unit | Status |
+|---|---|---|
+| B0 | Add the exhaustive policy catalog, evaluated projection/callable schemas, generated contract outputs, rules, indexes, fixtures, and owner documentation | `complete` |
+| B1 | Implement the manager-authorized read-through reconciler for every source-ready server kind, with bounded fail-closed scans and resolution tests | `pending` |
+| B2 | Replace Today’s event-only derivation with the callable projection plus the local attendance outbox merge; preserve Dress Rehearsal as a shortcut | `pending` |
+| B3 | Add machine-readable responsibility contracts for the five top-level Host features and generate their local overview Markdown plus a drift check | `pending` |
+| B4 | Align Today’s compact and wide visual states with the approved renders, run runtime captures, and close the first tab | `pending` |
+
 ### A1 boundary
 
 - `/host/today` constructs `HostTodayScreen` directly.
@@ -595,9 +609,11 @@ the Inbox and Sends modes. These statements describe committed rollout source
 and local verification only; no merge, deployment, or distribution claim is
 made here.
 
-Feature-ownership hardening is active. A1 is complete: Today is now a direct
-route-owned vertical slice, its truthful attention derivation is domain-owned,
-the shared event timeline provider has entered the Events data feature, and
-Dress Rehearsal is a dedicated Today action rather than an event-creation
-choice. A2 is next and will move the remaining Events presentation/state owners
-before deleting the legacy combined Home compatibility seam.
+Feature-ownership hardening is active. A1 and A2 are complete: Today and Events
+are direct route-owned vertical slices with separate screen state, view models,
+and controllers. Today owns a bounded feed over the shared event repository;
+Events owns the full timeline and inventory. Dress Rehearsal is a dedicated
+Today action, and the legacy combined Home compatibility surface is gone. B0
+now defines the source-backed attention contract; B1 is next and implements
+the server reconciler before Flutter consumes it. A3-A5 remain intentionally
+pending.

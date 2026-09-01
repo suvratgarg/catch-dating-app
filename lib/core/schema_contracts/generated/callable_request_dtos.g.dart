@@ -125,6 +125,7 @@ export 'callables/import_event_attendees_callable_request.g.dart';
 export 'callables/import_organizer_applications_callable_request.g.dart';
 export 'callables/inject_event_rehearsal_behavior_callable_request.g.dart';
 export 'callables/list_organizer_applications_callable_request.g.dart';
+export 'callables/list_organizer_attention_items_callable_request.g.dart';
 export 'callables/list_organizer_campaigns_callable_request.g.dart';
 export 'callables/list_organizer_contact_merge_candidates_callable_request.g.dart';
 export 'callables/list_organizer_contacts_callable_request.g.dart';

@@ -636,6 +636,16 @@
       ]
     },
     {
+      "collectionGroup": "organizerAttentionItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "dueAt", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerCampaigns",
       "queryScope": "COLLECTION",
       "fields": [
@@ -1399,6 +1409,16 @@
     {
       "collectionGroup": "providerSyncRuns",
       "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {"order": "ASCENDING", "queryScope": "COLLECTION"},
+        {"order": "DESCENDING", "queryScope": "COLLECTION"},
+        {"arrayConfig": "CONTAINS", "queryScope": "COLLECTION"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerAttentionItems",
+      "fieldPath": "purgeAt",
       "ttl": true,
       "indexes": [
         {"order": "ASCENDING", "queryScope": "COLLECTION"},

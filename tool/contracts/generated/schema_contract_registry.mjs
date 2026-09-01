@@ -15194,6 +15194,495 @@ export const organizerManualSendTaskDocumentSchema = {
   }
 };
 
+export const organizerAttentionItemDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_attention_items.schema.json",
+  "title": "OrganizerAttentionItemDocument",
+  "description": "Server-owned evaluated Host Today attention projection. Executable trigger, resolution, permission, deadline, and dedupe policy remains versioned in the Host attention catalog rather than embedded as prose in each document.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerAttentionItems",
+  "x-firestore-path": "organizerAttentionItems/{attentionId}",
+  "x-document-id-field": "attentionId",
+  "x-owner": "listOrganizerAttentionItems read-through reconciliation",
+  "required": [
+    "schemaVersion",
+    "attentionId",
+    "organizerId",
+    "kind",
+    "scope",
+    "sourceOwner",
+    "sourceId",
+    "sourceRevision",
+    "eventId",
+    "status",
+    "consequence",
+    "blocking",
+    "urgency",
+    "destination",
+    "context",
+    "dedupeKey",
+    "policyVersion",
+    "resolutionVersion",
+    "assignedHostUid",
+    "openedAt",
+    "dueAt",
+    "actionExpiresAt",
+    "sourceUpdatedAt",
+    "createdAt",
+    "updatedAt",
+    "resolvedAt",
+    "purgeAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "attentionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "eventLiveOperations",
+        "eventWaitlistReview",
+        "applicationReview",
+        "providerSyncFailure",
+        "formAutomationFailure",
+        "payoutSetup",
+        "attendanceSync",
+        "dressRehearsal",
+        "eventSuccessPreparation",
+        "roomLayoutSetup",
+        "eventStaffing",
+        "formResponseReview",
+        "inboxReply",
+        "postEventReconciliation"
+      ],
+      "x-catch-catalog": "../catalogs/host_attention_policies.json",
+      "x-catch-ownership": "server-only"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "organizer",
+        "event",
+        "application",
+        "form",
+        "thread",
+        "account"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "sourceOwner": {
+      "type": "string",
+      "enum": [
+        "events",
+        "organizerApplications",
+        "providerSyncRuns",
+        "organizerFormAutomationRuns",
+        "hostPaymentAccounts",
+        "hostAttendanceOutbox",
+        "eventSuccessPlans",
+        "eventRehearsals",
+        "eventStaffGrants",
+        "organizerFormResponses",
+        "organizerWhatsappThreads",
+        "eventAttendees"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "sourceRevision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "resolved",
+        "expired",
+        "superseded"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "consequence": {
+      "type": "string",
+      "enum": [
+        "blocksLiveOperation",
+        "risksGuestExperience",
+        "risksRevenue",
+        "delaysResponse",
+        "degradesAutomation",
+        "requiresReconciliation",
+        "preparationIncomplete",
+        "informational"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "blocking": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "urgency": {
+      "type": "string",
+      "enum": [
+        "immediate",
+        "soon",
+        "upcoming"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route",
+        "section",
+        "eventId",
+        "applicationId",
+        "formId",
+        "threadId"
+      ],
+      "properties": {
+        "route": {
+          "type": "string",
+          "enum": [
+            "hostEventManage",
+            "hostApplications",
+            "hostOrganizerPayments",
+            "hostAudienceForms",
+            "hostInbox",
+            "hostDressRehearsal",
+            "hostEvents"
+          ]
+        },
+        "section": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "applicationId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "formId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "threadId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventName",
+        "subjectLabel",
+        "count",
+        "provider",
+        "errorCode"
+      ],
+      "properties": {
+        "eventName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "subjectLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "provider": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        },
+        "errorCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "dedupeKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "server-only"
+    },
+    "policyVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000,
+      "x-catch-ownership": "server-only"
+    },
+    "resolutionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000,
+      "x-catch-ownership": "server-only"
+    },
+    "assignedHostUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "openedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "dueAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "actionExpiresAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "sourceUpdatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "resolvedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "purgeAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-firestore-ttl": true,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const organizerContactIdentityLinkDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_contact_identity_links.schema.json",
@@ -84911,6 +85400,394 @@ export const listOrganizerApplicationsCallableResponseSchema = {
   }
 };
 
+export const listOrganizerAttentionItemsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_attention_items_payload.schema.json",
+  "title": "ListOrganizerAttentionItemsCallablePayload",
+  "description": "Requests a complete, read-through-reconciled Host Today attention projection for one managed organizer.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Host Today",
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const listOrganizerAttentionItemsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_attention_items_response.schema.json",
+  "title": "ListOrganizerAttentionItemsCallableResponse",
+  "description": "Complete supported Host Today attention items plus explicit coverage for client-merged, shortcut-only, and blocked-missing-truth kinds.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "policyVersion",
+    "generatedAtMillis",
+    "horizonEndsAtMillis",
+    "items",
+    "coverage"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "policyVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "horizonEndsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 400,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "attentionId",
+          "kind",
+          "scope",
+          "sourceOwner",
+          "sourceId",
+          "sourceRevision",
+          "eventId",
+          "status",
+          "consequence",
+          "blocking",
+          "urgency",
+          "destination",
+          "context",
+          "dedupeKey",
+          "policyVersion",
+          "resolutionVersion",
+          "assignedHostUid",
+          "openedAtMillis",
+          "dueAtMillis",
+          "expiresAtMillis"
+        ],
+        "properties": {
+          "attentionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "eventLiveOperations",
+              "eventWaitlistReview",
+              "applicationReview",
+              "providerSyncFailure",
+              "formAutomationFailure",
+              "payoutSetup",
+              "attendanceSync",
+              "dressRehearsal",
+              "eventSuccessPreparation",
+              "roomLayoutSetup",
+              "eventStaffing",
+              "formResponseReview",
+              "inboxReply",
+              "postEventReconciliation"
+            ],
+            "x-catch-catalog": "../catalogs/host_attention_policies.json"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "organizer",
+              "event",
+              "application",
+              "form",
+              "thread",
+              "account"
+            ]
+          },
+          "sourceOwner": {
+            "type": "string",
+            "enum": [
+              "events",
+              "organizerApplications",
+              "providerSyncRuns",
+              "organizerFormAutomationRuns",
+              "hostPaymentAccounts",
+              "hostAttendanceOutbox",
+              "eventSuccessPlans",
+              "eventRehearsals",
+              "eventStaffGrants",
+              "organizerFormResponses",
+              "organizerWhatsappThreads",
+              "eventAttendees"
+            ]
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "sourceRevision": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "eventId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "status": {
+            "const": "open"
+          },
+          "consequence": {
+            "type": "string",
+            "enum": [
+              "blocksLiveOperation",
+              "risksGuestExperience",
+              "risksRevenue",
+              "delaysResponse",
+              "degradesAutomation",
+              "requiresReconciliation",
+              "preparationIncomplete",
+              "informational"
+            ]
+          },
+          "blocking": {
+            "type": "boolean"
+          },
+          "urgency": {
+            "type": "string",
+            "enum": [
+              "immediate",
+              "soon",
+              "upcoming"
+            ]
+          },
+          "destination": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "route",
+              "section",
+              "eventId",
+              "applicationId",
+              "formId",
+              "threadId"
+            ],
+            "properties": {
+              "route": {
+                "type": "string",
+                "enum": [
+                  "hostEventManage",
+                  "hostApplications",
+                  "hostOrganizerPayments",
+                  "hostAudienceForms",
+                  "hostInbox",
+                  "hostDressRehearsal",
+                  "hostEvents"
+                ]
+              },
+              "section": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80
+              },
+              "eventId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
+              },
+              "applicationId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
+              },
+              "formId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
+              },
+              "threadId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
+              }
+            }
+          },
+          "context": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "eventName",
+              "subjectLabel",
+              "count",
+              "provider",
+              "errorCode"
+            ],
+            "properties": {
+              "eventName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 160
+              },
+              "subjectLabel": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 160
+              },
+              "count": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 1000000000
+              },
+              "provider": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80
+              },
+              "errorCode": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 120
+              }
+            }
+          },
+          "dedupeKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "policyVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "resolutionVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "assignedHostUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "openedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "dueAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "expiresAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "minItems": 14,
+      "maxItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "state",
+          "reason"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "eventLiveOperations",
+              "eventWaitlistReview",
+              "applicationReview",
+              "providerSyncFailure",
+              "formAutomationFailure",
+              "payoutSetup",
+              "attendanceSync",
+              "dressRehearsal",
+              "eventSuccessPreparation",
+              "roomLayoutSetup",
+              "eventStaffing",
+              "formResponseReview",
+              "inboxReply",
+              "postEventReconciliation"
+            ],
+            "x-catch-catalog": "../catalogs/host_attention_policies.json"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "clientMergeRequired",
+              "shortcutOnly",
+              "blockedMissingTruth"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      }
+    }
+  }
+};
+
 export const getOrganizerApplicationDetailCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/get_organizer_application_detail_payload.schema.json",
@@ -101735,6 +102612,311 @@ export const organizerFormTemplateCatalog = {
           "questions": []
         }
       ]
+    }
+  ]
+};
+
+export const hostAttentionPolicyCatalog = {
+  "schemaVersion": 1,
+  "kind": "hostAttentionPolicies",
+  "policyVersion": 1,
+  "horizonHours": 168,
+  "immediateHours": 24,
+  "soonHours": 72,
+  "definitions": [
+    {
+      "kind": "eventLiveOperations",
+      "scope": "event",
+      "sourceOwner": "events",
+      "sourceIdPolicy": "Canonical events document id.",
+      "sourceRevisionPolicy": "SHA-256 fingerprint of the event lifecycle and time fields consumed by this policy.",
+      "triggerPredicate": "Event is active and startTime <= serverNow < endTime.",
+      "resolutionPredicate": "Event is cancelled or serverNow >= endTime.",
+      "permissionPredicate": "Caller is a canonical manager of the event organizer.",
+      "consequence": "blocksLiveOperation",
+      "dueAtPolicy": "Event startTime.",
+      "expiresAtPolicy": "Event endTime.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "live"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "Event lifecycle and schedule are canonical server-owned facts."
+    },
+    {
+      "kind": "eventWaitlistReview",
+      "scope": "event",
+      "sourceOwner": "events",
+      "sourceIdPolicy": "Canonical events document id.",
+      "sourceRevisionPolicy": "SHA-256 fingerprint of waitlistedCount, admission policy, capacity, and event schedule.",
+      "triggerPredicate": "Active event ends in the future, starts inside the Today horizon, has waitlistedCount > 0, and is not a manual-approval admission flow.",
+      "resolutionPredicate": "Waitlisted count reaches zero, event leaves the horizon, event ends, or event is cancelled.",
+      "permissionPredicate": "Caller is a canonical manager of the event organizer.",
+      "consequence": "risksGuestExperience",
+      "dueAtPolicy": "Event startTime minus 24 hours, clamped to openedAt.",
+      "expiresAtPolicy": "Event endTime.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "guests"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "Waitlist count and admission policy are canonical event projections."
+    },
+    {
+      "kind": "applicationReview",
+      "scope": "application",
+      "sourceOwner": "organizerApplications",
+      "sourceIdPolicy": "Canonical organizer application document id.",
+      "sourceRevisionPolicy": "Application revision converted to a stable string.",
+      "triggerPredicate": "reviewStatus is submitted or inReview.",
+      "resolutionPredicate": "Review status becomes approved, waitlisted, declined, or withdrawn.",
+      "permissionPredicate": "Caller is a canonical manager of the application organizer.",
+      "consequence": "delaysResponse",
+      "dueAtPolicy": "submittedAt plus 24 hours.",
+      "expiresAtPolicy": "No action expiry while the canonical review status remains open.",
+      "destination": {
+        "route": "hostApplications",
+        "section": null
+      },
+      "dedupePolicy": "kind + applicationId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "Application review status is an explicit callable-owned workflow state."
+    },
+    {
+      "kind": "providerSyncFailure",
+      "scope": "event",
+      "sourceOwner": "providerSyncRuns",
+      "sourceIdPolicy": "Latest provider sync run for an organizer and event.",
+      "sourceRevisionPolicy": "Latest run id plus inputHash, status, and completion time.",
+      "triggerPredicate": "The latest provider sync run for the event is partial or failed.",
+      "resolutionPredicate": "A newer sync run for the event completes successfully or the source expires.",
+      "permissionPredicate": "Caller is a canonical manager of the provider connection organizer.",
+      "consequence": "requiresReconciliation",
+      "dueAtPolicy": "Latest failed or partial run completion time, otherwise start time.",
+      "expiresAtPolicy": "Source run TTL expiry.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "guests"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "Provider sync run status is explicit, bounded, and server-owned."
+    },
+    {
+      "kind": "formAutomationFailure",
+      "scope": "form",
+      "sourceOwner": "organizerFormAutomationRuns",
+      "sourceIdPolicy": "Latest automation run for an organizer, form, and rule.",
+      "sourceRevisionPolicy": "Latest run id plus rule revision, status, and update time.",
+      "triggerPredicate": "The latest run for a form rule is partiallyFailed or failed.",
+      "resolutionPredicate": "A newer run for the same form rule succeeds or the rule is disabled or removed.",
+      "permissionPredicate": "Caller is a canonical manager of the form organizer.",
+      "consequence": "degradesAutomation",
+      "dueAtPolicy": "Latest failed run updatedAt.",
+      "expiresAtPolicy": "No action expiry while it remains the latest run for an active rule.",
+      "destination": {
+        "route": "hostAudienceForms",
+        "section": "automations"
+      },
+      "dedupePolicy": "kind + formId + ruleId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "Automation run status is explicit and server-owned."
+    },
+    {
+      "kind": "payoutSetup",
+      "scope": "account",
+      "sourceOwner": "hostPaymentAccounts",
+      "sourceIdPolicy": "Organizer owner uid plus the currency-selected payout provider.",
+      "sourceRevisionPolicy": "Fingerprint of organizer owner, paid-event schedule, provider, onboarding status, and payout capability fields.",
+      "triggerPredicate": "A paid active event starts inside the Today horizon and the organizer owner's required provider account is missing, restricted, or not charge-and-payout enabled.",
+      "resolutionPredicate": "The required owner account is fully enabled, all paid events leave the horizon, or the organizer ownership changes.",
+      "permissionPredicate": "Caller is a canonical organizer manager; payout setup remains owner-only at the destination.",
+      "consequence": "risksRevenue",
+      "dueAtPolicy": "Earliest paid event startTime minus 72 hours, clamped to openedAt.",
+      "expiresAtPolicy": "Earliest affected paid event endTime.",
+      "destination": {
+        "route": "hostOrganizerPayments",
+        "section": null
+      },
+      "dedupePolicy": "kind + organizerId + provider",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "Organizer ownership, paid-event currency, and provider account capability are explicit server facts."
+    },
+    {
+      "kind": "attendanceSync",
+      "scope": "event",
+      "sourceOwner": "hostAttendanceOutbox",
+      "sourceIdPolicy": "Local client operation id.",
+      "sourceRevisionPolicy": "Local expected attendance revision plus retry state.",
+      "triggerPredicate": "A local attendance operation is retryable, conflicted, or older than its review threshold.",
+      "resolutionPredicate": "The server accepts the absolute attendance mutation or the host explicitly resolves or discards it.",
+      "permissionPredicate": "Current signed-in host owns the local outbox entry and retains event attendance authority.",
+      "consequence": "requiresReconciliation",
+      "dueAtPolicy": "Immediate for conflict, otherwise the local retry or seven-day review threshold.",
+      "expiresAtPolicy": "Local outbox expiry at 30 days.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "guests"
+      },
+      "dedupePolicy": "kind + clientOperationId",
+      "deliveryMode": "clientMerged",
+      "readiness": "sourceReady",
+      "readinessReason": "The outbox is intentionally local-only and must be merged after the server projection is fetched."
+    },
+    {
+      "kind": "dressRehearsal",
+      "scope": "event",
+      "sourceOwner": "eventRehearsals",
+      "sourceIdPolicy": "Source event id when selected, otherwise organizer shortcut identity.",
+      "sourceRevisionPolicy": "Rehearsal sourceEventRevision compared with the current safe event snapshot fingerprint.",
+      "triggerPredicate": "Never inferred as mandatory attention; Today exposes it as an explicit preparation shortcut.",
+      "resolutionPredicate": "Not applicable to the attention queue.",
+      "permissionPredicate": "Caller is a canonical organizer manager.",
+      "consequence": "informational",
+      "dueAtPolicy": "No implicit due date.",
+      "expiresAtPolicy": "Rehearsal session expiry is independent of the shortcut.",
+      "destination": {
+        "route": "hostDressRehearsal",
+        "section": null
+      },
+      "dedupePolicy": "Not persisted as an attention item.",
+      "deliveryMode": "shortcutOnly",
+      "readiness": "sourceReady",
+      "readinessReason": "Rehearsal is available without pretending every event requires one."
+    },
+    {
+      "kind": "eventSuccessPreparation",
+      "scope": "event",
+      "sourceOwner": "eventSuccessPlans",
+      "sourceIdPolicy": "Event Success plan document id.",
+      "sourceRevisionPolicy": "Future explicit preparation revision.",
+      "triggerPredicate": "Requires an explicit preparation readiness state and blocker vocabulary; plan status setup alone does not mean incomplete.",
+      "resolutionPredicate": "Future explicit readiness state becomes ready.",
+      "permissionPredicate": "Canonical organizer manager.",
+      "consequence": "preparationIncomplete",
+      "dueAtPolicy": "Future policy derived from event start.",
+      "expiresAtPolicy": "Event endTime.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "setup"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "blockedMissingTruth",
+      "readiness": "blocked",
+      "readinessReason": "The plan has lifecycle state but no explicit complete preparation checklist or readiness projection."
+    },
+    {
+      "kind": "roomLayoutSetup",
+      "scope": "event",
+      "sourceOwner": "eventSuccessPlans",
+      "sourceIdPolicy": "Event Success plan document id.",
+      "sourceRevisionPolicy": "Future explicit layout requirement and selected layout revision.",
+      "triggerPredicate": "Requires an explicit event-format or playbook declaration that a room layout is mandatory.",
+      "resolutionPredicate": "A required compatible layout is selected and current.",
+      "permissionPredicate": "Canonical organizer manager.",
+      "consequence": "preparationIncomplete",
+      "dueAtPolicy": "Future policy derived from event start.",
+      "expiresAtPolicy": "Event startTime.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "setup"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "blockedMissingTruth",
+      "readiness": "blocked",
+      "readinessReason": "A null optional layout is not proof that the event requires one."
+    },
+    {
+      "kind": "eventStaffing",
+      "scope": "event",
+      "sourceOwner": "eventStaffGrants",
+      "sourceIdPolicy": "Event id plus future staffing requirement revision.",
+      "sourceRevisionPolicy": "Future required-role policy revision plus active grant revisions.",
+      "triggerPredicate": "Requires an explicit required staffing plan; zero grants alone is not an error.",
+      "resolutionPredicate": "All declared required roles have active unexpired grants.",
+      "permissionPredicate": "Canonical organizer manager; staff cannot expand their own grants.",
+      "consequence": "blocksLiveOperation",
+      "dueAtPolicy": "Future policy derived from event start.",
+      "expiresAtPolicy": "Event endTime.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "setup"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "blockedMissingTruth",
+      "readiness": "blocked",
+      "readinessReason": "Grant existence does not express how many staff, if any, an event requires."
+    },
+    {
+      "kind": "formResponseReview",
+      "scope": "form",
+      "sourceOwner": "organizerFormResponses",
+      "sourceIdPolicy": "Form response id plus future workflow revision.",
+      "sourceRevisionPolicy": "Future explicit response review revision.",
+      "triggerPredicate": "Requires form-level requiresReview policy and response-level review status.",
+      "resolutionPredicate": "Future response review status becomes terminal.",
+      "permissionPredicate": "Canonical organizer manager with active response data access.",
+      "consequence": "delaysResponse",
+      "dueAtPolicy": "Future form workflow SLA from submittedAt.",
+      "expiresAtPolicy": "Withdrawal or configured workflow expiry.",
+      "destination": {
+        "route": "hostAudienceForms",
+        "section": "responses"
+      },
+      "dedupePolicy": "kind + responseId",
+      "deliveryMode": "blockedMissingTruth",
+      "readiness": "blocked",
+      "readinessReason": "Submission is not equivalent to needing review, and generic responses have no review workflow today."
+    },
+    {
+      "kind": "inboxReply",
+      "scope": "thread",
+      "sourceOwner": "organizerWhatsappThreads",
+      "sourceIdPolicy": "Organizer thread id plus future attention revision.",
+      "sourceRevisionPolicy": "Future explicit reply-required or triage revision.",
+      "triggerPredicate": "Requires an explicit replyRequired, assigned, snoozed, or resolved workflow state.",
+      "resolutionPredicate": "Future thread attention state becomes resolved or snoozed beyond the horizon.",
+      "permissionPredicate": "Canonical organizer manager with authorized sanitized thread access.",
+      "consequence": "delaysResponse",
+      "dueAtPolicy": "Future inbox SLA from explicit attention opening.",
+      "expiresAtPolicy": "Thread retention expiry or explicit resolution.",
+      "destination": {
+        "route": "hostInbox",
+        "section": null
+      },
+      "dedupePolicy": "kind + threadId",
+      "deliveryMode": "blockedMissingTruth",
+      "readiness": "blocked",
+      "readinessReason": "Last inbound or unread is not proof that a human reply is required."
+    },
+    {
+      "kind": "postEventReconciliation",
+      "scope": "event",
+      "sourceOwner": "eventAttendees",
+      "sourceIdPolicy": "Event id plus future reconciliation revision.",
+      "sourceRevisionPolicy": "Future explicit reconciliation version over attendance, refunds, reports, and provider coverage.",
+      "triggerPredicate": "Requires an explicit post-event reconciliation policy and unresolved blocker set.",
+      "resolutionPredicate": "Future reconciliation state is complete.",
+      "permissionPredicate": "Canonical organizer manager.",
+      "consequence": "requiresReconciliation",
+      "dueAtPolicy": "Future policy after event end.",
+      "expiresAtPolicy": "Future retention policy.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "report"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "blockedMissingTruth",
+      "readiness": "blocked",
+      "readinessReason": "Counts alone cannot prove whether attendance, refunds, provider imports, and reporting are reconciled."
     }
   ]
 };

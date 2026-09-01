@@ -931,6 +931,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Today attention rows are evaluated server projections, not client task
+    // definitions. Managers receive a bounded sanitized callable response.
+    match /organizerAttentionItems/{attentionId} {
+      allow read, write: if false;
+    }
+
     match /organizerContactIdentityLinks/{identityLinkId} {
       allow read, write: if false;
     }

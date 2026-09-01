@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "attentionId": "attention-event-1-waitlist",
+  "organizerId": "organizer-1",
+  "kind": "eventWaitlistReview",
+  "scope": "event",
+  "sourceOwner": "events",
+  "sourceId": "event-1",
+  "sourceRevision": "f5e3ce38e34bfe44",
+  "eventId": "event-1",
+  "status": "open",
+  "consequence": "risksGuestExperience",
+  "blocking": false,
+  "urgency": "soon",
+  "destination": {
+    "route": "hostEventManage",
+    "section": "guests",
+    "eventId": "event-1",
+    "applicationId": null,
+    "formId": null,
+    "threadId": null
+  },
+  "context": {
+    "eventName": "Sunday Social Run",
+    "subjectLabel": null,
+    "count": 4,
+    "provider": null,
+    "errorCode": null
+  },
+  "dedupeKey": "eventWaitlistReview:event-1",
+  "policyVersion": 1,
+  "resolutionVersion": 1,
+  "assignedHostUid": null,
+  "openedAt": {"_seconds": 1788264000, "_nanoseconds": 0},
+  "dueAt": {"_seconds": 1788350400, "_nanoseconds": 0},
+  "actionExpiresAt": {"_seconds": 1788523200, "_nanoseconds": 0},
+  "sourceUpdatedAt": {"_seconds": 1788264000, "_nanoseconds": 0},
+  "createdAt": {"_seconds": 1788264000, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1788264000, "_nanoseconds": 0},
+  "resolvedAt": null,
+  "purgeAt": {"_seconds": 1791115200, "_nanoseconds": 0},
+  "triggerPredicate": "waitlistedCount > 0"
+}

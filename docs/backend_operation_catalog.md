@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.31.0
-updated: 2026-08-30
+version: 1.32.0
+updated: 2026-09-01
 owner: recursive_audit_loop
 status: active
 ---
@@ -328,6 +328,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `organizerContacts`, `organizerContactNotes`, `organizerContactTagVocabularies`, `organizerContactIdentityLinks`, `organizerContactIdentityClaims`, `organizerContactMergeReviewDecisions`, `organizerContactEventEdges`, `organizerContactTraits` | Organizer audience, merge review, and invite-attribution projections plus manager-only CRM callables | Server-only; raw contact, organizer-authored memory, identity evidence, review decisions and traits never have direct client collection access. |
 | `organizerCampaigns`, `organizerCampaignRecipients`, `organizerBroadcastSummaries`, `organizerCampaignWebhookReceipts`, `organizerSenderConnections`, `organizerMessageTemplates`, `organizerWhatsappThreads`, `organizerWhatsappMessages`, `organizerWhatsappReplyOperations` | Organizer CRM, Sends history, campaign dispatcher, Meta setup/webhook operations, and Inbox WhatsApp facets | Server-only; clients use sanitized manager callables. Announcement summaries are body-free organizer-scoped projections; provider tokens stay in Secret Manager. Resolved-contact WhatsApp bodies and at-most-once reply reservations are retained only in TTL-bound stores and never enter analytics projections. |
 | `organizerProviderConnections`, `externalEventMappings`, `providerSyncRuns` | Provider setup, mapping and reconciliation callables | Server-only; safe connection health/capability projections are returned by callables, while credentials never enter client-readable documents. |
+| `organizerAttentionItems/{attentionId}` | Host Today read-through attention reconciliation | Server-only evaluated projection. The policy catalog owns predicates; the row stores bounded provenance, urgency, destination, and resolution state. Managers receive sanitized callable results, and unsupported kinds remain explicit coverage gaps rather than inferred tasks. |
 | `organizerForms`, `organizerFormDrafts`, `organizerFormVersions`, `organizerFormResponseDrafts`, `organizerFormResponses`, `organizerFormShareLinks` | Generic Host Forms lifecycle, respondent runtime, and share callables | Server-only. Managers receive bounded projections, drafts use optimistic revisions, public identities grant no Firestore access, published versions and responses are immutable snapshots, and source tokens grant attribution only. |
 | `organizerApplicationForms`, `organizerApplicationFormVersions`, `organizerApplications`, `organizerApplicationResponses`, `organizerApplicationAssets`, `organizerApplicationSourceMappings`, `organizerApplicationImportReceipts` | Organizer application publishing, import, listing, detail and review callables | Server-only. Managers receive bounded callable projections; form versions and responses are immutable snapshots, receipts are idempotency evidence, and provider metadata never grants authority. |
 | `participantIntakeProfiles`, `participantOrganizerDataGrants/{grantId}` | Authenticated participant form load/submission/revocation callables | Server-only contract boundary. Portable prefill stays private and separate from `users`; each native application/response grant records only exact submitted questions and canonical fields for the recorded purpose. Revocation changes only the grant timestamp and Host projection. Host imports write neither collection. |
