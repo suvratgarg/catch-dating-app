@@ -224,8 +224,15 @@
       "routeId": "hostHomeScreen",
       "status": "alias",
       "priority": "P1",
-      "canonicalRouteId": "hostEventsScreen",
-      "reason": "Legacy /host entry redirects to the canonical consolidated Host Events workspace."
+      "canonicalRouteId": "hostTodayScreen",
+      "reason": "Legacy /host entry redirects to the canonical Host Today workspace."
+    },
+    {
+      "routeId": "hostTodayScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.home as the cross-event operational Today workspace.",
+      "screenId": "screen.host.home"
     },
     {
       "routeId": "hostEventsScreen",
@@ -235,10 +242,10 @@
       "screenId": "screen.host.home"
     },
     {
-      "routeId": "hostCustomersScreen",
+      "routeId": "hostAudienceScreen",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Covered by screen.host.customers as the canonical organizer customer directory workspace.",
+      "reason": "Covered by screen.host.customers as the canonical People, Audiences, Forms, and Responses workspace.",
       "screenId": "screen.host.customers"
     },
     {
@@ -263,52 +270,53 @@
       "screenId": "screen.host.customers"
     },
     {
-      "routeId": "hostFormsScreen",
-      "status": "planned",
-      "priority": "P1",
-      "reason": "The standalone Forms library and response inbox are implemented; a dedicated screen.host.forms contract will follow capture-backed visual reconciliation."
-    },
-    {
       "routeId": "hostFormTemplatesScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "The versioned form template gallery is implemented; its dedicated contract awaits deterministic template-gallery captures."
+      "reason": "Covered by screen.host.customers as the Audience-owned versioned form template gallery.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormResponseDetailScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "The immutable response-detail and reviewed conversion route is implemented; its dedicated contract awaits deterministic response fixtures."
+      "reason": "Covered by screen.host.customers as the Audience-owned immutable response-detail and reviewed conversion route.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormBuilderScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "The responsive outline, canvas, inspector, preview, validation, and lifecycle workspace is implemented; capture-backed builder state coverage remains planned."
+      "reason": "Covered by screen.host.customers as the Audience-owned responsive form builder workspace.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormPreviewScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "The shared-renderer phone and desktop preview route is implemented; deterministic logic, validation, and availability captures remain planned."
+      "reason": "Covered by screen.host.customers as the Audience-owned shared-renderer preview route.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormShareScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P2",
-      "reason": "The canonical link, attributed link, QR, native share, and embed workspace is implemented; capture-backed distribution states remain planned."
+      "reason": "Covered by screen.host.customers as the Audience-owned form distribution workspace.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormAnalyticsScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P2",
-      "reason": "The precomputed analytics and asynchronous export workspace is implemented; populated and privacy-threshold capture states remain planned."
+      "reason": "Covered by screen.host.customers as the Audience-owned form analytics workspace.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormAutomationsScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P2",
-      "reason": "The explicit automation rules and paginated run history workspace is implemented; configured, failure, and disabled-state captures remain planned."
+      "reason": "Covered by screen.host.customers as the Audience-owned form automation workspace.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostApplicationsScreen",
@@ -330,6 +338,20 @@
       "priority": "P1",
       "reason": "Covered by screen.host.customers as the nested customer identity, attendance, revenue, and conversation detail route.",
       "screenId": "screen.host.customers"
+    },
+    {
+      "routeId": "hostCustomersLegacyScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "Legacy Customers links redirect to the canonical Audience workspace while preserving deep-link state."
+    },
+    {
+      "routeId": "hostFormsLegacyScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "Legacy Forms links redirect to the canonical Audience workspace while preserving deep-link state."
     },
     {
       "routeId": "hostOperatorEventScreen",

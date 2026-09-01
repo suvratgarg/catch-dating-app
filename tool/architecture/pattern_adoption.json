@@ -1,6 +1,6 @@
 {
-  "version": "1.15.0",
-  "updated": "2026-08-30",
+  "version": "1.16.0",
+  "updated": "2026-09-01",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Defines architecture reference exhibits, adopter files, candidate status, and back-propagation obligations enforced by architecture checks.",
   "patterns": [
@@ -330,13 +330,18 @@
           "status": "aligned"
         },
         {
+          "path": "lib/hosts/today/presentation/widgets/host_today_body.dart",
+          "role": "HostTodayHeader gives every Today branch one scroll-owned CatchScreenHeaderTitle.block root header while HostTodayBody retains terminal shell padding",
+          "status": "aligned"
+        },
+        {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
           "role": "Calendar root-like route uses CatchScreenTopBar and the semantic CatchTopBarTextAction for Today",
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "role": "Host Events root shell delegates title ownership to CatchScreenHeaderTitle while its club section supplies the adaptive primary create action",
+          "path": "lib/hosts/events/presentation/host_events_screen.dart",
+          "role": "Host Events route delegates title ownership to CatchScreenHeaderTitle while its organizer section supplies the adaptive primary create action",
           "status": "aligned"
         },
         {
@@ -494,8 +499,26 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_home_view_model.dart",
-          "role": "provider-free Host route and Events workspace builders consuming CatchAsyncState with error-before-loading precedence",
+          "path": "lib/hosts/events/presentation/host_events_view_model.dart",
+          "role": "provider-free Host Events route and inventory workspace builders consuming CatchAsyncState with error-before-loading precedence",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/today/presentation/host_today_state.dart",
+          "role": "provider-free Today route, feed, seven-day urgency-filtered attention, and later-event display state consumed below the route edge",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/today/presentation/host_today_view_model.dart",
+          "role": "provider-free Today route and feed projection builders consuming CatchAsyncState with exhaustive error-before-loading precedence",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/today/presentation/widgets/host_today_body.dart",
+          "role": "provider-free Today composition consuming typed state and callbacks without repository, provider, or router reads",
           "providerFree": true,
           "status": "aligned"
         },
@@ -830,20 +853,25 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_home_screen_state.dart",
-          "role": "provider-free Host route, selected-club, Today, and Events lifecycle display states including exact lifecycle boundaries, month grouping, repeat availability, and render-ready row data",
+          "path": "lib/hosts/events/presentation/host_events_state.dart",
+          "role": "provider-free Host Events route and inventory lifecycle display states including exact lifecycle boundaries, month grouping, repeat availability, and render-ready row data",
           "providerFree": true,
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_event_entry_state.dart",
+          "path": "lib/hosts/events/presentation/host_event_entry_state.dart",
           "role": "provider-free Host event-entry capability adapter for organizer availability, organizer-scoped drafts and repeat source, ordered continue-versus-start intents, and shared mobile or larger-screen presentation inputs",
           "providerFree": true,
           "status": "aligned"
         },
         {
+          "path": "test/hosts/today/host_today_state_test.dart",
+          "role": "Today route-state exhaustion, live-first event priority, seven-day urgency-filtered attention derivation, manual-approval suppression, and exhaustive async display-state coverage",
+          "status": "aligned"
+        },
+        {
           "path": "test/hosts/host_events_screen_state_test.dart",
-          "role": "Host Events lifecycle, grouping, featured-event exclusion, attention-task, async display-state, and contextual event-entry capability behavior coverage",
+          "role": "Host Events lifecycle, grouping, async display-state, and contextual event-entry capability behavior coverage",
           "status": "aligned"
         },
         {
@@ -1309,8 +1337,8 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-          "role": "host Today and Events ListView terminals",
+          "path": "lib/hosts/events/presentation/host_events_screen.dart",
+          "role": "host Events scroll terminal",
           "status": "aligned"
         },
         {

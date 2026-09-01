@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/host_attention_common.schema.json",
+  "title": "HostAttentionCommon",
+  "description": "Shared vocabulary for the Host Today attention policy, persisted reconciliation projection, and callable response.",
+  "type": "object",
+  "definitions": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "eventLiveOperations",
+        "eventWaitlistReview",
+        "eventJoinRequestReview",
+        "applicationReview",
+        "providerSyncFailure",
+        "formAutomationFailure",
+        "payoutSetup",
+        "attendanceSync",
+        "dressRehearsal",
+        "eventSuccessPreparation",
+        "roomLayoutSetup",
+        "eventStaffing",
+        "formResponseReview",
+        "inboxReply",
+        "postEventReconciliation"
+      ],
+      "x-catch-catalog": "../catalogs/host_attention_policies.json"
+    },
+    "scope": {
+      "type": "string",
+      "enum": ["organizer", "event", "application", "form", "thread", "account"]
+    },
+    "sourceOwner": {
+      "type": "string",
+      "enum": [
+        "events",
+        "eventParticipations",
+        "organizerApplications",
+        "providerSyncRuns",
+        "organizerFormAutomationRuns",
+        "hostPaymentAccounts",
+        "hostAttendanceOutbox",
+        "eventSuccessPlans",
+        "eventRehearsals",
+        "eventStaffGrants",
+        "organizerFormResponses",
+        "organizerWhatsappThreads",
+        "eventAttendees"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "resolved", "expired", "superseded"]
+    },
+    "urgency": {
+      "type": "string",
+      "enum": ["immediate", "soon", "upcoming"]
+    },
+    "consequence": {
+      "type": "string",
+      "enum": [
+        "blocksLiveOperation",
+        "risksGuestExperience",
+        "risksRevenue",
+        "delaysResponse",
+        "degradesAutomation",
+        "requiresReconciliation",
+        "preparationIncomplete",
+        "informational"
+      ]
+    },
+    "destinationRoute": {
+      "type": "string",
+      "enum": [
+        "hostEventManage",
+        "hostApplications",
+        "hostOrganizerPayments",
+        "hostAudienceForms",
+        "hostInbox",
+        "hostDressRehearsal",
+        "hostEvents"
+      ]
+    },
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route", "section", "eventId", "applicationId", "formId", "threadId"],
+      "properties": {
+        "route": {"$ref": "#/definitions/destinationRoute"},
+        "section": {"type": ["string", "null"], "maxLength": 80},
+        "eventId": {"type": ["string", "null"], "maxLength": 180},
+        "applicationId": {"type": ["string", "null"], "maxLength": 180},
+        "formId": {"type": ["string", "null"], "maxLength": 180},
+        "threadId": {"type": ["string", "null"], "maxLength": 180}
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventName", "subjectLabel", "count", "provider", "errorCode"],
+      "properties": {
+        "eventName": {"type": ["string", "null"], "maxLength": 160},
+        "subjectLabel": {"type": ["string", "null"], "maxLength": 160},
+        "count": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000000},
+        "provider": {"type": ["string", "null"], "maxLength": 80},
+        "errorCode": {"type": ["string", "null"], "maxLength": 120}
+      }
+    },
+    "coverageState": {
+      "type": "string",
+      "enum": ["complete", "clientMergeRequired", "shortcutOnly", "blockedMissingTruth"]
+    }
+  }
+}

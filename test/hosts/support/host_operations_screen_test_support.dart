@@ -6,7 +6,7 @@ Finder _hostEventsScrollable() => find.descendant(
 );
 
 void registerHostEventEntryTests() {
-  testWidgets('Host events has no create-club header and opens event manage', (
+  testWidgets('Host Today delegates creation and opens event manage', (
     tester,
   ) async {
     final club = buildClub(id: 'club-host', ownerUserId: _hostUid);
@@ -18,7 +18,7 @@ void registerHostEventEntryTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
         ..._hostClubOverrides(
           owned: [club],
@@ -32,70 +32,61 @@ void registerHostEventEntryTests() {
       ],
     );
 
-    expect(find.text('Events'), findsWidgets);
+    expect(find.text('Today'), findsOneWidget);
     expect(find.byTooltip('Create organizer'), findsNothing);
     expect(find.byTooltip('Switch organizer'), findsNothing);
-    expect(find.text('Create event'), findsOneWidget);
-    expect(
-      tester
-          .widget<CatchScreenHeaderTitle>(find.byType(CatchScreenHeaderTitle))
-          .eyebrow,
-      isNull,
+    expect(find.text('Create event'), findsNothing);
+    final header = tester.widget<CatchScreenHeaderTitle>(
+      find.byType(CatchScreenHeaderTitle),
     );
+    expect(header.eyebrow, 'Monday, June 15, 2026');
+    expect(header.subtitle, club.name);
+    expect(header.actions, isEmpty);
     expect(
-      find.descendant(
-        of: find.byType(CatchScreenHeaderTitle),
-        matching: find.byKey(
-          const ValueKey<String>('host-events-create-event'),
-        ),
-      ),
-      findsOneWidget,
+      find.byKey(const ValueKey<String>('host-today-create-event')),
+      findsNothing,
     );
     expect(find.text('Use guest list'), findsNothing);
-    await tester.tap(
-      find.byKey(const ValueKey<String>('host-events-create-event')),
-    );
-    await pumpFeatureUi(tester);
-    expect(find.text('Sell tickets with Catch'), findsOneWidget);
-    expect(find.text('Use guest list'), findsOneWidget);
-    expect(find.text('Continue draft'), findsNothing);
-    expect(find.text('Repeat last event'), findsNothing);
-    final eventEntrySheet = find.byKey(
-      const ValueKey<String>('host-event-entry-sheet'),
-    );
-    expect(
-      find.descendant(of: eventEntrySheet, matching: find.byType(CatchSection)),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: eventEntrySheet,
-        matching: find.byType(CatchSectionFocusSurface),
-      ),
-      findsOneWidget,
-    );
-    expect(find.text('START NEW'), findsOneWidget);
-    await tester.tapAt(const Offset(10, 10));
-    await pumpFeatureUi(tester);
-    expect(find.text('View club'), findsNothing);
-    expect(find.text('View public profile'), findsNothing);
 
     expect(
       tester
-          .widget<HostEventOperationalSpotlight>(
-            find.byType(HostEventOperationalSpotlight),
-          )
+          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
           .event,
       event,
     );
-    await tester.tap(find.text('Set up & run'));
+    await tester.tap(find.text('Continue setup'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Manage ${event.id}'), findsOneWidget);
     expect(find.text('Section setup'), findsOneWidget);
   });
 
-  testWidgets('Host events resumes a loaded draft without a second lookup', (
+  testWidgets('Host Today owns the dedicated dress rehearsal entry point', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'rehearsal-club', ownerUserId: _hostUid);
+
+    await _pumpHostScreen(
+      tester,
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(const AsyncData<List<Event>>([])),
+      ],
+    );
+
+    final rehearsalAction = find.byKey(
+      const ValueKey<String>('host-today-start-dress-rehearsal'),
+    );
+    expect(rehearsalAction, findsOneWidget);
+    await tester.tap(rehearsalAction);
+    await pumpFeatureUi(tester);
+    expect(find.text('Rehearse rehearsal-club'), findsOneWidget);
+  });
+
+  testWidgets('Host Events resumes a loaded draft without a second lookup', (
     tester,
   ) async {
     final club = buildClub(id: 'draft-club', ownerUserId: _hostUid);
@@ -108,7 +99,7 @@ void registerHostEventEntryTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
+      HostEventsScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
         ..._hostClubOverrides(
           owned: [club],
@@ -427,6 +418,12 @@ List _hostClubOverrides({
     ...hosted.map((club) => club.id),
   };
   return [
+    eventRepositoryProvider.overrideWithValue(
+      _FixedHostEventRepository(timelineEventsByOrganizer),
+    ),
+    hostTodayFeedControllerProvider.overrideWith2(
+      (_) => _FixedHostTodayFeedController(timelineEventsByOrganizer),
+    ),
     hostEventsTimelineControllerProvider.overrideWith2(
       (_) => _FixedHostEventsTimelineController(timelineEventsByOrganizer),
     ),
@@ -483,6 +480,113 @@ List _hostClubOverrides({
       ),
   ];
 }
+
+class _FixedHostEventRepository extends Fake implements EventRepository {
+  _FixedHostEventRepository(this.eventsByOrganizer);
+
+  final Map<String, List<Event>> eventsByOrganizer;
+
+  @override
+  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchActiveEventsPage({
+    required String organizerId,
+    required DateTime sessionBoundary,
+    DocumentSnapshot<Event>? startAfter,
+    int limit = ReadLimitPolicy.directoryPage,
+  }) async {
+    final events = eventsByOrganizer[organizerId] ?? const <Event>[];
+    return CursorPage(
+      items: events
+          .where((event) => event.endTime.isAfter(sessionBoundary))
+          .take(limit)
+          .toList(growable: false),
+      hasMore: false,
+    );
+  }
+
+  @override
+  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchPastEventsPage({
+    required String organizerId,
+    required DateTime sessionBoundary,
+    DocumentSnapshot<Event>? startAfter,
+    int limit = ReadLimitPolicy.directoryPage,
+  }) async {
+    final events = eventsByOrganizer[organizerId] ?? const <Event>[];
+    return CursorPage(
+      items: events
+          .where((event) => !event.endTime.isAfter(sessionBoundary))
+          .take(limit)
+          .toList(growable: false),
+      hasMore: false,
+    );
+  }
+}
+
+class _FixedHostTodayFeedController extends HostTodayFeedController {
+  _FixedHostTodayFeedController(this.eventsByOrganizer);
+
+  final Map<String, List<Event>> eventsByOrganizer;
+
+  @override
+  Future<HostTodayFeedData> build(HostTodayFeedRequest request) async {
+    final events = eventsByOrganizer[request.organizerId] ?? const <Event>[];
+    final activeEvents = events
+        .where((event) => event.endTime.isAfter(request.sessionBoundary))
+        .toList(growable: false);
+    return HostTodayFeedData(
+      activeEvents: activeEvents,
+      pastEvents: events
+          .where((event) => !event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+      attentionItems: _fixedAttentionItems(
+        activeEvents,
+        request.sessionBoundary,
+      ),
+      localAttendanceMerged: true,
+    );
+  }
+}
+
+List<HostAttentionItem> _fixedAttentionItems(
+  Iterable<Event> events,
+  DateTime now,
+) => [
+  for (final event in events)
+    if (event.waitlistCount > 0 &&
+        !event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired)
+      HostAttentionItem(
+        id: 'attention-${event.id}',
+        kind: HostAttentionKind.eventWaitlistReview,
+        scope: HostAttentionScope.event,
+        sourceOwner: HostAttentionSourceOwner.events,
+        sourceId: event.id,
+        sourceRevision: 'fixture-${event.waitlistCount}',
+        eventId: event.id,
+        status: HostAttentionStatus.open,
+        consequence: HostAttentionConsequence.risksGuestExperience,
+        blocking: false,
+        urgency: event.startTime.difference(now) <= const Duration(hours: 24)
+            ? HostAttentionUrgency.immediate
+            : event.startTime.difference(now) <= const Duration(hours: 72)
+            ? HostAttentionUrgency.soon
+            : HostAttentionUrgency.upcoming,
+        destination: HostAttentionDestination(
+          route: HostAttentionDestinationRoute.hostEventManage,
+          section: 'guests',
+          eventId: event.id,
+        ),
+        context: HostAttentionContext(
+          eventName: event.title,
+          count: event.waitlistCount,
+        ),
+        dedupeKey: 'eventWaitlistReview:${event.id}',
+        policyVersion: 1,
+        resolutionVersion: 1,
+        assignedHostUid: null,
+        openedAt: now,
+        dueAt: event.startTime.subtract(const Duration(hours: 24)),
+        expiresAt: event.endTime,
+      ),
+];
 
 class _FixedHostEventsTimelineController extends HostEventsTimelineController {
   _FixedHostEventsTimelineController(this.eventsByOrganizer);

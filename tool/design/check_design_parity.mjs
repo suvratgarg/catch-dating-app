@@ -45,6 +45,7 @@ function runGate() {
     "node tool/design/check_screen_contracts.mjs --check --summary",
     "node tool/design/check_feature_coverage.mjs --check",
     "node tool/design/build_feature_contracts.mjs --check",
+    "node tool/design/build_host_feature_responsibilities.mjs --check",
     "node tool/design/check_screen_top_bar_contracts.mjs --check",
     "node tool/design/check_widgetbook_contract_refs.mjs --check",
     "node tool/design/check_widgetbook_coverage.mjs --check",

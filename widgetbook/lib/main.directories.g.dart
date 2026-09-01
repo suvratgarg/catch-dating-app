@@ -7730,17 +7730,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostEventAttentionCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Attention card states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostEventAttentionCardStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostEventManageScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7748,28 +7737,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostStrictCatchRosterActionCellCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventOperationalMetric',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Operational metric states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostEventOperationalMetricStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventOperationalSpotlight',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Operational spotlight states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostEventOperationalSpotlightStates,
                   ),
                 ],
               ),
@@ -7785,29 +7752,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostEventsOverviewContent',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Overview content states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostEventsOverviewContentStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventsOverviewSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Overview route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostEventsOverviewSectionStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventsScaffold',
+                name: 'HostEventsScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by host home route states',
@@ -7847,6 +7792,127 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostTeamRouteStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayAttentionCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Attention card states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayAttentionCardStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by Today route states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayEventDateBlock',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by Today route states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayEventDateBlockStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayEventMetadata',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by Today route states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayEventMetadataStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayEventMetric',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Operational metric states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayEventMetricStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayEventRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by Today route states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayEventRowStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayEventSpotlight',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Operational spotlight states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayEventSpotlightStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayHeader',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by Today route states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayHeaderStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayLoadedRoute',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by Today route states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayLoadedRouteStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayOrganizerEmptyState',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by Today route states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayOrganizerEmptyStateStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostTodayOverview',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Overview route states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostTodayOverviewStates,
                   ),
                 ],
               ),
@@ -8100,6 +8166,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Route and section states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
                     .hostEventManageRouteAndSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostTodayScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .hostTodayScreenStates,
               ),
             ],
           ),

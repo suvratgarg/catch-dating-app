@@ -137,6 +137,7 @@ import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
@@ -153,13 +154,14 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart'
@@ -170,6 +172,9 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
+import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
@@ -2717,9 +2722,9 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
           builder: (context, state, navigationShell) =>
               HostAppShell(navigationShell: navigationShell),
           branches: [
-            _branch('/host/events', 0),
-            _branch('/host/customers', 1),
-            _branch('/host/forms', 2),
+            _branch('/host/today', 0),
+            _branch('/host/events', 1),
+            _audienceBranch(2),
             _branch('/host/inbox', 3),
             _branch('/host/organizer', 4),
           ],
@@ -2738,6 +2743,14 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
               : const SizedBox.shrink(),
         ),
       ],
+    );
+  }
+
+  StatefulShellBranch _audienceBranch(int index) {
+    Widget builder(BuildContext context, GoRouterState state) =>
+        index == widget.activeIndex ? widget.child : const SizedBox.shrink();
+    return StatefulShellBranch(
+      routes: [GoRoute(path: '/host/audience', builder: builder)],
     );
   }
 
@@ -2836,6 +2849,9 @@ List<Object> _hostOperationsProviderOverrides({
   };
 
   return [
+    hostTodayFeedControllerProvider.overrideWith2(
+      (_) => _CaptureHostTodayFeedController(timelineEventsByOrganizer),
+    ),
     hostEventsTimelineControllerProvider.overrideWith2(
       (_) => _CaptureHostEventsTimelineController(timelineEventsByOrganizer),
     ),
@@ -2910,6 +2926,73 @@ List<Object> _hostOperationsProviderOverrides({
         ),
   ];
 }
+
+class _CaptureHostTodayFeedController extends HostTodayFeedController {
+  _CaptureHostTodayFeedController(this.eventsByOrganizer);
+
+  final Map<String, List<Event>> eventsByOrganizer;
+
+  @override
+  Future<HostTodayFeedData> build(HostTodayFeedRequest request) async {
+    final events = eventsByOrganizer[request.organizerId] ?? const <Event>[];
+    final activeEvents = events
+        .where((event) => event.endTime.isAfter(request.sessionBoundary))
+        .toList(growable: false);
+    return HostTodayFeedData(
+      activeEvents: activeEvents,
+      pastEvents: events
+          .where((event) => !event.endTime.isAfter(request.sessionBoundary))
+          .toList(growable: false),
+      attentionItems: _captureTodayAttentionItems(
+        activeEvents,
+        request.sessionBoundary,
+      ),
+      localAttendanceMerged: true,
+    );
+  }
+}
+
+List<HostAttentionItem> _captureTodayAttentionItems(
+  Iterable<Event> events,
+  DateTime now,
+) => [
+  for (final event in events)
+    if (event.waitlistCount > 0 &&
+        !event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired)
+      HostAttentionItem(
+        id: 'capture-attention-${event.id}',
+        kind: HostAttentionKind.eventWaitlistReview,
+        scope: HostAttentionScope.event,
+        sourceOwner: HostAttentionSourceOwner.events,
+        sourceId: event.id,
+        sourceRevision: 'capture-${event.waitlistCount}',
+        eventId: event.id,
+        status: HostAttentionStatus.open,
+        consequence: HostAttentionConsequence.risksGuestExperience,
+        blocking: false,
+        urgency: event.startTime.difference(now) <= const Duration(hours: 24)
+            ? HostAttentionUrgency.immediate
+            : event.startTime.difference(now) <= const Duration(hours: 72)
+            ? HostAttentionUrgency.soon
+            : HostAttentionUrgency.upcoming,
+        destination: HostAttentionDestination(
+          route: HostAttentionDestinationRoute.hostEventManage,
+          section: 'guests',
+          eventId: event.id,
+        ),
+        context: HostAttentionContext(
+          eventName: event.title,
+          count: event.waitlistCount,
+        ),
+        dedupeKey: 'eventWaitlistReview:${event.id}',
+        policyVersion: 1,
+        resolutionVersion: 1,
+        assignedHostUid: null,
+        openedAt: now,
+        dueAt: event.startTime.subtract(const Duration(hours: 24)),
+        expiresAt: event.endTime,
+      ),
+];
 
 class _CaptureHostEventsTimelineController
     extends HostEventsTimelineController {
@@ -4938,6 +5021,157 @@ class _CaptureHostFormResponsesController extends HostFormResponsesController {
   }
 }
 
+class _CaptureHostFormEditorController extends HostFormEditorController {
+  @override
+  Future<HostFormEditorState> build(String organizerId, String formId) async =>
+      HostFormEditorState(
+        editor: HostFormEditor(
+          form: _hostFormBuilderAuditSummary(organizerId, formId),
+          definition: HostFormDefinition.fromMap(
+            _hostFormBuilderAuditDefinition(),
+          ),
+          validationIssues: const [],
+        ),
+        canUndo: true,
+      );
+}
+
+HostFormSummary _hostFormBuilderAuditSummary(
+  String organizerId,
+  String formId,
+) => HostFormSummary(
+  organizerId: organizerId,
+  formId: formId,
+  title: 'Saturday Social application',
+  description: 'A concise application for the next Saturday Social.',
+  purpose: HostFormPurpose.application,
+  status: HostFormLifecycleStatus.draft,
+  templateId: 'event_application',
+  publicFormId: 'public-$formId',
+  defaultTargetKind: HostFormTargetKind.organizer,
+  defaultTargetId: organizerId,
+  activeVersionId: null,
+  draftRevision: 4,
+  publishedVersion: 0,
+  submittedResponseCount: 0,
+  consequences: const HostFormConsequences(
+    coverage: HostFormConsequenceCoverage.exact,
+    identityPolicy: HostFormIdentityPolicy.emailOrPhoneVerified,
+    enabledAutomationActionKinds: {
+      HostFormAutomationActionKind.createCrmContact,
+    },
+  ),
+  updatedAt: DateTime(2026, 8, 31, 8, 45),
+  publishedAt: null,
+  lastResponseAt: null,
+);
+
+Map<String, Object?> _hostFormBuilderAuditDefinition() => {
+  'schemaVersion': 1,
+  'title': 'Saturday Social application',
+  'description': 'A concise application for the next Saturday Social.',
+  'purpose': 'application',
+  'identityPolicy': 'emailOrPhoneVerified',
+  'sections': [
+    {
+      'sectionId': 'about_you',
+      'title': 'About you',
+      'description': 'The essentials we need to review your application.',
+      'pageBreak': false,
+      'questions': [
+        _hostFormBuilderAuditQuestion(
+          id: 'full_name',
+          label: 'Full name',
+          kind: 'shortText',
+          canonicalFieldId: 'fullName',
+        ),
+        _hostFormBuilderAuditQuestion(
+          id: 'phone_number',
+          label: 'Phone number',
+          kind: 'phone',
+          canonicalFieldId: 'phoneNumber',
+        ),
+      ],
+    },
+    {
+      'sectionId': 'intent',
+      'title': 'What brings you here?',
+      'description': null,
+      'pageBreak': false,
+      'questions': [
+        _hostFormBuilderAuditQuestion(
+          id: 'looking_for',
+          label: 'What are you hoping to find?',
+          kind: 'longText',
+          required: false,
+        ),
+      ],
+    },
+  ],
+  'logicRules': <Object?>[],
+  'appearance': {
+    'preset': 'editorial',
+    'logoAssetId': null,
+    'coverAssetId': null,
+    'activityKind': null,
+  },
+  'availability': {
+    'opensAt': null,
+    'closesAt': null,
+    'responseLimit': null,
+    'closedMessage': null,
+  },
+  'consent': {
+    'consentCopy':
+        'I consent to this information being used for this application.',
+    'consentVersion': 'v1',
+    'retentionCopy':
+        'Responses are retained for the application review period.',
+  },
+  'completion': {
+    'title': 'Application received',
+    'message': 'We will be in touch after the review.',
+    'actionKind': 'none',
+    'actionLabel': null,
+    'actionUrl': null,
+  },
+};
+
+Map<String, Object?> _hostFormBuilderAuditQuestion({
+  required String id,
+  required String label,
+  required String kind,
+  String? canonicalFieldId,
+  bool required = true,
+}) => {
+  'questionId': id,
+  'key': id,
+  'label': label,
+  'helpText': null,
+  'kind': kind,
+  'required': required,
+  'options': <Object?>[],
+  'canonicalFieldId': canonicalFieldId,
+  'privacyClass': canonicalFieldId == null ? 'organizerCustom' : 'contact',
+  'prefillPolicy': 'never',
+  'hostPresentation': 'detailOnly',
+  'validation': {
+    'minLength': null,
+    'maxLength': null,
+    'minNumber': null,
+    'maxNumber': null,
+    'earliestDate': null,
+    'latestDate': null,
+    'minSelections': null,
+    'maxSelections': null,
+    'maxFileCount': null,
+    'maxFileSizeBytes': null,
+    'allowedMimeTypes': <Object?>[],
+    'patternPreset': null,
+    'customError': null,
+  },
+};
+
 final List<HostFormSummary> _hostFormsAuditForms = [
   _hostFormsAuditSummary(
     id: 'guest-preferences',
@@ -5214,13 +5448,14 @@ List<Object> _hostInboxProviderOverrides({
   AsyncValue<String?> uid = const AsyncData<String?>(
     HostInboxSurfaceFixtures.hostUid,
   ),
+  bool includeUid = true,
   AsyncValue<ChatsListViewModel>? viewModel,
   AsyncValue<List<Club>>? clubs,
   AsyncValue<List<Event>>? events,
   AsyncValue<List<EventParticipation>>? participations,
 }) {
   return [
-    uidProvider.overrideWithValue(uid),
+    if (includeUid) uidProvider.overrideWithValue(uid),
     hostOperableClubsProvider(
       HostInboxSurfaceFixtures.hostUid,
     ).overrideWithValue(
@@ -5280,6 +5515,54 @@ List<Object> _hostInboxProviderOverrides({
     ),
   ];
 }
+
+final _hostInboxSelectedPreview =
+    HostInboxSurfaceFixtures.allThreads.conversations.first;
+final _hostInboxSelectedMessages = <ChatMessage>[
+  MatchesChatSurfaceFixtures.message(
+    id: 'host-inbox-selected-message-1',
+    senderId: HostInboxSurfaceFixtures.bookedOneUid,
+    text: 'See you tonight! Is the entrance beside the blue team board?',
+    sentAt: HostInboxSurfaceFixtures.now.subtract(const Duration(minutes: 24)),
+  ),
+  MatchesChatSurfaceFixtures.message(
+    id: 'host-inbox-selected-message-2',
+    senderId: HostInboxSurfaceFixtures.hostUid,
+    text: 'Yes. Head upstairs and we will meet you by the board.',
+    sentAt: HostInboxSurfaceFixtures.now.subtract(const Duration(minutes: 18)),
+  ),
+];
+
+List<Object> _hostInboxSelectedThreadOverrides() => [
+  ..._hostInboxProviderOverrides(includeUid: false),
+  ..._hostChatProviderOverrides(
+    uid: HostInboxSurfaceFixtures.hostUid,
+    match: _hostInboxSelectedPreview.match,
+    matchId: _hostInboxSelectedPreview.matchId,
+    messages: _hostInboxSelectedMessages,
+    includeEvent: false,
+    includeClub: false,
+  ),
+  watchClubProvider(
+    HostInboxSurfaceFixtures.club.id,
+  ).overrideWith((ref) => Stream<Club?>.value(HostInboxSurfaceFixtures.club)),
+  watchEventProvider(
+    HostInboxSurfaceFixtures.event.id,
+  ).overrideWith((ref) => Stream<Event?>.value(HostInboxSurfaceFixtures.event)),
+  watchPublicProfileProvider(
+    HostInboxSurfaceFixtures.bookedOneUid,
+  ).overrideWith(
+    (ref) => Stream<PublicProfile?>.value(
+      const PublicProfile(
+        uid: HostInboxSurfaceFixtures.bookedOneUid,
+        name: 'Dev Patel',
+        age: 30,
+        gender: Gender.man,
+        city: 'Mumbai',
+      ),
+    ),
+  ),
+];
 
 List<Object> _hostChatProviderOverrides({
   String? uid = MatchesChatSurfaceFixtures.hostUid,
@@ -6478,6 +6761,45 @@ final _hostEventsSpotlightEvent = _hostManageReferenceEvent.copyWith(
   ),
 );
 final _hostEventsReferenceNow = DateTime(2026, 6, 17, 17);
+final _hostTodayReferenceEvents = <Event>[
+  _hostEventsSpotlightEvent.copyWith(
+    startTime: DateTime(2026, 6, 17, 20),
+    endTime: DateTime(2026, 6, 17, 22),
+    bookedCount: 24,
+    checkedInCount: 18,
+    waitlistedCount: 2,
+    capacityLimit: 30,
+  ),
+  HostOperationsFixtures.upcomingEvent.copyWith(
+    id: 'host-today-reference-run',
+    clubId: _hostEventsReferenceClub.id,
+    startTime: DateTime(2026, 6, 19, 6, 30),
+    endTime: DateTime(2026, 6, 19, 8),
+    bookedCount: 16,
+    waitlistedCount: 0,
+    capacityLimit: 24,
+  ),
+  HostOperationsFixtures.fullEvent.copyWith(
+    id: 'host-today-reference-dinner',
+    clubId: _hostEventsReferenceClub.id,
+    startTime: DateTime(2026, 6, 21, 20),
+    endTime: DateTime(2026, 6, 21, 22),
+    bookedCount: 10,
+    checkedInCount: 0,
+    waitlistedCount: 0,
+    capacityLimit: 15,
+  ),
+  HostOperationsFixtures.upcomingEvent.copyWith(
+    id: 'host-today-reference-padel',
+    clubId: _hostEventsReferenceClub.id,
+    startTime: DateTime(2026, 6, 23, 9),
+    endTime: DateTime(2026, 6, 23, 10, 30),
+    eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.padel),
+    bookedCount: 5,
+    waitlistedCount: 0,
+    capacityLimit: 16,
+  ),
+];
 final _hostEventsReferenceEvents = <Event>[
   _hostEventsSpotlightEvent.copyWith(
     id: 'host-events-reference-trivia',
@@ -9715,7 +10037,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_home_dashboard',
-    routeIds: const <String>['hostHomeScreen'],
+    routeIds: const <String>['hostHomeScreen', 'hostTodayScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
@@ -9723,20 +10045,18 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         hostedClubs: [_hostEventsReferenceClub],
         ownedClubs: [_hostEventsReferenceClub],
         clubEvents: {
-          _hostEventsReferenceClub.id: AsyncData<List<Event>>([
-            _hostEventsSpotlightEvent,
-          ]),
+          _hostEventsReferenceClub.id: AsyncData<List<Event>>(
+            _hostTodayReferenceEvents,
+          ),
         },
       ),
     ],
     builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/events',
+      initialLocation: '/host/today',
       activeIndex: 0,
-      child: HostOperationsHomeScreen(
-        initialClubId: 'host-home-reference-bandra-social',
-        now: _hostEventsSpotlightEvent.startTime.subtract(
-          const Duration(hours: 2),
-        ),
+      child: HostTodayScreen(
+        initialOrganizerId: 'host-home-reference-bandra-social',
+        now: _hostEventsReferenceNow,
       ),
     ),
   ),
@@ -9758,9 +10078,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) => _HostRoutedShellCapture(
       initialLocation: '/host/events',
-      activeIndex: 0,
-      child: HostOperationsHomeScreen(
-        initialClubId: _hostEventsReferenceClub.id,
+      activeIndex: 1,
+      child: HostEventsScreen(
+        initialOrganizerId: _hostEventsReferenceClub.id,
         now: _hostEventsReferenceNow,
       ),
     ),
@@ -9778,7 +10098,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(initialClubId: 'design-host-cohost-club'),
+      child: HostTodayScreen(initialOrganizerId: 'design-host-cohost-club'),
     ),
   ),
   ScreenCaptureEntry(
@@ -9797,9 +10117,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(
-        initialClubId: _hostHomeLongNameOwnerClub.id,
-      ),
+      child: HostTodayScreen(initialOrganizerId: _hostHomeLongNameOwnerClub.id),
     ),
   ),
   ScreenCaptureEntry(
@@ -9809,10 +10127,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       uidProvider.overrideWithValue(const AsyncData<String?>(null)),
     ],
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_clubs_loading',
@@ -9822,10 +10138,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       hostedClubsAsync: const AsyncLoading<List<Club>>(),
       ownedClubsAsync: const AsyncLoading<List<Club>>(),
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_clubs_error',
@@ -9837,10 +10151,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         StackTrace.empty,
       ),
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_clubs_offline',
@@ -9852,10 +10164,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         StackTrace.empty,
       ),
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_empty_clubs',
@@ -9865,10 +10175,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       hostedClubs: const <Club>[],
       ownedClubs: const <Club>[],
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_loading',
@@ -9880,10 +10188,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
             const AsyncLoading<List<Event>>(),
       },
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_error',
@@ -9897,10 +10203,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         ),
       },
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_offline',
@@ -9916,7 +10220,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(initialClubId: 'design-host-table-club'),
+      child: HostTodayScreen(initialOrganizerId: 'design-host-table-club'),
     ),
   ),
   ScreenCaptureEntry(
@@ -9929,7 +10233,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(initialClubId: 'design-host-cohost-club'),
+      child: HostTodayScreen(initialOrganizerId: 'design-host-cohost-club'),
     ),
   ),
   ScreenCaptureEntry(
@@ -9938,10 +10242,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     textScale: 2,
     providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_reduced_motion',
@@ -9949,20 +10251,16 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     disableAnimations: true,
     providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_light_dark',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_management',
@@ -13247,6 +13545,45 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'host_live_console_wide',
+    routeIds: const <String>['hostAppEventManageScreen'],
+    device: CaptureDevice.auditTablet,
+    providerOverrides: [
+      uidProvider.overrideWith((ref) => Stream.value(_captureViewerUid)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => Stream.value(_captureViewer),
+      ),
+      watchEventProvider(
+        _hostLiveReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveReferenceEvent)),
+      eventParticipationRepositoryProvider.overrideWithValue(
+        _hostLiveReferenceParticipationRepository,
+      ),
+      watchEventAttendeesProvider(_hostLiveReferenceEvent.id).overrideWith(
+        (ref) => Stream.value(_hostLiveReferenceOperationalAttendees),
+      ),
+      publicProfileRepositoryProvider.overrideWithValue(
+        _hostLiveReferencePublicProfileRepository,
+      ),
+      watchEventSuccessPlanProvider(
+        _hostLiveReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(_hostLiveReferencePlan)),
+      watchEventSuccessScorecardProvider(
+        _hostLiveReferenceEvent.id,
+      ).overrideWith((ref) => Stream.value(null)),
+      ..._hostEventSuccessProviderOverrides,
+    ],
+    builder: (context) => HostEventManageScreen(
+      club: _hostLiveReferenceClub,
+      event: _hostLiveReferenceEvent,
+      onBackToSuccess: () {},
+      initialSection: HostEventManageSection.live,
+      referenceNow: _hostLiveReferenceEvent.startTime.add(
+        const Duration(minutes: 30),
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'host_live_room_workspace',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -15051,15 +15388,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_customers_populated',
-    routeIds: const <String>['hostCustomersScreen'],
+    routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ..._hostCustomersProviderOverrides(),
     ],
     builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/customers',
-      activeIndex: 1,
+      initialLocation: '/host/audience',
+      activeIndex: 2,
       child: HostCustomersScreen(
         initialOrganizerId: HostOperationsFixtures.primaryClub.id,
       ),
@@ -15067,18 +15404,18 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_customers_audiences_populated',
-    routeIds: const <String>['hostCustomersScreen'],
+    routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ..._hostCustomersProviderOverrides(),
     ],
     builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/customers?view=audiences',
-      activeIndex: 1,
+      initialLocation: '/host/audience?view=audiences',
+      activeIndex: 2,
       child: HostCustomersScreen(
         initialOrganizerId: HostOperationsFixtures.primaryClub.id,
-        initialView: HostCustomersView.audiences,
+        initialView: HostAudienceView.audiences,
       ),
     ),
   ),
@@ -15109,7 +15446,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_forms_populated',
-    routeIds: const <String>['hostFormsScreen'],
+    routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
@@ -15129,11 +15466,26 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
     ],
     builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/forms',
+      initialLocation: '/host/audience?view=forms',
       activeIndex: 2,
       child: HostFormsScreen(
         initialOrganizerId: HostOperationsFixtures.primaryClub.id,
       ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_form_builder_draft',
+    routeIds: const <String>['hostFormBuilderScreen'],
+    device: CaptureDevice.auditDesktop,
+    providerOverrides: [
+      hostFormEditorControllerProvider(
+        HostOperationsFixtures.primaryClub.id,
+        'saturday-social-application',
+      ).overrideWith(() => _CaptureHostFormEditorController()),
+    ],
+    builder: (context) => HostFormBuilderScreen(
+      organizerId: HostOperationsFixtures.primaryClub.id,
+      formId: 'saturday-social-application',
     ),
   ),
   ScreenCaptureEntry(
@@ -15155,8 +15507,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ).overrideWithValue(AsyncData(_hostCustomerMemoryCommunicationPlan())),
     ],
     builder: (context) => _HostRoutedShellCapture(
-      initialLocation: '/host/customers',
-      activeIndex: 1,
+      initialLocation: '/host/audience',
+      activeIndex: 2,
       child: HostCustomerDetailScreen(
         organizerId: HostOperationsFixtures.primaryClub.id,
         contactId: 'capture-customer-ananya',
@@ -15181,6 +15533,30 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         initialScope: const HostInboxScope.event(
           HostInboxSurfaceFixtures.eventId,
         ),
+        broadcastEnabled: true,
+        syncSelectionToRoute: false,
+        now: HostInboxSurfaceFixtures.now,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_inbox_thread_selected',
+    routeIds: const <String>['hostInboxScreen'],
+    device: CaptureDevice.auditTablet,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostInboxSurfaceFixtures.hostUid),
+      ..._hostInboxSelectedThreadOverrides(),
+    ],
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation:
+          '/host/inbox?eventId=${HostInboxSurfaceFixtures.eventId}'
+          '&threadId=${_hostInboxSelectedPreview.matchId}',
+      activeIndex: 3,
+      child: HostInboxScreen(
+        initialScope: const HostInboxScope.event(
+          HostInboxSurfaceFixtures.eventId,
+        ),
+        initialThreadId: _hostInboxSelectedPreview.matchId,
         broadcastEnabled: true,
         syncSelectionToRoute: false,
         now: HostInboxSurfaceFixtures.now,

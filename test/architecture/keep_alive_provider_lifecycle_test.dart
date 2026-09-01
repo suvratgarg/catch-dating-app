@@ -91,7 +91,7 @@ void main() {
           (_, _) {},
         );
         final initialLocation = subscription.read();
-        expect(initialLocation, Routes.hostEventsScreen.path);
+        expect(initialLocation, Routes.hostTodayScreen.path);
 
         subscription.close();
         await container.pump();

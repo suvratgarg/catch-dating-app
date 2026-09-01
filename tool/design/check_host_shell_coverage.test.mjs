@@ -6,16 +6,18 @@ import {
 } from "./check_host_shell_coverage.mjs";
 
 const destinations = [
+  "hostToday",
   "hostEvents",
-  "hostCustomers",
-  "hostForms",
+  "hostAudience",
   "hostInbox",
   "hostOrganizer",
 ];
+const labels = ["Today", "Events", "Audience", "Inbox", "Organizer"];
 const primaryRoutes = destinations.map((destination, index) => ({
   destination,
   routeId: `${destination}Screen`,
   path: `/host/${destination.slice(4).toLowerCase()}`,
+  label: labels[index],
   source: `lib/${destination}.dart`,
   captureId: `capture-${index}`,
 }));
@@ -33,12 +35,30 @@ function fixture() {
     manifest: {
       $schema: "catch.host-shell-coverage/v2",
       updated: "2026-08-29",
+      informationArchitectureDecision: {
+        selectedOption: "today-events-audience-inbox-organizer",
+        primaryLabels: primaryRoutes.map((route) => route.label),
+        todayOwnerRouteId: "hostTodayScreen",
+        formsOwnerRouteId: "hostAudienceScreen",
+        audiencesOwnerRouteId: "hostAudienceScreen",
+        inboxWorkspaceOwnerRouteId: "hostInboxScreen",
+      },
       primaryRoutes,
       legacyRoutes: [
         {
           routeId: "hostHomeScreen",
           status: "redirect",
-          canonicalRouteId: "hostEventsScreen",
+          canonicalRouteId: "hostTodayScreen",
+        },
+        {
+          routeId: "hostCustomersLegacyScreen",
+          status: "redirect",
+          canonicalRouteId: "hostAudienceScreen",
+        },
+        {
+          routeId: "hostFormsLegacyScreen",
+          status: "redirect",
+          canonicalRouteId: "hostAudienceScreen",
         },
       ],
     },
@@ -85,4 +105,30 @@ test("rejects a retired primary route and missing canonical capture", () => {
   assert.ok(errors.some((error) => error.includes("destination order")));
   assert.ok(errors.some((error) => error.includes("retired hostHomeScreen")));
   assert.ok(errors.some((error) => error.includes("does not own capture-1")));
+});
+
+test("rejects the retired shell IA and its split Forms owner", () => {
+  const input = fixture();
+  input.manifest.informationArchitectureDecision = {
+    ...input.manifest.informationArchitectureDecision,
+    selectedOption: "forms-global-today-within-events",
+    todayOwnerRouteId: "hostEventsScreen",
+    formsOwnerRouteId: "hostFormsScreen",
+  };
+  const errors = validateHostShellCoverage(input);
+  assert.ok(
+    errors.some((error) =>
+      error.includes("remain Today, Events, Audience, Inbox, Organizer"),
+    ),
+  );
+  assert.ok(
+    errors.some((error) =>
+      error.includes("todayOwnerRouteId must remain hostTodayScreen"),
+    ),
+  );
+  assert.ok(
+    errors.some((error) =>
+      error.includes("formsOwnerRouteId must remain hostAudienceScreen"),
+    ),
+  );
 });

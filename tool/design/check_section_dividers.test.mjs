@@ -159,7 +159,7 @@ test("allows CatchSection field rows to own sibling dividers", () => {
 
 test("flags custom CatchField leading content without a declared extent", () => {
   const findings = scanSourceForSectionDividers({
-    relativePath: "lib/hosts/presentation/host_operations/host_events_list.dart",
+    relativePath: "lib/hosts/events/presentation/widgets/host_events_list.dart",
     source: [
       "CatchField.nav(",
       "  title: 'Saturday Evening Run',",
@@ -175,7 +175,7 @@ test("flags custom CatchField leading content without a declared extent", () => 
 
 test("allows custom CatchField leading content with a declared extent", () => {
   const findings = scanSourceForSectionDividers({
-    relativePath: "lib/hosts/presentation/host_operations/host_events_list.dart",
+    relativePath: "lib/hosts/events/presentation/widgets/host_events_list.dart",
     source: [
       "CatchField.nav(",
       "  title: 'Saturday Evening Run',",

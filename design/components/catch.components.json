@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-08-29",
+  "updated": "2026-08-31",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -6607,10 +6607,11 @@
             "id": "catch.top_bar.screen_top_bar",
             "symbol": "CatchScreenTopBar",
             "file": "lib/core/widgets/catch_top_bar.dart",
-            "summary": "Root-screen app-bar wrapper that composes CatchScreenHeaderTitle inside CatchTopBar while preserving actions, leading, safe area, padding, bottom, and expanding search configuration.",
+            "summary": "Root-screen app-bar wrapper that composes CatchScreenHeaderTitle inside CatchTopBar while preserving actions, leading, safe area, padding, bottom, expanding search configuration, and natural two-line subtitle height at large text.",
             "states": [
               "root-title",
               "with-subtitle",
+              "large-text-subtitle",
               "with-search",
               "with-leading",
               "with-actions"
@@ -13251,7 +13252,7 @@
             "id": "catch.tabbed_screen.page_scroll_view",
             "symbol": "CatchTabbedPageScrollView",
             "file": "lib/core/widgets/catch_tabbed_screen.dart",
-            "summary": "Per-page vertical owner for focus isolation, matching overlap injection, stable PageStorage restoration, and shell-aware terminal padding.",
+            "summary": "Per-page vertical owner for focus isolation, matching overlap injection, stable PageStorage restoration, shell-aware terminal padding, and an optional screen-owned semantic maximum extent for bounded operational records.",
             "states": [
               "top",
               "scrolled",
@@ -13271,7 +13272,7 @@
             "id": "catch.tabbed_screen.sliver_content_width",
             "symbol": "CatchSliverContentWidth",
             "file": "lib/core/widgets/catch_tabbed_screen.dart",
-            "summary": "Sliver-native semantic width policy that stays direct on phones and centers the canonical readable lane on wide viewports.",
+            "summary": "Sliver-native semantic width policy that stays direct below the supplied maximum extent and centers the canonical or screen-owned bounded lane on wider viewports.",
             "states": [
               "phone-direct",
               "wide-centered",

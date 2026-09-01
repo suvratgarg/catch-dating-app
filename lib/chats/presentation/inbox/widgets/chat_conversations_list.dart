@@ -16,6 +16,7 @@ class ChatConversationsList extends StatelessWidget {
     required this.onThreadSelected,
     this.previewTextFor,
     this.timestampTextFor,
+    this.selectedMatchId,
     this.now,
   });
 
@@ -23,6 +24,7 @@ class ChatConversationsList extends StatelessWidget {
   final ChatThreadSelectedCallback onThreadSelected;
   final ChatPreviewTextBuilder? previewTextFor;
   final ChatTimestampTextBuilder? timestampTextFor;
+  final String? selectedMatchId;
   final DateTime? now;
 
   @override
@@ -34,7 +36,7 @@ class ChatConversationsList extends StatelessWidget {
           final preview = matches[index];
           final unreadCount = preview.unreadCount;
           final isNew = !preview.hasConversation;
-          return CatchPersonRow(
+          final row = CatchPersonRow(
             data: CatchPersonRowData(
               name: preview.displayName,
               imageUrl: preview.photoUrl,
@@ -54,6 +56,20 @@ class ChatConversationsList extends StatelessWidget {
             divider: index > 0,
             showFreshBackground: false,
             onTap: () => onThreadSelected(preview),
+          );
+          if (selectedMatchId != preview.matchId) return row;
+          return Semantics(
+            key: ValueKey<String>(
+              'chat-conversation-selected-${preview.matchId}',
+            ),
+            container: true,
+            selected: true,
+            child: ColoredBox(
+              color: CatchTokens.of(
+                context,
+              ).ink.withValues(alpha: CatchOpacity.tabBarPillFill),
+              child: row,
+            ),
           );
         }, childCount: matches.length),
       ),

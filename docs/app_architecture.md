@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.18.2
-updated: 2026-08-31
+version: 1.20.0
+updated: 2026-09-01
 owner: app_architecture
 status: active
 ---
@@ -181,6 +181,33 @@ lib/<feature>/
 Small features do not need every file. A feature may have only a repository and
 one screen if the behavior is simple. Large features may split by surface under
 `presentation/`, but should keep route-level screens easy to find.
+
+The authenticated Host app applies the same rule below its product domain. Its
+five global destinations are feature boundaries, not modes of one Home screen:
+
+```text
+lib/hosts/
+  today/{domain,data,presentation}
+  events/{domain,data,presentation}
+  audience/{domain,data,presentation}
+  inbox/{domain,data,presentation}
+  organizer/{domain,data,presentation}
+```
+
+The reviewed responsibility source for those five destinations is
+`design/features/host_feature_responsibilities.json`. It generates a local
+`README.md` at each target root and cross-checks the Host shell order, typed
+routes, existing feature-contract action owners, Dart symbols, specialist data
+contracts, and focused tests. Edit the machine-readable source and regenerate;
+do not hand-maintain five summaries. A generated README may name legacy current
+roots while a destination is migrating, but that status is not permission to
+add new destination-owned behavior to the legacy aggregate.
+
+Only create a layer when the destination has an owner for it. Shared event,
+organizer, roster, or shell behavior must live with its real authority and may
+be consumed across these destination folders; destination presentation code
+must never become the persistence owner merely because two tabs display the
+same entity.
 
 Files under `lib/**/presentation/**` ending in `_state.dart` are provider-free
 display adapters by naming convention. They may depend on domain/core/value
@@ -574,16 +601,57 @@ system.
 
 | Surface | Compact phone | Medium tablet | Expanded web or Mac window |
 |---|---|---|---|
-| Events | consolidated hero, attention queue, lifecycle list, full-screen Manage | rail plus event list and persistent selected-event summary where selection exists | operational command centre with event index, selected status/tasks, and compact quick actions |
-| Customers | search/filter directory, pushed customer detail | directory plus selected customer detail | filter/index pane, durable customer detail, history/actions pane when useful |
+| Today | live-or-next event spotlight and urgent cross-event work | rail plus operational spotlight and adjacent next actions | cross-event command centre with current event, attention, and compact quick actions |
+| Events | lifecycle inventory and full-screen Manage | rail plus event list and persistent selected-event summary where selection exists | bounded event index, selected status/tasks, and lifecycle actions |
+| Audience | People, Audiences, Forms, or Responses as one selected mode; pushed detail/editor | selected mode plus durable customer/form context where useful | filter/index pane, durable detail, and history/actions pane at capable local widths |
 | Inbox | event scope and conversation list, pushed thread | conversation list plus selected thread | event/audience navigation, conversation list, and thread/detail at sufficiently wide local width |
 | Organizer | top tabs and one form lane | rail plus secondary organizer navigation and one content pane | secondary navigation, editor, and preview or insights pane |
 | Create Event | current paged wizard and bottom actions | step rail plus focused form; optional summary pane in landscape | step rail, approximately 640 px form lane, live cover/summary preview, compact sticky actions |
-| Manage Event | one lifecycle-owned Preparation, Live Operations, or Recap workspace plus an overlay guest-roster drawer; Live may switch locally between Now and Room while Guests opens that drawer | the same lifecycle workspace with a wider overlay roster | lifecycle workspace, wide overlay roster, and context-appropriate commands without persistent top-level mode navigation |
+| Manage Event | one lifecycle-owned Preparation, Live Operations, or Recap workspace plus an overlay guest-roster drawer; Live may switch locally between Now and Room while Guests opens that drawer | the same lifecycle workspace; a capable local Live width keeps the command stage and supporting operations concurrent | bounded lifecycle workspace, command stage plus supporting operations, wide overlay roster, and no persistent top-level mode navigation |
 
-The consolidated Events route remains canonical. Responsive work must not
-recreate the retired Today destination or split operational shortcuts away from
-the lifecycle list.
+Today and Events remain separate canonical destinations. Responsive work must
+not collapse the cross-event operational home back into the durable event
+inventory or recreate Forms as a top-level destination.
+
+**Primary Host information architecture decision**
+
+The selected global contract is
+`Today · Events · Audience · Inbox · Organizer` on compact, medium, and
+expanded shells. This is a product-authority decision, not a reference-render
+preference:
+
+- Today owns the live-or-next event, time-sensitive attention, safest immediate
+  actions across the organizer's events, and the explicit Dress Rehearsal
+  entry. `/host` redirects to `/host/today`.
+- Events owns the durable event inventory, creation, schedule, history, and
+  lifecycle entry points. The isolated rehearsal feature remains event-scoped,
+  but it is entered from Today instead of masquerading as event creation.
+- Audience owns four peer modes: People, Audiences, Forms, and Responses.
+  Person-level CRM and intake keep their focused controllers and deep routes;
+  they no longer compete as global destinations.
+- Inbox owns the peer Inbox and Sends workspaces at `/host/inbox`. The short
+  destination label includes conversations, campaigns, event announcements,
+  follower updates, and manual send work without exposing the implementation
+  term Messaging as shell information architecture.
+- Organizer remains the identity, team, defaults, provider, payout, and
+  settings authority.
+
+The decision follows platform guidance that primary navigation represents a
+small number of persistent, peer top-level areas and preserves state within
+each area: [Apple tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars)
+and [Android layout and navigation patterns](https://developer.android.com/design/ui/mobile/guides/layout-and-content/layout-and-nav-patterns).
+Airbnb's Host guidance uses Today for an overview of upcoming reservations
+while keeping Calendar and Listings as distinct work domains
+([Airbnb Host dashboards](https://www.airbnb.com/help/article/3116)). Catch
+uses the same separation between immediate operations and durable inventory.
+Clear, destination-shaped labels also retain stronger information scent
+([Nielsen Norman Group](https://www.nngroup.com/articles/3-ia-mistakes/)).
+
+No verified Host route-frequency study or usage export is present in the
+repository. Therefore any future change to this global contract requires new
+product evidence, an explicit route/state compatibility plan, and a
+coordinated update to the shell manifest, routes, copy, tests, contracts, and
+captures. Reference images alone cannot reopen or bypass this boundary.
 
 **Architecture boundaries**
 
@@ -639,11 +707,11 @@ splits a section or teaches `CatchField` about the viewport.
 1. Foundation: adaptive Host bottom/rail/sidebar shell, shared geometry,
    current-branch preservation, exact 599/600/839/840 boundary tests, and
    phone/tablet/desktop Widgetbook states. This is the reference slice.
-2. Events reference workspace: keep the existing typed lifecycle state and
-   callbacks, then add medium and expanded provider-free compositions with no
-   data-layer changes.
-3. Customers and Inbox: introduce URL-backed master-detail selection and
-   preserve full-screen compact routes.
+2. Today and Events reference workspaces: keep the existing typed operational
+   and lifecycle state and callbacks, then add medium and expanded
+   provider-free compositions with no data-layer changes.
+3. Audience and Inbox: introduce URL-backed master-detail selection and
+   preserve full-screen compact routes and focused editors.
 4. Organizer, Create Event, and Manage Event: recompose the existing state and
    controllers into multi-pane workspaces, retaining local component
    breakpoints for forms and roster tables.
@@ -853,9 +921,12 @@ For `NestedScrollView` plus pinned tab rows:
 - Body padding belongs to the tab body, not to the pinned tab row.
 - Route-owned tab pages use `CatchTabbedPageScrollView`. Box-content pages opt
   into `constrainToContentWidth`; it preserves the canonical 600 px content
-  lane plus page gutters only when the viewport has surplus width. Phone-width
-  pages remain direct slivers. Full-bleed or intrinsically sliver-native pages
-  such as embedded Club Preview leave the option false.
+  lane plus page gutters only when the viewport has surplus width. A page may
+  supply a larger semantic `maxContentExtent` when its records carry multiple
+  operational columns or summaries; this changes only the centered lane, not
+  scroll ownership. Phone-width pages remain direct slivers. Full-bleed or
+  intrinsically sliver-native pages such as embedded Club Preview leave the
+  option false.
 - The overlap injector and terminal-padding sliver remain full-viewport even
   when page content is width constrained.
 - If a tab body contains an independently scrollable child and its top gap must
@@ -910,6 +981,7 @@ feature-local `Center`/`ConstrainedBox` wrappers or box the Preview slivers.
 | Map-heavy screens | Audit before migrating. Stable map viewport may matter more than sliver composition. |
 | Attendance sheet | Keep box-based while it remains a modal/sheet. |
 | Create event, onboarding, auth | Do not migrate just for consistency. |
+| Host Forms | Keep Forms / Responses as peer pages in the direct Forms destination. The Forms directory uses an 840 px operational content lane on capable widths so lifecycle, response, and consequence summaries remain legible. The builder stays single-task on phone and uses outline / respondent preview / inspector panes from 960 px; phone publication stays in `CatchBottomAction`, while tablet and desktop publication belongs in the top command bar rather than a full-viewport footer. |
 
 ### Design Tooling And Component Contracts
 
@@ -2071,17 +2143,18 @@ Rules:
   evidence and remaining TestFlight/Play work live in
   `docs/release_operations.md`.
 
-### Host Customers CRM, Provider, Staff, And Offline Boundaries
+### Host Audience CRM, Provider, Staff, And Offline Boundaries
 
 - `HostCrmRepository` is the single Flutter Functions facade for organizer
   customer summary, directory/detail, contact controls/export, Meta sender
-  setup and campaign lifecycle. The top-level Customers branch owns peer People
-  and Audiences workspaces: People owns the organizer CRM directory and customer
-  detail, while Audiences owns reusable definition authoring and exact previews.
-  The top-level Messaging branch owns the Inbox and Sends workspaces, including
-  sender setup and campaign lifecycle. Messaging and Organizer must not mount a
-  second audience builder, and event-manage widgets must not read restricted CRM
-  collections directly.
+  setup and campaign lifecycle. The top-level Audience branch owns peer People,
+  Audiences, Forms, and Responses workspaces: People owns the organizer CRM
+  directory and customer detail; Audiences owns reusable definition authoring
+  and exact previews; Forms and Responses own intake and review. The top-level
+  Inbox branch owns the Inbox and Sends workspaces, including sender setup and
+  campaign lifecycle. Inbox and Organizer must not mount a second audience
+  builder, and event-manage widgets must not read restricted CRM collections
+  directly.
 - A CRM contact, identity link, communication permission, communication route,
   saved audience, send attempt, and delivery receipt are different authorities.
   No screen or repository model may collapse one into another. A linked Catch
@@ -2103,14 +2176,14 @@ Rules:
   permission receipt. Unchecked input, ordinary form consent, imports, roster
   writes, manager entry, tags, applications, and merges never grant or revoke
   permission by inference.
-- Customers owns durable reusable CRM audiences. Event announcement workflows
-  own event-scoped audiences such as Booked and Prospective. Messaging consumes
+- Audience owns durable reusable CRM audiences. Event announcement workflows
+  own event-scoped audiences such as Booked and Prospective. Inbox consumes
   either a saved audience id or an event-scoped audience reference and must not
   grow a second audience-builder or reinterpret CRM predicates locally.
-- Customers may hand a scoped, exact computed segment or organizer tag to
-  Messaging only after persisting it as a saved audience and carrying that
+- Audience may hand a scoped, exact computed segment or organizer tag to Inbox
+  only after persisting it as a saved audience and carrying that
   audience id into compose. An unscoped, searched, partial, empty, or otherwise
-  blocked customer view never gets a generic Messaging shortcut. When an
+  blocked customer view never gets a generic Inbox shortcut. When an
   eligible view is blocked by organizer sender readiness, its recovery action
   opens the dedicated WhatsApp Business setup route; environment/provider
   unavailability remains explanatory and non-actionable.
@@ -2194,14 +2267,15 @@ and initialization complete.
 - Host, web, and desktop retain their existing startup behavior unless their
   role-specific owner explicitly adopts a different boot composition.
 
-Host Messaging is the reference for sharing foundations without sharing product
+Host Inbox is the reference for sharing foundations without sharing product
 composition. Consumer `/chats` owns `ChatsListScreen`; the compatibility route
-`/host/inbox` owns `HostInboxScreen` and presents the product label Messaging.
+`/host/inbox` owns `HostInboxScreen`; its shell label is Inbox while the local
+screen heading Messaging names the combined Inbox and Sends modes.
 They may reuse `ChatConversationsList`, `CatchPersonRow`, search state, inquiry
 repositories, and routing contracts, but the consumer screen must not remain
 the Host route dispatcher.
 
-The Host Messaging contract is:
+The Host Inbox contract is:
 
 - every workspace follows `hostOrganizerSelectionProvider`; Inbox events,
   inquiry previews, WhatsApp sender setup, and campaigns must all resolve from
@@ -2210,7 +2284,17 @@ The Host Messaging contract is:
   inquiries and reply-capable conversations. Sends owns outbound intent
   selection, event-announcement composition, mixed outbound history,
   follower-update composition and organizer campaign lifecycle; sender setup
-  stays on the dedicated organizer messaging route;
+  stays on the dedicated organizer messaging route. Workspace changes update
+  the compatibility route query when route synchronization is enabled;
+- Inbox decides list/thread adjacency from the width available inside the route
+  body after shell navigation, not from the global window. At 720 px or wider
+  it uses the canonical 360 px index beside a selected thread; narrower bodies
+  keep the pushed-thread flow. The index owns visible and semantic selection,
+  while each embedded `ChatScreen` is keyed by thread id and reports its draft
+  to the route so switching or resizing cannot leak or discard thread state;
+- Sends keeps its operational slivers inside an 840 px content lane on wide
+  bodies so intent controls, manual work, history, and empty states retain one
+  shared reading axis;
 - an explicit selected Event or explicit General scope; General is never an
   event-id sentinel;
 - personal two-party contacted-host inquiry threads, separated by event;
@@ -2292,16 +2376,18 @@ route.
 Conversely, provider-backed routes are unavailable until their sender,
 template, permission and provider health gates pass.
 
-Host Forms remains a general intake system. `HostFormPurpose` is useful internal
-classification, but list and publish-review copy must describe actual
-consequences: whether a response can create or update a CRM contact, which
-identity evidence it requests, whether participant permission is requested,
-and which review queue receives the result. Form automations may create or
-propose CRM, tag, application, attendee, team-notification, webhook, and
-campaign-draft work. They must not silently dispatch participant or customer
-outreach. Applications and form responses remain Forms-owned work queues;
-Customers may link to a person's application history but does not own the
-application queue.
+Host Forms remains the Audience destination's general intake system.
+`HostFormPurpose` is useful internal classification, but list and
+publish-review copy must describe actual consequences: whether a response can
+create or update a CRM contact, which identity evidence it requests, whether
+participant permission is requested, and which review queue receives the
+result. Form automations may create or propose CRM, tag, application, attendee,
+team-notification, webhook, and campaign-draft work. They must not silently
+dispatch participant or customer outreach. Audience owns the Forms,
+Applications, and Responses workspaces and their canonical routes; the Forms
+domain retains response/application semantics and mutation ownership. A person
+record may link to application history, but neither the People workspace nor a
+separate global Forms destination owns the application queue.
 
 Customer detail is the organizer CRM hub. Identity, editable organizer-owned
 contact facts, provenance, permission explanation, current communication plan,
@@ -2319,7 +2405,8 @@ pickers, keeps manual handoff work in Sends, reviews every permission-authority
 collection consumer, confines canonical collection writes, preserves Host Form
 provenance for both new and matched contacts, and rejects provider delivery or
 read claims on manual handoffs. It pins the Applications list and detail routes
-to the Forms shell while requiring redirects for legacy Customers URLs. It also
+to the Audience shell while requiring redirects for legacy Customers and Forms
+URLs. It also
 requires ICU plural ownership for
 visible CRM counts across Forms, Customers, saved audiences, and Sends. The
 scanner is deliberately narrower than a global “reachable” enum:
@@ -3158,15 +3245,25 @@ Defined variant:
   `HostEventManageRouteScreen` keeps canonical route ids/aliases, uid/club/event
   loading, missing-resource/error branches, host access gating, retry
   invalidation, and initial alias/deep-link inputs. `HostEventManageScreenState`
-  resolves the phase from event time/status; the guest roster is a lazy overlay
-  drawer that preserves the underlying workspace element and maps old Guests
-  deep links to an initially-open drawer. Preparation owns stable event details,
+  resolves the phase from event time/status; the top bar exposes one durable
+  Guest roster action and the roster is a lazy, full-viewport-edge overlay that
+  preserves the bounded underlying workspace element and maps old Guests deep
+  links to an initially-open drawer. Preparation owns stable event details,
   website registration, imported/manual/provider guest sources, private invite
   access, temporary event-staff access, Event Success setup, and host actions.
   The roster drawer owns guest status, search/filter, claims, attendance, and
-  reporting; setup-only import, forwarding, provider, registration, and staff
-  controls must not appear there. Live Operations may expose the single urgent
-  Add walk-in escape hatch, while Recap keeps the roster read-only. Provider-free
+  reporting plus a route-owned handoff to the existing event-scoped Host Inbox;
+  setup-only import, forwarding, provider, registration, and staff controls
+  must not appear there. Live Operations may expose the single urgent Add
+  walk-in escape hatch, while Recap keeps the roster read-only. The compact
+  Live Now console remains one scrollable command flow with a pinned action.
+  At the named local supporting-pane breakpoint, the same typed state reflows
+  into a dominant command stage and one 360 px supporting-operations lane;
+  Guests, fallback help, exclusion warnings, and current-step controls move to
+  that lane while the revision-fenced Previous/Continue region stays attached
+  to the stage. Text scale 1.4 and above returns to the single-column flow.
+  The roster remains the existing viewport-edge overlay rather than becoming a
+  third persistent data pane. Provider-free
   preparation, roster, private-access, invite-link, Event Success, recap, and
   host-action sections retain explicit display state and typed callbacks. Do
   not move solved route loading/access work into the workspace adapter, and do
@@ -3394,6 +3491,13 @@ roles, and explicit leading/action slots. Sliver screens pass
 screens use `CatchScreenTopBar(...)`, which wraps `CatchTopBar` while preserving
 search, leading, action, safe-area, and padding configuration.
 
+The app-bar wrapper's preferred size must reserve the same title, eyebrow,
+subtitle, and action line counts that `CatchScreenHeaderTitle` renders. At a
+text scale of 1.5 or greater the supporting subtitle may use two lines, so
+`CatchScreenTopBar.heightFor` must budget two scaled supporting line heights.
+Keep this invariant in the shared primitive and its focused widget test rather
+than compensating with route-owned fixed heights.
+
 Top-bar action slots accept only the top-bar action family. Use
 `CatchTopBarPrimaryAction` for a primary root-screen action: it renders the
 canonical 40 px bordered icon target on compact phones and preserves the
@@ -3423,6 +3527,7 @@ const CatchScreenHeaderTitle.block({
 @override
 Widget build(BuildContext context) {
   final t = CatchTokens.of(context);
+  final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
 
   return Row(
     children: [
@@ -3448,9 +3553,9 @@ Widget build(BuildContext context) {
             ),
             if (subtitle != null) ...[
               const SizedBox(height: CatchGaps.headerTitleToSubtitle),
-              Text(
-                subtitle!,
-                maxLines: 1,
+            Text(
+              subtitle!,
+              maxLines: largeText ? 2 : 1,
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
@@ -3497,19 +3602,34 @@ Reference files:
 - `test/calendar/calendar_screen_state_test.dart`
 - `lib/events/presentation/calendar/calendar_screen.dart`
 
-Current Host-v2 adopter:
+Current Host adopters:
 
-- `lib/hosts/presentation/host_home_screen_state.dart`
-- `lib/hosts/presentation/host_operations/host_events_list.dart`
+- `lib/hosts/today/presentation/host_today_state.dart`
+- `lib/hosts/today/presentation/host_today_view_model.dart`
+- `lib/hosts/today/presentation/widgets/host_today_body.dart`
+- `test/hosts/today/host_today_state_test.dart`
+- `lib/hosts/events/presentation/host_events_state.dart`
+- `lib/hosts/events/presentation/host_events_view_model.dart`
+- `lib/hosts/events/presentation/widgets/host_events_list.dart`
 - `test/hosts/host_operations_screen_test.dart`
 
-`HostEventsWorkspaceState` applies the same boundary to lifecycle policy: the
-provider adapter supplies events and an injected clock once; the state object
-owns cancellation exclusion, exact Upcoming/Live/Past classification, ordering,
-month/year grouping, Repeat availability, fill clamping, and render-ready row
-metadata; provider-free widgets consume only that state and typed callbacks.
-Do not move those decisions back into row widgets or substitute waitlist count
-for a pending-approval aggregate.
+`HostTodayState` and `HostTodayAttentionData` apply the boundary to the
+command-centre projection: `HostTodayScreen` translates provider snapshots at
+the route edge, the provider-free builder prioritizes live before upcoming,
+keeps every supported event-identified attention item, and prepares the bounded
+Later preview. `HostAttentionPolicy` owns whether backend event facts qualify
+as actionable work, applies the named seven-day Today horizon, and orders work
+by immediate, soon, then upcoming urgency. Widgets render that result and emit
+typed callbacks; they do not inspect repositories, admission policy, or route
+state.
+
+`HostEventsWorkspaceState` applies the same boundary to inventory lifecycle
+policy: the provider adapter supplies events and an injected clock once; the
+state object owns cancellation exclusion, exact Upcoming/Live/Past
+classification, ordering, month/year grouping, Repeat availability, fill
+clamping, and render-ready row metadata; provider-free widgets consume only
+that state and typed callbacks. Do not move those decisions back into row
+widgets or substitute waitlist count for a pending-approval aggregate.
 
 Use this pattern when a screen needs a provider-free display model that merges
 repository/domain data into UI-ready state. The screen may watch providers at the
@@ -3530,7 +3650,8 @@ selects error, and stale data remains available under an explicit error policy.
 Host presentation code must not branch directly on `isLoading`, `hasError`,
 `hasValue`, `asData`, or `valueOrNull` from a watched `AsyncValue`. The
 `catch_async_requires_state_surface` analyzer diagnostic enforces this route
-edge throughout `lib/hosts/presentation/`. Convert the snapshot once, then let
+edge throughout Host presentation folders under `lib/hosts/`. Convert the
+snapshot once, then let
 a feature-owned display state decide whether the result is a full-screen load,
 empty success, missing resource, primary failure, or optional enrichment. This
 keeps Riverpod transition semantics out of feature widgets and prevents a

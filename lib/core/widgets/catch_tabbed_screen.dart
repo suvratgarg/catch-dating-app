@@ -114,6 +114,7 @@ class CatchTabbedPageScrollView extends StatefulWidget {
     required this.slivers,
     this.includeTerminalPadding = true,
     this.constrainToContentWidth = false,
+    this.maxContentExtent,
     this.controller,
     this.scrollStateController,
     this.physics,
@@ -131,6 +132,10 @@ class CatchTabbedPageScrollView extends StatefulWidget {
   /// as read-only previews. The overlap injector and terminal-padding sliver
   /// always retain the viewport's full cross-axis extent.
   final bool constrainToContentWidth;
+
+  /// Optional cross-axis extent for a content-width-constrained page.
+  /// Defaults to the canonical prose lane plus page gutters.
+  final double? maxContentExtent;
   final ScrollController? controller;
   final CatchTabbedPageScrollController? scrollStateController;
   final ScrollPhysics? physics;
@@ -249,7 +254,12 @@ class _CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
               ),
               for (final sliver in widget.slivers)
                 if (widget.constrainToContentWidth)
-                  CatchSliverContentWidth(sliver: sliver)
+                  CatchSliverContentWidth(
+                    maxExtent:
+                        widget.maxContentExtent ??
+                        CatchLayout.tabbedPageMaxExtent,
+                    sliver: sliver,
+                  )
                 else
                   sliver,
               if (widget.includeTerminalPadding)
@@ -276,23 +286,27 @@ class _CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
 /// `constrainToContentWidth` is true. It remains public so sliver-native route
 /// shells can reuse and test the same width policy without private helpers.
 class CatchSliverContentWidth extends StatelessWidget {
-  const CatchSliverContentWidth({super.key, required this.sliver});
+  const CatchSliverContentWidth({
+    super.key,
+    required this.sliver,
+    this.maxExtent = CatchLayout.tabbedPageMaxExtent,
+  });
 
   final Widget sliver;
+  final double maxExtent;
 
   @override
   Widget build(BuildContext context) {
-    const pageExtent = CatchLayout.tabbedPageMaxExtent;
     return SliverLayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.crossAxisExtent <= pageExtent) return sliver;
+        if (constraints.crossAxisExtent <= maxExtent) return sliver;
         return SliverCrossAxisGroup(
           slivers: [
             const SliverCrossAxisExpanded(
               flex: 1,
               sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
             ),
-            SliverConstrainedCrossAxis(maxExtent: pageExtent, sliver: sliver),
+            SliverConstrainedCrossAxis(maxExtent: maxExtent, sliver: sliver),
             const SliverCrossAxisExpanded(
               flex: 1,
               sliver: SliverToBoxAdapter(child: SizedBox.shrink()),

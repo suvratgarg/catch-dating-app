@@ -1,7 +1,7 @@
 part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsClubWorkspaceTests() {
-  testWidgets('Host Events uses real countdown and routes cross-event tasks', (
+  testWidgets('Host Today uses real countdown and routes cross-event tasks', (
     tester,
   ) async {
     final now = DateTime(2026, 6, 15, 12);
@@ -20,7 +20,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: now),
+      HostTodayScreen(now: now),
       overrides: [
         ..._hostClubOverrides(
           owned: [club],
@@ -36,24 +36,25 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.text('STARTS IN 5H'), findsOneWidget);
     expect(find.text('Review waitlist'), findsOneWidget);
-    expect(find.textContaining('3 waiting · 20 spots open'), findsOneWidget);
+    expect(
+      find.text('3 people are waiting for ${later.title}.'),
+      findsOneWidget,
+    );
     expect(find.text('Check host setup'), findsNothing);
     expect(
       tester
-          .widget<HostEventOperationalSpotlight>(
-            find.byType(HostEventOperationalSpotlight),
-          )
+          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
           .event,
       hero,
     );
 
-    await tester.tap(find.text('REVIEW'));
+    await tester.tap(find.text('Review waitlist'));
     await pumpFeatureUi(tester);
     expect(find.text('Manage ${later.id}'), findsOneWidget);
     expect(find.text('Section guests'), findsOneWidget);
   });
 
-  testWidgets('Host Events opens a live spotlight in the run-of-show', (
+  testWidgets('Host Today opens a live spotlight in the run-of-show', (
     tester,
   ) async {
     final now = DateTime(2026, 6, 15, 12);
@@ -67,7 +68,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: now),
+      HostTodayScreen(now: now),
       overrides: [
         ..._hostClubOverrides(
           owned: [club],
@@ -89,7 +90,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Section live'), findsOneWidget);
   });
 
-  testWidgets('Host Events spotlight reflows at 200 percent text', (
+  testWidgets('Host Today spotlight reflows at 200 percent text', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -109,7 +110,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       tester,
       MediaQuery(
         data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-        child: HostOperationsHomeScreen(now: now),
+        child: HostTodayScreen(now: now),
       ),
       overrides: [
         ..._hostClubOverrides(
@@ -125,18 +126,73 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
 
     expect(find.text('STARTS IN 5H'), findsOneWidget);
-    expect(find.text('Set up & run'), findsOneWidget);
+    expect(find.text('Continue setup'), findsOneWidget);
     final createAction = find.byKey(
-      const ValueKey<String>('host-events-create-event'),
+      const ValueKey<String>('host-today-create-event'),
     );
-    expect(createAction, findsOneWidget);
+    expect(createAction, findsNothing);
+    expect(find.byTooltip('Create event'), findsNothing);
     expect(
-      find.descendant(of: createAction, matching: find.byType(CatchIconAction)),
+      find.byKey(const ValueKey<String>('host-today-compact-layout')),
       findsOneWidget,
     );
-    expect(find.byTooltip('Create event'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'Host Today uses adjacent command and attention panes when wide',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1200, 900);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final now = DateTime(2026, 6, 15, 12);
+      final club = buildClub(id: 'wide-today-club', ownerUserId: _hostUid);
+      final hero = buildEvent(
+        id: 'wide-hero-event',
+        clubId: club.id,
+        startTime: DateTime(2026, 6, 15, 17),
+      );
+      final later = buildEvent(
+        id: 'wide-later-event',
+        clubId: club.id,
+        startTime: DateTime(2026, 6, 16, 20),
+        waitlistedCount: 3,
+      );
+
+      await _pumpHostScreen(
+        tester,
+        HostTodayScreen(now: now),
+        overrides: [
+          ..._hostClubOverrides(
+            owned: [club],
+            timelineEventsByOrganizer: {
+              club.id: [hero, later],
+            },
+          ),
+          watchEventsForClubProvider(
+            club.id,
+          ).overrideWithValue(AsyncData<List<Event>>([hero, later])),
+        ],
+      );
+
+      expect(
+        find.byKey(const ValueKey<String>('host-today-wide-layout')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey<String>('host-today-primary-pane')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey<String>('host-today-attention-pane')),
+        findsOneWidget,
+      );
+      expect(find.text('Review waitlist'), findsOneWidget);
+      expect(find.text('NEXT 7 DAYS'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   registerHostEventEntryTests();
 
@@ -147,7 +203,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
+      HostEventsScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
         ..._hostClubOverrides(owned: [club]),
         watchEventsForClubProvider(
@@ -215,7 +271,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: now),
+      HostEventsScreen(now: now),
       overrides: [
         ..._hostClubOverrides(
           owned: [club],
@@ -233,37 +289,44 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Live'), findsNothing);
     expect(find.text('Past'), findsNothing);
     expect(find.text('SCHEDULE'), findsOneWidget);
+    expect(find.byType(HostTodayEventSpotlight), findsNothing);
     expect(
-      tester
-          .widget<HostEventOperationalSpotlight>(
-            find.byType(HostEventOperationalSpotlight),
-          )
-          .event,
-      live,
+      find.byKey(const ValueKey<String>('host-event-row-live-event')),
+      findsOneWidget,
     );
-    expect(find.text(past.title), findsNothing);
     expect(find.text('Repeat last event'), findsNothing);
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey<String>('host-event-row-upcoming-event')),
       300,
       scrollable: _hostEventsScrollable(),
     );
-    expect(find.text(upcoming.title), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('host-event-row-upcoming-event')),
+      findsOneWidget,
+    );
 
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey<String>('host-events-month-2026-6')),
       300,
       scrollable: _hostEventsScrollable(),
     );
-    expect(find.text(past.title), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('host-event-field-past-event')),
+      findsOneWidget,
+    );
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey<String>('host-events-month-2026-5')),
       300,
       scrollable: _hostEventsScrollable(),
     );
-    expect(find.text(olderPast.title), findsOneWidget);
-    expect(find.text(oldestPast.title), findsOneWidget);
-    expect(find.byType(HostEventLifecycleRow), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('host-event-field-older-past-event')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey<String>('host-event-field-oldest-past-event')),
+      findsOneWidget,
+    );
 
     final juneSection = find.byKey(
       const ValueKey<String>('host-events-month-2026-6'),
@@ -321,7 +384,19 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
     expect(
       tester.getTopLeft(mayRowDivider).dx,
-      closeTo(tester.getTopLeft(find.text(oldestPast.title)).dx, 0.5),
+      closeTo(
+        tester
+            .getTopLeft(
+              find.descendant(
+                of: find.byKey(
+                  const ValueKey<String>('host-event-field-oldest-past-event'),
+                ),
+                matching: find.text(oldestPast.title),
+              ),
+            )
+            .dx,
+        0.5,
+      ),
     );
     expect(
       tester.getTopRight(mayRowDivider).dx,
@@ -347,7 +422,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Repeat ${past.id}'), findsOneWidget);
   });
 
-  testWidgets('Host events follows the shared organizer selection', (
+  testWidgets('Host Today follows the shared organizer selection', (
     tester,
   ) async {
     final ownedClub = buildClub(
@@ -374,7 +449,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     await _pumpHostScreen(
       tester,
-      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
         ..._hostClubOverrides(
           owned: [ownedClub],
@@ -394,21 +469,19 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
 
     expect(
-      tester.widget<HostEventsClubCard>(find.byType(HostEventsClubCard)).club,
+      tester.widget<HostTodayBody>(find.byType(HostTodayBody)).organizer,
       ownedClub,
     );
     expect(
       tester
-          .widget<HostEventOperationalSpotlight>(
-            find.byType(HostEventOperationalSpotlight),
-          )
+          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
           .event,
       ownedEvent,
     );
 
     expect(find.byTooltip('Switch organizer'), findsNothing);
     final container = ProviderScope.containerOf(
-      tester.element(find.byType(HostEventsScaffold)),
+      tester.element(find.byType(HostTodayScreen)),
     );
     container
         .read(hostOrganizerSelectionProvider(_hostUid).notifier)
@@ -416,14 +489,12 @@ void _registerHostOperationsClubWorkspaceTests() {
     await pumpFeatureUi(tester);
 
     expect(
-      tester.widget<HostEventsClubCard>(find.byType(HostEventsClubCard)).club,
+      tester.widget<HostTodayBody>(find.byType(HostTodayBody)).organizer,
       cohostClub,
     );
     expect(
       tester
-          .widget<HostEventOperationalSpotlight>(
-            find.byType(HostEventOperationalSpotlight),
-          )
+          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
           .event,
       hostedEvent,
     );

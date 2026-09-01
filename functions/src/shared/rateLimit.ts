@@ -125,6 +125,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
     windowMs: 60 * 60 * 1000,
   },
   listOrganizerApplications: {maxRequests: 60, windowMs: 60 * 1000},
+  listOrganizerAttentionItems: {maxRequests: 60, windowMs: 60 * 1000},
   getOrganizerApplicationDetail: {
     maxRequests: 60,
     windowMs: 60 * 1000,

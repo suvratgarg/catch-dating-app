@@ -37,25 +37,26 @@
       ]
     },
     {
+      "branchKey": "keys.hostToday",
+      "routeName": "Routes.hostTodayScreen.name",
+      "surfaces": [
+        {"path": "lib/hosts/today/presentation/widgets/host_today_body.dart", "symbol": "HostTodayHeader", "owner": "CatchScreenHeaderTitle.block"}
+      ]
+    },
+    {
       "branchKey": "keys.hostEvents",
       "routeName": "Routes.hostEventsScreen.name",
       "surfaces": [
-        {"path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart", "symbol": "_HostEventsScaffoldState", "owner": "CatchScreenHeaderTitle.block"},
-        {"path": "lib/hosts/presentation/host_operations/host_events_list.dart", "symbol": "HostEventsClubSection", "owner": "CatchScreenHeaderTitle.block"}
+        {"path": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "HostEventsRouteScaffold", "owner": "CatchScreenHeaderTitle.block"},
+        {"path": "lib/hosts/events/presentation/widgets/host_events_list.dart", "symbol": "HostEventsClubSection", "owner": "CatchScreenHeaderTitle.block"}
       ]
     },
     {
-      "branchKey": "keys.hostCustomers",
-      "routeName": "Routes.hostCustomersScreen.name",
+      "branchKey": "keys.hostAudience",
+      "routeName": "Routes.hostAudienceScreen.name",
       "surfaces": [
         {"path": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "_HostCustomersScreenState", "owner": "CatchTabbedScreenScaffold"},
-        {"path": "lib/hosts/presentation/customers/host_customers_directory.dart", "symbol": "HostCustomersNoOrganizer", "owner": "CatchScreenHeaderTitle.block"}
-      ]
-    },
-    {
-      "branchKey": "keys.hostForms",
-      "routeName": "Routes.hostFormsScreen.name",
-      "surfaces": [
+        {"path": "lib/hosts/presentation/customers/host_customers_directory.dart", "symbol": "HostCustomersNoOrganizer", "owner": "CatchScreenHeaderTitle.block"},
         {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "owner": "CatchTabbedScreenScaffold"},
         {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "HostFormsNoOrganizer", "owner": "CatchScreenHeaderTitle.block"}
       ]
@@ -140,6 +141,13 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
+    },
+    {
+      "path": "lib/hosts/events/presentation/host_events_screen.dart",
+      "role": "screen",
+      "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar",
+      "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
@@ -314,6 +322,13 @@
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold"
+    },
+    {
+      "path": "lib/hosts/today/presentation/host_today_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",

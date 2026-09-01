@@ -20,6 +20,7 @@ class HostCustomerReachSection extends StatelessWidget {
     required this.onMessage,
     required this.onRetryCommunicationPlan,
     required this.onMessagingEnabledChanged,
+    this.messageActionInHeader = false,
     this.onReviewDuplicates,
   });
 
@@ -31,6 +32,7 @@ class HostCustomerReachSection extends StatelessWidget {
   final VoidCallback onMessage;
   final VoidCallback onRetryCommunicationPlan;
   final ValueChanged<bool>? onMessagingEnabledChanged;
+  final bool messageActionInHeader;
   final VoidCallback? onReviewDuplicates;
 
   @override
@@ -41,42 +43,43 @@ class HostCustomerReachSection extends StatelessWidget {
       key: const ValueKey('host-customer-reach-and-provenance'),
       title: context.l10n.hostCustomersReachAndProvenance,
       children: [
-        if (communicationPlanLoading)
-          CatchField.read(
-            key: const ValueKey('host-customer-message-plan-loading'),
-            title: context.l10n.hostCustomersMessagePerson(
-              name: customer.displayName,
+        if (!messageActionInHeader)
+          if (communicationPlanLoading)
+            CatchField.read(
+              key: const ValueKey('host-customer-message-plan-loading'),
+              title: context.l10n.hostCustomersMessagePerson(
+                name: customer.displayName,
+              ),
+              body: context.l10n.hostCustomersMessageOptionsLoading,
+              icon: CatchIcons.tabChats,
+            )
+          else if (communicationPlanFailed || recipient == null)
+            CatchField.action(
+              key: const ValueKey('host-customer-message-plan-retry'),
+              title: context.l10n.hostCustomersMessageOptionsUnavailable,
+              body: context.l10n.hostCustomersMessageOptionsRetry,
+              icon: CatchIcons.refresh,
+              onTap: onRetryCommunicationPlan,
+            )
+          else if (recommendedRoute != null)
+            CatchField.action(
+              key: const ValueKey('host-customer-message'),
+              title: context.l10n.hostCustomersMessagePerson(
+                name: customer.displayName,
+              ),
+              body: _recommendedMessageBody(context, recommendedRoute),
+              icon: CatchIcons.tabChats,
+              onTap: messageLoading ? null : onMessage,
+            )
+          else
+            CatchField.read(
+              key: const ValueKey('host-customer-message'),
+              title: context.l10n.hostCustomersMessagePerson(
+                name: customer.displayName,
+              ),
+              body: _unavailableMessageBody(context, recipient),
+              icon: CatchIcons.tabChats,
             ),
-            body: context.l10n.hostCustomersMessageOptionsLoading,
-            icon: CatchIcons.tabChats,
-          )
-        else if (communicationPlanFailed || recipient == null)
-          CatchField.action(
-            key: const ValueKey('host-customer-message-plan-retry'),
-            title: context.l10n.hostCustomersMessageOptionsUnavailable,
-            body: context.l10n.hostCustomersMessageOptionsRetry,
-            icon: CatchIcons.refresh,
-            onTap: onRetryCommunicationPlan,
-          )
-        else if (recommendedRoute != null)
-          CatchField.action(
-            key: const ValueKey('host-customer-message'),
-            title: context.l10n.hostCustomersMessagePerson(
-              name: customer.displayName,
-            ),
-            body: _recommendedMessageBody(context, recommendedRoute),
-            icon: CatchIcons.tabChats,
-            onTap: messageLoading ? null : onMessage,
-          )
-        else
-          CatchField.read(
-            key: const ValueKey('host-customer-message'),
-            title: context.l10n.hostCustomersMessagePerson(
-              name: customer.displayName,
-            ),
-            body: _unavailableMessageBody(context, recipient),
-            icon: CatchIcons.tabChats,
-          ),
         CatchField.read(
           key: const ValueKey('host-customer-whatsapp-permission'),
           title: context.l10n.hostCustomersWhatsappPermission,

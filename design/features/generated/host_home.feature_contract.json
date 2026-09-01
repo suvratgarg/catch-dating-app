@@ -2,26 +2,26 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
-  "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:0b5daf319152c1a06533ab9c3c1a793d6fa416db771ea018d378f06994f75720",
-  "resolvedDigest": "sha256:222f82f998c7aea34b5d7d4aecf3dc1e6cc7927aea122d0b4a309e5ef6d6f35d",
+  "generatedFor": "2026-09-01",
+  "sourceDigest": "sha256:e4ec1f33c4c5cdba3e870095a192a21fda1f4606a271efb2be6f6636c3a18834",
+  "resolvedDigest": "sha256:f711f2a688a20a6aa5580457713d987bc3a6880c60eb2cfbd75ee39d3b498966",
   "feature": {
     "id": "feature.host_home",
-    "name": "Host Events",
+    "name": "Host Today and Events",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Orchestrates the consolidated Host Events workspace across authentication, organizer selection, operational spotlight and attention state, paginated schedule and history state, recovery, and typed create, repeat, manage, and task navigation."
+    "description": "Contract covering the independently routed Host Today command centre and Host Events inventory. Today owns operational spotlight, attention policy, and Dress Rehearsal entry through its bounded feed controller; Events owns its route state, paginated schedule and history controller, create and repeat entry, and lifecycle-aware manage navigation."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 21,
-    "scenarios": 21,
-    "actionCases": 21,
-    "actions": 13,
+    "states": 22,
+    "scenarios": 22,
+    "actionCases": 22,
+    "actions": 14,
     "captures": 16,
     "previews": 1,
     "testFiles": 2,
-    "evidenceExceptions": 21
+    "evidenceExceptions": 22
   },
   "surfaces": [
     {
@@ -32,7 +32,7 @@
         "id": "screen.host.home"
       },
       "actionScope": {
-        "included": "Host Events authentication recovery, organizer switching, operational spotlight and attention work, paginated schedule and history loading and retry, and typed create, repeat, manage, and task navigation.",
+        "included": "Host Today authentication recovery, operational spotlight, attention work, and Dress Rehearsal entry; Host Events paginated schedule and history loading and retry; shared organizer switching; and typed create, repeat, manage, and task navigation.",
         "excluded": [
           "Organizer editing, event creation internals, event management mutations, booking policy, analytics, payouts, and host-team administration retain their owning feature contracts or controllers."
         ]
@@ -43,34 +43,58 @@
         ],
         "actionOwners": [
           {
-            "id": "route_screen",
+            "id": "events_route",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
-            "symbol": "HostOperationsHomeScreen"
+            "file": "lib/hosts/events/presentation/host_events_screen.dart",
+            "symbol": "HostEventsScreen"
+          },
+          {
+            "id": "today_route",
+            "language": "dart",
+            "file": "lib/hosts/today/presentation/host_today_screen.dart",
+            "symbol": "HostTodayScreen"
+          },
+          {
+            "id": "today_body",
+            "language": "dart",
+            "file": "lib/hosts/today/presentation/widgets/host_today_body.dart",
+            "symbol": "HostTodayBody"
+          },
+          {
+            "id": "today_attention_model",
+            "language": "dart",
+            "file": "lib/hosts/today/domain/host_attention_item.dart",
+            "symbol": "HostAttentionProjection"
+          },
+          {
+            "id": "today_attention_repository",
+            "language": "dart",
+            "file": "lib/hosts/today/data/host_attention_repository.dart",
+            "symbol": "HostAttentionRepository"
+          },
+          {
+            "id": "today_feed",
+            "language": "dart",
+            "file": "lib/hosts/today/presentation/host_today_feed_controller.dart",
+            "symbol": "HostTodayFeedController"
           },
           {
             "id": "workspace",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-            "symbol": "HostEventsScaffold"
+            "file": "lib/hosts/events/presentation/host_events_screen.dart",
+            "symbol": "HostEventsRouteScaffold"
           },
           {
             "id": "events_list",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+            "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
             "symbol": "HostEventsClubCard"
           },
           {
             "id": "events_timeline",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_events_timeline_controller.dart",
+            "file": "lib/hosts/events/presentation/host_events_timeline_controller.dart",
             "symbol": "HostEventsTimelineController"
-          },
-          {
-            "id": "auth_required",
-            "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
-            "symbol": "HostAuthRequiredScreen"
           },
           {
             "id": "host_shell",
@@ -84,27 +108,34 @@
           "catch.empty_state",
           "catch.error_state",
           "catch.event_card",
+          "catch.field",
           "catch.menu",
+          "catch.section",
           "catch.skeleton",
           "catch.surface",
           "catch.top_bar"
         ],
         "dataContracts": [
+          "contracts/callable_responses/list_organizer_attention_items_response.schema.json",
+          "contracts/callables/list_organizer_attention_items_payload.schema.json",
+          "contracts/catalogs/host_attention_policies.json",
           "contracts/firestore/clubs.schema.json",
           "contracts/firestore/events.schema.json",
+          "contracts/firestore/organizer_attention_items.schema.json",
           "contracts/firestore/organizer_team_memberships.schema.json",
-          "contracts/firestore/organizers.schema.json"
+          "contracts/firestore/organizers.schema.json",
+          "contracts/shared/host_attention_common.schema.json"
         ]
       },
       "coverage": {
-        "states": 21,
-        "scenarios": 21,
-        "actionCases": 21,
-        "actions": 13,
+        "states": 22,
+        "scenarios": 22,
+        "actionCases": 22,
+        "actions": 14,
         "captures": 16,
         "previews": 1,
         "testFiles": 2,
-        "evidenceExceptions": 21
+        "evidenceExceptions": 22
       },
       "dimensions": {
         "load": {
@@ -158,7 +189,7 @@
       "actions": [
         {
           "id": "sign_in",
-          "owner": "auth_required",
+          "owner": "today_route",
           "codeValue": "go",
           "cardinality": "singleton",
           "scopeKeys": [
@@ -179,7 +210,7 @@
         },
         {
           "id": "retry_host_home",
-          "owner": "route_screen",
+          "owner": "events_route",
           "codeValue": "invalidate",
           "cardinality": "singleton",
           "scopeKeys": [
@@ -410,7 +441,7 @@
         },
         {
           "id": "open_operational_event",
-          "owner": "workspace",
+          "owner": "today_route",
           "codeValue": "_openEvent",
           "cardinality": "unbounded",
           "scopeKeys": [
@@ -433,8 +464,8 @@
         },
         {
           "id": "open_attention_task",
-          "owner": "workspace",
-          "codeValue": "_openAttentionTask",
+          "owner": "today_route",
+          "codeValue": "_openAttention",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
@@ -449,9 +480,73 @@
                 "registry": "flutter_screens",
                 "id": "screen.host.event.manage"
               }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.applications"
+              }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.clubs"
+              }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.customers"
+              }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.inbox"
+              }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.event.rehearsal"
+              }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.home"
+              }
             }
           ],
-          "description": "Routes a truthful event-attention task to the matching guests or setup section of Host Event Manage.",
+          "description": "Routes an authoritative attention item through its typed destination to Event Manage, Applications, Payouts, Audience, Inbox, Dress Rehearsal, or Events.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "start_dress_rehearsal",
+          "owner": "today_route",
+          "codeValue": "_startRehearsal",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "tapAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.event.rehearsal"
+              }
+            }
+          ],
+          "description": "Starts the isolated Dress Rehearsal flow from Today as an operational-preparation action, not as an event-creation choice.",
           "implementationStatus": "implemented"
         }
       ],
@@ -490,13 +585,14 @@
         {
           "stateIds": [
             "create_event_action",
-            "manage_event_navigation"
+            "manage_event_navigation",
+            "dress_rehearsal_action"
           ],
           "evidence": [
             "captures"
           ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "The typed Host Home route actions are covered by focused widget tests and the route-state catalog but do not yet have standalone deterministic captures."
+          "reason": "The typed Host Today and Events route actions are covered by focused widget tests and the route-state catalog but do not yet have standalone deterministic captures."
         },
         {
           "stateIds": [
@@ -563,7 +659,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -618,7 +715,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -675,7 +773,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -731,7 +830,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -789,7 +889,8 @@
                   "load_more_history",
                   "retry_event_history",
                   "repeat_event",
-                  "manage_event"
+                  "manage_event",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -848,7 +949,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -906,7 +1008,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -961,7 +1064,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1017,7 +1121,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1071,7 +1176,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1130,7 +1236,8 @@
                   "retry_host_home",
                   "retry_host_events",
                   "create_organizer",
-                  "retry_event_history"
+                  "retry_event_history",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1186,7 +1293,8 @@
                   "retry_event_history",
                   "repeat_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1242,7 +1350,8 @@
                   "switch_organizer",
                   "repeat_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1297,7 +1406,8 @@
                   "load_more_history",
                   "repeat_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1353,7 +1463,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1409,7 +1520,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1465,7 +1577,65 @@
                   "load_more_history",
                   "retry_event_history",
                   "create_event",
-                  "repeat_event"
+                  "repeat_event",
+                  "start_dress_rehearsal"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "dress_rehearsal_action",
+          "stateId": "dress_rehearsal_action",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "rehearse",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "start_dress_rehearsal"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -1521,7 +1691,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1576,7 +1747,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1631,7 +1803,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1686,7 +1859,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1698,6 +1872,11 @@
           "id": "screen.host.home",
           "owner": "hosts",
           "routes": [
+            {
+              "id": "hostTodayScreen",
+              "path": "/host/today",
+              "role": "primary"
+            },
             {
               "id": "hostEventsScreen",
               "path": "/host/events",
@@ -1752,6 +1931,29 @@
             }
           },
           {
+            "id": "catch.field",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchField",
+              "file": "lib/core/widgets/catch_field.dart",
+              "constructors": [
+                "CatchField.read",
+                "CatchField.content",
+                "CatchField.nav",
+                "CatchField.action",
+                "CatchField.toggle",
+                "CatchField.input",
+                "CatchField.inputActions",
+                "CatchField.control",
+                "CatchField.choices",
+                "CatchField.optionCards",
+                "CatchField.stepper",
+                "CatchField.add",
+                "CatchField.select"
+              ]
+            }
+          },
+          {
             "id": "catch.menu",
             "kind": "composite",
             "dart": {
@@ -1759,6 +1961,22 @@
               "file": "lib/core/widgets/catch_menu.dart",
               "constructors": [
                 "CatchMenu"
+              ]
+            }
+          },
+          {
+            "id": "catch.section",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchSection",
+              "file": "lib/core/widgets/catch_section_layout.dart",
+              "constructors": [
+                "CatchSection.divided",
+                "CatchSection.fieldRows",
+                "CatchSection.containedFieldRows",
+                "CatchSection.containedFieldGroups",
+                "CatchSection.contained",
+                "CatchSection.plain"
               ]
             }
           },

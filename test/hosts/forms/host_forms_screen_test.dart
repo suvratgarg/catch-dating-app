@@ -28,7 +28,7 @@ void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   testWidgets(
-    'Forms and Responses use pinned tabs and one view-aware header search',
+    'Audience Forms and Responses use shared tabs and view-aware search',
     (tester) async {
       final formRequests = <HostFormListRequest>[];
       final responseRequests = <HostFormResponseListRequest>[];
@@ -59,9 +59,11 @@ void main() {
       final scaffold = find.byType(CatchTabbedScreenScaffold);
       expect(scaffold, findsOneWidget);
       expect(
-        find.byKey(const ValueKey('host-forms-view-tabs')),
+        find.byKey(const ValueKey('host-audience-view-tabs')),
         findsOneWidget,
       );
+      expect(find.text('People'), findsOneWidget);
+      expect(find.text('Audiences'), findsOneWidget);
       expect(find.text('Forms'), findsWidgets);
       expect(find.text('Responses'), findsOneWidget);
       expect(find.byKey(const ValueKey('host-forms-create')), findsOneWidget);
@@ -134,6 +136,10 @@ void main() {
   testWidgets('Forms directory is flat and published row menus stay bounded', (
     tester,
   ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 1000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
     final club = buildClub(id: 'forms-club', ownerUserId: 'host-1');
 
     await tester.pumpWidget(
@@ -179,6 +185,10 @@ void main() {
 
     expect(find.byKey(CatchSectionFocusSurface.rowGroupClipKey), findsNothing);
     expect(find.byKey(const ValueKey('host-form-published')), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const ValueKey('host-form-published'))).width,
+      CatchLayout.hostFormsDirectoryMaxContentWidth,
+    );
     expect(find.byKey(const ValueKey('host-form-paused')), findsOneWidget);
     expect(find.textContaining('Verifies email'), findsNWidgets(2));
     expect(find.textContaining('Adds a record to Customers'), findsNWidgets(2));

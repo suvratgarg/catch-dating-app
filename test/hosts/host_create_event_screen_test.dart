@@ -972,9 +972,7 @@ void main() {
         );
         expect(find.text('Arrival check-in'), findsNothing);
 
-        await tester.tap(
-          find.bySemanticsLabel('Open guest roster, 2 booked guests'),
-        );
+        await tester.tap(find.byType(CatchTopBarPrimaryAction));
         await _pumpTestAnimation(tester);
 
         expect(publicProfiles.fetchPublicProfilesCalls, hasLength(1));

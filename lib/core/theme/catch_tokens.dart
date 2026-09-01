@@ -453,6 +453,11 @@ abstract final class CatchInsets {
     horizontal: CatchSpacing.screenPx,
   );
 
+  /// Separation between the scroll-owned Today header and its first state.
+  static const EdgeInsets hostTodayContentStart = EdgeInsets.only(
+    top: CatchSpacing.s5,
+  );
+
   /// Leading route action aligned to the canonical screen gutter.
   static const EdgeInsets topBarLeadingAction = EdgeInsets.only(
     left: CatchSpacing.screenPx,
@@ -2162,9 +2167,46 @@ abstract final class CatchLayout {
   static const double tabbedPageMaxExtent =
       maxContentWidth + pageBodyHorizontalGutters;
 
+  /// Reading lane for the Host Forms directory on capable widths. Forms rows
+  /// carry lifecycle, response, and consequence summaries that need more room
+  /// than prose while remaining visibly one bounded list.
+  static const double hostFormsDirectoryMaxContentWidth = 840;
+  static const double hostFormsDirectoryPageMaxExtent =
+      hostFormsDirectoryMaxContentWidth + pageBodyHorizontalGutters;
+
+  /// Bounded command workspace for a live Host Event on tablet and desktop.
+  /// The stage remains dominant while one supporting operations pane can stay
+  /// visible without turning the runtime into a dashboard.
+  static const double hostEventLiveWorkspaceMaxContentWidth = 1040;
+
+  /// Supporting operations lane beside the live command stage.
+  static const double hostEventLiveSupportingPaneWidth = 360;
+
+  /// Width at which Today can keep the current-event lane and its attention
+  /// queue visible together without compressing either into card fragments.
+  static const double hostTodayTwoPaneBreakpoint = 720;
+
+  /// Bounded command-centre workspace for Today on tablet and desktop.
+  static const double hostTodayWorkspaceMaxContentWidth = 1120;
+
+  /// Supporting attention lane beside Today's current-event workspace.
+  static const double hostTodayAttentionPaneWidth = 360;
+
+  /// Narrowest useful attention lane when the app rail leaves tablet content
+  /// less room than the desktop workspace.
+  static const double hostTodayAttentionPaneCompactWidth = 300;
+
+  /// Width at which Today's supporting pane can expand without narrowing the
+  /// primary current-event and seven-day lane.
+  static const double hostTodayExpandedAttentionPaneBreakpoint = 960;
+
+  /// Visual separation extent for the bounded Today command workspace. The
+  /// page remains scroll-owned; this rule only separates the initial lanes.
+  static const double hostTodayWorkspaceRuleExtent = 640;
+
   /// Width at which the Host form builder can fit outline, preview, and
   /// inspector panes without compressing any one pane below its useful size.
-  static const double formBuilderExpandedBreakpoint = 1040;
+  static const double formBuilderExpandedBreakpoint = 960;
 
   /// Navigation outline width in the expanded Host form builder.
   static const double formBuilderOutlineWidth = 260;
@@ -2686,6 +2728,18 @@ abstract final class CatchLayout {
   static const double appShellLargeTextRailWidth = 168.0;
   static const double appShellSidebarWidth = 240.0;
   static const double masterDetailIndexPaneWidth = 360.0;
+
+  /// Minimum width inside the Messaging route body that can hold the
+  /// canonical conversation index and an equally usable thread pane. This is
+  /// intentionally measured after shell navigation has taken its width.
+  static const double hostMessagingSplitViewMinWidth =
+      masterDetailIndexPaneWidth * 2;
+  static const double hostMessagingSendsMaxContentWidth = 840.0;
+  static const double hostMessagingSendsPageMaxExtent =
+      hostMessagingSendsMaxContentWidth + pageBodyHorizontalGutters;
+  static const double hostCreateEventStepRailWidth = 240.0;
+  static const double hostCreateEventConsequencePaneWidth = 320.0;
+  static const double hostCreateEventFormLaneMaxWidth = 680.0;
   static const double appShellRailItemMinHeight = 64.0;
   static const double appShellSidebarItemMinHeight = 48.0;
   static const double tabRailHeight = 48.0;

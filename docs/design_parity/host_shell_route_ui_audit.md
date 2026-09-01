@@ -1,7 +1,7 @@
 ---
 doc_id: host_shell_route_ui_audit
-version: 1.1.0
-updated: 2026-08-29
+version: 1.2.0
+updated: 2026-08-31
 owner: design_parity_review
 status: active
 ---
@@ -13,10 +13,9 @@ Host shell routes. Checklist items are rows; audited pages are columns. To add
 a route, add one page column, its evidence block, and any new findings. Do not
 fork the checklist for a new page.
 
-This closure pass audits the implementation on
-`codex/component-geometry-system-simplify-20260828`. The branch contains the
-approved geometry-system work that has not yet been merged to `origin/main`;
-this report must not be read as a production-deployment receipt.
+The current matrix follows the corrective Host information architecture on
+`codex/host-visual-quality-rollout-20260831`. It is source and local-runtime
+evidence, not a merge, deployment, or distribution receipt.
 
 ## Verdicts
 
@@ -33,26 +32,26 @@ intentional: the matrix should remain scannable as page columns are appended.
 
 ## Matrix
 
-| Checklist | Events | Customers | Forms | Messages | Organizer |
+| Checklist | Today | Events | Audience | Inbox | Organizer |
 |---|---|---|---|---|---|
-| **SHELL-01 · One production route body inside the shared Host shell** | ✅ `/host/events` | ✅ `/host/customers` | ✅ `/host/forms` | ✅ `/host/inbox` | ✅ `/host/organizer` |
+| **SHELL-01 · One production route body inside the shared Host shell** | ✅ `/host/today` | ✅ `/host/events` | ✅ `/host/audience` | ✅ `/host/inbox` | ✅ `/host/organizer` |
 | **SHELL-02 · Correct destination order, selection, and organizer identity** | ✅ shared five-destination contract | ✅ shared five-destination contract | ✅ shared five-destination contract | ✅ shared five-destination contract | ✅ identity remains route-owned |
-| **HEADER-01 · Page owns one title/top-bar hierarchy** | ✅ scroll title + Create | ✅ top-bar title, search, and actions | ✅ tabbed scaffold | ✅ explicit Host browse presentation | ✅ tabbed scaffold |
-| **SCROLL-01 · Exactly one page scroll owner with terminal shell clearance** | ✅ sliver root + terminal padding | ✅ sliver root + terminal padding | ✅ one controller per tab | ✅ sliver root + terminal padding | ✅ one controller per tab |
-| **RESP-01 · Compact, medium, and expanded composition is intentional** | ✅ coherent single workspace | ✅ expanded index/detail workspace | ✅ bounded content lane | ✅ expanded inbox/detail; campaigns stay single-lane | ✅ bounded editor workspace |
-| **GUTTER-01 · Page gutters and content-width constraints have one owner** | ✅ page/sliver owns lanes | ✅ page/sliver owns lanes | ✅ tabbed page constrains width | ✅ page/sliver owns lanes | ✅ tabbed page constrains width |
-| **SECTION-01 · Contained/divided/plain treatment follows semantic role** | ✅ operational modules earn surfaces | ✅ summary/action/list frames earn surfaces | ✅ flat divided directory | ✅ flat context rails + thread rows | ✅ field sections use canonical variants |
+| **HEADER-01 · Page owns one title/top-bar hierarchy** | ✅ operational title | ✅ inventory title + Create | ✅ one Audience title + shared mode rail | ✅ explicit Host browse presentation | ✅ tabbed scaffold |
+| **SCROLL-01 · Exactly one page scroll owner with terminal shell clearance** | ✅ sliver root + terminal padding | ✅ sliver root + terminal padding | ✅ one controller per local mode | ✅ sliver root + terminal padding | ✅ one controller per tab |
+| **RESP-01 · Compact, medium, and expanded composition is intentional** | ✅ bounded operational workspace | ✅ coherent inventory workspace | ✅ customer index/detail and bounded Forms lane | ✅ expanded inbox/detail; Sends stays single-lane | ✅ bounded editor workspace |
+| **GUTTER-01 · Page gutters and content-width constraints have one owner** | ✅ page/sliver owns lanes | ✅ page/sliver owns lanes | ✅ mode page owns its lane | ✅ page/sliver owns lanes | ✅ tabbed page constrains width |
+| **SECTION-01 · Contained/divided/plain treatment follows semantic role** | ✅ operational modules earn surfaces | ✅ lifecycle rows stay flat | ✅ CRM and form directories stay flat | ✅ flat context rails + thread rows | ✅ field sections use canonical variants |
 | **SECTION-02 · Containment depth stays at one visible border** | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **SECTION-03 · Headers, kickers, counts, and dividers share one geometry** | ✅ | ✅ | ✅ | ✅ | ✅ populated headers reflow their trailing action |
-| **FIELD-01 · Rows/fields own capability geometry; parent owns list frame** | ✅ lifecycle rows | ✅ contained customer rows | ✅ divided rows | ✅ thread rows | ✅ canonical `CatchField` lanes |
-| **RHYTHM-01 · Vertical spacing distinguishes hierarchy without card soup** | ✅ | ✅ borders have distinct jobs | ✅ | ✅ | ✅ |
-| **ACTION-01 · One clear primary action per hierarchy level** | ◐ Create, run, and urgent review are distinct but visually loud | ◐ header, sort, filter, and campaign actions compete | ✅ | ✅ | ✅ |
-| **SEARCH-01 · Search/filter/menu placement matches its scope** | ⏺ | ✅ top-bar search + body sort/filter | ✅ top-bar search + body lifecycle filter | ✅ top-bar search + workspace rails | ⏺ |
+| **FIELD-01 · Rows/fields own capability geometry; parent owns list frame** | ✅ attention rows | ✅ lifecycle rows | ✅ customer/form divided rows | ✅ thread rows | ✅ canonical `CatchField` lanes |
+| **RHYTHM-01 · Vertical spacing distinguishes hierarchy without card soup** | ✅ | ✅ | ✅ borders have distinct jobs | ✅ | ✅ |
+| **ACTION-01 · One clear primary action per hierarchy level** | ✅ immediate event action | ✅ Create plus row-local lifecycle action | ◐ People header, sort, filter, and campaign actions compete | ✅ | ✅ |
+| **SEARCH-01 · Search/filter/menu placement matches its scope** | ⏺ | ⏺ | ✅ mode-aware top-bar search + body filters | ✅ top-bar search + workspace rails | ⏺ |
 | **STATE-01 · Loading, empty, error, offline, and retry preserve the same shell** | ✅ source-backed | ✅ source-backed | ✅ source-backed | ✅ source-backed | ✅ source-backed |
-| **MOTION-01 · Focus, selection, tab, and route transitions are coherent** | ◌ | ◌ | ◐ tab/menu tests exist; motion not visually audited | ◐ workspace transitions source-only | ◐ tabs/editor reveal source-only |
-| **A11Y-01 · 200% text scale reflows without clipping or overflow** | ✅ spotlight stacks and wraps | ✅ full title; header actions reflow | ✅ full title; scrollable lifecycle rail | ✅ full title; semantic icon-only dock | ✅ title and populated headers reflow |
+| **MOTION-01 · Focus, selection, tab, and route transitions are coherent** | ◌ | ◌ | ◐ local tab and retained-draft tests exist | ◐ workspace transitions source-only | ◐ tabs/editor reveal source-only |
+| **A11Y-01 · 200% text scale reflows without clipping or overflow** | ✅ spotlight stacks and wraps | ✅ inventory rows wrap | ✅ full title; scrollable four-mode rail | ✅ full title; semantic icon-only dock | ✅ title and populated headers reflow |
 | **A11Y-02 · Labels, targets, and light/dark contrast remain legible** | ◐ shared primitives; visual check only | ◐ shared primitives; visual check only | ◐ shared primitives; visual check only | ◐ shared primitives; visual check only | ◐ shared primitives; visual check only |
-| **ARCH-01 · Component boundaries expose ownership instead of a screen monolith** | ✅ feature split into focused parts | ✅ route, directory, sheets, and detail cards split | ◐ 633-line route + row actions | ✅ explicit browse role + page-owned workspace | ✅ route/scaffold/edit modules split |
+| **ARCH-01 · Component boundaries expose ownership instead of a screen monolith** | ✅ shared operations state + focused section | ✅ shared operations state + inventory section | ✅ shared rail + focused CRM/Form route bodies | ✅ explicit browse role + page-owned workspace | ✅ route/scaffold/edit modules split |
 | **GOV-01 · Widgetbook/capture/catalog use production widgets and current routes** | ✅ executable shell coverage | ✅ executable shell coverage | ✅ executable shell coverage | ✅ executable shell coverage | ✅ executable shell coverage |
 
 ## Findings
@@ -132,32 +131,32 @@ as source authority.
 
 | Page | Route | Production widget | Capture ID | Primary source |
 |---|---|---|---|---|
-| Events | `/host/events` | `HostOperationsHomeScreen` | `host_home_events_list` | `lib/hosts/presentation/host_operations/host_operations_home_screen.dart` |
-| Customers | `/host/customers` | `HostCustomersScreen` | `host_customers_populated` | `lib/hosts/presentation/customers/host_customers_screen.dart` |
-| Forms | `/host/forms` | `HostFormsScreen` | `host_forms_populated` | `lib/hosts/presentation/forms/host_forms_screen.dart` |
-| Messages | `/host/inbox` | `HostInboxScreen` | `host_inbox_queries` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` |
+| Today | `/host/today` | `HostTodayScreen` | `host_home_dashboard` | `lib/hosts/today/presentation/host_today_screen.dart` |
+| Events | `/host/events` | `HostEventsScreen` | `host_home_events_list` | `lib/hosts/events/presentation/host_events_screen.dart` |
+| Audience | `/host/audience` | `HostCustomersScreen` / `HostFormsScreen` | `host_customers_populated`, `host_forms_populated` | `lib/hosts/presentation/host_audience_view.dart` |
+| Inbox | `/host/inbox` | `HostInboxScreen` | `host_inbox_queries` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` |
 | Organizer | `/host/organizer` | `HostClubsScreen` | `host_clubs_management` | `lib/hosts/presentation/host_operations/host_clubs_scaffold.dart` |
 
 Reproducible capture contexts:
 
 ```sh
 node tool/ui_capture/run_captures.mjs \
-  --ids host_home_events_list,host_customers_populated,host_forms_populated,host_inbox_queries,host_clubs_management \
+  --ids host_home_dashboard,host_home_events_list,host_customers_populated,host_forms_populated,host_inbox_queries,host_clubs_management \
   --device claude-phone-390x812 \
   --output-dir artifacts/ui-captures/host-shell-audit/phone
 
 node tool/ui_capture/run_captures.mjs \
-  --ids host_home_events_list,host_customers_populated,host_forms_populated,host_inbox_queries,host_clubs_management \
+  --ids host_home_dashboard,host_home_events_list,host_customers_populated,host_forms_populated,host_inbox_queries,host_clubs_management \
   --device audit-medium-700x1000 \
   --output-dir artifacts/ui-captures/host-shell-audit/medium
 
 node tool/ui_capture/run_captures.mjs \
-  --ids host_home_events_list,host_customers_populated,host_forms_populated,host_inbox_queries,host_clubs_management \
+  --ids host_home_dashboard,host_home_events_list,host_customers_populated,host_forms_populated,host_inbox_queries,host_clubs_management \
   --device audit-tablet-1024x1366 \
   --output-dir artifacts/ui-captures/host-shell-audit/tablet
 
 node tool/ui_capture/run_captures.mjs \
-  --ids host_home_events_list,host_customers_populated,host_forms_populated,host_inbox_queries,host_clubs_management \
+  --ids host_home_dashboard,host_home_events_list,host_customers_populated,host_forms_populated,host_inbox_queries,host_clubs_management \
   --device claude-phone-390x812 \
   --text-scale 2.0 \
   --output-dir artifacts/ui-captures/host-shell-audit/text-scale-2
@@ -170,15 +169,15 @@ Flutter render alone does not detect destructive ellipsis or weak reflow.
 
 ### Compact, light
 
-| Events | Customers | Forms | Messages | Organizer |
+| Today | Events | Audience | Inbox | Organizer |
 |---|---|---|---|---|
-| ![Events compact](../../artifacts/ui-captures/host-shell-audit/phone/host_home_events_list/light.png) | ![Customers compact](../../artifacts/ui-captures/host-shell-audit/phone/host_customers_populated/light.png) | ![Forms compact](../../artifacts/ui-captures/host-shell-audit/phone/host_forms_populated/light.png) | ![Messages compact](../../artifacts/ui-captures/host-shell-audit/phone/host_inbox_queries/light.png) | ![Organizer compact](../../artifacts/ui-captures/host-shell-audit/phone/host_clubs_management/light.png) |
+| ![Today compact](../../artifacts/ui-captures/host-shell-audit/phone/host_home_dashboard/light.png) | ![Events compact](../../artifacts/ui-captures/host-shell-audit/phone/host_home_events_list/light.png) | ![Audience compact](../../artifacts/ui-captures/host-shell-audit/phone/host_customers_populated/light.png) | ![Inbox compact](../../artifacts/ui-captures/host-shell-audit/phone/host_inbox_queries/light.png) | ![Organizer compact](../../artifacts/ui-captures/host-shell-audit/phone/host_clubs_management/light.png) |
 
 ### Expanded, light
 
-| Events | Customers | Forms | Messages | Organizer |
+| Today | Events | Audience | Inbox | Organizer |
 |---|---|---|---|---|
-| ![Events expanded](../../artifacts/ui-captures/host-shell-audit/tablet/host_home_events_list/light.png) | ![Customers expanded](../../artifacts/ui-captures/host-shell-audit/tablet/host_customers_populated/light.png) | ![Forms expanded](../../artifacts/ui-captures/host-shell-audit/tablet/host_forms_populated/light.png) | ![Messages expanded](../../artifacts/ui-captures/host-shell-audit/tablet/host_inbox_queries/light.png) | ![Organizer expanded](../../artifacts/ui-captures/host-shell-audit/tablet/host_clubs_management/light.png) |
+| ![Today expanded](../../artifacts/ui-captures/host-shell-audit/tablet/host_home_dashboard/light.png) | ![Events expanded](../../artifacts/ui-captures/host-shell-audit/tablet/host_home_events_list/light.png) | ![Audience expanded](../../artifacts/ui-captures/host-shell-audit/tablet/host_customers_populated/light.png) | ![Inbox expanded](../../artifacts/ui-captures/host-shell-audit/tablet/host_inbox_queries/light.png) | ![Organizer expanded](../../artifacts/ui-captures/host-shell-audit/tablet/host_clubs_management/light.png) |
 
 ## Evidence limits
 

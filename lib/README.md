@@ -54,6 +54,7 @@ generic audit trackers:
 | `lib/event_policies/README.md` | Changing the live event policy bundle, admission, pricing, waitlist, cancellation, settlement, or legacy-document compatibility. |
 | `lib/safety/README.md` | Changing blocking, reporting, account deletion, safety rules, or deletion/anonymization behavior. |
 | `lib/user_profile/README.md` | Changing private profile identity fields, profile edit UI, public projection inputs, or profile schema migration. |
+| `lib/hosts/{today,events,audience,inbox,organizer}/README.md` | Changing a top-level Host destination, its route ownership, code-owner seams, cross-feature handoffs, or migration boundary. These five files are generated from `design/features/host_feature_responsibilities.json`; never edit them directly. |
 
 ## Cross-Cutting Docs
 

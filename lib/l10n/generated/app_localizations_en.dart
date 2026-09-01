@@ -46,16 +46,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consumerNavigationProfile => 'You';
 
   @override
+  String get hostNavigationToday => 'Today';
+
+  @override
   String get hostNavigationEvents => 'Events';
 
   @override
   String get hostNavigationCustomers => 'Customers';
 
   @override
-  String get hostNavigationInbox => 'Messaging';
+  String get hostNavigationAudience => 'Audience';
+
+  @override
+  String get hostNavigationInbox => 'Inbox';
 
   @override
   String get hostNavigationOrganizer => 'Organizer';
+
+  @override
+  String get hostTodayEmptyTitle => 'You’re all caught up';
+
+  @override
+  String get hostTodayEmptyBody =>
+      'No live or upcoming events need your attention. Check the calendar or rehearse a run-of-show.';
+
+  @override
+  String get hostTodayViewAllEvents => 'View full calendar';
+
+  @override
+  String get hostTodayLater => 'Next 7 days';
 
   @override
   String hostInboxUnreadCount({required int count}) {
@@ -6493,11 +6512,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'This preview is capped at 2,500 roster records.';
 
   @override
-  String get hostsHostTodayTitleNeedsYou => 'Needs you';
-
-  @override
-  String get hostsHostTodayTextNothingNeedsYouRight =>
-      'Nothing needs you right now.';
+  String get hostsHostTodayTitleNeedsYou => 'Needs attention';
 
   @override
   String get hostsHostTodayTooltipSwitchClub => 'Switch organizer';
@@ -6511,19 +6526,123 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsHostTodayLabelGoing => 'Going';
+  String get hostsHostTodayLabelGoing => 'expected';
 
   @override
-  String get hostsHostTodayLabelWaiting => 'Waiting';
+  String get hostsHostTodayLabelWaiting => 'checked in';
 
   @override
-  String get hostsHostTodayLabelNeedsYou => 'Needs you';
+  String get hostsHostTodayLabelNeedsYou => 'things to finish';
 
   @override
   String get hostsHostTodayLabelOpenRunOfShow => 'Open run-of-show';
 
   @override
-  String get hostsHostTodayLabelSetUpRun => 'Set up & run';
+  String get hostsHostTodayLabelSetUpRun => 'Continue setup';
+
+  @override
+  String get hostTodayTaskSummary => 'Setup, guests, run sheet';
+
+  @override
+  String get hostTodayAttentionLiveTitle => 'Event is live';
+
+  @override
+  String hostTodayAttentionLiveBody({required Object eventName}) {
+    return '$eventName is happening now. Keep guest operations moving.';
+  }
+
+  @override
+  String get hostTodayAttentionOpenLive => 'Open live controls';
+
+  @override
+  String hostTodayAttentionWaitlistBody({
+    required Object count,
+    required Object eventName,
+  }) {
+    return '$count people are waiting for $eventName.';
+  }
+
+  @override
+  String get hostTodayAttentionJoinTitle => 'Review join requests';
+
+  @override
+  String hostTodayAttentionJoinBody({
+    required Object count,
+    required Object eventName,
+  }) {
+    return '$count join requests are waiting for $eventName.';
+  }
+
+  @override
+  String get hostTodayAttentionApplicationTitle => 'Review application';
+
+  @override
+  String hostTodayAttentionApplicationBody({required Object subjectLabel}) {
+    return '$subjectLabel is waiting for a decision.';
+  }
+
+  @override
+  String get hostTodayAttentionReview => 'Review';
+
+  @override
+  String get hostTodayAttentionProviderTitle => 'Resolve guest sync';
+
+  @override
+  String hostTodayAttentionProviderBody({required Object eventName}) {
+    return '$eventName has a guest-list sync that needs reconciliation.';
+  }
+
+  @override
+  String get hostTodayAttentionAutomationTitle => 'Fix form automation';
+
+  @override
+  String hostTodayAttentionAutomationBody({required Object subjectLabel}) {
+    return '$subjectLabel stopped before every action completed.';
+  }
+
+  @override
+  String get hostTodayAttentionFix => 'Fix';
+
+  @override
+  String get hostTodayAttentionPayoutTitle => 'Finish payout setup';
+
+  @override
+  String hostTodayAttentionPayoutBody({
+    required Object count,
+    required Object provider,
+  }) {
+    return '$count paid events need an active $provider payout account.';
+  }
+
+  @override
+  String get hostTodayAttentionSetUpPayouts => 'Set up payouts';
+
+  @override
+  String get hostTodayAttentionAttendanceTitle => 'Resolve attendance sync';
+
+  @override
+  String hostTodayAttentionAttendanceBody({required Object eventName}) {
+    return '$eventName has an attendance change that needs review.';
+  }
+
+  @override
+  String get hostTodayAttentionReviewAttendance => 'Review attendance';
+
+  @override
+  String get hostTodayAttentionFallbackEvent => 'This event';
+
+  @override
+  String get hostTodayAttentionFallbackSubject => 'This item';
+
+  @override
+  String get hostTodayAttentionGenericTitle => 'Review task';
+
+  @override
+  String get hostTodayAttentionGenericBody =>
+      'This item needs a host decision.';
+
+  @override
+  String get hostTodayAttentionOpen => 'Open';
 
   @override
   String get coreBlockUserDialogMessageYouWillStopSeeing =>
@@ -8147,26 +8266,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Create your next event to start filling this list.';
 
   @override
-  String hostsHostHomeScreenStateVisiblecopySpotsremainingSpotsOpen({
-    required Object spotsRemaining,
-  }) {
-    return '$spotsRemaining spots open';
-  }
-
-  @override
-  String get hostsHostHomeScreenStateVisiblecopyEventFull => 'event full';
-
-  @override
   String get hostsHostHomeScreenStateTitleReviewWaitlist => 'Review waitlist';
-
-  @override
-  String hostsHostHomeScreenStateBodyTitleWaitlistcountWaitingAvailability({
-    required Object title,
-    required Object waitlistCount,
-    required Object availability,
-  }) {
-    return '$title\n$waitlistCount waiting · $availability';
-  }
 
   @override
   String get hostsHostHomeScreenStateVisiblecopyReview => 'Review';
@@ -9701,13 +9801,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object signedUpCount,
   }) {
     return '$signedUpCount';
-  }
-
-  @override
-  String hostsHostTodayVisiblecopyWaitlistcount({
-    required Object waitlistCount,
-  }) {
-    return '$waitlistCount';
   }
 
   @override
@@ -12646,9 +12739,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceRemoveAction => 'Remove customer';
 
   @override
-  String get hostsHostAudienceContactName => 'Name shown to your team';
-
-  @override
   String get hostsHostAudienceContactNameHelp =>
       'This does not alter the guest’s Catch profile or verified contact details.';
 
@@ -14705,6 +14795,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostEventRosterDrawerClose => 'Close guest roster';
 
   @override
+  String get hostsHostEventRosterDrawerMessageGuests => 'Message guests';
+
+  @override
   String get hostApplicationsTitle => 'Applications';
 
   @override
@@ -14927,9 +15020,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostApplicationReviewUpdated => 'Application review updated';
-
-  @override
-  String get hostNavigationForms => 'Forms';
 
   @override
   String get hostFormsCreate => 'Create form';

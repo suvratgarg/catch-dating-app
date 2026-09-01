@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.46
-updated: 2026-08-29
+version: 0.1.47
+updated: 2026-09-01
 owner: product_design_parity
 status: active
 ---
@@ -17,6 +17,7 @@ checks in one durable matrix.
 
 | File | Purpose |
 |---|---|
+| `host_visual_quality_rollout.md` | Authored execution tracker for the Host phone/tablet/desktop visual-quality rollout. Defines bounded slices, acceptance, exclusions, authority order, and the commit-after-item rule without storing run evidence. |
 | `host_shell_route_ui_audit.md` | Extensible route-by-checklist audit matrix for the Host shell destinations, with source-backed findings and reproducible compact, medium, expanded, and 200% text-scale captures. Add a destination by appending one column. |
 | `claude_widgetbook_inventory.md` | Persistent inventory comparison between the Claude Design export, local Widgetbook, local component contracts, and foundation token/style sources. |
 | `comprehensive_todo.md` | Canonical execution checklist for remaining design-parity work across sources of truth, state contracts, Widgetbook, captures, pixel comparison, composition, tokens, features, drift prevention, and pass cadence. |
@@ -27,8 +28,10 @@ checks in one durable matrix.
 | `design/features/*.feature.json` | Structured multi-surface feature orchestration contracts. Each surface binds a Flutter screen, marketing route, or admin route plus native components, action owners, and evidence. |
 | `design/features/generated/*.feature_contract.json` | Generated cross-surface state/action/evidence projections. These artifacts are deterministic and must not be edited by hand. |
 | `design/features/feature_coverage.json` | Exhaustive cross-surface migration ledger. Every registered Flutter screen, marketing route, and admin route component is contracted, grouped, planned with stable debt, or explicitly excluded. |
+| `design/features/host_feature_responsibilities.json` | Ordered responsibility and migration contract for Today, Events, Audience, Inbox, and Organizer. It resolves existing feature-contract action owners instead of duplicating their behavior. |
 | `tool/design/check_design_parity.mjs` | Standard local design parity gate. Runs component contracts, route inventory, capture coverage, screen coverage, screen contracts, Widgetbook refs, and advisory scanners. |
 | `tool/design/build_feature_contracts.mjs` | Compiles multi-surface feature sources, enforces exact authority-state coverage and action cardinality, resolves runtime-native evidence, and fails stale generated output. |
+| `tool/design/build_host_feature_responsibilities.mjs` | Validates the five Host owners against shell order, routes, code symbols, contracts, and tests, then generates their local `lib/hosts/*/README.md` overviews. |
 | `tool/design/check_feature_coverage.mjs` | Fails missing, duplicate, unknown, falsely contracted, or orphaned feature coverage across the three product runtimes. |
 | `tool/design/check_screen_coverage.mjs` | Validates screen coverage against route inventory, capture coverage, and the screen composition registry. |
 | `tool/design/check_screen_contracts.mjs` | Validates screen contracts against route inventory, capture catalog entries, component dependencies, Flutter source paths, and Dart symbols. |
@@ -218,6 +221,15 @@ planned-event agenda, organizer-name enrichment, and Event Detail handoff as
 Calendar, so both belong to Event Planning. A shared widget is useful evidence,
 but the deciding test is shared user goal plus overlapping data and action
 semantics—not class identity alone.
+
+The Host top-level responsibility contract is a narrower architecture index
+over this graph. It does not replace `feature.host_home`,
+`feature.host_customers`, `feature.host_inbox`, or
+`feature.host_organizers`; it selects their existing action owners into the
+five destination boundaries and adds only currently uncontracted transitional
+owners such as Forms and Applications. Generated local READMEs therefore stay
+useful during A3-A5 without pretending that target folders already own code
+which still lives under `lib/hosts/presentation/`.
 
 Do not infer actions from repository capabilities. Saved Events has a
 `SavedEventRepository` in its authority metadata, but the list route exposes no

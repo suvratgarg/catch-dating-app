@@ -207,6 +207,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerManualSendTaskDocument.ts",
   },
   {
+    name: "OrganizerAttentionItemDocument",
+    source: "firestore/organizer_attention_items.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerAttentionItemDocument.ts",
+  },
+  {
     name: "OrganizerContactIdentityLinkDocument",
     source: "firestore/organizer_contact_identity_links.schema.json",
     typeOutput:
@@ -2631,6 +2637,21 @@ const schemaSpecs = [
       "listOrganizerApplicationsCallableResponse.ts",
   },
   {
+    name: "ListOrganizerAttentionItemsCallablePayload",
+    source: "callables/list_organizer_attention_items_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerAttentionItemsCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerAttentionItemsCallableResponse",
+    source:
+      "callable_responses/list_organizer_attention_items_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerAttentionItemsCallableResponse.ts",
+  },
+  {
     name: "GetOrganizerApplicationDetailCallablePayload",
     source:
       "callables/get_organizer_application_detail_payload.schema.json",
@@ -3787,6 +3808,9 @@ async function main() {
     "catalogs/organizer_form_templates.json"
   );
   assertOrganizerFormTemplateCatalog(organizerFormTemplateCatalog);
+  const hostAttentionPolicyCatalog = readContractJson(
+    "catalogs/host_attention_policies.json"
+  );
   const eventSuccessMomentPresentationCatalog = readContractJson(
     "catalogs/event_success_moment_presentations.json"
   );
@@ -3822,6 +3846,7 @@ async function main() {
       profileCatalog,
       personFieldCatalog,
       organizerFormTemplateCatalog,
+      hostAttentionPolicyCatalog,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -3851,6 +3876,7 @@ async function main() {
       profileCatalog,
       personFieldCatalog,
       organizerFormTemplateCatalog,
+      hostAttentionPolicyCatalog,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -5060,6 +5086,7 @@ function renderTsSchemaRegistry({
   profileCatalog,
   personFieldCatalog,
   organizerFormTemplateCatalog,
+  hostAttentionPolicyCatalog,
   photoCatalog,
   profilePhotoPolicy,
 }) {
@@ -5068,6 +5095,7 @@ function renderTsSchemaRegistry({
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
+    ["hostAttentionPolicyCatalog", hostAttentionPolicyCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],
@@ -5160,6 +5188,7 @@ function renderToolSchemaRegistry({
   profileCatalog,
   personFieldCatalog,
   organizerFormTemplateCatalog,
+  hostAttentionPolicyCatalog,
   photoCatalog,
   profilePhotoPolicy,
 }) {
@@ -5168,6 +5197,7 @@ function renderToolSchemaRegistry({
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
+    ["hostAttentionPolicyCatalog", hostAttentionPolicyCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],

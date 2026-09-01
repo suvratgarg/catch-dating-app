@@ -1199,6 +1199,76 @@ class LiveNowConsole extends StatelessWidget {
             checkedIn: checkedInCount,
             expected: expectedCount,
           );
+    final supportingFields = DecoratedBox(
+      decoration: BoxDecoration(color: t.surface),
+      child: CatchSection.fieldRows(
+        children: [
+          CatchField.nav(
+            icon: CatchIcons.groupsOutlined,
+            title: context.l10n.eventSuccessControlRoomGuests,
+            body: guestSummary,
+            onTap: onOpenGuests,
+          ),
+          CatchField.nav(
+            icon: CatchIcons.helpOutlineRounded,
+            title: context.l10n.eventSuccessControlRoomHelpFallback,
+            body: context.l10n.eventSuccessControlRoomHelpFallbackSubtitle,
+            onTap: () => unawaited(_showControlRoomFallback(context)),
+          ),
+        ],
+      ),
+    );
+    final baseSupportingOperations = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [?exclusionAlert, supportingFields],
+    );
+    final compactSupportingOperations = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ?exclusionAlert,
+        supportingFields,
+        if (currentStepControls.isNotEmpty)
+          Padding(
+            padding: CatchInsets.pageBody.copyWith(bottom: CatchSpacing.s2),
+            child: CatchSectionList(
+              emptyStateOmitted: true,
+              gap: CatchSpacing.s4,
+              children: currentStepControls,
+            ),
+          ),
+      ],
+    );
+    final wideSupportingOperations = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ?exclusionAlert,
+        supportingFields,
+        if (currentStepControls.isNotEmpty)
+          Padding(
+            padding: CatchInsets.pageBody.copyWith(bottom: CatchSpacing.s2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CatchSectionHeader(
+                  padding: EdgeInsets.zero,
+                  title: context
+                      .l10n
+                      .eventSuccessEventSuccessHostLiveTitleControlsForThisStep,
+                  subtitle: context
+                      .l10n
+                      .eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving,
+                ),
+                gapH10,
+                CatchSectionList(
+                  emptyStateOmitted: true,
+                  gap: CatchSpacing.s4,
+                  children: currentStepControls,
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
     Widget controlRoomBody({required bool showVenue}) => Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -1210,35 +1280,7 @@ class LiveNowConsole extends StatelessWidget {
           attendeeExperience: compactCopy ? null : attendeeExperience,
           showVenue: showVenue,
         ),
-        ?exclusionAlert,
-        DecoratedBox(
-          decoration: BoxDecoration(color: t.surface),
-          child: CatchSection.fieldRows(
-            children: [
-              CatchField.nav(
-                icon: CatchIcons.groupsOutlined,
-                title: context.l10n.eventSuccessControlRoomGuests,
-                body: guestSummary,
-                onTap: onOpenGuests,
-              ),
-              CatchField.nav(
-                icon: CatchIcons.helpOutlineRounded,
-                title: context.l10n.eventSuccessControlRoomHelpFallback,
-                body: context.l10n.eventSuccessControlRoomHelpFallbackSubtitle,
-                onTap: () => unawaited(_showControlRoomFallback(context)),
-              ),
-            ],
-          ),
-        ),
-        if (compactCopy && currentStepControls.isNotEmpty)
-          Padding(
-            padding: CatchInsets.pageBody,
-            child: CatchSectionList(
-              emptyStateOmitted: true,
-              gap: CatchSpacing.s4,
-              children: currentStepControls,
-            ),
-          ),
+        compactCopy ? compactSupportingOperations : baseSupportingOperations,
       ],
     );
 
@@ -1255,55 +1297,106 @@ class LiveNowConsole extends StatelessWidget {
 
     if (compactCopy) {
       final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
-      if (largeText) {
-        return ColoredBox(
-          color: t.surface,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                controlRoomBody(showVenue: true),
-                CatchBottomAction(
-                  label: primaryLabel,
-                  onPressed: primaryAction,
-                  isLoading: isPrimaryLoading,
-                  buttonAccentColor: accent,
-                  buttonKey: ValueKey(
-                    context
-                        .l10n
-                        .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
-                  ),
-                  leadingContent: previousAction,
-                ),
-              ],
-            ),
-          ),
-        );
-      }
-      return ColoredBox(
+      final compactLayout = ColoredBox(
         color: t.surface,
-        child: Column(
+        child: largeText
+            ? SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    controlRoomBody(showVenue: true),
+                    CatchBottomAction(
+                      label: primaryLabel,
+                      onPressed: primaryAction,
+                      isLoading: isPrimaryLoading,
+                      buttonAccentColor: accent,
+                      buttonKey: ValueKey(
+                        context
+                            .l10n
+                            .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
+                      ),
+                      leadingContent: previousAction,
+                    ),
+                  ],
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: controlRoomBody(showVenue: true),
+                    ),
+                  ),
+                  CatchBottomAction(
+                    label: primaryLabel,
+                    onPressed: primaryAction,
+                    isLoading: isPrimaryLoading,
+                    buttonAccentColor: accent,
+                    buttonKey: ValueKey(
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
+                    ),
+                    leadingContent: previousAction,
+                  ),
+                ],
+              ),
+      );
+
+      final expandedLayout = ColoredBox(
+        key: const ValueKey<String>('event_success.live.wide_workspace'),
+        color: t.surface,
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                child: controlRoomBody(showVenue: true),
+              key: const ValueKey<String>('event_success.live.command_pane'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: _ControlRoomStage(
+                      event: event,
+                      plan: plan,
+                      syncState: syncState,
+                      nextStepTitle: nextStepTitle,
+                      attendeeExperience: null,
+                      showVenue: true,
+                    ),
+                  ),
+                  CatchBottomAction(
+                    label: primaryLabel,
+                    onPressed: primaryAction,
+                    isLoading: isPrimaryLoading,
+                    buttonAccentColor: accent,
+                    buttonKey: ValueKey(
+                      context
+                          .l10n
+                          .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
+                    ),
+                    leadingContent: previousAction,
+                  ),
+                ],
               ),
             ),
-            CatchBottomAction(
-              label: primaryLabel,
-              onPressed: primaryAction,
-              isLoading: isPrimaryLoading,
-              buttonAccentColor: accent,
-              buttonKey: ValueKey(
-                context
-                    .l10n
-                    .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
-              ),
-              leadingContent: previousAction,
+            VerticalDivider(width: CatchStroke.hairline, color: t.line),
+            SizedBox(
+              key: const ValueKey<String>('event_success.live.supporting_pane'),
+              width: CatchLayout.hostEventLiveSupportingPaneWidth,
+              child: SingleChildScrollView(child: wideSupportingOperations),
             ),
           ],
         ),
+      );
+
+      if (largeText) {
+        return compactLayout;
+      }
+      return ComponentResponsiveBuilder(
+        breakpoint: ComponentBreakpoints.hostEventLiveSupportingPaneBreakpoint,
+        compact: (_) => compactLayout,
+        expanded: (_) => expandedLayout,
       );
     }
 

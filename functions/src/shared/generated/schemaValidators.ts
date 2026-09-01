@@ -38,6 +38,7 @@ import {OrganizerContactNoteDocument} from "./organizerContactNoteDocument";
 import {OrganizerContactTagVocabularyDocument} from "./organizerContactTagVocabularyDocument";
 import {OrganizerSavedAudienceDocument} from "./organizerSavedAudienceDocument";
 import {OrganizerManualSendTaskDocument} from "./organizerManualSendTaskDocument";
+import {OrganizerAttentionItemDocument} from "./organizerAttentionItemDocument";
 import {OrganizerContactIdentityLinkDocument} from "./organizerContactIdentityLinkDocument";
 import {OrganizerContactIdentityClaimDocument} from "./organizerContactIdentityClaimDocument";
 import {OrganizerContactEventEdgeDocument} from "./organizerContactEventEdgeDocument";
@@ -404,6 +405,8 @@ import {ImportOrganizerApplicationsCallablePayload} from "./importOrganizerAppli
 import {ImportOrganizerApplicationsCallableResponse} from "./importOrganizerApplicationsCallableResponse";
 import {ListOrganizerApplicationsCallablePayload} from "./listOrganizerApplicationsCallablePayload";
 import {ListOrganizerApplicationsCallableResponse} from "./listOrganizerApplicationsCallableResponse";
+import {ListOrganizerAttentionItemsCallablePayload} from "./listOrganizerAttentionItemsCallablePayload";
+import {ListOrganizerAttentionItemsCallableResponse} from "./listOrganizerAttentionItemsCallableResponse";
 import {GetOrganizerApplicationDetailCallablePayload} from "./getOrganizerApplicationDetailCallablePayload";
 import {GetOrganizerApplicationDetailCallableResponse} from "./getOrganizerApplicationDetailCallableResponse";
 import {ReviewOrganizerApplicationCallablePayload} from "./reviewOrganizerApplicationCallablePayload";
@@ -559,6 +562,7 @@ import {
   organizerContactTagVocabularyDocumentSchema,
   organizerSavedAudienceDocumentSchema,
   organizerManualSendTaskDocumentSchema,
+  organizerAttentionItemDocumentSchema,
   organizerContactIdentityLinkDocumentSchema,
   organizerContactIdentityClaimDocumentSchema,
   organizerContactEventEdgeDocumentSchema,
@@ -925,6 +929,8 @@ import {
   importOrganizerApplicationsCallableResponseSchema,
   listOrganizerApplicationsCallablePayloadSchema,
   listOrganizerApplicationsCallableResponseSchema,
+  listOrganizerAttentionItemsCallablePayloadSchema,
+  listOrganizerAttentionItemsCallableResponseSchema,
   getOrganizerApplicationDetailCallablePayloadSchema,
   getOrganizerApplicationDetailCallableResponseSchema,
   reviewOrganizerApplicationCallablePayloadSchema,
@@ -1132,6 +1138,8 @@ export const validateOrganizerSavedAudienceDocument =
   lazyValidator<OrganizerSavedAudienceDocument>(organizerSavedAudienceDocumentSchema);
 export const validateOrganizerManualSendTaskDocument =
   lazyValidator<OrganizerManualSendTaskDocument>(organizerManualSendTaskDocumentSchema);
+export const validateOrganizerAttentionItemDocument =
+  lazyValidator<OrganizerAttentionItemDocument>(organizerAttentionItemDocumentSchema);
 export const validateOrganizerContactIdentityLinkDocument =
   lazyValidator<OrganizerContactIdentityLinkDocument>(organizerContactIdentityLinkDocumentSchema);
 export const validateOrganizerContactIdentityClaimDocument =
@@ -1864,6 +1872,10 @@ export const validateListOrganizerApplicationsCallablePayload =
   lazyValidator<ListOrganizerApplicationsCallablePayload>(listOrganizerApplicationsCallablePayloadSchema);
 export const validateListOrganizerApplicationsCallableResponse =
   lazyValidator<ListOrganizerApplicationsCallableResponse>(listOrganizerApplicationsCallableResponseSchema);
+export const validateListOrganizerAttentionItemsCallablePayload =
+  lazyValidator<ListOrganizerAttentionItemsCallablePayload>(listOrganizerAttentionItemsCallablePayloadSchema);
+export const validateListOrganizerAttentionItemsCallableResponse =
+  lazyValidator<ListOrganizerAttentionItemsCallableResponse>(listOrganizerAttentionItemsCallableResponseSchema);
 export const validateGetOrganizerApplicationDetailCallablePayload =
   lazyValidator<GetOrganizerApplicationDetailCallablePayload>(getOrganizerApplicationDetailCallablePayloadSchema);
 export const validateGetOrganizerApplicationDetailCallableResponse =

@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-08-29",
+  "updated": "2026-08-31",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "6d00a95cd418a0621bfb3b4f0f2337283948007b6994b8ea0e9419cbbbaf1e45",
+  "sourceDigest": "e41f1d676c9719820abb1a85b53470020e2e0e0293fdf230fbc2300136777db8",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "6d00a95cd418a0621bfb3b4f0f2337283948007b6994b8ea0e9419cbbbaf1e45",
-    "contractDigest": "6d00a95cd418a0621bfb3b4f0f2337283948007b6994b8ea0e9419cbbbaf1e45"
+    "digest": "e41f1d676c9719820abb1a85b53470020e2e0e0293fdf230fbc2300136777db8",
+    "contractDigest": "e41f1d676c9719820abb1a85b53470020e2e0e0293fdf230fbc2300136777db8"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "7eb293c0c4c2b81f445483b7c6063ba82efcbf2ff6df5acf38a889d12ad0290d",
+    "handoffRequestDigest": "690b528c2b13067918bc37558b1d117e97e6384bbb16727b8b79c722ec44b69e",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1367,7 +1367,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "a9fdb4a1d786256f0f57369e14a17265d607b389029356801ea050fc240ad086"
+      "contractDigest": "6e5523cc65f24c41b00bc2fd6e37ae419a1d7c568ef7bf398954c6e1938f7f53"
     },
     {
       "contractId": "catch.privacy_badge",
@@ -2551,7 +2551,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TabbedScreen",
       "claudeAllowed": true,
-      "contractDigest": "3adb124e999c138a921b376e460d0a1c4bc788f5b056f50b70cafe6c3b2c29bf"
+      "contractDigest": "60e28ad88fa73ae1d2947937848596ad8c955303df2b2f4a1d27fa332b22aab9"
     },
     {
       "contractId": "catch.bottom_action",

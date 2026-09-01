@@ -96,6 +96,14 @@
     "x-surface": "consumer.navigation",
     "x-max-chars": 16
   },
+  "hostNavigationToday": "Today",
+  "@hostNavigationToday": {
+    "description": "Host bottom navigation label for the operational home.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.navigation",
+    "x-max-chars": 16
+  },
   "hostNavigationEvents": "Events",
   "@hostNavigationEvents": {
     "description": "Host bottom navigation label for the event-management tab.",
@@ -112,7 +120,15 @@
     "x-surface": "host.navigation",
     "x-max-chars": 16
   },
-  "hostNavigationInbox": "Messaging",
+  "hostNavigationAudience": "Audience",
+  "@hostNavigationAudience": {
+    "description": "Host bottom navigation label for people, saved audiences, forms, and responses.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.navigation",
+    "x-max-chars": 16
+  },
+  "hostNavigationInbox": "Inbox",
   "@hostNavigationInbox": {
     "description": "Host bottom navigation label for conversations, broadcasts, and campaigns.",
     "x-audience": "host",
@@ -127,6 +143,34 @@
     "x-owner": "product",
     "x-surface": "host.navigation",
     "x-max-chars": 16
+  },
+  "hostTodayEmptyTitle": "You’re all caught up",
+  "@hostTodayEmptyTitle": {
+    "description": "Today workspace title when no live or upcoming event needs attention.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.today"
+  },
+  "hostTodayEmptyBody": "No live or upcoming events need your attention. Check the calendar or rehearse a run-of-show.",
+  "@hostTodayEmptyBody": {
+    "description": "Today workspace guidance when no live or upcoming event needs attention.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.today"
+  },
+  "hostTodayViewAllEvents": "View full calendar",
+  "@hostTodayViewAllEvents": {
+    "description": "Opens the full Host Events inventory from Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.today"
+  },
+  "hostTodayLater": "Next 7 days",
+  "@hostTodayLater": {
+    "description": "Today workspace section for the next events after the operational spotlight.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.today"
   },
   "hostInboxUnreadCount": "{count, plural, =0{Unread} =1{Unread · 1} other{Unread · {count}}}",
   "@hostInboxUnreadCount": {
@@ -370,7 +414,7 @@
   },
   "hostInboxTitle": "Messaging",
   "@hostInboxTitle": {
-    "description": "Host messaging screen heading.",
+    "description": "Host messaging screen heading above the Inbox and Sends modes.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "host.inbox",
@@ -11671,42 +11715,42 @@
     "description": "Explains that event-entry choices lead to a reviewable create flow.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetSectionContinueExisting": "Continue",
   "@hostsHostEventEntrySheetSectionContinueExisting": {
     "description": "Section label for resuming existing event work.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetSectionStartNew": "Start new",
   "@hostsHostEventEntrySheetSectionStartNew": {
     "description": "Section label for beginning a new event.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetTitleContinueDraft": "Continue draft",
   "@hostsHostEventEntrySheetTitleContinueDraft": {
     "description": "Action title for resuming a saved event draft.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetTitleRepeatLastEvent": "Repeat last event",
   "@hostsHostEventEntrySheetTitleRepeatLastEvent": {
     "description": "Action title for reusing the most recent eligible event setup.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetTitleSellTicketsWithCatch": "Sell tickets with Catch",
   "@hostsHostEventEntrySheetTitleSellTicketsWithCatch": {
     "description": "Action title for creating an event that uses Catch bookings.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetBodySavedDraftCount": "{count, plural, =1{1 saved draft} other{{count} saved drafts}}",
   "@hostsHostEventEntrySheetBodySavedDraftCount": {
@@ -11719,7 +11763,7 @@
     },
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetBodyReuseEventSetup": "Reuse the setup from {eventTitle} and choose a new date.",
   "@hostsHostEventEntrySheetBodyReuseEventSetup": {
@@ -11732,21 +11776,21 @@
     },
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments": "Tickets, waitlist, and payments in one place.",
   "@hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments": {
     "description": "Supporting copy for the Catch-bookings event path.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetBodyImportCsvOrXlsx": "Import CSV or XLSX; ticketing stays on your existing platform.",
   "@hostsHostEventEntrySheetBodyImportCsvOrXlsx": {
     "description": "Supporting copy for creating an event from an external guest list.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventsListTextLive": "LIVE",
   "@hostsHostEventsListTextLive": {
@@ -11954,19 +11998,12 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizer"
   },
-  "hostsHostTodayTitleNeedsYou": "Needs you",
+  "hostsHostTodayTitleNeedsYou": "Needs attention",
   "@hostsHostTodayTitleNeedsYou": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).",
+    "description": "Section title for the time-sensitive action queue on Host Today.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayTextNothingNeedsYouRight": "Nothing needs you right now.",
-  "@hostsHostTodayTextNothingNeedsYouRight": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
+    "x-surface": "hosts.today"
   },
   "hostsHostTodayTooltipSwitchClub": "Switch organizer",
   "@hostsHostTodayTooltipSwitchClub": {
@@ -11986,26 +12023,26 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_today"
   },
-  "hostsHostTodayLabelGoing": "Going",
+  "hostsHostTodayLabelGoing": "expected",
   "@hostsHostTodayLabelGoing": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
+    "description": "Expected guest count label in the Host Today current-event focus.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
+    "x-surface": "hosts.today"
   },
-  "hostsHostTodayLabelWaiting": "Waiting",
+  "hostsHostTodayLabelWaiting": "checked in",
   "@hostsHostTodayLabelWaiting": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
+    "description": "Checked-in guest count label in the Host Today current-event focus.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
+    "x-surface": "hosts.today"
   },
-  "hostsHostTodayLabelNeedsYou": "Needs you",
+  "hostsHostTodayLabelNeedsYou": "things to finish",
   "@hostsHostTodayLabelNeedsYou": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
+    "description": "Open task count label in the Host Today current-event focus.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
+    "x-surface": "hosts.today"
   },
   "hostsHostTodayLabelOpenRunOfShow": "Open run-of-show",
   "@hostsHostTodayLabelOpenRunOfShow": {
@@ -12014,12 +12051,202 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_today"
   },
-  "hostsHostTodayLabelSetUpRun": "Set up & run",
+  "hostsHostTodayLabelSetUpRun": "Continue setup",
   "@hostsHostTodayLabelSetUpRun": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
+    "description": "Primary action for continuing setup of the current Host Today event.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
+    "x-surface": "hosts.today"
+  },
+  "hostTodayTaskSummary": "Setup, guests, run sheet",
+  "@hostTodayTaskSummary": {
+    "description": "Concise summary of the event work represented by the current-event task count.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionLiveTitle": "Event is live",
+  "@hostTodayAttentionLiveTitle": {
+    "description": "Title for a live-event operations task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionLiveBody": "{eventName} is happening now. Keep guest operations moving.",
+  "@hostTodayAttentionLiveBody": {
+    "description": "Body for a live-event operations task on Host Today.",
+    "placeholders": {"eventName": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionOpenLive": "Open live controls",
+  "@hostTodayAttentionOpenLive": {
+    "description": "Action for a live-event operations task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionWaitlistBody": "{count} people are waiting for {eventName}.",
+  "@hostTodayAttentionWaitlistBody": {
+    "description": "Body for an ordinary event waitlist task on Host Today.",
+    "placeholders": {"count": {}, "eventName": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionJoinTitle": "Review join requests",
+  "@hostTodayAttentionJoinTitle": {
+    "description": "Title for a manual join-request task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionJoinBody": "{count} join requests are waiting for {eventName}.",
+  "@hostTodayAttentionJoinBody": {
+    "description": "Body for a manual join-request task on Host Today.",
+    "placeholders": {"count": {}, "eventName": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionApplicationTitle": "Review application",
+  "@hostTodayAttentionApplicationTitle": {
+    "description": "Title for an organizer application task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionApplicationBody": "{subjectLabel} is waiting for a decision.",
+  "@hostTodayAttentionApplicationBody": {
+    "description": "Body for an organizer application task on Host Today.",
+    "placeholders": {"subjectLabel": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionReview": "Review",
+  "@hostTodayAttentionReview": {
+    "description": "Shared review action for Host Today tasks.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionProviderTitle": "Resolve guest sync",
+  "@hostTodayAttentionProviderTitle": {
+    "description": "Title for a provider sync task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionProviderBody": "{eventName} has a guest-list sync that needs reconciliation.",
+  "@hostTodayAttentionProviderBody": {
+    "description": "Body for a provider sync task on Host Today.",
+    "placeholders": {"eventName": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionAutomationTitle": "Fix form automation",
+  "@hostTodayAttentionAutomationTitle": {
+    "description": "Title for a form automation task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionAutomationBody": "{subjectLabel} stopped before every action completed.",
+  "@hostTodayAttentionAutomationBody": {
+    "description": "Body for a form automation task on Host Today.",
+    "placeholders": {"subjectLabel": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionFix": "Fix",
+  "@hostTodayAttentionFix": {
+    "description": "Repair action for Host Today tasks.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionPayoutTitle": "Finish payout setup",
+  "@hostTodayAttentionPayoutTitle": {
+    "description": "Title for a payout-readiness task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionPayoutBody": "{count} paid events need an active {provider} payout account.",
+  "@hostTodayAttentionPayoutBody": {
+    "description": "Body for a payout-readiness task on Host Today.",
+    "placeholders": {"count": {}, "provider": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionSetUpPayouts": "Set up payouts",
+  "@hostTodayAttentionSetUpPayouts": {
+    "description": "Action for a payout-readiness task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionAttendanceTitle": "Resolve attendance sync",
+  "@hostTodayAttentionAttendanceTitle": {
+    "description": "Title for a local attendance reconciliation task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionAttendanceBody": "{eventName} has an attendance change that needs review.",
+  "@hostTodayAttentionAttendanceBody": {
+    "description": "Body for a local attendance reconciliation task on Host Today.",
+    "placeholders": {"eventName": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionReviewAttendance": "Review attendance",
+  "@hostTodayAttentionReviewAttendance": {
+    "description": "Action for a local attendance reconciliation task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionFallbackEvent": "This event",
+  "@hostTodayAttentionFallbackEvent": {
+    "description": "Fallback event label for a Host Today task.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionFallbackSubject": "This item",
+  "@hostTodayAttentionFallbackSubject": {
+    "description": "Fallback subject label for a Host Today task.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionGenericTitle": "Review task",
+  "@hostTodayAttentionGenericTitle": {
+    "description": "Fallback title for a future Host Today task kind.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionGenericBody": "This item needs a host decision.",
+  "@hostTodayAttentionGenericBody": {
+    "description": "Fallback body for a future Host Today task kind.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionOpen": "Open",
+  "@hostTodayAttentionOpen": {
+    "description": "Fallback action for a Host Today task.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
   },
   "coreBlockUserDialogMessageYouWillStopSeeing": "You will stop seeing each other in chats, matches, Catches, and future event slots where the other person is already booked.",
   "@coreBlockUserDialogMessageYouWillStopSeeing": {
@@ -14989,38 +15216,9 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_home_screen_state"
   },
-  "hostsHostHomeScreenStateVisiblecopySpotsremainingSpotsOpen": "{spotsRemaining} spots open",
-  "@hostsHostHomeScreenStateVisiblecopySpotsremainingSpotsOpen": {
-    "description": "Product copy used by lib/hosts/presentation/host_home_screen_state.dart (visibleCopy).",
-    "placeholders": {
-      "spotsRemaining": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_home_screen_state"
-  },
-  "hostsHostHomeScreenStateVisiblecopyEventFull": "event full",
-  "@hostsHostHomeScreenStateVisiblecopyEventFull": {
-    "description": "Product copy used by lib/hosts/presentation/host_home_screen_state.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_home_screen_state"
-  },
   "hostsHostHomeScreenStateTitleReviewWaitlist": "Review waitlist",
   "@hostsHostHomeScreenStateTitleReviewWaitlist": {
     "description": "Product copy used by lib/hosts/presentation/host_home_screen_state.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_home_screen_state"
-  },
-  "hostsHostHomeScreenStateBodyTitleWaitlistcountWaitingAvailability": "{title}\n{waitlistCount} waiting · {availability}",
-  "@hostsHostHomeScreenStateBodyTitleWaitlistcountWaitingAvailability": {
-    "description": "Product copy used by lib/hosts/presentation/host_home_screen_state.dart (body).",
-    "placeholders": {
-      "title": {},
-      "waitlistCount": {},
-      "availability": {}
-    },
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_home_screen_state"
@@ -17600,16 +17798,6 @@
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).",
     "placeholders": {
       "signedUpCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayVisiblecopyWaitlistcount": "{waitlistCount}",
-  "@hostsHostTodayVisiblecopyWaitlistcount": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).",
-    "placeholders": {
-      "waitlistCount": {}
     },
     "x-audience": "host",
     "x-owner": "product",
@@ -21104,8 +21292,6 @@
   "@hostsHostAudienceRemoveConfirm": {"description": "Confirm customer removal CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostsHostAudienceRemoveAction": "Remove customer",
   "@hostsHostAudienceRemoveAction": {"description": "Open customer removal confirmation CTA.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostsHostAudienceContactName": "Name shown to your team",
-  "@hostsHostAudienceContactName": {"description": "Organizer-local audience contact name field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
   "hostsHostAudienceContactNameHelp": "This does not alter the guest’s Catch profile or verified contact details.",
   "@hostsHostAudienceContactNameHelp": {"description": "Organizer-local audience contact name disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
   "hostsHostAudienceContactVerifiedPhone": "Verified phone",
@@ -22112,6 +22298,8 @@
   "@hostsHostEventRosterDrawerOpen": {"description": "Accessible label for the closed roster pull tab.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_event_roster_drawer"},
   "hostsHostEventRosterDrawerClose": "Close guest roster",
   "@hostsHostEventRosterDrawerClose": {"description": "Accessible label for closing the pull-out roster.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_event_roster_drawer"},
+  "hostsHostEventRosterDrawerMessageGuests": "Message guests",
+  "@hostsHostEventRosterDrawerMessageGuests": {"description": "Action that opens this event's scoped Host Inbox from the guest roster.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_event_roster_drawer"},
   "hostApplicationsTitle": "Applications",
   "hostApplicationsUnavailable": "Applications unavailable",
   "@hostApplicationsUnavailable": {"description": "Application-list or detail load failure title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
@@ -22226,8 +22414,6 @@
   "@hostApplicationDecline": {"description": "Application decline action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationReviewUpdated": "Application review updated",
   "@hostApplicationReviewUpdated": {"description": "Successful application review mutation message.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
-  "hostNavigationForms": "Forms",
-  "@hostNavigationForms": {"description": "Host bottom navigation label for the standalone forms workspace.", "x-audience": "host", "x-owner": "product", "x-surface": "host.navigation", "x-max-chars": 16},
   "hostFormsCreate": "Create form",
   "@hostFormsCreate": {"description": "Creates a standalone organizer form.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormsUnavailableTitle": "Forms unavailable",

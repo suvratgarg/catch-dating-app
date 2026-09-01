@@ -42,12 +42,14 @@ class ChatScreen extends ConsumerStatefulWidget {
     required this.matchId,
     this.otherProfile,
     this.initialDraftText,
+    this.onDraftChanged,
     this.embedded = false,
   });
 
   final String matchId;
   final PublicProfile? otherProfile;
   final String? initialDraftText;
+  final ValueChanged<String>? onDraftChanged;
   final bool embedded;
 
   @override
@@ -63,6 +65,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void initState() {
     super.initState();
     _textController = TextEditingController(text: widget.initialDraftText);
+    _textController.addListener(_notifyDraftChanged);
     _readMarkerController = ChatReadMarkerController.fromReader(
       conversationId: widget.matchId,
       read: ref.read,
@@ -74,10 +77,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void dispose() {
     _readMarkerController.markOnDispose();
+    _textController.removeListener(_notifyDraftChanged);
     _textController.dispose();
     _scrollCoordinator.dispose();
     super.dispose();
   }
+
+  void _notifyDraftChanged() =>
+      widget.onDraftChanged?.call(_textController.text);
 
   void _resetUnread(String? uid, {bool force = false}) {
     _readMarkerController.markForUid(uid, force: force);

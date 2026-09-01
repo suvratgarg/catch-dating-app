@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-17",
+  "updated": "2026-09-01",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -1131,7 +1131,7 @@
           "flags direct contact creation outside canonical projection owners",
           "flags provider delivery states on manual handoffs",
           "flags visible Host CRM counts without ICU plurals",
-          "flags application queue ownership under Customers"
+          "flags application queue ownership outside Audience"
         ]
       }
     },
@@ -4625,6 +4625,36 @@
           "rejects runtime and authority mismatches"
         ]
       }
+    },
+    {
+      "id": "design:host-feature-responsibilities",
+      "category": "design",
+      "path": "tool/design/build_host_feature_responsibilities.mjs",
+      "impactPaths": [
+        "design/features/host_feature_responsibilities.json",
+        "design/features/host_feature_responsibilities.schema.json",
+        "design/features/host_home.feature.json",
+        "design/features/host_customers.feature.json",
+        "design/features/host_inbox.feature.json",
+        "design/features/host_organizers.feature.json",
+        "design/source_packs/host-v2/host-coverage-manifest.json",
+        "lib/routing/route_contract.dart",
+        "lib/hosts/today/README.md",
+        "lib/hosts/events/README.md",
+        "lib/hosts/audience/README.md",
+        "lib/hosts/inbox/README.md",
+        "lib/hosts/organizer/README.md"
+      ],
+      "command": "node tool/design/build_host_feature_responsibilities.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Validates the ordered Today, Events, Audience, Inbox, and Organizer responsibility boundaries against the Host shell, typed routes, existing feature-contract action owners, Dart symbols, data contracts, and focused tests, then generates one local overview in each destination root.",
+      "checks": [
+        "node --check tool/design/build_host_feature_responsibilities.mjs",
+        "node --test tool/design/build_host_feature_responsibilities.test.mjs",
+        "node tool/design/build_host_feature_responsibilities.mjs --check"
+      ],
+      "role": "generator"
     },
     {
       "id": "design:component-contracts",

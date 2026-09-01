@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
   "sourceDigest": "sha256:e6a5b6845b3b92aa13537889825bdd345d2a0bc2a41803adea7d91fc6036fc8c",
-  "resolvedDigest": "sha256:c07a1728dc14d5367112309c5e9006791c581a8ca48e917990cb0da64f563c91",
+  "resolvedDigest": "sha256:c85b1735a042a9c7ecd773d12756ad0b98b13c8c16098a0fc7f6d3ab53ca94cb",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -18,7 +18,7 @@
     "scenarios": 79,
     "actionCases": 84,
     "actions": 14,
-    "captures": 74,
+    "captures": 75,
     "previews": 2,
     "testFiles": 7,
     "evidenceExceptions": 50
@@ -79,7 +79,7 @@
         "scenarios": 58,
         "actionCases": 63,
         "actions": 3,
-        "captures": 58,
+        "captures": 59,
         "previews": 1,
         "testFiles": 5,
         "evidenceExceptions": 33
@@ -645,6 +645,7 @@
               "host_manage_setup_private_access",
               "host_manage_attendance_roster",
               "host_live_console",
+              "host_live_console_wide",
               "host_post_event_report"
             ],
             "previewIds": [
@@ -1287,7 +1288,8 @@
           },
           "evidence": {
             "captureIds": [
-              "host_live_console"
+              "host_live_console",
+              "host_live_console_wide"
             ],
             "previewIds": [
               "HostEventManageRouteScreen/Route and section states"
@@ -1551,6 +1553,7 @@
           "evidence": {
             "captureIds": [
               "host_live_console",
+              "host_live_console_wide",
               "host_manage_live_wingman_requests",
               "host_manage_live_micro_pods_assigned",
               "host_manage_live_guided_rotations_assigned",

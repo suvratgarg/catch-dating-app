@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.20.0
-updated: 2026-08-17
+version: 1.20.1
+updated: 2026-08-31
 owner: recursive_audit_loop
 status: active
 ---
@@ -465,6 +465,17 @@ There is no second reveal confirmation, countdown, or ceremony implementation;
 the existing assignment-reveal slot switches its payload to standings.
 
 ### Spatial Layout And Control Room
+
+Host Manage treats the saved live plan as a command workspace, not a generic
+dashboard. Below the local 900 px component breakpoint, Live Now remains the
+single-column Quiet Command Console with one pinned Previous/Continue region.
+At or above that width, the same provider-free state reflows into a dominant
+dark current-beat stage and one 360 px supporting-operations lane. Guests,
+fallback help, cumulative-exclusion warnings, and current-step controls remain
+concurrent there; the roster itself stays the canonical lazy overlay. No
+additional mutation, permission, or source of live truth appears on wide
+screens, and text scale 1.4 or above uses the compact flow to protect reading
+width and semantic order.
 
 An event-success plan may select one reusable organizer layout by `layoutId`.
 The layout remains an organizer asset rather than being copied into the event.

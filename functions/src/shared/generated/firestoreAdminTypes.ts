@@ -1973,6 +1973,95 @@ export interface OrganizerManualSendTaskDocument {
 }
 
 /**
+ * Server-owned evaluated Host Today attention projection. Executable trigger, resolution, permission, deadline, and dedupe policy remains versioned in the Host attention catalog rather than embedded as prose in each document.
+ */
+export interface OrganizerAttentionItemDocument {
+  schemaVersion: 1;
+  attentionId: string;
+  organizerId: string;
+  kind:
+    | "eventLiveOperations"
+    | "eventWaitlistReview"
+    | "eventJoinRequestReview"
+    | "applicationReview"
+    | "providerSyncFailure"
+    | "formAutomationFailure"
+    | "payoutSetup"
+    | "attendanceSync"
+    | "dressRehearsal"
+    | "eventSuccessPreparation"
+    | "roomLayoutSetup"
+    | "eventStaffing"
+    | "formResponseReview"
+    | "inboxReply"
+    | "postEventReconciliation";
+  scope: "organizer" | "event" | "application" | "form" | "thread" | "account";
+  sourceOwner:
+    | "events"
+    | "eventParticipations"
+    | "organizerApplications"
+    | "providerSyncRuns"
+    | "organizerFormAutomationRuns"
+    | "hostPaymentAccounts"
+    | "hostAttendanceOutbox"
+    | "eventSuccessPlans"
+    | "eventRehearsals"
+    | "eventStaffGrants"
+    | "organizerFormResponses"
+    | "organizerWhatsappThreads"
+    | "eventAttendees";
+  sourceId: string;
+  sourceRevision: string;
+  eventId: string | null;
+  status: "open" | "resolved" | "expired" | "superseded";
+  consequence:
+    | "blocksLiveOperation"
+    | "risksGuestExperience"
+    | "risksRevenue"
+    | "delaysResponse"
+    | "degradesAutomation"
+    | "requiresReconciliation"
+    | "preparationIncomplete"
+    | "informational";
+  blocking: boolean;
+  urgency: "immediate" | "soon" | "upcoming";
+  destination: {
+    route:
+      | "hostEventManage"
+      | "hostApplications"
+      | "hostOrganizerPayments"
+      | "hostAudienceForms"
+      | "hostInbox"
+      | "hostDressRehearsal"
+      | "hostEvents";
+    section: string | null;
+    eventId: string | null;
+    applicationId: string | null;
+    formId: string | null;
+    threadId: string | null;
+  };
+  context: {
+    eventName: string | null;
+    subjectLabel: string | null;
+    count: number | null;
+    provider: string | null;
+    errorCode: string | null;
+  };
+  dedupeKey: string;
+  policyVersion: number;
+  resolutionVersion: number;
+  assignedHostUid: string | null;
+  openedAt: FirebaseFirestore.Timestamp;
+  dueAt: FirebaseFirestore.Timestamp;
+  actionExpiresAt: FirebaseFirestore.Timestamp | null;
+  sourceUpdatedAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  resolvedAt: FirebaseFirestore.Timestamp | null;
+  purgeAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
  * Server-only identity evidence edge used for keyed candidate lookup. Hashes are restricted identifiers, not anonymous data.
  */
 export interface OrganizerContactIdentityLinkDocument {

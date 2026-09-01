@@ -162,38 +162,40 @@ void main() {
   });
 
   group('Host organizer routes', () {
-    test('legacy Host root redirects to consolidated Events', () {
+    test('legacy Host root redirects to Today', () {
       expect(Routes.hostHomeScreen.path, '/host');
+      expect(Routes.hostTodayScreen.path, '/host/today');
       expect(Routes.hostEventsScreen.path, '/host/events');
-      expect(Routes.hostCustomersScreen.path, '/host/customers');
-      expect(Routes.hostAddCustomerScreen.path, '/host/customers/new');
+      expect(Routes.hostAudienceScreen.path, '/host/audience');
+      expect(Routes.hostAddCustomerScreen.path, '/host/audience/people/new');
       expect(
         Routes.hostCreateSavedAudienceScreen.path,
-        '/host/customers/audiences/new',
+        '/host/audience/audiences/new',
       );
       expect(
         Routes.hostSavedAudienceDetailScreen.path,
-        '/host/customers/audiences/:audienceId',
+        '/host/audience/audiences/:audienceId',
       );
-      expect(Routes.hostFormsScreen.path, '/host/forms');
-      expect(Routes.hostApplicationsScreen.path, '/host/forms/applications');
+      expect(Routes.hostCustomersLegacyScreen.path, '/host/customers');
+      expect(Routes.hostFormsLegacyScreen.path, '/host/forms');
+      expect(Routes.hostApplicationsScreen.path, '/host/audience/applications');
       expect(
         Routes.hostApplicationDetailScreen.path,
-        '/host/forms/applications/:applicationId',
+        '/host/audience/applications/:applicationId',
       );
       expect(
         Routes.hostCustomerDetailScreen.path,
-        '/host/customers/:contactId',
+        '/host/audience/people/:contactId',
       );
-      expect(hostHomeLegacyRedirect(), Routes.hostEventsScreen.path);
+      expect(hostHomeLegacyRedirect(), Routes.hostTodayScreen.path);
     });
 
-    test('legacy application links redirect into Forms ownership', () {
+    test('legacy application links redirect into Audience ownership', () {
       expect(
         hostApplicationsLegacyRedirect(
           Uri.parse('/host/customers/applications?organizerId=organizer-1'),
         ),
-        '/host/forms/applications?organizerId=organizer-1',
+        '/host/audience/applications?organizerId=organizer-1',
       );
       expect(
         hostApplicationsLegacyRedirect(
@@ -202,7 +204,36 @@ void main() {
           ),
           applicationId: 'application-1',
         ),
-        '/host/forms/applications/application-1?organizerId=organizer-1',
+        '/host/audience/applications/application-1?organizerId=organizer-1',
+      );
+    });
+
+    test('legacy Customers and Forms links preserve deep-link state', () {
+      expect(
+        hostCustomersLegacyRedirect(
+          Uri.parse(
+            '/host/customers/audiences/audience-1?organizerId=organizer-1',
+          ),
+        ),
+        '/host/audience/audiences/audience-1?organizerId=organizer-1',
+      );
+      expect(
+        hostCustomersLegacyRedirect(
+          Uri.parse('/host/customers/contact-1?organizerId=organizer-1'),
+        ),
+        '/host/audience/people/contact-1?organizerId=organizer-1',
+      );
+      expect(
+        hostFormsLegacyRedirect(
+          Uri.parse('/host/forms?organizerId=organizer-1&view=responses'),
+        ),
+        '/host/audience?organizerId=organizer-1&view=responses',
+      );
+      expect(
+        hostFormsLegacyRedirect(
+          Uri.parse('/host/forms/form-1/analytics?organizerId=organizer-1'),
+        ),
+        '/host/audience/forms/form-1/analytics?organizerId=organizer-1',
       );
     });
 
@@ -253,12 +284,12 @@ void main() {
       expect(screen.initialTab.name, 'insights');
     });
 
-    test('redirects the retired Organizer Audience tab into Customers', () {
+    test('redirects the retired Organizer Audience tab into Audience', () {
       expect(
         hostOrganizerAudienceRedirect(
           Uri.parse('/host/organizer?clubId=club-1&tab=audience'),
         ),
-        '/host/customers?organizerId=club-1',
+        '/host/audience?organizerId=club-1',
       );
       expect(
         hostOrganizerAudienceRedirect(
@@ -327,7 +358,7 @@ void main() {
 
       expect(
         container.read(initialAppLocationProvider),
-        Routes.hostEventsScreen.path,
+        Routes.hostTodayScreen.path,
       );
     });
 
@@ -365,7 +396,7 @@ void main() {
           location: '/auth?from=%2Fclubs',
           matchedLocation: Routes.authScreen.path,
         ),
-        Routes.hostEventsScreen.path,
+        Routes.hostTodayScreen.path,
       );
     });
 

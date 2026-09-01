@@ -14,6 +14,11 @@ test("fixture manifest maps every fixture exactly once", () => {
       "invalid/event_success_unit_outcomes_multiple_values.json",
     ),
   );
+  assert.ok(
+    fixturePaths.includes(
+      "invalid/organizer_attention_item_embedded_predicate.json",
+    ),
+  );
   assert.ok(fixturePaths.includes("invalid/places_autocomplete_short_input.json"));
 });
 
@@ -21,5 +26,5 @@ test("schema fixture check validates all current fixtures", () => {
   const result = checkSchemaFixtures();
   assert.deepEqual(result.errors, []);
   assert.equal(result.fixtureCount, fixtureSchemaCases.length);
-  assert.equal(result.invalidFixtureCount, 24);
+  assert.equal(result.invalidFixtureCount, 25);
 });

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.38.0
-updated: 2026-08-30
+version: 1.41.0
+updated: 2026-09-01
 owner: recursive_audit_loop
 status: active
 ---
@@ -47,6 +47,62 @@ Read this before changing:
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Host Today Attention Contract
+
+`contracts/catalogs/host_attention_policies.json` is the exhaustive policy
+inventory for the Host Today queue. Every kind declares one source owner,
+trigger and resolution semantics, authorization boundary, consequence,
+deadline policy, destination, deduplication policy, delivery mode, and source-
+truth readiness. The schema validator requires the catalog to match the closed
+kind enum in `contracts/shared/host_attention_common.schema.json` exactly and
+in order. Adding an attention kind therefore requires an explicit catalog
+decision; it cannot appear as widget-local business logic.
+
+The catalog distinguishes four delivery modes:
+
+| Delivery mode | Meaning |
+|---|---|
+| `serverProjected` | The backend can derive the item from explicit canonical facts and return it after read-through reconciliation. |
+| `clientMerged` | The fact is intentionally device-local and Flutter merges it after the server response. |
+| `shortcutOnly` | Today exposes an action, but the product does not claim that every organizer has a mandatory task. |
+| `blockedMissingTruth` | A desirable archetype lacks an explicit authoritative workflow field; the callable reports the gap instead of inferring it from a weak proxy. |
+
+`organizerAttentionItems/{attentionId}` is a server-only evaluated projection.
+It stores stable source provenance and revision, open/resolved lifecycle,
+urgency, consequence, deadline, destination, display-safe context, policy and
+resolution versions. Open rows use a null TTL; resolved rows receive bounded
+cleanup. It never embeds prose predicates or
+becomes the source of the underlying event, application, form, provider, or
+payout state. Direct client reads and writes are denied.
+
+`listOrganizerAttentionItems` owns the read-through boundary. Before returning
+supported server items it must re-read every declared authoritative source,
+derive the desired open set, upsert changed rows, and resolve stale rows. Each
+source scan is bounded at 400 records and fails closed when exceeded; the
+callable must never label a truncated scan exhaustive. The response also
+contains one coverage row per catalog kind so clients and tests can distinguish
+complete server coverage, required local merging, shortcuts, and missing truth.
+
+The source-ready server kinds are live-event operations, ordinary waitlist
+review, manual join-request review, application review, provider-sync failure,
+form-automation failure, and payout setup. Attendance retry/conflict work is
+merged from the local Host outbox. Flutter consumes the callable through
+`HostAttentionRepository`, parses the closed item and coverage vocabularies
+into typed domain values, verifies the requested organizer, and rejects any
+response that does not contain every catalog kind exactly once. The Today feed
+then merges every normalized `HostAttendanceOutbox` row, deduplicates and sorts
+the combined queue by urgency, blocking consequence, deadline, and stable id.
+The active-event feed remains usable when either optional attention source
+fails, but the presentation receives a source-specific issue and must not claim
+that the organizer has no outstanding work.
+
+Dress Rehearsal is a Today shortcut. Event Success readiness, room-layout
+requirements, staffing requirements, generic form-response review, Inbox reply
+obligation, and post-event reconciliation stay blocked until their owning
+domains add explicit workflow state. In particular, null optional setup, zero
+staff grants, an unread message, a submitted generic form, or aggregate counts
+are not sufficient evidence of a mandatory task.
 
 ### Event Dress Rehearsal Isolation Contract
 

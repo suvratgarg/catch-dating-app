@@ -14,6 +14,8 @@ export 'data/host_profile_repository.dart';
 export 'domain/host_attendance_window.dart';
 export 'domain/host_profile.dart';
 export 'domain/host_report_export.dart';
+export 'events/presentation/host_events_screen.dart'; // public-api: route entry point exposed to app routing
+export 'events/presentation/host_events_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/club_management/create/create_club_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/club_management/create/create_club_draft_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/club_management/create/create_club_screen.dart'; // public-api: route entry point exposed to app routing
@@ -39,7 +41,6 @@ export 'presentation/host_event_booking_controller.dart'; // public-api: command
 export 'presentation/host_event_manage_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/host_event_manage_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/host_event_manage_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
-export 'presentation/host_home_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/host_operations_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/host_organizer_selection_controller.dart'; // public-api: Host-shell organizer identity state seam
 export 'presentation/host_profile_controller.dart'; // public-api: command seam for route-owned actions
@@ -55,3 +56,4 @@ export 'presentation/widgets/host_loading_skeletons.dart'; // public-api: shared
 export 'presentation/widgets/host_organizer_switcher.dart'; // public-api: shared Host-shell identity component
 export 'presentation/widgets/host_team_management_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/stepper_footer.dart'; // public-api: shared presentation component used outside this feature
+export 'today/presentation/host_today_screen.dart'; // public-api: route entry point exposed to app routing

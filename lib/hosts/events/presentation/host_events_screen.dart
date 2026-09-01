@@ -1,24 +1,121 @@
-part of '../host_operations_screen.dart';
+import 'dart:async';
 
-class HostEventsScaffold extends ConsumerStatefulWidget {
-  const HostEventsScaffold({
-    super.key,
-    required this.clubs,
-    required this.currentUid,
-    this.initialClubId,
-    this.now,
-  });
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/events/data/event_draft_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
+import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-  final List<Club> clubs;
-  final String currentUid;
-  final String? initialClubId;
+class HostEventsScreen extends ConsumerWidget {
+  const HostEventsScreen({super.key, this.initialOrganizerId, this.now});
+
+  final String? initialOrganizerId;
   final DateTime? now;
 
   @override
-  ConsumerState<HostEventsScaffold> createState() => _HostEventsScaffoldState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uidState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final uid = uidState.value;
+    final organizersState = uid == null
+        ? null
+        : catchAsyncStateFromAsyncValue(
+            ref.watch(hostOperableClubsProvider(uid)),
+          );
+    final routeState = buildHostEventsRouteState(
+      uid: uidState,
+      organizers: organizersState,
+    );
+
+    return switch (routeState.status) {
+      HostEventsRouteStatus.authRequired => CatchErrorScaffold(
+        title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+        message: context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
+        retryLabel: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+        onRetry: () => context.go(Routes.authScreen.path),
+      ),
+      HostEventsRouteStatus.loading => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+          context: context,
+          title: context.l10n.hostsHostOperationsHomeScreenTitleHostEvents,
+          divider: scrolledUnder,
+        ),
+        body: const SafeArea(child: HostRouteLoadingBody()),
+      ),
+      HostEventsRouteStatus.error => CatchErrorScaffold.fromError(
+        routeState.error!,
+        context: routeState.errorContext,
+        onRetry: () {
+          final currentUid = routeState.uid;
+          if (routeState.errorContext == AppErrorContext.auth ||
+              currentUid == null) {
+            ref.invalidate(uidProvider);
+            return;
+          }
+          ref.invalidate(hostOperableClubsProvider(currentUid));
+        },
+      ),
+      HostEventsRouteStatus.empty ||
+      HostEventsRouteStatus.loaded => HostEventsRouteScaffold(
+        organizers: routeState.organizers,
+        currentUid: routeState.uid!,
+        initialOrganizerId: initialOrganizerId,
+        now: now,
+      ),
+    };
+  }
 }
 
-class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
+class HostEventsRouteScaffold extends ConsumerStatefulWidget {
+  const HostEventsRouteScaffold({
+    super.key,
+    required this.organizers,
+    required this.currentUid,
+    this.initialOrganizerId,
+    this.now,
+  });
+
+  final List<Club> organizers;
+  final String currentUid;
+  final String? initialOrganizerId;
+  final DateTime? now;
+
+  @override
+  ConsumerState<HostEventsRouteScaffold> createState() =>
+      _HostEventsRouteScaffoldState();
+}
+
+class _HostEventsRouteScaffoldState
+    extends ConsumerState<HostEventsRouteScaffold> {
   late DateTime _clockNow;
   late DateTime _timelineBoundary;
   Timer? _clockTimer;
@@ -30,7 +127,7 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
   }
 
   @override
-  void didUpdateWidget(HostEventsScaffold oldWidget) {
+  void didUpdateWidget(HostEventsRouteScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.now != widget.now) _resetClock();
   }
@@ -72,10 +169,10 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
       hostOrganizerSelectionProvider(widget.currentUid),
     );
     final selectedClub = resolveSelectedHostOrganizer(
-      widget.clubs,
+      widget.organizers,
       selectedOrganizerId: selectedOrganizerId,
       preferredOrganizerId: selectedOrganizerId == null
-          ? widget.initialClubId
+          ? widget.initialOrganizerId
           : null,
     );
 
@@ -114,7 +211,6 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
                 club: selectedClub,
                 onEventEntrySelected: _handleEventEntrySelected,
                 onManageEvent: _openEvent,
-                onOpenTask: _openAttentionTask,
                 now: _clockNow,
                 sessionBoundary: _timelineBoundary,
               ),
@@ -136,11 +232,6 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
         final source = state.repeatSource;
         if (source == null) return;
         await _openRepeatEvent(club, source);
-      case HostEventEntryIntent.dressRehearsal:
-        await context.pushNamed(
-          Routes.hostEventRehearsalStartScreen.name,
-          pathParameters: {'clubId': club.id},
-        );
       case HostEventEntryIntent.createWithCatchBookings:
         await _openCreateEvent(club);
       case HostEventEntryIntent.createFromGuestList:
@@ -242,20 +333,6 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
       Routes.hostAppEventManageScreen.name,
       pathParameters: {'clubId': club.id, 'eventId': event.id},
       queryParameters: {'section': section},
-      extra: event,
-    );
-  }
-
-  void _openAttentionTask(Club club, Event event, HostEventAttentionData task) {
-    context.pushNamed(
-      Routes.hostAppEventManageScreen.name,
-      pathParameters: {'clubId': club.id, 'eventId': event.id},
-      queryParameters: {
-        'section': switch (task.destination) {
-          HostEventAttentionDestination.guests => 'guests',
-          HostEventAttentionDestination.setup => 'setup',
-        },
-      },
       extra: event,
     );
   }

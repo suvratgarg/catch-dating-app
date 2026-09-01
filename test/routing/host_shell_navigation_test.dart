@@ -39,15 +39,15 @@ void main() {
     tester,
   ) async {
     final router = GoRouter(
-      initialLocation: '/host/events',
+      initialLocation: '/host/today',
       routes: [
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) =>
               HostAppShell(navigationShell: navigationShell),
           branches: [
+            _branch('/host/today', 'TODAY BODY'),
             _branch('/host/events', 'EVENTS BODY'),
-            _branch('/host/customers', 'CUSTOMERS BODY'),
-            _branch('/host/forms', 'FORMS BODY'),
+            _branch('/host/audience', 'AUDIENCE BODY'),
             _branch('/host/inbox', 'INBOX BODY'),
             _branch('/host/organizer', 'ORGANIZER BODY'),
           ],
@@ -85,14 +85,14 @@ void main() {
     expect(
       navigationBar.items!.map((item) => item.destination),
       orderedEquals(const [
+        AppShellNavigationDestination.hostToday,
         AppShellNavigationDestination.hostEvents,
-        AppShellNavigationDestination.hostCustomers,
-        AppShellNavigationDestination.hostForms,
+        AppShellNavigationDestination.hostAudience,
         AppShellNavigationDestination.hostInbox,
         AppShellNavigationDestination.hostOrganizer,
       ]),
     );
-    expect(find.text('EVENTS BODY'), findsOneWidget);
+    expect(find.text('TODAY BODY'), findsOneWidget);
     expect(
       find.byKey(const ValueKey<String>('host-organizer-navigation-avatar')),
       findsOneWidget,
@@ -133,13 +133,13 @@ void main() {
       find.byKey(const ValueKey('app_shell.navigation.destination.1')),
     );
     await pumpFeatureUi(tester);
-    expect(find.text('CUSTOMERS BODY'), findsOneWidget);
+    expect(find.text('EVENTS BODY'), findsOneWidget);
 
     await tester.tap(
       find.byKey(const ValueKey('app_shell.navigation.destination.2')),
     );
     await pumpFeatureUi(tester);
-    expect(find.text('FORMS BODY'), findsOneWidget);
+    expect(find.text('AUDIENCE BODY'), findsOneWidget);
 
     await tester.tap(
       find.byKey(const ValueKey('app_shell.navigation.destination.3')),
@@ -169,7 +169,7 @@ void main() {
       addTearDown(tester.view.resetViewInsets);
 
       final router = GoRouter(
-        initialLocation: '/host/events',
+        initialLocation: '/host/today',
         routes: [
           StatefulShellRoute.indexedStack(
             builder: (context, state, navigationShell) =>
@@ -178,7 +178,7 @@ void main() {
               StatefulShellBranch(
                 routes: [
                   GoRoute(
-                    path: '/host/events',
+                    path: '/host/today',
                     builder: (context, state) => Scaffold(
                       body: TextField(
                         key: editorKey,
@@ -189,8 +189,8 @@ void main() {
                   ),
                 ],
               ),
-              _branch('/host/customers', 'CUSTOMERS BODY'),
-              _branch('/host/forms', 'FORMS BODY'),
+              _branch('/host/events', 'EVENTS BODY'),
+              _branch('/host/audience', 'AUDIENCE BODY'),
               _branch('/host/inbox', 'INBOX BODY'),
               _branch('/host/organizer', 'ORGANIZER BODY'),
             ],
@@ -248,6 +248,21 @@ void main() {
       );
       expect(activeTab.bottomBarPlacement, expectedPlacement);
       expect(activeTab.bottomOverlayInset, tabBarFloats ? greaterThan(0) : 0);
+      expect(
+        find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+        tabBarFloats ? findsOneWidget : findsNothing,
+      );
+      expect(
+        find.byKey(const ValueKey('catch_tab_bar.anchored_chrome')),
+        tabBarFloats ? findsNothing : findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+          matching: find.byType(BackdropFilter),
+        ),
+        tabBarFloats ? findsOneWidget : findsNothing,
+      );
 
       final editor = find.byKey(editorKey);
       await tester.tap(editor);
@@ -314,11 +329,103 @@ void main() {
             .bottomBarPlacement,
         expectedPlacement,
       );
+      expect(
+        find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+        tabBarFloats ? findsOneWidget : findsNothing,
+      );
+      expect(
+        find.byKey(const ValueKey('catch_tab_bar.anchored_chrome')),
+        tabBarFloats ? findsNothing : findsOneWidget,
+      );
     },
     variant: const TargetPlatformVariant({
       TargetPlatform.android,
       TargetPlatform.iOS,
     }),
+  );
+
+  testWidgets(
+    'Audience Forms draft survives destination changes and shell reflow',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 844);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final router = GoRouter(
+        initialLocation: '/host/audience?view=forms',
+        routes: [
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) =>
+                HostAppShell(navigationShell: navigationShell),
+            branches: [
+              _branch('/host/today', 'TODAY BODY'),
+              _branch('/host/events', 'EVENTS BODY'),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/host/audience',
+                    builder: (context, state) => const _FormsDraftBody(),
+                  ),
+                ],
+              ),
+              _branch('/host/inbox', 'INBOX BODY'),
+              _branch('/host/organizer', 'ORGANIZER BODY'),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(_uid)),
+            hostOperableClubsProvider(
+              _uid,
+            ).overrideWithValue(AsyncData([_organizer])),
+            totalUnreadCountProvider(_uid).overrideWithValue(0),
+            appConnectivityProvider.overrideWith(
+              (ref) => Stream.value(const [ConnectivityResult.wifi]),
+            ),
+            appShellFcmInitializationProvider(
+              _uid,
+              router,
+            ).overrideWith((ref) async {}),
+            errorLoggerProvider.overrideWithValue(ErrorLogger()),
+            appAnalyticsProvider.overrideWithValue(AppAnalytics()),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await pumpFeatureUi(tester);
+
+      const draftKey = ValueKey<String>('host-shell-forms-draft');
+      final draft = find.byKey(draftKey);
+      final draftElement = tester.element(draft);
+      await tester.enterText(draft, 'Member application');
+
+      await tester.tap(find.bySemanticsLabel(RegExp('Events')));
+      await pumpFeatureUi(tester);
+      expect(find.text('EVENTS BODY'), findsOneWidget);
+
+      tester.view.physicalSize = const Size(1024, 900);
+      await tester.pump();
+      expect(
+        find.byKey(const ValueKey('app_shell.navigation.sidebar')),
+        findsOneWidget,
+      );
+
+      await tester.tap(
+        find.byKey(const ValueKey('app_shell.navigation.destination.2')),
+      );
+      await pumpFeatureUi(tester);
+      expect(tester.element(draft), same(draftElement));
+      expect(find.text('Member application'), findsOneWidget);
+    },
   );
 
   for (final scenario in const [
@@ -351,6 +458,13 @@ void main() {
       sidebar: true,
     ),
     (
+      width: 840.0,
+      textScale: 2.0,
+      chromeKey: 'app_shell.navigation.sidebar',
+      sideNavigation: true,
+      sidebar: true,
+    ),
+    (
       width: 700.0,
       textScale: 2.0,
       chromeKey: 'app_shell.navigation.rail',
@@ -366,15 +480,15 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
 
       final router = GoRouter(
-        initialLocation: '/host/events',
+        initialLocation: '/host/today',
         routes: [
           StatefulShellRoute.indexedStack(
             builder: (context, state, navigationShell) =>
                 HostAppShell(navigationShell: navigationShell),
             branches: [
+              _branch('/host/today', 'TODAY BODY'),
               _branch('/host/events', 'EVENTS BODY'),
-              _branch('/host/customers', 'CUSTOMERS BODY'),
-              _branch('/host/forms', 'FORMS BODY'),
+              _branch('/host/audience', 'AUDIENCE BODY'),
               _branch('/host/inbox', 'INBOX BODY'),
               _branch('/host/organizer', 'ORGANIZER BODY'),
             ],
@@ -433,6 +547,12 @@ void main() {
         find.text('Catch Host'),
         scenario.sidebar ? findsOneWidget : findsNothing,
       );
+      if (scenario.sidebar) {
+        expect(
+          tester.widget<Text>(find.text('Catch Host')).maxLines,
+          scenario.textScale >= 1.6 ? 2 : 1,
+        );
+      }
       final navigationBar = tester.widget<AppShellNavigationBar>(
         find.byType(AppShellNavigationBar),
       );
@@ -448,10 +568,10 @@ void main() {
               : CatchLayout.appShellRailWidth,
         );
         final expectedLabels = [
+          'Today',
           'Events',
-          'Customers',
-          'Forms',
-          'Messaging',
+          'Audience',
+          'Inbox',
           'Organizer',
         ];
         for (final (index, label) in expectedLabels.indexed) {
@@ -465,10 +585,10 @@ void main() {
           expect(semantics.properties.selected, index == 0);
         }
       } else {
+        expect(find.bySemanticsLabel(RegExp('Today')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Events')), findsOneWidget);
-        expect(find.bySemanticsLabel(RegExp('Customers')), findsOneWidget);
-        expect(find.bySemanticsLabel(RegExp('Forms')), findsOneWidget);
-        expect(find.bySemanticsLabel(RegExp('Messaging')), findsOneWidget);
+        expect(find.bySemanticsLabel(RegExp('Audience')), findsOneWidget);
+        expect(find.bySemanticsLabel(RegExp('Inbox')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Organizer')), findsOneWidget);
       }
     });
@@ -483,5 +603,30 @@ StatefulShellBranch _branch(String path, String label) {
         builder: (context, state) => Scaffold(body: Center(child: Text(label))),
       ),
     ],
+  );
+}
+
+class _FormsDraftBody extends StatefulWidget {
+  const _FormsDraftBody();
+
+  @override
+  State<_FormsDraftBody> createState() => _FormsDraftBodyState();
+}
+
+class _FormsDraftBodyState extends State<_FormsDraftBody> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: TextField(
+      key: const ValueKey<String>('host-shell-forms-draft'),
+      controller: _controller,
+    ),
   );
 }
