@@ -53,6 +53,38 @@ void main() {
     },
   );
 
+  testWidgets('CatchTabbedPageScrollView resolves semantic top rhythm', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(400, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    for (final (layout, expectedTop) in [
+      (CatchScreenBodyLayout.standard, CatchInsets.pageBody.top),
+      (CatchScreenBodyLayout.compact, CatchInsets.pageBodyCompact.top),
+      (CatchScreenBodyLayout.fullBleed, 0.0),
+    ]) {
+      await tester.pumpWidget(
+        _wrap(constrainToContentWidth: false, bodyLayout: layout),
+      );
+      await tester.pump();
+
+      final rail = tester.getRect(
+        find.byKey(const ValueKey('tabbed-page-rail')),
+      );
+      final body = tester.getRect(
+        find.byKey(const ValueKey('tabbed-page-frame')),
+      );
+      expect(
+        body.top - rail.bottom,
+        closeTo(expectedTop, 0.001),
+        reason: '$layout must own its exact tab-to-body relationship.',
+      );
+    }
+  });
+
   testWidgets('CatchTabbedScreenScaffold composes expanding header search', (
     tester,
   ) async {
@@ -89,18 +121,21 @@ void main() {
   });
 }
 
-Widget _wrap({required bool constrainToContentWidth}) {
+Widget _wrap({
+  required bool constrainToContentWidth,
+  CatchScreenBodyLayout bodyLayout = CatchScreenBodyLayout.standard,
+}) {
   return MaterialApp(
     theme: AppTheme.light,
     home: CatchTabbedScreenScaffold(
       title: 'Workspace',
       tabRail: const PreferredSize(
         preferredSize: Size.fromHeight(1),
-        child: SizedBox(height: 1),
+        child: SizedBox(key: ValueKey('tabbed-page-rail'), height: 1),
       ),
       body: CatchTabbedPageScrollView(
         scrollKey: const PageStorageKey<String>('tabbed-page-test'),
-        bodyLayout: CatchScreenBodyLayout.standard,
+        bodyLayout: bodyLayout,
         constrainToContentWidth: constrainToContentWidth,
         slivers: const [
           SliverToBoxAdapter(

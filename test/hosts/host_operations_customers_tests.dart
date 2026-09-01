@@ -199,7 +199,7 @@ void _registerHostOperationsCustomersTests() {
     );
   });
 
-  testWidgets('customer directory uses approved full-bleed field rows', (
+  testWidgets('customer directory uses canonical field-row feedback', (
     tester,
   ) async {
     await _pumpHostScreen(
@@ -229,6 +229,10 @@ void _registerHostOperationsCustomersTests() {
 
     final frame = find.byKey(const ValueKey('host-customers-directory-list'));
     expect(
+      find.descendant(of: frame, matching: find.byType(CatchRowPressSurface)),
+      findsNothing,
+    );
+    expect(
       find.descendant(
         of: frame,
         matching: find.byKey(CatchSectionFocusSurface.rowGroupClipKey),
@@ -241,18 +245,48 @@ void _registerHostOperationsCustomersTests() {
     );
 
     final row = find.byType(HostCustomerRow).first;
+    final pressOverlayFinder = find.descendant(
+      of: row,
+      matching: find.byKey(CatchField.pressOverlayKey),
+    );
+    final activeOverlayFinder = find.descendant(
+      of: row,
+      matching: find.byKey(const ValueKey('catch-field-active-overlay')),
+    );
+    final mouse = await tester.createGesture(kind: ui.PointerDeviceKind.mouse);
+    await mouse.addPointer(location: tester.getCenter(row));
+    addTearDown(mouse.removePointer);
+    await mouse.moveTo(tester.getCenter(row));
+    await tester.pump();
+    final hoveredPressDecoration =
+        tester.widget<AnimatedContainer>(pressOverlayFinder).decoration!
+            as BoxDecoration;
+    final hoveredActiveDecoration =
+        tester.widget<AnimatedContainer>(activeOverlayFinder).decoration!
+            as BoxDecoration;
+    expect(hoveredPressDecoration.color, Colors.transparent);
+    expect(hoveredActiveDecoration.color, Colors.transparent);
+    expect(hoveredActiveDecoration.boxShadow, CatchElevation.none);
+
     final gesture = await tester.startGesture(tester.getCenter(row));
     await tester.pump();
-    final overlay = tester.widget<AnimatedContainer>(
-      find.descendant(
-        of: row,
-        matching: find.byKey(CatchField.pressOverlayKey),
-      ),
-    );
+    final overlay = tester.widget<AnimatedContainer>(pressOverlayFinder);
     final decoration = overlay.decoration! as BoxDecoration;
     expect(decoration.color, isNot(Colors.transparent));
     expect(decoration.borderRadius, BorderRadius.zero);
+    expect(decoration.border, isNull);
+    expect(decoration.boxShadow, isNull);
+    final pageWidth = tester.getSize(find.byType(Scaffold).first).width;
+    final overlayRect = tester.getRect(pressOverlayFinder);
+    expect(overlayRect.left, closeTo(0, 0.001));
+    expect(overlayRect.right, closeTo(pageWidth, 0.001));
     await gesture.up();
+    await tester.pump();
+    await tester.pump(CatchFieldTokens.pressOut);
+    final releasedDecoration =
+        tester.widget<AnimatedContainer>(pressOverlayFinder).decoration!
+            as BoxDecoration;
+    expect(releasedDecoration.color, Colors.transparent);
   });
 
   testWidgets('incomplete customer history is honest and can be rechecked', (
@@ -916,6 +950,13 @@ void _registerHostOperationsCustomersTests() {
     );
 
     final summary = find.byType(HostCustomersSummary);
+    final tabRailRect = tester.getRect(find.byType(HostAudienceTabRail));
+    final summaryRect = tester.getRect(summary);
+    expect(
+      summaryRect.top - tabRailRect.bottom,
+      closeTo(CatchInsets.pageBody.top, 0.5),
+      reason: 'The tab body owns the standard top rhythm.',
+    );
     final metricSurfaces = tester
         .widgetList<CatchSurface>(
           find.descendant(of: summary, matching: find.byType(CatchSurface)),

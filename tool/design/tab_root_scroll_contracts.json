@@ -220,6 +220,21 @@
           ]
         },
         {
+          "path": "lib/hosts/presentation/customers/host_customers_directory.dart",
+          "requires": [
+            {"text": "CatchSection.fieldRows", "minimumOccurrences": 1}
+          ]
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customer_row.dart",
+          "requires": [
+            {"text": "return CatchField.nav(", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchRowPressSurface"}
+          ]
+        },
+        {
           "path": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
           "requires": [
             {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1},
