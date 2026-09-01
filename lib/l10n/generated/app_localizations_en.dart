@@ -14948,9 +14948,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationReviewUpdated => 'Application review updated';
 
   @override
-  String get hostNavigationForms => 'Forms';
-
-  @override
   String get hostFormsCreate => 'Create form';
 
   @override

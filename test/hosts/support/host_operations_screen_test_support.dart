@@ -62,6 +62,13 @@ void registerHostEventEntryTests() {
       const ValueKey<String>('host-event-entry-sheet'),
     );
     expect(
+      find.descendant(
+        of: eventEntrySheet,
+        matching: find.text('Dress rehearsal'),
+      ),
+      findsNothing,
+    );
+    expect(
       find.descendant(of: eventEntrySheet, matching: find.byType(CatchSection)),
       findsOneWidget,
     );
@@ -80,9 +87,7 @@ void registerHostEventEntryTests() {
 
     expect(
       tester
-          .widget<HostEventOperationalSpotlight>(
-            find.byType(HostEventOperationalSpotlight),
-          )
+          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
           .event,
       event,
     );
@@ -91,6 +96,31 @@ void registerHostEventEntryTests() {
 
     expect(find.text('Manage ${event.id}'), findsOneWidget);
     expect(find.text('Section setup'), findsOneWidget);
+  });
+
+  testWidgets('Host Today owns the dedicated dress rehearsal entry point', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'rehearsal-club', ownerUserId: _hostUid);
+
+    await _pumpHostScreen(
+      tester,
+      HostOperationsHomeScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        ..._hostClubOverrides(owned: [club]),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(const AsyncData<List<Event>>([])),
+      ],
+    );
+
+    final rehearsalAction = find.byKey(
+      const ValueKey<String>('host-today-start-dress-rehearsal'),
+    );
+    expect(rehearsalAction, findsOneWidget);
+    await tester.tap(rehearsalAction);
+    await pumpFeatureUi(tester);
+    expect(find.text('Rehearse rehearsal-club'), findsOneWidget);
   });
 
   testWidgets('Host Today resumes a loaded draft without a second lookup', (

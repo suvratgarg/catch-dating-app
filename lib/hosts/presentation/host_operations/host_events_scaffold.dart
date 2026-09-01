@@ -7,14 +7,12 @@ class HostEventsScaffold extends ConsumerStatefulWidget {
     required this.currentUid,
     this.initialClubId,
     this.now,
-    this.surface = HostOperationsSurface.today,
   });
 
   final List<Club> clubs;
   final String currentUid;
   final String? initialClubId;
   final DateTime? now;
-  final HostOperationsSurface surface;
 
   @override
   ConsumerState<HostEventsScaffold> createState() => _HostEventsScaffoldState();
@@ -90,9 +88,7 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
                 slivers: [
                   SliverToBoxAdapter(
                     child: CatchScreenHeaderTitle.block(
-                      title: widget.surface == HostOperationsSurface.today
-                          ? context.l10n.hostNavigationToday
-                          : context.l10n.hostsHostEventsListTextEvents,
+                      title: context.l10n.hostsHostEventsListTextEvents,
                     ),
                   ),
                   CatchSliverEmptyState(
@@ -118,10 +114,8 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
                 club: selectedClub,
                 onEventEntrySelected: _handleEventEntrySelected,
                 onManageEvent: _openEvent,
-                onOpenTask: _openAttentionTask,
                 now: _clockNow,
                 sessionBoundary: _timelineBoundary,
-                surface: widget.surface,
               ),
       ),
     );
@@ -141,11 +135,6 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
         final source = state.repeatSource;
         if (source == null) return;
         await _openRepeatEvent(club, source);
-      case HostEventEntryIntent.dressRehearsal:
-        await context.pushNamed(
-          Routes.hostEventRehearsalStartScreen.name,
-          pathParameters: {'clubId': club.id},
-        );
       case HostEventEntryIntent.createWithCatchBookings:
         await _openCreateEvent(club);
       case HostEventEntryIntent.createFromGuestList:
@@ -247,20 +236,6 @@ class _HostEventsScaffoldState extends ConsumerState<HostEventsScaffold> {
       Routes.hostAppEventManageScreen.name,
       pathParameters: {'clubId': club.id, 'eventId': event.id},
       queryParameters: {'section': section},
-      extra: event,
-    );
-  }
-
-  void _openAttentionTask(Club club, Event event, HostEventAttentionData task) {
-    context.pushNamed(
-      Routes.hostAppEventManageScreen.name,
-      pathParameters: {'clubId': club.id, 'eventId': event.id},
-      queryParameters: {
-        'section': switch (task.destination) {
-          HostEventAttentionDestination.guests => 'guests',
-          HostEventAttentionDestination.setup => 'setup',
-        },
-      },
       extra: event,
     );
   }

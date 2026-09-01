@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
@@ -10,8 +9,6 @@ import 'package:flutter/material.dart';
 typedef HostHomeCreateEventCallback = void Function(Club club);
 typedef HostHomeRepeatEventCallback = void Function(Club club, Event event);
 typedef HostHomeManageEventCallback = void Function(Club club, Event event);
-typedef HostHomeOpenTaskCallback =
-    void Function(Club club, Event event, HostEventAttentionData task);
 
 enum HostHomeRouteStatus { authRequired, loading, error, empty, loaded }
 
@@ -278,93 +275,6 @@ class HostEventLifecycleRowData {
         '${EventFormatters.time(event.startTime)} · $fillPercent% full';
   }
 }
-
-enum HostEventsOverviewStatus { loading, error, empty, content }
-
-@immutable
-class HostEventsOverviewState {
-  const HostEventsOverviewState({
-    required this.status,
-    this.event,
-    this.tasks = const <HostEventAttentionData>[],
-    this.error,
-    this.stackTrace,
-  });
-
-  final HostEventsOverviewStatus status;
-  final Event? event;
-  final List<HostEventAttentionData> tasks;
-  final Object? error;
-  final StackTrace? stackTrace;
-}
-
-@immutable
-class HostEventAttentionData {
-  const HostEventAttentionData({
-    required this.id,
-    required this.event,
-    required this.title,
-    required this.body,
-    required this.primaryActionLabel,
-    required this.icon,
-    required this.destination,
-  });
-
-  factory HostEventAttentionData.reviewWaitlist(
-    Event event,
-    AppLocalizations l10n,
-  ) {
-    final waitlistCount = event.waitlistCount;
-    final availability = event.spotsRemaining > 0
-        ? l10n.hostsHostHomeScreenStateVisiblecopySpotsremainingSpotsOpen(
-            spotsRemaining: event.spotsRemaining,
-          )
-        : l10n.hostsHostHomeScreenStateVisiblecopyEventFull;
-    return HostEventAttentionData(
-      id: 'waitlist:${event.id}',
-      event: event,
-      title: l10n.hostsHostHomeScreenStateTitleReviewWaitlist,
-      body: l10n
-          .hostsHostHomeScreenStateBodyTitleWaitlistcountWaitingAvailability(
-            title: event.title,
-            waitlistCount: waitlistCount,
-            availability: availability,
-          ),
-      primaryActionLabel: l10n.hostsHostHomeScreenStateVisiblecopyReview,
-      icon: CatchIcons.personSearchOutlined,
-      destination: HostEventAttentionDestination.guests,
-    );
-  }
-
-  static List<HostEventAttentionData> forEvent(
-    Event event,
-    AppLocalizations l10n,
-  ) {
-    return event.waitlistCount > 0 &&
-            !event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired
-        ? <HostEventAttentionData>[
-            HostEventAttentionData.reviewWaitlist(event, l10n),
-          ]
-        : const <HostEventAttentionData>[];
-  }
-
-  static List<HostEventAttentionData> forEvents(
-    Iterable<Event> events,
-    AppLocalizations l10n,
-  ) => List<HostEventAttentionData>.unmodifiable(
-    events.expand((event) => HostEventAttentionData.forEvent(event, l10n)),
-  );
-
-  final String id;
-  final Event event;
-  final String title;
-  final String body;
-  final String primaryActionLabel;
-  final IconData icon;
-  final HostEventAttentionDestination destination;
-}
-
-enum HostEventAttentionDestination { guests, setup }
 
 bool _canRepeatEvent(Event event) => CreateEventPrefill.canRepeat(event);
 

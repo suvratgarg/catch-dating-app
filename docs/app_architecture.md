@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.18.8
-updated: 2026-08-31
+version: 1.19.0
+updated: 2026-09-01
 owner: app_architecture
 status: active
 ---
@@ -181,6 +181,24 @@ lib/<feature>/
 Small features do not need every file. A feature may have only a repository and
 one screen if the behavior is simple. Large features may split by surface under
 `presentation/`, but should keep route-level screens easy to find.
+
+The authenticated Host app applies the same rule below its product domain. Its
+five global destinations are feature boundaries, not modes of one Home screen:
+
+```text
+lib/hosts/
+  today/{domain,data,presentation}
+  events/{domain,data,presentation}
+  audience/{domain,data,presentation}
+  inbox/{domain,data,presentation}
+  organizer/{domain,data,presentation}
+```
+
+Only create a layer when the destination has an owner for it. Shared event,
+organizer, roster, or shell behavior must live with its real authority and may
+be consumed across these destination folders; destination presentation code
+must never become the persistence owner merely because two tabs display the
+same entity.
 
 Files under `lib/**/presentation/**` ending in `_state.dart` are provider-free
 display adapters by naming convention. They may depend on domain/core/value
@@ -593,11 +611,12 @@ The selected global contract is
 expanded shells. This is a product-authority decision, not a reference-render
 preference:
 
-- Today owns the live-or-next event, time-sensitive attention, and safest
-  immediate actions across the organizer's events. `/host` redirects to
-  `/host/today`.
-- Events owns the durable event inventory, creation, schedule, history,
-  rehearsal, and lifecycle entry points.
+- Today owns the live-or-next event, time-sensitive attention, safest immediate
+  actions across the organizer's events, and the explicit Dress Rehearsal
+  entry. `/host` redirects to `/host/today`.
+- Events owns the durable event inventory, creation, schedule, history, and
+  lifecycle entry points. The isolated rehearsal feature remains event-scoped,
+  but it is entered from Today instead of masquerading as event creation.
 - Audience owns four peer modes: People, Audiences, Forms, and Responses.
   Person-level CRM and intake keep their focused controllers and deep routes;
   they no longer compete as global destinations.
@@ -3571,19 +3590,34 @@ Reference files:
 - `test/calendar/calendar_screen_state_test.dart`
 - `lib/events/presentation/calendar/calendar_screen.dart`
 
-Current Host-v2 adopter:
+Current Host adopters:
 
-- `lib/hosts/presentation/host_home_screen_state.dart`
+- `lib/hosts/today/presentation/host_today_state.dart`
+- `lib/hosts/today/presentation/host_today_view_model.dart`
+- `lib/hosts/today/presentation/widgets/host_today_body.dart`
+- `test/hosts/today/host_today_state_test.dart`
+- `lib/hosts/presentation/host_home_screen_state.dart` (transitional Events
+  state until the Events vertical-slice migration completes)
 - `lib/hosts/presentation/host_operations/host_events_list.dart`
 - `test/hosts/host_operations_screen_test.dart`
 
-`HostEventsWorkspaceState` applies the same boundary to lifecycle policy: the
-provider adapter supplies events and an injected clock once; the state object
-owns cancellation exclusion, exact Upcoming/Live/Past classification, ordering,
-month/year grouping, Repeat availability, fill clamping, and render-ready row
-metadata; provider-free widgets consume only that state and typed callbacks.
-Do not move those decisions back into row widgets or substitute waitlist count
-for a pending-approval aggregate.
+`HostTodayState` and `HostTodayAttentionData` apply the boundary to the
+command-centre projection: `HostTodayScreen` translates provider snapshots at
+the route edge, the provider-free builder prioritizes live before upcoming,
+keeps every supported event-identified attention item, and prepares the bounded
+Later preview. `HostAttentionPolicy` owns whether backend event facts qualify
+as actionable work, applies the named seven-day Today horizon, and orders work
+by immediate, soon, then upcoming urgency. Widgets render that result and emit
+typed callbacks; they do not inspect repositories, admission policy, or route
+state.
+
+`HostEventsWorkspaceState` applies the same boundary to inventory lifecycle
+policy: the provider adapter supplies events and an injected clock once; the
+state object owns cancellation exclusion, exact Upcoming/Live/Past
+classification, ordering, month/year grouping, Repeat availability, fill
+clamping, and render-ready row metadata; provider-free widgets consume only
+that state and typed callbacks. Do not move those decisions back into row
+widgets or substitute waitlist count for a pending-approval aggregate.
 
 Use this pattern when a screen needs a provider-free display model that merges
 repository/domain data into UI-ready state. The screen may watch providers at the
@@ -3604,7 +3638,8 @@ selects error, and stale data remains available under an explicit error policy.
 Host presentation code must not branch directly on `isLoading`, `hasError`,
 `hasValue`, `asData`, or `valueOrNull` from a watched `AsyncValue`. The
 `catch_async_requires_state_surface` analyzer diagnostic enforces this route
-edge throughout `lib/hosts/presentation/`. Convert the snapshot once, then let
+edge throughout Host presentation folders under `lib/hosts/`. Convert the
+snapshot once, then let
 a feature-owned display state decide whether the result is a full-screen load,
 empty success, missing resource, primary failure, or optional enrichment. This
 keeps Riverpod transition semantics out of feature widgets and prevents a

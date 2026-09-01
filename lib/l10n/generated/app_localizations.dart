@@ -23185,12 +23185,6 @@ abstract class AppLocalizations {
   /// **'Application review updated'**
   String get hostApplicationReviewUpdated;
 
-  /// Host bottom navigation label for the standalone forms workspace.
-  ///
-  /// In en, this message translates to:
-  /// **'Forms'**
-  String get hostNavigationForms;
-
   /// Creates a standalone organizer form.
   ///
   /// In en, this message translates to:

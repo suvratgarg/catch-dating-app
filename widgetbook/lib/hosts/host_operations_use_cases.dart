@@ -108,9 +108,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dar
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_events_timeline_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
+import 'package:catch_dating_app/hosts/events/data/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
@@ -118,6 +116,11 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
+import 'package:catch_dating_app/hosts/today/data/host_today_feed_controller.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
+import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
+import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_overview.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
@@ -412,7 +415,7 @@ Widget hostSavedAudiencesStates(BuildContext context) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostEventsOverviewSection,
+  type: HostTodayOverview,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -422,17 +425,17 @@ Widget hostSavedAudiencesStates(BuildContext context) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostEventOperationalSpotlight,
+  type: HostTodayEventSpotlight,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostEventOperationalMetric,
+  type: HostTodayEventMetric,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostEventAttentionCard,
+  type: HostTodayAttentionCard,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -450,20 +453,15 @@ Widget hostSavedAudiencesStates(BuildContext context) {
   type: HostLoadingScreen,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-@widgetbook.UseCase(
-  name: 'Route states',
-  type: HostOperationsHomeScreen,
-  path: '[P1 product surfaces]/Host operations',
-)
 Widget hostHomeRouteStates(BuildContext context) {
   return _HostCatalog(
-    title: 'HostOperationsHomeScreen',
+    title: 'HostTodayScreen',
     contractId: 'screen.host.home',
     children: [
       _StateCard(
         label: 'auth required',
         child: const _DeviceFrame(
-          child: _HostShellScope(uid: null, child: HostOperationsHomeScreen()),
+          child: _HostShellScope(uid: null, child: HostTodayScreen()),
         ),
       ),
       _StateCard(
@@ -472,7 +470,7 @@ Widget hostHomeRouteStates(BuildContext context) {
           child: _HostShellScope(
             hostedClubsStream:
                 HostOperationsFixtures.loadingStream<List<Club>>(),
-            child: const HostOperationsHomeScreen(),
+            child: const HostTodayScreen(),
           ),
         ),
       ),
@@ -483,7 +481,7 @@ Widget hostHomeRouteStates(BuildContext context) {
             hostedClubsStream: HostOperationsFixtures.errorStream<List<Club>>(
               'Hosted clubs failed',
             ),
-            child: const HostOperationsHomeScreen(),
+            child: const HostTodayScreen(),
           ),
         ),
       ),
@@ -495,7 +493,7 @@ Widget hostHomeRouteStates(BuildContext context) {
               obviousOfflineException(),
               StackTrace.empty,
             ),
-            child: const HostOperationsHomeScreen(),
+            child: const HostTodayScreen(),
           ),
         ),
       ),
@@ -509,8 +507,8 @@ Widget hostHomeRouteStates(BuildContext context) {
                 StackTrace.empty,
               ),
             },
-            child: HostOperationsHomeScreen(
-              initialClubId: HostOperationsFixtures.dinnerClub.id,
+            child: HostTodayScreen(
+              initialOrganizerId: HostOperationsFixtures.dinnerClub.id,
             ),
           ),
         ),
@@ -521,14 +519,14 @@ Widget hostHomeRouteStates(BuildContext context) {
           child: _HostShellScope(
             hostedClubs: [],
             ownedClubs: [],
-            child: HostOperationsHomeScreen(),
+            child: HostTodayScreen(),
           ),
         ),
       ),
       _StateCard(
         label: 'populated host dashboard',
         child: const _DeviceFrame(
-          child: _HostShellScope(child: HostOperationsHomeScreen()),
+          child: _HostShellScope(child: HostTodayScreen()),
         ),
       ),
       _StateCard(
@@ -540,8 +538,8 @@ Widget hostHomeRouteStates(BuildContext context) {
               HostOperationsFixtures.primaryClub,
               HostOperationsFixtures.dinnerClub,
             ],
-            child: const HostOperationsHomeScreen(
-              initialClubId: 'design-host-cohost-club',
+            child: const HostTodayScreen(
+              initialOrganizerId: 'design-host-cohost-club',
             ),
           ),
         ),
@@ -558,9 +556,7 @@ Widget hostHomeRouteStates(BuildContext context) {
               ]),
               _longNameCoHostedClub.id: Stream<List<Event>>.value(const []),
             },
-            child: HostOperationsHomeScreen(
-              initialClubId: _longNameOwnerClub.id,
-            ),
+            child: HostTodayScreen(initialOrganizerId: _longNameOwnerClub.id),
           ),
         ),
       ),
@@ -570,8 +566,8 @@ Widget hostHomeRouteStates(BuildContext context) {
           child: _HostShellScope(
             hostedClubs: [HostOperationsFixtures.coHostedClub],
             ownedClubs: const [],
-            child: const HostOperationsHomeScreen(
-              initialClubId: 'design-host-cohost-club',
+            child: const HostTodayScreen(
+              initialOrganizerId: 'design-host-cohost-club',
             ),
           ),
         ),
@@ -581,7 +577,7 @@ Widget hostHomeRouteStates(BuildContext context) {
         child: const _DeviceFrame(
           child: _MediaOverride(
             textScaler: TextScaler.linear(2),
-            child: _HostShellScope(child: HostOperationsHomeScreen()),
+            child: _HostShellScope(child: HostTodayScreen()),
           ),
         ),
       ),
@@ -590,7 +586,7 @@ Widget hostHomeRouteStates(BuildContext context) {
         child: const _DeviceFrame(
           child: _MediaOverride(
             disableAnimations: true,
-            child: _HostShellScope(child: HostOperationsHomeScreen()),
+            child: _HostShellScope(child: HostTodayScreen()),
           ),
         ),
       ),
@@ -599,13 +595,77 @@ Widget hostHomeRouteStates(BuildContext context) {
         child: const _DeviceFrame(
           child: _HostShellScope(
             themeMode: ThemeMode.dark,
-            child: HostOperationsHomeScreen(),
+            child: HostTodayScreen(),
           ),
         ),
       ),
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Route states',
+  type: HostTodayScreen,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget hostTodayScreenStates(BuildContext context) =>
+    hostHomeRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Covered by Today route states',
+  type: HostTodayLoadedRoute,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostTodayLoadedRouteStates(BuildContext context) =>
+    hostHomeRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Covered by Today route states',
+  type: HostTodayBody,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostTodayBodyStates(BuildContext context) =>
+    hostHomeRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Covered by Today route states',
+  type: HostTodayHeader,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostTodayHeaderStates(BuildContext context) =>
+    hostHomeRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Covered by Today route states',
+  type: HostTodayEventRow,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostTodayEventRowStates(BuildContext context) =>
+    hostHomeRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Covered by Today route states',
+  type: HostTodayOrganizerEmptyState,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostTodayOrganizerEmptyStateStates(BuildContext context) =>
+    hostHomeRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Covered by Today route states',
+  type: HostTodayEventDateBlock,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostTodayEventDateBlockStates(BuildContext context) =>
+    hostHomeRouteStates(context);
+
+@widgetbook.UseCase(
+  name: 'Covered by Today route states',
+  type: HostTodayEventMetadata,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostTodayEventMetadataStates(BuildContext context) =>
+    hostHomeRouteStates(context);
 
 @widgetbook.UseCase(
   name: 'Navigation identity states',
@@ -655,42 +715,34 @@ Widget hostOrganizerSwitcherSheetStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Overview route states',
-  type: HostEventsOverviewSection,
+  type: HostTodayOverview,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-Widget hostEventsOverviewSectionStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Overview content states',
-  type: HostEventsOverviewContent,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostEventsOverviewContentStates(BuildContext context) =>
+Widget hostTodayOverviewStates(BuildContext context) =>
     hostHomeRouteStates(context);
 
 @widgetbook.UseCase(
   name: 'Operational spotlight states',
-  type: HostEventOperationalSpotlight,
+  type: HostTodayEventSpotlight,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-Widget hostEventOperationalSpotlightStates(BuildContext context) =>
+Widget hostTodayEventSpotlightStates(BuildContext context) =>
     hostHomeRouteStates(context);
 
 @widgetbook.UseCase(
   name: 'Operational metric states',
-  type: HostEventOperationalMetric,
+  type: HostTodayEventMetric,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-Widget hostEventOperationalMetricStates(BuildContext context) =>
+Widget hostTodayEventMetricStates(BuildContext context) =>
     hostHomeRouteStates(context);
 
 @widgetbook.UseCase(
   name: 'Attention card states',
-  type: HostEventAttentionCard,
+  type: HostTodayAttentionCard,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-Widget hostEventAttentionCardStates(BuildContext context) =>
+Widget hostTodayAttentionCardStates(BuildContext context) =>
     hostHomeRouteStates(context);
 
 @widgetbook.UseCase(
@@ -1484,7 +1536,6 @@ Widget hostHomeEventSectionStates(BuildContext context) {
             club: _club,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
-            onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
             sessionBoundary: HostOperationsFixtures.now,
           ),
@@ -1513,7 +1564,6 @@ Widget hostHomeEventSectionStates(BuildContext context) {
             club: _club,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
-            onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
             sessionBoundary: HostOperationsFixtures.now,
           ),
@@ -1529,7 +1579,6 @@ Widget hostHomeEventSectionStates(BuildContext context) {
             club: _club,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
-            onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
             sessionBoundary: HostOperationsFixtures.now,
           ),
@@ -1547,7 +1596,6 @@ Widget hostHomeEventSectionStates(BuildContext context) {
             club: _club,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
-            onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
             sessionBoundary: HostOperationsFixtures.now,
           ),
@@ -1566,7 +1614,6 @@ Widget hostHomeEventSectionStates(BuildContext context) {
             club: _club,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
-            onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
             sessionBoundary: HostOperationsFixtures.now,
           ),
@@ -1580,7 +1627,6 @@ Widget hostHomeEventSectionStates(BuildContext context) {
             club: _club,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
-            onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
             sessionBoundary: HostOperationsFixtures.now,
           ),
@@ -1598,7 +1644,6 @@ Widget hostHomeEventSectionStates(BuildContext context) {
             club: _club,
             onEventEntrySelected: (_, _, _) {},
             onManageEvent: (_, _) {},
-            onOpenTask: (_, _, _) {},
             now: HostOperationsFixtures.now,
             sessionBoundary: HostOperationsFixtures.now,
           ),
@@ -2076,16 +2121,18 @@ Widget _hostHomeExactCatalog(BuildContext context, String focus) {
 Widget _hostHomePreviewFor(BuildContext context, String focus) {
   final club = HostOperationsFixtures.primaryClub;
   final event = HostOperationsFixtures.upcomingEvent;
-  final state = buildHostEventsOverviewState(
-    CatchAsyncState<List<Event>>.data([
-      event,
-      HostOperationsFixtures.privateEvent,
-    ]),
+  final state = buildHostTodayState(
+    CatchAsyncState<HostTodayFeedData>.data(
+      HostTodayFeedData(
+        activeEvents: [event, HostOperationsFixtures.privateEvent],
+        pastEvents: const [],
+      ),
+    ),
     now: event.startTime.subtract(const Duration(hours: 2)),
     l10n: context.l10n,
   );
   final now = event.startTime.subtract(const Duration(hours: 2));
-  final tasks = HostEventAttentionData.forEvent(event, context.l10n);
+  final tasks = state.attentionItems;
   return switch (focus) {
     'CatchEmptyState' => CatchEmptyState(
       title: 'No clubs yet',
@@ -2104,25 +2151,24 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
       size: CatchLayout.appShellNavigationIdentityExtent,
       selected: true,
     ),
-    'HostEventsOverviewSection' => HostEventsOverviewSection(
-      club: club,
+    'HostTodayOverview' => HostTodayOverview(
       state: state,
-      onManageEvent: (_, _) {},
-      onOpenTask: (_, _, _) {},
       now: now,
+      onOpenEvent: (_) {},
+      onOpenAttention: (_) {},
     ),
-    'HostEventOperationalSpotlight' => HostEventOperationalSpotlight(
+    'HostTodayEventSpotlight' => HostTodayEventSpotlight(
       event: event,
       now: HostOperationsFixtures.now,
       taskCount: tasks.length,
       onPressed: () {},
     ),
-    'HostEventOperationalMetric' => const HostEventOperationalMetric(
+    'HostTodayEventMetric' => const HostTodayEventMetric(
       value: '10',
       label: 'Going',
     ),
-    'HostEventAttentionCard' => HostEventAttentionCard(
-      task: tasks.first,
+    'HostTodayAttentionCard' => HostTodayAttentionCard(
+      data: tasks.first,
       onPrimary: () {},
     ),
     _ => Text('No exact preview registered for $focus.'),
@@ -2247,7 +2293,6 @@ Widget _hostClubPreviewFor(String focus) {
       club: club,
       onEventEntrySelected: (_, _, _) {},
       onManageEvent: (_, _) {},
-      onOpenTask: (_, _, _) {},
       now: HostOperationsFixtures.now,
       sessionBoundary: HostOperationsFixtures.now,
     ),

@@ -11715,42 +11715,42 @@
     "description": "Explains that event-entry choices lead to a reviewable create flow.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetSectionContinueExisting": "Continue",
   "@hostsHostEventEntrySheetSectionContinueExisting": {
     "description": "Section label for resuming existing event work.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetSectionStartNew": "Start new",
   "@hostsHostEventEntrySheetSectionStartNew": {
     "description": "Section label for beginning a new event.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetTitleContinueDraft": "Continue draft",
   "@hostsHostEventEntrySheetTitleContinueDraft": {
     "description": "Action title for resuming a saved event draft.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetTitleRepeatLastEvent": "Repeat last event",
   "@hostsHostEventEntrySheetTitleRepeatLastEvent": {
     "description": "Action title for reusing the most recent eligible event setup.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetTitleSellTicketsWithCatch": "Sell tickets with Catch",
   "@hostsHostEventEntrySheetTitleSellTicketsWithCatch": {
     "description": "Action title for creating an event that uses Catch bookings.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetBodySavedDraftCount": "{count, plural, =1{1 saved draft} other{{count} saved drafts}}",
   "@hostsHostEventEntrySheetBodySavedDraftCount": {
@@ -11763,7 +11763,7 @@
     },
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetBodyReuseEventSetup": "Reuse the setup from {eventTitle} and choose a new date.",
   "@hostsHostEventEntrySheetBodyReuseEventSetup": {
@@ -11776,21 +11776,21 @@
     },
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments": "Tickets, waitlist, and payments in one place.",
   "@hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments": {
     "description": "Supporting copy for the Catch-bookings event path.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetBodyImportCsvOrXlsx": "Import CSV or XLSX; ticketing stays on your existing platform.",
   "@hostsHostEventEntrySheetBodyImportCsvOrXlsx": {
     "description": "Supporting copy for creating an event from an external guest list.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_event_entry_sheet"
+    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventsListTextLive": "LIVE",
   "@hostsHostEventsListTextLive": {
@@ -22270,8 +22270,6 @@
   "@hostApplicationDecline": {"description": "Application decline action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationReviewUpdated": "Application review updated",
   "@hostApplicationReviewUpdated": {"description": "Successful application review mutation message.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
-  "hostNavigationForms": "Forms",
-  "@hostNavigationForms": {"description": "Host bottom navigation label for the standalone forms workspace.", "x-audience": "host", "x-owner": "product", "x-surface": "host.navigation", "x-max-chars": 16},
   "hostFormsCreate": "Create form",
   "@hostFormsCreate": {"description": "Creates a standalone organizer form.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormsUnavailableTitle": "Forms unavailable",

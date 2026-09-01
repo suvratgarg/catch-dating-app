@@ -40,8 +40,7 @@
       "branchKey": "keys.hostToday",
       "routeName": "Routes.hostTodayScreen.name",
       "surfaces": [
-        {"path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart", "symbol": "_HostEventsScaffoldState", "owner": "CatchScreenHeaderTitle.block"},
-        {"path": "lib/hosts/presentation/host_operations/host_events_list.dart", "symbol": "HostTodayClubSection", "owner": "CatchScreenHeaderTitle.block"}
+        {"path": "lib/hosts/today/presentation/widgets/host_today_body.dart", "symbol": "HostTodayHeader", "owner": "CatchScreenHeaderTitle.block"}
       ]
     },
     {
@@ -316,6 +315,13 @@
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold"
+    },
+    {
+      "path": "lib/hosts/today/presentation/host_today_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",

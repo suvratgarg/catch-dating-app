@@ -137,6 +137,7 @@ import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
+import 'package:catch_dating_app/hosts/events/data/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
@@ -161,7 +162,6 @@ import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart'
@@ -172,6 +172,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
@@ -9942,8 +9943,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _HostRoutedShellCapture(
       initialLocation: '/host/today',
       activeIndex: 0,
-      child: HostOperationsHomeScreen(
-        initialClubId: 'host-home-reference-bandra-social',
+      child: HostTodayScreen(
+        initialOrganizerId: 'host-home-reference-bandra-social',
         now: _hostEventsSpotlightEvent.startTime.subtract(
           const Duration(hours: 2),
         ),
@@ -9989,7 +9990,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(initialClubId: 'design-host-cohost-club'),
+      child: HostTodayScreen(initialOrganizerId: 'design-host-cohost-club'),
     ),
   ),
   ScreenCaptureEntry(
@@ -10008,9 +10009,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(
-        initialClubId: _hostHomeLongNameOwnerClub.id,
-      ),
+      child: HostTodayScreen(initialOrganizerId: _hostHomeLongNameOwnerClub.id),
     ),
   ),
   ScreenCaptureEntry(
@@ -10020,10 +10019,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       uidProvider.overrideWithValue(const AsyncData<String?>(null)),
     ],
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_clubs_loading',
@@ -10033,10 +10030,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       hostedClubsAsync: const AsyncLoading<List<Club>>(),
       ownedClubsAsync: const AsyncLoading<List<Club>>(),
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_clubs_error',
@@ -10048,10 +10043,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         StackTrace.empty,
       ),
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_clubs_offline',
@@ -10063,10 +10056,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         StackTrace.empty,
       ),
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_empty_clubs',
@@ -10076,10 +10067,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       hostedClubs: const <Club>[],
       ownedClubs: const <Club>[],
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_loading',
@@ -10091,10 +10080,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
             const AsyncLoading<List<Event>>(),
       },
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_error',
@@ -10108,10 +10095,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         ),
       },
     ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_offline',
@@ -10127,7 +10112,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(initialClubId: 'design-host-table-club'),
+      child: HostTodayScreen(initialOrganizerId: 'design-host-table-club'),
     ),
   ),
   ScreenCaptureEntry(
@@ -10140,7 +10125,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostOperationsHomeScreen(initialClubId: 'design-host-cohost-club'),
+      child: HostTodayScreen(initialOrganizerId: 'design-host-cohost-club'),
     ),
   ),
   ScreenCaptureEntry(
@@ -10149,10 +10134,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     textScale: 2,
     providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_reduced_motion',
@@ -10160,20 +10143,16 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     disableAnimations: true,
     providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_home_light_dark',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(),
-    ),
+    builder: (context) =>
+        const _AppRoleCapture(role: AppRole.host, child: HostTodayScreen()),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_management',

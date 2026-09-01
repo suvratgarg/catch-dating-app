@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-18",
+  "updated": "2026-09-01",
   "id": "feature.host_home",
-  "name": "Host Events",
+  "name": "Host Today and Events",
   "owner": "hosts",
   "status": "pilot",
-  "description": "Orchestrates the consolidated Host Events workspace across authentication, organizer selection, operational spotlight and attention state, paginated schedule and history state, recovery, and typed create, repeat, manage, and task navigation.",
+  "description": "Transitional contract covering the independently routed Host Today command centre and the Events inventory while the Events presentation vertical slice is extracted. Today owns operational spotlight, attention policy, and Dress Rehearsal entry; Events owns paginated schedule and history plus create, repeat, and manage navigation.",
   "surfaces": [
     {
       "id": "host_flutter",
@@ -16,7 +16,7 @@
         "id": "screen.host.home"
       },
       "actionScope": {
-        "included": "Host Events authentication recovery, organizer switching, operational spotlight and attention work, paginated schedule and history loading and retry, and typed create, repeat, manage, and task navigation.",
+        "included": "Host Today authentication recovery, operational spotlight, attention work, and Dress Rehearsal entry; Host Events paginated schedule and history loading and retry; shared organizer switching; and typed create, repeat, manage, and task navigation.",
         "excluded": [
           "Organizer editing, event creation internals, event management mutations, booking policy, analytics, payouts, and host-team administration retain their owning feature contracts or controllers."
         ]
@@ -33,6 +33,30 @@
             "symbol": "HostOperationsHomeScreen"
           },
           {
+            "id": "today_route",
+            "language": "dart",
+            "file": "lib/hosts/today/presentation/host_today_screen.dart",
+            "symbol": "HostTodayScreen"
+          },
+          {
+            "id": "today_body",
+            "language": "dart",
+            "file": "lib/hosts/today/presentation/widgets/host_today_body.dart",
+            "symbol": "HostTodayBody"
+          },
+          {
+            "id": "today_attention",
+            "language": "dart",
+            "file": "lib/hosts/today/domain/host_attention_item.dart",
+            "symbol": "HostAttentionPolicy"
+          },
+          {
+            "id": "today_feed",
+            "language": "dart",
+            "file": "lib/hosts/today/data/host_today_feed_controller.dart",
+            "symbol": "HostTodayFeedController"
+          },
+          {
             "id": "workspace",
             "language": "dart",
             "file": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
@@ -47,7 +71,7 @@
           {
             "id": "events_timeline",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_events_timeline_controller.dart",
+            "file": "lib/hosts/events/data/host_events_timeline_controller.dart",
             "symbol": "HostEventsTimelineController"
           },
           {
@@ -263,7 +287,7 @@
         },
         {
           "id": "open_operational_event",
-          "owner": "workspace",
+          "owner": "today_route",
           "codeValue": "_openEvent",
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "clubId", "eventId", "eventClockState"],
@@ -277,8 +301,8 @@
         },
         {
           "id": "open_attention_task",
-          "owner": "workspace",
-          "codeValue": "_openAttentionTask",
+          "owner": "today_route",
+          "codeValue": "_openAttention",
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "clubId", "eventId", "taskDestination"],
           "outcomes": [
@@ -288,6 +312,20 @@
             }
           ],
           "description": "Routes a truthful event-attention task to the matching guests or setup section of Host Event Manage."
+        },
+        {
+          "id": "start_dress_rehearsal",
+          "owner": "today_route",
+          "codeValue": "_startRehearsal",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "clubId", "tapAttemptId"],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {"registry": "flutter_screens", "id": "screen.host.event.rehearsal"}
+            }
+          ],
+          "description": "Starts the isolated Dress Rehearsal flow from Today as an operational-preparation action, not as an event-creation choice."
         }
       ],
       "stateIds": [
@@ -308,6 +346,7 @@
         "empty_events",
         "create_event_action",
         "manage_event_navigation",
+        "dress_rehearsal_action",
         "offline",
         "text_scale_2",
         "reduced_motion",
@@ -375,6 +414,9 @@
         "manage_event_navigation": {
           "actionCases": [{"id": "manage", "enabledActions": ["manage_event", "open_operational_event", "open_attention_task"]}]
         },
+        "dress_rehearsal_action": {
+          "actionCases": [{"id": "rehearse", "enabledActions": ["start_dress_rehearsal"]}]
+        },
         "offline": {
           "dimensions": {"load": "offline"},
           "actionCases": [{"id": "recovery", "enabledActions": ["retry_host_home"]}]
@@ -402,10 +444,10 @@
           "reason": "The nested hosted-event offline state is captured but has no dedicated Widgetbook scenario registered yet."
         },
         {
-          "stateIds": ["create_event_action", "manage_event_navigation"],
+          "stateIds": ["create_event_action", "manage_event_navigation", "dress_rehearsal_action"],
           "evidence": ["captures"],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "The typed Host Home route actions are covered by focused widget tests and the route-state catalog but do not yet have standalone deterministic captures."
+          "reason": "The typed Host Today and Events route actions are covered by focused widget tests and the route-state catalog but do not yet have standalone deterministic captures."
         },
         {
           "stateIds": ["event_schedule_paginating", "event_history_paginating", "event_history_error"],

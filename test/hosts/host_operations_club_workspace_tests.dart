@@ -40,9 +40,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Check host setup'), findsNothing);
     expect(
       tester
-          .widget<HostEventOperationalSpotlight>(
-            find.byType(HostEventOperationalSpotlight),
-          )
+          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
           .event,
       hero,
     );
@@ -236,7 +234,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Live'), findsNothing);
     expect(find.text('Past'), findsNothing);
     expect(find.text('SCHEDULE'), findsOneWidget);
-    expect(find.byType(HostEventOperationalSpotlight), findsNothing);
+    expect(find.byType(HostTodayEventSpotlight), findsNothing);
     expect(
       find.byKey(const ValueKey<String>('host-event-row-live-event')),
       findsOneWidget,
@@ -416,21 +414,19 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
 
     expect(
-      tester.widget<HostEventsClubCard>(find.byType(HostEventsClubCard)).club,
+      tester.widget<HostTodayBody>(find.byType(HostTodayBody)).organizer,
       ownedClub,
     );
     expect(
       tester
-          .widget<HostEventOperationalSpotlight>(
-            find.byType(HostEventOperationalSpotlight),
-          )
+          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
           .event,
       ownedEvent,
     );
 
     expect(find.byTooltip('Switch organizer'), findsNothing);
     final container = ProviderScope.containerOf(
-      tester.element(find.byType(HostEventsScaffold)),
+      tester.element(find.byType(HostTodayScreen)),
     );
     container
         .read(hostOrganizerSelectionProvider(_hostUid).notifier)
@@ -438,14 +434,12 @@ void _registerHostOperationsClubWorkspaceTests() {
     await pumpFeatureUi(tester);
 
     expect(
-      tester.widget<HostEventsClubCard>(find.byType(HostEventsClubCard)).club,
+      tester.widget<HostTodayBody>(find.byType(HostTodayBody)).organizer,
       cohostClub,
     );
     expect(
       tester
-          .widget<HostEventOperationalSpotlight>(
-            find.byType(HostEventOperationalSpotlight),
-          )
+          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
           .event,
       hostedEvent,
     );

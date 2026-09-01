@@ -1,4 +1,12 @@
-part of '../host_operations_screen.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:flutter/material.dart';
 
 Future<HostEventEntryIntent?> showHostEventEntrySheet({
   required BuildContext context,
@@ -88,8 +96,6 @@ class _HostEventEntryRow extends StatelessWidget {
       context.l10n.hostsHostEventEntrySheetTitleContinueDraft,
     HostEventEntryIntent.repeatLastEvent =>
       context.l10n.hostsHostEventEntrySheetTitleRepeatLastEvent,
-    HostEventEntryIntent.dressRehearsal =>
-      context.l10n.hostEventRehearsalEntryTitle,
     HostEventEntryIntent.createWithCatchBookings =>
       context.l10n.hostsHostEventEntrySheetTitleSellTicketsWithCatch,
     HostEventEntryIntent.createFromGuestList =>
@@ -106,8 +112,6 @@ class _HostEventEntryRow extends StatelessWidget {
       context.l10n.hostsHostEventEntrySheetBodyReuseEventSetup(
         eventTitle: state.repeatSource?.title ?? '',
       ),
-    HostEventEntryIntent.dressRehearsal =>
-      context.l10n.hostEventRehearsalEntryBody,
     HostEventEntryIntent.createWithCatchBookings =>
       context.l10n.hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments,
     HostEventEntryIntent.createFromGuestList =>
@@ -117,7 +121,6 @@ class _HostEventEntryRow extends StatelessWidget {
   IconData get _icon => switch (intent) {
     HostEventEntryIntent.resumeDraft => CatchIcons.editNoteRounded,
     HostEventEntryIntent.repeatLastEvent => CatchIcons.refresh,
-    HostEventEntryIntent.dressRehearsal => CatchIcons.scienceOutlined,
     HostEventEntryIntent.createWithCatchBookings =>
       CatchIcons.confirmationNumberOutlined,
     HostEventEntryIntent.createFromGuestList => CatchIcons.cloudUploadOutlined,

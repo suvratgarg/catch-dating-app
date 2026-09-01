@@ -14,6 +14,9 @@ class HostOperationsHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (surface == HostOperationsSurface.today) {
+      return HostTodayScreen(initialOrganizerId: initialClubId, now: now);
+    }
     final uidAsync = ref.watch(uidProvider);
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final uid = uidState.value;
@@ -30,9 +33,7 @@ class HostOperationsHomeScreen extends ConsumerWidget {
     return switch (routeState.status) {
       HostHomeRouteStatus.authRequired => const HostAuthRequiredScreen(),
       HostHomeRouteStatus.loading => HostLoadingScreen(
-        title: surface == HostOperationsSurface.today
-            ? context.l10n.hostNavigationToday
-            : context.l10n.hostsHostOperationsHomeScreenTitleHostEvents,
+        title: context.l10n.hostsHostOperationsHomeScreenTitleHostEvents,
       ),
       HostHomeRouteStatus.error => CatchErrorScaffold.fromError(
         routeState.error!,
@@ -51,14 +52,12 @@ class HostOperationsHomeScreen extends ConsumerWidget {
         currentUid: routeState.uid!,
         initialClubId: initialClubId,
         now: now,
-        surface: surface,
       ),
       HostHomeRouteStatus.loaded => HostEventsScaffold(
         clubs: routeState.clubs,
         currentUid: routeState.uid!,
         initialClubId: initialClubId,
         now: now,
-        surface: surface,
       ),
     };
   }

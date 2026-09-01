@@ -1,8 +1,7 @@
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_entry_state.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -29,7 +28,6 @@ void main() {
     final firstEvent = HostEventEntryState.resolve(organizerId: 'club-1');
     expect(firstEvent.continueIntents, isEmpty);
     expect(firstEvent.startIntents, [
-      HostEventEntryIntent.dressRehearsal,
       HostEventEntryIntent.createWithCatchBookings,
       HostEventEntryIntent.createFromGuestList,
     ]);
@@ -198,133 +196,6 @@ void main() {
       );
       expect(continuationState.status, HostEventsWorkspaceStatus.populated);
       expect(continuationState.canLoadMoreActive, isTrue);
-    },
-  );
-
-  test('HostEventsOverviewState maps next event and tasks', () {
-    final now = DateTime(2026, 6, 15, 12);
-    final early = buildEvent(
-      id: 'early',
-      startTime: DateTime(2026, 6, 15, 17),
-      bookedCount: 24,
-      waitlistedCount: 6,
-    ).copyWith(capacityLimit: 30);
-    final late = buildEvent(id: 'late', startTime: DateTime(2026, 6, 16, 20));
-    final cancelled = buildEvent(
-      id: 'cancelled',
-      startTime: DateTime(2026, 6, 14),
-    ).copyWith(status: EventLifecycleStatus.cancelled);
-
-    expect(
-      buildHostEventsOverviewState(
-        const CatchAsyncState<List<Event>>.loading(),
-        now: now,
-        l10n: _l10n,
-      ).status,
-      HostEventsOverviewStatus.loading,
-    );
-
-    final emptyState = buildHostEventsOverviewState(
-      CatchAsyncState<List<Event>>.data([cancelled]),
-      now: now,
-      l10n: _l10n,
-    );
-    expect(emptyState.status, HostEventsOverviewStatus.empty);
-
-    final contentState = buildHostEventsOverviewState(
-      CatchAsyncState<List<Event>>.data([late, early, cancelled]),
-      now: now,
-      l10n: _l10n,
-    );
-    expect(contentState.status, HostEventsOverviewStatus.content);
-    expect(contentState.event, early);
-    expect(contentState.tasks, hasLength(1));
-    expect(contentState.tasks.first.id, 'waitlist:early');
-    expect(contentState.tasks.first.event, early);
-    expect(contentState.tasks.first.title, 'Review waitlist');
-    expect(
-      contentState.tasks.first.destination,
-      HostEventAttentionDestination.guests,
-    );
-    final upcomingState = HostEventsWorkspaceState.fromEvents(
-      events: [late, early],
-      now: now,
-      featuredEventId: early.id,
-    );
-    expect(upcomingState.status, HostEventsWorkspaceStatus.populated);
-    expect(
-      upcomingState.activeSections
-          .expand((section) => section.rows)
-          .single
-          .event,
-      late,
-    );
-  });
-
-  test(
-    'Host Events overview prioritizes live work and unsupported approvals',
-    () {
-      final now = DateTime(2026, 6, 15, 12);
-      final hero = buildEvent(
-        id: 'hero-live',
-        startTime: DateTime(2026, 6, 15, 10),
-        endTime: DateTime(2026, 6, 15, 14),
-      );
-      final overlapping = buildEvent(
-        id: 'overlapping-live',
-        startTime: DateTime(2026, 6, 15, 11),
-        endTime: DateTime(2026, 6, 15, 13),
-      );
-      final approval =
-          buildEvent(
-            id: 'approval-event',
-            startTime: DateTime(2026, 6, 16, 18),
-            waitlistedCount: 3,
-          ).copyWith(
-            eventPolicy: EventPolicyBundle.requestToJoinEvent(
-              capacityLimit: 20,
-              basePriceInPaise: 0,
-            ),
-          );
-
-      final state = buildHostEventsOverviewState(
-        CatchAsyncState<List<Event>>.data([approval, overlapping, hero]),
-        now: now,
-        l10n: _l10n,
-      );
-
-      expect(state.event, hero);
-      expect(state.tasks, isEmpty);
-    },
-  );
-
-  test(
-    'Host Events overview keeps every real task instead of truncating work',
-    () {
-      final now = DateTime(2026, 6, 15, 12);
-      final events = List.generate(
-        5,
-        (index) => buildEvent(
-          id: 'task-$index',
-          startTime: now.add(Duration(hours: index + 1)),
-          waitlistedCount: index + 1,
-        ),
-      );
-
-      final state = buildHostEventsOverviewState(
-        CatchAsyncState<List<Event>>.data(events),
-        now: now,
-        l10n: _l10n,
-      );
-
-      expect(state.tasks, hasLength(5));
-      expect(state.tasks.map((task) => task.event.id), [
-        'task-0',
-        'task-1',
-        'task-2',
-        'task-3',
-        'task-4',
-      ]);
     },
   );
 }

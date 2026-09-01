@@ -1,9 +1,9 @@
 ---
 doc_id: host_visual_quality_rollout
-version: 1.2.0
-updated: 2026-08-31
+version: 1.3.0
+updated: 2026-09-01
 owner: product_design_parity
-status: complete
+status: active
 ---
 
 # Host Visual Quality Rollout
@@ -157,12 +157,57 @@ question and therefore preserved the wrong top-level hierarchy.
 | C3 | Consolidate People, Audiences, Forms, and Responses under Audience | `complete` |
 | C4 | Rename the global Messaging destination to Inbox; migrate contracts, captures, and owner docs | `complete` |
 
+## Feature-ownership refactor checklist
+
+The visual and information-architecture rollout exposed a second problem: the
+five destinations were still implemented largely inside the legacy
+`lib/hosts/presentation/` aggregate. The product hierarchy is now being made
+literal in source so each destination can own its policy, data projection,
+route edge, typed state, widgets, tests, and visual states without rebuilding a
+second monolithic Host home.
+
+The target folders are `lib/hosts/<destination>/{domain,data,presentation}`.
+Existing cross-destination concepts stay shared only when they are genuinely
+shared; a temporary compatibility seam must be named in the active item and
+removed by the item that owns its destination.
+
+| Item | Delivery unit | Status |
+|---|---|---|
+| A0 | Pin feature-first destination ownership, migration order, exclusions, and completion rules | `complete` |
+| A1 | Extract Today into its own vertical slice and move Dress Rehearsal out of the create-event chooser | `complete` |
+| A2 | Extract the Events inventory, timeline state, and route screen into `lib/hosts/events/`; retire the legacy Home compatibility surface | `pending` |
+| A3 | Extract Audience ownership, including People, Audiences, Forms, and Responses, without reviving a Forms destination | `pending` |
+| A4 | Extract Inbox ownership and its Inbox/Sends modes while preserving conversation and composer state | `pending` |
+| A5 | Extract Organizer ownership, then reduce `lib/hosts/presentation/` to intentional shared Host presentation seams | `pending` |
+
+### A1 boundary
+
+- `/host/today` constructs `HostTodayScreen` directly.
+- Today owns route/display state, the attention policy, the Today feed
+  projection, provider-free body/overview widgets, its clock, and its route
+  effects under `lib/hosts/today/`.
+- The supported queue is exhaustive inside a named seven-day horizon and is
+  ordered by immediate, soon, then upcoming urgency; facts outside that window
+  stay in Events until they become time-sensitive.
+- The event timeline provider moved to `lib/hosts/events/data/` because both
+  Today and the Events inventory consume it; Today data no longer imports a
+  legacy presentation layer.
+- Dress Rehearsal is a dedicated Today action and is absent from the
+  create-event chooser. Creating and rehearsing are separate intents.
+- `HostOperationsHomeScreen(surface: today)` remains only as a bounded test and
+  preview compatibility adapter until A2 removes the surface enum and legacy
+  combined home.
+- A1 deliberately does not reorganize the Events presentation tree, Audience,
+  Inbox, Organizer, or the shared shell.
+
 ### Approved information architecture
 
 - **Today** is the operational home: the next or live event, time-sensitive
-  attention, and the safest immediate action across the organizer's events.
+  attention, the safest immediate action across the organizer's events, and
+  the dedicated Dress Rehearsal entry.
 - **Events** is the durable event inventory and entry point for creation,
-  lifecycle history, rehearsal, and event workspaces.
+  lifecycle history, and event workspaces. Rehearsal remains event-scoped but
+  is entered from Today rather than the create-event chooser.
 - **Audience** owns people, saved audiences, forms, and responses as one
   participant-relationship area. Form builders and deep response routes remain
   focused routes within that authority rather than global destinations.
@@ -548,3 +593,10 @@ The shell label is Inbox; the route retains Messaging as its local title above
 the Inbox and Sends modes. These statements describe committed rollout source
 and local verification only; no merge, deployment, or distribution claim is
 made here.
+
+Feature-ownership hardening is active. A1 is complete: Today is now a direct
+route-owned vertical slice, its truthful attention derivation is domain-owned,
+the shared event timeline provider has entered the Events data feature, and
+Dress Rehearsal is a dedicated Today action rather than an event-creation
+choice. A2 is next and will move the remaining Events presentation/state owners
+before deleting the legacy combined Home compatibility seam.

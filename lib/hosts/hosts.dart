@@ -55,3 +55,4 @@ export 'presentation/widgets/host_loading_skeletons.dart'; // public-api: shared
 export 'presentation/widgets/host_organizer_switcher.dart'; // public-api: shared Host-shell identity component
 export 'presentation/widgets/host_team_management_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/stepper_footer.dart'; // public-api: shared presentation component used outside this feature
+export 'today/presentation/host_today_screen.dart'; // public-api: route entry point exposed to app routing

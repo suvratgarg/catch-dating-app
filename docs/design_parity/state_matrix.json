@@ -4710,7 +4710,11 @@
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
             "lib/hosts/presentation/host_home_screen_state.dart",
-            "lib/hosts/presentation/host_events_timeline_controller.dart",
+            "lib/hosts/events/data/host_events_timeline_controller.dart",
+            "lib/hosts/today/domain/host_attention_item.dart",
+            "lib/hosts/today/presentation/host_today_screen.dart",
+            "lib/hosts/today/presentation/host_today_state.dart",
+            "lib/hosts/today/presentation/host_today_view_model.dart",
             "lib/clubs/data/clubs_repository.dart",
             "lib/events/data/event_repository.dart"
           ],
@@ -5036,7 +5040,7 @@
             {
               "id": "DP-HOST-HOME-003",
               "status": "closed",
-              "nextAction": "HostHomeRouteState maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches before shell composition. HostHomeScreenState owns selected organizer; HostEventsTimelineController owns schedule/history pagination and partial recovery; HostEventsOverviewState owns live-or-next spotlight and attention derivation; HostEventsWorkspaceState owns loading/error/empty/populated branches, grouping, featured-event de-duplication, Repeat availability, and render-ready rows."
+              "nextAction": "HostTodayScreen and HostTodayRouteState own Today route branches; HostTodayState owns live-first spotlight, attention, and Later projection; HostAttentionPolicy owns action qualification. HostEventsTimelineController owns shared schedule/history pagination and partial recovery, while the transitional Events adapter maps it into HostEventsWorkspaceState until the Events presentation vertical slice is extracted."
             },
             {
               "id": "DP-HOST-HOME-004",

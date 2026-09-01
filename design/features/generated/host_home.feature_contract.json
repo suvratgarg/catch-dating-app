@@ -2,26 +2,26 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
-  "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:0b5daf319152c1a06533ab9c3c1a793d6fa416db771ea018d378f06994f75720",
-  "resolvedDigest": "sha256:222f82f998c7aea34b5d7d4aecf3dc1e6cc7927aea122d0b4a309e5ef6d6f35d",
+  "generatedFor": "2026-09-01",
+  "sourceDigest": "sha256:11e8bb687decce8cbfb3f13c8c6bd0dbbfa0b9021bab464320bc40654fb21a15",
+  "resolvedDigest": "sha256:d886d1e2ce6f3c1260c1d2b9ac739eb2211bad752a988f381ee8cfd56ae758ef",
   "feature": {
     "id": "feature.host_home",
-    "name": "Host Events",
+    "name": "Host Today and Events",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Orchestrates the consolidated Host Events workspace across authentication, organizer selection, operational spotlight and attention state, paginated schedule and history state, recovery, and typed create, repeat, manage, and task navigation."
+    "description": "Transitional contract covering the independently routed Host Today command centre and the Events inventory while the Events presentation vertical slice is extracted. Today owns operational spotlight, attention policy, and Dress Rehearsal entry; Events owns paginated schedule and history plus create, repeat, and manage navigation."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 21,
-    "scenarios": 21,
-    "actionCases": 21,
-    "actions": 13,
+    "states": 22,
+    "scenarios": 22,
+    "actionCases": 22,
+    "actions": 14,
     "captures": 16,
     "previews": 1,
     "testFiles": 2,
-    "evidenceExceptions": 21
+    "evidenceExceptions": 22
   },
   "surfaces": [
     {
@@ -32,7 +32,7 @@
         "id": "screen.host.home"
       },
       "actionScope": {
-        "included": "Host Events authentication recovery, organizer switching, operational spotlight and attention work, paginated schedule and history loading and retry, and typed create, repeat, manage, and task navigation.",
+        "included": "Host Today authentication recovery, operational spotlight, attention work, and Dress Rehearsal entry; Host Events paginated schedule and history loading and retry; shared organizer switching; and typed create, repeat, manage, and task navigation.",
         "excluded": [
           "Organizer editing, event creation internals, event management mutations, booking policy, analytics, payouts, and host-team administration retain their owning feature contracts or controllers."
         ]
@@ -49,6 +49,30 @@
             "symbol": "HostOperationsHomeScreen"
           },
           {
+            "id": "today_route",
+            "language": "dart",
+            "file": "lib/hosts/today/presentation/host_today_screen.dart",
+            "symbol": "HostTodayScreen"
+          },
+          {
+            "id": "today_body",
+            "language": "dart",
+            "file": "lib/hosts/today/presentation/widgets/host_today_body.dart",
+            "symbol": "HostTodayBody"
+          },
+          {
+            "id": "today_attention",
+            "language": "dart",
+            "file": "lib/hosts/today/domain/host_attention_item.dart",
+            "symbol": "HostAttentionPolicy"
+          },
+          {
+            "id": "today_feed",
+            "language": "dart",
+            "file": "lib/hosts/today/data/host_today_feed_controller.dart",
+            "symbol": "HostTodayFeedController"
+          },
+          {
             "id": "workspace",
             "language": "dart",
             "file": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
@@ -63,7 +87,7 @@
           {
             "id": "events_timeline",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_events_timeline_controller.dart",
+            "file": "lib/hosts/events/data/host_events_timeline_controller.dart",
             "symbol": "HostEventsTimelineController"
           },
           {
@@ -97,14 +121,14 @@
         ]
       },
       "coverage": {
-        "states": 21,
-        "scenarios": 21,
-        "actionCases": 21,
-        "actions": 13,
+        "states": 22,
+        "scenarios": 22,
+        "actionCases": 22,
+        "actions": 14,
         "captures": 16,
         "previews": 1,
         "testFiles": 2,
-        "evidenceExceptions": 21
+        "evidenceExceptions": 22
       },
       "dimensions": {
         "load": {
@@ -410,7 +434,7 @@
         },
         {
           "id": "open_operational_event",
-          "owner": "workspace",
+          "owner": "today_route",
           "codeValue": "_openEvent",
           "cardinality": "unbounded",
           "scopeKeys": [
@@ -433,8 +457,8 @@
         },
         {
           "id": "open_attention_task",
-          "owner": "workspace",
-          "codeValue": "_openAttentionTask",
+          "owner": "today_route",
+          "codeValue": "_openAttention",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
@@ -452,6 +476,28 @@
             }
           ],
           "description": "Routes a truthful event-attention task to the matching guests or setup section of Host Event Manage.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "start_dress_rehearsal",
+          "owner": "today_route",
+          "codeValue": "_startRehearsal",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "tapAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.event.rehearsal"
+              }
+            }
+          ],
+          "description": "Starts the isolated Dress Rehearsal flow from Today as an operational-preparation action, not as an event-creation choice.",
           "implementationStatus": "implemented"
         }
       ],
@@ -490,13 +536,14 @@
         {
           "stateIds": [
             "create_event_action",
-            "manage_event_navigation"
+            "manage_event_navigation",
+            "dress_rehearsal_action"
           ],
           "evidence": [
             "captures"
           ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "The typed Host Home route actions are covered by focused widget tests and the route-state catalog but do not yet have standalone deterministic captures."
+          "reason": "The typed Host Today and Events route actions are covered by focused widget tests and the route-state catalog but do not yet have standalone deterministic captures."
         },
         {
           "stateIds": [
@@ -563,7 +610,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -618,7 +666,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -675,7 +724,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -731,7 +781,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -789,7 +840,8 @@
                   "load_more_history",
                   "retry_event_history",
                   "repeat_event",
-                  "manage_event"
+                  "manage_event",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -848,7 +900,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -906,7 +959,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -961,7 +1015,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1017,7 +1072,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1071,7 +1127,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1130,7 +1187,8 @@
                   "retry_host_home",
                   "retry_host_events",
                   "create_organizer",
-                  "retry_event_history"
+                  "retry_event_history",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1186,7 +1244,8 @@
                   "retry_event_history",
                   "repeat_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1242,7 +1301,8 @@
                   "switch_organizer",
                   "repeat_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1297,7 +1357,8 @@
                   "load_more_history",
                   "repeat_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1353,7 +1414,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1409,7 +1471,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1465,7 +1528,65 @@
                   "load_more_history",
                   "retry_event_history",
                   "create_event",
-                  "repeat_event"
+                  "repeat_event",
+                  "start_dress_rehearsal"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "dress_rehearsal_action",
+          "stateId": "dress_rehearsal_action",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "rehearse",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "start_dress_rehearsal"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "load_more_schedule",
+                  "load_more_history",
+                  "retry_event_history",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_operational_event",
+                  "open_attention_task"
                 ]
               }
             }
@@ -1521,7 +1642,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1576,7 +1698,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1631,7 +1754,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }
@@ -1686,7 +1810,8 @@
                   "repeat_event",
                   "manage_event",
                   "open_operational_event",
-                  "open_attention_task"
+                  "open_attention_task",
+                  "start_dress_rehearsal"
                 ]
               }
             }

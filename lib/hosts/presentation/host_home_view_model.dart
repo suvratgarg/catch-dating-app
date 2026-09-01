@@ -3,7 +3,6 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 HostHomeRouteState buildHostHomeRouteState({
   required CatchAsyncState<String?> uid,
@@ -95,51 +94,5 @@ HostEventsWorkspaceState buildHostEventsWorkspaceState(
     activeLoadMoreError: activeLoadMoreError,
     pastError: pastError,
     pastStackTrace: pastStackTrace,
-  );
-}
-
-HostEventsOverviewState buildHostEventsOverviewState(
-  CatchAsyncState<List<Event>> events, {
-  required DateTime now,
-  required AppLocalizations l10n,
-}) {
-  if (events.hasError) {
-    return HostEventsOverviewState(
-      status: HostEventsOverviewStatus.error,
-      error: events.error,
-      stackTrace: events.stackTrace,
-    );
-  }
-  if (events.isLoading) {
-    return const HostEventsOverviewState(
-      status: HostEventsOverviewStatus.loading,
-    );
-  }
-
-  final activeEvents = (events.value ?? const <Event>[])
-      .where((event) => !event.isCancelled && event.endTime.isAfter(now))
-      .toList();
-  activeEvents.sort((a, b) {
-    final aIsLive = !a.startTime.isAfter(now) && a.endTime.isAfter(now);
-    final bIsLive = !b.startTime.isAfter(now) && b.endTime.isAfter(now);
-    if (aIsLive != bIsLive) return aIsLive ? -1 : 1;
-    return a.startTime.compareTo(b.startTime);
-  });
-  final event = activeEvents.firstOrNull;
-  if (event == null) {
-    return const HostEventsOverviewState(
-      status: HostEventsOverviewStatus.empty,
-    );
-  }
-
-  final tasks = HostEventAttentionData.forEvents(
-    activeEvents,
-    l10n,
-  ).toList(growable: false);
-
-  return HostEventsOverviewState(
-    status: HostEventsOverviewStatus.content,
-    event: event,
-    tasks: List<HostEventAttentionData>.unmodifiable(tasks),
   );
 }

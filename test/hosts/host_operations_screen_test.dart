@@ -48,6 +48,7 @@ import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
+import 'package:catch_dating_app/hosts/events/data/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
@@ -59,7 +60,6 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customers_scr
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
-import 'package:catch_dating_app/hosts/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -69,6 +69,9 @@ import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_mod
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
+import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
+import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_overview.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
@@ -198,6 +201,12 @@ Future<void> _pumpHostScreen(
             Text('Draft ${arguments.initialDraft!.id}'),
           _ => Text('Create ${state.pathParameters['clubId']}'),
         },
+      ),
+      GoRoute(
+        path: Routes.hostEventRehearsalStartScreen.path,
+        name: Routes.hostEventRehearsalStartScreen.name,
+        builder: (_, state) =>
+            Text('Rehearse ${state.pathParameters['clubId']}'),
       ),
       GoRoute(
         path: Routes.hostClubTeamScreen.path,

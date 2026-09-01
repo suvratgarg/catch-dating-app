@@ -1,75 +1,56 @@
-part of '../host_operations_screen.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/hosts/domain/host_events_policy.dart';
+import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:flutter/material.dart';
 
-class HostEventsOverviewSection extends StatelessWidget {
-  const HostEventsOverviewSection({
+class HostTodayOverview extends StatelessWidget {
+  const HostTodayOverview({
     super.key,
-    required this.club,
     required this.state,
-    required this.onManageEvent,
-    required this.onOpenTask,
     required this.now,
+    required this.onOpenEvent,
+    required this.onOpenAttention,
   });
 
-  final Club club;
-  final HostEventsOverviewState state;
-  final HostHomeManageEventCallback onManageEvent;
-  final HostHomeOpenTaskCallback onOpenTask;
+  final HostTodayState state;
   final DateTime now;
+  final ValueChanged<Event> onOpenEvent;
+  final ValueChanged<HostAttentionItem> onOpenAttention;
 
   @override
   Widget build(BuildContext context) {
-    if (state.status != HostEventsOverviewStatus.content) {
-      return const SizedBox.shrink();
-    }
-    return HostEventsOverviewContent(
-      state: state,
-      club: club,
-      now: now,
-      onManageEvent: onManageEvent,
-      onOpenTask: onOpenTask,
-    );
-  }
-}
-
-class HostEventsOverviewContent extends StatelessWidget {
-  const HostEventsOverviewContent({
-    super.key,
-    required this.state,
-    required this.club,
-    required this.now,
-    required this.onManageEvent,
-    required this.onOpenTask,
-  });
-
-  final HostEventsOverviewState state;
-  final Club club;
-  final DateTime now;
-  final void Function(Club club, Event event) onManageEvent;
-  final HostHomeOpenTaskCallback onOpenTask;
-
-  @override
-  Widget build(BuildContext context) {
-    final event = state.event!;
-    final tasks = state.tasks;
-    final heroTaskCount = tasks
-        .where((task) => task.event.id == event.id)
+    final event = state.featuredEvent!;
+    final attentionItems = state.attentionItems;
+    final heroTaskCount = attentionItems
+        .where((data) => data.item.event.id == event.id)
         .length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HostEventOperationalSpotlight(
+        HostTodayEventSpotlight(
           event: event,
           now: now,
           taskCount: heroTaskCount,
-          onPressed: () => onManageEvent(club, event),
+          onPressed: () => onOpenEvent(event),
         ),
         gapH24,
         CatchSection.plain(
           title: context.l10n.hostsHostTodayTitleNeedsYou,
-          count: tasks.isEmpty ? null : tasks.length,
+          count: attentionItems.isEmpty ? null : attentionItems.length,
           titleColor: CatchTokens.of(context).ink3,
-          child: tasks.isEmpty
+          child: attentionItems.isEmpty
               ? Text(
                   context.l10n.hostsHostTodayTextNothingNeedsYouRight,
                   style: CatchTextStyles.supporting(context),
@@ -77,10 +58,10 @@ class HostEventsOverviewContent extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    for (final task in tasks) ...[
-                      HostEventAttentionCard(
-                        task: task,
-                        onPrimary: () => onOpenTask(club, task.event, task),
+                    for (final data in attentionItems) ...[
+                      HostTodayAttentionCard(
+                        data: data,
+                        onPrimary: () => onOpenAttention(data.item),
                       ),
                       gapH12,
                     ],
@@ -92,8 +73,8 @@ class HostEventsOverviewContent extends StatelessWidget {
   }
 }
 
-class HostEventOperationalSpotlight extends StatelessWidget {
-  const HostEventOperationalSpotlight({
+class HostTodayEventSpotlight extends StatelessWidget {
+  const HostTodayEventSpotlight({
     super.key,
     required this.event,
     required this.now,
@@ -134,7 +115,7 @@ class HostEventOperationalSpotlight extends StatelessWidget {
             ),
           ),
           gapH14,
-          _HostEventSpotlightMetadata(event: event),
+          HostTodayEventMetadata(event: event),
           gapH16,
           Divider(
             height: CatchStroke.hairline,
@@ -148,19 +129,19 @@ class HostEventOperationalSpotlight extends StatelessWidget {
             spacing: CatchSpacing.s5,
             runSpacing: CatchSpacing.s3,
             children: [
-              HostEventOperationalMetric(
+              HostTodayEventMetric(
                 value: context.l10n.hostsHostTodayVisiblecopySignedupcount(
                   signedUpCount: event.signedUpCount,
                 ),
                 label: context.l10n.hostsHostTodayLabelGoing,
               ),
-              HostEventOperationalMetric(
+              HostTodayEventMetric(
                 value: context.l10n.hostsHostTodayVisiblecopyWaitlistcount(
                   waitlistCount: event.waitlistCount,
                 ),
                 label: context.l10n.hostsHostTodayLabelWaiting,
               ),
-              HostEventOperationalMetric(
+              HostTodayEventMetric(
                 value: context.l10n.hostsHostTodayVisiblecopyTaskcount(
                   taskCount: taskCount,
                 ),
@@ -186,8 +167,8 @@ class HostEventOperationalSpotlight extends StatelessWidget {
   }
 }
 
-class _HostEventSpotlightMetadata extends StatelessWidget {
-  const _HostEventSpotlightMetadata({required this.event});
+class HostTodayEventMetadata extends StatelessWidget {
+  const HostTodayEventMetadata({super.key, required this.event});
 
   final Event event;
 
@@ -232,8 +213,8 @@ class _HostEventSpotlightMetadata extends StatelessWidget {
   }
 }
 
-class HostEventOperationalMetric extends StatelessWidget {
-  const HostEventOperationalMetric({
+class HostTodayEventMetric extends StatelessWidget {
+  const HostTodayEventMetric({
     super.key,
     required this.value,
     required this.label,
@@ -271,14 +252,14 @@ class HostEventOperationalMetric extends StatelessWidget {
   }
 }
 
-class HostEventAttentionCard extends StatelessWidget {
-  const HostEventAttentionCard({
+class HostTodayAttentionCard extends StatelessWidget {
+  const HostTodayAttentionCard({
     super.key,
-    required this.task,
+    required this.data,
     required this.onPrimary,
   });
 
-  final HostEventAttentionData task;
+  final HostTodayAttentionData data;
   final VoidCallback onPrimary;
 
   @override
@@ -297,7 +278,7 @@ class HostEventAttentionCard extends StatelessWidget {
             height: CatchSpacing.s9,
             child: ColoredBox(
               color: t.primarySoft,
-              child: Icon(task.icon, color: t.ink2, size: CatchIcon.md),
+              child: Icon(data.icon, color: t.ink2, size: CatchIcon.md),
             ),
           ),
           gapW14,
@@ -306,14 +287,14 @@ class HostEventAttentionCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  task.title,
+                  data.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
                 ),
                 gapH4,
                 Text(
-                  task.body,
+                  data.body,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
@@ -323,7 +304,7 @@ class HostEventAttentionCard extends StatelessWidget {
           ),
           gapW12,
           CatchButton(
-            label: task.primaryActionLabel.toUpperCase(),
+            label: data.primaryActionLabel.toUpperCase(),
             size: CatchButtonSize.sm,
             accentColor: t.danger,
             onPressed: onPrimary,
