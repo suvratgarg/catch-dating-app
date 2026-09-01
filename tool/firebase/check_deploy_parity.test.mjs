@@ -8,6 +8,7 @@ import {
   buildFunctionsListCommand,
   buildSecretsListCommand,
   compareDeployParity,
+  loadRepositoryInventory,
   parseArgs,
   parseDeployedFunctionNames,
   parseLiveSecretNames,
@@ -166,4 +167,28 @@ test("Functions deployment checks live parity against the exact source checkout"
   assert.equal(report.ok, true);
   assert.equal(report.repoFunctionCount, 1);
   assert.equal(report.projectId, "catchdates-prod");
+});
+
+test("repository parity excludes source-exported dormant scheduled Functions", () => {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "deploy-parity-"));
+  fs.mkdirSync(path.join(repoRoot, "functions/src"), {recursive: true});
+  fs.writeFileSync(
+    path.join(repoRoot, "functions/src/index.ts"),
+    [
+      'export {callable} from "./callable";',
+      'export {sendEventReminders} from "./sendEventReminders";',
+      "",
+    ].join("\n"),
+  );
+  fs.writeFileSync(
+    path.join(repoRoot, "functions/src/callable.ts"),
+    "export const callable = true;\n",
+  );
+  fs.writeFileSync(
+    path.join(repoRoot, "functions/src/sendEventReminders.ts"),
+    "export const sendEventReminders = true;\n",
+  );
+
+  const inventory = loadRepositoryInventory(repoRoot);
+  assert.deepEqual([...inventory.functionNames], ["callable"]);
 });

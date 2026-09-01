@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * Compare the repository's Firebase Functions and declared secrets with one
- * live Firebase environment. Environment-only Functions are intentionally
- * ignored because installed Firebase Extensions own legitimate extra exports.
+ * Compare the repository's deployment-eligible Firebase Functions and declared
+ * secrets with one live Firebase environment. Environment-only Functions are
+ * intentionally ignored because installed Firebase Extensions own legitimate
+ * extra exports.
  *
  * This command is metadata-only. It never reads secret payloads.
  *
@@ -18,10 +19,11 @@ import {fileURLToPath} from "node:url";
 
 import {
   discoverDefineSecretNames,
-  parseFirebaseFunctionTargets,
   parseFirebaseProjectAliases,
   resolveFirebaseProjectId,
 } from "./check_environment_readiness.mjs";
+import {listFirebaseFunctionTargets} from
+  "./list_firebase_function_targets.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepoRoot = path.resolve(toolDir, "../..");
@@ -112,11 +114,8 @@ function collectTypeScriptSources(directory, repoRoot, sources = []) {
 }
 
 export function loadRepositoryInventory(repoRoot) {
-  const indexPath = path.join(repoRoot, "functions/src/index.ts");
   const functionsSourceRoot = path.join(repoRoot, "functions/src");
-  const functionTargets = parseFirebaseFunctionTargets(
-    readUtf8(indexPath, "functions/src/index.ts"),
-  );
+  const functionTargets = listFirebaseFunctionTargets(repoRoot);
   const discovery = discoverDefineSecretNames(
     collectTypeScriptSources(functionsSourceRoot, repoRoot),
   );
@@ -128,7 +127,7 @@ export function loadRepositoryInventory(repoRoot) {
   }
   return {
     functionNames: new Set(
-      [...functionTargets].map((target) => target.replace(/^functions:/u, "")),
+      functionTargets.map((target) => target.replace(/^functions:/u, "")),
     ),
     secretNames: discovery.names,
   };
@@ -289,7 +288,7 @@ export function formatReport(report) {
   const lines = [
     `${report.ok ? "PASS" : "FAIL"} deploy parity for ` +
       `${report.environment}: ${report.projectId}`,
-    `  Functions: ${report.repoFunctionCount} repo export(s), ` +
+    `  Functions: ${report.repoFunctionCount} deployable source export(s), ` +
       `${report.deployedFunctionCount} deployed, ` +
       `${report.environmentOnlyFunctionCount} environment-only ignored`,
     `  Secrets: ${report.declaredSecretCount} defineSecret name(s), ` +

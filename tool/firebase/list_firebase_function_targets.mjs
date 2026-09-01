@@ -6,7 +6,21 @@ import {fileURLToPath} from "node:url";
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepoRoot = path.resolve(toolDir, "../..");
 
-export function listFirebaseFunctionTargets(sourceRoot = defaultRepoRoot) {
+// These Functions remain implemented and testable, but Catch's bounded deploy
+// path must not recreate their recurring infrastructure until product usage and
+// an explicit operating budget justify activation.
+export const dormantFirebaseFunctionTargets = Object.freeze([
+  "functions:dispatchPendingOrganizerFollowerUpdates",
+  "functions:dispatchScheduledOrganizerCampaigns",
+  "functions:expireCrossPathsInvitations",
+  "functions:expireCrossPathsPairHolds",
+  "functions:expireEventRehearsals",
+  "functions:expireEventWaitlistOffers",
+  "functions:reconcileRazorpayOrders",
+  "functions:sendEventReminders",
+]);
+
+export function listFirebaseFunctionExports(sourceRoot = defaultRepoRoot) {
   const indexPath = path.join(path.resolve(sourceRoot), "functions/src/index.ts");
   const stat = fs.lstatSync(indexPath);
   if (!stat.isFile() || stat.isSymbolicLink()) {
@@ -36,12 +50,22 @@ export function listFirebaseFunctionTargets(sourceRoot = defaultRepoRoot) {
   return names.map((name) => `functions:${name}`);
 }
 
+export function listFirebaseFunctionTargets(sourceRoot = defaultRepoRoot) {
+  const dormantTargets = new Set(dormantFirebaseFunctionTargets);
+  return listFirebaseFunctionExports(sourceRoot)
+    .filter((target) => !dormantTargets.has(target));
+}
+
 function main() {
   const args = new Set(process.argv.slice(2));
   for (const arg of args) {
-    if (arg !== "--csv") throw new Error(`Unknown argument: ${arg}`);
+    if (arg !== "--all-exports" && arg !== "--csv") {
+      throw new Error(`Unknown argument: ${arg}`);
+    }
   }
-  const targets = listFirebaseFunctionTargets();
+  const targets = args.has("--all-exports") ?
+    listFirebaseFunctionExports() :
+    listFirebaseFunctionTargets();
   const output = args.has("--csv") ? targets.join(",") : `${targets.join("\n")}\n`;
   process.stdout.write(output);
 }
