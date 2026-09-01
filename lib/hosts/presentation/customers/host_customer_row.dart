@@ -37,24 +37,26 @@ class HostCustomerRow extends StatelessWidget {
     final lifecycleLabel = contact.hasAmbiguousIdentity
         ? null
         : _preferredCustomerTag(context, contact.tags);
-    return CatchField.nav(
-      title: contact.displayName,
-      body: [metadata.join(' · '), ?lifecycleLabel].join('\n'),
-      bodyMaxLines: usesLargeText ? 3 : 2,
-      emphasis: CatchFieldEmphasis.title,
-      leading: CatchPersonAvatar(
-        size: CatchSpacing.s10,
-        name: contact.displayName,
+    return CatchFieldLanes.single(
+      child: CatchField.nav(
+        title: contact.displayName,
+        body: [metadata.join(' · '), ?lifecycleLabel].join('\n'),
+        bodyMaxLines: usesLargeText ? 3 : 2,
+        emphasis: CatchFieldEmphasis.title,
+        leading: CatchPersonAvatar(
+          size: CatchSpacing.s10,
+          name: contact.displayName,
+        ),
+        leadingExtent: CatchSpacing.s10,
+        action: contact.hasAmbiguousIdentity
+            ? CatchBadge.functional(
+                label: context.l10n.hostCustomersNeedsReview,
+                tone: CatchBadgeTone.warning,
+                icon: CatchIcons.fieldWarning,
+              )
+            : null,
+        onTap: onTap,
       ),
-      leadingExtent: CatchSpacing.s10,
-      action: contact.hasAmbiguousIdentity
-          ? CatchBadge.functional(
-              label: context.l10n.hostCustomersNeedsReview,
-              tone: CatchBadgeTone.warning,
-              icon: CatchIcons.fieldWarning,
-            )
-          : null,
-      onTap: onTap,
     );
   }
 }
