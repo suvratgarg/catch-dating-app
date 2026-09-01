@@ -6316,9 +6316,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Cancellation policy';
 
   @override
-  String get hostsHostClubsScaffoldKickerHostClubs => 'HOST ORGANIZERS';
-
-  @override
   String get hostsHostClubsScaffoldLabelClubWorkspaceTabs =>
       'Organizer workspace tabs';
 
@@ -6345,9 +6342,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostClubsScaffoldLabelCreateClub => 'Create organizer';
-
-  @override
-  String get hostsHostClubsScreenTitleClubs => 'Organizers';
 
   @override
   String get hostsHostEventsListTextEvents => 'Events';
@@ -6433,9 +6427,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventsScaffoldLabelCreateClub => 'Create organizer';
-
-  @override
-  String get hostsHostOperationsHomeScreenTitleHostEvents => 'Host events';
 
   @override
   String get hostsHostOrganizerLabelMembers => 'Followers';

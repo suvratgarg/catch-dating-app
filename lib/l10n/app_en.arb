@@ -11619,13 +11619,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_profile"
   },
-  "hostsHostClubsScaffoldKickerHostClubs": "HOST ORGANIZERS",
-  "@hostsHostClubsScaffoldKickerHostClubs": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (kicker).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
-  },
   "hostsHostClubsScaffoldLabelClubWorkspaceTabs": "Organizer workspace tabs",
   "@hostsHostClubsScaffoldLabelClubWorkspaceTabs": {
     "description": "Accessibility label for the Host Clubs tabbed workspace.",
@@ -11681,13 +11674,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
-  },
-  "hostsHostClubsScreenTitleClubs": "Organizers",
-  "@hostsHostClubsScreenTitleClubs": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_clubs_screen"
   },
   "hostsHostEventsListTextEvents": "Events",
   "@hostsHostEventsListTextEvents": {
@@ -11854,13 +11840,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_events_scaffold"
-  },
-  "hostsHostOperationsHomeScreenTitleHostEvents": "Host events",
-  "@hostsHostOperationsHomeScreenTitleHostEvents": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_operations_home_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_operations_home_screen"
   },
   "hostsHostOrganizerLabelMembers": "Followers",
   "@hostsHostOrganizerLabelMembers": {
