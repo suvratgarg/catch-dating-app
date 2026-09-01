@@ -13,6 +13,15 @@ shift 2
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 
+planner_policy_args=()
+if [[ -n "${CATCH_DELIVERY_FUNCTIONS_DIR:-}" &&
+      -n "${CATCH_FIREBASE_SOURCE_ROOT:-}" ]]; then
+  # A verified historical package may predate the current dormant-Function
+  # policy. The control plane may reduce that exact legacy target set, but it
+  # must never add a target or silently accept any other unknown Function.
+  planner_policy_args+=(--filter-dormant-exact-targets)
+fi
+
 # Refuse to publish a ref that is behind its remote. See the incident note in
 # check_deploy_ref.mjs: deploying from a stale local `main` silently removed
 # five match blocks from the live Firestore ruleset.
@@ -60,7 +69,7 @@ sync_callable_invokers() {
 
 plan_output="$(
   node "$repo_root/tool/firebase/plan_firebase_deploy_targets.mjs" \
-    "$targets_csv" --tsv
+    "$targets_csv" --tsv "${planner_policy_args[@]}"
 )"
 
 while IFS=$'\t' read -r phase deploy_only; do
@@ -69,7 +78,7 @@ while IFS=$'\t' read -r phase deploy_only; do
     function_batches="$(
       CATCH_FIREBASE_SOURCE_ROOT="${CATCH_FIREBASE_SOURCE_ROOT:-$repo_root}" \
         node "$repo_root/tool/firebase/plan_firebase_deploy_targets.mjs" \
-          "$deploy_only" --function-batches
+          "$deploy_only" --function-batches "${planner_policy_args[@]}"
     )"
     [[ -n "$function_batches" ]]
     while IFS= read -r function_batch; do

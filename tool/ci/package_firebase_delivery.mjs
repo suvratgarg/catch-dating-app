@@ -4,7 +4,11 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {planFirebaseDeployGroups} from "../firebase/plan_firebase_deploy_targets.mjs";
-import {listFirebaseFunctionTargets} from "../firebase/list_firebase_function_targets.mjs";
+import {
+  dormantFirebaseFunctionTargets,
+  listFirebaseFunctionExports,
+  listFirebaseFunctionTargets,
+} from "../firebase/list_firebase_function_targets.mjs";
 
 export const FIREBASE_DELIVERY_PLAN_SCHEMA = "catch.firebase-delivery-plan/v2";
 export const FIREBASE_DELIVERY_INVENTORY_SCHEMA =
@@ -382,6 +386,11 @@ function currentFunctionTargets(sourceRoot) {
   return listFirebaseFunctionTargets(sourceRoot);
 }
 
+function effectiveFunctionTargets(functionTargets) {
+  const dormantTargets = new Set(dormantFirebaseFunctionTargets);
+  return functionTargets.filter((target) => !dormantTargets.has(target));
+}
+
 export function prepareFirebaseDelivery({
   sourceRoot,
   impactPlanPath,
@@ -535,13 +544,25 @@ export function verifyFirebaseDelivery({
   assert(sha256(impactPlanBytes) === deliveryPlan.impactPlanSha256,
     "Packaged CI impact plan digest does not match the delivery plan.");
   const impactPlan = JSON.parse(impactPlanBytes.toString("utf8"));
-  const resolvedFunctionTargets = functionTargets ?? currentFunctionTargets(path.resolve(sourceRoot));
-  const selection = deliverySelection({impactPlan, functionTargets: resolvedFunctionTargets, binding});
-  assert(jsonEqual(selection.deployGroups, deliveryPlan.deployGroups),
+  const resolvedSourceFunctionTargets = functionTargets ??
+    listFirebaseFunctionExports(path.resolve(sourceRoot));
+  const sourceSelection = deliverySelection({
+    impactPlan,
+    functionTargets: resolvedSourceFunctionTargets,
+    binding,
+  });
+  const effectiveSelection = deliverySelection({
+    impactPlan,
+    functionTargets: effectiveFunctionTargets(resolvedSourceFunctionTargets),
+    binding,
+  });
+  assert(jsonEqual(sourceSelection.deployGroups, deliveryPlan.deployGroups),
     "Delivery groups do not match the packaged CI impact plan.");
-  assert(jsonEqual(selection.stages, deliveryPlan.stages),
+  assert(jsonEqual(sourceSelection.stages, deliveryPlan.stages),
     "Delivery stages do not match the packaged CI impact plan.");
-  assert(jsonEqual(selection.targets, deliveryPlan.targets),
+  assert(
+    jsonEqual(sourceSelection.targets, deliveryPlan.targets) ||
+      jsonEqual(effectiveSelection.targets, deliveryPlan.targets),
     "Delivery targets do not match the checked-in Firebase Function exports and CI plan.");
 
   assert(provenanceManifestPath,
@@ -588,7 +609,7 @@ export function verifyFirebaseDelivery({
     assert(jsonEqual(packagedPackage, boundedFunctionsPackage(sourcePackage)),
       "Packaged Functions package.json is not the bounded lifecycle-safe projection.");
   }
-  return deliveryPlan;
+  return {...deliveryPlan, targets: effectiveSelection.targets};
 }
 
 function parseArgs(argv) {
