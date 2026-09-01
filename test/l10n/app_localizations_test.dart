@@ -12,7 +12,7 @@ void main() {
     );
     expect(
       AppShellNavigationDestination.hostInbox.localizedLabel(l10n),
-      'Messaging',
+      'Inbox',
     );
   });
 
