@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.20.0
+version: 1.21.0
 updated: 2026-09-01
 owner: app_architecture
 status: active
@@ -479,7 +479,7 @@ Screen composition should be predictable:
 ```text
 <Feature>Screen
   -> mutation listener(s), if actions can fail transiently
-  -> Scaffold / SafeArea / route chrome
+  -> one approved screen-family owner
   -> one scroll owner or one body shell
   -> CatchAsyncValueView / CatchAsyncValueSliver / typed UI-state adapter
   -> <Feature>Body / sliver body / state-specific widgets
@@ -495,6 +495,41 @@ If a parent owns a `CustomScrollView`, async loading/error/empty/data branches
 should usually be sliver-native. Box widgets can still be used at composition
 boundaries through `SliverToBoxAdapter`, but growing repeated content should use
 lazy slivers.
+
+### Exhibit ARCH-SCREEN-COMPOSITION-001: Semantic Screen Composition
+
+<!-- exhibit-freshness: ARCH-SCREEN-COMPOSITION-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+
+Screen composition is a closed family, not a per-feature assembly exercise:
+
+- A root shell destination uses `CatchRootScreenScaffold`, or
+  `CatchRootScreenScrollView` when an adaptive parent already owns the
+  `Scaffold`. It provides a scroll-content header, an explicit
+  `CatchScreenBodyLayout`, and body slivers. The owner supplies the safe area,
+  single scroll view, semantic body gutter, optional responsive content lane,
+  field-obstruction scope, refresh wrapper, and terminal shell clearance.
+- A root destination with pinned peer tabs uses `CatchTabbedScreenScaffold`
+  and one `CatchTabbedPageScrollView` per page. Every page must declare
+  `bodyLayout`; overlap injection, restoration, focus isolation, body geometry,
+  refresh, and terminal clearance remain shared mechanics.
+- A section-composed page without root-title chrome uses
+  `CatchResponsiveSectionPage`; master-detail workspaces use
+  `CatchAdaptiveMasterDetailLayout` at their actual responsive boundary.
+- A pushed utility or detail route uses `CatchRouteScaffold` with its compact
+  `CatchTopBar`. A pushed route must not be restyled to resemble a root title.
+
+`CatchScreenBodyLayout.standard` is the normal title/tab-to-content rhythm,
+`compact` is reserved for dense chrome whose first child already carries
+hierarchy, and `fullBleed` is for intrinsically edge-owned slivers such as a
+conversation list or embedded preview. Feature code selects a role; it does
+not restate its `EdgeInsets`, title gap, terminal spacer, or field interaction
+plane. Loading, error, empty, and populated branches of one destination use the
+same family owner so state changes cannot move the screen geometry.
+
+The contract manifest at `tool/design/tab_root_scroll_contracts.json` records
+every shell branch and its real composition owners. Its scanner rejects an
+unregistered branch, missing semantic owner/body role, forbidden raw root
+composition, and raw sliver empty/error viewport ownership.
 
 ## App Shell Chrome Policy
 
@@ -920,7 +955,9 @@ For `NestedScrollView` plus pinned tab rows:
 - Each tab body starts with the matching `SliverOverlapInjector`.
 - Body padding belongs to the tab body, not to the pinned tab row.
 - Route-owned tab pages use `CatchTabbedPageScrollView`. Box-content pages opt
-  into `constrainToContentWidth`; it preserves the canonical 600 px content
+  into an explicit `bodyLayout` and may opt into `constrainToContentWidth`; the
+  body role owns title/tab-to-content rhythm and page gutters, while the width
+  option preserves the canonical 600 px content
   lane plus page gutters only when the viewport has surplus width. A page may
   supply a larger semantic `maxContentExtent` when its records carry multiple
   operational columns or summaries; this changes only the centered lane, not
@@ -953,19 +990,21 @@ preview under one route-owned tab shell:
 ```dart
 CatchTabbedPageScrollView(
   scrollKey: editScrollKey,
+  bodyLayout: CatchScreenBodyLayout.standard,
   constrainToContentWidth: true,
   slivers: editSlivers,
 )
 
 CatchTabbedPageScrollView(
   scrollKey: previewScrollKey,
+  bodyLayout: CatchScreenBodyLayout.fullBleed,
   slivers: previewSlivers, // Full-bleed and sliver-native.
 )
 ```
 
 `CatchTabbedPageScrollView` owns overlap injection, focus isolation, independent
-offset restoration, and terminal clearance. Feature pages own their slivers,
-refresh policy, controllers, and typed tab state. Do not reintroduce
+offset restoration, semantic body geometry, and terminal clearance. Feature
+pages own their slivers, refresh policy, controllers, and typed tab state. Do not reintroduce
 feature-local `Center`/`ConstrainedBox` wrappers or box the Preview slivers.
 
 ### Current Screen Layout Decisions
@@ -2593,7 +2632,10 @@ Every handwritten `Scaffold.appBar` is registered by exact file, role,
 expression, and canonical owner in
 `tool/design/screen_top_bar_contracts.json`. Root and root-like destinations
 use `CatchScreenTopBar`, compact detail/edit/utility routes use `CatchTopBar`,
-and identity routes use `CatchTopBar.identity`. A canonical call elsewhere in
+and avatar-backed identity routes use `CatchTopBar.identity`. Generic compact
+route labels resolve through `CatchTextStyles.routeTitle`; a user-authored name
+must opt into `CatchTopBarTitleRole.identity` under a registered title policy.
+A canonical call elsewhere in
 the file cannot bless helper-owned or raw chrome inside the actual `appBar`
 value.
 
@@ -2612,6 +2654,16 @@ routes. The route supplies a `CatchTopBar` builder and body; the shell alone
 owns surface color and the scroll-under divider. Loading, empty, error, and
 content branches retain the same title voice and back behavior instead of
 building competing scaffolds.
+
+The primitive owns the compact title role: `CatchTextStyles.routeTitle` is
+Archivo at 20/700/1.16, while the root `CatchScreenHeaderTitle` remains Archivo
+at the larger headline scale. Route and workspace screens pass semantic
+`title`, title-case `eyebrow` (untracked `monoLabel`) or uppercase `kicker`,
+`subtitle`, and `titleMaxLines` inputs; a feature-local `titleWidget` or raw
+title style is a contract failure. Workspace bars pin `large: false` so this
+path cannot silently resolve back to `titleL`. Identity names remain a
+registered semantic exception in the platform function family, with an
+explicit route-title fallback while identity data is unavailable.
 
 The adopters are Saved Events, Review History, Payment History, Settings, Chat
 Detail, Host Event Manage, Host Event Edit, Host team, every Host organizer
@@ -3510,8 +3562,8 @@ action lists and simple local action-list variables.
 
 Do not use bare `CatchTopBar(title: ...)` for these root headers. That compact
 route-title path intentionally remains available for detail, edit, lab, and
-utility screens where the title is functional navigation chrome rather than the
-root screen voice.
+utility screens. It shares the Archivo family but remains a separate compact
+hierarchy from the 32px root headline.
 
 ```dart
 const CatchScreenHeaderTitle.block({

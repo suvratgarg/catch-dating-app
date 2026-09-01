@@ -11,7 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
@@ -57,32 +57,53 @@ class HostEventsScreen extends ConsumerWidget {
     );
 
     return switch (routeState.status) {
-      HostEventsRouteStatus.authRequired => CatchErrorScaffold(
-        title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
-        message: context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
-        retryLabel: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
-        onRetry: () => context.go(Routes.authScreen.path),
-      ),
-      HostEventsRouteStatus.loading => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
-          context: context,
-          title: context.l10n.hostsHostOperationsHomeScreenTitleHostEvents,
-          divider: scrolledUnder,
+      HostEventsRouteStatus.authRequired => CatchRootScreenScaffold(
+        header: CatchScreenHeaderTitle.block(
+          title: context.l10n.hostsHostEventsListTextEvents,
         ),
-        body: const SafeArea(child: HostRouteLoadingBody()),
+        bodyLayout: CatchScreenBodyLayout.standard,
+        slivers: [
+          CatchSliverErrorState(
+            title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+            message:
+                context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
+            retryLabel:
+                context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+            onRetry: () => context.go(Routes.authScreen.path),
+          ),
+        ],
       ),
-      HostEventsRouteStatus.error => CatchErrorScaffold.fromError(
-        routeState.error!,
-        context: routeState.errorContext,
-        onRetry: () {
-          final currentUid = routeState.uid;
-          if (routeState.errorContext == AppErrorContext.auth ||
-              currentUid == null) {
-            ref.invalidate(uidProvider);
-            return;
-          }
-          ref.invalidate(hostOperableClubsProvider(currentUid));
-        },
+      HostEventsRouteStatus.loading => CatchRootScreenScaffold(
+        header: CatchScreenHeaderTitle.block(
+          title: context.l10n.hostsHostEventsListTextEvents,
+        ),
+        bodyLayout: CatchScreenBodyLayout.standard,
+        slivers: const [
+          CatchSliverStateViewport(
+            child: HostRouteLoadingBody(padding: EdgeInsets.zero),
+          ),
+        ],
+      ),
+      HostEventsRouteStatus.error => CatchRootScreenScaffold(
+        header: CatchScreenHeaderTitle.block(
+          title: context.l10n.hostsHostEventsListTextEvents,
+        ),
+        bodyLayout: CatchScreenBodyLayout.standard,
+        slivers: [
+          CatchSliverErrorState.fromError(
+            routeState.error!,
+            context: routeState.errorContext,
+            onRetry: () {
+              final currentUid = routeState.uid;
+              if (routeState.errorContext == AppErrorContext.auth ||
+                  currentUid == null) {
+                ref.invalidate(uidProvider);
+                return;
+              }
+              ref.invalidate(hostOperableClubsProvider(currentUid));
+            },
+          ),
+        ],
       ),
       HostEventsRouteStatus.empty ||
       HostEventsRouteStatus.loaded => HostEventsRouteScaffold(
@@ -164,7 +185,6 @@ class _HostEventsRouteScaffoldState
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final selectedOrganizerId = ref.watch(
       hostOrganizerSelectionProvider(widget.currentUid),
     );
@@ -176,45 +196,34 @@ class _HostEventsRouteScaffoldState
           : null,
     );
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: selectedClub == null
-            ? CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: CatchScreenHeaderTitle.block(
-                      title: context.l10n.hostsHostEventsListTextEvents,
-                    ),
-                  ),
-                  CatchSliverEmptyState(
-                    icon: CatchIcons.groupsOutlined,
-                    title: context
-                        .l10n
-                        .hostsHostEventsScaffoldTitleCreateYourFirstClub,
-                    message:
-                        context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-                    action: CatchButton(
-                      label:
-                          context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-                      icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                      size: CatchButtonSize.sm,
-                      onPressed: () =>
-                          context.pushNamed(Routes.hostCreateClubScreen.name),
-                    ),
-                  ),
-                  const CatchSliverTerminalPadding(),
-                ],
-              )
-            : HostEventsClubCard(
-                club: selectedClub,
-                onEventEntrySelected: _handleEventEntrySelected,
-                onManageEvent: _openEvent,
-                now: _clockNow,
-                sessionBoundary: _timelineBoundary,
-              ),
+    if (selectedClub != null) {
+      return HostEventsClubCard(
+        club: selectedClub,
+        onEventEntrySelected: _handleEventEntrySelected,
+        onManageEvent: _openEvent,
+        now: _clockNow,
+        sessionBoundary: _timelineBoundary,
+      );
+    }
+    return CatchRootScreenScaffold(
+      header: CatchScreenHeaderTitle.block(
+        title: context.l10n.hostsHostEventsListTextEvents,
       ),
+      bodyLayout: CatchScreenBodyLayout.standard,
+      slivers: [
+        CatchSliverEmptyState(
+          icon: CatchIcons.groupsOutlined,
+          title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
+          message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+          action: CatchButton(
+            label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+            icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+            size: CatchButtonSize.sm,
+            onPressed: () =>
+                context.pushNamed(Routes.hostCreateClubScreen.name),
+          ),
+        ),
+      ],
     );
   }
 

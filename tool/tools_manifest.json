@@ -6120,7 +6120,7 @@
       "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Requires every consumer and host StatefulShellBranch to declare semantic shell-aware terminal clearance, enforces registered box-layout CatchStateViewport adoption, and rejects raw empty/error SliverFillRemaining composition that bypasses optical shell geometry.",
+      "description": "Requires every consumer and host StatefulShellBranch to declare semantic screen-composition owners and shell-aware terminal clearance, enforces registered body roles and box-layout CatchStateViewport adoption, and rejects raw root or empty/error composition that bypasses shared geometry.",
       "checks": [
         "node --check tool/design/check_tab_root_scroll_contracts.mjs",
         "node --test tool/design/check_tab_root_scroll_contracts.test.mjs",
@@ -6134,6 +6134,8 @@
         "type": "test",
         "path": "tool/design/check_tab_root_scroll_contracts.test.mjs",
         "contains": [
+          "accepts a root screen with an explicit semantic body role",
+          "flags a root screen that bypasses semantic composition",
           "accepts lifecycle-owned StatefulShellBranch key member access",
           "flags the known-bad tab root fixture when terminal padding is missing",
           "flags a new StatefulShellBranch until it is registered",

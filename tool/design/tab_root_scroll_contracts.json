@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "logicalName": "catch-tab-root-scroll-clearance",
+  "logicalName": "catch-tab-root-screen-composition",
   "routerPath": "lib/routing/go_router.dart",
   "shells": [
     {
@@ -146,13 +146,34 @@
         {
           "path": "lib/hosts/today/presentation/host_today_screen.dart",
           "requires": [
-            {"text": "bottom: false", "minimumOccurrences": 1}
+            {"text": "CatchRootScreenScaffold", "minimumOccurrences": 1},
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"}
           ]
         },
         {
           "path": "lib/hosts/today/presentation/widgets/host_today_body.dart",
           "requires": [
-            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+            {"text": "CatchRootScreenScaffold", "minimumOccurrences": 1},
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1},
+            {"text": "CatchSliverErrorState.fromError", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CustomScrollView("},
+            {"text": "CatchSliverTerminalPadding"},
+            {"text": "SliverPadding("},
+            {"text": "subtitle: organizer"}
+          ]
+        },
+        {
+          "path": "lib/core/widgets/catch_screen_scaffold.dart",
+          "requires": [
+            {"text": "CatchSliverScreenBody", "minimumOccurrences": 1},
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1},
+            {"text": "CatchFieldVisibilityScope", "minimumOccurrences": 1},
+            {"text": "SafeArea(bottom: false", "minimumOccurrences": 1}
           ]
         }
       ]
@@ -164,8 +185,24 @@
         {
           "path": "lib/hosts/events/presentation/host_events_screen.dart",
           "requires": [
-            {"text": "bottom: false", "minimumOccurrences": 1},
-            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+            {"text": "CatchRootScreenScaffold", "minimumOccurrences": 1},
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"}
+          ]
+        },
+        {
+          "path": "lib/hosts/events/presentation/widgets/host_events_list.dart",
+          "requires": [
+            {"text": "CatchRootScreenScaffold", "minimumOccurrences": 1},
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1},
+            {"text": "if (hasScheduleRegion) gapH24", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CustomScrollView("},
+            {"text": "CatchSliverTerminalPadding"},
+            {"text": "const SliverToBoxAdapter(child: gapH14)"}
           ]
         }
       ]
@@ -178,28 +215,89 @@
           "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
           "requires": [
             {"text": "CatchTabbedScreenScaffold", "minimumOccurrences": 1},
-            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1}
+            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1},
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1},
+            {"text": "HostAudienceStateScaffold", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"},
+            {"text": "HostLoadingScreen("},
+            {"text": "HostAuthRequiredScreen("},
+            {"text": "return Scaffold("},
+            {"text": "=> Scaffold("}
+          ]
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customers_directory.dart",
+          "requires": [
+            {"text": "CatchSection.fieldRows", "minimumOccurrences": 1},
+            {"text": "Widget build(BuildContext context) => HostAudienceStateScaffold(", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"},
+            {"text": "HostLoadingScreen("},
+            {"text": "HostAuthRequiredScreen("},
+            {"text": "return Scaffold("},
+            {"text": "=> Scaffold("}
+          ]
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customer_row.dart",
+          "requires": [
+            {"text": "return CatchFieldLanes.single(", "minimumOccurrences": 1},
+            {"text": "child: CatchField.nav(", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchRowPressSurface"}
           ]
         },
         {
           "path": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
           "requires": [
-            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1}
+            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1},
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1}
           ]
         },
         {
           "path": "lib/core/widgets/catch_tabbed_screen.dart",
           "requires": [
             {"text": "bottom: false", "minimumOccurrences": 1},
+            {"text": "required this.bodyLayout", "minimumOccurrences": 1},
+            {"text": "CatchSliverScreenBody", "minimumOccurrences": 1},
             {"text": "if (widget.includeTerminalPadding)", "minimumOccurrences": 1},
             {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
           ]
         },
         {
+          "path": "lib/hosts/presentation/host_audience_view.dart",
+          "requires": [
+            {"text": "class HostAudienceStateScaffold", "minimumOccurrences": 1},
+            {"text": "return CatchTabbedScreenScaffold(", "minimumOccurrences": 1},
+            {"text": "tabRail: HostAudienceTabRail(", "minimumOccurrences": 1},
+            {"text": "body: CatchTabbedPageScrollView(", "minimumOccurrences": 1},
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"},
+            {"text": "HostLoadingScreen("},
+            {"text": "HostAuthRequiredScreen("},
+            {"text": "return Scaffold("},
+            {"text": "=> Scaffold("}
+          ]
+        },
+        {
           "path": "lib/hosts/presentation/forms/host_forms_screen.dart",
           "requires": [
-            {"text": "bottom: false", "minimumOccurrences": 1},
-            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 2},
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 2},
+            {"text": "HostAudienceStateScaffold", "minimumOccurrences": 2}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"},
+            {"text": "HostLoadingScreen("},
+            {"text": "HostAuthRequiredScreen("},
+            {"text": "return Scaffold("},
+            {"text": "=> Scaffold("}
           ]
         }
       ]
@@ -211,8 +309,14 @@
         {
           "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
           "requires": [
-            {"text": "bottom: false", "minimumOccurrences": 1},
-            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+            {"text": "CatchRootScreenScrollView", "minimumOccurrences": 1},
+            {"text": "bodyLayout: CatchScreenBodyLayout.fullBleed", "minimumOccurrences": 1},
+            {"text": "showHostSubtitle: !isInbox", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CustomScrollView("},
+            {"text": "CatchSliverTerminalPadding"},
+            {"text": "context.l10n.hostInboxSubtitle"}
           ]
         }
       ]
@@ -222,11 +326,30 @@
       "routeName": "Routes.hostOrganizerScreen.name",
       "owners": [
         {
+          "path": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
+          "requires": [
+            {"text": "CatchAsyncValueView<String?>", "minimumOccurrences": 1},
+            {"text": "errorBuilderWithRetry:", "minimumOccurrences": 2},
+            {"text": "HostOrganizerStateScaffold", "minimumOccurrences": 5},
+            {"text": "CatchSliverStateViewport", "minimumOccurrences": 2},
+            {"text": "CatchSliverErrorState", "minimumOccurrences": 3}
+          ],
+          "forbids": [
+            {"text": "CatchErrorScaffold"},
+            {"text": "HostLoadingScreen"},
+            {"text": "HostAuthRequiredScreen("}
+          ]
+        },
+        {
           "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
           "requires": [
-            {"text": "CatchTabbedScreenScaffold", "minimumOccurrences": 1},
-            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1},
-            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
+            {"text": "CatchTabbedScreenScaffold", "minimumOccurrences": 2},
+            {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 4},
+            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 3},
+            {"text": "bodyLayout: CatchScreenBodyLayout.fullBleed", "minimumOccurrences": 1}
+          ],
+          "forbids": [
+            {"text": "CatchRootScreenScaffold"}
           ]
         },
         {

@@ -122,6 +122,9 @@ class PublicProfileScreen extends ConsumerWidget {
         child: Scaffold(
           appBar: CatchTopBar(
             title: screenState.title(context.l10n),
+            titleRole: profile == null
+                ? CatchTopBarTitleRole.route
+                : CatchTopBarTitleRole.identity,
             actions: [
               if (screenState.showSafetyActions)
                 CatchTopBarMenuAction<String>(

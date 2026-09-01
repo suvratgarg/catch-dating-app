@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.8.5
-updated: 2026-08-29
+version: 1.8.6
+updated: 2026-09-01
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -133,8 +133,8 @@ Three roles, no competition:
 
 | Role | Family | Use |
 |---|---|---|
-| **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | brand moments, screen/event/club display titles, and the welcome reel |
-| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | prose, bios, descriptions, names, buttons, nav, inputs, and dense UI controls |
+| **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | brand moments, root headlines, compact route titles, event/club display titles, and the welcome reel |
+| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | prose, bios, descriptions, user-authored names, buttons, navigation controls, inputs, and dense UI controls |
 | **Data** | **IBM Plex Mono** | time, price, counts, OTP digits, kickers, and explicit uppercase labels |
 
 **Why Archivo:** the current direction is typographic, restrained, and non-serif. Archivo
@@ -167,6 +167,12 @@ These map onto the existing `CatchTextStyles` roles — display/title styles mov
 Archivo, sentence/data roles to untracked IBM Plex Mono, explicit caps roles to tracked
 IBM Plex Mono, and names/controls/prose to the platform system font. App UI calls semantic
 `CatchTextStyles` roles; `CatchFonts` is an internal theme implementation detail.
+
+Route hierarchy is size and composition, not a competing font family. Root-screen
+titles use `CatchTextStyles.headline` (Archivo, 32/600/1.04); compact pushed-route
+labels use `CatchTextStyles.routeTitle` (Archivo, 20/700/1.16). A route whose title
+becomes a user-authored person name selects the semantic identity title role and
+stays in the platform family. Feature screens do not restate these styles.
 
 ---
 
@@ -306,6 +312,13 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
   vertical content has actually scrolled beneath the compact bar. Root tab
   titles are scroll content rather than fixed app bars.
+- Root title screens route through `CatchRootScreenScaffold` (or its
+  parent-scaffold `CatchRootScreenScrollView` variant), and pinned peer-tab
+  screens route through `CatchTabbedScreenScaffold` plus
+  `CatchTabbedPageScrollView`. Every body declares `standard`, `compact`, or
+  `fullBleed` geometry through `CatchScreenBodyLayout`; feature screens do not
+  reconstruct title gaps, page gutters, terminal navigation clearance,
+  responsive content lanes, or state-viewport placement.
 - Compact route bars use the default `CatchTopBar` geometry. Feature screens do
   not override height, safe-area, alignment, gutter, or content padding. A
   detail route whose title is loaded asynchronously carries the known subject

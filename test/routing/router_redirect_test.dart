@@ -282,6 +282,7 @@ void main() {
       expect(screen.initialClubId, 'club-1');
       expect(screen.initialExpandedEditField, 'description');
       expect(screen.initialTab.name, 'insights');
+      expect(screen.effectiveInitialTab.name, 'edit');
     });
 
     test('redirects the retired Organizer Audience tab into Audience', () {

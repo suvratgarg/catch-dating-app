@@ -300,6 +300,11 @@ class FoundationTypographyTokens extends StatelessWidget {
                 CatchTextStyles.headlineS(context),
               ),
               _TypeSpec(
+                'routeTitle',
+                'Dress rehearsal',
+                CatchTextStyles.routeTitle(context),
+              ),
+              _TypeSpec(
                 'welcomeReelHeadline',
                 'Catch someone real.',
                 CatchTextStyles.welcomeReelHeadline(context),

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -42,72 +43,49 @@ class HostTodayBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      key: const ValueKey<String>('host-today-scroll-view'),
+    return CatchRootScreenScaffold(
+      scrollKey: const ValueKey<String>('host-today-scroll-view'),
+      header: HostTodayHeader(now: now),
+      bodyLayout: CatchScreenBodyLayout.standard,
       slivers: [
-        SliverToBoxAdapter(
-          child: HostTodayHeader(organizer: organizer, now: now),
-        ),
         switch (state.status) {
-          HostTodayStatus.loading => const SliverPadding(
-            padding: CatchInsets.pageHorizontal,
-            sliver: SliverToBoxAdapter(
-              child: CatchSkeletonRows(
-                leading: CatchSkeletonRowLeading.mediaTile,
-                count: 4,
-              ),
+          HostTodayStatus.loading => const SliverToBoxAdapter(
+            child: CatchSkeletonRows(
+              leading: CatchSkeletonRowLeading.mediaTile,
+              count: 4,
             ),
           ),
-          HostTodayStatus.error => SliverPadding(
-            padding: CatchInsets.pageHorizontal,
-            sliver: SliverToBoxAdapter(
-              child: CatchInlineErrorState.fromError(
-                state.error!,
-                context: AppErrorContext.event,
-                onRetry: onRetry,
-              ),
+          HostTodayStatus.error => CatchSliverErrorState.fromError(
+            state.error!,
+            context: AppErrorContext.event,
+            onRetry: onRetry,
+          ),
+          HostTodayStatus.empty => SliverToBoxAdapter(
+            child: HostTodayQuietState(
+              onViewEvents: onViewEvents,
+              onStartRehearsal: onStartRehearsal,
             ),
           ),
-          HostTodayStatus.empty => SliverPadding(
-            padding: CatchInsets.pageHorizontal,
-            sliver: SliverToBoxAdapter(
-              child: Padding(
-                padding: CatchInsets.hostTodayContentStart,
-                child: HostTodayQuietState(
-                  onViewEvents: onViewEvents,
-                  onStartRehearsal: onStartRehearsal,
-                ),
-              ),
-            ),
-          ),
-          HostTodayStatus.content => SliverPadding(
-            padding: CatchInsets.pageHorizontal,
-            sliver: SliverToBoxAdapter(
-              child: Padding(
-                padding: CatchInsets.hostTodayContentStart,
-                child: HostTodayOverview(
-                  state: state,
-                  now: now,
-                  onRetry: onRetry,
-                  onOpenEvent: onOpenEvent,
-                  onOpenAttention: onOpenAttention,
-                  onViewEvents: onViewEvents,
-                  onStartRehearsal: onStartRehearsal,
-                ),
-              ),
+          HostTodayStatus.content => SliverToBoxAdapter(
+            child: HostTodayOverview(
+              state: state,
+              now: now,
+              onRetry: onRetry,
+              onOpenEvent: onOpenEvent,
+              onOpenAttention: onOpenAttention,
+              onViewEvents: onViewEvents,
+              onStartRehearsal: onStartRehearsal,
             ),
           ),
         },
-        const CatchSliverTerminalPadding(),
       ],
     );
   }
 }
 
 class HostTodayHeader extends StatelessWidget {
-  const HostTodayHeader({super.key, this.organizer, this.now});
+  const HostTodayHeader({super.key, this.now});
 
-  final Club? organizer;
   final DateTime? now;
 
   @override
@@ -119,13 +97,11 @@ class HostTodayHeader extends StatelessWidget {
       breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
       compact: (_) => CatchScreenHeaderTitle.block(
         title: context.l10n.hostNavigationToday,
-        subtitle: organizer?.name,
         titleStyle: CatchTextStyles.eventTitle(context),
       ),
       expanded: (_) => CatchScreenHeaderTitle.block(
         title: context.l10n.hostNavigationToday,
         eyebrow: date,
-        subtitle: organizer?.name,
         titleStyle: CatchTextStyles.eventTitle(context),
       ),
     );

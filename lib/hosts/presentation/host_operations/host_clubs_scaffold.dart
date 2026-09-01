@@ -1,5 +1,64 @@
 part of '../host_operations_screen.dart';
 
+List<CatchOption<HostClubTab>> _hostClubTabOptions(BuildContext context) => [
+  CatchOption(
+    value: HostClubTab.edit,
+    label: context.l10n.hostsHostClubsScaffoldLabelEdit,
+  ),
+  CatchOption(
+    value: HostClubTab.insights,
+    label: context.l10n.hostsHostClubsScaffoldLabelInsights,
+  ),
+  CatchOption(
+    value: HostClubTab.preview,
+    label: context.l10n.hostsHostClubsScaffoldLabelPreview,
+  ),
+];
+
+/// Organizer route-state adapter that preserves the loaded workspace chrome.
+///
+/// Loading, auth, error, and no-organizer states replace only the tab body;
+/// the route title, pinned peer rail, semantic body rhythm, responsive content
+/// lane, scroll ownership, and shell terminal clearance stay on the canonical
+/// tabbed-screen path.
+class HostOrganizerStateScaffold extends StatelessWidget {
+  const HostOrganizerStateScaffold({
+    super.key,
+    required this.selectedTab,
+    required this.scrollKey,
+    required this.slivers,
+    this.actions = const <Widget>[],
+  }) : assert(slivers.length > 0);
+
+  final HostClubTab selectedTab;
+  final PageStorageKey<String> scrollKey;
+  final List<Widget> slivers;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchTabbedScreenScaffold(
+      title: context.l10n.hostNavigationOrganizer,
+      titleMaxLines: 2,
+      rowCrossAxisAlignment: CrossAxisAlignment.start,
+      actions: actions,
+      tabRail: CatchTabRail<HostClubTab>(
+        groupKey: _hostClubTabRailKey,
+        selected: selectedTab,
+        selectionPosition: selectedTab.index.toDouble(),
+        options: _hostClubTabOptions(context),
+      ),
+      semanticsLabel: context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
+      body: CatchTabbedPageScrollView(
+        scrollKey: scrollKey,
+        bodyLayout: CatchScreenBodyLayout.standard,
+        constrainToContentWidth: true,
+        slivers: slivers,
+      ),
+    );
+  }
+}
+
 class HostClubsScaffold extends ConsumerStatefulWidget {
   const HostClubsScaffold({
     super.key,
@@ -93,36 +152,24 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       return CatchMutationErrorListener(
         mutation: AuthSessionController.signOutMutation,
         errorContext: AppErrorContext.auth,
-        child: Scaffold(
-          backgroundColor: t.bg,
-          appBar: CatchScreenTopBar(
-            context: context,
-            eyebrow: context.l10n.hostsHostClubsScaffoldKickerHostClubs,
-            title: state.title(context.l10n),
-            actions: [signOutAction],
-            border: true,
-          ),
-          body: SafeArea(
-            top: false,
-            bottom: false,
-            child: CustomScrollView(
-              slivers: [
-                CatchSliverEmptyState(
-                  icon: CatchIcons.groupsOutlined,
-                  title: context.l10n.hostsHostClubsScaffoldTitleNoHostClubsYet,
-                  message: context.l10n.hostsHostClubsScaffoldBodyCreateAClubOr,
-                  action: CatchButton(
-                    label: context.l10n.hostsHostClubsScaffoldLabelCreateClub,
-                    icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                    size: CatchButtonSize.sm,
-                    onPressed: () =>
-                        context.pushNamed(Routes.hostCreateClubScreen.name),
-                  ),
-                ),
-                const CatchSliverTerminalPadding(),
-              ],
+        child: HostOrganizerStateScaffold(
+          selectedTab: _selectedTab,
+          scrollKey: const PageStorageKey<String>('host-organizer-empty-state'),
+          actions: [signOutAction],
+          slivers: [
+            CatchSliverEmptyState(
+              icon: CatchIcons.groupsOutlined,
+              title: context.l10n.hostsHostClubsScaffoldTitleNoHostClubsYet,
+              message: context.l10n.hostsHostClubsScaffoldBodyCreateAClubOr,
+              action: CatchButton(
+                label: context.l10n.hostsHostClubsScaffoldLabelCreateClub,
+                icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                size: CatchButtonSize.sm,
+                onPressed: () =>
+                    context.pushNamed(Routes.hostCreateClubScreen.name),
+              ),
             ),
-          ),
+          ],
         ),
       );
     }
@@ -140,20 +187,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
         tabRail: CatchTabControllerRail<HostClubTab>(
           controller: _tabController,
           groupKey: _hostClubTabRailKey,
-          options: [
-            CatchOption(
-              value: HostClubTab.edit,
-              label: context.l10n.hostsHostClubsScaffoldLabelEdit,
-            ),
-            CatchOption(
-              value: HostClubTab.insights,
-              label: context.l10n.hostsHostClubsScaffoldLabelInsights,
-            ),
-            CatchOption(
-              value: HostClubTab.preview,
-              label: context.l10n.hostsHostClubsScaffoldLabelPreview,
-            ),
-          ],
+          options: _hostClubTabOptions(context),
         ),
         semanticsLabel:
             context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
@@ -163,25 +197,23 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
           children: [
             CatchTabbedPageScrollView(
               scrollStateController: _pageScrollControllers[HostClubTab.edit],
+              bodyLayout: CatchScreenBodyLayout.standard,
               constrainToContentWidth: true,
               scrollKey: PageStorageKey(
                 'host-club-${selectedClub.id}-edit-scroll',
               ),
               slivers: [
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: CatchInsets.pageBody.copyWith(bottom: 0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: KeyedSubtree(
-                        key: _profileSectionsKey,
-                        child: HostClubEditTab(
-                          key: ValueKey('host-club-${selectedClub.id}-edit'),
-                          club: selectedClub,
-                          currentUid: state.currentUid,
-                          isOwner: state.selectedClubIsOwner,
-                          initialExpandedField: widget.initialExpandedEditField,
-                        ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: KeyedSubtree(
+                      key: _profileSectionsKey,
+                      child: HostClubEditTab(
+                        key: ValueKey('host-club-${selectedClub.id}-edit'),
+                        club: selectedClub,
+                        currentUid: state.currentUid,
+                        isOwner: state.selectedClubIsOwner,
+                        initialExpandedField: widget.initialExpandedEditField,
                       ),
                     ),
                   ),
@@ -191,22 +223,20 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
             CatchTabbedPageScrollView(
               scrollStateController:
                   _pageScrollControllers[HostClubTab.insights],
+              bodyLayout: CatchScreenBodyLayout.standard,
               constrainToContentWidth: true,
               onRefresh: _insightsRefreshController.refresh,
               scrollKey: PageStorageKey(
                 'host-club-${selectedClub.id}-insights-scroll',
               ),
               slivers: [
-                SliverPadding(
-                  padding: CatchInsets.pageBody.copyWith(bottom: 0),
-                  sliver: SliverToBoxAdapter(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: HostClubInsightsPane(
-                        key: ValueKey('host-club-${selectedClub.id}-insights'),
-                        club: selectedClub,
-                        refreshController: _insightsRefreshController,
-                      ),
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: HostClubInsightsPane(
+                      key: ValueKey('host-club-${selectedClub.id}-insights'),
+                      club: selectedClub,
+                      refreshController: _insightsRefreshController,
                     ),
                   ),
                 ),
@@ -217,6 +247,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               child: CatchTabbedPageScrollView(
                 scrollStateController:
                     _pageScrollControllers[HostClubTab.preview],
+                bodyLayout: CatchScreenBodyLayout.fullBleed,
                 scrollKey: PageStorageKey(
                   'host-club-${selectedClub.id}-preview-scroll',
                 ),

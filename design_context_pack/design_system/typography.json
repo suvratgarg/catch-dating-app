@@ -27,8 +27,8 @@
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 59,
-    "covered": 57,
+    "publicStaticTextStyleMethods": 60,
+    "covered": 58,
     "excluded": 2
   },
   "excluded": {
@@ -100,6 +100,30 @@
         {
           "axis": "wght",
           "value": 600.0
+        },
+        {
+          "axis": "wdth",
+          "value": 78.0
+        }
+      ],
+      "casePolicy": "mixed"
+    },
+    "routeTitle": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 20.0,
+      "weight": 700,
+      "lineHeight": 1.16,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 700.0
         },
         {
           "axis": "wdth",

@@ -7774,6 +7774,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerStateScaffold',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loading, auth, error, and empty',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostOrganizerStateScaffoldStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostOrganizerSwitcherSheet',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

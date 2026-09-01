@@ -52,10 +52,10 @@ const validLeadingPolicies = new Set([
   "none",
 ]);
 const validSurfacePolicies = new Set(["CatchRouteScaffold"]);
+const validTitlePolicies = new Set(["sharedRoute", "routeOrIdentity"]);
 const canonicalWorkspaceOwners = new Set([
   "CatchTopBar",
   "CatchScreenTopBar",
-  "HostOperationsTopBar",
 ]);
 const rawHeroExpressions = new Set([
   "SliverAppBar",
@@ -603,6 +603,96 @@ function checkContract({root, contract, appBars, findings}) {
     }
   }
 
+  if (
+    (contract.role === "compact" || contract.role === "workspace") &&
+    contract.owner === "CatchTopBar"
+  ) {
+    const customTitleBypasses = appBars.filter((appBar) =>
+      /\b(?:titleStyle|titleWidget|titleWidgetIncludesSupplementalText)\s*:/u.test(
+        appBar.value,
+      ),
+    );
+    if (customTitleBypasses.length > 0) {
+      findings.push({
+        code: "route-title-widget-bypass",
+        path: contract.path,
+        message:
+          "Compact and workspace route bars must pass semantic title, eyebrow, kicker, " +
+          "subtitle, and titleMaxLines inputs to CatchTopBar. A local title " +
+          "widget or style bypasses the shared route-title typography contract.",
+      });
+    }
+
+    const routeTitleModeBypasses = appBars.filter((appBar) => {
+      const pinsCompactMode = /\blarge\s*:\s*false\b/u.test(appBar.value);
+      const declaresLargeMode = /\blarge\s*:/u.test(appBar.value);
+      const kickerInfersLargeMode = /\bkicker\s*:/u.test(appBar.value);
+      return (
+        (declaresLargeMode && !pinsCompactMode) ||
+        (kickerInfersLargeMode && !pinsCompactMode) ||
+        (contract.role === "workspace" && !pinsCompactMode)
+      );
+    });
+    if (routeTitleModeBypasses.length > 0) {
+      findings.push({
+        code: "route-title-large-mode-bypass",
+        path: contract.path,
+        message:
+          "Compact route typography cannot enter CatchTopBar large mode. " +
+          "Workspace bars, and compact bars with a kicker, must pin large: false.",
+      });
+    }
+
+    const titlePolicy = contract.titlePolicy ?? "sharedRoute";
+    if (titlePolicy === "sharedRoute") {
+      const identityOverrides = appBars.filter((appBar) =>
+        /\btitleRole\s*:/u.test(appBar.value),
+      );
+      if (identityOverrides.length > 0) {
+        findings.push({
+          code: "route-title-role-override",
+          path: contract.path,
+          message:
+            "This route is registered for shared route-title typography. " +
+            "Any explicit titleRole requires a routeOrIdentity policy.",
+        });
+      }
+    }
+
+    if (titlePolicy === "routeOrIdentity") {
+      const missingIdentityRole = appBars.filter(
+        (appBar) =>
+          !/\btitleRole\s*:[\s\S]*CatchTopBarTitleRole\.identity\b/u.test(
+            appBar.value,
+          ),
+      );
+      const missingRouteFallback = appBars.filter(
+        (appBar) =>
+          !/\btitleRole\s*:[\s\S]*CatchTopBarTitleRole\.route\b/u.test(
+            appBar.value,
+          ),
+      );
+      if (missingIdentityRole.length > 0) {
+        findings.push({
+          code: "missing-identity-title-role",
+          path: contract.path,
+          message:
+            "A routeOrIdentity title policy must explicitly select " +
+            "CatchTopBarTitleRole.identity when user-authored identity content is present.",
+        });
+      }
+      if (missingRouteFallback.length > 0) {
+        findings.push({
+          code: "missing-route-title-fallback",
+          path: contract.path,
+          message:
+            "A routeOrIdentity title policy must explicitly select " +
+            "CatchTopBarTitleRole.route while identity content is unavailable.",
+        });
+      }
+    }
+  }
+
   if (contract.leading === "back") {
     const appBarsWithoutBack = appBars.filter(
       (appBar) =>
@@ -696,6 +786,28 @@ function validateManifest(manifest, findings, manifestPath) {
         code: "invalid-surface-policy",
         path: contract.path ?? manifestPath,
         message: `Unknown screen surface policy ${contract.surface}.`,
+      });
+    }
+    if (
+      contract.titlePolicy != null &&
+      !validTitlePolicies.has(contract.titlePolicy)
+    ) {
+      findings.push({
+        code: "invalid-title-policy",
+        path: contract.path ?? manifestPath,
+        message: `Unknown screen-chrome title policy ${contract.titlePolicy}.`,
+      });
+    }
+    if (
+      contract.titlePolicy != null &&
+      contract.role !== "compact" &&
+      contract.role !== "workspace"
+    ) {
+      findings.push({
+        code: "title-policy-role-mismatch",
+        path: contract.path ?? manifestPath,
+        message:
+          "titlePolicy is only valid for compact or workspace CatchTopBar contracts.",
       });
     }
     if (

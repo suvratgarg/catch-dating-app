@@ -9807,23 +9807,19 @@ class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
         children: const [
           CatchTabbedPageScrollView(
             scrollKey: PageStorageKey<String>('contract-tab-edit'),
+            bodyLayout: CatchScreenBodyLayout.standard,
             slivers: [
-              SliverPadding(
-                padding: CatchInsets.pageBody,
-                sliver: SliverToBoxAdapter(
-                  child: Text('Edit owns this scroll position.'),
-                ),
+              SliverToBoxAdapter(
+                child: Text('Edit owns this scroll position.'),
               ),
             ],
           ),
           CatchTabbedPageScrollView(
             scrollKey: PageStorageKey<String>('contract-tab-preview'),
+            bodyLayout: CatchScreenBodyLayout.standard,
             slivers: [
-              SliverPadding(
-                padding: CatchInsets.pageBody,
-                sliver: SliverToBoxAdapter(
-                  child: Text('Preview owns a separate scroll position.'),
-                ),
+              SliverToBoxAdapter(
+                child: Text('Preview owns a separate scroll position.'),
               ),
             ],
           ),

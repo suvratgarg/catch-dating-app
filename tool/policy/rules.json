@@ -1884,7 +1884,7 @@
       ]
     },
     "TAB-ROOT-SCROLL-001": {
-      "title": "Tab-root scroll owners clear adaptive shell chrome",
+      "title": "Tab-root screens declare semantic composition and clear adaptive shell chrome",
       "status": "active",
       "kind": "contract",
       "introduced_in": {
@@ -1897,9 +1897,9 @@
         "lib/core/presentation/**",
         "lib/core/widgets/catch_section_layout.dart"
       ],
-      "instruction": "Every direct consumer and host StatefulShellBranch must declare its true root scroll owners in tool/design/tab_root_scroll_contracts.json. Root scrolls end in CatchSliverTerminalPadding or CatchScrollTerminalPadding, use SafeArea(bottom: false) when the terminal owns the device inset, consume raw floating iOS shell obstruction, and add no tab-bar inset for Android chrome already reserved by Scaffold. Box-layout terminal empty/error branches use CatchStateViewport; presentation slivers use CatchSliverStateViewport, CatchSliverEmptyState, or CatchSliverErrorState rather than composing SliverFillRemaining directly, so the same shell obstruction controls their optical center.",
+      "instruction": "Every direct consumer and host StatefulShellBranch must declare its true screen-composition owners in tool/design/tab_root_scroll_contracts.json. Root title screens use CatchRootScreenScaffold or CatchRootScreenScrollView and declare a CatchScreenBodyLayout; pinned peer-tab screens use CatchTabbedScreenScaffold plus CatchTabbedPageScrollView with an explicit body role. These owners centralize SafeArea(bottom: false), semantic title-to-body rhythm, gutters, responsive content width, field obstruction, refresh, and CatchSliverTerminalPadding. Box-layout terminal empty/error branches use CatchStateViewport; presentation slivers use CatchSliverStateViewport, CatchSliverEmptyState, or CatchSliverErrorState rather than composing SliverFillRemaining directly, so the same shell obstruction controls their optical center.",
       "sunset_when": [
-        "Every tab-root scroll surface is structurally created through one canonical root-scroll constructor that appends terminal clearance automatically"
+        "All registered root and pinned-tab destinations use a canonical composition owner and no feature-local root layout remains"
       ],
       "sunset_signals": [
         {

@@ -80,18 +80,13 @@ void _registerHostOperationsAnalyticsTeamTests() {
     }
 
     expectSharedChrome();
-    final editBodyPadding = tester
-        .widgetList<Padding>(
-          find.ancestor(
-            of: find.byType(HostClubEditTab),
-            matching: find.byType(Padding),
-          ),
-        )
-        .where(
-          (padding) =>
-              padding.padding == CatchInsets.pageBody.copyWith(bottom: 0),
-        );
-    expect(editBodyPadding, hasLength(1));
+    final editBody = tester.widget<CatchSliverScreenBody>(
+      find.ancestor(
+        of: find.byType(HostClubEditTab),
+        matching: find.byType(CatchSliverScreenBody),
+      ),
+    );
+    expect(editBody.layout, CatchScreenBodyLayout.standard);
     final loadedHeader = tester.widget<CatchScreenHeaderTitle>(
       find.byWidgetPredicate(
         (widget) =>
@@ -102,6 +97,13 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(loadedHeader.eyebrow, isNull);
     expect(loadedHeader.subtitle, isNull);
     expect(loadedHeader.leading, isNull);
+    final publicationSection = find.byWidgetPredicate(
+      (widget) => widget is CatchSection && widget.title == 'Public visibility',
+    );
+    expect(
+      tester.getRect(publicationSection).top - tester.getRect(tabRail).bottom,
+      closeTo(CatchInsets.pageBody.top, 0.5),
+    );
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsNothing,
