@@ -79,11 +79,15 @@ void main() {
       startTime: DateTime(2026, 6, 16, 20),
       waitlistedCount: 2,
     );
+    final outsideHorizon = buildEvent(
+      id: 'outside-horizon',
+      startTime: DateTime(2026, 6, 23, 13),
+    );
 
     final state = buildHostTodayState(
       CatchAsyncState<HostTodayFeedData>.data(
         HostTodayFeedData(
-          activeEvents: [later, next, live],
+          activeEvents: [outsideHorizon, later, next, live],
           pastEvents: const [],
           attentionItems: [
             _attentionItem(

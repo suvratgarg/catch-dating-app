@@ -8574,8 +8574,8 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/events/presentation/host_events_screen.dart",
-        "symbol": "HostEventsScreen"
+        "file": "lib/hosts/today/presentation/host_today_screen.dart",
+        "symbol": "HostTodayScreen"
       },
       "stateController": {
         "primary": "HostTodayFeedController + HostEventsTimelineController",
@@ -8614,14 +8614,14 @@
           "kind": "repo",
           "status": "available",
           "path": "design/features/host_home.feature.json",
-      "notes": "Authoritative consolidated Host Events feature orchestration source; the compiler requires exact coverage of all registered Host Events states and typed actions."
+      "notes": "Authoritative Host Today and Events feature orchestration source; the compiler requires exact coverage of both independent destinations, their registered states, and typed actions."
         },
         {
           "id": "generated.host-home-feature-contract",
           "kind": "generated",
           "status": "available",
           "path": "design/features/generated/host_home.feature_contract.json",
-      "notes": "Generated Host Events state, action, evidence, component, and data-contract projection; do not edit directly."
+      "notes": "Generated Host Today and Events state, action, evidence, component, and data-contract projection; do not edit directly."
         },
         {
           "id": "repo.host-operations-tests",
@@ -8634,7 +8634,7 @@
           "id": "claude.host-home",
           "kind": "claude",
           "status": "available",
-      "notes": "Historical Host Today reference remains registered as source material for the operational spotlight and attention composition now integrated into Events.",
+      "notes": "Host Today reference remains registered as source material for the independent operational spotlight, attention queue, seven-day horizon, and responsive command-centre composition.",
           "path": "design/source_packs/host-v2/templates/hosts-today/Today.dc.html"
         },
         {
@@ -8649,12 +8649,12 @@
         {
           "id": "host_home_dashboard",
           "status": "captured",
-      "notes": "Historical deterministic capture of the former Today destination. Its truthful minute-refreshing countdown, event-identified waitlist routing, live run-of-show routing, and detail-rich metrics now supply the operational overview inside the canonical Events workspace; the capture ID remains evidence history and is not a separate navigation destination."
+      "notes": "Canonical deterministic Today capture. It exercises the independent command centre with minute-refreshing temporal status, source-backed metrics, event-identified attention, a seven-day horizon, typed event and rehearsal handoffs, and the preserved adaptive Host shell."
         },
         {
           "id": "host_home_events_list",
           "status": "captured",
-      "notes": "The deterministic full-shell capture is the canonical Host Events evidence ID. Events now combines the operational spotlight and Needs You work with New/exact-policy-gated Repeat actions, paginated Schedule and History sections, month groups, activity-spined rows, and truthful fill progress. The pre-merge reference drift remains tracked by HOST-V2-EVENTS-VISUAL-DRIFT-001; canonical references are not refreshed merely to clear CI."
+      "notes": "The deterministic full-shell capture is the canonical Host Events evidence ID. Events owns New/exact-policy-gated Repeat actions, paginated Schedule and History sections, month groups, activity-spined rows, and truthful fill progress without duplicating Today's operational spotlight or attention queue. The pre-merge reference drift remains tracked by HOST-V2-EVENTS-VISUAL-DRIFT-001; canonical references are not refreshed merely to clear CI."
         },
         {
           "id": "host_home_switcher_cohost",
@@ -9022,8 +9022,8 @@
         }
       ],
       "composition": {
-    "currentLayout": "HostTodayScreen is the direct Today route edge and delegates provider-free command-centre composition to HostTodayBody and HostTodayOverview. HostAttentionPolicy derives supported work from backend event facts. HostEventsClubCard independently maps HostEventsTimelineController into HostEventsWorkspaceState and the Events inventory; it no longer composes the Today spotlight or attention queue.",
-    "targetLayout": "Keep Today as the independent cross-event command centre and Events as the durable lifecycle inventory. Their separate route, state, view-model, and controller boundaries must remain explicit while shared event facts stay repository-owned.",
+    "currentLayout": "HostTodayScreen is the direct Today route edge and delegates provider-free command-centre composition to HostTodayBody and HostTodayOverview. Compact layouts stack the current event, exhaustive attention, and seven-day horizon; capable layouts place the current event and horizon beside a fixed attention pane. HostAttentionPolicy derives supported work from backend facts, while Events exclusively owns create, repeat, import, draft-resume, schedule, and history inventory. No speculative recent-activity feed is rendered without an authoritative source.",
+    "targetLayout": "Complete. Keep Today as the independent time-sensitive command centre and Events as the durable lifecycle inventory. Preserve their separate route, state, view-model, and controller boundaries, shared repository-owned event facts, and the original adaptive Catch navigation chrome.",
         "sections": [
           {
             "id": "section.host.home_screen_adapter",
@@ -9057,8 +9057,42 @@
             ]
           },
           {
+            "id": "section.host.today_command_centre",
+            "name": "Host Today command centre",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [
+              "HostTodayOverview"
+            ],
+            "flutter": {
+              "file": "lib/hosts/today/presentation/widgets/host_today_overview.dart",
+              "symbol": "HostTodayOverview"
+            },
+            "currentOwner": "HostTodayBody + HostTodayOverview",
+            "targetOwner": "provider-free responsive Today composition",
+            "dependencies": [
+              "catch.button",
+              "catch.field",
+              "catch.section",
+              "catch.surface"
+            ],
+            "states": [
+              "loading",
+              "error",
+              "quiet",
+              "content",
+              "compact",
+              "wide",
+              "attention_incomplete"
+            ],
+            "migration": "Complete. Today renders one current-event decision layer, every supported time-sensitive attention item, up to three additional events inside the named seven-day horizon, and View full calendar plus Dress Rehearsal handoffs. Compact layouts use a quiet outlined spotlight and a vertical stack; capable layouts remove the spotlight container and add a fixed attention pane. Event creation remains Events-owned and Recent signals stays absent until an authoritative feed exists.",
+            "previewIds": [
+              "hostHomeRouteStates"
+            ]
+          },
+          {
             "id": "section.host.home_top_bar",
-        "name": "Host Events title and shell organizer identity",
+        "name": "Host destination titles and shell organizer identity",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
@@ -9068,8 +9102,8 @@
           "file": "lib/hosts/presentation/widgets/host_organizer_switcher.dart",
           "symbol": "HostOrganizerAvatar"
             },
-        "currentOwner": "HostEventsClubSection + HostAppShell",
-        "targetOwner": "direct Host Events title plus shell-owned organizer identity",
+        "currentOwner": "HostTodayHeader + HostEventsClubSection + HostAppShell",
+        "targetOwner": "direct destination titles plus shell-owned organizer identity",
             "dependencies": [
               "catch.top_bar",
               "catch.person_avatar",
@@ -9082,7 +9116,7 @@
               "owner",
               "host_team"
             ],
-        "migration": "HostEventsClubSection renders the direct Events title and New event action without a daypart eyebrow. HostAppShell renders the selected organizer avatar in bottom navigation and opens HostOrganizerSwitcherSheet with haptic feedback on long press when multiple organizers are available.",
+        "migration": "HostTodayHeader renders Today, organizer identity, and a capable-width date without a creation action. HostEventsClubSection renders the direct Events title and New event action. HostAppShell renders the selected organizer avatar in bottom navigation and opens HostOrganizerSwitcherSheet with haptic feedback on long press when multiple organizers are available.",
             "previewIds": [
               "hostHomeRouteStates",
           "HostOrganizerAvatar/Navigation identity states"
@@ -9237,12 +9271,12 @@
         {
           "id": "DS-HOST-HOME-004",
           "status": "blocked",
-      "nextAction": "Blocked/reference-only until canonical state-variant exports exist for the consolidated Events composition. The former Today and Events sources remain valid ingredient references, but loading, empty, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional event-list variants need approved consolidated exports before reference work can continue."
+      "nextAction": "Blocked/reference-only until canonical state-variant exports exist for the separate Today and Events destinations. The current compact and wide Today captures establish the populated command-centre baseline; loading, quiet, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional Events-list variants still need approved reference exports before reference work can continue."
         },
         {
           "id": "DS-HOST-HOME-005",
           "status": "open",
-          "nextAction": "Close feature.host_home evidence exceptions with focused tests for 12 registered route, nested-event, empty, offline, accessibility, and theme states; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
+          "nextAction": "Close feature.host_home's 22 registered evidence exceptions with focused route, attention-coverage, nested-event, empty, offline, accessibility, and theme tests; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
         }
       ]
     },

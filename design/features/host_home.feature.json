@@ -92,7 +92,9 @@
           "catch.empty_state",
           "catch.error_state",
           "catch.event_card",
+          "catch.field",
           "catch.menu",
+          "catch.section",
           "catch.skeleton",
           "catch.surface",
           "catch.top_bar"

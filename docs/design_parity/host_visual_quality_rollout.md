@@ -192,7 +192,7 @@ instead of silently deriving them from incomplete fields.
 | B1 | Implement the manager-authorized read-through reconciler for every source-ready server kind, with bounded fail-closed scans and resolution tests | `complete` |
 | B2 | Replace Today’s event-only derivation with the callable projection plus the local attendance outbox merge; preserve Dress Rehearsal as a shortcut | `complete` |
 | B3 | Add machine-readable responsibility contracts for the five top-level Host features and generate their local overview Markdown plus a drift check | `complete` |
-| B4 | Align Today’s compact and wide visual states with the approved renders, run runtime captures, and close the first tab | `pending` |
+| B4 | Align Today’s compact and wide visual states with the approved renders, run runtime captures, and close the first tab | `complete` |
 
 ### A1 boundary
 
@@ -625,6 +625,14 @@ an incomplete attention source instead of showing a false all-clear. B3 now
 defines and schema-validates exactly five destination owners, generates a local
 overview at each target root, and checks shell order, typed routes, feature
 actions, code symbols, data contracts, dependencies, and focused tests for
-drift. B4 is next: align Today's compact and wide runtime compositions with the
-approved visual direction and capture them for review. A3-A5 remain
-intentionally pending.
+drift. B4 closes the first tab visually: compact Today uses a quiet outlined
+current-event focus followed by the exhaustive attention queue and seven-day
+horizon, while capable widths split current-event/horizon work from a fixed
+attention pane. Event creation, repeat, import, and draft resume remain owned by
+Events; Today retains View full calendar and Dress Rehearsal. The implementation
+uses existing activity pigments, Catch fields, section dividers, typography,
+spacing, and adaptive navigation rather than copying the reference shell. It
+deliberately omits Recent signals because no authoritative activity feed exists.
+Deterministic phone, tablet, and desktop light/dark captures plus focused wide-
+layout, routing, text-scale, and seven-day-boundary tests close the runtime
+evidence for the populated state. A3-A5 remain intentionally pending.

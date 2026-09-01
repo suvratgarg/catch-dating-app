@@ -6761,6 +6761,45 @@ final _hostEventsSpotlightEvent = _hostManageReferenceEvent.copyWith(
   ),
 );
 final _hostEventsReferenceNow = DateTime(2026, 6, 17, 17);
+final _hostTodayReferenceEvents = <Event>[
+  _hostEventsSpotlightEvent.copyWith(
+    startTime: DateTime(2026, 6, 17, 20),
+    endTime: DateTime(2026, 6, 17, 22),
+    bookedCount: 24,
+    checkedInCount: 18,
+    waitlistedCount: 2,
+    capacityLimit: 30,
+  ),
+  HostOperationsFixtures.upcomingEvent.copyWith(
+    id: 'host-today-reference-run',
+    clubId: _hostEventsReferenceClub.id,
+    startTime: DateTime(2026, 6, 19, 6, 30),
+    endTime: DateTime(2026, 6, 19, 8),
+    bookedCount: 16,
+    waitlistedCount: 0,
+    capacityLimit: 24,
+  ),
+  HostOperationsFixtures.fullEvent.copyWith(
+    id: 'host-today-reference-dinner',
+    clubId: _hostEventsReferenceClub.id,
+    startTime: DateTime(2026, 6, 21, 20),
+    endTime: DateTime(2026, 6, 21, 22),
+    bookedCount: 10,
+    checkedInCount: 0,
+    waitlistedCount: 0,
+    capacityLimit: 15,
+  ),
+  HostOperationsFixtures.upcomingEvent.copyWith(
+    id: 'host-today-reference-padel',
+    clubId: _hostEventsReferenceClub.id,
+    startTime: DateTime(2026, 6, 23, 9),
+    endTime: DateTime(2026, 6, 23, 10, 30),
+    eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.padel),
+    bookedCount: 5,
+    waitlistedCount: 0,
+    capacityLimit: 16,
+  ),
+];
 final _hostEventsReferenceEvents = <Event>[
   _hostEventsSpotlightEvent.copyWith(
     id: 'host-events-reference-trivia',
@@ -10006,9 +10045,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         hostedClubs: [_hostEventsReferenceClub],
         ownedClubs: [_hostEventsReferenceClub],
         clubEvents: {
-          _hostEventsReferenceClub.id: AsyncData<List<Event>>([
-            _hostEventsSpotlightEvent,
-          ]),
+          _hostEventsReferenceClub.id: AsyncData<List<Event>>(
+            _hostTodayReferenceEvents,
+          ),
         },
       ),
     ],
@@ -10017,9 +10056,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       activeIndex: 0,
       child: HostTodayScreen(
         initialOrganizerId: 'host-home-reference-bandra-social',
-        now: _hostEventsSpotlightEvent.startTime.subtract(
-          const Duration(hours: 2),
-        ),
+        now: _hostEventsReferenceNow,
       ),
     ),
   ),

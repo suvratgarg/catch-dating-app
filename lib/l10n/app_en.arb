@@ -151,21 +151,21 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.today"
   },
-  "hostTodayEmptyBody": "No live or upcoming events need your attention.",
+  "hostTodayEmptyBody": "No live or upcoming events need your attention. Check the calendar or rehearse a run-of-show.",
   "@hostTodayEmptyBody": {
     "description": "Today workspace guidance when no live or upcoming event needs attention.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.today"
   },
-  "hostTodayViewAllEvents": "View all events",
+  "hostTodayViewAllEvents": "View full calendar",
   "@hostTodayViewAllEvents": {
     "description": "Opens the full Host Events inventory from Today.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.today"
   },
-  "hostTodayLater": "Later",
+  "hostTodayLater": "Next 7 days",
   "@hostTodayLater": {
     "description": "Today workspace section for the next events after the operational spotlight.",
     "x-audience": "host",
@@ -11998,19 +11998,12 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_organizer"
   },
-  "hostsHostTodayTitleNeedsYou": "Needs you",
+  "hostsHostTodayTitleNeedsYou": "Needs attention",
   "@hostsHostTodayTitleNeedsYou": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).",
+    "description": "Section title for the time-sensitive action queue on Host Today.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayTextNothingNeedsYouRight": "Nothing needs you right now.",
-  "@hostsHostTodayTextNothingNeedsYouRight": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
+    "x-surface": "hosts.today"
   },
   "hostsHostTodayTooltipSwitchClub": "Switch organizer",
   "@hostsHostTodayTooltipSwitchClub": {
@@ -12030,26 +12023,26 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_today"
   },
-  "hostsHostTodayLabelGoing": "Going",
+  "hostsHostTodayLabelGoing": "expected",
   "@hostsHostTodayLabelGoing": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
+    "description": "Expected guest count label in the Host Today current-event focus.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
+    "x-surface": "hosts.today"
   },
-  "hostsHostTodayLabelWaiting": "Waiting",
+  "hostsHostTodayLabelWaiting": "checked in",
   "@hostsHostTodayLabelWaiting": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
+    "description": "Checked-in guest count label in the Host Today current-event focus.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
+    "x-surface": "hosts.today"
   },
-  "hostsHostTodayLabelNeedsYou": "Needs you",
+  "hostsHostTodayLabelNeedsYou": "things to finish",
   "@hostsHostTodayLabelNeedsYou": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
+    "description": "Open task count label in the Host Today current-event focus.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
+    "x-surface": "hosts.today"
   },
   "hostsHostTodayLabelOpenRunOfShow": "Open run-of-show",
   "@hostsHostTodayLabelOpenRunOfShow": {
@@ -12058,12 +12051,19 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_today"
   },
-  "hostsHostTodayLabelSetUpRun": "Set up & run",
+  "hostsHostTodayLabelSetUpRun": "Continue setup",
   "@hostsHostTodayLabelSetUpRun": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).",
+    "description": "Primary action for continuing setup of the current Host Today event.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
+    "x-surface": "hosts.today"
+  },
+  "hostTodayTaskSummary": "Setup, guests, run sheet",
+  "@hostTodayTaskSummary": {
+    "description": "Concise summary of the event work represented by the current-event task count.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
   },
   "hostTodayAttentionLiveTitle": "Event is live",
   "@hostTodayAttentionLiveTitle": {
@@ -17798,16 +17798,6 @@
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).",
     "placeholders": {
       "signedUpCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_today"
-  },
-  "hostsHostTodayVisiblecopyWaitlistcount": "{waitlistCount}",
-  "@hostsHostTodayVisiblecopyWaitlistcount": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).",
-    "placeholders": {
-      "waitlistCount": {}
     },
     "x-audience": "host",
     "x-owner": "product",

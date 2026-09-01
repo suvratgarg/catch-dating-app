@@ -4976,7 +4976,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "HostEventsRouteScaffold owns one lifecycle-aware event callback and pushes hostAppEventManageScreen with organizer id, event id, event extra, and live/setup/report section. HostEventLifecycleRow remains provider/router-free and delegates taps to its parent.",
+              "notes": "HostTodayScreen and HostEventsRouteScaffold own independent lifecycle-aware event callbacks and push hostAppEventManageScreen with organizer id, event id, event extra, and live/setup/report section. Provider-free Today and Events rows delegate taps to their owning route edges.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "HostEventLifecycleRow/Exact catalog"
@@ -5057,17 +5057,17 @@
             {
               "id": "DP-HOST-HOME-003",
               "status": "closed",
-              "nextAction": "HostTodayScreen and HostTodayRouteState own Today route branches; HostTodayState owns live-first spotlight, attention, and Later projection; HostAttentionPolicy owns action qualification. HostEventsTimelineController owns shared schedule/history pagination and partial recovery, while the transitional Events adapter maps it into HostEventsWorkspaceState until the Events presentation vertical slice is extracted."
+              "nextAction": "Closed. HostTodayScreen, HostTodayRouteState, HostTodayState, HostTodayFeedController, and HostAttentionPolicy own the independent Today route, live-first spotlight, exhaustive attention, and seven-day projection. HostEventsScreen, HostEventsRouteState, HostEventsWorkspaceState, and HostEventsTimelineController own the independent Events route and durable inventory under lib/hosts/events/presentation/."
             },
             {
               "id": "DP-HOST-HOME-004",
               "status": "blocked",
-              "nextAction": "Create and approve a canonical consolidated Events reference before recalculating or removing historical Host Events and Today comparison debt. Compose real pending-approval, offer, draft, and guest-inquiry sources into the attention model only when their backend owners exist. Additional loading/empty/role/theme variants still need design exports."
+              "nextAction": "Approve canonical reference exports for the separate Today and Events destinations before recalculating or removing historical comparison debt. The populated Today runtime now has compact and wide captures; additional loading, quiet, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and Events lifecycle variants still need design exports."
             },
             {
               "id": "DS-HOST-HOME-005",
               "status": "open",
-              "nextAction": "Close feature.host_home evidence exceptions with focused tests for 12 registered route, nested-event, empty, offline, accessibility, and theme states; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
+              "nextAction": "Close feature.host_home's 22 registered evidence exceptions with focused route, attention-coverage, nested-event, empty, offline, accessibility, and theme tests; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
             }
           ]
         },

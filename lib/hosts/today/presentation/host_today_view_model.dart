@@ -2,6 +2,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -98,7 +99,11 @@ HostTodayState buildHostTodayState(
 
   final laterEvents = activeEvents
       .skip(1)
-      .take(2)
+      .where(
+        (event) =>
+            !event.startTime.isAfter(now.add(hostTodayOperationsHorizon)),
+      )
+      .take(3)
       .map((event) => HostTodayEventRowData.fromEvent(event: event, now: now))
       .toList(growable: false);
 

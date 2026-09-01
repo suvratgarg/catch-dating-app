@@ -68,13 +68,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostTodayEmptyBody =>
-      'No live or upcoming events need your attention.';
+      'No live or upcoming events need your attention. Check the calendar or rehearse a run-of-show.';
 
   @override
-  String get hostTodayViewAllEvents => 'View all events';
+  String get hostTodayViewAllEvents => 'View full calendar';
 
   @override
-  String get hostTodayLater => 'Later';
+  String get hostTodayLater => 'Next 7 days';
 
   @override
   String hostInboxUnreadCount({required int count}) {
@@ -6512,11 +6512,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'This preview is capped at 2,500 roster records.';
 
   @override
-  String get hostsHostTodayTitleNeedsYou => 'Needs you';
-
-  @override
-  String get hostsHostTodayTextNothingNeedsYouRight =>
-      'Nothing needs you right now.';
+  String get hostsHostTodayTitleNeedsYou => 'Needs attention';
 
   @override
   String get hostsHostTodayTooltipSwitchClub => 'Switch organizer';
@@ -6530,19 +6526,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsHostTodayLabelGoing => 'Going';
+  String get hostsHostTodayLabelGoing => 'expected';
 
   @override
-  String get hostsHostTodayLabelWaiting => 'Waiting';
+  String get hostsHostTodayLabelWaiting => 'checked in';
 
   @override
-  String get hostsHostTodayLabelNeedsYou => 'Needs you';
+  String get hostsHostTodayLabelNeedsYou => 'things to finish';
 
   @override
   String get hostsHostTodayLabelOpenRunOfShow => 'Open run-of-show';
 
   @override
-  String get hostsHostTodayLabelSetUpRun => 'Set up & run';
+  String get hostsHostTodayLabelSetUpRun => 'Continue setup';
+
+  @override
+  String get hostTodayTaskSummary => 'Setup, guests, run sheet';
 
   @override
   String get hostTodayAttentionLiveTitle => 'Event is live';
@@ -9802,13 +9801,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object signedUpCount,
   }) {
     return '$signedUpCount';
-  }
-
-  @override
-  String hostsHostTodayVisiblecopyWaitlistcount({
-    required Object waitlistCount,
-  }) {
-    return '$waitlistCount';
   }
 
   @override

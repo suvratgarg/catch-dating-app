@@ -48,7 +48,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       hero,
     );
 
-    await tester.tap(find.text('REVIEW'));
+    await tester.tap(find.text('Review waitlist'));
     await pumpFeatureUi(tester);
     expect(find.text('Manage ${later.id}'), findsOneWidget);
     expect(find.text('Section guests'), findsOneWidget);
@@ -126,18 +126,73 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
 
     expect(find.text('STARTS IN 5H'), findsOneWidget);
-    expect(find.text('Set up & run'), findsOneWidget);
+    expect(find.text('Continue setup'), findsOneWidget);
     final createAction = find.byKey(
       const ValueKey<String>('host-today-create-event'),
     );
-    expect(createAction, findsOneWidget);
+    expect(createAction, findsNothing);
+    expect(find.byTooltip('Create event'), findsNothing);
     expect(
-      find.descendant(of: createAction, matching: find.byType(CatchIconAction)),
+      find.byKey(const ValueKey<String>('host-today-compact-layout')),
       findsOneWidget,
     );
-    expect(find.byTooltip('Create event'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'Host Today uses adjacent command and attention panes when wide',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1200, 900);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final now = DateTime(2026, 6, 15, 12);
+      final club = buildClub(id: 'wide-today-club', ownerUserId: _hostUid);
+      final hero = buildEvent(
+        id: 'wide-hero-event',
+        clubId: club.id,
+        startTime: DateTime(2026, 6, 15, 17),
+      );
+      final later = buildEvent(
+        id: 'wide-later-event',
+        clubId: club.id,
+        startTime: DateTime(2026, 6, 16, 20),
+        waitlistedCount: 3,
+      );
+
+      await _pumpHostScreen(
+        tester,
+        HostTodayScreen(now: now),
+        overrides: [
+          ..._hostClubOverrides(
+            owned: [club],
+            timelineEventsByOrganizer: {
+              club.id: [hero, later],
+            },
+          ),
+          watchEventsForClubProvider(
+            club.id,
+          ).overrideWithValue(AsyncData<List<Event>>([hero, later])),
+        ],
+      );
+
+      expect(
+        find.byKey(const ValueKey<String>('host-today-wide-layout')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey<String>('host-today-primary-pane')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey<String>('host-today-attention-pane')),
+        findsOneWidget,
+      );
+      expect(find.text('Review waitlist'), findsOneWidget);
+      expect(find.text('NEXT 7 DAYS'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   registerHostEventEntryTests();
 

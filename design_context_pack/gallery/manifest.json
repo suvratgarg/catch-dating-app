@@ -2,12 +2,12 @@
   "version": 1,
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
-    "routes": 68,
+    "routes": 70,
     "captures": 639,
     "statusCounts": {
       "excluded": 2,
-      "captured": 45,
-      "alias": 7,
+      "captured": 44,
+      "alias": 10,
       "planned": 14
     }
   },
@@ -1774,7 +1774,8 @@
     {
       "id": "host_home_dashboard",
       "routes": [
-        "hostHomeScreen"
+        "hostHomeScreen",
+        "hostTodayScreen"
       ],
       "device": "claude-phone-390x812",
       "themes": [
@@ -8846,7 +8847,7 @@
     {
       "id": "host_customers_populated",
       "routes": [
-        "hostCustomersScreen"
+        "hostAudienceScreen"
       ],
       "device": "claude-phone-390x812",
       "themes": [
@@ -8863,7 +8864,7 @@
     {
       "id": "host_customers_audiences_populated",
       "routes": [
-        "hostCustomersScreen"
+        "hostAudienceScreen"
       ],
       "device": "claude-phone-390x812",
       "themes": [
@@ -8914,7 +8915,7 @@
     {
       "id": "host_forms_populated",
       "routes": [
-        "hostFormsScreen"
+        "hostAudienceScreen"
       ],
       "device": "claude-phone-390x812",
       "themes": [

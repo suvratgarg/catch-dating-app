@@ -108,7 +108,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dar
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
-import 'package:catch_dating_app/hosts/events/data/host_events_timeline_controller.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
@@ -116,7 +116,8 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
-import 'package:catch_dating_app/hosts/today/data/host_today_feed_controller.dart';
+import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
@@ -2121,17 +2122,18 @@ Widget _hostHomeExactCatalog(BuildContext context, String focus) {
 Widget _hostHomePreviewFor(BuildContext context, String focus) {
   final club = HostOperationsFixtures.primaryClub;
   final event = HostOperationsFixtures.upcomingEvent;
+  final now = event.startTime.subtract(const Duration(hours: 2));
   final state = buildHostTodayState(
     CatchAsyncState<HostTodayFeedData>.data(
       HostTodayFeedData(
         activeEvents: [event, HostOperationsFixtures.privateEvent],
         pastEvents: const [],
+        attentionItems: _widgetbookTodayAttentionItems([event], now),
       ),
     ),
-    now: event.startTime.subtract(const Duration(hours: 2)),
+    now: now,
     l10n: context.l10n,
   );
-  final now = event.startTime.subtract(const Duration(hours: 2));
   final tasks = state.attentionItems;
   return switch (focus) {
     'CatchEmptyState' => CatchEmptyState(
@@ -2154,8 +2156,11 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
     'HostTodayOverview' => HostTodayOverview(
       state: state,
       now: now,
+      onRetry: () {},
       onOpenEvent: (_) {},
       onOpenAttention: (_) {},
+      onViewEvents: () {},
+      onStartRehearsal: () {},
     ),
     'HostTodayEventSpotlight' => HostTodayEventSpotlight(
       event: event,
@@ -6854,8 +6859,51 @@ class _WidgetbookHostTodayFeedController extends HostTodayFeedController {
       pastEvents: events
           .where((event) => !event.endTime.isAfter(request.sessionBoundary))
           .toList(growable: false),
+      attentionItems: _widgetbookTodayAttentionItems(
+        events.where((event) => event.endTime.isAfter(request.sessionBoundary)),
+        request.sessionBoundary,
+      ),
     );
   }
+}
+
+List<HostAttentionItem> _widgetbookTodayAttentionItems(
+  Iterable<Event> events,
+  DateTime now,
+) {
+  final event = events.firstOrNull;
+  if (event == null) return const <HostAttentionItem>[];
+  return <HostAttentionItem>[
+    HostAttentionItem(
+      id: 'widgetbook-attention-${event.id}',
+      kind: HostAttentionKind.eventWaitlistReview,
+      scope: HostAttentionScope.event,
+      sourceOwner: HostAttentionSourceOwner.events,
+      sourceId: event.id,
+      sourceRevision: 'widgetbook-${event.waitlistCount}',
+      eventId: event.id,
+      status: HostAttentionStatus.open,
+      consequence: HostAttentionConsequence.risksGuestExperience,
+      blocking: false,
+      urgency: HostAttentionUrgency.immediate,
+      destination: HostAttentionDestination(
+        route: HostAttentionDestinationRoute.hostEventManage,
+        section: 'guests',
+        eventId: event.id,
+      ),
+      context: HostAttentionContext(
+        eventName: event.title,
+        count: event.waitlistCount == 0 ? 6 : event.waitlistCount,
+      ),
+      dedupeKey: 'eventWaitlistReview:${event.id}',
+      policyVersion: 1,
+      resolutionVersion: 1,
+      assignedHostUid: null,
+      openedAt: now,
+      dueAt: event.startTime.subtract(const Duration(hours: 24)),
+      expiresAt: event.endTime,
+    ),
+  ];
 }
 
 class _WidgetbookHostEventsTimelineController

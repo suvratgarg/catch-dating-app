@@ -211,19 +211,19 @@ abstract class AppLocalizations {
   /// Today workspace guidance when no live or upcoming event needs attention.
   ///
   /// In en, this message translates to:
-  /// **'No live or upcoming events need your attention.'**
+  /// **'No live or upcoming events need your attention. Check the calendar or rehearse a run-of-show.'**
   String get hostTodayEmptyBody;
 
   /// Opens the full Host Events inventory from Today.
   ///
   /// In en, this message translates to:
-  /// **'View all events'**
+  /// **'View full calendar'**
   String get hostTodayViewAllEvents;
 
   /// Today workspace section for the next events after the operational spotlight.
   ///
   /// In en, this message translates to:
-  /// **'Later'**
+  /// **'Next 7 days'**
   String get hostTodayLater;
 
   /// Host inbox filter label showing the number of unread attendee inquiries.
@@ -10366,17 +10366,11 @@ abstract class AppLocalizations {
   /// **'This preview is capped at 2,500 roster records.'**
   String get hostsHostOrganizerCrmTruncated;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).
+  /// Section title for the time-sensitive action queue on Host Today.
   ///
   /// In en, this message translates to:
-  /// **'Needs you'**
+  /// **'Needs attention'**
   String get hostsHostTodayTitleNeedsYou;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing needs you right now.'**
-  String get hostsHostTodayTextNothingNeedsYouRight;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (tooltip).
   ///
@@ -10393,22 +10387,22 @@ abstract class AppLocalizations {
     required Object time,
   });
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
+  /// Expected guest count label in the Host Today current-event focus.
   ///
   /// In en, this message translates to:
-  /// **'Going'**
+  /// **'expected'**
   String get hostsHostTodayLabelGoing;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
+  /// Checked-in guest count label in the Host Today current-event focus.
   ///
   /// In en, this message translates to:
-  /// **'Waiting'**
+  /// **'checked in'**
   String get hostsHostTodayLabelWaiting;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
+  /// Open task count label in the Host Today current-event focus.
   ///
   /// In en, this message translates to:
-  /// **'Needs you'**
+  /// **'things to finish'**
   String get hostsHostTodayLabelNeedsYou;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
@@ -10417,11 +10411,17 @@ abstract class AppLocalizations {
   /// **'Open run-of-show'**
   String get hostsHostTodayLabelOpenRunOfShow;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
+  /// Primary action for continuing setup of the current Host Today event.
   ///
   /// In en, this message translates to:
-  /// **'Set up & run'**
+  /// **'Continue setup'**
   String get hostsHostTodayLabelSetUpRun;
+
+  /// Concise summary of the event work represented by the current-event task count.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup, guests, run sheet'**
+  String get hostTodayTaskSummary;
 
   /// Title for a live-event operations task on Host Today.
   ///
@@ -15387,14 +15387,6 @@ abstract class AppLocalizations {
   /// **'{signedUpCount}'**
   String hostsHostTodayVisiblecopySignedupcount({
     required Object signedUpCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{waitlistCount}'**
-  String hostsHostTodayVisiblecopyWaitlistcount({
-    required Object waitlistCount,
   });
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).

@@ -9,23 +9,12 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
@@ -144,119 +133,12 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
         initialOrganizerId: widget.initialOrganizerId,
         clockNow: _clockNow,
         sessionBoundary: _sessionBoundary,
-        onEventEntrySelected: _handleEventEntrySelected,
         onOpenEvent: _openEvent,
         onOpenAttention: _openAttention,
         onViewEvents: () => context.goNamed(Routes.hostEventsScreen.name),
         onStartRehearsal: _startRehearsal,
       ),
     };
-  }
-
-  Future<void> _handleEventEntrySelected(
-    Club organizer,
-    HostEventEntryState state,
-    HostEventEntryIntent intent,
-  ) async {
-    switch (intent) {
-      case HostEventEntryIntent.resumeDraft:
-        final draft = await _pickDraft(state);
-        if (draft == null || !mounted) return;
-        await _openCreateEvent(organizer, initialDraft: draft);
-      case HostEventEntryIntent.repeatLastEvent:
-        final source = state.repeatSource;
-        if (source == null) return;
-        await _openRepeatEvent(organizer, source);
-      case HostEventEntryIntent.createWithCatchBookings:
-        await _openCreateEvent(organizer);
-      case HostEventEntryIntent.createFromGuestList:
-        await _openExternalEvent(organizer);
-    }
-  }
-
-  Future<EventDraft?> _pickDraft(HostEventEntryState state) async {
-    if (!state.hasMultipleDrafts) return state.mostRecentDraft;
-    return showDraftPickerSheet(
-      context: context,
-      drafts: state.drafts,
-      showStartFreshAction: false,
-      onDeleteDraft: (draft) async {
-        await CreateEventDraftController.deleteDraftMutation.run(ref, (tx) {
-          return tx
-              .get(createEventDraftControllerProvider.notifier)
-              .deleteDraft(clubId: draft.clubId, draftId: draft.id);
-        });
-        ref.invalidate(clubEventDraftsProvider(clubId: draft.clubId));
-      },
-    );
-  }
-
-  Future<void> _openCreateEvent(
-    Club organizer, {
-    EventDraft? initialDraft,
-  }) async {
-    await context.pushNamed(
-      Routes.hostCreateEventScreen.name,
-      pathParameters: {'clubId': organizer.id},
-      extra: HostCreateEventRouteArguments(
-        initialClub: organizer,
-        initialDraft: initialDraft,
-        externalBookingMode: initialDraft?.externalBookingMode ?? false,
-        promptForDrafts: false,
-      ),
-    );
-    ref.invalidate(clubEventDraftsProvider(clubId: organizer.id));
-  }
-
-  Future<void> _openExternalEvent(Club organizer) async {
-    HostRosterTable? table;
-    try {
-      table = await ref
-          .read(createEventControllerProvider.notifier)
-          .pickRosterFile();
-    } on HostRosterImportException catch (error) {
-      if (mounted) {
-        showCatchSnackBar(
-          context,
-          hostRosterImportIssueCopy(context, error.issue),
-        );
-      }
-      return;
-    } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
-      return;
-    }
-    if (table == null || !mounted) return;
-    final rosterPlan = await showHostRosterMapping(context, table);
-    if (rosterPlan == null || !mounted) return;
-    await context.pushNamed(
-      Routes.hostCreateEventScreen.name,
-      pathParameters: {'clubId': organizer.id},
-      extra: HostCreateEventRouteArguments(
-        initialClub: organizer,
-        externalBookingMode: true,
-        initialRosterImportPlan: rosterPlan,
-        promptForDrafts: false,
-      ),
-    );
-    ref.invalidate(clubEventDraftsProvider(clubId: organizer.id));
-  }
-
-  Future<void> _openRepeatEvent(Club organizer, Event event) async {
-    final prefill = CreateEventPrefill.repeat(
-      event: event,
-      createdAt: _clockNow,
-    );
-    await context.pushNamed(
-      Routes.hostCreateEventScreen.name,
-      pathParameters: {'clubId': organizer.id},
-      extra: HostCreateEventRouteArguments(
-        initialClub: organizer,
-        initialPrefill: prefill,
-        promptForDrafts: false,
-      ),
-    );
-    ref.invalidate(clubEventDraftsProvider(clubId: organizer.id));
   }
 
   void _startRehearsal(Club organizer) {
@@ -353,7 +235,6 @@ class HostTodayLoadedRoute extends ConsumerWidget {
     required this.routeState,
     required this.clockNow,
     required this.sessionBoundary,
-    required this.onEventEntrySelected,
     required this.onOpenEvent,
     required this.onOpenAttention,
     required this.onViewEvents,
@@ -365,7 +246,6 @@ class HostTodayLoadedRoute extends ConsumerWidget {
   final String? initialOrganizerId;
   final DateTime clockNow;
   final DateTime sessionBoundary;
-  final HostEventEntryCallback onEventEntrySelected;
   final void Function(Club organizer, Event event) onOpenEvent;
   final void Function(Club organizer, HostAttentionItem item) onOpenAttention;
   final VoidCallback onViewEvents;
@@ -395,17 +275,6 @@ class HostTodayLoadedRoute extends ConsumerWidget {
       now: clockNow,
       l10n: context.l10n,
     );
-    final draftsState = catchAsyncStateFromAsyncValue(
-      ref.watch(clubEventDraftsProvider(clubId: organizer.id)),
-    );
-    final repeatSource = feedState.value?.pastEvents
-        .where(CreateEventPrefill.canRepeat)
-        .firstOrNull;
-    final entryState = HostEventEntryState.resolve(
-      organizerId: organizer.id,
-      drafts: draftsState.value ?? const <EventDraft>[],
-      repeatSource: repeatSource,
-    );
 
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
@@ -414,12 +283,10 @@ class HostTodayLoadedRoute extends ConsumerWidget {
         child: HostTodayBody(
           organizer: organizer,
           state: todayState,
-          entryState: entryState,
           now: clockNow,
           onRetry: () => ref
               .read(hostTodayFeedControllerProvider(request).notifier)
               .retry(),
-          onEventEntrySelected: onEventEntrySelected,
           onOpenEvent: (event) => onOpenEvent(organizer, event),
           onOpenAttention: (item) => onOpenAttention(organizer, item),
           onViewEvents: onViewEvents,

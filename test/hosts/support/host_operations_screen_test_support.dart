@@ -6,7 +6,7 @@ Finder _hostEventsScrollable() => find.descendant(
 );
 
 void registerHostEventEntryTests() {
-  testWidgets('Host Today has no create-club header and opens event manage', (
+  testWidgets('Host Today delegates creation and opens event manage', (
     tester,
   ) async {
     final club = buildClub(id: 'club-host', ownerUserId: _hostUid);
@@ -35,55 +35,18 @@ void registerHostEventEntryTests() {
     expect(find.text('Today'), findsOneWidget);
     expect(find.byTooltip('Create organizer'), findsNothing);
     expect(find.byTooltip('Switch organizer'), findsNothing);
-    expect(find.text('Create event'), findsOneWidget);
-    expect(
-      tester
-          .widget<CatchScreenHeaderTitle>(find.byType(CatchScreenHeaderTitle))
-          .eyebrow,
-      isNull,
+    expect(find.text('Create event'), findsNothing);
+    final header = tester.widget<CatchScreenHeaderTitle>(
+      find.byType(CatchScreenHeaderTitle),
     );
+    expect(header.eyebrow, 'Monday, June 15, 2026');
+    expect(header.subtitle, club.name);
+    expect(header.actions, isEmpty);
     expect(
-      find.descendant(
-        of: find.byType(CatchScreenHeaderTitle),
-        matching: find.byKey(const ValueKey<String>('host-today-create-event')),
-      ),
-      findsOneWidget,
-    );
-    expect(find.text('Use guest list'), findsNothing);
-    await tester.tap(
       find.byKey(const ValueKey<String>('host-today-create-event')),
-    );
-    await pumpFeatureUi(tester);
-    expect(find.text('Sell tickets with Catch'), findsOneWidget);
-    expect(find.text('Use guest list'), findsOneWidget);
-    expect(find.text('Continue draft'), findsNothing);
-    expect(find.text('Repeat last event'), findsNothing);
-    final eventEntrySheet = find.byKey(
-      const ValueKey<String>('host-event-entry-sheet'),
-    );
-    expect(
-      find.descendant(
-        of: eventEntrySheet,
-        matching: find.text('Dress rehearsal'),
-      ),
       findsNothing,
     );
-    expect(
-      find.descendant(of: eventEntrySheet, matching: find.byType(CatchSection)),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: eventEntrySheet,
-        matching: find.byType(CatchSectionFocusSurface),
-      ),
-      findsOneWidget,
-    );
-    expect(find.text('START NEW'), findsOneWidget);
-    await tester.tapAt(const Offset(10, 10));
-    await pumpFeatureUi(tester);
-    expect(find.text('View club'), findsNothing);
-    expect(find.text('View public profile'), findsNothing);
+    expect(find.text('Use guest list'), findsNothing);
 
     expect(
       tester
@@ -91,7 +54,7 @@ void registerHostEventEntryTests() {
           .event,
       event,
     );
-    await tester.tap(find.text('Set up & run'));
+    await tester.tap(find.text('Continue setup'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Manage ${event.id}'), findsOneWidget);
@@ -123,7 +86,7 @@ void registerHostEventEntryTests() {
     expect(find.text('Rehearse rehearsal-club'), findsOneWidget);
   });
 
-  testWidgets('Host Today resumes a loaded draft without a second lookup', (
+  testWidgets('Host Events resumes a loaded draft without a second lookup', (
     tester,
   ) async {
     final club = buildClub(id: 'draft-club', ownerUserId: _hostUid);
@@ -136,7 +99,7 @@ void registerHostEventEntryTests() {
 
     await _pumpHostScreen(
       tester,
-      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
+      HostEventsScreen(now: DateTime(2026, 6, 15, 12)),
       overrides: [
         ..._hostClubOverrides(
           owned: [club],
@@ -151,7 +114,7 @@ void registerHostEventEntryTests() {
     );
 
     await tester.tap(
-      find.byKey(const ValueKey<String>('host-today-create-event')),
+      find.byKey(const ValueKey<String>('host-events-create-event')),
     );
     await pumpFeatureUi(tester);
     expect(find.text('Continue draft'), findsOneWidget);

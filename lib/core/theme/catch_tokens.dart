@@ -453,6 +453,11 @@ abstract final class CatchInsets {
     horizontal: CatchSpacing.screenPx,
   );
 
+  /// Separation between the scroll-owned Today header and its first state.
+  static const EdgeInsets hostTodayContentStart = EdgeInsets.only(
+    top: CatchSpacing.s5,
+  );
+
   /// Leading route action aligned to the canonical screen gutter.
   static const EdgeInsets topBarLeadingAction = EdgeInsets.only(
     left: CatchSpacing.screenPx,
@@ -2176,6 +2181,28 @@ abstract final class CatchLayout {
 
   /// Supporting operations lane beside the live command stage.
   static const double hostEventLiveSupportingPaneWidth = 360;
+
+  /// Width at which Today can keep the current-event lane and its attention
+  /// queue visible together without compressing either into card fragments.
+  static const double hostTodayTwoPaneBreakpoint = 720;
+
+  /// Bounded command-centre workspace for Today on tablet and desktop.
+  static const double hostTodayWorkspaceMaxContentWidth = 1120;
+
+  /// Supporting attention lane beside Today's current-event workspace.
+  static const double hostTodayAttentionPaneWidth = 360;
+
+  /// Narrowest useful attention lane when the app rail leaves tablet content
+  /// less room than the desktop workspace.
+  static const double hostTodayAttentionPaneCompactWidth = 300;
+
+  /// Width at which Today's supporting pane can expand without narrowing the
+  /// primary current-event and seven-day lane.
+  static const double hostTodayExpandedAttentionPaneBreakpoint = 960;
+
+  /// Visual separation extent for the bounded Today command workspace. The
+  /// page remains scroll-owned; this rule only separates the initial lanes.
+  static const double hostTodayWorkspaceRuleExtent = 640;
 
   /// Width at which the Host form builder can fit outline, preview, and
   /// inspector panes without compressing any one pane below its useful size.
