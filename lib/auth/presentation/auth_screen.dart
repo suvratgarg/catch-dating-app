@@ -66,7 +66,6 @@ class AuthScreen extends ConsumerWidget {
     }
 
     return CatchScreenScaffold.standalone(
-      safeArea: CatchScreenSafeArea.all,
       body: switch (step) {
         AuthStep.phone => const PhonePage(),
         AuthStep.otp => OtpPage(
@@ -93,7 +92,6 @@ class HostAuthFlowFrame extends StatelessWidget {
     return CatchScreenScaffold.standalone(
       backgroundColor: t.bg,
       resizeToAvoidBottomInset: true,
-      safeArea: CatchScreenSafeArea.all,
       body: Column(
         children: [
           const CatchStartupBrandStage(appRole: AppRole.host),

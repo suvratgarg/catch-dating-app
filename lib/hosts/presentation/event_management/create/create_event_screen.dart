@@ -1280,7 +1280,6 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       },
       child: CatchScreenScaffold.stepFlow(
         backgroundColor: t.bg,
-        safeArea: CatchScreenSafeArea.all,
         body: CreateEventAdaptiveWorkspace(
           header: CreateEventStepHeader(
             title: _isReviewing

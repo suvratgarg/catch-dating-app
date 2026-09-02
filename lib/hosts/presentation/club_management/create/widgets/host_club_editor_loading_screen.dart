@@ -15,7 +15,6 @@ class HostClubEditorLoadingScreen extends StatelessWidget {
 
     return CatchScreenScaffold.stepFlow(
       backgroundColor: t.bg,
-      safeArea: CatchScreenSafeArea.all,
       body: Column(
         children: [
           CatchStepHeader(

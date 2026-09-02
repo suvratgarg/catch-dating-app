@@ -35,6 +35,11 @@ void main() {
               HostMessagingSetup(
                 organizerId: organizerId,
                 providerConfigured: false,
+                embeddedSignup: HostWhatsappEmbeddedSignupConfig(
+                  appId: null,
+                  configId: null,
+                  graphVersion: null,
+                ),
                 connection: null,
                 templates: [],
               ),
@@ -53,7 +58,7 @@ void main() {
 
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.byType(CatchResponsiveSectionPage), findsOneWidget);
-    expect(find.text('WhatsApp Business'), findsWidgets);
+    expect(find.text('WhatsApp Business settings'), findsOneWidget);
   });
 
   testWidgets('native WhatsApp setup opens the Host web onboarding route', (

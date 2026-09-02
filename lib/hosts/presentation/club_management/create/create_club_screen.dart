@@ -678,7 +678,6 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       },
       child: CatchScreenScaffold.stepFlow(
         backgroundColor: t.bg,
-        safeArea: CatchScreenSafeArea.all,
         body: Column(
           children: [
             CreateClubStepHeader(
