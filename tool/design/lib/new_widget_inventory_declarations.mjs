@@ -218,8 +218,296 @@ export function collectWidgetHelpers(
     }
   }
 
+  const looseCandidates = collectLooseHelperCandidates(code, classRanges);
+  const widgetHelperNames = new Set(rows.map(({name}) => name));
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const candidate of looseCandidates) {
+      const key = `${candidate.offset}:${candidate.name}`;
+      if (seen.has(key)) continue;
+      if (
+        !candidate.returnExpressions.some((expression) =>
+          returnedExpressionLooksLikeWidget(
+            expression,
+            widgetTypeNames,
+            widgetHelperNames,
+          ),
+        )
+      ) {
+        continue;
+      }
+      seen.add(key);
+      widgetHelperNames.add(candidate.name);
+      changed = true;
+      const {name, owner} = candidate;
+      if (
+        name === "build" ||
+        owner?.name === "CatchFormRowDescriptor" ||
+        owner?.baseClass === "CatchFormRowDescriptor" ||
+        isCanonicalClosedDescriptorRenderer(owner?.name, name)
+      ) {
+        continue;
+      }
+      rows.push({
+        name,
+        owner: owner?.name ?? null,
+        ownerBaseClass: owner?.baseClass ?? null,
+        returnType: candidate.returnType == null
+          ? "inferred"
+          : candidate.returnType.replaceAll(/\s+/gu, ""),
+        visibility: name.startsWith("_") ? "private" : "public",
+        line: lineForOffset(lineStarts, candidate.offset),
+        scope: owner ? "class-method" : "top-level",
+        declarationKind: candidate.declarationKind,
+      });
+    }
+  }
+
   return rows.sort((a, b) => a.line - b.line || a.name.localeCompare(b.name));
 }
+
+function collectLooseHelperCandidates(code, classRanges) {
+  const rows = [];
+  const type =
+    String.raw`(?:[A-Za-z_][A-Za-z0-9_]*\.)?[A-Za-z_][A-Za-z0-9_]*\??`;
+  const functionRegex = new RegExp(
+    String.raw`(?:^|\n)([ \t]*(?:(?:static|external)\s+)*(?:(${type})\s+)?([A-Za-z_][A-Za-z0-9_]*)(?:\s*<[^<>{};=()]+>)?\s*\()`,
+    "gu",
+  );
+  const getterRegex = new RegExp(
+    String.raw`(?:^|\n)([ \t]*(?:(?:static|external)\s+)*(?:(${type})\s+)?get\s+([A-Za-z_][A-Za-z0-9_]*)\s*)`,
+    "gu",
+  );
+
+  for (const match of code.matchAll(functionRegex)) {
+    const offset = (match.index ?? 0) + (match[0].startsWith("\n") ? 1 : 0);
+    if (delimiterDepthAt(code, offset, "(", ")") > 0) continue;
+    if (!isLooseReturnType(match[2])) continue;
+    const name = match[3];
+    // A type-shaped, unannotated `Foo()` followed by `=>` is a Dart object
+    // pattern in a switch expression, not a function declaration.
+    if (
+      controlFlowNames.has(name) ||
+      (match[2] == null && /^_?[A-Z]/u.test(name))
+    ) {
+      continue;
+    }
+    const owner = innermostClassRange(classRanges, offset);
+    if (owner?.name === name) continue;
+    const open = code.indexOf("(", offset + match[1].lastIndexOf(name));
+    const close = findMatchingDelimiter(code, open, "(", ")");
+    if (close === -1) continue;
+    const body = looseCallableBody(code, close + 1);
+    if (body == null) continue;
+    rows.push({
+      name,
+      owner,
+      offset,
+      returnType: match[2] ?? null,
+      declarationKind: "function",
+      returnExpressions: body,
+    });
+  }
+
+  for (const match of code.matchAll(getterRegex)) {
+    const offset = (match.index ?? 0) + (match[0].startsWith("\n") ? 1 : 0);
+    if (!isLooseReturnType(match[2])) continue;
+    const body = looseCallableBody(
+      code,
+      (match.index ?? 0) + match[0].length,
+    );
+    if (body == null) continue;
+    rows.push({
+      name: match[3],
+      owner: innermostClassRange(classRanges, offset),
+      offset,
+      returnType: match[2] ?? null,
+      declarationKind: "getter",
+      returnExpressions: body,
+    });
+  }
+  return rows;
+}
+
+const controlFlowNames = new Set([
+  "assert",
+  "catch",
+  "for",
+  "if",
+  "switch",
+  "while",
+]);
+
+function isLooseReturnType(type) {
+  return type == null || simpleTypeName(type) === "Object" || type === "dynamic";
+}
+
+function looseCallableBody(code, start) {
+  let cursor = start;
+  while (/\s/u.test(code[cursor] ?? "")) cursor += 1;
+  if (code.startsWith("async", cursor)) {
+    cursor += "async".length;
+    while (/\s/u.test(code[cursor] ?? "")) cursor += 1;
+  }
+  if (code.startsWith("=>", cursor)) {
+    const end = findExpressionSemicolon(code, cursor + 2, code.length);
+    return end === -1 ? null : [code.slice(cursor + 2, end)];
+  }
+  if (code[cursor] !== "{") return null;
+  const close = findMatchingBrace(code, cursor);
+  if (close === -1) return null;
+  return collectDirectReturnExpressions(code, cursor, close);
+}
+
+function collectDirectReturnExpressions(code, open, close) {
+  const rows = [];
+  const functionBodyStack = [];
+  for (let cursor = open + 1; cursor < close; cursor += 1) {
+    if (code[cursor] === "{") {
+      functionBodyStack.push(isNestedFunctionBodyOpen(code, cursor));
+      continue;
+    }
+    if (code[cursor] === "}") {
+      functionBodyStack.pop();
+      continue;
+    }
+    if (
+      functionBodyStack.includes(true) ||
+      !code.startsWith("return", cursor) ||
+      /[A-Za-z0-9_]/u.test(code[cursor - 1] ?? "") ||
+      /[A-Za-z0-9_]/u.test(code[cursor + "return".length] ?? "")
+    ) {
+      continue;
+    }
+    const end = findExpressionSemicolon(
+      code,
+      cursor + "return".length,
+      close,
+    );
+    if (end === -1 || end > close) continue;
+    rows.push(code.slice(cursor + "return".length, end));
+    cursor = end;
+  }
+  return rows;
+}
+
+function findExpressionSemicolon(code, start, limit) {
+  const depths = {"(": 0, "[": 0, "{": 0};
+  const closes = {")": "(", "]": "[", "}": "{"};
+  for (let cursor = start; cursor < limit; cursor += 1) {
+    const token = code[cursor];
+    if (Object.hasOwn(depths, token)) depths[token] += 1;
+    else if (Object.hasOwn(closes, token)) {
+      depths[closes[token]] = Math.max(0, depths[closes[token]] - 1);
+    } else if (
+      token === ";" &&
+      depths["("] === 0 &&
+      depths["["] === 0 &&
+      depths["{"] === 0
+    ) {
+      return cursor;
+    }
+  }
+  return -1;
+}
+
+function isNestedFunctionBodyOpen(code, open) {
+  let cursor = previousNonWhitespace(code, open - 1);
+  if (code[cursor] === "*") cursor = previousNonWhitespace(code, cursor - 1);
+  const modifier = previousIdentifier(code, cursor);
+  if (modifier?.value === "async" || modifier?.value === "sync") {
+    cursor = previousNonWhitespace(code, modifier.start - 1);
+    if (code[cursor] === "*") cursor = previousNonWhitespace(code, cursor - 1);
+  }
+  if (code[cursor] !== ")") return false;
+  const parameterOpen = findMatchingDelimiterBackward(code, cursor, "(", ")");
+  if (parameterOpen === -1) return false;
+  const preceding = previousIdentifier(
+    code,
+    previousNonWhitespace(code, parameterOpen - 1),
+  )?.value;
+  return !controlFlowNames.has(preceding);
+}
+
+function previousNonWhitespace(code, start) {
+  let cursor = start;
+  while (cursor >= 0 && /\s/u.test(code[cursor])) cursor -= 1;
+  return cursor;
+}
+
+function previousIdentifier(code, end) {
+  if (end < 0 || !/[A-Za-z0-9_]/u.test(code[end])) return null;
+  let start = end;
+  while (start > 0 && /[A-Za-z0-9_]/u.test(code[start - 1])) start -= 1;
+  return {start, value: code.slice(start, end + 1)};
+}
+
+function returnedExpressionLooksLikeWidget(
+  expression,
+  widgetTypeNames,
+  widgetHelperNames,
+) {
+  let value = expression.trim();
+  let explicitConstructor = false;
+  let normalizing = true;
+  while (normalizing) {
+    normalizing = false;
+    while (value.startsWith("(")) {
+      const close = findMatchingDelimiter(value, 0, "(", ")");
+      if (close !== value.length - 1) break;
+      value = value.slice(1, -1).trim();
+      normalizing = true;
+    }
+    if (/^(?:const|new)\s+/u.test(value)) {
+      explicitConstructor = true;
+      value = value.replace(/^(?:(?:const|new)\s+)+/u, "");
+      normalizing = true;
+    }
+  }
+  const cast = value.match(
+    /\s+as\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?([A-Za-z_][A-Za-z0-9_]*)\??\s*$/u,
+  );
+  if (cast != null) {
+    if (widgetTypeNames.has(cast[1])) return true;
+    if (cast[1] === "Object" || cast[1] === "dynamic") {
+      value = value.slice(0, cast.index).trim();
+    }
+  }
+  const call = value.match(
+    /^([A-Za-z_][A-Za-z0-9_]*(?:\s*\.\s*[A-Za-z_][A-Za-z0-9_]*)*)(?:\s*<[^<>(){};]+>)?\s*\(/u,
+  );
+  if (call != null) {
+    const parts = call[1].split(".").map((part) => part.trim());
+    if (widgetHelperNames.has(parts.at(-1))) return true;
+    if (parts.some((part) => widgetTypeNames.has(part))) return true;
+    if (explicitConstructor && parts.some((part) => /^_?[A-Z]/u.test(part))) {
+      return true;
+    }
+    // Without analyzer resolution, a loose helper returning a direct
+    // capitalized constructor is ambiguous. Fail closed for the new/moved
+    // declaration; qualified lowercase calls such as Navigator.of remain
+    // ordinary behavior callbacks.
+    if (/^_?[A-Z]/u.test(parts.at(-1))) return true;
+  }
+  const identifier = value.match(
+    /^(?:this\s*\.\s*)?([A-Za-z_][A-Za-z0-9_]*)[!?]?$/u,
+  )?.[1];
+  if (identifier == null) return false;
+  if (widgetHelperNames.has(identifier)) return true;
+  // A bare local/field returned through Object, dynamic, or inference cannot
+  // be resolved by this syntax-only gate. Treat the new/moved declaration as
+  // ambiguous and require a precise non-Widget return type to clear it.
+  return !nonWidgetValueKeywords.has(identifier);
+}
+
+const nonWidgetValueKeywords = new Set([
+  "false",
+  "null",
+  "super",
+  "this",
+  "true",
+]);
 
 function isCanonicalClosedDescriptorRenderer(ownerName, methodName) {
   return canonicalClosedDescriptorRendererMethods
@@ -286,10 +574,26 @@ function lineForOffset(lineStarts, offset) {
 }
 
 function findMatchingBrace(code, open) {
+  return findMatchingDelimiter(code, open, "{", "}");
+}
+
+function findMatchingDelimiter(code, open, opener, closer) {
   let depth = 0;
   for (let index = open; index < code.length; index += 1) {
-    if (code[index] === "{") depth += 1;
-    else if (code[index] === "}") {
+    if (code[index] === opener) depth += 1;
+    else if (code[index] === closer) {
+      depth -= 1;
+      if (depth === 0) return index;
+    }
+  }
+  return -1;
+}
+
+function findMatchingDelimiterBackward(code, close, opener, closer) {
+  let depth = 0;
+  for (let index = close; index >= 0; index -= 1) {
+    if (code[index] === closer) depth += 1;
+    else if (code[index] === opener) {
       depth -= 1;
       if (depth === 0) return index;
     }

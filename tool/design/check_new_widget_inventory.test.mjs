@@ -166,6 +166,102 @@ void acceptsCallback(
   );
 });
 
+test("discovers Object, dynamic, and inferred widget helpers without treating behavior callbacks as helpers", () => {
+  const source = `
+class LooseHelperOwner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => const SizedBox();
+
+  Object objectHelper() => (const SizedBox());
+  dynamic dynamicHelper(bool compact) {
+    if (compact) {
+      return typedHelper();
+    }
+    if (!compact) {
+      return const SizedBox.shrink();
+    }
+    throw StateError('unreachable');
+  }
+  inferredHelper() => const CatchLooseProbe();
+  Object get objectGetter => inferredHelper();
+  get inferredGetter => objectGetter;
+  Widget typedHelper() => const SizedBox();
+  Object aliasedHelper() {
+    final child = const SizedBox();
+    return (child as Object);
+  }
+
+  handleTap() {
+    registerCallback(() {
+      return const SizedBox();
+    });
+  }
+  dynamic openRoute() => Navigator.of(context).pushNamed('/next');
+  dynamic openDialog() {
+    return showDialog(
+      context: context,
+      builder: (_) {
+        return const SizedBox();
+      },
+    );
+  }
+  Object callbackFactory() => () => openRoute();
+  Object mapState(Object state) => switch (state) {
+    SomeState() => 1,
+    _ => 0,
+  };
+  Object ambiguousCapitalizedFactory() => SomeDescriptor();
+  void acceptsCallback(
+    Object callback(),
+  ) {}
+}
+
+class CatchLooseProbe extends StatelessWidget {
+  const CatchLooseProbe();
+
+  @override
+  Widget build(BuildContext context) => const SizedBox();
+}
+
+Object topLevelObjectHelper() => const CatchLooseProbe();
+topLevelInferredHelper() => topLevelObjectHelper();
+`;
+  const lineStarts = buildLineStarts(source);
+  const declarations = collectClassDeclarations(source, lineStarts);
+  const widgetTypes = resolveWidgetTypeNames(declarations);
+  const helpers = collectWidgetHelpers(
+    source,
+    lineStarts,
+    collectClassRanges(source, lineStarts),
+    widgetTypes,
+  );
+
+  assert.deepEqual(helpers.map(({name, returnType, declarationKind}) => [
+    name,
+    returnType,
+    declarationKind,
+  ]), [
+    ["objectHelper", "Object", "function"],
+    ["dynamicHelper", "dynamic", "function"],
+    ["inferredHelper", "inferred", "function"],
+    ["objectGetter", "Object", "getter"],
+    ["inferredGetter", "inferred", "getter"],
+    ["typedHelper", "Widget", "function"],
+    ["aliasedHelper", "Object", "function"],
+    // A new loosely typed capitalized factory is deliberately blocked when
+    // syntax alone cannot prove that it is non-Widget.
+    ["ambiguousCapitalizedFactory", "Object", "function"],
+    ["topLevelObjectHelper", "Object", "function"],
+    ["topLevelInferredHelper", "inferred", "function"],
+  ]);
+  assert.equal(helpers.some(({name}) => name === "handleTap"), false);
+  assert.equal(helpers.some(({name}) => name === "openRoute"), false);
+  assert.equal(helpers.some(({name}) => name === "openDialog"), false);
+  assert.equal(helpers.some(({name}) => name === "callbackFactory"), false);
+  assert.equal(helpers.some(({name}) => name === "SomeState"), false);
+  assert.equal(helpers.some(({name}) => name === "callback"), false);
+});
+
 test("exempts only exact canonical closed descriptor renderers", () => {
   const source = `
 final class CatchRouteBody {
