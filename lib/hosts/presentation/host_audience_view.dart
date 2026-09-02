@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
-import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -37,17 +38,19 @@ class HostAudienceStateScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabbedScreenScaffold(
-      title: context.l10n.hostNavigationAudience,
-      tabRail: HostAudienceTabRail(
+    return CatchRootScreenScaffold.withPrimaryRail(
+      header: CatchRootScreenHeader.title(
+        title: context.l10n.hostNavigationAudience,
+      ),
+      primaryRail: HostAudienceTabRail(
         selected: selected,
         selectionPosition: selected.index.toDouble(),
         onChanged: onChanged ?? (view) => _openView(context, view),
       ),
-      body: CatchTabbedScreenBody.single(
-        page: CatchTabbedPageSpec.scroll(
+      body: CatchRootScreenBody.single(
+        page: CatchRootScreenPageSpec.scroll(
           bodyLayout: CatchScreenBodyLayout.standard,
-          page: CatchTabbedPageScrollView(
+          page: CatchRootScreenPageScrollView(
             scrollKey: scrollKey,
             bodyLayout: CatchScreenBodyLayout.standard,
             constrainToContentWidth: true,

@@ -515,8 +515,8 @@ Screen composition is a closed family, not a per-feature assembly exercise:
   `CatchScreenBodyLayout`, and body slivers. The owner supplies the safe area,
   single scroll view, semantic body gutter, optional responsive content lane,
   field-obstruction scope, refresh wrapper, and terminal shell clearance.
-- A root destination with pinned peer tabs uses `CatchTabbedScreenScaffold`
-  and one `CatchTabbedPageScrollView` per page. Every page must declare
+- A root destination with pinned peer tabs uses `CatchRootScreenScaffold.withPrimaryRail`
+  and one `CatchRootScreenPageScrollView` per page. Every page must declare
   `bodyLayout`; overlap injection, restoration, focus isolation, body geometry,
   refresh, and terminal clearance remain shared mechanics.
 - A section-composed page without root-title chrome uses
@@ -524,6 +524,14 @@ Screen composition is a closed family, not a per-feature assembly exercise:
   `CatchAdaptiveMasterDetailLayout` at their actual responsive boundary.
 - A pushed utility or detail route uses `CatchRouteScaffold` with its compact
   `CatchTopBar`. A pushed route must not be restyled to resemble a root title.
+
+Ordinary and primary-rail roots are one layout family and one public widget.
+The named `withPrimaryRail` constructor is a typed parameter bundle, not a
+second scaffold: it requires the rail, closed page body, and root-header spec
+together, preventing impossible half-configured states that nullable unrelated
+properties would allow. The root owner privately selects `CustomScrollView`
+without a rail or overlap-safe `NestedScrollView` with one. The adaptive app
+shell remains the separate owner of bottom navigation and its obstruction.
 
 `CatchScreenBodyLayout.standard` is the one regular body contract: 20 pt phone
 gutters and 24 pt from the preceding title/tab boundary to the standard body
@@ -537,9 +545,9 @@ selects one of these semantic roles; it does not restate its horizontal gutter,
 title gap, terminal spacer, or field interaction plane.
 
 `CatchInsets.pageBody` owns the 20 pt horizontal gutter and 24 pt standard body
-start. `CatchInsets.tabbedScreenTitleBlock` owns the 4 pt title-to-rail handoff;
-`CatchTabbedScreenScaffold` owns and runtime-enforces the 44 pt pinned rail; and
-`CatchTabbedPageScrollView` reapplies the same 24 pt standard body start after
+start. `CatchInsets.primaryRailTitleBlock` owns the 4 pt title-to-rail handoff;
+`CatchRootScreenScaffold.withPrimaryRail` owns and runtime-enforces the 44 pt pinned rail; and
+`CatchRootScreenPageScrollView` reapplies the same 24 pt standard body start after
 the rail. The semantic-layout and tabbed-scaffold tests pin those numeric
 mappings. The composition checker validates semantic roles rather than the
 literal numbers.
@@ -597,7 +605,7 @@ actual redirect result. The same baseline contains 11 imperative page
 construction sites across 7 registered targets; each site must remain present
 in the generated inventory and analyzer-resolve to its target's typed owner.
 
-The contract manifest at `tool/design/tab_root_scroll_contracts.json` records
+The contract manifest at `tool/design/root_screen_composition_contracts.json` records
 every shell branch and its real composition owners. Its scanner rejects an
 unregistered branch, missing semantic owner/body role, forbidden raw root
 composition, and raw sliver empty/error viewport ownership.
@@ -605,7 +613,7 @@ composition, and raw sliver empty/error viewport ownership.
 ## App Shell Chrome Policy
 
 The consumer shell and compact Host shell own bottom tab chrome only for
-tab-root screens. The medium and expanded Host shell instead owns persistent
+root-screen screens. The medium and expanded Host shell instead owns persistent
 side navigation. Branch child routes that own their own route chrome or bottom
 affordance must set `parentNavigatorKey: _rootNavigatorKey` in
 `lib/routing/go_router.dart` so compact detail CTAs, chat composers, and
@@ -620,7 +628,7 @@ navigator by default, which keeps drawers above shell chrome. Do not call
 Flutter's raw `showModalBottomSheet` directly from production code unless this
 policy test is intentionally updated.
 
-Tab-root overlays that still coexist with the floating tab bar should use
+Root-screen overlays that still coexist with the floating tab bar should use
 `AppShellActiveTab.bottomOverlayClearanceOf(context, minimum: ...)`; feature
 code should not recompute the tab-bar height, safe-area subtraction, or platform
 floating inset. Root scroll views without tab chrome should end with a semantic
@@ -648,7 +656,7 @@ Host side navigation remains mounted because it does not overlap the software
 keyboard. A hardware keyboard leaves `viewInsets.bottom` at zero, so all
 navigation remains available.
 
-### Exhibit ARCH-SHELL-SCROLL-001: Adaptive Tab-Root Scroll Clearance
+### Exhibit ARCH-SHELL-SCROLL-001: Adaptive Root-Screen Scroll Clearance
 
 <!-- exhibit-freshness: ARCH-SHELL-SCROLL-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
 
@@ -1016,7 +1024,7 @@ Pinned bottom rows must not visually cover a collapsing title. Shared feature
 headers should use `CatchSliverHeader` from `lib/core/widgets/catch_top_bar.dart`
 and its title-height contracts before adding local header math.
 
-### Nested Tab Screens
+### Root Screens With A Primary Rail
 
 For `NestedScrollView` plus pinned tab rows:
 
@@ -1025,7 +1033,7 @@ For `NestedScrollView` plus pinned tab rows:
   title group.
 - Each tab body starts with the matching `SliverOverlapInjector`.
 - Body padding belongs to the tab body, not to the pinned tab row.
-- Route-owned tab pages use `CatchTabbedPageScrollView`. Box-content pages opt
+- Route-owned tab pages use `CatchRootScreenPageScrollView`. Box-content pages opt
   into an explicit `bodyLayout` and may opt into `constrainToContentWidth`; the
   body role owns title/tab-to-content rhythm and page gutters, while the width
   option preserves the canonical 600 px content
@@ -1053,27 +1061,27 @@ For `NestedScrollView` plus pinned tab rows:
   a zero-duration final correction covers any residual clamp. Do not add a
   second `ScrollController` inside the `NestedScrollView` to implement this.
 
-#### Exhibit: ARCH-TABBED-SCREEN-001 route-owned nested tab screen shell
+#### Exhibit: ARCH-ROOT-PRIMARY-RAIL-001 root-owned pinned primary-rail composition
 
 Host Clubs is the reference for mixing bounded box content with a sliver-native
-preview under one route-owned tab shell:
+preview under one root-owned primary-rail path:
 
 ```dart
-CatchTabbedPageScrollView(
+CatchRootScreenPageScrollView(
   scrollKey: editScrollKey,
   bodyLayout: CatchScreenBodyLayout.standard,
   constrainToContentWidth: true,
   slivers: editSlivers,
 )
 
-CatchTabbedPageScrollView(
+CatchRootScreenPageScrollView(
   scrollKey: previewScrollKey,
   bodyLayout: CatchScreenBodyLayout.fullBleed,
   slivers: previewSlivers, // Full-bleed and sliver-native.
 )
 ```
 
-`CatchTabbedPageScrollView` owns overlap injection, focus isolation, independent
+`CatchRootScreenPageScrollView` owns overlap injection, focus isolation, independent
 offset restoration, semantic body geometry, and terminal clearance. Feature
 pages own their slivers, refresh policy, controllers, and typed tab state. Do not reintroduce
 feature-local `Center`/`ConstrainedBox` wrappers or box the Preview slivers.
@@ -1087,7 +1095,7 @@ feature-local `Center`/`ConstrainedBox` wrappers or box the Preview slivers.
 | Chats list | Keep sliver shell; make populated body sliver-native only if list scale or tests demand it. |
 | Event detail | Keep sliver-native because the collapsing hero justifies it. |
 | Club detail | Keep sliver-native with agenda-style event list. |
-| User profile | Use the shared `CatchTabbedPageScrollView` contract for every tab, preserving overlap injection and the Preview card scroll bridge. The shared owner always publishes shell obstruction; each page explicitly selects terminal clearance according to whether its final content can expand. |
+| User profile | Use the shared `CatchRootScreenPageScrollView` contract for every tab, preserving overlap injection and the Preview card scroll bridge. The shared owner always publishes shell obstruction; each page explicitly selects terminal clearance according to whether its final content can expand. |
 | Map-heavy screens | Keep the stable full-bleed viewport, but declare it as an immersive `CatchScreenScaffold.workspace`; overlays continue to own their local safe-area insets. |
 | Attendance sheet | Keep box-based while it remains a modal/sheet. |
 | Create event, onboarding, auth | Use the typed `stepFlow` or `standalone` surface role while preserving their task-specific header, safe-area, keyboard, and footer behavior. |
@@ -2778,8 +2786,8 @@ workspace, or temporary legacy role by symbol and owner. Role-to-owner policy
 is enforced; raw Material app bars cannot be relabeled as workspace or hero
 exceptions. Legacy entries are visible migration debt, not generic
 exceptions.
-The same gate consumes `tool/design/tab_root_scroll_contracts.json` and must
-report every consumer and Host tab-root branch; a zero-root pass is invalid.
+The same gate consumes `tool/design/root_screen_composition_contracts.json` and must
+report every consumer and Host root-screen branch; a zero-root pass is invalid.
 
 Full-screen editors that must cover persistent shell navigation declare their
 launcher in the same contract and push through

@@ -342,7 +342,7 @@ abstract final class CatchGaps {
 
   /// Gap between a screen-header title and the kicker/subtitle paired with it
   /// (browse-header title→subtitle, Home dashboard eyebrow→title). Centralises
-  /// the subtitle-to-title relationship of the shared tab-screen header rhythm.
+  /// the subtitle-to-title relationship of the shared root-screen header rhythm.
   static const double headerTitleToSubtitle = CatchSpacing.s1;
 
   /// Distance between closely related rows inside the same content cluster.
@@ -520,11 +520,11 @@ abstract final class CatchInsets {
     CatchSpacing.s3,
   );
 
-  // ── Shared tab-screen header rhythm ─────────────────────────────────────────
+  // ── Shared root-screen header rhythm ────────────────────────────────────────
   //
-  // The five top-level tab screens (Home, Clubs, Catches, Chats, Profile) share
-  // one spacing contract for the band between their title block, any pinned
-  // search/filter/tab control, and the first content row. These role tokens
+  // Root destinations share one spacing contract for the band between their
+  // title block, an optional pinned primary rail, and the first content row.
+  // These role tokens
   // centralise that rhythm so screens stop tuning their own raw EdgeInsets.
   // The horizontal page gutter stays [CatchSpacing.screenPx] (s5) everywhere.
 
@@ -539,14 +539,14 @@ abstract final class CatchInsets {
 
   /// Title block for a pinned peer-tab destination. The rail owns its full
   /// interactive height; this is the small visual handoff into that rail.
-  static const EdgeInsets tabbedScreenTitleBlock = EdgeInsets.fromLTRB(
+  static const EdgeInsets primaryRailTitleBlock = EdgeInsets.fromLTRB(
     CatchSpacing.s5,
     CatchSpacing.s0,
     CatchSpacing.s5,
     CatchSpacing.s1,
   );
 
-  /// (1) Title block padding for tab screens whose header is a compact
+  /// (1) Title block padding for root screens whose header is a compact
   /// eyebrow/title or title-only row (Home dashboard, Profile-style headers).
   /// Canonical = [pageHeaderCompact].
   static const EdgeInsets screenTitleBlockCompact = pageHeaderCompact;
@@ -2171,7 +2171,7 @@ abstract final class CatchLayout {
   static const double maxContentWithDockHeight =
       maxContentWidth + CatchSpacing.s16;
   static const double pageBodyHorizontalGutters = CatchSpacing.screenPx * 2;
-  static const double tabbedPageMaxExtent =
+  static const double screenPageMaxExtent =
       maxContentWidth + pageBodyHorizontalGutters;
 
   /// Reading lane for the Host Forms directory on capable widths. Forms rows

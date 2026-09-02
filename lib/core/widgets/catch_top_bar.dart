@@ -250,7 +250,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
   }
 }
 
-/// App-bar wrapper for static/root screens that use the tab-screen title voice.
+/// App-bar wrapper for static/root screens that use the root-title voice.
 ///
 /// The factory requires [BuildContext] because [preferredSize] must be resolved
 /// synchronously from the caller's text scaler and direction before this
@@ -309,12 +309,12 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     search: search,
   );
 
-  /// Root-title chrome embedded in [CatchTabbedScreenScaffold].
+  /// Root-title chrome embedded in [CatchRootScreenScaffold].
   ///
-  /// The tabbed owner supplies the safe area and pinned rail, so this variant
+  /// The root owner supplies the safe area and pinned rail, so this variant
   /// uses the same content-sized title band and 4 pt rail handoff as the
   /// non-search title path instead of inheriting the 56 pt app-bar minimum.
-  factory CatchScreenTopBar.tabbed({
+  factory CatchScreenTopBar.primaryRail({
     Key? key,
     required BuildContext context,
     required String title,
@@ -332,7 +332,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       hasSubtitle: subtitle?.isNotEmpty ?? false,
       titleMaxLines: titleMaxLines,
       hasActions: actions.isNotEmpty,
-      contentPadding: CatchInsets.tabbedScreenTitleBlock,
+      contentPadding: CatchInsets.primaryRailTitleBlock,
       minimumHeight: 0,
     ),
     key: key,
@@ -351,7 +351,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     divider: false,
     gutter: false,
     applySafeArea: false,
-    contentPadding: CatchInsets.tabbedScreenTitleBlock,
+    contentPadding: CatchInsets.primaryRailTitleBlock,
     bottom: null,
     trailing: null,
     search: search,

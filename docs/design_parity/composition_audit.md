@@ -513,8 +513,8 @@ variant); the raw `bottomHeight: 48` goes to a token in the same change.
 ### P2. Positive calibration
 
 The `NestedScrollView` + overlap-absorber architecture remains correct, but its
-reusable ownership now lives in `CatchTabbedScreenScaffold` and
-`CatchTabbedPageScrollView`. Profile and Host Clubs share that shell, while
+reusable ownership now lives in `CatchRootScreenScaffold.withPrimaryRail` and
+`CatchRootScreenPageScrollView`. Profile and Host Clubs share that shell, while
 their typed `CatchTabControllerRail` adapters keep option taps and native
 `TabBarView` paging on one route-owned controller. Profile retains only its
 feature-specific two-way Preview scroll bridge.

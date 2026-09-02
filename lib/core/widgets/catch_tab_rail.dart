@@ -84,7 +84,7 @@ class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
 /// Binds a route-owned [TabController] to the canonical [CatchTabRail].
 ///
 /// This keeps tap selection, horizontal pager interpolation, and the standard
-/// option-group chrome on one shared path for tabbed root screens.
+/// option-group chrome on one shared path for root screens with peer views.
 class CatchTabControllerRail<T> extends StatelessWidget
     implements PreferredSizeWidget {
   const CatchTabControllerRail({

@@ -55,7 +55,7 @@ final class CatchRouteBody {
   const CatchRouteBody.standardSlivers({
     required List<Widget> slivers,
     bool constrainToContentWidth = false,
-    double maxContentExtent = CatchLayout.tabbedPageMaxExtent,
+    double maxContentExtent = CatchLayout.screenPageMaxExtent,
     ScrollController? controller,
     ScrollPhysics? physics,
     bool? primary,

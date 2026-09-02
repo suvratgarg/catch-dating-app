@@ -92,7 +92,7 @@ Non-goals:
 | F9 | The structure editor renders unconditionally, so a host with "Small starter groups" off still sees a "Pod setup" section | `event_success_setup_body.dart` ~line 243 (no module condition) |
 | F10 | Untranslated hardcoded English in presentation: panel default title/subtitle (`event_success_defaults_panel.dart` ~lines 23–24), `_questionnaireModeLabel`, `_questionnaireSubtitle`, `_structureSectionTitle`, `_revealCountdownLabel` (`event_success_setup_body.dart` ~lines 327–361). Domain enums/catalog also carry hardcoded English (`event_success_structure.dart`, generated `modules.dart`, `rules.dart`, `library.dart`) |
 | F11 | Jargon copy: "Default event success", "Apply activity-aware run-of-show defaults automatically…", "Flow type", "Balance across units", "Cluster similar people", "Repeat policy", "Max meetings per pair", "Assignment goals", "Set a host-owned count…", error text literally `'Before launch'` | ARB keys listed in §5; `eventSuccessEventSuccessHostSetupTextBeforeLaunch` used as `errorText` in `event_success_setup_body.dart` ~line 132 |
-| F12 | No width constraint on the host edit tab; the consumer `ProfileTab` wraps content in `ConstrainedBox(maxWidth: CatchLayout.maxContentWidth)` (600), `CatchTabbedScreenScaffold`/`CatchTabbedPageScrollView` do not | `profile_tab.dart` ~line 52; `catch_tabbed_screen.dart` (no `maxContentWidth` reference) |
+| F12 | No width constraint on the host edit tab; the consumer `ProfileTab` wraps content in `ConstrainedBox(maxWidth: CatchLayout.maxContentWidth)` (600), `CatchRootScreenScaffold.withPrimaryRail`/`CatchRootScreenPageScrollView` do not | `profile_tab.dart` ~line 52; `catch_root_screen_body.dart` (no `maxContentWidth` reference) |
 | F13 | Paired numeric inputs have three treatments: age min/max side-by-side halves (`host_inline_editors.dart` `HostInlineAgeRangeEditor` ~line 533), cohort caps and pricing stacked full-width contained rows (`club_host_defaults_step.dart`) | cited files |
 | F14 | Add host = tooltip-only `CatchIconButton` in the section header trailing slot; the DS already has the `CatchField.add` row constructor used by the consumer prompt editor | `host_team_management_section.dart` ~line 155; `catch_field.dart` ~line 844; `inline_editor_prompt.dart` ~line 343 |
 | F15 | Field expansion keys are LOCALIZED strings (`context.l10n.…Visiblecopy…` used as `fieldName` and compared against `initialExpandedEditField`); breaks on locale change and unstable for deep links. The organizer route never passes `initialExpandedEditField` (dead plumbing) | `host_club_profile.dart` ~line 318 etc.; `go_router.dart` organizer branch (~line 872) passes only `clubId` + `tab` |
@@ -159,7 +159,7 @@ do not (F12).
   and the insights pane, in a centered `ConstrainedBox(maxWidth:
   CatchLayout.maxContentWidth)`; the Preview tab already renders the consumer
   club detail sliver — leave it).
-- Do NOT bake the constraint into `CatchTabbedPageScrollView` (other callers
+- Do NOT bake the constraint into `CatchRootScreenPageScrollView` (other callers
   may be full-bleed); apply at the call sites.
 
 Acceptance: on a wide window (e.g. `flutter run -d macos` or a widget test

@@ -2,11 +2,11 @@ part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsClubWorkspaceTests() {
   testWidgets(
-    'Host clubs keeps tabbed root composition for auth and data errors',
+    'Host clubs keeps root primary-rail composition for auth and data errors',
     (tester) async {
       void expectStateChrome() {
-        expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
-        expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
+        expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+        expect(find.byType(CatchRootScreenPageScrollView), findsOneWidget);
         expect(find.byType(NestedScrollView), findsOneWidget);
         expect(
           find.byKey(const ValueKey('host-club-tab-rail')),
@@ -19,8 +19,8 @@ void _registerHostOperationsClubWorkspaceTests() {
         expect(find.byType(CatchRouteScaffold), findsNothing);
         expect(
           tester
-              .widget<CatchTabbedPageScrollView>(
-                find.byType(CatchTabbedPageScrollView),
+              .widget<CatchRootScreenPageScrollView>(
+                find.byType(CatchRootScreenPageScrollView),
               )
               .bodyLayout,
           CatchScreenBodyLayout.standard,
@@ -76,25 +76,25 @@ void _registerHostOperationsClubWorkspaceTests() {
     },
   );
 
-  testWidgets('Host clubs keeps tabbed root composition without an organizer', (
-    tester,
-  ) async {
-    await _pumpHostScreen(
-      tester,
-      const HostClubsScreen(),
-      overrides: _hostClubOverrides(),
-    );
+  testWidgets(
+    'Host clubs keeps root primary-rail composition without an organizer',
+    (tester) async {
+      await _pumpHostScreen(
+        tester,
+        const HostClubsScreen(),
+        overrides: _hostClubOverrides(),
+      );
 
-    expect(find.byType(HostClubsScaffold), findsOneWidget);
-    expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
-    expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
-    expect(find.byType(CatchSliverEmptyState), findsOneWidget);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
-    expect(find.byType(CatchRootScreenScaffold), findsNothing);
-    expect(find.byKey(const ValueKey('host-club-tab-rail')), findsOneWidget);
-    expect(find.text('Organizer'), findsOneWidget);
-    expect(find.text('No hosted organizers yet'), findsOneWidget);
-  });
+      expect(find.byType(HostClubsScaffold), findsOneWidget);
+      expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+      expect(find.byType(CatchRootScreenPageScrollView), findsOneWidget);
+      expect(find.byType(CatchSliverEmptyState), findsOneWidget);
+      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byKey(const ValueKey('host-club-tab-rail')), findsOneWidget);
+      expect(find.text('Organizer'), findsOneWidget);
+      expect(find.text('No hosted organizers yet'), findsOneWidget);
+    },
+  );
 
   testWidgets('Host Today keeps root composition for auth and route errors', (
     tester,

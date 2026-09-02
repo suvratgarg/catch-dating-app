@@ -22,16 +22,16 @@ const widgetBaseTypes = new Set([
 ]);
 
 // These final, non-Widget descriptor types are the closed input protocols for
-// the canonical route/tab scaffolds. Their private renderers are callable only
-// from the owning scaffold library; keep this exact owner+method allowlist so
+// the canonical route/root scaffolds. Keep this exact owner+method allowlist so
 // unrelated Widget-returning helpers on the same types still fail inventory.
 const canonicalClosedDescriptorRendererMethods = new Map([
   [
     "CatchRouteBody",
     new Set(["_build", "_buildStandard", "_buildStandardSlivers"]),
   ],
-  ["CatchTabbedPageSpec", new Set(["_build"])],
-  ["CatchTabbedScreenBody", new Set(["_build"])],
+  ["CatchRootScreenPageSpec", new Set(["build"])],
+  ["CatchRootScreenBody", new Set(["build"])],
+  ["CatchRootScreenHeader", new Set(["_build"])],
 ]);
 
 export function unresolvedInventoryItems({

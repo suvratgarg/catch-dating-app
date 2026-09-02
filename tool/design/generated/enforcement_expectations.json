@@ -71,7 +71,7 @@
       "catch.network_image"
     ],
     "catch_no_raw_breakpoint": [
-      "catch.tabbed_screen"
+      "catch.screen_body"
     ],
     "catch_no_raw_button_control": [
       "catch.button",
@@ -168,7 +168,7 @@
       "catch.section_stack"
     ],
     "catch_shell_owns_tab_scaffold": [
-      "catch.tabbed_screen"
+      "catch.tab_bar"
     ],
     "catch_text_requires_style": [
       "catch.typography"

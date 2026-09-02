@@ -200,14 +200,14 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const PreferredSize(
           preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
           child: SizedBox(height: CatchLayout.tabRailHeight),
         ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
@@ -236,14 +236,14 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const PreferredSize(
           preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
           child: SizedBox(height: CatchLayout.tabRailHeight),
         ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
@@ -266,14 +266,14 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const PreferredSize(
           preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
           child: SizedBox(height: CatchLayout.tabRailHeight),
         ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
@@ -751,14 +751,14 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const PreferredSize(
           preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
           child: SizedBox(height: CatchLayout.tabRailHeight),
         ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,

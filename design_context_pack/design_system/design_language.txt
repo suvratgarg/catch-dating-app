@@ -298,7 +298,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchTopBarMenuAction`. Do not pass a body-style `CatchButton` directly into
   any top-bar `actions` slot.
 - Screen hierarchy follows one control per level. Shell destinations express
-  product-level navigation; pinned `CatchTabRail` / `CatchTabbedScreenScaffold`
+  product-level navigation; pinned `CatchTabRail` / `CatchRootScreenScaffold.withPrimaryRail`
   tabs switch peer views within one destination. A small fixed set of terse,
   mutually-exclusive filters uses `CatchOptionGroup`; longer, numerous, or
   dynamic mutually-exclusive filters use `CatchAdaptiveSelectionControl` so
@@ -313,15 +313,15 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   vertical content has actually scrolled beneath the compact bar. Root tab
   titles are scroll content rather than fixed app bars.
 - Root title screens route through `CatchRootScreenScaffold` (or its
-  parent-scaffold `CatchRootScreenScrollView` variant), and pinned peer-tab
-  screens route through `CatchTabbedScreenScaffold` plus
-  `CatchTabbedPageScrollView`. Every body declares the one regular `standard`
+  parent-scaffold `CatchRootScreenScrollView` variant). Roots with pinned peer
+  navigation use `CatchRootScreenScaffold.withPrimaryRail` plus
+  `CatchRootScreenPageScrollView`. Every body declares the one regular `standard`
   geometry (20 pt phone gutter, 24 pt body start) or explicitly edge-owned
   `fullBleed` geometry through `CatchScreenBodyLayout`; feature screens do not
   reconstruct title gaps, page gutters, terminal navigation clearance,
-  responsive content lanes, or state-viewport placement. Tabbed roots use a
+  responsive content lanes, or state-viewport placement. Primary-rail roots use a
   4 pt title-to-rail handoff, 44 pt rail, and the same 24 pt body start.
-  `CatchInsets.pageBody`, `CatchInsets.tabbedScreenTitleBlock`, and
+  `CatchInsets.pageBody`, `CatchInsets.primaryRailTitleBlock`, and
   `CatchLayout.tabRailHeight` own those values. Full bleed removes only the
   outer inset; named nested lanes such as `CatchInsets.chatListGutter` keep
   Consumer Chats and Host Inbox on the same 20 pt horizontal rhythm.

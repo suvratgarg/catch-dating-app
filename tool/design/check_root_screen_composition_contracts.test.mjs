@@ -3,29 +3,29 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {checkTabRootScrollContracts} from "./check_tab_root_scroll_contracts.mjs";
+import {checkRootScreenCompositionContracts} from "./check_root_screen_composition_contracts.mjs";
 
 test("accepts a registered shell branch with a semantic terminal owner", () => {
   const root = fixtureRoot({
     ownerSource:
       "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchSliverTerminalPadding()]));",
   });
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   assert.deepEqual(result.findings, []);
 });
 
-test("accepts a tab root that delegates scroll ownership to the shared shell", () => {
+test("accepts a primary-rail root that delegates scroll ownership to the shared shell", () => {
   const root = fixtureRoot({
     ownerSource: `
-      class ExamplePage extends Widget implements CatchTabbedPageOwner {
+      class ExamplePage extends Widget implements CatchRootScreenPageOwner {
         CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
-        Widget build(BuildContext context) => CatchTabbedPageScrollView(
+        Widget build(BuildContext context) => CatchRootScreenPageScrollView(
           bodyLayout: bodyLayout,
         );
       }
-      CatchTabbedScreenScaffold(
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
+      CatchRootScreenScaffold.withPrimaryRail(
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
             page: ExamplePage(),
           ),
@@ -33,15 +33,37 @@ test("accepts a tab root that delegates scroll ownership to the shared shell", (
       );
     `,
     requires: [
-      {text: "CatchTabbedScreenScaffold", minimumOccurrences: 1},
-      {text: "CatchTabbedPageScrollView", minimumOccurrences: 1},
-      {text: "implements CatchTabbedPageOwner", minimumOccurrences: 1},
-      {text: "CatchTabbedScreenBody.single", minimumOccurrences: 1},
-      {text: "CatchTabbedPageSpec.scroll", minimumOccurrences: 1},
+      {text: "CatchRootScreenScaffold.withPrimaryRail", minimumOccurrences: 1},
+      {text: "CatchRootScreenPageScrollView", minimumOccurrences: 1},
+      {text: "implements CatchRootScreenPageOwner", minimumOccurrences: 1},
+      {text: "CatchRootScreenBody.single", minimumOccurrences: 1},
+      {text: "CatchRootScreenPageSpec.scroll", minimumOccurrences: 1},
     ],
   });
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   assert.deepEqual(result.findings, []);
+});
+
+test("rejects the superseded parallel tabbed-root API", () => {
+  const root = fixtureRoot({
+    ownerSource: `
+      SafeArea(
+        bottom: false,
+        child: CustomScrollView(
+          slivers: [
+            CatchSliverTerminalPadding(),
+            SliverToBoxAdapter(child: CatchTabbedScreenScaffold()),
+          ],
+        ),
+      );
+    `,
+  });
+  const result = checkRootScreenCompositionContracts({root});
+  assert.ok(
+    result.findings.some(
+      (finding) => finding.code === "legacy-root-layout-symbol",
+    ),
+  );
 });
 
 test("accepts a root screen with an explicit semantic body role", () => {
@@ -61,7 +83,7 @@ test("accepts a root screen with an explicit semantic body role", () => {
     ],
     forbids: [{text: "CustomScrollView("}],
   });
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   assert.deepEqual(result.findings, []);
 });
 
@@ -77,7 +99,7 @@ test("flags a root screen that bypasses semantic composition", () => {
     ],
     forbids: [{text: "CustomScrollView("}],
   });
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   assert.ok(
     result.findings.some(
       (finding) => finding.code === "missing-required-text",
@@ -107,7 +129,7 @@ test("flags a state branch that escapes an otherwise valid root owner", () => {
     ],
     forbids: [{text: "CatchErrorScaffold"}],
   });
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   assert.ok(
     result.findings.some(
       (finding) =>
@@ -123,15 +145,15 @@ test("accepts lifecycle-owned StatefulShellBranch key member access", () => {
       "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchSliverTerminalPadding()]));",
     routerBranchKey: "keys.home",
   });
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   assert.deepEqual(result.findings, []);
 });
 
-test("flags the known-bad tab root fixture when terminal padding is missing", () => {
+test("flags the known-bad root screen fixture when terminal padding is missing", () => {
   const root = fixtureRoot({
     ownerSource: "SafeArea(bottom: false, child: CustomScrollView());",
   });
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   assert.ok(
     result.findings.some(
       (finding) => finding.code === "missing-required-text",
@@ -145,7 +167,7 @@ test("flags a shell that bypasses the shared adaptive scaffold", () => {
       "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchSliverTerminalPadding()]));",
     shellSource: "return Scaffold(body: navigationShell);",
   });
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   assert.ok(
     result.findings.some(
       (finding) =>
@@ -167,7 +189,7 @@ test("flags a new StatefulShellBranch until it is registered", () => {
       ),
     `,
   });
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   assert.ok(
     result.findings.some(
       (finding) =>
@@ -187,7 +209,7 @@ test("flags a raw SliverFillRemaining empty state in presentation code", () => {
       );
     `,
   });
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   assert.ok(
     result.findings.some(
       (finding) =>
@@ -228,7 +250,7 @@ function fixtureRoot({
   }
   write(
     root,
-    "tool/design/tab_root_scroll_contracts.json",
+    "tool/design/root_screen_composition_contracts.json",
     JSON.stringify({
       schemaVersion: 2,
       logicalName: "fixture",

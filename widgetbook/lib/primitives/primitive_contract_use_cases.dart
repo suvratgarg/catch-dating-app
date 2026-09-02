@@ -65,7 +65,6 @@ import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -77,7 +76,7 @@ import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart'
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
-import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -7346,20 +7345,20 @@ Widget chatInputBarFocusedDraft(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchTabbedScreenScaffold,
+  type: CatchRootScreenScaffold,
   path: '[Core primitives]/Navigation',
 )
-Widget catchTabbedScreenContractStates(BuildContext context) {
-  return const _TabbedScreenContractUseCase();
+Widget catchRootScreenPrimaryRailContractStates(BuildContext context) {
+  return const _RootScreenContractUseCase();
 }
 
 @widgetbook.UseCase(
-  name: 'Shared tabbed page',
-  type: CatchTabbedPageScrollView,
+  name: 'Root page with primary rail',
+  type: CatchRootScreenPageScrollView,
   path: '[Core primitives]/Navigation',
 )
-Widget catchTabbedPageContractStates(BuildContext context) {
-  return const _TabbedScreenContractUseCase();
+Widget catchRootScreenPageContractStates(BuildContext context) {
+  return const _RootScreenContractUseCase();
 }
 
 @widgetbook.UseCase(
@@ -7368,7 +7367,7 @@ Widget catchTabbedPageContractStates(BuildContext context) {
   path: '[Core primitives]/Navigation',
 )
 Widget catchSliverContentWidthContractStates(BuildContext context) {
-  return const _TabbedScreenContractUseCase();
+  return const _RootScreenContractUseCase();
 }
 
 @widgetbook.UseCase(
@@ -7377,29 +7376,32 @@ Widget catchSliverContentWidthContractStates(BuildContext context) {
   path: '[Core primitives]/Navigation',
 )
 Widget catchTabControllerRailContractStates(BuildContext context) {
-  return const _TabbedScreenContractUseCase();
+  return const _RootScreenContractUseCase();
 }
 
-class _TabbedScreenContractUseCase extends StatelessWidget {
-  const _TabbedScreenContractUseCase();
+class _RootScreenContractUseCase extends StatelessWidget {
+  const _RootScreenContractUseCase();
 
   @override
   Widget build(BuildContext context) {
     return const _ContractScreen(
-      title: 'CatchTabbedScreenScaffold',
-      contractId: 'catch.tabbed_screen',
+      title: 'CatchRootScreenScaffold',
+      contractId: 'catch.screen_body.root_screen_scaffold',
       states: [
-        'title-expanded',
-        'title-collapsed',
-        'tab-rail-pinned',
-        'tab-page-restored',
+        'standard',
+        'full-bleed',
+        'primary-rail',
+        'paged-primary-rail',
+        'responsive-width',
+        'floating-bottom-navigation',
+        'side-navigation',
       ],
       children: [
         _StateCard(
           label: 'shared shell',
           child: AspectRatio(
             aspectRatio: 9 / 16,
-            child: _TabbedScreenContractDemo(),
+            child: _RootScreenPrimaryRailContractDemo(),
           ),
         ),
       ],
@@ -9833,15 +9835,16 @@ class _ChatComposerContractPreviewState
   }
 }
 
-class _TabbedScreenContractDemo extends StatefulWidget {
-  const _TabbedScreenContractDemo();
+class _RootScreenPrimaryRailContractDemo extends StatefulWidget {
+  const _RootScreenPrimaryRailContractDemo();
 
   @override
-  State<_TabbedScreenContractDemo> createState() =>
-      _TabbedScreenContractDemoState();
+  State<_RootScreenPrimaryRailContractDemo> createState() =>
+      _RootScreenPrimaryRailContractDemoState();
 }
 
-class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
+class _RootScreenPrimaryRailContractDemoState
+    extends State<_RootScreenPrimaryRailContractDemo>
     with SingleTickerProviderStateMixin {
   late final TabController _controller = TabController(length: 2, vsync: this);
 
@@ -9853,24 +9856,26 @@ class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabbedScreenScaffold(
-      eyebrow: 'YOUR SPACE',
-      title: 'Tabbed workspace',
-      subtitle: 'Independent page scroll state',
-      semanticsLabel: 'Tabbed screen contract preview',
-      tabRail: CatchTabControllerRail<String>(
+    return CatchRootScreenScaffold.withPrimaryRail(
+      header: const CatchRootScreenHeader.title(
+        eyebrow: 'YOUR SPACE',
+        title: 'Root workspace',
+        subtitle: 'Independent page scroll state',
+      ),
+      semanticsLabel: 'Root primary-rail contract preview',
+      primaryRail: CatchTabControllerRail<String>(
         controller: _controller,
         options: const [
           CatchOption(value: 'edit', label: 'Edit'),
           CatchOption(value: 'preview', label: 'Preview'),
         ],
       ),
-      body: CatchTabbedScreenBody.paged(
+      body: CatchRootScreenBody.paged(
         controller: _controller,
         pages: const [
-          CatchTabbedPageSpec.scroll(
+          CatchRootScreenPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
-            page: CatchTabbedPageScrollView(
+            page: CatchRootScreenPageScrollView(
               scrollKey: PageStorageKey<String>('contract-tab-edit'),
               bodyLayout: CatchScreenBodyLayout.standard,
               slivers: [
@@ -9880,9 +9885,9 @@ class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
               ],
             ),
           ),
-          CatchTabbedPageSpec.scroll(
+          CatchRootScreenPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
-            page: CatchTabbedPageScrollView(
+            page: CatchRootScreenPageScrollView(
               scrollKey: PageStorageKey<String>('contract-tab-preview'),
               bodyLayout: CatchScreenBodyLayout.standard,
               slivers: [

@@ -1315,6 +1315,42 @@ Widget exploreFilterRailStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Applied filter states',
+  type: ExploreAppliedFilterChips,
+  path: '[Explore]/Sections',
+)
+Widget exploreAppliedFilterChipsStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreAppliedFilterChips',
+    catalogId: 'section.explore.applied_filters',
+    children: [
+      _StateCard(
+        label: 'secondary filters scroll with content',
+        description:
+            'This row is deliberately separate from the pinned time rail.',
+        child: _ExploreScope(
+          child: ExploreAppliedFilterChips(
+            filters: const ExploreFilterSelection(
+              distanceFilter: ExploreDistanceFilter.threeKm,
+              highRatedOnly: true,
+              joinedOnly: true,
+              activityTag: 'pickleball',
+              area: 'Bandra',
+            ),
+            showJoinedOnly: true,
+            onDistanceFilterSelected: (_) {},
+            onToggleJoinedOnly: _noop,
+            onToggleHighRatedOnly: _noop,
+            onToggleActivityTag: (_) {},
+            onToggleArea: (_) {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Filter option item states',
   type: CatchOptionGroupItem,
   path: '[Explore]/Controls',

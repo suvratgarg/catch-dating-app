@@ -520,8 +520,8 @@ void _expectAudienceStateOwner(
   required HostAudienceView selected,
 }) {
   expect(find.byType(HostAudienceStateScaffold), findsOneWidget);
-  expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
-  expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
+  expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+  expect(find.byType(CatchRootScreenPageScrollView), findsOneWidget);
   expect(find.byType(HostAudienceTabRail), findsOneWidget);
   expect(find.byType(CatchErrorScaffold), findsNothing);
   expect(find.byType(HostLoadingScreen), findsNothing);
@@ -533,8 +533,8 @@ void _expectAudienceStateOwner(
   );
   expect(
     tester
-        .widget<CatchTabbedPageScrollView>(
-          find.byType(CatchTabbedPageScrollView),
+        .widget<CatchRootScreenPageScrollView>(
+          find.byType(CatchRootScreenPageScrollView),
         )
         .bodyLayout,
     CatchScreenBodyLayout.standard,

@@ -1,7 +1,7 @@
 part of 'host_customers_screen.dart';
 
 class HostSavedAudiencesWorkspace extends ConsumerWidget
-    implements CatchTabbedPageOwner {
+    implements CatchRootScreenPageOwner {
   const HostSavedAudiencesWorkspace({
     super.key,
     required this.organizerId,
@@ -21,7 +21,7 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final audiences = ref.watch(hostAllSavedAudiencesProvider(organizerId));
-    return CatchTabbedPageScrollView(
+    return CatchRootScreenPageScrollView(
       scrollKey: const PageStorageKey<String>('host-customers-audiences'),
       bodyLayout: bodyLayout,
       constrainToContentWidth: true,

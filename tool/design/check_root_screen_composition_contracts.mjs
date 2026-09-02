@@ -4,9 +4,18 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {repoRoot} from "../lib/repo_paths.mjs";
 
-const defaultManifestPath = "tool/design/tab_root_scroll_contracts.json";
+const defaultManifestPath = "tool/design/root_screen_composition_contracts.json";
 const branchKeyPattern =
   /StatefulShellBranch\s*\(\s*navigatorKey\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)/gu;
+const legacyRootSymbols = [
+  "CatchTabbedScreenScaffold",
+  "CatchTabbedScreenBody",
+  "CatchTabbedPageSpec",
+  "CatchTabbedPageOwner",
+  "CatchTabbedPageScrollView",
+  "CatchTabbedPageScrollController",
+  "catch_tabbed_screen.dart",
+];
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -14,7 +23,7 @@ const isCliEntrypoint =
 
 if (isCliEntrypoint) runCli();
 
-export function checkTabRootScrollContracts({
+export function checkRootScreenCompositionContracts({
   root = repoRoot,
   manifestPath = defaultManifestPath,
 } = {}) {
@@ -24,7 +33,7 @@ export function checkTabRootScrollContracts({
     return resultWith(findings, {
       code: "missing-manifest",
       path: manifestPath,
-      message: "Tab-root scroll contract manifest does not exist.",
+      message: "Root-screen composition contract manifest does not exist.",
     });
   }
 
@@ -97,9 +106,29 @@ export function checkTabRootScrollContracts({
     }
   }
 
+  checkLegacyRootSymbols({root, findings});
   checkStateViewportOwnership({root, findings});
 
   return summarize(manifest, findings);
+}
+
+function checkLegacyRootSymbols({root, findings}) {
+  const libRoot = path.join(root, "lib");
+  if (!fs.existsSync(libRoot)) return;
+  for (const absolutePath of dartFiles(libRoot)) {
+    const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
+    const source = fs.readFileSync(absolutePath, "utf8");
+    for (const symbol of legacyRootSymbols) {
+      if (!source.includes(symbol)) continue;
+      findings.push({
+        code: "legacy-root-layout-symbol",
+        path: relativePath,
+        message:
+          `${symbol} was replaced by the single CatchRootScreenScaffold ` +
+          "family. Use the ordinary constructor or withPrimaryRail.",
+      });
+    }
+  }
 }
 
 function checkStateViewportOwnership({root, findings}) {
@@ -161,7 +190,7 @@ function checkOwner({root, owner, findings, ownerKind}) {
     findings.push({
       code: "missing-owner",
       path: relativePath,
-      message: `Declared tab-root ${ownerKind} does not exist.`,
+      message: `Declared root-screen ${ownerKind} does not exist.`,
     });
     return;
   }
@@ -291,7 +320,7 @@ function summarize(manifest, findings) {
 function runCli() {
   const args = process.argv.slice(2);
   if (args.includes("--help") || args.includes("-h")) {
-    console.log(`Usage: node tool/design/check_tab_root_scroll_contracts.mjs [--check|--json]
+    console.log(`Usage: node tool/design/check_root_screen_composition_contracts.mjs [--check|--json]
 
 Checks every StatefulShellBranch against the versioned screen-composition
 manifest, verifies semantic body and terminal ownership, and rejects raw
@@ -301,12 +330,12 @@ empty/error SliverFillRemaining composition in presentation code.`);
 
   const rootIndex = args.indexOf("--root");
   const root = rootIndex >= 0 ? args[rootIndex + 1] : repoRoot;
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   if (args.includes("--json")) {
     console.log(JSON.stringify(result, null, 2));
   } else if (result.findings.length === 0) {
     console.log(
-      `Tab-root scroll contracts: ${result.shellCount} shells, ` +
+      `Root-screen composition contracts: ${result.shellCount} shells, ` +
         `${result.branchCount} branches, ` +
         `${result.ownerCount} owner files, 0 findings.`,
     );

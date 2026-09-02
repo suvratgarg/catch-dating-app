@@ -402,7 +402,15 @@ void _registerExploreErrorsAndCreationTests() {
     final rootScaffold = tester.widget<CatchRootScreenScaffold>(
       find.byType(CatchRootScreenScaffold),
     );
-    expect(rootScaffold.bodyLayout, CatchScreenBodyLayout.fullBleed);
+    expect(rootScaffold.primaryRail, isNotNull);
+    expect(
+      tester
+          .widget<CatchRootScreenPageScrollView>(
+            find.byType(CatchRootScreenPageScrollView),
+          )
+          .bodyLayout,
+      CatchScreenBodyLayout.fullBleed,
+    );
     expect(rootScaffold.topEdge, CatchRootScreenTopEdge.headerOwned);
     expect(find.text('Explore unavailable'), findsOneWidget);
     expect(

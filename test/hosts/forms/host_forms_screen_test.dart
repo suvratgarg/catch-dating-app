@@ -10,9 +10,9 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
@@ -158,7 +158,7 @@ void main() {
       );
       await pumpFeatureUi(tester);
 
-      final scaffold = find.byType(CatchTabbedScreenScaffold);
+      final scaffold = find.byType(CatchRootScreenScaffold);
       expect(scaffold, findsOneWidget);
       expect(
         find.byKey(const ValueKey('host-audience-view-tabs')),
@@ -172,7 +172,9 @@ void main() {
       expect(find.byType(CatchTopBarPrimaryAction), findsOneWidget);
       expect(find.byType(CatchSearchField), findsOneWidget);
       expect(
-        tester.widget<CatchTabbedScreenScaffold>(scaffold).search?.placeholder,
+        tester
+            .widget<CatchSearchField>(find.byType(CatchSearchField))
+            .placeholder,
         'Search forms',
       );
       expect(
@@ -207,7 +209,9 @@ void main() {
       expect(find.byKey(const ValueKey('host-forms-create')), findsNothing);
       expect(find.byType(CatchSearchField), findsOneWidget);
       expect(
-        tester.widget<CatchTabbedScreenScaffold>(scaffold).search?.placeholder,
+        tester
+            .widget<CatchSearchField>(find.byType(CatchSearchField))
+            .placeholder,
         'Search responses',
       );
       expect(
@@ -331,8 +335,8 @@ void _expectFormsAudienceStateOwner(
   required HostAudienceView selected,
 }) {
   expect(find.byType(HostAudienceStateScaffold), findsOneWidget);
-  expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
-  expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
+  expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+  expect(find.byType(CatchRootScreenPageScrollView), findsOneWidget);
   expect(find.byType(HostAudienceTabRail), findsOneWidget);
   expect(find.byType(CatchErrorScaffold), findsNothing);
   expect(find.byType(HostLoadingScreen), findsNothing);
@@ -344,8 +348,8 @@ void _expectFormsAudienceStateOwner(
   );
   expect(
     tester
-        .widget<CatchTabbedPageScrollView>(
-          find.byType(CatchTabbedPageScrollView),
+        .widget<CatchRootScreenPageScrollView>(
+          find.byType(CatchRootScreenPageScrollView),
         )
         .bodyLayout,
     CatchScreenBodyLayout.standard,

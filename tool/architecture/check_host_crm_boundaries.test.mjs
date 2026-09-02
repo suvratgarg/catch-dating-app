@@ -55,7 +55,7 @@ test("flags modal, contained, or duplicate saved-audience presentation", () => {
     ].join("\n"),
     customersPath: "customers.dart",
     customersSource: [
-      "CatchTabbedScreenScaffold(",
+      "CatchRootScreenScaffold.withPrimaryRail(",
       "HostSavedAudiencesWorkspace(",
       "actions: peopleView",
       "HostSavedAudiencesSheet()",

@@ -337,7 +337,7 @@ export function audienceWorkspacePresentationFindings({
 }) {
   const findings = [];
   for (const anchor of [
-    "CatchTabbedScreenScaffold(",
+    "CatchRootScreenScaffold.withPrimaryRail(",
     "HostSavedAudiencesWorkspace(",
     "actions: peopleView",
   ]) {

@@ -48,7 +48,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 abstract final class ExploreScreenKeys {
-  static const scrollView = ValueKey<String>('explore.scroll_view');
+  static const scrollView = PageStorageKey<String>('explore.scroll_view');
 }
 
 /// Explore — the supply-side feed (design-system Explore).
@@ -541,66 +541,95 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       children: [
         CatchMutationErrorListener(
           mutation: ClubMembershipController.joinMutation,
-          child: CatchRootScreenScaffold(
-            scrollKey: ExploreScreenKeys.scrollView,
+          child: CatchRootScreenScaffold.withPrimaryRail(
             topEdge: CatchRootScreenTopEdge.headerOwned,
-            header: ExploreDiscoveryCoverHeader(
-              cityPickerState: cityPickerState,
-              query: query,
-              featuredItem: featuredItem,
-              onCitySelected: (selectedCity) => ref
-                  .read(selectedExploreCityProvider.notifier)
-                  .setCity(selectedCity),
-              onQueryChanged: (value) =>
-                  ref.read(exploreSearchQueryProvider.notifier).setQuery(value),
-              actions: showAccountControls ? [savedEventsAction()] : const [],
-              heroActions: showAccountControls
-                  ? [savedEventsAction(onDarkBackdrop: true)]
-                  : const [],
-              searchRequested: _searchRequested,
-              onSearchRequestedChanged: (expanded) {
-                if (_searchRequested == expanded) return;
-                setState(() => _searchRequested = expanded);
-              },
-              onFeaturedEventSelected: openFeaturedEvent,
+            header: CatchRootScreenHeader.custom(
+              ExploreDiscoveryCoverHeader(
+                cityPickerState: cityPickerState,
+                query: query,
+                featuredItem: featuredItem,
+                onCitySelected: (selectedCity) => ref
+                    .read(selectedExploreCityProvider.notifier)
+                    .setCity(selectedCity),
+                onQueryChanged: (value) => ref
+                    .read(exploreSearchQueryProvider.notifier)
+                    .setQuery(value),
+                actions: showAccountControls ? [savedEventsAction()] : const [],
+                heroActions: showAccountControls
+                    ? [savedEventsAction(onDarkBackdrop: true)]
+                    : const [],
+                searchRequested: _searchRequested,
+                onSearchRequestedChanged: (expanded) {
+                  if (_searchRequested == expanded) return;
+                  setState(() => _searchRequested = expanded);
+                },
+                onFeaturedEventSelected: openFeaturedEvent,
+              ),
             ),
-            bodyLayout: CatchScreenBodyLayout.fullBleed,
-            physics: const AlwaysScrollableScrollPhysics(),
-            onRefresh: _refreshExploreData,
-            slivers: [
-              SliverToBoxAdapter(
-                child: ExploreFilterRail(
-                  filters: visibleFilters,
-                  state: filterRailState,
-                  dateStripState: dateStripState,
-                  sheetState: filterSheetState,
-                  onTimeFilterSelected: (filter) => ref
-                      .read(exploreFiltersProvider.notifier)
-                      .setTimeFilter(filter),
-                  onDistanceFilterSelected: (filter) =>
-                      unawaited(_applyDistanceFilter(filter)),
-                  onToggleJoinedOnly: showAccountControls
-                      ? () => ref
+            primaryRail: ExploreFilterRail(
+              filters: visibleFilters,
+              state: filterRailState,
+              dateStripState: dateStripState,
+              sheetState: filterSheetState,
+              onTimeFilterSelected: (filter) => ref
+                  .read(exploreFiltersProvider.notifier)
+                  .setTimeFilter(filter),
+              onDistanceFilterSelected: (filter) =>
+                  unawaited(_applyDistanceFilter(filter)),
+              onToggleJoinedOnly: showAccountControls
+                  ? () => ref
+                        .read(exploreFiltersProvider.notifier)
+                        .toggleJoinedOnly()
+                  : null,
+              onToggleHighRatedOnly: () => ref
+                  .read(exploreFiltersProvider.notifier)
+                  .toggleHighRatedOnly(),
+              onToggleActivityTag: (tag) => ref
+                  .read(exploreFiltersProvider.notifier)
+                  .toggleActivityTag(tag),
+              onToggleArea: (area) =>
+                  ref.read(exploreFiltersProvider.notifier).toggleArea(area),
+              onClearFilters: () =>
+                  ref.read(exploreFiltersProvider.notifier).clear(),
+              onOpenFilters: openExploreFilters,
+              showJoinedOnly: showAccountControls,
+            ),
+            body: CatchRootScreenBody.single(
+              page: CatchRootScreenPageSpec.scroll(
+                bodyLayout: CatchScreenBodyLayout.fullBleed,
+                page: CatchRootScreenPageScrollView(
+                  scrollKey: ExploreScreenKeys.scrollView,
+                  bodyLayout: CatchScreenBodyLayout.fullBleed,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  onRefresh: _refreshExploreData,
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: ExploreAppliedFilterChips(
+                        filters: visibleFilters,
+                        showJoinedOnly: showAccountControls,
+                        onDistanceFilterSelected: (filter) =>
+                            unawaited(_applyDistanceFilter(filter)),
+                        onToggleJoinedOnly: showAccountControls
+                            ? () => ref
+                                  .read(exploreFiltersProvider.notifier)
+                                  .toggleJoinedOnly()
+                            : null,
+                        onToggleHighRatedOnly: () => ref
                             .read(exploreFiltersProvider.notifier)
-                            .toggleJoinedOnly()
-                      : null,
-                  onToggleHighRatedOnly: () => ref
-                      .read(exploreFiltersProvider.notifier)
-                      .toggleHighRatedOnly(),
-                  onToggleActivityTag: (tag) => ref
-                      .read(exploreFiltersProvider.notifier)
-                      .toggleActivityTag(tag),
-                  onToggleArea: (area) => ref
-                      .read(exploreFiltersProvider.notifier)
-                      .toggleArea(area),
-                  onClearFilters: () =>
-                      ref.read(exploreFiltersProvider.notifier).clear(),
-                  onOpenFilters: openExploreFilters,
-                  showJoinedOnly: showAccountControls,
+                            .toggleHighRatedOnly(),
+                        onToggleActivityTag: (tag) => ref
+                            .read(exploreFiltersProvider.notifier)
+                            .toggleActivityTag(tag),
+                        onToggleArea: (area) => ref
+                            .read(exploreFiltersProvider.notifier)
+                            .toggleArea(area),
+                      ),
+                    ),
+                    ...bodySlivers,
+                  ],
                 ),
               ),
-              ...bodySlivers,
-            ],
+            ),
           ),
         ),
         if (screenState.mapLauncherState.isVisible)

@@ -134,7 +134,6 @@
           "description": "Semantic screen-layout family. Every owner registered for one route must use the same family.",
           "enum": [
             "root",
-            "tabbed-root",
             "pushed-route",
             "media-hero",
             "immersive",
@@ -147,8 +146,9 @@
           "description": "Allowed canonical layout expression that must occur in the named declaration.",
           "enum": [
             "CatchRootScreenScaffold",
+            "CatchRootScreenScaffold.withPrimaryRail",
             "CatchRootScreenScrollView",
-            "CatchTabbedScreenScaffold",
+            "CatchRootScreenScrollView.withPrimaryRail",
             "CatchRouteScaffold",
             "CatchScreenScaffold.standalone",
             "CatchScreenScaffold.stepFlow",
@@ -211,7 +211,6 @@
           "description": "Semantic screen-layout family shared by every owner for this presentation target.",
           "enum": [
             "root",
-            "tabbed-root",
             "pushed-route",
             "media-hero",
             "immersive",
@@ -224,8 +223,9 @@
           "description": "Allowed canonical layout expression that must occur in the named declaration.",
           "enum": [
             "CatchRootScreenScaffold",
+            "CatchRootScreenScaffold.withPrimaryRail",
             "CatchRootScreenScrollView",
-            "CatchTabbedScreenScaffold",
+            "CatchRootScreenScrollView.withPrimaryRail",
             "CatchRouteScaffold",
             "CatchScreenScaffold.standalone",
             "CatchScreenScaffold.stepFlow",

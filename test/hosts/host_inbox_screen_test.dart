@@ -13,7 +13,8 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -127,6 +128,46 @@ void main() {
     );
     expect(find.text('Asha Guest'), findsNothing);
   });
+
+  testWidgets(
+    'Messaging title collapses while the workspace rail stays pinned',
+    (tester) async {
+      final previews = List<ChatThreadPreview>.generate(
+        24,
+        (index) => _preview(
+          uid: 'general-$index',
+          name: 'General Guest $index',
+          eventIds: const [],
+        ),
+      );
+      await tester.pumpWidget(
+        _app(
+          event: null,
+          previews: previews,
+          participations: const [],
+          now: now,
+        ),
+      );
+      await pumpFeatureUi(tester);
+
+      expect(find.byType(NestedScrollView), findsOneWidget);
+      final topBar = tester.widget<CatchScreenTopBar>(
+        find.byType(CatchScreenTopBar),
+      );
+      expect(topBar.contentPadding, CatchInsets.primaryRailTitleBlock);
+      final rail = find.byType(HostMessagingWorkspaceRail);
+      final railBefore = tester.getRect(rail);
+
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -600));
+      await pumpFeatureUi(tester);
+      final railAfterCollapse = tester.getRect(rail);
+      expect(railAfterCollapse.top, lessThan(railBefore.top));
+
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -240));
+      await pumpFeatureUi(tester);
+      expect(tester.getRect(rail).top, closeTo(railAfterCollapse.top, 0.001));
+    },
+  );
 
   testWidgets('expanded inbox reserves a stable conversation detail pane', (
     tester,
@@ -731,13 +772,13 @@ void main() {
         find.ancestor(of: emptyState, matching: find.byType(Center)),
         findsNothing,
       );
-      final fill = tester.widget<SliverFillRemaining>(
+      final fills = tester.widgetList<SliverFillRemaining>(
         find.ancestor(
           of: emptyState,
           matching: find.byType(SliverFillRemaining),
         ),
       );
-      expect(fill.hasScrollBody, isTrue);
+      expect(fills.any((fill) => fill.hasScrollBody), isTrue);
       expect(
         tester.getCenter(content).dx,
         closeTo(tester.getCenter(emptyState).dx, 0.5),

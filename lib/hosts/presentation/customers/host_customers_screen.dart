@@ -28,12 +28,12 @@ import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
@@ -296,70 +296,75 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
               summaryState.value?.smsReadiness,
             ),
     );
-    return CatchTabbedScreenScaffold(
-      title: context.l10n.hostNavigationAudience,
-      actions: peopleView
-          ? [
-              CatchTopBarPrimaryAction(
-                key: const ValueKey<String>('host-customers-add-customer'),
-                label: context.l10n.hostCustomersAdd,
-                icon: CatchIcons.personAddAlt1Rounded,
-                onPressed: () => _addCustomer(selectedClub, request),
-              ),
-              CatchTopBarMenuAction<_HostCustomersHeaderAction>(
-                tooltip: context.l10n.hostCustomersMoreActions,
-                items: _hostCustomersHeaderActions(
-                  context,
-                  includeExport: !_exporting,
-                  exportEnabled: _manualTag == null,
-                  exportSublabel: _manualTag == null
-                      ? null
-                      : context.l10n.hostCustomersManualTagExportUnavailable,
+    return CatchRootScreenScaffold.withPrimaryRail(
+      header: CatchRootScreenHeader.title(
+        title: context.l10n.hostNavigationAudience,
+        actions: peopleView
+            ? [
+                CatchTopBarPrimaryAction(
+                  key: const ValueKey<String>('host-customers-add-customer'),
+                  label: context.l10n.hostCustomersAdd,
+                  icon: CatchIcons.personAddAlt1Rounded,
+                  onPressed: () => _addCustomer(selectedClub, request),
                 ),
-                onSelected: (action) {
-                  if (action == _HostCustomersHeaderAction.reviewDuplicates) {
-                    unawaited(_reviewDuplicates(selectedClub.id));
-                  }
-                  if (action == _HostCustomersHeaderAction.export) {
-                    unawaited(_exportCustomers(selectedClub, effectiveFilter));
-                  }
-                },
-              ),
-            ]
-          : const [],
-      search: CatchTopBarSearch(
-        fieldKey: ValueKey(
-          peopleView ? 'host-customers-search' : 'host-audiences-search',
+                CatchTopBarMenuAction<_HostCustomersHeaderAction>(
+                  tooltip: context.l10n.hostCustomersMoreActions,
+                  items: _hostCustomersHeaderActions(
+                    context,
+                    includeExport: !_exporting,
+                    exportEnabled: _manualTag == null,
+                    exportSublabel: _manualTag == null
+                        ? null
+                        : context.l10n.hostCustomersManualTagExportUnavailable,
+                  ),
+                  onSelected: (action) {
+                    if (action == _HostCustomersHeaderAction.reviewDuplicates) {
+                      unawaited(_reviewDuplicates(selectedClub.id));
+                    }
+                    if (action == _HostCustomersHeaderAction.export) {
+                      unawaited(
+                        _exportCustomers(selectedClub, effectiveFilter),
+                      );
+                    }
+                  },
+                ),
+              ]
+            : const [],
+        search: CatchTopBarSearch(
+          fieldKey: ValueKey(
+            peopleView ? 'host-customers-search' : 'host-audiences-search',
+          ),
+          value: activeQuery ?? '',
+          contract: peopleView
+              ? CatchContractConstraints
+                    .listOrganizerContactsCallablePayloadQuery
+              : CatchContractConstraints
+                    .upsertOrganizerSavedAudienceCallablePayloadName,
+          placeholder: peopleView
+              ? context.l10n.hostsHostAudienceSearch
+              : context.l10n.hostSavedAudiencesSearch,
+          tooltip: peopleView
+              ? context.l10n.hostsHostAudienceSearch
+              : context.l10n.hostSavedAudiencesSearch,
+          semanticLabel: peopleView
+              ? context.l10n.hostsHostAudienceSearch
+              : context.l10n.hostSavedAudiencesSearch,
+          expanded: _searchExpanded || activeQuery != null,
+          onExpandedChanged: (expanded) {
+            if (_searchExpanded == expanded) return;
+            setState(() => _searchExpanded = expanded);
+          },
+          onChanged: (value) => _scheduleSearch(_view, value),
+          onSubmitted: (value) => _applySearch(_view, value),
+          onFocusChanged: (focused) {
+            if (!focused && activeQuery == null && _searchExpanded) {
+              setState(() => _searchExpanded = false);
+            }
+          },
+          textInputAction: TextInputAction.search,
         ),
-        value: activeQuery ?? '',
-        contract: peopleView
-            ? CatchContractConstraints.listOrganizerContactsCallablePayloadQuery
-            : CatchContractConstraints
-                  .upsertOrganizerSavedAudienceCallablePayloadName,
-        placeholder: peopleView
-            ? context.l10n.hostsHostAudienceSearch
-            : context.l10n.hostSavedAudiencesSearch,
-        tooltip: peopleView
-            ? context.l10n.hostsHostAudienceSearch
-            : context.l10n.hostSavedAudiencesSearch,
-        semanticLabel: peopleView
-            ? context.l10n.hostsHostAudienceSearch
-            : context.l10n.hostSavedAudiencesSearch,
-        expanded: _searchExpanded || activeQuery != null,
-        onExpandedChanged: (expanded) {
-          if (_searchExpanded == expanded) return;
-          setState(() => _searchExpanded = expanded);
-        },
-        onChanged: (value) => _scheduleSearch(_view, value),
-        onSubmitted: (value) => _applySearch(_view, value),
-        onFocusChanged: (focused) {
-          if (!focused && activeQuery == null && _searchExpanded) {
-            setState(() => _searchExpanded = false);
-          }
-        },
-        textInputAction: TextInputAction.search,
       ),
-      tabRail: PreferredSize(
+      primaryRail: PreferredSize(
         preferredSize: const Size.fromHeight(CatchLayout.tabRailHeight),
         child: AnimatedBuilder(
           animation: _tabController.animation!,
@@ -370,13 +375,13 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
           ),
         ),
       ),
-      body: CatchTabbedScreenBody.paged(
+      body: CatchRootScreenBody.paged(
         controller: _tabController,
         pages: [
-          CatchTabbedPageSpec.masterDetail(
+          CatchRootScreenPageSpec.masterDetail(
             bodyLayout: CatchScreenBodyLayout.standard,
             expanded: screenSize.isExpanded,
-            master: CatchTabbedPageScrollView(
+            master: CatchRootScreenPageScrollView(
               scrollKey: const PageStorageKey<String>('host-customers-people'),
               bodyLayout: CatchScreenBodyLayout.standard,
               constrainToContentWidth: true,
@@ -508,7 +513,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                     embedded: true,
                   ),
           ),
-          CatchTabbedPageSpec.scroll(
+          CatchRootScreenPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
             page: HostSavedAudiencesWorkspace(
               organizerId: selectedClub.id,
