@@ -1791,7 +1791,7 @@
       "command": "node tool/design/check_component_enforcement_coverage.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Requires every component to have enforcement or an unexpired waiver and every plugin/checker code to have a catalog owner.",
+      "description": "Requires every component to have static enforcement, executable contract verification, or an exceptional unexpired waiver, and every plugin/checker code to have a catalog owner.",
       "checks": [
         "node --test tool/design/check_component_enforcement_coverage.test.mjs",
         "node tool/design/check_component_enforcement_coverage.mjs"
@@ -1804,7 +1804,7 @@
         "type": "test",
         "path": "tool/design/check_component_enforcement_coverage.test.mjs",
         "contains": [
-          "requires decisions, live waivers, ownership, and probes"
+          "requires decisions, executable verification, live waivers, ownership, and probes"
         ]
       }
     },
