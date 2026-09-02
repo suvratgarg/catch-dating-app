@@ -4944,6 +4944,9 @@ Widget catchJourneyStepNodeContractStates(BuildContext context) {
   path: '[Core primitives]/Sections',
 )
 Widget catchScreenScaffoldContractStates(BuildContext context) {
+  final mediaQuery = MediaQuery.of(context);
+  final t = CatchTokens.of(context);
+
   return CatchScreenScaffold.standalone(
     body: _ContractScreen(
       title: 'CatchScreenScaffold',
@@ -4952,12 +4955,44 @@ Widget catchScreenScaffoldContractStates(BuildContext context) {
         'standalone-safe-area',
         'step-flow-safe-area',
         'workspace-owned-insets',
+        'keyboard-resize',
       ],
-      children: const [
-        _StateCard(
+      children: [
+        const _StateCard(
           label: 'role-owned surface',
           child: _BodySpec(
             label: 'The named constructor owns surface and safe-area policy.',
+          ),
+        ),
+        _StateCard(
+          label: 'keyboard-resize',
+          description:
+              'A simulated keyboard inset shortens the scaffold body so its '
+              'bottom action remains above the obstruction.',
+          child: _BodyFrame(
+            child: MediaQuery(
+              data: mediaQuery.copyWith(
+                viewInsets: const EdgeInsets.only(
+                  bottom: WidgetbookPreviewLayout.compactPanelHeight,
+                ),
+              ),
+              child: CatchScreenScaffold.standalone(
+                safeArea: CatchScreenSafeArea.none,
+                resizeToAvoidBottomInset: true,
+                body: ColoredBox(
+                  color: t.surface,
+                  child: const Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: CatchInsets.content,
+                      child: _BodySpec(
+                        label: 'Bottom action clears the keyboard inset.',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ],

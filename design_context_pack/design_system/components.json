@@ -7389,8 +7389,8 @@
         ],
         "notes": [
           "Use for regular non-sliver route bodies before composing ad hoc page padding.",
-          "Every full-screen route first declares standalone, step-flow, or workspace surface ownership through CatchScreenScaffold. Root title destinations then use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry; pinned peer-tab destinations declare the same role through CatchTabbedPageScrollView.",
-          "Screens may override top/bottom rhythm but should not hand-roll the horizontal gutter.",
+          "Every full-screen composition terminates in standalone, step-flow, or workspace surface ownership through CatchScreenScaffold. Root title destinations use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry; pinned peer-tab destinations declare the same role through CatchTabbedPageScrollView.",
+          "Regular root and tab bodies may not override the 24-point standard start; specialized full-bleed or intrinsic families and named semantic primitives own any alternate rhythm.",
           "Use CatchResponsiveSectionPage when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
           "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding."
         ]
@@ -13395,9 +13395,15 @@
           }
         ],
         "tokens": [
-          "theme.light.color.bg"
+          "theme.light.color.bg",
+          "space.s1",
+          "space.s5",
+          "space.s6"
         ],
         "dartRoles": [
+          "CatchInsets.tabbedScreenTitleBlock",
+          "CatchLayout.tabRailHeight",
+          "CatchScreenBodyLayout",
           "CatchScreenHeaderTitle.block",
           "CatchSliverHeader",
           "NestedScrollView",
@@ -13467,6 +13473,7 @@
         ],
         "notes": [
           "The route owns the typed TabController and TabBarView; the shell owns title, pinned rail, overlap, and safe-area composition.",
+          "The shell enforces a 4-point title-to-rail handoff, a 44-point pinned rail, and the standard 24-point rail-to-body content start; feature routes do not restate these values.",
           "Every page uses CatchTabbedPageScrollView with a stable PageStorageKey. Never switch tab children inside one shared vertical ListView.",
           "Feature code retains async state, data policy, route actions, and specialized inner-scroll bridges."
         ]
