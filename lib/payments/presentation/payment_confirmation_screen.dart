@@ -50,6 +50,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
       onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
       loadingBuilder: (_) => const PaymentConfirmationLoadingScreen(),
       errorBuilder: (_, e, _) => CatchScreenScaffold.standalone(
+        safeArea: CatchScreenSafeArea.none,
         body: CatchErrorState.fromError(
           e,
           context: AppErrorContext.payments,
@@ -59,6 +60,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
       builder: (context, event) {
         if (event == null) {
           return CatchScreenScaffold.standalone(
+            safeArea: CatchScreenSafeArea.none,
             body: CatchErrorState(
               title: context
                   .l10n
