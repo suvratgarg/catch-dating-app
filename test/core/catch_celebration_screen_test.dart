@@ -129,13 +129,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: PaperCelebrationScaffold(
+        home: const PaperCelebrationScaffold(
           eyebrow: 'Event created',
           title: 'Your event is live.',
           message: 'The event is ready to manage.',
-          details: const [
-            CelebrationDetail(label: 'When', value: 'Sunday morning'),
-          ],
+          details: [CelebrationDetail(label: 'When', value: 'Sunday morning')],
           primaryAction: CelebrationAction(
             label: 'Manage event',
             onPressed: _noop,
