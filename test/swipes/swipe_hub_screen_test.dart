@@ -191,10 +191,16 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: CatchesHubContent(
-            state: CatchesHubReady(uid: 'runner-1', rows: rows),
-            onOpenCatch: (_) {},
-            onOpenRecap: (_) {},
+          body: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: CatchesHubContent(
+                  state: CatchesHubReady(uid: 'runner-1', rows: rows),
+                  onOpenCatch: (_) {},
+                  onOpenRecap: (_) {},
+                ),
+              ),
+            ],
           ),
         ),
       ),
