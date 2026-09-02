@@ -188,7 +188,7 @@ test("Flutter new-widget gate consumes the planner's exact reachable base", () =
   assert.match(checkout, /actions\/checkout@v6\s*\n\s+with:\s*\n\s+fetch-depth: 0/u);
 });
 
-test("resolved composition gate owns every cross-file authority it consumes", () => {
+test("resolved composition gate owns its authorities and both split suites", () => {
   const flutter = workflow("flutter-ci.yml");
   const gate = namedStep(flutter, "Catch UI resolved composition contracts");
   assert.match(
@@ -201,6 +201,8 @@ test("resolved composition gate owns every cross-file authority it consumes", ()
   );
   assert.ok(tool, "missing architecture:ui-composition-contracts manifest entry");
   for (const authority of [
+    "test/tool/ui_composition_contracts_test.dart",
+    "test/tool/ui_composition_ownership_test.dart",
     "design/screens/catch.screens.json",
     "design/screens/catch.screens.schema.json",
     "design/screens/screen_coverage.json",
@@ -217,6 +219,26 @@ test("resolved composition gate owns every cross-file authority it consumes", ()
       `composition gate does not own ${authority}`,
     );
   }
+
+  const suites = [
+    "test/tool/ui_composition_contracts_test.dart",
+    "test/tool/ui_composition_ownership_test.dart",
+  ];
+  const formatCheck = tool.checks.find((check) =>
+    check.startsWith("dart format"),
+  );
+  assert.ok(formatCheck, "composition gate is missing its format check");
+  for (const suite of suites) {
+    assert.ok(formatCheck.includes(suite), `format check omits ${suite}`);
+    assert.ok(
+      tool.checks.includes(`dart test ${suite}`),
+      `test check omits ${suite}`,
+    );
+  }
+  assert.equal(
+    tool.vacuityProof.path,
+    "test/tool/ui_composition_ownership_test.dart",
+  );
 });
 
 test("Flutter l10n ratchet derives JSON live and uploads ephemeral evidence", () => {
