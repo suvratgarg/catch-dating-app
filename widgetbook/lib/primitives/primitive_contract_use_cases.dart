@@ -65,6 +65,7 @@ import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -4934,6 +4935,33 @@ Widget catchJourneyStepNodeContractStates(BuildContext context) {
         ),
       ),
     ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchScreenScaffold,
+  path: '[Core primitives]/Sections',
+)
+Widget catchScreenScaffoldContractStates(BuildContext context) {
+  return CatchScreenScaffold.standalone(
+    body: _ContractScreen(
+      title: 'CatchScreenScaffold',
+      contractId: 'catch.screen_body.screen_scaffold',
+      states: const [
+        'standalone-safe-area',
+        'step-flow-safe-area',
+        'workspace-owned-insets',
+      ],
+      children: const [
+        _StateCard(
+          label: 'role-owned surface',
+          child: _BodySpec(
+            label: 'The named constructor owns surface and safe-area policy.',
+          ),
+        ),
+      ],
+    ),
   );
 }
 

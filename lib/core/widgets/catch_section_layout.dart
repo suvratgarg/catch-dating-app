@@ -215,11 +215,10 @@ class CatchSliverPageBody extends StatelessWidget {
 /// Semantic body geometry for root and nested-tab screen scroll owners.
 ///
 /// The screen family, rather than a feature, resolves these roles to concrete
-/// insets. [standard] is the normal title-to-content rhythm, [compact] is for
-/// dense chrome whose first child already carries some hierarchy, and
+/// insets. [standard] is the one normal title/tab-to-content rhythm and
 /// [fullBleed] is reserved for intrinsically edge-owned slivers such as maps,
-/// media previews, and conversation lists.
-enum CatchScreenBodyLayout { standard, compact, fullBleed }
+/// media previews, and conversation canvases.
+enum CatchScreenBodyLayout { standard, fullBleed }
 
 /// Canonical sliver body shared by root screens and nested tab pages.
 ///
@@ -247,9 +246,6 @@ class CatchSliverScreenBody extends StatelessWidget {
     Widget body = SliverMainAxisGroup(slivers: slivers);
     final padding = switch (layout) {
       CatchScreenBodyLayout.standard => CatchInsets.pageBody.copyWith(
-        bottom: 0,
-      ),
-      CatchScreenBodyLayout.compact => CatchInsets.pageBodyCompact.copyWith(
         bottom: 0,
       ),
       CatchScreenBodyLayout.fullBleed => null,

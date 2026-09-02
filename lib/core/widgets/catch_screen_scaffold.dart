@@ -5,6 +5,77 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart'
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:flutter/material.dart';
 
+/// Safe-area ownership for canonical full-screen composition families.
+enum CatchScreenSafeArea { all, top, none }
+
+/// Canonical surface owner for full-screen compositions.
+///
+/// Named constructors make the route role explicit while this widget keeps
+/// background, keyboard resize, and safe-area mechanics out of features.
+/// Root-title, tabbed, and pushed-route shells use [workspace] because their
+/// nested owner already applies the appropriate insets.
+class CatchScreenScaffold extends StatelessWidget {
+  const CatchScreenScaffold.standalone({
+    super.key,
+    required this.body,
+    this.backgroundColor,
+    this.resizeToAvoidBottomInset,
+    this.safeArea = CatchScreenSafeArea.all,
+  }) : appBar = null,
+       bottomNavigationBar = null;
+
+  const CatchScreenScaffold.stepFlow({
+    super.key,
+    required this.body,
+    this.backgroundColor,
+    this.resizeToAvoidBottomInset,
+    this.safeArea = CatchScreenSafeArea.all,
+  }) : appBar = null,
+       bottomNavigationBar = null;
+
+  const CatchScreenScaffold.workspace({
+    super.key,
+    required this.body,
+    this.backgroundColor,
+    this.resizeToAvoidBottomInset,
+    this.appBar,
+    this.bottomNavigationBar,
+  }) : safeArea = CatchScreenSafeArea.none;
+
+  final Widget body;
+  final Color? backgroundColor;
+  final bool? resizeToAvoidBottomInset;
+  final CatchScreenSafeArea safeArea;
+  final PreferredSizeWidget? appBar;
+  final Widget? bottomNavigationBar;
+
+  @override
+  Widget build(BuildContext context) {
+    final child = switch (safeArea) {
+      CatchScreenSafeArea.all => SafeArea(child: body),
+      CatchScreenSafeArea.top => SafeArea(bottom: false, child: body),
+      CatchScreenSafeArea.none => body,
+    };
+    return Scaffold(
+      backgroundColor: backgroundColor ?? CatchTokens.of(context).bg,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+      appBar: appBar,
+      bottomNavigationBar: bottomNavigationBar,
+      body: child,
+    );
+  }
+}
+
+/// Declares which owner consumes the physical top safe-area inset.
+enum CatchRootScreenTopEdge {
+  /// The canonical root scroll owner keeps all content below the safe area.
+  safeArea,
+
+  /// An edge-to-edge header paints behind system chrome and applies its own
+  /// safe-area padding to interactive content.
+  headerOwned,
+}
+
 /// Full-screen owner for a root destination with scroll-content title chrome.
 ///
 /// Root feature screens provide semantic header content and body slivers. This
@@ -28,6 +99,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
     this.terminalExtra = CatchSpacing.screenPb,
     this.semanticsLabel,
     this.semanticsHint,
+    this.topEdge = CatchRootScreenTopEdge.safeArea,
   }) : assert(slivers.length > 0),
        assert(maxContentExtent > 0),
        assert(terminalExtra >= 0);
@@ -46,11 +118,11 @@ class CatchRootScreenScaffold extends StatelessWidget {
   final double terminalExtra;
   final String? semanticsLabel;
   final String? semanticsHint;
+  final CatchRootScreenTopEdge topEdge;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: CatchTokens.of(context).bg,
+    return CatchScreenScaffold.workspace(
       body: CatchRootScreenScrollView(
         header: header,
         bodyLayout: bodyLayout,
@@ -66,6 +138,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
         terminalExtra: terminalExtra,
         semanticsLabel: semanticsLabel,
         semanticsHint: semanticsHint,
+        topEdge: topEdge,
       ),
     );
   }
@@ -90,6 +163,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
     this.terminalExtra = CatchSpacing.screenPb,
     this.semanticsLabel,
     this.semanticsHint,
+    this.topEdge = CatchRootScreenTopEdge.safeArea,
   }) : assert(slivers.length > 0),
        assert(maxContentExtent > 0),
        assert(terminalExtra >= 0);
@@ -108,6 +182,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
   final double terminalExtra;
   final String? semanticsLabel;
   final String? semanticsHint;
+  final CatchRootScreenTopEdge topEdge;
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +221,11 @@ class CatchRootScreenScrollView extends StatelessWidget {
     }
     return CatchFieldVisibilityScope(
       bottomObstruction: obstruction,
-      child: SafeArea(bottom: false, child: scrollView),
+      child: SafeArea(
+        top: topEdge == CatchRootScreenTopEdge.safeArea,
+        bottom: false,
+        child: scrollView,
+      ),
     );
   }
 }

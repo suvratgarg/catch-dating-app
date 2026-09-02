@@ -412,15 +412,6 @@ abstract final class CatchInsets {
     CatchSpacing.screenPb,
   );
 
-  /// Compact body padding for dense chrome where the content already owns
-  /// vertical separation.
-  static const EdgeInsets pageBodyCompact = EdgeInsets.fromLTRB(
-    CatchSpacing.screenPx,
-    CatchSpacing.s2,
-    CatchSpacing.screenPx,
-    CatchSpacing.s4,
-  );
-
   /// Compact-top scroll body for tab screens that own their title block inline
   /// (no pinned header) and need section-sized scroll-end breathing room — the
   /// Catches hub feed and its empty state share this single contract.
@@ -537,14 +528,22 @@ abstract final class CatchInsets {
   // centralise that rhythm so screens stop tuning their own raw EdgeInsets.
   // The horizontal page gutter stays [CatchSpacing.screenPx] (s5) everywhere.
 
-  /// (1) Title block padding for tab screens whose header pairs a title with a
-  /// subtitle (Chats, Explore, and Host browse headers). Root titles begin at
-  /// the safe-area content edge; the title component owns its internal height.
+  /// Root-screen title block. Separation from the first body element belongs
+  /// to the enclosing screen family, so the title contributes no trailing gap.
   static const EdgeInsets screenTitleBlock = EdgeInsets.fromLTRB(
     CatchSpacing.s5,
     CatchSpacing.s0,
     CatchSpacing.s5,
-    CatchSpacing.s3,
+    CatchSpacing.s0,
+  );
+
+  /// Title block for a pinned peer-tab destination. The rail owns its full
+  /// interactive height; this is the small visual handoff into that rail.
+  static const EdgeInsets tabbedScreenTitleBlock = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s0,
+    CatchSpacing.s5,
+    CatchSpacing.s1,
   );
 
   /// (1) Title block padding for tab screens whose header is a compact
@@ -1068,10 +1067,10 @@ abstract final class CatchInsets {
     bottom: CatchSpacing.micro6,
   );
 
-  /// Horizontal gutters for the Chats conversation list. Matches the section
-  /// kicker gutter so the list tiles, header label, and dividers all align.
+  /// Horizontal gutters for conversation lists. Matches the app-wide page
+  /// gutter so Consumer Chats and Host Inbox align with every inset body.
   static const EdgeInsets chatListGutter = EdgeInsets.symmetric(
-    horizontal: CatchSpacing.s4,
+    horizontal: CatchSpacing.screenPx,
   );
 
   /// Vertical padding for a single chat conversation row.
@@ -2742,7 +2741,7 @@ abstract final class CatchLayout {
   static const double hostCreateEventFormLaneMaxWidth = 680.0;
   static const double appShellRailItemMinHeight = 64.0;
   static const double appShellSidebarItemMinHeight = 48.0;
-  static const double tabRailHeight = 48.0;
+  static const double tabRailHeight = 44.0;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;
   static const double topBarLargeTextActionReserve =

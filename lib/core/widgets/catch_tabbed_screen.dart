@@ -1,5 +1,9 @@
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart'
+    show CatchFieldVisibilityScope;
 import 'package:catch_dating_app/core/widgets/catch_pager_focus_boundary.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +60,7 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
                 actions: actions,
                 titleMaxLines: titleMaxLines,
                 rowCrossAxisAlignment: rowCrossAxisAlignment,
+                padding: CatchInsets.tabbedScreenTitleBlock,
               )
             : CatchScreenTopBar(
                 context: context,
@@ -97,7 +102,7 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
       );
     }
 
-    return Scaffold(
+    return CatchScreenScaffold.workspace(
       backgroundColor: t.bg,
       body: SafeArea(bottom: false, child: scrollView),
     );
@@ -269,12 +274,16 @@ class _CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
             ],
           );
           final onRefresh = widget.onRefresh;
-          return onRefresh == null
+          final refreshed = onRefresh == null
               ? scrollView
               : RefreshIndicator.adaptive(
                   onRefresh: onRefresh,
                   child: scrollView,
                 );
+          return CatchFieldVisibilityScope(
+            bottomObstruction: AppShellActiveTab.bottomOverlayInsetOf(context),
+            child: refreshed,
+          );
         },
       ),
     );

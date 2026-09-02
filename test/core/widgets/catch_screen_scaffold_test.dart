@@ -65,11 +65,58 @@ void main() {
     expect(body.width, CatchLayout.maxContentWidth);
     expect(body.left, (1000 - CatchLayout.maxContentWidth) / 2);
   });
+
+  testWidgets('root top edge has one explicit safe-area owner', (tester) async {
+    await tester.pumpWidget(
+      _rootScreen(
+        bodyLayout: CatchScreenBodyLayout.standard,
+        topEdge: CatchRootScreenTopEdge.headerOwned,
+      ),
+    );
+
+    final safeArea = tester.widget<SafeArea>(
+      find.descendant(
+        of: find.byType(CatchRootScreenScrollView),
+        matching: find.byType(SafeArea),
+      ),
+    );
+    expect(safeArea.top, isFalse);
+    expect(safeArea.bottom, isFalse);
+  });
+
+  testWidgets('screen surface constructors make safe-area policy explicit', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const CatchScreenScaffold.stepFlow(
+          safeArea: CatchScreenSafeArea.top,
+          body: SizedBox(key: ValueKey('step-body')),
+        ),
+      ),
+    );
+
+    final safeArea = tester.widget<SafeArea>(find.byType(SafeArea));
+    expect(safeArea.top, isTrue);
+    expect(safeArea.bottom, isFalse);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const CatchScreenScaffold.workspace(
+          body: SizedBox(key: ValueKey('workspace-body')),
+        ),
+      ),
+    );
+    expect(find.byType(SafeArea), findsNothing);
+  });
 }
 
 Widget _rootScreen({
   required CatchScreenBodyLayout bodyLayout,
   bool constrainToContentWidth = false,
+  CatchRootScreenTopEdge topEdge = CatchRootScreenTopEdge.safeArea,
 }) {
   return MaterialApp(
     theme: AppTheme.light,
@@ -84,6 +131,7 @@ Widget _rootScreen({
           height: 80,
         ),
         bodyLayout: bodyLayout,
+        topEdge: topEdge,
         constrainToContentWidth: constrainToContentWidth,
         slivers: const [
           SliverToBoxAdapter(

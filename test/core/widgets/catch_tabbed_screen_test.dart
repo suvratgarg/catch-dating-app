@@ -1,6 +1,8 @@
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -63,7 +65,6 @@ void main() {
 
     for (final (layout, expectedTop) in [
       (CatchScreenBodyLayout.standard, CatchInsets.pageBody.top),
-      (CatchScreenBodyLayout.compact, CatchInsets.pageBodyCompact.top),
       (CatchScreenBodyLayout.fullBleed, 0.0),
     ]) {
       await tester.pumpWidget(
@@ -83,6 +84,30 @@ void main() {
         reason: '$layout must own its exact tab-to-body relationship.',
       );
     }
+  });
+
+  testWidgets('tab page publishes the shell obstruction to expanding fields', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      AppShellActiveTab(
+        index: 0,
+        bottomBarPlacement: AppShellBottomBarPlacement.floating,
+        bottomOverlayInset: 96,
+        child: _wrap(constrainToContentWidth: false),
+      ),
+    );
+
+    final scope = tester.widget<CatchFieldVisibilityScope>(
+      find.byType(CatchFieldVisibilityScope),
+    );
+    expect(scope.bottomObstruction, 96);
+  });
+
+  test('tabbed screen geometry uses the approved compact rail rhythm', () {
+    expect(CatchInsets.tabbedScreenTitleBlock.bottom, CatchSpacing.s1);
+    expect(CatchLayout.tabRailHeight, 44);
+    expect(CatchInsets.pageBody.top, 24);
   });
 
   testWidgets('CatchTabbedScreenScaffold composes expanding header search', (

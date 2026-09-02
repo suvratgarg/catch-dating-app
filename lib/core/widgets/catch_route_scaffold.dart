@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:flutter/material.dart';
 
 typedef CatchRouteTopBarBuilder =
@@ -46,7 +47,7 @@ class _CatchRouteScaffoldState extends State<CatchRouteScaffold> {
   @override
   Widget build(BuildContext context) {
     final background = widget.backgroundColor ?? CatchTokens.of(context).bg;
-    return Scaffold(
+    return CatchScreenScaffold.workspace(
       backgroundColor: background,
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       appBar: widget.topBarBuilder(context, _scrolledUnder),
