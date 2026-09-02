@@ -1593,6 +1593,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   bool _isAllowedPrimitiveRawButtonControl(String typeName) {
     return (_isCatchFieldImplementationPath &&
             (typeName == 'TextField' || typeName == 'TextFormField')) ||
+        (_isCatchMenuImplementationPath && typeName == 'MenuAnchor') ||
         (_isCatchTextInputImplementationPath && typeName == 'TextField') ||
         (_isCatchRangeSliderImplementationPath && typeName == 'RangeSlider') ||
         (_isCatchTextButtonImplementationPath && typeName == 'TextButton');
@@ -2002,6 +2003,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool get _isCatchSectionImplementationPath {
     return path.endsWith('/lib/core/widgets/catch_section_layout.dart');
+  }
+
+  bool get _isCatchMenuImplementationPath {
+    return path.endsWith('/lib/core/widgets/catch_menu.dart');
   }
 
   bool get _isCatchTextButtonImplementationPath {

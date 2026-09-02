@@ -62,7 +62,6 @@ class CatchSelectionMenu<T> extends StatefulWidget {
 
 class _CatchSelectionMenuState<T> extends State<CatchSelectionMenu<T>> {
   final _controller = MenuController();
-  final _anchorKey = GlobalKey();
 
   CatchSelectionMenuItem<T> get _selectedItem =>
       widget.items.firstWhere((item) => item.value == widget.value);
@@ -73,44 +72,32 @@ class _CatchSelectionMenuState<T> extends State<CatchSelectionMenu<T>> {
       preferredWidth: widget.width,
       viewportWidth: MediaQuery.sizeOf(context).width,
     );
-    return MenuAnchor(
+    return CatchMenuAnchor<T>(
       controller: _controller,
+      width: menuWidth,
       alignmentOffset: const Offset(0, CatchSpacing.s1),
-      style: catchMenuAnchorStyle,
-      menuChildren: [
-        catchMenuWithViewportBoundary(
-          context: context,
-          anchorKey: _anchorKey,
-          child: CatchMenu<T>(
-            width: menuWidth,
-            items: [
-              for (final item in widget.items)
-                CatchMenuItem<T>(
-                  value: item.value,
-                  label: item.label,
-                  sublabel: item.sublabel,
-                  icon: item.icon,
-                  selected: item.value == widget.value,
-                  enabled: item.enabled,
-                  role: CatchMenuItemRole.choice,
-                ),
-            ],
-            onSelected: (value, _) {
-              if (value != widget.value) catchSelectionHaptic();
-              widget.onSelected(value);
-              _controller.close();
-            },
+      items: [
+        for (final item in widget.items)
+          CatchMenuItem<T>(
+            value: item.value,
+            label: item.label,
+            sublabel: item.sublabel,
+            icon: item.icon,
+            selected: item.value == widget.value,
+            enabled: item.enabled,
+            role: CatchMenuItemRole.choice,
           ),
-        ),
       ],
-      builder: (context, controller, child) => KeyedSubtree(
-        key: _anchorKey,
-        child: widget.builder(
-          context,
-          _selectedItem,
-          controller.isOpen,
-          () => controller.isOpen ? controller.close() : controller.open(),
-        ),
+      onSelected: (value, _) {
+        if (value != widget.value) catchSelectionHaptic();
+        widget.onSelected(value);
+        _controller.close();
+      },
+      builder: (context, controller, child) => widget.builder(
+        context,
+        _selectedItem,
+        controller.isOpen,
+        () => controller.isOpen ? controller.close() : controller.open(),
       ),
     );
   }

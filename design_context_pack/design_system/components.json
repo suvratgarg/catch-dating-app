@@ -5298,9 +5298,10 @@
         "vehicle": "plugin",
         "replaces": [
           "DropdownButton",
+          "MenuAnchor",
           "PopupMenuButton"
         ],
-        "replacement": "CatchMenu",
+        "replacement": "CatchMenuAnchor, CatchActionMenu, or CatchSelectionMenu",
         "steeringGroup": "button",
         "steeringCode": "catch_no_raw_button_control",
         "probeSeed": "PopupMenuButton<void>(itemBuilder: (_) => const [])"
@@ -5385,6 +5386,7 @@
           "CatchMenuItemRole",
           "CatchActionMenuItem",
           "CatchSelectionMenuItem",
+          "CatchMenuAnchor",
           "CatchMenuRow",
           "CatchActionMenu",
           "CatchSelectionMenu",
@@ -5398,6 +5400,26 @@
         ],
         "goldens": [],
         "members": [
+          {
+            "id": "catch.menu.anchor",
+            "symbol": "CatchMenuAnchor",
+            "file": "lib/core/widgets/catch_menu.dart",
+            "summary": "Canonical low-level anchored menu owner; applies the shell-aware viewport boundary before rendering typed CatchMenu rows.",
+            "states": [
+              "closed",
+              "open",
+              "flipped-above",
+              "scrolling",
+              "shell-obstructed"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.menu",
+              "parentConceptId": "catch.menu",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.menu"
+            }
+          },
           {
             "id": "catch.menu.row",
             "symbol": "CatchMenuRow",

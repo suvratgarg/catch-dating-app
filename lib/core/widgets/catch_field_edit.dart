@@ -470,112 +470,90 @@ extension _CatchFieldEdit on _CatchFieldState {
     final label = value == null ? null : labelOf(value);
     final canOpen = widget.enabled && onChanged != null && values.isNotEmpty;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final menuWidth = constraints.hasBoundedWidth
-            ? constraints.maxWidth
-            : null;
-        return MenuAnchor(
-          controller: _menuController,
-          // The panel itself is the shared CatchMenu surface; the anchor
-          // chrome stays transparent (same contract as CatchActionMenu).
-          style: catchMenuAnchorStyle,
-          menuChildren: [
-            catchMenuWithViewportBoundary(
-              context: context,
-              anchorKey: _selectMenuAnchorKey,
-              child: CatchMenu<Object?>(
-                width: menuWidth,
-                items: [
-                  for (final item in values)
-                    CatchMenuItem<Object?>(
-                      value: item,
-                      label: labelOf(item),
-                      selected: item == value,
-                      role: CatchMenuItemRole.choice,
-                    ),
-                ],
-                onSelected: (item, _) {
-                  onChanged?.call(item);
-                  _menuController.close();
-                },
-              ),
-            ),
-          ],
-          builder: (context, controller, child) {
-            final selectHasLabel =
-                widget.showLabel && (_title?.trim().isNotEmpty ?? false);
-            return KeyedSubtree(
-              key: _selectMenuAnchorKey,
-              child: Semantics(
-                button: true,
-                enabled: canOpen,
-                label: _title,
-                value: label,
-                child: Focus(
-                  focusNode: _focusNode,
-                  child: CatchFieldRow.standard(
-                    onTap: canOpen
-                        ? () {
-                            _focusNode.requestFocus();
-                            controller.isOpen
-                                ? controller.close()
-                                : controller.open();
-                          }
-                        : null,
-                    constraints: _rowConstraints,
-                    padding: _rowPadding,
-                    leading: _buildSelectLeadingSlot(tokens),
-                    content: _buildFieldContent(
-                      tokens,
-                      label: widget.showLabel ? _title?.trim() : null,
-                      value:
-                          label ??
-                          widget.placeholder ??
-                          _selectPlaceholder(context.l10n, _title),
-                      supportText: supportText,
-                      hasError: hasError,
-                      valueIsPlaceholder: label == null,
-                      labelStyle: _fieldCaptionTextStyle(
-                        context,
-                        color: hasError ? tokens.danger : tokens.ink3,
-                      ),
-                      valueStyle: _fieldValueTextStyle(
-                        context,
-                        color: label == null || !widget.enabled
-                            ? tokens.ink3
-                            : tokens.ink,
-                      ),
-                    ),
-                    trailing: selectHasLabel
-                        ? Padding(
-                            padding: const EdgeInsets.only(
-                              top: CatchFieldTokens.captionExtent,
-                            ),
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                minHeight: CatchFieldTokens.valueLineExtent,
-                              ),
-                              child: Align(
-                                widthFactor: 1,
-                                heightFactor: 1,
-                                child: CatchFieldTrailing.rotatingChevron(
-                                  open: controller.isOpen,
-                                  color: tokens.ink3,
-                                  topPadding: 0,
-                                ),
-                              ),
-                            ),
-                          )
-                        : CatchFieldTrailing.rotatingChevron(
-                            open: controller.isOpen,
-                            color: tokens.ink3,
-                          ),
-                  ),
+    return CatchMenuAnchor<Object?>(
+      controller: _menuController,
+      items: [
+        for (final item in values)
+          CatchMenuItem<Object?>(
+            value: item,
+            label: labelOf(item),
+            selected: item == value,
+            role: CatchMenuItemRole.choice,
+          ),
+      ],
+      onSelected: (item, _) {
+        onChanged?.call(item);
+        _menuController.close();
+      },
+      builder: (context, controller, child) {
+        final selectHasLabel =
+            widget.showLabel && (_title?.trim().isNotEmpty ?? false);
+        return Semantics(
+          button: true,
+          enabled: canOpen,
+          label: _title,
+          value: label,
+          child: Focus(
+            focusNode: _focusNode,
+            child: CatchFieldRow.standard(
+              onTap: canOpen
+                  ? () {
+                      _focusNode.requestFocus();
+                      controller.isOpen
+                          ? controller.close()
+                          : controller.open();
+                    }
+                  : null,
+              constraints: _rowConstraints,
+              padding: _rowPadding,
+              leading: _buildSelectLeadingSlot(tokens),
+              content: _buildFieldContent(
+                tokens,
+                label: widget.showLabel ? _title?.trim() : null,
+                value:
+                    label ??
+                    widget.placeholder ??
+                    _selectPlaceholder(context.l10n, _title),
+                supportText: supportText,
+                hasError: hasError,
+                valueIsPlaceholder: label == null,
+                labelStyle: _fieldCaptionTextStyle(
+                  context,
+                  color: hasError ? tokens.danger : tokens.ink3,
+                ),
+                valueStyle: _fieldValueTextStyle(
+                  context,
+                  color: label == null || !widget.enabled
+                      ? tokens.ink3
+                      : tokens.ink,
                 ),
               ),
-            );
-          },
+              trailing: selectHasLabel
+                  ? Padding(
+                      padding: const EdgeInsets.only(
+                        top: CatchFieldTokens.captionExtent,
+                      ),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minHeight: CatchFieldTokens.valueLineExtent,
+                        ),
+                        child: Align(
+                          widthFactor: 1,
+                          heightFactor: 1,
+                          child: CatchFieldTrailing.rotatingChevron(
+                            open: controller.isOpen,
+                            color: tokens.ink3,
+                            topPadding: 0,
+                          ),
+                        ),
+                      ),
+                    )
+                  : CatchFieldTrailing.rotatingChevron(
+                      open: controller.isOpen,
+                      color: tokens.ink3,
+                    ),
+            ),
+          ),
         );
       },
     );

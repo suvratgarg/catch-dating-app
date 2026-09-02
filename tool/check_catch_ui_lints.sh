@@ -476,6 +476,31 @@ expect_code_count \
   "catch_no_raw_material_control" \
   1
 
+probe_path="$probe_root/lib/events/presentation/widgets/raw_menu_anchor_probe.dart"
+run_analyze_probe "raw menu anchor bypass" <<'DART'
+import 'package:flutter/material.dart';
+
+class RawMenuAnchorProbe extends StatelessWidget {
+  const RawMenuAnchorProbe({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MenuAnchor(
+      menuChildren: const [MenuItemButton(child: Text('Raw'))],
+      builder: (_, controller, child) => TextButton(
+        onPressed: controller.open,
+        child: const Text('Open'),
+      ),
+    );
+  }
+}
+DART
+
+expect_code_count \
+  "raw menu anchor bypass" \
+  "catch_no_raw_button_control" \
+  1
+
 probe_path="$probe_root/lib/events/presentation/widgets/event_detail_lint_probe.dart"
 
 run_analyze_probe "generated steering corpus" <"$generated_probe_path"
