@@ -149,6 +149,54 @@ void main() {
     expect(body.width, 400 - CatchInsets.pageBody.horizontal);
   });
 
+  testWidgets(
+    'standalone route standard body reserves device safe bottom plus 20',
+    (tester) async {
+      await tester.pumpWidget(_standardRouteWithBottomGeometry(safeBottom: 34));
+
+      expect(
+        tester.widget<CatchScreenBody>(find.byType(CatchScreenBody)).pb,
+        34 + CatchSpacing.screenPb,
+      );
+    },
+  );
+
+  testWidgets(
+    'floating shell route uses published overlay once for bottom clearance',
+    (tester) async {
+      await tester.pumpWidget(
+        _standardRouteWithBottomGeometry(
+          safeBottom: 34,
+          bottomBarPlacement: AppShellBottomBarPlacement.floating,
+          bottomOverlayInset: 100,
+        ),
+      );
+
+      expect(
+        tester.widget<CatchScreenBody>(find.byType(CatchScreenBody)).pb,
+        100 + CatchSpacing.screenPb,
+      );
+    },
+  );
+
+  testWidgets(
+    'anchored shell route does not double-count bottom space outside viewport',
+    (tester) async {
+      await tester.pumpWidget(
+        _standardRouteWithBottomGeometry(
+          safeBottom: 34,
+          bottomBarPlacement: AppShellBottomBarPlacement.anchored,
+          bottomOverlayInset: 100,
+        ),
+      );
+
+      expect(
+        tester.widget<CatchScreenBody>(find.byType(CatchScreenBody)).pb,
+        CatchSpacing.screenPb,
+      );
+    },
+  );
+
   testWidgets('pushed route full bleed delegates no page inset', (
     tester,
   ) async {
@@ -184,6 +232,37 @@ void main() {
     expect(body.left, 0);
     expect(body.width, 400);
   });
+}
+
+Widget _standardRouteWithBottomGeometry({
+  required double safeBottom,
+  AppShellBottomBarPlacement? bottomBarPlacement,
+  double bottomOverlayInset = 0,
+}) {
+  Widget route = CatchRouteScaffold(
+    topBarBuilder: (_, _) =>
+        const PreferredSize(preferredSize: Size.zero, child: SizedBox.shrink()),
+    body: const CatchRouteBody.standard(child: SizedBox(height: 40)),
+  );
+  if (bottomBarPlacement != null) {
+    route = AppShellActiveTab(
+      index: 0,
+      bottomBarPlacement: bottomBarPlacement,
+      bottomOverlayInset: bottomOverlayInset,
+      child: route,
+    );
+  }
+
+  return MaterialApp(
+    theme: AppTheme.light,
+    home: MediaQuery(
+      data: MediaQueryData(
+        padding: EdgeInsets.only(bottom: safeBottom),
+        viewPadding: EdgeInsets.only(bottom: safeBottom),
+      ),
+      child: route,
+    ),
+  );
 }
 
 Widget _rootScreen({

@@ -210,13 +210,17 @@ final class CatchRouteBody {
       );
     }
     final bottomObstruction = AppShellActiveTab.bottomOverlayInsetOf(context);
+    final terminalClearance = AppShellActiveTab.scrollTerminalClearanceOf(
+      context,
+      extra: CatchSpacing.screenPb,
+    );
     return CatchFieldVisibilityScope(
       bottomObstruction: bottomObstruction,
       child: SafeArea(
         top: false,
         bottom: false,
         child: CatchScreenBody(
-          pb: CatchSpacing.screenPb + bottomObstruction,
+          pb: terminalClearance,
           scrollable: _scrollable,
           controller: _controller,
           physics: _physics,
