@@ -56,11 +56,12 @@ class HostEventOperatorScreen extends ConsumerWidget {
             leadingType: CatchTopBarLeading.back,
           ),
           body: SafeArea(
-            child: CatchScreenBody(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  CatchSection.contained(
+            top: false,
+            bottom: false,
+            child: CatchResponsiveSectionPage(
+              sections: [
+                CatchResponsiveSectionItem(
+                  child: CatchSection.contained(
                     title: context.l10n.hostsEventOperatorAccessTitle,
                     subtitle: context.l10n.hostsEventOperatorAccessSubtitle,
                     child: Wrap(
@@ -88,8 +89,9 @@ class HostEventOperatorScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  gapH20,
-                  HostOperationalRosterPanel(
+                ),
+                CatchResponsiveSectionItem(
+                  child: HostOperationalRosterPanel(
                     eventId: eventId,
                     organizerId: access.organizerId,
                     allowAttendanceChanges: access.has(
@@ -101,8 +103,8 @@ class HostEventOperatorScreen extends ConsumerWidget {
                     showAudienceInsights:
                         access.actorRole == HostEventOperatorRole.manager,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );

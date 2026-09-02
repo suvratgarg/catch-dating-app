@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -26,25 +25,29 @@ class HostMessagingSetupScreen extends ConsumerWidget {
         leadingType: CatchTopBarLeading.back,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: CatchPageBody(
-            padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s4),
-            child: club.when(
-              loading: () => const CatchSkeletonRows(),
-              error: (error, _) => CatchErrorState.fromError(
-                error,
-                context: AppErrorContext.club,
-                onRetry: () => ref.invalidate(watchClubProvider(clubId)),
+        top: false,
+        bottom: false,
+        child: CatchResponsiveSectionPage(
+          sections: [
+            CatchResponsiveSectionItem(
+              child: club.when(
+                loading: () => const CatchSkeletonRows(),
+                error: (error, _) => CatchErrorState.fromError(
+                  error,
+                  context: AppErrorContext.club,
+                  onRetry: () => ref.invalidate(watchClubProvider(clubId)),
+                ),
+                data: (value) => value == null
+                    ? CatchErrorState.fromError(
+                        StateError('Organizer not found.'),
+                        context: AppErrorContext.club,
+                        onRetry: () =>
+                            ref.invalidate(watchClubProvider(clubId)),
+                      )
+                    : HostWhatsappSetupPane(club: value),
               ),
-              data: (value) => value == null
-                  ? CatchErrorState.fromError(
-                      StateError('Organizer not found.'),
-                      context: AppErrorContext.club,
-                      onRetry: () => ref.invalidate(watchClubProvider(clubId)),
-                    )
-                  : HostWhatsappSetupPane(club: value),
             ),
-          ),
+          ],
         ),
       ),
     );

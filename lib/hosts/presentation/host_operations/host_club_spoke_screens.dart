@@ -129,19 +129,8 @@ class HostClubSpokeScaffold extends StatelessWidget {
       body: SafeArea(
         top: false,
         bottom: false,
-        child: ListView(
-          padding: CatchInsets.pageBody.copyWith(bottom: 0),
-          children: [
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: CatchLayout.maxContentWidth,
-                ),
-                child: SizedBox(width: double.infinity, child: child),
-              ),
-            ),
-            const CatchScrollTerminalPadding(),
-          ],
+        child: CatchResponsiveSectionPage(
+          sections: [CatchResponsiveSectionItem(child: child)],
         ),
       ),
     );

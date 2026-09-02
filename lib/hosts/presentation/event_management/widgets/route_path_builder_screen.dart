@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
@@ -55,10 +56,11 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final coordinates = _coordinates;
-    return Scaffold(
-      appBar: CatchTopBar(
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostsRoutePathBuilderTitle,
         leadingType: CatchTopBarLeading.close,
+        divider: scrolledUnder,
       ),
       body: Stack(
         children: [
@@ -118,7 +120,7 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
                           : context.l10n.hostsRoutePathBuilderCount(
                               count: coordinates.length,
                             ),
-                        style: CatchTextStyles.supporting(context),
+                      style: CatchTextStyles.supporting(context),
                     ),
                     gapH12,
                     Row(
