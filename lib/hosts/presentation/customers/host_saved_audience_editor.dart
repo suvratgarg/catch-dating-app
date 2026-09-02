@@ -1,5 +1,16 @@
 part of 'host_customers_screen.dart';
 
+CatchScreenTopBar _hostSavedAudienceEditorTopBar(
+  BuildContext context,
+  bool scrolledUnder, {
+  required String title,
+}) => CatchScreenTopBar(
+  context: context,
+  title: title,
+  leadingType: CatchTopBarLeading.back,
+  divider: scrolledUnder,
+);
+
 class HostSavedAudienceEditorScreen extends ConsumerWidget {
   const HostSavedAudienceEditorScreen({
     super.key,
@@ -28,22 +39,44 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
       initialLoadTimeout: null,
       loadingBuilder: (_) =>
           HostLoadingScreen(title: context.l10n.hostSavedAudiencesManage),
-      errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.customers,
-        onRetry: () =>
-            ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+      errorBuilder: (_, error, _) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) =>
+            _hostSavedAudienceEditorTopBar(
+              context,
+              scrolledUnder,
+              title: context.l10n.hostSavedAudiencesManage,
+            ),
+        body: SafeArea(
+          top: false,
+          child: CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.customers,
+            onRetry: () =>
+                ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+          ),
+        ),
       ),
       builder: (context, page) {
         final audience = page.audiences
             .where((item) => item.audienceId == audienceId)
             .firstOrNull;
         if (audience == null) {
-          return CatchErrorScaffold.fromError(
-            StateError(context.l10n.hostSavedAudienceNotFound),
-            context: AppErrorContext.customers,
-            onRetry: () =>
-                ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+          return CatchRouteScaffold(
+            topBarBuilder: (context, scrolledUnder) =>
+                _hostSavedAudienceEditorTopBar(
+                  context,
+                  scrolledUnder,
+                  title: context.l10n.hostSavedAudiencesManage,
+                ),
+            body: SafeArea(
+              top: false,
+              child: CatchErrorState.fromError(
+                StateError(context.l10n.hostSavedAudienceNotFound),
+                context: AppErrorContext.customers,
+                onRetry: () =>
+                    ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+              ),
+            ),
           );
         }
         return _HostSavedAudienceEditorForm(

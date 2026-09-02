@@ -1,5 +1,17 @@
 part of '../host_operations_screen.dart';
 
+CatchTopBar _hostClubSpokeTopBar(
+  BuildContext context,
+  bool scrolledUnder, {
+  required String title,
+  String? subtitle,
+}) => CatchTopBar(
+  title: title,
+  subtitle: subtitle,
+  leadingType: CatchTopBarLeading.back,
+  divider: scrolledUnder,
+);
+
 class HostClubEventDefaultsScreen extends StatelessWidget {
   const HostClubEventDefaultsScreen({super.key, required this.clubId});
 
@@ -67,33 +79,70 @@ class HostClubSpokeResolver extends ConsumerWidget {
     final uidAsync = ref.watch(uidProvider);
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     if (uidState.hasError) {
-      return CatchErrorScaffold.fromError(
-        uidState.error!,
-        context: AppErrorContext.auth,
-        onRetry: () => ref.invalidate(uidProvider),
+      return CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) =>
+            _hostClubSpokeTopBar(context, scrolledUnder, title: title),
+        body: SafeArea(
+          top: false,
+          child: CatchErrorState.fromError(
+            uidState.error!,
+            context: AppErrorContext.auth,
+            onRetry: () => ref.invalidate(uidProvider),
+          ),
+        ),
       );
     }
     if (uidState.isLoading) return HostLoadingScreen(title: title);
     final uid = uidState.value;
-    if (uid == null) return const HostAuthRequiredScreen();
+    if (uid == null) {
+      return CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) =>
+            _hostClubSpokeTopBar(context, scrolledUnder, title: title),
+        body: SafeArea(
+          top: false,
+          child: CatchErrorBody(
+            title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+            message:
+                context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
+            retryLabel:
+                context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+            onRetry: () => context.go(Routes.authScreen.path),
+          ),
+        ),
+      );
+    }
 
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
     return CatchAsyncValueView<List<Club>>(
       value: clubsAsync,
       onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
       loadingBuilder: (_) => HostLoadingScreen(title: title),
-      errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.club,
-        onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+      errorBuilder: (_, error, _) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) =>
+            _hostClubSpokeTopBar(context, scrolledUnder, title: title),
+        body: SafeArea(
+          top: false,
+          child: CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.club,
+            onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+          ),
+        ),
       ),
       builder: (context, clubs) {
         final club = clubs.where((item) => item.id == clubId).firstOrNull;
         if (club == null) {
-          return CatchErrorScaffold.fromError(
-            StateError('Organizer unavailable'),
-            context: AppErrorContext.club,
-            onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+          return CatchRouteScaffold(
+            topBarBuilder: (context, scrolledUnder) =>
+                _hostClubSpokeTopBar(context, scrolledUnder, title: title),
+            body: SafeArea(
+              top: false,
+              child: CatchErrorState.fromError(
+                StateError('Organizer unavailable'),
+                context: AppErrorContext.club,
+                onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+              ),
+            ),
           );
         }
         return HostClubSpokeScaffold._(

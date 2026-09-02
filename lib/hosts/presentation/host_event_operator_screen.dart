@@ -15,6 +15,26 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+PreferredSizeWidget _hostEventOperatorRouteTopBar(
+  BuildContext context,
+  bool scrolledUnder,
+) => CatchTopBar(
+  title: context.l10n.hostsEventOperatorTitle,
+  divider: scrolledUnder,
+  leadingType: CatchTopBarLeading.back,
+);
+
+PreferredSizeWidget _hostEventOperatorAccessTopBar(
+  BuildContext context,
+  bool scrolledUnder,
+  HostEventOperatorAccess access,
+) => CatchTopBar(
+  title: access.title,
+  subtitle: context.l10n.hostsEventOperatorTitle,
+  divider: scrolledUnder,
+  leadingType: CatchTopBarLeading.back,
+);
+
 class HostEventOperatorScreen extends ConsumerWidget {
   const HostEventOperatorScreen({super.key, required this.eventId});
 
@@ -34,18 +54,32 @@ class HostEventOperatorScreen extends ConsumerWidget {
         ),
         body: const SafeArea(child: HostRouteLoadingBody()),
       ),
-      errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(hostEventOperatorAccessProvider(eventId)),
+      errorBuilder: (_, error, _) => CatchRouteScaffold(
+        topBarBuilder: _hostEventOperatorRouteTopBar,
+        body: SafeArea(
+          top: false,
+          child: CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.event,
+            onRetry: () =>
+                ref.invalidate(hostEventOperatorAccessProvider(eventId)),
+          ),
+        ),
       ),
       builder: (context, access) {
         if (access.eventStatus == 'cancelled') {
-          return CatchErrorScaffold(
-            title: context.l10n.hostsEventOperatorCancelledTitle,
-            message: context.l10n.hostsEventOperatorCancelledMessage,
-            icon: CatchIcons.eventBusyOutlined,
-            secondaryAction: const CatchErrorBackAction(),
+          return CatchRouteScaffold(
+            topBarBuilder: (context, scrolledUnder) =>
+                _hostEventOperatorAccessTopBar(context, scrolledUnder, access),
+            body: SafeArea(
+              top: false,
+              child: CatchErrorBody(
+                title: context.l10n.hostsEventOperatorCancelledTitle,
+                message: context.l10n.hostsEventOperatorCancelledMessage,
+                icon: CatchIcons.eventBusyOutlined,
+                secondaryAction: const CatchErrorBackAction(),
+              ),
+            ),
           );
         }
         return CatchRouteScaffold(

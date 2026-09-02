@@ -1,5 +1,21 @@
 part of '../host_operations_screen.dart';
 
+CatchTopBar _hostClubTeamTopBar(
+  BuildContext context,
+  bool scrolledUnder, {
+  required String title,
+  String? subtitle,
+  Widget? leading,
+  PreferredSizeWidget? bottom,
+}) => CatchTopBar(
+  title: title,
+  subtitle: subtitle,
+  leading: leading,
+  leadingType: CatchTopBarLeading.back,
+  divider: scrolledUnder,
+  bottom: bottom,
+);
+
 class HostClubTeamScreen extends ConsumerStatefulWidget {
   const HostClubTeamScreen({super.key, required this.clubId});
 
@@ -37,49 +53,81 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
 
   @override
   Widget build(BuildContext context) {
+    final routeTitle = context.l10n.hostsHostClubEditTabLabelHostTeam;
     final uidAsync = ref.watch(uidProvider);
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     if (uidState.hasError) {
-      return CatchErrorScaffold.fromError(
-        uidState.error!,
-        context: AppErrorContext.auth,
-        onRetry: () => ref.invalidate(uidProvider),
+      return CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) =>
+            _hostClubTeamTopBar(context, scrolledUnder, title: routeTitle),
+        body: SafeArea(
+          top: false,
+          child: CatchErrorState.fromError(
+            uidState.error!,
+            context: AppErrorContext.auth,
+            onRetry: () => ref.invalidate(uidProvider),
+          ),
+        ),
       );
     }
     if (uidState.isLoading) {
-      return HostLoadingScreen(
-        title: context.l10n.hostsHostClubEditTabLabelHostTeam,
-        showTabRail: true,
-      );
+      return HostLoadingScreen(title: routeTitle, showTabRail: true);
     }
 
     final uid = uidState.value;
-    if (uid == null) return const HostAuthRequiredScreen();
+    if (uid == null) {
+      return CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) =>
+            _hostClubTeamTopBar(context, scrolledUnder, title: routeTitle),
+        body: SafeArea(
+          top: false,
+          child: CatchErrorBody(
+            title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+            message:
+                context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
+            retryLabel:
+                context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+            onRetry: () => context.go(Routes.authScreen.path),
+          ),
+        ),
+      );
+    }
 
     final hostProfileAsync = ref.watch(watchHostProfileProvider(uid));
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
     final hostProfileState = catchAsyncStateFromAsyncValue(hostProfileAsync);
     final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
     if (clubsState.hasError) {
-      return CatchErrorScaffold.fromError(
-        clubsState.error!,
-        context: AppErrorContext.club,
-        onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+      return CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) =>
+            _hostClubTeamTopBar(context, scrolledUnder, title: routeTitle),
+        body: SafeArea(
+          top: false,
+          child: CatchErrorState.fromError(
+            clubsState.error!,
+            context: AppErrorContext.club,
+            onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+          ),
+        ),
       );
     }
     if (clubsState.isLoading) {
-      return HostLoadingScreen(
-        title: context.l10n.hostsHostClubEditTabLabelHostTeam,
-        showTabRail: true,
-      );
+      return HostLoadingScreen(title: routeTitle, showTabRail: true);
     }
     final clubs = clubsState.value ?? const <Club>[];
     final club = clubs.where((item) => item.id == widget.clubId).firstOrNull;
     if (club == null) {
-      return CatchErrorScaffold.fromError(
-        StateError('Organizer unavailable'),
-        context: AppErrorContext.club,
-        onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+      return CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) =>
+            _hostClubTeamTopBar(context, scrolledUnder, title: routeTitle),
+        body: SafeArea(
+          top: false,
+          child: CatchErrorState.fromError(
+            StateError('Organizer unavailable'),
+            context: AppErrorContext.club,
+            onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+          ),
+        ),
       );
     }
     final ensureMutation = ref.watch(
@@ -104,7 +152,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       errorContext: AppErrorContext.profile,
       child: CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-          title: context.l10n.hostsHostClubEditTabLabelHostTeam,
+          title: routeTitle,
           subtitle: club.name,
           leading: CatchIconAction(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
