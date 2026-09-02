@@ -216,10 +216,8 @@ void main() {
       );
 
       expect(find.byType(CatchScreenScaffold), findsOneWidget);
-      final errorBody = tester.widget<CatchErrorBody>(
-        find.byType(CatchErrorBody),
-      );
-      expect(errorBody.onRetry, isNotNull);
+      final body = tester.widget<CatchErrorBody>(find.byType(CatchErrorBody));
+      expect(body.onRetry, isNotNull);
     });
 
     testWidgets('renders the loaded state at text scale 2', (tester) async {
