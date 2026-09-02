@@ -13,7 +13,7 @@ void main() {
     await _pump(tester, const HostClubEditorLoadingScreen());
 
     expect(find.byType(CatchScreenScaffold), findsOneWidget);
-    expect(find.text('Club basics'), findsOneWidget);
+    expect(find.text('Organizer basics'), findsOneWidget);
   });
 
   testWidgets('event editor loading uses the canonical step-flow surface', (
