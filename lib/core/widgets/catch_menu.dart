@@ -82,17 +82,32 @@ class _CatchMenuAnchorState<T> extends State<CatchMenuAnchor<T>> {
         style: _catchMenuAnchorStyle,
         menuChildren: [
           Builder(
-            builder: (context) => _buildMenuViewportBoundary(
-              anchorKey: _anchorKey,
-              viewport: viewport,
-              child: CatchMenu<T>(
-                width:
-                    widget.width ??
-                    (constraints.hasBoundedWidth ? constraints.maxWidth : null),
-                items: widget.items,
-                onSelected: widget.onSelected,
-              ),
-            ),
+            builder: (context) {
+              final boundary = viewport.boundaryFor(_anchorKey);
+              return Padding(
+                // The shell clearance is deliberately placed on the side
+                // away from the actual menu. It participates in Material's
+                // flip calculation while the visible menu stays flush with
+                // its trigger on the chosen side.
+                padding: boundary.padding,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: boundary.maxHeight > 0
+                        ? boundary.maxHeight
+                        : double.infinity,
+                  ),
+                  child: CatchMenu<T>(
+                    width:
+                        widget.width ??
+                        (constraints.hasBoundedWidth
+                            ? constraints.maxWidth
+                            : null),
+                    items: widget.items,
+                    onSelected: widget.onSelected,
+                  ),
+                ),
+              );
+            },
           ),
         ],
         builder: (context, controller, child) => KeyedSubtree(
@@ -138,52 +153,39 @@ class CatchMenuViewport {
 
   final Rect usableRect;
   final double overlayBottomClearance;
-}
 
-/// Keeps an anchored menu inside the usable viewport, including Catch's
-/// floating shell navigation.
-///
-/// Material's menu overlay is owned by the navigator and therefore cannot see
-/// shell-local inherited padding. This boundary measures the anchor against the
-/// shell-aware usable rectangle and caps the menu to the larger of the spaces
-/// above and below it. Material can then place the menu on the viable side,
-/// while the menu's own scroll view handles overflow without entering the
-/// floating navigation region.
-Widget _buildMenuViewportBoundary({
-  required GlobalKey anchorKey,
-  required CatchMenuViewport viewport,
-  required Widget child,
-}) {
-  final anchorBox = anchorKey.currentContext?.findRenderObject() as RenderBox?;
-  final anchorRect = anchorBox == null || !anchorBox.hasSize
-      ? null
-      : anchorBox.localToGlobal(Offset.zero) & anchorBox.size;
-  final spaceAbove = anchorRect == null
-      ? viewport.usableRect.height
-      : math.max(0.0, anchorRect.top - viewport.usableRect.top);
-  final spaceBelow = anchorRect == null
-      ? viewport.usableRect.height
-      : math.max(0.0, viewport.usableRect.bottom - anchorRect.bottom);
-  final placeAbove = spaceAbove > spaceBelow;
-  final clearance = viewport.overlayBottomClearance;
-  final maxHeight = placeAbove
-      ? math.max(0.0, spaceAbove - clearance)
-      : spaceBelow;
-  return Padding(
-    // The shell clearance is deliberately placed on the side away from the
-    // actual menu. It participates in Material's flip calculation while the
-    // visible menu stays flush with its trigger on the chosen side.
-    padding: EdgeInsets.only(
-      top: placeAbove ? clearance : 0,
-      bottom: placeAbove ? 0 : clearance,
-    ),
-    child: ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: maxHeight > 0 ? maxHeight : double.infinity,
+  /// Resolves the physical boundary for a menu anchored in an overlay.
+  ///
+  /// Material's menu overlay is owned by the navigator and therefore cannot
+  /// see shell-local inherited padding. This measures the anchor against the
+  /// shell-aware usable rectangle and caps the menu to the larger of the spaces
+  /// above and below it. Material can then place the menu on the viable side,
+  /// while the menu's own scroll view handles overflow without entering the
+  /// floating navigation region.
+  ({EdgeInsets padding, double maxHeight}) boundaryFor(GlobalKey anchorKey) {
+    final anchorBox =
+        anchorKey.currentContext?.findRenderObject() as RenderBox?;
+    final anchorRect = anchorBox == null || !anchorBox.hasSize
+        ? null
+        : anchorBox.localToGlobal(Offset.zero) & anchorBox.size;
+    final spaceAbove = anchorRect == null
+        ? usableRect.height
+        : math.max(0.0, anchorRect.top - usableRect.top);
+    final spaceBelow = anchorRect == null
+        ? usableRect.height
+        : math.max(0.0, usableRect.bottom - anchorRect.bottom);
+    final placeAbove = spaceAbove > spaceBelow;
+    final maxHeight = placeAbove
+        ? math.max(0.0, spaceAbove - overlayBottomClearance)
+        : spaceBelow;
+    return (
+      padding: EdgeInsets.only(
+        top: placeAbove ? overlayBottomClearance : 0,
+        bottom: placeAbove ? 0 : overlayBottomClearance,
       ),
-      child: child,
-    ),
-  );
+      maxHeight: maxHeight,
+    );
+  }
 }
 
 const _catchMenuAnchorStyle = MenuStyle(
