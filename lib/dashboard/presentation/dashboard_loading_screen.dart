@@ -5,35 +5,11 @@ class DashboardLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            const SliverToBoxAdapter(child: DashboardLoadingHeader()),
-            SliverToBoxAdapter(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: CatchLayout.maxContentWidth,
-                  ),
-                  child: CatchSectionStack(
-                    padding: CatchInsets.pageBodyUnderHeader.copyWith(
-                      bottom: 0,
-                    ),
-                    gap: CatchSpacing.micro18,
-                    children: const [DashboardFocusLoadingCard()],
-                  ),
-                ),
-              ),
-            ),
-            const CatchSliverTerminalPadding(),
-          ],
-        ),
-      ),
+    return const CatchRootScreenScaffold(
+      header: DashboardLoadingHeader(),
+      bodyLayout: CatchScreenBodyLayout.standard,
+      constrainToContentWidth: true,
+      slivers: [SliverToBoxAdapter(child: DashboardFocusLoadingCard())],
     );
   }
 }

@@ -14,28 +14,15 @@ class DashboardHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: Semantics(
-          label: context.l10n.dashboardDashboardHomeScreenLabelHome,
-          child: CustomScrollView(
-            slivers: [
-              ...CatchSliverHeader(
-                title: CatchScreenHeaderTitle.block(
-                  title: header.title(context.l10n),
-                  actions: actions,
-                ),
-              ).buildSlivers(context),
-              dashboardSliver,
-              const CatchSliverTerminalPadding(),
-            ],
-          ),
-        ),
+    return CatchRootScreenScaffold(
+      header: CatchScreenHeaderTitle.block(
+        title: header.title(context.l10n),
+        actions: actions,
       ),
+      bodyLayout: CatchScreenBodyLayout.standard,
+      constrainToContentWidth: true,
+      semanticsLabel: context.l10n.dashboardDashboardHomeScreenLabelHome,
+      slivers: [dashboardSliver],
     );
   }
 }

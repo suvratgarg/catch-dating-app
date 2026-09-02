@@ -12,23 +12,17 @@ class DashboardErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            CatchSliverErrorState.fromError(
-              error,
-              context: AppErrorContext.dashboard,
-              onRetry: onRetry,
-            ),
-            const CatchSliverTerminalPadding(),
-          ],
+    return CatchRootScreenScaffold(
+      header: const SizedBox.shrink(),
+      bodyLayout: CatchScreenBodyLayout.standard,
+      constrainToContentWidth: true,
+      slivers: [
+        CatchSliverErrorState.fromError(
+          error,
+          context: AppErrorContext.dashboard,
+          onRetry: onRetry,
         ),
-      ),
+      ],
     );
   }
 }
