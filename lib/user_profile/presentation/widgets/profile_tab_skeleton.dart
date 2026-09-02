@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchAspectRatio, CatchInsets, CatchRadius, CatchStroke;
+    show CatchAspectRatio, CatchInsets, CatchLayout, CatchRadius, CatchStroke;
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldRow;
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';

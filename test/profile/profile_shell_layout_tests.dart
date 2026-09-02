@@ -60,7 +60,7 @@ void _registerProfileShellLayoutTests() {
         ),
       );
       expect(find.byType(CatchStateViewport), findsOneWidget);
-      expect(find.bySubtype<CatchErrorState>(), findsOneWidget);
+      expect(find.byType(CatchErrorBody), findsOneWidget);
     },
   );
 

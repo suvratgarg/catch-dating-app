@@ -920,8 +920,14 @@ void main() {
           .first;
       final viewWidth =
           tester.view.physicalSize.width / tester.view.devicePixelRatio;
-      expect(fieldRect.left, CatchSpacing.screenPx);
-      expect(fieldRect.right, viewWidth - CatchSpacing.screenPx);
+      final availableWidth = viewWidth - CatchSpacing.screenPx * 2;
+      final laneWidth = availableWidth < CatchLayout.maxContentWidth
+          ? availableWidth
+          : CatchLayout.maxContentWidth;
+      final laneInset =
+          CatchSpacing.screenPx + (availableWidth - laneWidth) / 2;
+      expect(fieldRect.left, laneInset);
+      expect(fieldRect.right, viewWidth - laneInset);
       expect(tester.getRect(leadingIcon).left, fieldRect.left);
     });
   });

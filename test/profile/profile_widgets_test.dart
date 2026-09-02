@@ -125,6 +125,7 @@ Future<void> _pumpObstructedProfileScreen(WidgetTester tester) async {
           child: AppShellActiveTab(
             index: appShellProfileTabIndex,
             bottomOverlayInset: _profileBottomOverlayInset,
+            bottomBarPlacement: AppShellBottomBarPlacement.floating,
             child: ProfileScreen(),
           ),
         ),
