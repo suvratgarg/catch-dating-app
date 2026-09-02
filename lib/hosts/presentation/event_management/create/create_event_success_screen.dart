@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
@@ -8,8 +10,9 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CreateEventSuccessScreen extends StatelessWidget {
+class CreateEventSuccessScreen extends ConsumerStatefulWidget {
   const CreateEventSuccessScreen({
     super.key,
     required this.club,
@@ -32,7 +35,35 @@ class CreateEventSuccessScreen extends StatelessWidget {
   final bool rosterImportFailed;
 
   @override
+  ConsumerState<CreateEventSuccessScreen> createState() =>
+      _CreateEventSuccessScreenState();
+}
+
+class _CreateEventSuccessScreenState
+    extends ConsumerState<CreateEventSuccessScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(
+        ref
+            .read(celebrationEffectsControllerProvider)
+            .play(CelebrationMomentKind.eventCreated),
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final club = widget.club;
+    final event = widget.event;
+    final inviteCode = widget.inviteCode;
+    final eventDisplayName = widget.eventDisplayName;
+    final onManageEvent = widget.onManageEvent;
+    final onDone = widget.onDone;
+    final rosterImportResult = widget.rosterImportResult;
+    final rosterImportFailed = widget.rosterImportFailed;
     final normalizedInviteCode = inviteCode?.trim();
     final inviteLink =
         normalizedInviteCode == null || normalizedInviteCode.isEmpty
@@ -65,8 +96,7 @@ class CreateEventSuccessScreen extends StatelessWidget {
               .l10n
               .hostsCreateEventSuccessScreenNoteBookingsWaitlistAndAttendance;
 
-    return CatchCelebrationScreen(
-      kind: CelebrationMomentKind.eventCreated,
+    return PaperCelebrationScaffold(
       icon: CatchIcons.celebration,
       eyebrow: context.l10n.hostsCreateEventSuccessScreenEyebrowEventCreated,
       title: context.l10n.hostsCreateEventSuccessScreenTitleYourEventIsLive,
@@ -129,8 +159,6 @@ class CreateEventSuccessScreen extends StatelessWidget {
       ),
       onClose: onDone,
       showCloseButton: false,
-      appearance: CatchCelebrationAppearance.paper,
-      surface: CatchCelebrationSurface.stepFlow,
     );
   }
 }

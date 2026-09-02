@@ -97,16 +97,6 @@ class ClubDetailScreen extends ConsumerWidget {
       authResolved: currentUidAsync.hasValue || currentUidAsync.hasError,
     );
 
-    Widget wrapMutationListeners(Widget child) => CatchMutationErrorListeners(
-      mutations: [
-        ClubMembershipController.joinMutation,
-        ClubMembershipController.leaveMutation,
-        ClubMembershipController.pushNotificationsMutation,
-        ClubHostContactController.startConversationMutation,
-      ],
-      child: child,
-    );
-
     if (screenState is HostClubDetailContent) {
       final bodyState = ClubDetailBodyState.fromContent(
         screenState,
@@ -148,8 +138,14 @@ class ClubDetailScreen extends ConsumerWidget {
         );
       }
 
-      return wrapMutationListeners(
-        CatchScreenScaffold.workspace(
+      return CatchMutationErrorListeners(
+        mutations: [
+          ClubMembershipController.joinMutation,
+          ClubMembershipController.leaveMutation,
+          ClubMembershipController.pushNotificationsMutation,
+          ClubHostContactController.startConversationMutation,
+        ],
+        child: CatchScreenScaffold.workspace(
           body: ClubDetailBody(
             state: bodyState,
             onShareClub: (buttonContext, club) => showClubShareCardSheet(

@@ -3,7 +3,7 @@
   "$id": "https://catch.app/design/screens/catch.screens.schema.json",
   "title": "Catch screen composition registry",
   "type": "object",
-  "required": ["$schema", "version", "updated", "sourceOfTruth", "screens"],
+  "required": ["$schema", "version", "updated", "sourceOfTruth", "layoutContracts", "layoutOnlyRoutes", "imperativePageContracts", "screens"],
   "properties": {
     "$schema": {
       "type": "string"
@@ -21,6 +21,36 @@
         "type": "string"
       }
     },
+    "layoutContracts": {
+      "description": "Typed layout ownership for registered design screens. Every rendered route in a screen contract must have at least one owner declaration.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^screen\\.[a-z0-9_.-]+$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/layoutContract"
+      }
+    },
+    "layoutOnlyRoutes": {
+      "description": "Typed layout ownership for rendered routes excluded from baseline design parity. Layout-only routes remain fully governed by the composition gate.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Za-z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/layoutContract"
+      }
+    },
+    "imperativePageContracts": {
+      "description": "Typed layout ownership for full-screen MaterialPageRoute presentation targets outside the named GoRouter graph. Every analyzer-resolved production construction site must name one of these targets.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Za-z_$][A-Za-z0-9_$.]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/imperativePageContract"
+      }
+    },
     "screens": {
       "type": "array",
       "minItems": 1,
@@ -31,6 +61,185 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "layoutContract": {
+      "description": "A rendered screen or route declares layout owners; a redirect-only historical screen instead declares canonical alias metadata.",
+      "type": "object",
+      "required": ["reason"],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": ["owners"],
+          "not": {"required": ["redirectTo"]}
+        },
+        {
+          "required": ["redirectTo"],
+          "not": {"required": ["owners"]}
+        }
+      ],
+      "properties": {
+        "owners": {
+          "description": "Registered layout-bearing declarations. Each owner must be statically reachable from every listed GoRoute presentation target.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/layoutOwner"
+          }
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redirectTo": {
+          "description": "Canonical-route metadata for a redirect-only alias. The composition gate validates typed target membership; focused router tests prove the actual redirect result.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "layoutOwner": {
+      "description": "A layout-bearing declaration and expression for one or more rendered routes. Rows may represent state-specific, responsive, adapter, or shared-wrapper alternatives; they identify registered declarations but do not label or exhaust runtime states. Reachability is conservative static analysis, not runtime branch execution.",
+      "type": "object",
+      "required": [
+        "routes",
+        "file",
+        "symbol",
+        "family",
+        "expression",
+        "bodyGeometry",
+        "topEdge"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "routes": {
+          "description": "Rendered route IDs whose analyzer-resolved presentation must statically reach this declaration.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "file": {
+          "description": "Hand-authored production Dart source containing the named declaration.",
+          "type": "string",
+          "minLength": 1
+        },
+        "symbol": {
+          "description": "Named declaration that contains the registered layout expression.",
+          "type": "string",
+          "minLength": 1
+        },
+        "family": {
+          "description": "Semantic screen-layout family. Every owner registered for one route must use the same family.",
+          "enum": [
+            "root",
+            "tabbed-root",
+            "pushed-route",
+            "media-hero",
+            "immersive",
+            "adaptive-workspace",
+            "standalone",
+            "step-flow"
+          ]
+        },
+        "expression": {
+          "description": "Allowed canonical layout expression that must occur in the named declaration.",
+          "enum": [
+            "CatchRootScreenScaffold",
+            "CatchRootScreenScrollView",
+            "CatchTabbedScreenScaffold",
+            "CatchRouteScaffold",
+            "CatchScreenScaffold.standalone",
+            "CatchScreenScaffold.stepFlow",
+            "CatchScreenScaffold.workspace"
+          ]
+        },
+        "bodyGeometry": {
+          "description": "Declared body geometry. Explicit standard/full-bleed owner arguments are checked where the owner API exposes them; mixed, intrinsic, and unrepresented arguments remain review metadata.",
+          "enum": ["standard", "full-bleed", "mixed", "intrinsic"]
+        },
+        "topEdge": {
+          "description": "Declared top-edge ownership. Explicit header-owned arguments are checked where the owner API exposes them; other unrepresented policies remain review metadata.",
+          "enum": ["safe-area", "header-owned", "route-chrome", "body-owned"]
+        }
+      }
+    },
+    "imperativePageContract": {
+      "description": "A full-screen imperative presentation target and every layout-bearing declaration conservatively reachable from each of its MaterialPageRoute builders.",
+      "type": "object",
+      "required": ["owners", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "owners": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/imperativePageOwner"
+          }
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "imperativePageOwner": {
+      "description": "A typed layout-bearing declaration for one imperative page target. Unlike a named-route owner, its binding is supplied by the enclosing target key rather than a routes array.",
+      "type": "object",
+      "required": [
+        "file",
+        "symbol",
+        "family",
+        "expression",
+        "bodyGeometry",
+        "topEdge"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "description": "Hand-authored production Dart source containing the named declaration.",
+          "type": "string",
+          "minLength": 1
+        },
+        "symbol": {
+          "description": "Named declaration that contains the registered layout expression.",
+          "type": "string",
+          "minLength": 1
+        },
+        "family": {
+          "description": "Semantic screen-layout family shared by every owner for this presentation target.",
+          "enum": [
+            "root",
+            "tabbed-root",
+            "pushed-route",
+            "media-hero",
+            "immersive",
+            "adaptive-workspace",
+            "standalone",
+            "step-flow"
+          ]
+        },
+        "expression": {
+          "description": "Allowed canonical layout expression that must occur in the named declaration.",
+          "enum": [
+            "CatchRootScreenScaffold",
+            "CatchRootScreenScrollView",
+            "CatchTabbedScreenScaffold",
+            "CatchRouteScaffold",
+            "CatchScreenScaffold.standalone",
+            "CatchScreenScaffold.stepFlow",
+            "CatchScreenScaffold.workspace"
+          ]
+        },
+        "bodyGeometry": {
+          "enum": ["standard", "full-bleed", "mixed", "intrinsic"]
+        },
+        "topEdge": {
+          "enum": ["safe-area", "header-owned", "route-chrome", "body-owned"]
+        }
+      }
+    },
     "screen": {
       "type": "object",
       "required": [

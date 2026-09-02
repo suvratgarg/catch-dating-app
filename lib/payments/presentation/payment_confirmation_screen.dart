@@ -49,27 +49,21 @@ class PaymentConfirmationScreen extends ConsumerWidget {
       value: eventAsync,
       onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
       loadingBuilder: (_) => const PaymentConfirmationLoadingScreen(),
-      errorBuilder: (_, e, _) => CatchScreenScaffold.standalone(
-        safeArea: CatchScreenSafeArea.none,
-        body: CatchErrorState.fromError(
-          e,
-          context: AppErrorContext.payments,
-          onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
-        ),
+      errorBuilder: (_, e, _) => CatchErrorScaffold.fromError(
+        e,
+        context: AppErrorContext.payments,
+        onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
       ),
       builder: (context, event) {
         if (event == null) {
-          return CatchScreenScaffold.standalone(
-            safeArea: CatchScreenSafeArea.none,
-            body: CatchErrorState(
-              title: context
-                  .l10n
-                  .paymentsPaymentConfirmationScreenTitleEventNotFound,
-              message: context
-                  .l10n
-                  .paymentsPaymentConfirmationScreenMessageThisEventIsNo,
-              secondaryAction: const CatchErrorBackAction(),
-            ),
+          return CatchErrorScaffold(
+            title: context
+                .l10n
+                .paymentsPaymentConfirmationScreenTitleEventNotFound,
+            message: context
+                .l10n
+                .paymentsPaymentConfirmationScreenMessageThisEventIsNo,
+            secondaryAction: const CatchErrorBackAction(),
           );
         }
         if (data.isPendingExternalCheckout) {

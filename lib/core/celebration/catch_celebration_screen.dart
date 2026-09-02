@@ -16,10 +16,6 @@ const _celebrationInk = CatchCelebrationColors.ink;
 const _celebrationCream = CatchCelebrationColors.cream;
 const _celebrationActionInk = CatchCelebrationColors.actionInk;
 
-enum CatchCelebrationAppearance { immersive, paper }
-
-enum CatchCelebrationSurface { standalone, stepFlow }
-
 class CelebrationDetail {
   const CelebrationDetail({
     required this.label,
@@ -65,8 +61,6 @@ class CatchCelebrationScreen extends ConsumerStatefulWidget {
     this.onClose,
     this.showCloseButton,
     this.playEffects = true,
-    this.appearance = CatchCelebrationAppearance.immersive,
-    this.surface = CatchCelebrationSurface.standalone,
   });
 
   final CelebrationMomentKind kind;
@@ -83,8 +77,6 @@ class CatchCelebrationScreen extends ConsumerStatefulWidget {
   final VoidCallback? onClose;
   final bool? showCloseButton;
   final bool playEffects;
-  final CatchCelebrationAppearance appearance;
-  final CatchCelebrationSurface surface;
 
   IconData get icon => _icon ?? CatchIcons.checkRounded;
 
@@ -110,10 +102,6 @@ class _CatchCelebrationScreenState
 
   @override
   Widget build(BuildContext context) {
-    if (widget.appearance == CatchCelebrationAppearance.paper) {
-      return PaperCelebrationScaffold(screen: widget);
-    }
-
     final t = CatchTokens.of(context);
     final details = widget.details;
     final secondaryAction = widget.secondaryAction;
@@ -240,31 +228,49 @@ class _CatchCelebrationScreenState
         ),
       ),
     );
-    return switch (widget.surface) {
-      CatchCelebrationSurface.standalone => CatchScreenScaffold.standalone(
-        safeArea: CatchScreenSafeArea.none,
-        extendBody: true,
-        body: body,
-      ),
-      CatchCelebrationSurface.stepFlow => CatchScreenScaffold.stepFlow(
-        safeArea: CatchScreenSafeArea.none,
-        extendBody: true,
-        body: body,
-      ),
-    };
+    return CatchScreenScaffold.standalone(
+      safeArea: CatchScreenSafeArea.none,
+      extendBody: true,
+      body: body,
+    );
   }
 }
 
 class PaperCelebrationScaffold extends StatelessWidget {
-  const PaperCelebrationScaffold({super.key, required this.screen});
+  const PaperCelebrationScaffold({
+    super.key,
+    required this.title,
+    required this.message,
+    required this.primaryAction,
+    this.eyebrow,
+    this.icon,
+    this.visual,
+    this.details = const [],
+    this.note,
+    this.supplementalChildren = const [],
+    this.secondaryAction,
+    this.onClose,
+    this.showCloseButton,
+  });
 
-  final CatchCelebrationScreen screen;
+  final String? eyebrow;
+  final String title;
+  final String message;
+  final IconData? icon;
+  final Widget? visual;
+  final List<CelebrationDetail> details;
+  final String? note;
+  final List<Widget> supplementalChildren;
+  final CelebrationAction primaryAction;
+  final CelebrationAction? secondaryAction;
+  final VoidCallback? onClose;
+  final bool? showCloseButton;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final secondaryAction = screen.secondaryAction;
-    final showCloseButton = screen.showCloseButton ?? screen.onClose != null;
+    final secondaryAction = this.secondaryAction;
+    final showCloseButton = this.showCloseButton ?? onClose != null;
 
     final body = SafeArea(
       child: LayoutBuilder(
@@ -286,12 +292,12 @@ class PaperCelebrationScaffold extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (showCloseButton && screen.onClose != null) ...[
+                  if (showCloseButton && onClose != null) ...[
                     Align(
                       alignment: Alignment.centerRight,
                       child: CatchIconButton(
                         background: t.primarySoft,
-                        onTap: screen.onClose,
+                        onTap: onClose,
                         child: Icon(CatchIcons.closeRounded, color: t.primary),
                       ),
                     ),
@@ -299,13 +305,15 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   ],
                   Align(
                     child:
-                        screen.visual ??
-                        PaperCelebrationIcon(icon: screen.icon),
+                        visual ??
+                        PaperCelebrationIcon(
+                          icon: icon ?? CatchIcons.checkRounded,
+                        ),
                   ),
-                  if (screen.eyebrow != null) ...[
+                  if (eyebrow != null) ...[
                     gapH16,
                     Text(
-                      screen.eyebrow!.toUpperCase(),
+                      eyebrow!.toUpperCase(),
                       textAlign: TextAlign.center,
                       style: CatchTextStyles.labelM(
                         context,
@@ -315,7 +323,7 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   ],
                   gapH8,
                   Text(
-                    screen.title,
+                    title,
                     textAlign: TextAlign.center,
                     style: CatchTextStyles.display(context, color: t.ink),
                   ),
@@ -324,36 +332,33 @@ class PaperCelebrationScaffold extends StatelessWidget {
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 340),
                       child: Text(
-                        screen.message,
+                        message,
                         textAlign: TextAlign.center,
                         style: CatchTextStyles.proseM(context, color: t.ink2),
                       ),
                     ),
                   ),
-                  if (screen.details.isNotEmpty) ...[
+                  if (details.isNotEmpty) ...[
                     gapH24,
-                    PaperCelebrationDetailsCard(details: screen.details),
+                    PaperCelebrationDetailsCard(details: details),
                   ],
-                  if (screen.note != null) ...[
+                  if (note != null) ...[
                     gapH12,
                     Text(
-                      screen.note!,
+                      note!,
                       textAlign: TextAlign.center,
                       style: CatchTextStyles.supporting(context, color: t.ink3),
                     ),
                   ],
-                  for (final child in screen.supplementalChildren) ...[
-                    gapH18,
-                    child,
-                  ],
+                  for (final child in supplementalChildren) ...[gapH18, child],
                   const SizedBox(
                     height: CatchLayout.celebrationPaperActionTopGap,
                   ),
                   CatchButton(
-                    key: screen.primaryAction.key,
-                    label: screen.primaryAction.label,
-                    onPressed: screen.primaryAction.onPressed,
-                    icon: screen.primaryAction.icon,
+                    key: primaryAction.key,
+                    label: primaryAction.label,
+                    onPressed: primaryAction.onPressed,
+                    icon: primaryAction.icon,
                     fullWidth: true,
                     backgroundColor: t.primary,
                     foregroundColor: t.primaryInk,
@@ -379,18 +384,11 @@ class PaperCelebrationScaffold extends StatelessWidget {
         },
       ),
     );
-    return switch (screen.surface) {
-      CatchCelebrationSurface.standalone => CatchScreenScaffold.standalone(
-        safeArea: CatchScreenSafeArea.none,
-        backgroundColor: t.bg,
-        body: body,
-      ),
-      CatchCelebrationSurface.stepFlow => CatchScreenScaffold.stepFlow(
-        safeArea: CatchScreenSafeArea.none,
-        backgroundColor: t.bg,
-        body: body,
-      ),
-    };
+    return CatchScreenScaffold.stepFlow(
+      safeArea: CatchScreenSafeArea.none,
+      backgroundColor: t.bg,
+      body: body,
+    );
   }
 }
 

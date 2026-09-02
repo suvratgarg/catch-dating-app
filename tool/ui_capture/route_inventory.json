@@ -1,11 +1,11 @@
 {
-  "version": 1,
+  "version": 4,
   "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "ed9adedf0181ca60e058ae64985d1066db20f967056a125ceed9f9a4b3142ad6",
-    "routeContractSha256": "20ab7220ba08599084d9c6d26e35e385f301f85140608dcf79487ca333815b13",
+    "normalizedFileSha256": "e5ee13cd737be53d75470372e1969af317d98bf8866eea49bcc261c8fc6f73e7",
+    "routeContractSha256": "32b285ddbdf2ee372853a57ee65123f8d9ff6f334760dfd545072b4e234d8412",
     "goRouteCount": 85,
     "shellBranchCount": 9,
     "enumRouteCount": 70,
@@ -18,7 +18,9 @@
       "_hostAudienceRoute",
       "_hostCustomersLegacyRoute",
       "_hostFormsLegacyRoute"
-    ]
+    ],
+    "imperativePageRouteCount": 11,
+    "imperativePageTargetCount": 7
   },
   "routes": [
     {
@@ -30,6 +32,9 @@
       "runtimePath": "/loading",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.loadingScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const _RouteLoadingScreen()",
+      "presentationTarget": "_RouteLoadingScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -42,6 +47,9 @@
       "runtimePath": "/start",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.startScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const StartWelcomeRouteScreen()",
+      "presentationTarget": "StartWelcomeRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -54,6 +62,9 @@
       "runtimePath": "/auth",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.authScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const AuthScreen()",
+      "presentationTarget": "AuthScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -66,6 +77,9 @@
       "runtimePath": "/onboarding",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.onboardingScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>OnboardingScreen(profileCompletionOnly:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeProfileIntent,runPreferencesOnly:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeRunPreferencesIntent)",
+      "presentationTarget": "OnboardingScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -78,6 +92,9 @@
       "runtimePath": "/calendar",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.calendarScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const CalendarScreen()",
+      "presentationTarget": "CalendarScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -93,6 +110,9 @@
       "runtimePath": "/calendar/organizers/:clubId/events/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.calendarEventDetailScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>_eventDetailScreen(state)",
+      "presentationTarget": "_eventDetailScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -105,6 +125,9 @@
       "runtimePath": "/saved-events",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.savedEventsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const SavedEventsScreen()",
+      "presentationTarget": "SavedEventsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -120,6 +143,9 @@
       "runtimePath": "/saved-events/organizers/:clubId/events/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.savedEventDetailScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>_eventDetailScreen(state)",
+      "presentationTarget": "_eventDetailScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -132,6 +158,9 @@
       "runtimePath": "/filters",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.filtersScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const FiltersScreen()",
+      "presentationTarget": "FiltersScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -147,6 +176,9 @@
       "runtimePath": "/dashboard/organizers/:clubId/events/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.dashboardEventDetailScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>_eventDetailScreen(state)",
+      "presentationTarget": "_eventDetailScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -161,6 +193,9 @@
       "runtimePath": "/events/:eventId/location",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.eventLocationMapScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>EventLocationMapRouteScreen(eventId:state.pathParameters['eventId']!)",
+      "presentationTarget": "EventLocationMapRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -173,6 +208,9 @@
       "runtimePath": "/",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.dashboardScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const DashboardScreen()",
+      "presentationTarget": "DashboardScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -185,6 +223,9 @@
       "runtimePath": "/notifications",
       "runtimeParentId": "dashboardScreen",
       "runtimePathExpression": "'notifications'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const ActivityScreen()",
+      "presentationTarget": "ActivityScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -199,6 +240,9 @@
       "runtimePath": "/cross-paths/invitations/:invitationId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.crossPathsInvitationScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>CrossPathsInvitationScreen(invitationId:state.pathParameters['invitationId']!)",
+      "presentationTarget": "CrossPathsInvitationScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -211,6 +255,9 @@
       "runtimePath": "/organizers",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.exploreScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const ExploreScreen()",
+      "presentationTarget": "ExploreScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -223,6 +270,9 @@
       "runtimePath": "/organizers/map",
       "runtimeParentId": "exploreScreen",
       "runtimePathExpression": "'map'",
+      "renderKind": "pageBuilder",
+      "presentationExpression": "_exploreMapPage",
+      "presentationTarget": "_exploreMapPage",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -237,6 +287,9 @@
       "runtimePath": "/organizers/:clubId",
       "runtimeParentId": "exploreScreen",
       "runtimePathExpression": "':clubId'",
+      "renderKind": "pageBuilder",
+      "presentationExpression": "_clubDetailPage",
+      "presentationTarget": "_clubDetailPage",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -252,6 +305,9 @@
       "runtimePath": "/organizers/:clubId/events/:eventId",
       "runtimeParentId": "clubDetailScreen",
       "runtimePathExpression": "'events/:eventId'",
+      "renderKind": "pageBuilder",
+      "presentationExpression": "_eventDetailPage",
+      "presentationTarget": "_eventDetailPage",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -267,6 +323,9 @@
       "runtimePath": "/organizers/:clubId/events/:eventId/companion",
       "runtimeParentId": "eventDetailScreen",
       "runtimePathExpression": "'companion'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>EventSuccessCompanionRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:switch(state.extra){final Event event=>event,_=>null})",
+      "presentationTarget": "EventSuccessCompanionRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -279,6 +338,9 @@
       "runtimePath": "/catches",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.swipeHubScreen.path",
+      "renderKind": "redirect",
+      "presentationExpression": "(context,state)=>Routes.dashboardScreen.path",
+      "presentationTarget": "Routes.dashboardScreen.path",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -293,6 +355,9 @@
       "runtimePath": "/catches/:eventId",
       "runtimeParentId": "dashboardScreen",
       "runtimePathExpression": "'catches/:eventId'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>SwipeScreen(eventId:state.pathParameters['eventId']!,vibeIds:switch(state.extra){final Set<String>ids=>ids,_=>const{}})",
+      "presentationTarget": "SwipeScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -307,6 +372,9 @@
       "runtimePath": "/catches/:eventId/recap",
       "runtimeParentId": "dashboardScreen",
       "runtimePathExpression": "'catches/:eventId/recap'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>EventRecapScreen(eventId:state.pathParameters['eventId']!)",
+      "presentationTarget": "EventRecapScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -319,6 +387,9 @@
       "runtimePath": "/chats",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.matchesListScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const ChatsListScreen()",
+      "presentationTarget": "ChatsListScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -333,6 +404,9 @@
       "runtimePath": "/chats/:matchId",
       "runtimeParentId": "matchesListScreen",
       "runtimePathExpression": "':matchId'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ChatScreen(matchId:state.pathParameters['matchId']!,otherProfile:switch(state.extra){final PublicProfile p=>p,_=>null})",
+      "presentationTarget": "ChatScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -345,6 +419,9 @@
       "runtimePath": "/you",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.profileScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const ProfileScreen()",
+      "presentationTarget": "ProfileScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -357,6 +434,9 @@
       "runtimePath": "/you/reviews",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.reviewsHistoryScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const ReviewsHistoryScreen()",
+      "presentationTarget": "ReviewsHistoryScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -371,6 +451,9 @@
       "runtimePath": "/profiles/:uid",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.publicProfileScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>PublicProfileScreen(uid:state.pathParameters['uid']!,initialProfile:switch(state.extra){final PublicProfile p=>p,_=>null})",
+      "presentationTarget": "PublicProfileScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -383,6 +466,9 @@
       "runtimePath": "/settings",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.settingsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const SettingsScreen()",
+      "presentationTarget": "SettingsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -395,6 +481,9 @@
       "runtimePath": "/settings/launch-access",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.launchAccessScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const LaunchAccessApplicationScreen()",
+      "presentationTarget": "LaunchAccessApplicationScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -407,6 +496,9 @@
       "runtimePath": "/payment-history",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.paymentHistoryScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const PaymentHistoryScreen()",
+      "presentationTarget": "PaymentHistoryScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -419,6 +511,9 @@
       "runtimePath": "/payment-confirmation",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.paymentConfirmationScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state){final data=state.extra!as PaymentConfirmationData;return PaymentConfirmationScreen(data:data);}",
+      "presentationTarget": "PaymentConfirmationScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -431,6 +526,9 @@
       "runtimePath": "/host",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostHomeScreen.path",
+      "renderKind": "redirect",
+      "presentationExpression": "(context,state)=>hostHomeLegacyRedirect()",
+      "presentationTarget": "hostHomeLegacyRedirect",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -443,6 +541,9 @@
       "runtimePath": "/host/today",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostTodayScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostTodayScreen(initialOrganizerId:state.uri.queryParameters['organizerId']??state.uri.queryParameters['clubId'])",
+      "presentationTarget": "HostTodayScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -455,6 +556,9 @@
       "runtimePath": "/host/events",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostEventsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostEventsScreen(initialOrganizerId:state.uri.queryParameters['organizerId']??state.uri.queryParameters['clubId'])",
+      "presentationTarget": "HostEventsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -467,6 +571,9 @@
       "runtimePath": "/host/audience",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostAudienceScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>hostAudienceScreenForUri(state.uri,initialContactDisplayName:switch(state.extra){HostCustomerDetailRouteArguments(:final displayName)=>displayName,_=>null})",
+      "presentationTarget": "hostAudienceScreenForUri",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -479,6 +586,9 @@
       "runtimePath": "/host/audience/people/new",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'people/new'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostAddCustomerScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "HostAddCustomerScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -491,6 +601,9 @@
       "runtimePath": "/host/audience/audiences/new",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'audiences/new'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostSavedAudienceEditorScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "HostSavedAudienceEditorScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -505,6 +618,9 @@
       "runtimePath": "/host/audience/audiences/:audienceId",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'audiences/:audienceId'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostSavedAudienceEditorScreen(organizerId:state.uri.queryParameters['organizerId']??'',audienceId:state.pathParameters['audienceId'],initialAudience:switch(state.extra){HostSavedAudience audience=>audience,_=>null})",
+      "presentationTarget": "HostSavedAudienceEditorScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -517,6 +633,9 @@
       "runtimePath": "/host/audience/forms/new",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'forms/new'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostFormTemplatesScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "HostFormTemplatesScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -531,6 +650,9 @@
       "runtimePath": "/host/audience/responses/:responseId",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'responses/:responseId'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostFormResponseDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',responseId:state.pathParameters['responseId']!)",
+      "presentationTarget": "HostFormResponseDetailScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -545,6 +667,9 @@
       "runtimePath": "/host/audience/forms/:formId",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'forms/:formId'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostFormBuilderScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!)",
+      "presentationTarget": "HostFormBuilderScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -559,6 +684,9 @@
       "runtimePath": "/host/audience/forms/:formId/preview",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'forms/:formId/preview'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostFormPreviewScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!)",
+      "presentationTarget": "HostFormPreviewScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -573,6 +701,9 @@
       "runtimePath": "/host/audience/forms/:formId/share",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'forms/:formId/share'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostFormShareScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!)",
+      "presentationTarget": "HostFormShareScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -587,6 +718,9 @@
       "runtimePath": "/host/audience/forms/:formId/analytics",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'forms/:formId/analytics'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostFormAnalyticsScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!)",
+      "presentationTarget": "HostFormAnalyticsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -601,6 +735,9 @@
       "runtimePath": "/host/audience/forms/:formId/automations",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'forms/:formId/automations'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostFormAutomationsScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!)",
+      "presentationTarget": "HostFormAutomationsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -613,6 +750,9 @@
       "runtimePath": "/host/audience/applications",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'applications'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostApplicationsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "HostApplicationsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -627,6 +767,9 @@
       "runtimePath": "/host/audience/applications/:applicationId",
       "runtimeParentId": "hostApplicationsScreen",
       "runtimePathExpression": "':applicationId'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostApplicationDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',applicationId:state.pathParameters['applicationId']!)",
+      "presentationTarget": "HostApplicationDetailScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -641,6 +784,9 @@
       "runtimePath": "/host/audience/people/:contactId",
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'people/:contactId'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostCustomerDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',contactId:state.pathParameters['contactId']!,initialDisplayName:switch(state.extra){HostCustomerDetailRouteArguments(:final displayName)=>displayName,_=>null})",
+      "presentationTarget": "HostCustomerDetailScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -653,6 +799,9 @@
       "runtimePath": "/host/customers",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostCustomersLegacyScreen.path",
+      "renderKind": "redirect",
+      "presentationExpression": "(context,state)=>hostCustomersLegacyRedirect(state.uri)",
+      "presentationTarget": "hostCustomersLegacyRedirect",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -665,6 +814,9 @@
       "runtimePath": "/host/forms",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostFormsLegacyScreen.path",
+      "renderKind": "redirect",
+      "presentationExpression": "(context,state)=>hostFormsLegacyRedirect(state.uri)",
+      "presentationTarget": "hostFormsLegacyRedirect",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -679,6 +831,9 @@
       "runtimePath": "/host/operator/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOperatorEventScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostEventOperatorScreen(eventId:state.pathParameters['eventId']!)",
+      "presentationTarget": "HostEventOperatorScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -691,6 +846,9 @@
       "runtimePath": "/host/organizer",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>hostOrganizerScreenForUri(state.uri)",
+      "presentationTarget": "hostOrganizerScreenForUri",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -705,6 +863,9 @@
       "runtimePath": "/host/organizer/:clubId/messaging",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostOrganizerMessagingScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostMessagingSetupScreen(clubId:state.pathParameters['clubId']!)",
+      "presentationTarget": "HostMessagingSetupScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -717,6 +878,9 @@
       "runtimePath": "/host/organizers",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostClubsScreen.path",
+      "renderKind": "redirect",
+      "presentationExpression": "(context,state)=>hostOrganizerIndexRedirect(state.uri)",
+      "presentationTarget": "hostOrganizerIndexRedirect",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -729,6 +893,9 @@
       "runtimePath": "/host/organizers/event-defaults",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostClubEventDefaultsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostClubEventDefaultsScreen(clubId:state.uri.queryParameters['clubId']??'')",
+      "presentationTarget": "HostClubEventDefaultsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -741,6 +908,9 @@
       "runtimePath": "/host/organizers/live-guide",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostClubLiveGuideScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostClubLiveGuideScreen(clubId:state.uri.queryParameters['clubId']??'')",
+      "presentationTarget": "HostClubLiveGuideScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -753,6 +923,9 @@
       "runtimePath": "/host/organizers/team",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostClubTeamScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostClubTeamScreen(clubId:state.uri.queryParameters['clubId']??'')",
+      "presentationTarget": "HostClubTeamScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -765,6 +938,9 @@
       "runtimePath": "/host/organizers/payments",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostClubPaymentsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostClubPaymentsScreen(clubId:state.uri.queryParameters['clubId']??'')",
+      "presentationTarget": "HostClubPaymentsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -779,6 +955,9 @@
       "runtimePath": "/host/organizers/:clubId",
       "runtimeParentId": "hostClubsScreen",
       "runtimePathExpression": "':clubId'",
+      "renderKind": "pageBuilder",
+      "presentationExpression": "_clubDetailPage",
+      "presentationTarget": "_clubDetailPage",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -791,6 +970,9 @@
       "runtimePath": "/host/organizers/create-organizer",
       "runtimeParentId": "hostClubsScreen",
       "runtimePathExpression": "'create-organizer'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const HostCreateClubScreen()",
+      "presentationTarget": "HostCreateClubScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -805,6 +987,9 @@
       "runtimePath": "/host/organizers/:clubId/create-event",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'create-event'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state){final extra=state.extra;return HostCreateEventRouteScreen(clubId:state.pathParameters['clubId']!,initialClub:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialClub,final Club club=>club,_=>null},initialPrefill:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialPrefill,_=>null},initialDraft:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialDraft,_=>null},externalBookingMode:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.externalBookingMode,_=>false},initialRosterImportPlan:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialRosterImportPlan,_=>null},promptForDrafts:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.promptForDrafts,_=>true});}",
+      "presentationTarget": "HostCreateEventRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -819,6 +1004,9 @@
       "runtimePath": "/host/organizers/:clubId/rehearsals/new",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'rehearsals/new'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostEventRehearsalStartScreen(clubId:state.pathParameters['clubId']!,sourceEventId:state.uri.queryParameters['eventId'])",
+      "presentationTarget": "HostEventRehearsalStartScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -834,6 +1022,9 @@
       "runtimePath": "/host/organizers/:clubId/rehearsals/:sessionId",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'rehearsals/:sessionId'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostEventRehearsalScreen(clubId:state.pathParameters['clubId']!,sessionId:state.pathParameters['sessionId']!)",
+      "presentationTarget": "HostEventRehearsalScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -849,6 +1040,9 @@
       "runtimePath": "/host/organizers/:clubId/events/:eventId",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId'",
+      "renderKind": "pageBuilder",
+      "presentationExpression": "_eventDetailPage",
+      "presentationTarget": "_eventDetailPage",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -864,6 +1058,9 @@
       "runtimePath": "/host/organizers/:clubId/events/:eventId/manage",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/manage'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:switch(state.extra){final Event event=>event,_=>null},initialSection:_hostManageSectionFromState(state))",
+      "presentationTarget": "HostEventManageRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -879,6 +1076,9 @@
       "runtimePath": "/host/organizers/:clubId/events/:eventId/edit",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/edit'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>EditHostedEventRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:switch(state.extra){final Event event=>event,_=>null})",
+      "presentationTarget": "EditHostedEventRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -894,6 +1094,9 @@
       "runtimePath": "/host/organizers/:clubId/events/:eventId/attendance",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/attendance'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:switch(state.extra){final Event event=>event,_=>null},initialSection:HostEventManageSection.live)",
+      "presentationTarget": "HostEventManageRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -909,6 +1112,9 @@
       "runtimePath": "/host/organizers/:clubId/events/:eventId/success",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/success'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:switch(state.extra){final Event event=>event,_=>null},initialSection:_hostManageSectionFromState(state))",
+      "presentationTarget": "HostEventManageRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -921,6 +1127,9 @@
       "runtimePath": "/host/inbox",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostInboxScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>hostInboxScreenForUri(state.uri,initialOrganizerId:switch(state.extra){final Club club=>club.id,_=>null})",
+      "presentationTarget": "hostInboxScreenForUri",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -935,8 +1144,112 @@
       "runtimePath": "/host/inbox/:matchId",
       "runtimeParentId": "hostInboxScreen",
       "runtimePathExpression": "':matchId'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ChatScreen(matchId:state.pathParameters['matchId']!,otherProfile:switch(state.extra){final PublicProfile profile=>profile,_=>null})",
+      "presentationTarget": "ChatScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
+    }
+  ],
+  "imperativePageRoutes": [
+    {
+      "siteId": "material-page:lib/core/widgets/ordered_photo_picker.dart:1",
+      "sourcePath": "lib/core/widgets/ordered_photo_picker.dart",
+      "line": 210,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!)",
+      "presentationTarget": "OrderedPhotoManagerScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/dashboard/presentation/widgets/dashboard_full.dart:1",
+      "sourcePath": "lib/dashboard/presentation/widgets/dashboard_full.dart",
+      "line": 256,
+      "ordinal": 1,
+      "presentationExpression": "(routeContext)=>EventCheckInCelebrationScreen(event:event,onViewEvent:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.eventDetailScreen.name,pathParameters:{'clubId':event.clubId,'eventId':event.id},extra:event);},onBackHome:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.dashboardScreen.name);})",
+      "presentationTarget": "EventCheckInCelebrationScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/events/presentation/widgets/event_detail_cta.dart:1",
+      "sourcePath": "lib/events/presentation/widgets/event_detail_cta.dart",
+      "line": 367,
+      "ordinal": 1,
+      "presentationExpression": "(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);})",
+      "presentationTarget": "EventJoinedCelebrationScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_screen.dart:1",
+      "sourcePath": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 845,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:locationState.startingPoint,initialCenter:locationState.startingPoint??deviceLocation,initialLabel:locationState.pickerInitialLabel,loadMapTiles:widget.loadMapTiles)",
+      "presentationTarget": "LocationPickerScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_screen.dart:2",
+      "sourcePath": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1023,
+      "ordinal": 2,
+      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
+      "presentationTarget": "LocationPickerScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:1",
+      "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
+      "line": 382,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:_locationState.startingPoint,initialCenter:_locationState.initialCenter(deviceLocation),initialLabel:_locationState.initialLabel(meetingPoint:_meetingPointController.text),loadMapTiles:widget.loadMapTiles)",
+      "presentationTarget": "LocationPickerScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:2",
+      "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
+      "line": 418,
+      "ordinal": 2,
+      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_locationState.startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
+      "presentationTarget": "LocationPickerScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart:1",
+      "sourcePath": "lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart",
+      "line": 302,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>RoutePathBuilderScreen(initialCenter:widget.initialCenter,initialPath:plan.path,enableNetworkTiles:widget.loadMapTiles)",
+      "presentationTarget": "RoutePathBuilderScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/host_operations/host_club_edit_tab.dart:1",
+      "sourcePath": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "line": 204,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:_HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:_HostClubMediaManagerActions(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false)",
+      "presentationTarget": "OrderedPhotoManagerScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/image_uploads/shared/profile_photo_editor_screen.dart:1",
+      "sourcePath": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
+      "line": 66,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>ProfilePhotoEditorScreen(index:index,photo:photo,initialImageBytes:initialImageBytes,canDelete:canDelete)",
+      "presentationTarget": "ProfilePhotoEditorScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/matches/presentation/match_celebration_controller.dart:1",
+      "sourcePath": "lib/matches/presentation/match_celebration_controller.dart",
+      "line": 17,
+      "ordinal": 1,
+      "presentationExpression": "(routeContext)=>Consumer(builder:(_,ref,_)=>MatchCelebrationDialog(match:match,otherUid:otherUid,onSendMessage:(){Navigator.of(routeContext).pop();final otherProfile=ref.read(watchPublicProfileProvider(otherUid)).asData?.value;context.goNamed(Routes.chatScreen.name,pathParameters:{'matchId':match.id},extra:otherProfile);},onKeepSwiping:()=>Navigator.of(routeContext).pop()))",
+      "presentationTarget": "MatchCelebrationDialog",
+      "fullscreenDialogExpression": "true"
     }
   ],
   "goRouterRouteReferences": [

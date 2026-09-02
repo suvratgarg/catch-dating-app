@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-08-31",
+  "updated": "2026-09-02",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -7060,7 +7060,10 @@
             "catch_no_legacy_spacing_token",
             "catch_screen_gutter_uses_semantic_insets",
             "catch_no_shell_local_measurement",
-            "catch_screen_registry_conformance"
+            "catch_screen_registry_conformance",
+            "catch_screen_layout_family_conformance",
+            "catch_screen_route_owner_binding",
+            "catch_screen_scaffold_ownership"
           ],
           "vehicle": "plugin",
           "probeSeed": "Padding(padding: EdgeInsets.all(CatchSpacing.s4), child: const SizedBox())"
@@ -7319,8 +7322,8 @@
         ],
         "notes": [
           "Use for regular non-sliver route bodies before composing ad hoc page padding.",
-          "Every full-screen route first declares standalone, step-flow, or workspace surface ownership through CatchScreenScaffold. Root title destinations then use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry; pinned peer-tab destinations declare the same role through CatchTabbedPageScrollView.",
-          "Screens may override top/bottom rhythm but should not hand-roll the horizontal gutter.",
+          "Every full-screen composition terminates in standalone, step-flow, or workspace surface ownership through CatchScreenScaffold. Root title destinations use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry; pinned peer-tab destinations declare the same role through CatchTabbedPageScrollView.",
+          "Regular root and tab bodies may not override the 24-point standard start; specialized full-bleed or intrinsic families and named semantic primitives own any alternate rhythm.",
           "Use CatchResponsiveSectionPage when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
           "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding."
         ]
@@ -13197,10 +13200,9 @@
         "enforcement": {
           "code": "catch_shell_owns_tab_scaffold",
           "codes": [
-            "catch_no_raw_breakpoint",
-            "catch_screen_nested_scaffold"
+            "catch_no_raw_breakpoint"
           ],
-          "vehicle": "checker",
+          "vehicle": "plugin",
           "states": [
             "loading",
             "error",
@@ -13326,9 +13328,15 @@
           }
         ],
         "tokens": [
-          "theme.light.color.bg"
+          "theme.light.color.bg",
+          "space.s1",
+          "space.s5",
+          "space.s6"
         ],
         "dartRoles": [
+          "CatchInsets.tabbedScreenTitleBlock",
+          "CatchLayout.tabRailHeight",
+          "CatchScreenBodyLayout",
           "CatchScreenHeaderTitle.block",
           "CatchSliverHeader",
           "NestedScrollView",
@@ -13398,6 +13406,7 @@
         ],
         "notes": [
           "The route owns the typed TabController and TabBarView; the shell owns title, pinned rail, overlap, and safe-area composition.",
+          "The shell enforces a 4-point title-to-rail handoff, a 44-point pinned rail, and the standard 24-point rail-to-body content start; feature routes do not restate these values.",
           "Every page uses CatchTabbedPageScrollView with a stable PageStorageKey. Never switch tab children inside one shared vertical ListView.",
           "Feature code retains async state, data policy, route actions, and specialized inner-scroll bridges."
         ]

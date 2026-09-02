@@ -53,3 +53,40 @@ test("requires decisions, live waivers, ownership, and probes", () => {
   assert.ok(result.failures.some((failure) => failure.includes("catch_orphan")));
   assert.equal(result.metrics.expiredWaivers, 1);
 });
+
+test("primary enforcement code must match its declared vehicle", () => {
+  const registry = {
+    components: [
+      {
+        id: "catch.mixed-valid",
+        enforcement: {
+          code: "catch_plugin_primary",
+          codes: ["catch_checker_supplement"],
+          vehicle: "plugin",
+        },
+      },
+      {
+        id: "catch.mismatched",
+        enforcement: {
+          code: "catch_plugin_mismatch",
+          vehicle: "checker",
+        },
+      },
+    ],
+  };
+  const result = checkComponentEnforcementCoverage({
+    registry,
+    pluginCodes: new Set([
+      "catch_plugin_primary",
+      "catch_plugin_mismatch",
+    ]),
+    checkerCodes: new Set(["catch_checker_supplement"]),
+    harnessSource: "'catch_plugin_primary' 'catch_plugin_mismatch'",
+    generatedProbeMinimums: {},
+    today: "2026-09-02",
+  });
+
+  assert.deepEqual(result.failures, [
+    "catch.mismatched: primary code catch_plugin_mismatch is not implemented by declared checker vehicle",
+  ]);
+});

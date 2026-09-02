@@ -3,32 +3,49 @@ import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {newWidgetPolicyIssues} from "./component_concepts.mjs";
+import {
+  buildLineStarts,
+  collectCatalogWidgetSymbols,
+  collectClassDeclarations,
+  collectClassRanges,
+  collectWidgetClasses,
+  collectWidgetHelpers,
+  requireResolvedMergeBase,
+  resolveWidgetTypeNames,
+  unresolvedInventoryItems,
+} from "./lib/new_widget_inventory_declarations.mjs";
+import {
+  isGeneratedProductionWidgetDartPath,
+  productionWidgetRoots,
+} from "./lib/production_widget_roots.mjs";
 
 const args = process.argv.slice(2);
-const explicitBaseRef = valueAfter("--base");
-const baseRef = explicitBaseRef ?? "HEAD^";
-const writePath = valueAfter("--write") ?? "build/reports/new_widget_inventory_scan.json";
-const shouldCheck = args.includes("--check");
-const shouldJson = args.includes("--json");
-const shouldNoWrite = args.includes("--no-write");
 
 if (args.includes("--help") || args.includes("-h")) {
   console.log(`Usage:
   node tool/design/check_new_widget_inventory.mjs [--base <ref>] [--write <path>] [--json] [--check] [--no-write]
 
-Compares current lib/**/*.dart against a base ref, HEAD^ by default. Reports
-new widget classes, new private widget classes, new Widget-returning helper
-functions/methods, and whether new public widget classes are present in
-Widgetbook plus docs/widget_catalog.md.
+Compares production Dart sources against the merge base with origin/main by
+default. Blocks new or moved private widget classes and Widget-returning helpers,
+checks Widgetbook plus docs/widget_catalog.md for every new or moved public
+widget, and requires core widgets to use the Catch* namespace and a component
+contract. The scan fails closed when its base ref is unavailable.
 `);
   process.exit(0);
 }
 
-const currentFiles = listCurrentDartFiles(fromRepo("lib"));
+const explicitBaseRef = valueAfter("--base");
+const baseRef = explicitBaseRef ?? defaultBaseRef();
+const writePath = valueAfter("--write") ?? "build/reports/new_widget_inventory_scan.json";
+const shouldCheck = args.includes("--check");
+const shouldJson = args.includes("--json");
+const shouldNoWrite = args.includes("--no-write");
+const currentFiles = productionWidgetRoots.flatMap((root) =>
+  fs.existsSync(fromRepo(root)) ? listCurrentDartFiles(fromRepo(root)) : [],
+).sort();
 const baseInput = resolveBaseInput({
   ref: baseRef,
-  explicit: explicitBaseRef !== null,
-  currentFiles,
 });
 const baseSnapshot = scanSnapshot({
   files: baseInput.files,
@@ -40,14 +57,21 @@ const currentSnapshot = scanSnapshot({
   readFile: (file) => fs.readFileSync(fromRepo(file), "utf8"),
 });
 const widgetbookNames = readWidgetbookNames();
-const catalogSource = fs.readFileSync(fromRepo("docs/widget_catalog.md"), "utf8");
+const catalogWidgetSymbols = collectCatalogWidgetSymbols(
+  fs.readFileSync(fromRepo("docs/widget_catalog.md"), "utf8"),
+);
+const componentSymbols = readComponentSymbols();
 
 const newWidgetClassCandidates = currentSnapshot.widgetClasses.filter(
   (entry) => !baseSnapshot.widgetClassKeys.has(widgetClassKey(entry)),
 );
 const movedWidgets = newWidgetClassCandidates
   .filter((entry) => isMovedWidgetClass(entry, baseSnapshot, currentSnapshot))
-  .map((entry) => withMoveMetadata(entry, baseSnapshot.widgetClassIdentityToKeys, widgetClassIdentityKey))
+  .map((entry) => classifyWidget(withMoveMetadata(
+    entry,
+    baseSnapshot.widgetClassIdentityToKeys,
+    widgetClassIdentityKey,
+  )))
   .sort(compareByFileLine);
 const addedWidgets = newWidgetClassCandidates
   .filter((entry) => !isMovedWidgetClass(entry, baseSnapshot, currentSnapshot))
@@ -59,7 +83,11 @@ const newWidgetHelperCandidates = currentSnapshot.widgetHelpers.filter(
 );
 const movedWidgetHelpers = newWidgetHelperCandidates
   .filter((entry) => isMovedWidgetHelper(entry, baseSnapshot, currentSnapshot))
-  .map((entry) => withMoveMetadata(entry, baseSnapshot.widgetHelperIdentityToKeys, widgetHelperIdentityKey))
+  .map((entry) => classifyWidgetHelper(withMoveMetadata(
+    entry,
+    baseSnapshot.widgetHelperIdentityToKeys,
+    widgetHelperIdentityKey,
+  )))
   .sort(compareByFileLine);
 const addedWidgetHelpers = newWidgetHelperCandidates
   .filter((entry) => !isMovedWidgetHelper(entry, baseSnapshot, currentSnapshot))
@@ -82,7 +110,7 @@ const report = {
     widgetbook: "widgetbook/lib/main.directories.g.dart",
     catalog: "docs/widget_catalog.md",
     policy:
-      "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets.",
+      "New or moved public widget classes need Widgetbook and widget catalog coverage; core widgets also require a canonical Catch* name and component contract. New or moved private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets.",
   },
   summary,
   movedWidgets,
@@ -111,6 +139,7 @@ if (shouldCheck && summary.unresolved > 0) {
 function scanSnapshot({files, readFile}) {
   const widgetClasses = [];
   const widgetHelpers = [];
+  const sources = [];
 
   for (const file of files) {
     if (shouldSkip(file)) continue;
@@ -118,12 +147,29 @@ function scanSnapshot({files, readFile}) {
     const library = dartLibraryFor(file, source);
     const lineStarts = buildLineStarts(source);
     const classRanges = collectClassRanges(source, lineStarts);
+    sources.push({file, source, library, lineStarts, classRanges});
+  }
 
-    for (const declaration of collectWidgetClasses(source, lineStarts)) {
+  const widgetTypeNames = resolveWidgetTypeNames(
+    sources.flatMap(({source, lineStarts}) =>
+      collectClassDeclarations(source, lineStarts),
+    ),
+  );
+  for (const {file, source, library, lineStarts, classRanges} of sources) {
+    for (const declaration of collectWidgetClasses(
+      source,
+      lineStarts,
+      widgetTypeNames,
+    )) {
       widgetClasses.push({...declaration, file, library});
     }
 
-    for (const helper of collectWidgetHelpers(source, lineStarts, classRanges)) {
+    for (const helper of collectWidgetHelpers(
+      source,
+      lineStarts,
+      classRanges,
+      widgetTypeNames,
+    )) {
       widgetHelpers.push({...helper, file, library});
     }
   }
@@ -152,91 +198,21 @@ function dartLibraryFor(file, source) {
   return path.posix.normalize(path.posix.join(path.posix.dirname(file), partOf[1]));
 }
 
-function collectWidgetClasses(source, lineStarts) {
-  const rows = [];
-  const regex =
-    /class\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>{}]+>)?\s+extends\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?(StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)\b/gu;
-
-  for (const match of source.matchAll(regex)) {
-    rows.push({
-      name: match[1],
-      baseClass: match[2],
-      visibility: match[1].startsWith("_") ? "private" : "public",
-      line: lineForOffset(lineStarts, match.index ?? 0),
-    });
-  }
-
-  return rows;
-}
-
-function collectWidgetHelpers(source, lineStarts, classRanges) {
-  const rows = [];
-  const regex = /(?:^|\n)([ \t]*(?:static\s+)?Widget\s+([A-Za-z_][A-Za-z0-9_]*)\s*\()/gu;
-
-  for (const match of source.matchAll(regex)) {
-    const offset = (match.index ?? 0) + (match[0].startsWith("\n") ? 1 : 0);
-    const name = match[2];
-    if (name === "build") continue;
-    const owner = classRanges.find((range) => offset > range.open && offset < range.close);
-    // Descriptor renderers are the typed mapper protocol, not free-standing
-    // composition helpers that can drift outside a cataloged widget owner.
-    if (
-      owner?.name === "CatchFormRowDescriptor" ||
-      owner?.baseClass.startsWith("CatchFormRowDescriptor")
-    ) {
-      continue;
-    }
-    rows.push({
-      name,
-      owner: owner?.name ?? null,
-      ownerBaseClass: owner?.baseClass ?? null,
-      visibility: name.startsWith("_") ? "private" : "public",
-      line: lineForOffset(lineStarts, offset),
-      scope: owner ? "class-method" : "top-level",
-    });
-  }
-
-  return rows;
-}
-
-function collectClassRanges(source, lineStarts) {
-  const rows = [];
-  const regex =
-    /class\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>{}]+>)?(?:\s+extends\s+([A-Za-z_][A-Za-z0-9_<>?, ]*))?/gu;
-
-  for (const match of source.matchAll(regex)) {
-    const open = source.indexOf("{", match.index);
-    if (open === -1) continue;
-    const close = findMatchingBrace(source, open);
-    if (close === -1) continue;
-    rows.push({
-      name: match[1],
-      baseClass: match[2]?.trim() ?? "",
-      open,
-      close,
-      line: lineForOffset(lineStarts, match.index ?? 0),
-    });
-  }
-
-  return rows.sort((a, b) => a.open - b.open);
-}
-
 function classifyWidget(entry) {
   const widgetbookCovered = widgetbookNames.has(entry.name);
-  const catalogMentioned = mentionsSymbol(catalogSource, entry.name);
-  const issues = [];
-
-  if (entry.visibility === "private") {
-    issues.push("private-widget-class");
-  } else {
-    if (!widgetbookCovered) issues.push("missing-widgetbook");
-    if (!catalogMentioned) issues.push("missing-widget-catalog");
-  }
+  const catalogMentioned = catalogWidgetSymbols.has(entry.name);
+  const componentContracted = componentSymbols.has(entry.name);
+  const issues = newWidgetPolicyIssues(entry, {
+    widgetbookCovered,
+    catalogMentioned,
+    componentContracted,
+  });
 
   return {
     ...entry,
     widgetbookCovered,
     catalogMentioned,
+    componentContracted,
     status: issues.length === 0 ? "covered" : "unresolved",
     issues,
     recommendedAction: recommendationForWidget(entry, issues),
@@ -266,6 +242,12 @@ function recommendationForWidget(entry, issues) {
   if (issues.includes("missing-widget-catalog")) {
     return "Add docs/widget_catalog.md inventory guidance or merge/delete the redundant public widget.";
   }
+  if (issues.includes("noncanonical-core-widget-name")) {
+    return "Rename the core widget to the canonical Catch* namespace or merge it into the existing concept owner.";
+  }
+  if (issues.includes("missing-component-contract")) {
+    return "Register the core widget as a canonical concept or governed member in design/components/catch.components.json.";
+  }
   return "Covered by Widgetbook and docs/widget_catalog.md.";
 }
 
@@ -275,12 +257,18 @@ function summarize({
   movedWidgets,
   movedWidgetHelpers,
 }) {
-  const widgetsByStatus = countBy(addedWidgets, (entry) => entry.status);
-  const helpersByStatus = countBy(addedWidgetHelpers, (entry) => entry.status);
-  const issues = countIssues([...addedWidgets, ...addedWidgetHelpers]);
-  const unresolved =
-    addedWidgets.filter((entry) => entry.status !== "covered").length +
-    addedWidgetHelpers.length;
+  const allWidgets = [...addedWidgets, ...movedWidgets];
+  const allHelpers = [...addedWidgetHelpers, ...movedWidgetHelpers];
+  const widgetsByStatus = countBy(allWidgets, (entry) => entry.status);
+  const helpersByStatus = countBy(allHelpers, (entry) => entry.status);
+  const allItems = [...allWidgets, ...allHelpers];
+  const issues = countIssues(allItems);
+  const unresolved = unresolvedInventoryItems({
+    addedWidgets,
+    addedWidgetHelpers,
+    movedWidgets,
+    movedWidgetHelpers,
+  }).length;
 
   return {
     addedWidgetClasses: addedWidgets.length,
@@ -311,9 +299,7 @@ function printSummary(report, outputPath) {
   console.log(`  Issues: ${JSON.stringify(summary.issues)}`);
   if (!shouldNoWrite) console.log(`Report written to: ${outputPath}`);
 
-  const blockers = [...report.addedWidgets, ...report.addedWidgetHelpers].filter(
-    (entry) => entry.status !== "covered",
-  );
+  const blockers = unresolvedInventoryItems(report);
   if (blockers.length === 0) return;
 
   console.log("");
@@ -326,8 +312,11 @@ function printSummary(report, outputPath) {
   }
 }
 
-function resolveBaseInput({ref, explicit, currentFiles}) {
-  const result = spawnGit(["ls-tree", "-r", "--name-only", ref, "lib"], {allowFailure: true});
+function resolveBaseInput({ref}) {
+  const result = spawnGit(
+    ["ls-tree", "-r", "--name-only", ref, "--", ...productionWidgetRoots],
+    {allowFailure: true},
+  );
   if (result.status === 0) {
     return {
       status: "git-ref",
@@ -337,19 +326,12 @@ function resolveBaseInput({ref, explicit, currentFiles}) {
     };
   }
 
-  if (explicit) {
-    console.error(result.stderr || `git ls-tree ${ref} failed`);
-    process.exit(result.status ?? 1);
-  }
-
-  const warning = `Base ref ${ref} is unavailable; using the working tree as the baseline. This commonly happens in shallow CI checkouts.`;
-  console.warn(warning);
-  return {
-    status: "working-tree-fallback",
-    warning,
-    files: currentFiles,
-    readFile: (file) => fs.readFileSync(fromRepo(file), "utf8"),
-  };
+  console.error(
+    `Base ref ${ref} is unavailable; refusing to run a vacuous new-widget check. ` +
+      "Fetch the ref or pass an exact reachable commit with --base.\n" +
+      (result.stderr || ""),
+  );
+  process.exit(64);
 }
 
 function dartFilesFromGitList(stdout) {
@@ -402,49 +384,25 @@ function readWidgetbookNames() {
   return names;
 }
 
-function mentionsSymbol(source, symbol) {
-  const escaped = symbol.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
-  return new RegExp(`(^|[^A-Za-z0-9_])${escaped}([^A-Za-z0-9_]|$)`, "u").test(source);
+function readComponentSymbols() {
+  const components = JSON.parse(
+    fs.readFileSync(fromRepo("design/components/catch.components.json"), "utf8"),
+  ).components ?? [];
+  const names = new Set();
+  for (const component of components) {
+    if (component.dart?.symbol) names.add(component.dart.symbol);
+    for (const member of component.contract?.members ?? []) {
+      if (member.symbol) names.add(member.symbol);
+    }
+  }
+  return names;
 }
 
 function shouldSkip(file) {
   return (
-    file.endsWith(".g.dart") ||
-    file.endsWith(".freezed.dart") ||
-    file.includes("/design_fixtures/") ||
-    file.includes("/generated/")
+    isGeneratedProductionWidgetDartPath(file) ||
+    file.includes("/design_fixtures/")
   );
-}
-
-function buildLineStarts(source) {
-  const starts = [0];
-  for (let index = 0; index < source.length; index += 1) {
-    if (source[index] === "\n") starts.push(index + 1);
-  }
-  return starts;
-}
-
-function lineForOffset(lineStarts, offset) {
-  let low = 0;
-  let high = lineStarts.length - 1;
-  while (low <= high) {
-    const mid = Math.floor((low + high) / 2);
-    if (lineStarts[mid] <= offset) low = mid + 1;
-    else high = mid - 1;
-  }
-  return high + 1;
-}
-
-function findMatchingBrace(source, open) {
-  let depth = 0;
-  for (let index = open; index < source.length; index += 1) {
-    if (source[index] === "{") depth += 1;
-    else if (source[index] === "}") {
-      depth -= 1;
-      if (depth === 0) return index;
-    }
-  }
-  return -1;
 }
 
 function widgetClassKey(entry) {
@@ -537,4 +495,16 @@ function valueAfter(flag) {
     process.exit(64);
   }
   return value;
+}
+
+function defaultBaseRef() {
+  const result = spawnGit(["merge-base", "HEAD", "origin/main"], {
+    allowFailure: true,
+  });
+  try {
+    return requireResolvedMergeBase(result);
+  } catch (error) {
+    console.error(`${error.message}\n${result.stderr || ""}`);
+    process.exit(64);
+  }
 }

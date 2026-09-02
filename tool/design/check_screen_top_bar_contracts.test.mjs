@@ -858,6 +858,77 @@ test("flags a tracked root Screen that drops its canonical owner", () => {
   assert.ok(hasFinding(result, "tracked-root-header-missing-owner"));
 });
 
+test("exempts only the canonical CatchScreenScaffold app-bar forwarder", () => {
+  const root = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar(title: 'Details'));",
+    contract: compactContract(),
+    includeRootContracts: false,
+    canonicalScaffoldSource: `
+      class CatchScreenScaffold extends StatelessWidget {
+        final PreferredSizeWidget? appBar;
+        final Widget body;
+
+        Widget build(BuildContext context) {
+          return Scaffold(appBar: appBar, body: body);
+        }
+      }
+
+      class RogueInfrastructureWidget extends StatelessWidget {
+        Widget build(BuildContext context) =>
+          Scaffold(appBar: CatchTopBar(title: 'Rogue'));
+      }
+    `,
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(
+    result.findings.some(
+      (finding) =>
+        finding.code === "unregistered-app-bar" &&
+        finding.path === "lib/core/widgets/catch_screen_scaffold.dart",
+    ),
+  );
+  assert.equal(
+    result.findings.some(
+      (finding) =>
+        finding.code === "canonical-screen-scaffold-app-bar-drift",
+    ),
+    false,
+  );
+});
+
+test("fails closed when the canonical app-bar forwarder drifts", () => {
+  const root = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar(title: 'Details'));",
+    contract: compactContract(),
+    includeRootContracts: false,
+    canonicalScaffoldSource: `
+      class CatchScreenScaffold extends StatelessWidget {
+        final PreferredSizeWidget? appBar;
+        final Widget body;
+
+        Widget build(BuildContext context) {
+          return Scaffold(appBar: resolveAppBar(appBar), body: body);
+        }
+      }
+    `,
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(
+    hasFinding(result, "canonical-screen-scaffold-app-bar-drift"),
+  );
+  assert.ok(
+    result.findings.some(
+      (finding) =>
+        finding.code === "unregistered-app-bar" &&
+        finding.path === "lib/core/widgets/catch_screen_scaffold.dart",
+    ),
+  );
+});
+
 function hasFinding(result, code) {
   return result.findings.some((finding) => finding.code === code);
 }
@@ -937,6 +1008,16 @@ function fixtureRoot({
   manualSource,
   manualHeaders = [],
   trackedRootSources = [],
+  canonicalScaffoldSource = `
+    class CatchScreenScaffold extends StatelessWidget {
+      final PreferredSizeWidget? appBar;
+      final Widget body;
+
+      Widget build(BuildContext context) {
+        return Scaffold(appBar: appBar, body: body);
+      }
+    }
+  `,
   tokenSource = `
     static const EdgeInsets screenTitleBlock = EdgeInsets.fromLTRB(
       CatchSpacing.s5,
@@ -948,6 +1029,11 @@ function fixtureRoot({
 }) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-screen-chrome-"));
   write(root, contract.path, source);
+  write(
+    root,
+    "lib/core/widgets/catch_screen_scaffold.dart",
+    canonicalScaffoldSource,
+  );
   if (includeRootContracts) {
     write(root, configuredRootSurface.path, rootSource);
     write(root, "lib/core/theme/catch_tokens.dart", tokenSource);

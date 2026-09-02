@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-01",
+  "updated": "2026-09-02",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -1836,17 +1836,41 @@
       "id": "architecture:ui-composition-contracts",
       "category": "architecture",
       "path": "tool/architecture/check_ui_composition_contracts.dart",
+      "impactPaths": [
+        "test/tool/ui_composition_contracts_test.dart",
+        "test/tool/route_discovery_adversarial_test.dart",
+        "test/tool/fixtures/scaffold_ownership_fixture.dart",
+        "test/tool/fixtures/route_discovery_adversarial_fixture.dart",
+        "design/screens/catch.screens.json",
+        "design/screens/catch.screens.schema.json",
+        "design/screens/screen_coverage.json",
+        "tool/ui_capture/check_route_inventory.mjs",
+        "tool/ui_capture/route_inventory.json",
+        "tool/design/screen_top_bar_contracts.json",
+        "lib/routing/go_router.dart",
+        "lib/**",
+        "apps/host/lib/**",
+        "apps/consumer/lib/**"
+      ],
       "command": "dart run tool/architecture/check_ui_composition_contracts.dart --check",
       "safety": "local-build-test",
       "status": "active",
-      "description": "Uses analyzer resolution to validate screen source, state, top-bar, and shell composition contracts with a nested-scaffold ratchet.",
+      "description": "Uses analyzer resolution to require branch-universal typed layout ownership for every statically reachable terminal of each rendered GoRoute and full-screen PageRoute presentation, fails unsupported PageRoute aliases, factories, tear-offs, builders, and subclasses closed, and reserves Flutter Scaffold construction, aliases, and subclasses for the canonical screen scaffold. Only direct MaterialPageRoute construction is supported by the generated imperative route inventory.",
       "checks": [
-        "dart format --output=none --set-exit-if-changed tool/architecture/check_ui_composition_contracts.dart test/tool/ui_composition_contracts_test.dart",
-        "flutter test --concurrency=1 test/tool/ui_composition_contracts_test.dart",
+        "dart format --output=none --set-exit-if-changed tool/architecture/check_ui_composition_contracts.dart test/tool/ui_composition_contracts_test.dart test/tool/route_discovery_adversarial_test.dart test/tool/fixtures/scaffold_ownership_fixture.dart test/tool/fixtures/route_discovery_adversarial_fixture.dart",
+        "dart test test/tool/ui_composition_contracts_test.dart",
+        "dart test test/tool/route_discovery_adversarial_test.dart",
         "dart run tool/architecture/check_ui_composition_contracts.dart --check"
       ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      },
       "role": "gate",
-      "baseline": "tool/architecture/ui_composition_baseline.json",
       "rules": [
         "UI-LINT-001"
       ],
@@ -1854,8 +1878,32 @@
         "type": "test",
         "path": "test/tool/ui_composition_contracts_test.dart",
         "contains": [
-          "flags a nested scaffold on a shell-reachable screen",
-          "requires the registered top-bar expression"
+          "flags raw Scaffold ownership",
+          "follows Widget constructors, createState, State.build, and Widget methods",
+          "follows generic widget-builder wrappers",
+          "rejects unresolved and external adapter terminals",
+          "rejects a mixed-family adapter terminal",
+          "rejects cyclic Widget adapter graphs",
+          "rejects an owner outside the registered layout family",
+          "rejects one rogue build return beside a canonical terminal",
+          "rejects a rogue conditional child branch around an owner",
+          "accepts one Stack root plane with conditional positioned overlays",
+          "rejects a second non-positioned Stack screen plane",
+          "accepts typed tab bodies returned by a same-owner switch helper",
+          "rejects a rogue branch in a same-owner tab body helper",
+          "rejects a rogue semantic tab page return branch",
+          "requires header-owned roots to declare their top edge",
+          "does not accept a layout expression mentioned only in a comment",
+          "requires every inventory route to have one coverage contract",
+          "rejects incompatible layout families for one rendered route",
+          "rejects planned routes from the zero-debt composition gate",
+          "requires every registered owner to be reachable from its GoRoute",
+          "fails closed when generated presentation metadata is absent",
+          "analyzer rejects prefixed, aliased, direct, and indirect Scaffold ownership",
+          "analysis contexts own root, Consumer, and Host production sources",
+          "requires every imperative page target to have a typed contract",
+          "rejects an imperative page contract with no production target",
+          "requires imperative MaterialPageRoute owner reachability"
         ]
       }
     },
@@ -4401,7 +4449,7 @@
       "command": "node tool/ui_capture/check_route_inventory.mjs --check",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Generates and checks the named route inventory against route_contract.dart identities and go_router.dart runtime wiring, including semantic nested-path checks and a redirect-only exception for retired raw legacy paths.",
+      "description": "Generates and checks the named route inventory against route_contract.dart identities and go_router.dart runtime wiring, including semantic nested paths, normalized builder/pageBuilder presentation targets, locally declared block- and arrow-bodied route helpers, direct MaterialPageRoute sites, and a redirect-only exception for retired raw legacy paths. Imported or prebuilt route collections, constructor typedefs, and unsupported full-screen PageRoute forms fail closed through the resolved composition gate.",
       "checks": [
         "node --check tool/ui_capture/check_route_inventory.mjs",
         "node --test tool/ui_capture/check_route_inventory_test.mjs",
@@ -4412,7 +4460,13 @@
         "type": "test",
         "path": "tool/ui_capture/check_route_inventory_test.mjs",
         "contains": [
-          "rejects unnamed routes that can render a page"
+          "rejects unnamed routes that can render a page",
+          "canonical presentation expressions ignore formatting but preserve strings",
+          "extracts deterministic presentation targets from route presentations",
+          "discovers arrow-bodied route helpers instead of dropping their routes",
+          "fails closed on imported or prebuilt route collections",
+          "fails closed on route constructor typedefs",
+          "fails closed on unsupported full-screen PageRoute constructors"
         ]
       }
     },
@@ -4423,7 +4477,7 @@
       "command": "node --test tool/ui_capture/check_route_inventory_test.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Pins the redirect-only exception for unnamed retired route paths.",
+      "description": "Pins redirect-only route exceptions plus deterministic normalized presentation expressions and presentation targets.",
       "checks": [
         "node --test tool/ui_capture/check_route_inventory_test.mjs"
       ],
@@ -4701,7 +4755,9 @@
       "path": "tool/design/generate_widget_classification.mjs",
       "impactPaths": [
         "tool/design/check_widget_classification.mjs",
-        "tool/design/check_widget_classification.test.mjs"
+        "tool/design/check_widget_classification.test.mjs",
+        "tool/design/lib/new_widget_inventory_declarations.mjs",
+        "tool/design/lib/production_widget_roots.mjs"
       ],
       "command": "node tool/design/generate_widget_classification.mjs --check",
       "safety": "local-readonly",
@@ -4783,18 +4839,35 @@
       "path": "tool/design/check_widget_classification.mjs",
       "impactPaths": [
         "tool/design/generate_widget_classification.mjs",
-        "tool/design/check_widget_classification.test.mjs"
+        "tool/design/check_widget_classification.test.mjs",
+        "tool/design/component_concepts.mjs",
+        "tool/design/component_concepts.test.mjs",
+        "tool/design/lib/new_widget_inventory_declarations.mjs",
+        "tool/design/lib/production_widget_roots.mjs"
       ],
       "command": "node tool/design/check_widget_classification.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Validates the source-derived widget classification contract and blocks private-helper remediation paths without reading a tracked inventory snapshot.",
+      "description": "Validates a source-derived, transitive widget classification across shared, Consumer, and Host production roots and blocks exact duplicate public widget classes plus ungoverned normalized naming collisions. Generated exclusions are restricted to named localization outputs and generated-file suffixes rather than whole directories, and no tracked inventory snapshot is trusted.",
       "checks": [
         "node --check tool/design/check_widget_classification.mjs",
         "node --test tool/design/check_widget_classification.test.mjs",
+        "node --test tool/design/component_concepts.test.mjs",
         "node tool/design/check_widget_classification.mjs"
       ],
-      "role": "finder"
+      "role": "gate",
+      "rules": [
+        "WIDGET-CATALOG-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/component_concepts.test.mjs",
+        "contains": [
+          "ungoverned normalized names and exact public duplicates fail",
+          "registered concept members may intentionally share a normalized collision",
+          "canonical and uncontracted public widgets cannot evade normalized collisions"
+        ]
+      }
     },
     {
       "id": "design:widget-pattern-families",
@@ -4827,15 +4900,53 @@
       "id": "design:new-widget-inventory",
       "category": "design",
       "path": "tool/design/check_new_widget_inventory.mjs",
-      "command": "node tool/design/check_new_widget_inventory.mjs",
-      "safety": "local-writes-build-artifacts",
+      "impactPaths": [
+        "tool/design/check_new_widget_inventory.test.mjs",
+        "tool/design/lib/new_widget_inventory_declarations.mjs",
+        "tool/design/lib/production_widget_roots.mjs",
+        "tool/design/component_concepts.mjs",
+        "tool/design/component_concepts.test.mjs",
+        "lib/**",
+        "apps/consumer/lib/**",
+        "apps/host/lib/**",
+        "widgetbook/lib/main.directories.g.dart",
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "command": "node tool/design/check_new_widget_inventory.mjs --check --no-write",
+      "safety": "local-readonly",
       "status": "active",
-      "description": "Compares the working tree against a base ref to find newly introduced widget classes, private widget classes, Widget-returning helpers, and Widgetbook/catalog coverage gaps.",
+      "description": "Fails closed against a reachable base and transitively discovers widget subclasses across shared, Consumer, and Host production roots. It blocks new or moved private widget classes, Widget-returning functions/getters, uncataloged public widgets, and core widgets without canonical Catch* names or component contracts; generated exclusions are file-specific or suffix-specific, never directory-wide.",
       "checks": [
         "node --check tool/design/check_new_widget_inventory.mjs",
-        "node tool/design/check_new_widget_inventory.mjs --no-write"
+        "node --check tool/design/lib/new_widget_inventory_declarations.mjs",
+        "node --test tool/design/check_new_widget_inventory.test.mjs",
+        "node --test tool/design/component_concepts.test.mjs",
+        "node tool/design/check_new_widget_inventory.mjs --check --no-write"
       ],
-      "role": "finder"
+      "role": "gate",
+      "rules": [
+        "WIDGET-CATALOG-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_new_widget_inventory.test.mjs",
+        "contains": [
+          "discovers direct and transitive widget subclasses without matching prose",
+          "generated exclusions are file-specific rather than directory-wide",
+          "discovers nullable, interface, generic, getter, and top-level widget helpers",
+          "moved widget classes and helpers remain blocking inventory items",
+          "an unavailable default merge base fails closed instead of using HEAD parent",
+          "an unavailable explicit base fails closed without scanning the working tree",
+          "prose-only catalog mentions do not satisfy exact widget inventory coverage"
+        ]
+      }
     },
     {
       "id": "design:widget-variant-inventory",
@@ -5067,7 +5178,8 @@
           "flags an unregistered body-owned manual screen header",
           "flags raw sliver chrome until a durable hero exception is registered",
           "flags a direct pill action in canonical top-bar actions",
-          "flags a direct pill hidden behind a local top-bar action list"
+          "flags a direct pill hidden behind a local top-bar action list",
+          "fails closed when the canonical app-bar forwarder drifts"
         ]
       }
     },
@@ -5293,7 +5405,7 @@
       "command": "node tool/design/check_design_parity.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Runs the standard local design parity gate from freshly extracted temporary widget fingerprints across concept topology, component contracts, widget classification, decision coverage, pattern families, Figma/Claude sync drift, routes, captures, screen contracts, todo summaries, Widgetbook refs, and advisory hygiene scanners.",
+      "description": "Runs the standard local design parity gate from freshly extracted temporary widget fingerprints across concept topology, component contracts, widget classification, fail-closed new-widget policy, decision coverage, pattern families, Figma/Claude sync drift, routes, captures, screen contracts, todo summaries, Widgetbook refs, and advisory hygiene scanners.",
       "checks": [
         "node --check tool/design/check_design_parity.mjs",
         "node tool/design/check_design_parity.mjs --check"

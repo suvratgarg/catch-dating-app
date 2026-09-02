@@ -1,10 +1,17 @@
 #!/usr/bin/env node
 import fs from "node:fs";
-import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
-import {buildWidgetClassification} from "./generate_widget_classification.mjs";
+import {
+  buildWidgetClassification,
+  collectProductionWidgetClassificationDeclarations,
+} from "./generate_widget_classification.mjs";
+import {publicWidgetNamingProblems} from "./component_concepts.mjs";
+import {
+  isProductionWidgetDartPath,
+  productionWidgetGlobs,
+} from "./lib/production_widget_roots.mjs";
 
 const widgetKeys = [
   "name", "file", "classKind", "baseClass", "visibility", "role",
@@ -90,6 +97,7 @@ export function validateWidgetClassification(
   }
   validateSummary(registry.summary, registry.widgets, widgetbookNames, failures);
   validateSourceClosure(sourceDeclarations, registry.widgets, registryKeys, failures);
+  failures.push(...publicWidgetNamingProblems(registry.widgets));
   return [...new Set(failures)].sort();
 }
 
@@ -99,6 +107,11 @@ function validateSourceOfTruth(value, failures) {
   const keys = ["scope", "canonicalContracts", "catalog", "privateHelperPolicy", "generator"];
   requireExactKeys(value, keys, "sourceOfTruth", failures);
   for (const key of keys) requireNonemptyString(value[key], `sourceOfTruth.${key}`, failures);
+  for (const rootGlob of productionWidgetGlobs) {
+    if (!String(value.scope ?? "").includes(rootGlob)) {
+      failures.push(`sourceOfTruth.scope must include ${rootGlob}`);
+    }
+  }
   if (!String(value.privateHelperPolicy ?? "").includes("not an allowed destination")) {
     failures.push("sourceOfTruth.privateHelperPolicy must explicitly ban private-helper destinations");
   }
@@ -111,8 +124,10 @@ function validateWidget(widget, context) {
   if (!isObject(widget)) return;
   requireExactKeys(widget, widgetKeys, prefix, failures);
   requireNonemptyString(widget.name, `${prefix}.name`, failures);
-  if (typeof widget.file !== "string" || !/^lib\/.+\.dart$/u.test(widget.file)) {
-    failures.push(`${prefix}.file must match lib/**/*.dart`);
+  if (!isProductionWidgetDartPath(widget.file)) {
+    failures.push(
+      `${prefix}.file must be a Dart source under ${productionWidgetGlobs.join(", ")}`,
+    );
   }
   requireEnum(widget.classKind, new Set(["widget", "widget-state"]), `${prefix}.classKind`, failures);
   requireNonemptyString(widget.baseClass, `${prefix}.baseClass`, failures);
@@ -449,26 +464,9 @@ function readWidgetbookNames() {
 }
 
 function collectSourceDeclarations() {
-  const rows = [];
-  for (const file of listDartFiles(fromRepo("lib"))) {
-    const source = fs.readFileSync(file, "utf8");
-    const relativeFile = path.relative(repoRoot, file).split(path.sep).join("/");
-    const expression =
-      /class\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>{}]+>)?\s+extends\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?((?:StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)|(?:State|ConsumerState)<[^>{}]+>)/gu;
-    for (const match of source.matchAll(expression)) {
-      rows.push({file: relativeFile, name: match[1], baseClass: match[2]});
-    }
-  }
-  return rows;
-}
-
-function listDartFiles(root) {
-  if (!fs.existsSync(root)) return [];
-  return fs.readdirSync(root, {withFileTypes: true}).flatMap((entry) => {
-    const full = path.join(root, entry.name);
-    if (entry.isDirectory()) return listDartFiles(full);
-    return entry.isFile() && entry.name.endsWith(".dart") ? [full] : [];
-  });
+  return collectProductionWidgetClassificationDeclarations({repoRoot}).map(
+    ({file, name, baseClass}) => ({file, name, baseClass}),
+  );
 }
 
 function runCli() {
