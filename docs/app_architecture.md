@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.22.0
-updated: 2026-09-02
+version: 1.23.0
+updated: 2026-09-03
 owner: app_architecture
 status: active
 ---
@@ -509,12 +509,14 @@ Screen composition is a closed family, not a per-feature assembly exercise:
   delegate to it. It centralizes page surface, keyboard resize, safe-area
   policy, bottom chrome, and edge-to-edge behavior without forcing unlike
   routes into one visual form.
-- A root shell destination uses `CatchRootScreenScaffold`, or
-  `CatchRootScreenScrollView` when an adaptive parent already owns the
-  `Scaffold`. It provides a scroll-content header, an explicit
-  `CatchScreenBodyLayout`, and body slivers. The owner supplies the safe area,
-  single scroll view, semantic body gutter, optional responsive content lane,
-  field-obstruction scope, refresh wrapper, and terminal shell clearance.
+- A root shell destination uses `CatchRootScreenScaffold.standard` or
+  `.fullBleed`; an adaptive parent that already owns the `Scaffold` uses the
+  corresponding `CatchRootScreenScrollView` constructor. Each closed role
+  accepts a scroll-content header and body slivers, then jointly selects body
+  geometry, responsive-width policy, and terminal clearance. Standard always
+  owns the centered readable lane; full bleed is explicitly edge-owned. Both
+  retain the safe area, one scroll owner, field-obstruction scope, optional
+  refresh wrapper, and shell clearance.
 - A root destination with pinned peer tabs uses `CatchRootScreenScaffold.withPrimaryRail`
   and one `CatchRootScreenPageScrollView` per page. Every page must declare
   geometry through the page owner's `standard`, `fullBleed`, or
@@ -539,10 +541,11 @@ shell remains the separate owner of bottom navigation and its obstruction.
 
 `CatchScreenBodyLayout.standard` is the one regular body contract: 20 pt phone
 gutters and 24 pt from the preceding title/tab boundary to the standard body
-content box. `fullBleed` is the explicit alternative for intrinsically
-edge-owned slivers such as a conversation canvas, media hero, map, or embedded
-preview. Full bleed removes the outer page inset; it does not create a second
-body standard. A nested content lane may use a named semantic gutter, such as
+content box. Root call sites select it through a `.standard` constructor rather
+than combining layout booleans. `fullBleed` is the explicit alternative for
+intrinsically edge-owned slivers such as a conversation canvas, media hero,
+map, or embedded preview. Full bleed removes the outer page inset; it does not
+create a second body standard. A nested content lane may use a named semantic gutter, such as
 `CatchInsets.chatListGutter`, which maps Consumer Chats and Host Inbox to the
 same 20 pt horizontal rhythm. There is no compact body role. Feature code
 selects one of these semantic roles; it does not restate its horizontal gutter,

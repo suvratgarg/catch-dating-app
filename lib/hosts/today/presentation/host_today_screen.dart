@@ -98,9 +98,8 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
     );
 
     return switch (routeState.status) {
-      HostTodayRouteStatus.authRequired => CatchRootScreenScaffold(
+      HostTodayRouteStatus.authRequired => CatchRootScreenScaffold.standard(
         header: HostTodayHeader(now: _clockNow),
-        bodyLayout: CatchScreenBodyLayout.standard,
         slivers: [
           CatchSliverErrorState(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
@@ -112,18 +111,16 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
           ),
         ],
       ),
-      HostTodayRouteStatus.loading => CatchRootScreenScaffold(
+      HostTodayRouteStatus.loading => CatchRootScreenScaffold.standard(
         header: HostTodayHeader(now: _clockNow),
-        bodyLayout: CatchScreenBodyLayout.standard,
         slivers: const [
           CatchSliverStateViewport(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],
       ),
-      HostTodayRouteStatus.error => CatchRootScreenScaffold(
+      HostTodayRouteStatus.error => CatchRootScreenScaffold.standard(
         header: HostTodayHeader(now: _clockNow),
-        bodyLayout: CatchScreenBodyLayout.standard,
         slivers: [
           CatchSliverErrorState.fromError(
             routeState.error!,
@@ -316,9 +313,8 @@ class HostTodayOrganizerEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchRootScreenScaffold(
+    return CatchRootScreenScaffold.standard(
       header: const HostTodayHeader(),
-      bodyLayout: CatchScreenBodyLayout.standard,
       slivers: [
         CatchSliverEmptyState(
           icon: CatchIcons.groupsOutlined,

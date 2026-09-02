@@ -31,11 +31,20 @@ const _rootPageScrollRoles = <String, String>{
       'CatchScreenBodyLayout.fullBleed',
 };
 
+const _rootScreenRoles = <String, String>{
+  'CatchRootScreenScaffold.standard': 'CatchScreenBodyLayout.standard',
+  'CatchRootScreenScaffold.fullBleed': 'CatchScreenBodyLayout.fullBleed',
+  'CatchRootScreenScrollView.standard': 'CatchScreenBodyLayout.standard',
+  'CatchRootScreenScrollView.fullBleed': 'CatchScreenBodyLayout.fullBleed',
+};
+
 const _familyExpressions = <String, Set<String>>{
   'root': <String>{
-    'CatchRootScreenScaffold',
+    'CatchRootScreenScaffold.standard',
+    'CatchRootScreenScaffold.fullBleed',
     'CatchRootScreenScaffold.withPrimaryRail',
-    'CatchRootScreenScrollView',
+    'CatchRootScreenScrollView.standard',
+    'CatchRootScreenScrollView.fullBleed',
     'CatchRootScreenScrollView.withPrimaryRail',
   },
   'pushed-route': <String>{'CatchRouteScaffold'},
@@ -43,7 +52,8 @@ const _familyExpressions = <String, Set<String>>{
   'immersive': <String>{'CatchScreenScaffold.workspace'},
   'adaptive-workspace': <String>{
     'CatchScreenScaffold.workspace',
-    'CatchRootScreenScrollView',
+    'CatchRootScreenScrollView.standard',
+    'CatchRootScreenScrollView.fullBleed',
     'CatchRootScreenScrollView.withPrimaryRail',
   },
   'standalone': <String>{'CatchScreenScaffold.standalone'},
@@ -555,22 +565,15 @@ List<String> _evaluateBodyGeometryContract({
     return failures;
   }
 
-  if (<String>{
-    'CatchRootScreenScaffold',
-    'CatchRootScreenScrollView',
-  }.contains(expression)) {
+  if (_rootScreenRoles.containsKey(expression)) {
     final requiredRole = switch (bodyGeometry) {
       'standard' => 'CatchScreenBodyLayout.standard',
       'full-bleed' => 'CatchScreenBodyLayout.fullBleed',
       _ => null,
     };
-    if (requiredRole != null &&
-        !instantiations.every(
-          (instantiation) =>
-              instantiation.namedArguments['bodyLayout'] == requiredRole,
-        )) {
+    if (requiredRole != null && _rootScreenRoles[expression] != requiredRole) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: $bodyGeometry $family bodies must explicitly select $requiredRole on every build/return terminal',
+        '$screenLayoutFamilyCode $screenId: $bodyGeometry $family bodies must select the matching closed root-screen constructor',
       );
     }
     if (bodyGeometry == 'standard') {
@@ -1288,12 +1291,7 @@ final class _StandardBodyGeometryTraversal {
       return;
     }
 
-    if (const <String>{
-          'CatchRootScreenScaffold',
-          'CatchRootScreenScrollView',
-        }.contains(signature) &&
-        _namedArgumentExpression(arguments, 'bodyLayout')?.toSource() ==
-            'CatchScreenBodyLayout.standard') {
+    if (_rootScreenRoles[signature] == 'CatchScreenBodyLayout.standard') {
       if (_namedArgumentExpression(arguments, 'slivers') case final slivers?) {
         walk(slivers, withinStandardContent: true);
       }

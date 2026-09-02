@@ -14,13 +14,11 @@ class DashboardHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchRootScreenScaffold(
+    return CatchRootScreenScaffold.standard(
       header: CatchScreenHeaderTitle.block(
         title: header.title(context.l10n),
         actions: actions,
       ),
-      bodyLayout: CatchScreenBodyLayout.standard,
-      constrainToContentWidth: true,
       semanticsLabel: context.l10n.dashboardDashboardHomeScreenLabelHome,
       slivers: [dashboardSliver],
     );

@@ -48,29 +48,30 @@ class SwipeHubScreen extends ConsumerWidget {
     final showHubChrome = state is CatchesHubEmpty || state is CatchesHubReady;
     final t = CatchTokens.of(context);
 
-    return CatchRootScreenScaffold(
-      header: showHubChrome
-          ? CatchScreenHeaderTitle.block(
-              eyebrow: context.l10n.swipesSwipeHubScreenTitleCatches,
-              title: context.l10n.swipesSwipeHubScreenTextAfterTheEvent,
-              actions: [
-                CatchIconTile(
-                  icon: CatchIcons.favoriteRounded,
-                  iconColor: t.primary,
-                  backgroundColor: t.primarySoft,
-                  borderColor: t.primarySoft,
-                  size: CatchIconButton.navSize,
-                  iconSize: CatchIcon.md,
-                  radius: CatchRadius.pill,
-                ),
-              ],
-            )
-          : const SizedBox.shrink(),
-      bodyLayout: showHubChrome
-          ? CatchScreenBodyLayout.standard
-          : CatchScreenBodyLayout.fullBleed,
-      constrainToContentWidth: showHubChrome,
-      slivers: [CatchesHubStateView(state: state)],
+    final slivers = <Widget>[CatchesHubStateView(state: state)];
+    if (!showHubChrome) {
+      return CatchRootScreenScaffold.fullBleed(
+        header: const SizedBox.shrink(),
+        slivers: slivers,
+      );
+    }
+    return CatchRootScreenScaffold.standard(
+      header: CatchScreenHeaderTitle.block(
+        eyebrow: context.l10n.swipesSwipeHubScreenTitleCatches,
+        title: context.l10n.swipesSwipeHubScreenTextAfterTheEvent,
+        actions: [
+          CatchIconTile(
+            icon: CatchIcons.favoriteRounded,
+            iconColor: t.primary,
+            backgroundColor: t.primarySoft,
+            borderColor: t.primarySoft,
+            size: CatchIconButton.navSize,
+            iconSize: CatchIcon.md,
+            radius: CatchRadius.pill,
+          ),
+        ],
+      ),
+      slivers: slivers,
     );
   }
 }

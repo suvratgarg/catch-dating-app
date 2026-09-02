@@ -185,32 +185,50 @@ final class CatchRootScreenHeader {
 /// geometry, responsive content lane, field obstruction, refresh behavior,
 /// and terminal clearance above adaptive shell navigation.
 class CatchRootScreenScaffold extends StatelessWidget {
-  const CatchRootScreenScaffold({
+  const CatchRootScreenScaffold.standard({
     super.key,
     required Widget header,
-    required CatchScreenBodyLayout bodyLayout,
     required List<Widget> slivers,
     this.scrollKey,
     this.controller,
     this.physics,
     this.primary,
     this.onRefresh,
-    this.constrainToContentWidth = false,
     this.maxContentExtent = CatchLayout.screenPageMaxExtent,
-    this.includeTerminalPadding = true,
-    this.terminalExtra = CatchSpacing.screenPb,
     this.semanticsLabel,
     this.semanticsHint,
     this.topEdge = CatchRootScreenTopEdge.safeArea,
   }) : _header = header,
        _primaryRailHeader = null,
-       bodyLayout = bodyLayout,
+       bodyLayout = CatchScreenBodyLayout.standard,
        slivers = slivers,
        primaryRail = null,
        body = null,
+       constrainToContentWidth = true,
        assert(slivers.length > 0),
-       assert(maxContentExtent > 0),
-       assert(terminalExtra >= 0);
+       assert(maxContentExtent > 0);
+
+  const CatchRootScreenScaffold.fullBleed({
+    super.key,
+    required Widget header,
+    required List<Widget> slivers,
+    this.scrollKey,
+    this.controller,
+    this.physics,
+    this.primary,
+    this.onRefresh,
+    this.semanticsLabel,
+    this.semanticsHint,
+    this.topEdge = CatchRootScreenTopEdge.safeArea,
+  }) : _header = header,
+       _primaryRailHeader = null,
+       bodyLayout = CatchScreenBodyLayout.fullBleed,
+       slivers = slivers,
+       primaryRail = null,
+       body = null,
+       constrainToContentWidth = false,
+       maxContentExtent = CatchLayout.screenPageMaxExtent,
+       assert(slivers.length > 0);
 
   /// Root composition with a scroll-away header and pinned primary rail.
   ///
@@ -235,9 +253,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
        primary = null,
        onRefresh = null,
        constrainToContentWidth = false,
-       maxContentExtent = CatchLayout.screenPageMaxExtent,
-       includeTerminalPadding = true,
-       terminalExtra = CatchSpacing.screenPb;
+       maxContentExtent = CatchLayout.screenPageMaxExtent;
 
   final Widget? _header;
   final CatchRootScreenHeader? _primaryRailHeader;
@@ -252,8 +268,6 @@ class CatchRootScreenScaffold extends StatelessWidget {
   final Future<void> Function()? onRefresh;
   final bool constrainToContentWidth;
   final double maxContentExtent;
-  final bool includeTerminalPadding;
-  final double terminalExtra;
   final String? semanticsLabel;
   final String? semanticsHint;
   final CatchRootScreenTopEdge topEdge;
@@ -276,7 +290,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
       );
     }
     return CatchScreenScaffold.workspace(
-      body: CatchRootScreenScrollView(
+      body: CatchRootScreenScrollView._(
         header: _header!,
         bodyLayout: bodyLayout!,
         slivers: slivers!,
@@ -287,8 +301,6 @@ class CatchRootScreenScaffold extends StatelessWidget {
         onRefresh: onRefresh,
         constrainToContentWidth: constrainToContentWidth,
         maxContentExtent: maxContentExtent,
-        includeTerminalPadding: includeTerminalPadding,
-        terminalExtra: terminalExtra,
         semanticsLabel: semanticsLabel,
         semanticsHint: semanticsHint,
         topEdge: topEdge,
@@ -300,32 +312,73 @@ class CatchRootScreenScaffold extends StatelessWidget {
 /// Root-screen scroll composition for a pane whose parent already owns the
 /// [Scaffold], such as an adaptive master-detail workspace.
 class CatchRootScreenScrollView extends StatelessWidget {
-  const CatchRootScreenScrollView({
+  const CatchRootScreenScrollView.standard({
     super.key,
     required Widget header,
-    required CatchScreenBodyLayout bodyLayout,
     required List<Widget> slivers,
     this.scrollKey,
     this.controller,
     this.physics,
     this.primary,
     this.onRefresh,
-    this.constrainToContentWidth = false,
     this.maxContentExtent = CatchLayout.screenPageMaxExtent,
-    this.includeTerminalPadding = true,
-    this.terminalExtra = CatchSpacing.screenPb,
     this.semanticsLabel,
     this.semanticsHint,
     this.topEdge = CatchRootScreenTopEdge.safeArea,
   }) : _header = header,
        _primaryRailHeader = null,
-       bodyLayout = bodyLayout,
+       bodyLayout = CatchScreenBodyLayout.standard,
+       slivers = slivers,
+       primaryRail = null,
+       body = null,
+       constrainToContentWidth = true,
+       assert(slivers.length > 0),
+       assert(maxContentExtent > 0);
+
+  const CatchRootScreenScrollView.fullBleed({
+    super.key,
+    required Widget header,
+    required List<Widget> slivers,
+    this.scrollKey,
+    this.controller,
+    this.physics,
+    this.primary,
+    this.onRefresh,
+    this.semanticsLabel,
+    this.semanticsHint,
+    this.topEdge = CatchRootScreenTopEdge.safeArea,
+  }) : _header = header,
+       _primaryRailHeader = null,
+       bodyLayout = CatchScreenBodyLayout.fullBleed,
+       slivers = slivers,
+       primaryRail = null,
+       body = null,
+       constrainToContentWidth = false,
+       maxContentExtent = CatchLayout.screenPageMaxExtent,
+       assert(slivers.length > 0);
+
+  const CatchRootScreenScrollView._({
+    super.key,
+    required Widget header,
+    required this.bodyLayout,
+    required List<Widget> slivers,
+    this.scrollKey,
+    this.controller,
+    this.physics,
+    this.primary,
+    this.onRefresh,
+    required this.constrainToContentWidth,
+    required this.maxContentExtent,
+    this.semanticsLabel,
+    this.semanticsHint,
+    required this.topEdge,
+  }) : _header = header,
+       _primaryRailHeader = null,
        slivers = slivers,
        primaryRail = null,
        body = null,
        assert(slivers.length > 0),
-       assert(maxContentExtent > 0),
-       assert(terminalExtra >= 0);
+       assert(maxContentExtent > 0);
 
   /// Embedded root composition with a scroll-away header and pinned rail.
   const CatchRootScreenScrollView.withPrimaryRail({
@@ -346,9 +399,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
        primary = null,
        onRefresh = null,
        constrainToContentWidth = false,
-       maxContentExtent = CatchLayout.screenPageMaxExtent,
-       includeTerminalPadding = true,
-       terminalExtra = CatchSpacing.screenPb;
+       maxContentExtent = CatchLayout.screenPageMaxExtent;
 
   final Widget? _header;
   final CatchRootScreenHeader? _primaryRailHeader;
@@ -363,8 +414,6 @@ class CatchRootScreenScrollView extends StatelessWidget {
   final Future<void> Function()? onRefresh;
   final bool constrainToContentWidth;
   final double maxContentExtent;
-  final bool includeTerminalPadding;
-  final double terminalExtra;
   final String? semanticsLabel;
   final String? semanticsHint;
   final CatchRootScreenTopEdge topEdge;
@@ -389,8 +438,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
             maxContentExtent: maxContentExtent,
             slivers: slivers!,
           ),
-          if (includeTerminalPadding)
-            CatchSliverTerminalPadding(extra: terminalExtra),
+          const CatchSliverTerminalPadding(),
         ],
       );
     } else {

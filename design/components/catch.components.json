@@ -7210,7 +7210,7 @@
           {
             "id": "catch.screen_body.root_screen_scaffold",
             "symbol": "CatchRootScreenScaffold",
-            "summary": "Single root-title screen owner for surface, safe area, semantic body geometry, refresh, field obstruction, responsive width, terminal shell clearance, and an optional typed pinned primary rail. It privately selects a simple CustomScrollView or the overlap-safe NestedScrollView path.",
+            "summary": "Single root-title screen owner whose closed standard and fullBleed constructors jointly select body geometry, responsive width, and terminal shell clearance; withPrimaryRail closes the pinned peer-navigation path over typed pages. It also owns surface, safe area, refresh, and field obstruction while privately selecting a simple CustomScrollView or overlap-safe NestedScrollView.",
             "states": [
               "standard",
               "full-bleed",

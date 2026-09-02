@@ -5,9 +5,8 @@ class DashboardEmptyHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchRootScreenScaffold(
+    return CatchRootScreenScaffold.fullBleed(
       header: const SizedBox.shrink(),
-      bodyLayout: CatchScreenBodyLayout.fullBleed,
       semanticsLabel: context.l10n.dashboardDashboardEmptyHomeScreenLabelHome,
       slivers: const [DashboardEmptySliverBody()],
     );

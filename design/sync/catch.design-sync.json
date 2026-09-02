@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "bc5ef893139e4c0c30063c32a933428ff298a85847ec57d8846a4606121b83e4",
+  "sourceDigest": "66d3ca06bf6e7f07306a35cf4cc90c196626d71d4b181012ff77d87b4ee8b56b",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "bc5ef893139e4c0c30063c32a933428ff298a85847ec57d8846a4606121b83e4",
-    "contractDigest": "bc5ef893139e4c0c30063c32a933428ff298a85847ec57d8846a4606121b83e4"
+    "digest": "66d3ca06bf6e7f07306a35cf4cc90c196626d71d4b181012ff77d87b4ee8b56b",
+    "contractDigest": "66d3ca06bf6e7f07306a35cf4cc90c196626d71d4b181012ff77d87b4ee8b56b"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "14d48527f28201894263bc98f8cf59e735ee5241be85d7dbe5860f9df09dd8a4",
+    "handoffRequestDigest": "f016e3c99a7746da07451180ffd1d0315c9b9af08931b1c4bf47d559741fd38f",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 70,
-    "publicClassCount": 213,
+    "publicClassCount": 214,
     "conceptCount": 64,
-    "memberCount": 131,
-    "membersPerConcept": 2.05,
+    "memberCount": 132,
+    "membersPerConcept": 2.06,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 64,
-      "member": 131,
+      "member": 132,
       "screen": 15
     },
     "collisionCount": 32,
@@ -247,6 +247,7 @@
           "CatchActionMenu",
           "CatchAdaptiveSelectionControl",
           "CatchMenu",
+          "CatchMenuAnchor",
           "CatchMenuRow",
           "CatchSelectionMenu",
           "CatchSelectionSheet"
@@ -1172,7 +1173,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Menu",
       "claudeAllowed": true,
-      "contractDigest": "33c477701f5fbb6233c34ff42a6c830999f3446ea09141fd9dd51ebfc27aa350"
+      "contractDigest": "16496b47fb40d72946e0698f5444d5bdb7986f2e75d1caa392c8a10c982a29e9"
     },
     {
       "contractId": "catch.icon_tile",
@@ -1460,7 +1461,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ScreenBody",
       "claudeAllowed": true,
-      "contractDigest": "c1612e18fc1e642822da56637e9da8634b7632e52b0dc0c9b27da9ea049c98a1"
+      "contractDigest": "7ef438ae8fd1dfb3722d48063e1ba33a1fc996e2c0498f5662a80f941f923b26"
     },
     {
       "contractId": "catch.section_stack",

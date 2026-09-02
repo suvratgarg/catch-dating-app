@@ -57,11 +57,10 @@ class HostEventsScreen extends ConsumerWidget {
     );
 
     return switch (routeState.status) {
-      HostEventsRouteStatus.authRequired => CatchRootScreenScaffold(
+      HostEventsRouteStatus.authRequired => CatchRootScreenScaffold.standard(
         header: CatchScreenHeaderTitle.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
-        bodyLayout: CatchScreenBodyLayout.standard,
         slivers: [
           CatchSliverErrorState(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
@@ -73,22 +72,20 @@ class HostEventsScreen extends ConsumerWidget {
           ),
         ],
       ),
-      HostEventsRouteStatus.loading => CatchRootScreenScaffold(
+      HostEventsRouteStatus.loading => CatchRootScreenScaffold.standard(
         header: CatchScreenHeaderTitle.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
-        bodyLayout: CatchScreenBodyLayout.standard,
         slivers: const [
           CatchSliverStateViewport(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],
       ),
-      HostEventsRouteStatus.error => CatchRootScreenScaffold(
+      HostEventsRouteStatus.error => CatchRootScreenScaffold.standard(
         header: CatchScreenHeaderTitle.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
-        bodyLayout: CatchScreenBodyLayout.standard,
         slivers: [
           CatchSliverErrorState.fromError(
             routeState.error!,
@@ -205,11 +202,10 @@ class _HostEventsRouteScaffoldState
         sessionBoundary: _timelineBoundary,
       );
     }
-    return CatchRootScreenScaffold(
+    return CatchRootScreenScaffold.standard(
       header: CatchScreenHeaderTitle.block(
         title: context.l10n.hostsHostEventsListTextEvents,
       ),
-      bodyLayout: CatchScreenBodyLayout.standard,
       slivers: [
         CatchSliverEmptyState(
           icon: CatchIcons.groupsOutlined,

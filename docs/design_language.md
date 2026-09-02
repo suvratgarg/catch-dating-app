@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.9.0
-updated: 2026-09-02
+version: 1.10.0
+updated: 2026-09-03
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -312,8 +312,10 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
   vertical content has actually scrolled beneath the compact bar. Root tab
   titles are scroll content rather than fixed app bars.
-- Root title screens route through `CatchRootScreenScaffold` (or its
-  parent-scaffold `CatchRootScreenScrollView` variant). Roots with pinned peer
+- Root title screens route through `CatchRootScreenScaffold.standard` or
+  `.fullBleed` (or the corresponding parent-scaffold
+  `CatchRootScreenScrollView` role). The constructor jointly owns geometry,
+  responsive width, and shell clearance. Roots with pinned peer
   navigation use `CatchRootScreenScaffold.withPrimaryRail` plus
   a closed `CatchRootScreenPageScrollView.standard`, `.fullBleed`, or
   `.embeddedViewport` role. Standard owns the 20 pt phone gutter, 24 pt body

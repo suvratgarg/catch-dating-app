@@ -38,10 +38,10 @@
     },
     "screen.dashboard.home": {
       "owners": [
-        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_home_screen.dart", "symbol": "DashboardHomeScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_loading_screen.dart", "symbol": "DashboardLoadingScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_error_screen.dart", "symbol": "DashboardErrorScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_empty_home_screen.dart", "symbol": "DashboardEmptyHomeScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "full-bleed", "topEdge": "safe-area"}
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_home_screen.dart", "symbol": "DashboardHomeScreen", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_loading_screen.dart", "symbol": "DashboardLoadingScreen", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_error_screen.dart", "symbol": "DashboardErrorScreen", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_empty_home_screen.dart", "symbol": "DashboardEmptyHomeScreen", "family": "root", "expression": "CatchRootScreenScaffold.fullBleed", "bodyGeometry": "full-bleed", "topEdge": "safe-area"}
       ],
       "reason": "Dashboard state variants share the root-screen family while declaring their body geometry."
     },
@@ -65,7 +65,7 @@
     },
     "screen.matches.list": {
       "owners": [
-        {"routes": ["matchesListScreen"], "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart", "symbol": "_ChatsListScreenState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "full-bleed", "topEdge": "safe-area"}
+        {"routes": ["matchesListScreen"], "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart", "symbol": "_ChatsListScreenState", "family": "root", "expression": "CatchRootScreenScaffold.fullBleed", "bodyGeometry": "full-bleed", "topEdge": "safe-area"}
       ],
       "reason": "Consumer Chats is a root list using the universal 20-point horizontal gutter."
     },
@@ -89,12 +89,12 @@
     },
     "screen.host.home": {
       "owners": [
-        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/host_today_screen.dart", "symbol": "_HostTodayScreenState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/host_today_screen.dart", "symbol": "HostTodayOrganizerEmptyState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/widgets/host_today_body.dart", "symbol": "HostTodayBody", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "HostEventsScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "_HostEventsRouteScaffoldState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/widgets/host_events_list.dart", "symbol": "HostEventsClubSection", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"}
+        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/host_today_screen.dart", "symbol": "_HostTodayScreenState", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/host_today_screen.dart", "symbol": "HostTodayOrganizerEmptyState", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/widgets/host_today_body.dart", "symbol": "HostTodayBody", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "HostEventsScreen", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "_HostEventsRouteScaffoldState", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/widgets/host_events_list.dart", "symbol": "HostEventsClubSection", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"}
       ],
       "reason": "Host Today and Events use the same root composition in loading, error, empty, and populated states."
     },

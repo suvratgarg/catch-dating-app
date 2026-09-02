@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-09-02",
+  "updated": "2026-09-03",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -378,10 +378,9 @@
     },
     {
       "id": "catch.ui_label",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchSectionLabel",
       "status": "active",
@@ -1047,10 +1046,9 @@
     },
     {
       "id": "catch.empty_state",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchEmptyState",
       "status": "active",
@@ -1564,10 +1562,9 @@
     },
     {
       "id": "catch.error_banner",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchErrorBanner",
       "status": "active",
@@ -1744,10 +1741,9 @@
     },
     {
       "id": "catch.notice",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchNotice",
       "status": "active",
@@ -4176,10 +4172,9 @@
     },
     {
       "id": "catch.startup_loading_screen",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchStartupLoadingScreen",
       "status": "active",
@@ -4432,10 +4427,9 @@
     },
     {
       "id": "catch.mini_bar_chart",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchMiniBarChart",
       "status": "active",
@@ -4563,10 +4557,9 @@
     },
     {
       "id": "catch.metric_strip",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchMetricStrip",
       "status": "active",
@@ -4841,10 +4834,9 @@
     },
     {
       "id": "catch.sheet",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchBottomSheetScaffold",
       "status": "active",
@@ -5566,10 +5558,9 @@
     },
     {
       "id": "catch.icon_tile",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchIconTile",
       "status": "active",
@@ -5902,10 +5893,9 @@
     },
     {
       "id": "catch.number_stepper",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchNumberStepper",
       "status": "active",
@@ -6061,10 +6051,9 @@
     },
     {
       "id": "catch.option_card",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchOptionCard",
       "status": "active",
@@ -6899,10 +6888,9 @@
     },
     {
       "id": "catch.privacy_badge",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchPrivacyBadge",
       "status": "active",
@@ -7009,10 +6997,9 @@
     },
     {
       "id": "catch.journey_steps",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchJourneySteps",
       "status": "active",
@@ -7290,7 +7277,7 @@
           {
             "id": "catch.screen_body.root_screen_scaffold",
             "symbol": "CatchRootScreenScaffold",
-            "summary": "Single root-title screen owner for surface, safe area, semantic body geometry, refresh, field obstruction, responsive width, terminal shell clearance, and an optional typed pinned primary rail. It privately selects a simple CustomScrollView or the overlap-safe NestedScrollView path.",
+            "summary": "Single root-title screen owner whose closed standard and fullBleed constructors jointly select body geometry, responsive width, and terminal shell clearance; withPrimaryRail closes the pinned peer-navigation path over typed pages. It also owns surface, safe area, refresh, and field obstruction while privately selecting a simple CustomScrollView or overlap-safe NestedScrollView.",
             "states": [
               "standard",
               "full-bleed",
@@ -7680,10 +7667,9 @@
     },
     {
       "id": "catch.roster_tiles",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchRosterTiles",
       "status": "active",
@@ -7800,10 +7786,9 @@
     },
     {
       "id": "catch.roster_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchRosterRow",
       "status": "active",
@@ -7965,10 +7950,9 @@
     },
     {
       "id": "catch.roster_table",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchRosterTable",
       "status": "active",
@@ -8109,10 +8093,9 @@
     },
     {
       "id": "catch.activity_art",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchActivityArt",
       "status": "active",
@@ -8436,10 +8419,9 @@
     },
     {
       "id": "catch.distance_ring",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchDistanceRing",
       "status": "active",
@@ -8569,10 +8551,9 @@
     },
     {
       "id": "catch.code_input",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchCodeInput",
       "status": "active",
@@ -8783,10 +8764,9 @@
     },
     {
       "id": "catch.option_group",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchOptionGroup",
       "status": "active",
@@ -8963,10 +8943,9 @@
     },
     {
       "id": "catch.tab_rail",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchTabRail",
       "status": "active",
@@ -9119,10 +9098,9 @@
     },
     {
       "id": "catch.search_field",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchSearchField",
       "status": "active",
@@ -9572,10 +9550,9 @@
     },
     {
       "id": "catch.status_bar",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchStatusBar",
       "status": "active",
@@ -9691,10 +9668,9 @@
     },
     {
       "id": "catch.step_header",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchStepHeader",
       "status": "active",
@@ -10091,10 +10067,9 @@
     },
     {
       "id": "catch.bottom_dock",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchBottomDock",
       "status": "active",
@@ -10213,10 +10188,9 @@
     },
     {
       "id": "catch.confirm_dialog",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchConfirmDialog",
       "status": "active",
@@ -10332,10 +10306,9 @@
     },
     {
       "id": "catch.form_dialog",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchFormDialog",
       "status": "active",
@@ -10469,10 +10442,9 @@
     },
     {
       "id": "catch.count_pill",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchCountPill",
       "status": "active",
@@ -10611,10 +10583,9 @@
     },
     {
       "id": "catch.page_dots",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchPageDots",
       "status": "active",
@@ -10745,10 +10716,9 @@
     },
     {
       "id": "catch.club_dock",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "ClubDetailDock",
       "status": "active",
@@ -10924,10 +10894,9 @@
     },
     {
       "id": "catch.cover_story",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchCoverStory",
       "status": "active",
@@ -11112,10 +11081,9 @@
     },
     {
       "id": "catch.person_avatar",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchPersonAvatar",
       "status": "active",
@@ -11536,10 +11504,9 @@
     },
     {
       "id": "catch.person_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchPersonRow",
       "status": "active",
@@ -11753,10 +11720,9 @@
     },
     {
       "id": "catch.event_card",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchEventCard",
       "status": "active",
@@ -12136,10 +12102,9 @@
     },
     {
       "id": "catch.graded_image",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchGradedImage",
       "status": "active",
@@ -12250,10 +12215,9 @@
     },
     {
       "id": "catch.detail_media",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchDetailHeroBackdrop",
       "status": "active",
@@ -12400,10 +12364,9 @@
     },
     {
       "id": "catch.activity_map_pin",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchActivityMapPin",
       "status": "active",
@@ -12999,10 +12962,9 @@
     },
     {
       "id": "catch.notification_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "NotificationRow",
       "status": "active",
@@ -13332,10 +13294,9 @@
     },
     {
       "id": "catch.bottom_action",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchBottomAction",
       "status": "active",
@@ -13578,10 +13539,9 @@
     },
     {
       "id": "catch.host_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchHostRow",
       "status": "active",
@@ -13758,10 +13718,9 @@
     },
     {
       "id": "catch.map_preview",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchMapPreview",
       "status": "active",
@@ -13894,10 +13853,9 @@
     },
     {
       "id": "catch.meta_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchMetaRow",
       "status": "active",
@@ -14012,10 +13970,9 @@
     },
     {
       "id": "catch.index_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchIndexRow",
       "status": "active",
@@ -14154,10 +14111,9 @@
     },
     {
       "id": "catch.organizer_poster",
-      "waiver": {
-        "reason": "Entity-material placement is governed by ARCH-ENTITY-MATERIAL-001 and the design-language metaphor contract.",
-        "owner": "design_system",
-        "expires": "2026-12-31"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchOrganizerPoster",
       "status": "active",
@@ -14391,10 +14347,9 @@
     },
     {
       "id": "catch.person_polaroid",
-      "waiver": {
-        "reason": "Entity-material placement is governed by ARCH-ENTITY-MATERIAL-001 and the design-language metaphor contract.",
-        "owner": "design_system",
-        "expires": "2026-12-31"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchPersonPolaroid",
       "status": "active",
@@ -14548,10 +14503,9 @@
     },
     {
       "id": "catch.club_cover",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchClubCover",
       "status": "active",

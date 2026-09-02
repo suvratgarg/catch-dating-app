@@ -130,10 +130,8 @@ class HostEventsClubSection extends StatelessWidget {
         state.activeSections.isNotEmpty ||
         state.activeLoadMoreError != null ||
         state.hasMoreActive;
-    return CatchRootScreenScaffold(
+    return CatchRootScreenScaffold.standard(
       scrollKey: const ValueKey<String>('host-events-scroll-view'),
-      bodyLayout: CatchScreenBodyLayout.standard,
-      constrainToContentWidth: true,
       header: CatchScreenHeaderTitle.block(
         title: context.l10n.hostsHostEventsListTextEvents,
         actions: [

@@ -40,7 +40,7 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
       isHostApp: isHostApp,
     );
 
-    return CatchRootScreenScaffold(
+    return CatchRootScreenScaffold.fullBleed(
       header: ChatsBrowseHeader(
         presentation: isHostApp
             ? ChatsBrowsePresentation.host
@@ -52,7 +52,6 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
         hostUnreadCount: screenState.unreadThreadCount,
         onHostFilterChanged: _handleHostFilterChanged,
       ),
-      bodyLayout: CatchScreenBodyLayout.fullBleed,
       slivers: [
         ChatsList(
           hostFilter: screenState.hostFilter,

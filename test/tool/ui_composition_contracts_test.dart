@@ -105,14 +105,13 @@ class ExampleScreen {
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
         'family': 'root',
-        'expression': 'CatchRootScreenScaffold',
+        'expression': 'CatchRootScreenScaffold.standard',
         'bodyGeometry': 'standard',
         'topEdge': 'safe-area',
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build() => CatchRootScreenScaffold(
-    bodyLayout: CatchScreenBodyLayout.standard,
+  Object build() => CatchRootScreenScaffold.standard(
     slivers: [
       CatchSliverScreenBody(
         layout: CatchScreenBodyLayout.standard,
@@ -138,6 +137,28 @@ class ExampleScreen {
         ),
       ),
     );
+  });
+
+  test('rejects the former loose ordinary root constructor', () {
+    final failures = evaluateLayoutOwnerContract(
+      screenId: 'screen.fixture',
+      owner: <String, Object?>{
+        'symbol': 'ExampleScreen',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold',
+        'bodyGeometry': 'standard',
+        'topEdge': 'safe-area',
+      },
+      declarationSource: '''
+class ExampleScreen {
+  Object build() => CatchRootScreenScaffold(
+    bodyLayout: CatchScreenBodyLayout.standard,
+  );
+}
+''',
+    );
+
+    expect(failures, contains(contains('cannot be owned')));
   });
 
   test('allows component insets and ignores dead competing geometry', () {
@@ -177,16 +198,14 @@ class ExampleScreen {
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
         'family': 'adaptive-workspace',
-        'expression': 'CatchRootScreenScrollView',
+        'expression': 'CatchRootScreenScrollView.fullBleed',
         'bodyGeometry': 'full-bleed',
         'topEdge': 'safe-area',
       },
       declarationSource: '''
 class ExampleScreen {
   Object build() {
-    Object buildMaster() => CatchRootScreenScrollView(
-      bodyLayout: CatchScreenBodyLayout.fullBleed,
-    );
+    Object buildMaster() => CatchRootScreenScrollView.fullBleed();
 
     return CatchScreenScaffold.workspace(body: buildMaster());
   }
@@ -360,7 +379,7 @@ class ExampleScreen {
         owner: <String, Object?>{
           'symbol': 'ExampleScreen',
           'family': 'root',
-          'expression': 'CatchRootScreenScaffold',
+          'expression': 'CatchRootScreenScaffold.standard',
           'bodyGeometry': 'standard',
           'topEdge': 'safe-area',
         },
@@ -376,35 +395,33 @@ class ExampleScreen {
     },
   );
 
-  test('resolved terminal proof cannot bless wrong direct body geometry', () {
-    final failures = evaluateLayoutOwnerContract(
-      screenId: 'screen.fixture',
-      owner: <String, Object?>{
-        'symbol': 'ExampleScreen',
-        'family': 'root',
-        'expression': 'CatchRootScreenScaffold',
-        'bodyGeometry': 'standard',
-        'topEdge': 'safe-area',
-      },
-      declarationSource: '''
+  test(
+    'rejects registry geometry that disagrees with a closed constructor',
+    () {
+      final failures = evaluateLayoutOwnerContract(
+        screenId: 'screen.fixture',
+        owner: <String, Object?>{
+          'symbol': 'ExampleScreen',
+          'family': 'root',
+          'expression': 'CatchRootScreenScaffold.fullBleed',
+          'bodyGeometry': 'standard',
+          'topEdge': 'safe-area',
+        },
+        declarationSource: '''
 class ExampleScreen {
-  Object build(bool loading) => loading
-      ? CatchRootScreenScaffold(
-          bodyLayout: CatchScreenBodyLayout.fullBleed,
-        )
-      : const RegisteredRootDelegate();
+  Object build() => CatchRootScreenScaffold.fullBleed();
 }
 ''',
-      resolvedTerminalOwnerProof: true,
-    );
+      );
 
-    expect(
-      failures,
-      contains(
-        contains('must explicitly select CatchScreenBodyLayout.standard'),
-      ),
-    );
-  });
+      expect(
+        failures,
+        contains(
+          contains('must select the matching closed root-screen constructor'),
+        ),
+      );
+    },
+  );
 
   test('accepts one Stack root plane with conditional positioned overlays', () {
     final failures = evaluateLayoutOwnerContract(
@@ -412,7 +429,7 @@ class ExampleScreen {
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
         'family': 'root',
-        'expression': 'CatchRootScreenScaffold',
+        'expression': 'CatchRootScreenScaffold.fullBleed',
         'bodyGeometry': 'full-bleed',
         'topEdge': 'header-owned',
       },
@@ -420,8 +437,7 @@ class ExampleScreen {
 class ExampleScreen {
   Object build(bool showOverlay) => Stack(
     children: [
-      CatchRootScreenScaffold(
-        bodyLayout: CatchScreenBodyLayout.fullBleed,
+      CatchRootScreenScaffold.fullBleed(
         topEdge: CatchRootScreenTopEdge.headerOwned,
       ),
       if (showOverlay) Positioned(child: const MapLauncher()),
@@ -440,7 +456,7 @@ class ExampleScreen {
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
         'family': 'root',
-        'expression': 'CatchRootScreenScaffold',
+        'expression': 'CatchRootScreenScaffold.standard',
         'bodyGeometry': 'standard',
         'topEdge': 'safe-area',
       },
@@ -448,9 +464,7 @@ class ExampleScreen {
 class ExampleScreen {
   Object build() => Stack(
     children: [
-      CatchRootScreenScaffold(
-        bodyLayout: CatchScreenBodyLayout.standard,
-      ),
+      CatchRootScreenScaffold.standard(),
       const SizedBox.expand(),
     ],
   );

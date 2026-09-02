@@ -57,10 +57,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      _rootScreen(
-        bodyLayout: CatchScreenBodyLayout.standard,
-        constrainToContentWidth: true,
-      ),
+      _rootScreen(bodyLayout: CatchScreenBodyLayout.standard),
     );
 
     final body = tester.getRect(find.byKey(const ValueKey('root-body')));
@@ -356,34 +353,41 @@ Widget _standardRouteWithBottomGeometry({
 
 Widget _rootScreen({
   required CatchScreenBodyLayout bodyLayout,
-  bool constrainToContentWidth = false,
   CatchRootScreenTopEdge topEdge = CatchRootScreenTopEdge.safeArea,
 }) {
+  const header = SizedBox(
+    key: ValueKey('root-header'),
+    width: double.infinity,
+    height: 80,
+  );
+  const slivers = <Widget>[
+    SliverToBoxAdapter(
+      child: SizedBox(
+        key: ValueKey('root-body'),
+        width: double.infinity,
+        height: 40,
+      ),
+    ),
+  ];
+  final root = switch (bodyLayout) {
+    CatchScreenBodyLayout.standard => CatchRootScreenScaffold.standard(
+      header: header,
+      topEdge: topEdge,
+      slivers: slivers,
+    ),
+    CatchScreenBodyLayout.fullBleed => CatchRootScreenScaffold.fullBleed(
+      header: header,
+      topEdge: topEdge,
+      slivers: slivers,
+    ),
+  };
   return MaterialApp(
     theme: AppTheme.light,
     home: AppShellActiveTab(
       index: 0,
       bottomBarPlacement: AppShellBottomBarPlacement.floating,
       bottomOverlayInset: 100,
-      child: CatchRootScreenScaffold(
-        header: const SizedBox(
-          key: ValueKey('root-header'),
-          width: double.infinity,
-          height: 80,
-        ),
-        bodyLayout: bodyLayout,
-        topEdge: topEdge,
-        constrainToContentWidth: constrainToContentWidth,
-        slivers: const [
-          SliverToBoxAdapter(
-            child: SizedBox(
-              key: ValueKey('root-body'),
-              width: double.infinity,
-              height: 40,
-            ),
-          ),
-        ],
-      ),
+      child: root,
     ),
   );
 }
