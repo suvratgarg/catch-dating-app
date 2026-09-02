@@ -41,8 +41,7 @@ class PaymentHistoryScreen extends ConsumerWidget {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: CatchRouteBody.standard(
-        constrainToContentWidth: true,
+      body: CatchRouteBody.standardConstrained(
         child: CatchAsyncValueView<String?>(
           value: uidAsync,
           loadingBuilder: (_) => const PaymentHistorySkeleton(),

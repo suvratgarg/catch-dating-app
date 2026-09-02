@@ -57,8 +57,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: CatchRouteBody.standard(
-        constrainToContentWidth: true,
+      body: CatchRouteBody.standardConstrained(
         child: CatchAsyncValueView<HostFormShareAssets>(
           value: assets,
           onRetry: () => ref.invalidate(

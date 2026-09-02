@@ -250,8 +250,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 : null,
             divider: scrolledUnder,
           ),
-          body: CatchRouteBody.standard(
-            constrainToContentWidth: true,
+          body: CatchRouteBody.standardConstrained(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

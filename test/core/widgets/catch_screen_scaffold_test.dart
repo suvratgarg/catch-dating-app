@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -147,6 +148,94 @@ void main() {
     expect(body.top - topBar.bottom, CatchInsets.pageBody.top);
     expect(body.left, CatchInsets.pageBody.left);
     expect(body.width, 400 - CatchInsets.pageBody.horizontal);
+  });
+
+  testWidgets('pushed route viewport body cannot acquire a scroll owner', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: CatchRouteScaffold(
+          topBarBuilder: (_, _) => const PreferredSize(
+            preferredSize: Size.zero,
+            child: SizedBox.shrink(),
+          ),
+          body: const CatchRouteBody.standardViewport(
+            child: SizedBox(key: ValueKey('route-viewport-content')),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(SingleChildScrollView), findsNothing);
+    expect(
+      tester.widget<CatchScreenBody>(find.byType(CatchScreenBody)).scrollable,
+      isFalse,
+    );
+  });
+
+  testWidgets('pushed constrained body owns one centered responsive lane', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1000, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: CatchRouteScaffold(
+          topBarBuilder: (_, _) => const PreferredSize(
+            preferredSize: Size.zero,
+            child: SizedBox.shrink(),
+          ),
+          body: const CatchRouteBody.standardConstrained(
+            child: SizedBox(
+              key: ValueKey('route-constrained-content'),
+              width: double.infinity,
+              height: 40,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final content = tester.getRect(
+      find.byKey(const ValueKey('route-constrained-content')),
+    );
+    expect(content.width, CatchLayout.maxContentWidth);
+    expect(content.center.dx, 500);
+  });
+
+  testWidgets('sliver route publishes floating shell obstruction to fields', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: AppShellActiveTab(
+          index: 0,
+          bottomBarPlacement: AppShellBottomBarPlacement.floating,
+          bottomOverlayInset: 96,
+          child: CatchRouteScaffold(
+            topBarBuilder: (_, _) => const PreferredSize(
+              preferredSize: Size.zero,
+              child: SizedBox.shrink(),
+            ),
+            body: const CatchRouteBody.standardSlivers(
+              slivers: [SliverToBoxAdapter(child: SizedBox.shrink())],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final scope = tester.widget<CatchFieldVisibilityScope>(
+      find.byType(CatchFieldVisibilityScope),
+    );
+    expect(scope.bottomObstruction, 96);
   });
 
   testWidgets(

@@ -396,8 +396,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
             : const [],
       ),
       bottomNavigationBar: widget.footer,
-      body: CatchRouteBody.standard(
-        scrollable: false,
+      body: CatchRouteBody.standardViewport(
         child: Column(
           children: [
             if (widget.header case final header?) ...[header, gapH12],

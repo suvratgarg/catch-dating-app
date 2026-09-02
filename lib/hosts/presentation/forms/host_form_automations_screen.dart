@@ -41,8 +41,7 @@ class HostFormAutomationsScreen extends ConsumerWidget {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: CatchRouteBody.standard(
-        constrainToContentWidth: true,
+      body: CatchRouteBody.standardConstrained(
         child: CatchAsyncValueView<HostFormAutomationsState>(
           value: automations,
           onRetry: () => ref.invalidate(provider),

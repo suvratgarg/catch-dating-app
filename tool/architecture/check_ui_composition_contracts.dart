@@ -624,7 +624,10 @@ List<String> _evaluateBodyGeometryContract({
 
 bool _isTypedRouteBody(String body) => const <String>{
   'CatchRouteBody.standard',
+  'CatchRouteBody.standardViewport',
+  'CatchRouteBody.standardConstrained',
   'CatchRouteBody.standardSlivers',
+  'CatchRouteBody.standardConstrainedSlivers',
   'CatchRouteBody.standardSections',
   'CatchRouteBody.paged',
   'CatchRouteBody.fullBleed',
@@ -632,7 +635,10 @@ bool _isTypedRouteBody(String body) => const <String>{
 
 bool _isStandardRouteBody(String body) {
   if (_hasConstructor(body, 'CatchRouteBody.standard') ||
+      _hasConstructor(body, 'CatchRouteBody.standardViewport') ||
+      _hasConstructor(body, 'CatchRouteBody.standardConstrained') ||
       _hasConstructor(body, 'CatchRouteBody.standardSlivers') ||
+      _hasConstructor(body, 'CatchRouteBody.standardConstrainedSlivers') ||
       _hasConstructor(body, 'CatchRouteBody.standardSections')) {
     return !body.contains('CatchRouteBody.fullBleed');
   }
@@ -641,7 +647,10 @@ bool _isStandardRouteBody(String body) {
     return false;
   }
   return body.contains('CatchRouteBody.standard(') ||
+      body.contains('CatchRouteBody.standardViewport(') ||
+      body.contains('CatchRouteBody.standardConstrained(') ||
       body.contains('CatchRouteBody.standardSlivers(') ||
+      body.contains('CatchRouteBody.standardConstrainedSlivers(') ||
       body.contains('CatchRouteBody.standardSections(');
 }
 
@@ -1320,7 +1329,10 @@ final class _StandardBodyGeometryTraversal {
 
     final standardContentName = switch (signature) {
       'CatchRouteBody.standard' => 'child',
+      'CatchRouteBody.standardViewport' => 'child',
+      'CatchRouteBody.standardConstrained' => 'child',
       'CatchRouteBody.standardSlivers' => 'slivers',
+      'CatchRouteBody.standardConstrainedSlivers' => 'slivers',
       'CatchRouteBody.standardSections' => 'sections',
       _ => null,
     };

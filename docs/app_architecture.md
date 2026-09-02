@@ -2750,6 +2750,15 @@ owns surface color and the scroll-under divider. Loading, empty, error, and
 content branches retain the same title voice and back behavior instead of
 building competing scaffolds.
 
+Its closed `CatchRouteBody` API makes viewport behavior explicit:
+`standard` scrolls in the canonical lane, `standardViewport` is fixed,
+`standardConstrained` centers a scrolling content-width lane,
+`standardSlivers` and `standardConstrainedSlivers` own custom-scroll variants,
+and `fullBleed` is the deliberate edge-owned exception. Feature routes cannot
+toggle scroll, responsive width, or terminal-padding policy with booleans.
+Box, sliver, and section variants all publish the same shell obstruction to
+expanding fields.
+
 The primitive owns the compact title role: `CatchTextStyles.routeTitle` is
 Archivo at 20/700/1.16, while the root `CatchScreenHeaderTitle` remains Archivo
 at the larger headline scale. Route and workspace screens pass semantic

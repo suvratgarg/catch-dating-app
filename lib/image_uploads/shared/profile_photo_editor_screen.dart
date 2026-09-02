@@ -233,8 +233,7 @@ class _ProfilePhotoEditorScreenState
             : context.l10n.imageUploadsProfilePhotoEditorScreenTitleEditPhoto,
         border: scrolledUnder,
       ),
-      body: CatchRouteBody.standard(
-        constrainToContentWidth: true,
+      body: CatchRouteBody.standardConstrained(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
