@@ -613,10 +613,13 @@ actual redirect result. The same baseline contains 11 imperative page
 construction sites across 7 registered targets; each site must remain present
 in the generated inventory and analyzer-resolve to its target's typed owner.
 
-The contract manifest at `tool/design/root_screen_composition_contracts.json` records
-every shell branch and its real composition owners. Its scanner rejects an
-unregistered branch, missing semantic owner/body role, forbidden raw root
-composition, and raw sliver empty/error viewport ownership.
+The shell-branch manifest at `tool/design/root_screen_composition_contracts.json`
+records every `StatefulShellBranch` and the adaptive shell invariants. Its
+scanner rejects an unregistered branch, superseded root APIs, and raw sliver
+empty/error viewport ownership. Semantic screen owners and body roles belong
+only to `design/screens/catch.screens.json` and the analyzer-backed UI
+composition gate; the shell scanner must not duplicate those constructor
+contracts as substring counts.
 
 ## App Shell Chrome Policy
 
@@ -1105,7 +1108,7 @@ the Preview slivers.
 | Chats list | Keep sliver shell; make populated body sliver-native only if list scale or tests demand it. |
 | Event detail | Keep sliver-native because the collapsing hero justifies it. |
 | Club detail | Keep sliver-native with agenda-style event list. |
-| User profile | Use the shared `CatchRootScreenPageScrollView` contract for every tab, preserving overlap injection and the Preview card scroll bridge. The shared owner always publishes shell obstruction; each page explicitly selects terminal clearance according to whether its final content can expand. |
+| User profile | Use the shared `CatchRootScreenPageScrollView` contract for every tab, preserving overlap injection and the Preview card scroll bridge. The semantic constructor owns terminal clearance structurally: `standard` and `fullBleed` add it, while `embeddedViewport` delegates it to the embedded surface. |
 | Map-heavy screens | Keep the stable full-bleed viewport, but declare it as an immersive `CatchScreenScaffold.workspace`; overlays continue to own their local safe-area insets. |
 | Attendance sheet | Keep box-based while it remains a modal/sheet. |
 | Create event, onboarding, auth | Use the typed `stepFlow` or `standalone` surface role while preserving their task-specific header, safe-area, keyboard, and footer behavior. |
@@ -2809,8 +2812,12 @@ workspace, or temporary legacy role by symbol and owner. Role-to-owner policy
 is enforced; raw Material app bars cannot be relabeled as workspace or hero
 exceptions. Legacy entries are visible migration debt, not generic
 exceptions.
-The same gate consumes `tool/design/root_screen_composition_contracts.json` and must
-report every consumer and Host root-screen branch; a zero-root pass is invalid.
+The same gate consumes `tool/design/root_screen_composition_contracts.json` and
+must report every consumer and Host root-screen branch; a zero-root pass is
+invalid. That manifest classifies shell branches only. Exact title ownership is
+registered against the title primitive (`CatchRootScreenHeader.title`,
+`CatchScreenHeaderTitle.block`, or `CatchScreenTopBar`), never against the
+layout scaffold that happens to carry it.
 
 Full-screen editors that must cover persistent shell navigation declare their
 launcher in the same contract and push through

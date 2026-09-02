@@ -33,7 +33,7 @@
       "branchKey": "keys.profile",
       "routeName": "Routes.profileScreen.name",
       "surfaces": [
-        {"path": "lib/user_profile/presentation/profile_screen.dart", "symbol": "_ProfileScreenState", "owner": "CatchRootScreenScaffold.withPrimaryRail"}
+        {"path": "lib/user_profile/presentation/profile_screen.dart", "symbol": "_ProfileScreenState", "owner": "CatchRootScreenHeader.title"}
       ]
     },
     {
@@ -55,9 +55,9 @@
       "branchKey": "keys.hostAudience",
       "routeName": "Routes.hostAudienceScreen.name",
       "surfaces": [
-        {"path": "lib/hosts/presentation/host_audience_view.dart", "symbol": "HostAudienceStateScaffold", "owner": "CatchRootScreenScaffold.withPrimaryRail"},
-        {"path": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "_HostCustomersScreenState", "owner": "CatchRootScreenScaffold.withPrimaryRail"},
-        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "owner": "CatchRootScreenScaffold.withPrimaryRail"}
+        {"path": "lib/hosts/presentation/host_audience_view.dart", "symbol": "HostAudienceStateScaffold", "owner": "CatchRootScreenHeader.title"},
+        {"path": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "_HostCustomersScreenState", "owner": "CatchRootScreenHeader.title"},
+        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "owner": "CatchRootScreenHeader.title"}
       ]
     },
     {
@@ -71,8 +71,8 @@
       "branchKey": "keys.hostOrganizer",
       "routeName": "Routes.hostOrganizerScreen.name",
       "surfaces": [
-        {"path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "HostOrganizerStateScaffold", "owner": "CatchRootScreenScaffold.withPrimaryRail"},
-        {"path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "_HostClubsScaffoldState", "owner": "CatchRootScreenScaffold.withPrimaryRail"}
+        {"path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "HostOrganizerStateScaffold", "owner": "CatchRootScreenHeader.title"},
+        {"path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "_HostClubsScaffoldState", "owner": "CatchRootScreenHeader.title"}
       ]
     }
   ],

@@ -7072,6 +7072,7 @@
             "catch_no_shell_local_measurement",
             "catch_screen_registry_conformance",
             "catch_screen_layout_family_conformance",
+            "catch_screen_layout_constructor_vocabulary",
             "catch_screen_route_owner_binding",
             "catch_screen_scaffold_ownership"
           ],

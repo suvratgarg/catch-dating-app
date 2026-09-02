@@ -2195,6 +2195,8 @@ abstract final class CatchLayout {
 
   /// Bounded command-centre workspace for Today on tablet and desktop.
   static const double hostTodayWorkspaceMaxContentWidth = 1120;
+  static const double hostTodayWorkspacePageMaxExtent =
+      hostTodayWorkspaceMaxContentWidth + pageBodyHorizontalGutters;
 
   /// Supporting attention lane beside Today's current-event workspace.
   static const double hostTodayAttentionPaneWidth = 360;

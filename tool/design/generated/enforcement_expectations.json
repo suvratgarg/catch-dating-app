@@ -149,6 +149,9 @@
     "catch_screen_gutter_uses_semantic_insets": [
       "catch.screen_body"
     ],
+    "catch_screen_layout_constructor_vocabulary": [
+      "catch.screen_body"
+    ],
     "catch_screen_layout_family_conformance": [
       "catch.screen_body"
     ],

@@ -300,7 +300,7 @@ void _registerProfileShellLayoutTests() {
     );
   });
 
-  testWidgets('ProfileScreen limits terminal clearance to Edit', (
+  testWidgets('ProfileScreen assigns terminal clearance by page role', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1.0;
@@ -379,7 +379,7 @@ void _registerProfileShellLayoutTests() {
       tester
           .widget<CatchRootScreenPageScrollView>(insightsWrapper)
           .includeTerminalPadding,
-      isFalse,
+      isTrue,
     );
     expect(
       tester
@@ -390,7 +390,7 @@ void _registerProfileShellLayoutTests() {
           )
           .slivers
           .whereType<CatchSliverTerminalPadding>(),
-      isEmpty,
+      hasLength(1),
     );
   });
 

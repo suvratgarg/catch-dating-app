@@ -248,11 +248,11 @@ test("resolves canonical root chrome owned by a StatefulWidget state", () => {
   assert.deepEqual(result.findings, []);
 });
 
-test("accepts the shared root scaffold as a canonical root-header owner", () => {
+test("accepts the typed root header as the canonical title owner", () => {
   const root = fixtureRoot({
     source: "Scaffold(appBar: CatchScreenTopBar(title: 'Fallback'));",
     contract: screenContract(),
-    rootSurface: rootSurface({owner: "CatchRootScreenScaffold.withPrimaryRail"}),
+    rootSurface: rootSurface({owner: "CatchRootScreenHeader.title"}),
     rootSource: `
       class RootHeader {
         Widget build() => CatchRootScreenScaffold.withPrimaryRail(

@@ -1360,7 +1360,7 @@
         }
       ],
       "exceptions": [],
-      "requiredBackPropagation": "When shell placement, window classes, side-navigation geometry, tab geometry, root routes, semantic body roles, or terminal primitives change, update both shells, every manifest owner, root/tab composition primitives, the architecture exhibits, exact 599/600/839/840 tests, Widgetbook phone/tablet/desktop states, and the known-bad scanner fixtures in one pass.",
+      "requiredBackPropagation": "When shell placement, window classes, side-navigation geometry, tab geometry, root routes, semantic body roles, or terminal primitives change, update both shells, every analyzer-backed screen-registry owner, root/tab composition primitives, the architecture exhibits, exact 599/600/839/840 tests, Widgetbook phone/tablet/desktop states, and the known-bad scanner fixtures in one pass.",
       "requiredChecks": [
         "node tool/design/check_root_screen_composition_contracts.mjs --check",
         "node --test tool/design/check_root_screen_composition_contracts.test.mjs",
@@ -1417,7 +1417,7 @@
         }
       ],
       "exceptions": [],
-      "requiredBackPropagation": "When root-title, primary-rail, pushed-route, body-role, safe-area, scroll, responsive-width, field-obstruction, state-viewport, refresh, or terminal-clearance policy changes, update the closed screen family, all manifest owners, component and widget catalogs, architecture and design-language guidance, primitive and screen regression tests, and the known-bad scanner fixture in one pass.",
+      "requiredBackPropagation": "When root-title, primary-rail, pushed-route, body-role, safe-area, scroll, responsive-width, field-obstruction, state-viewport, refresh, or terminal-clearance policy changes, update the closed screen family, all analyzer-backed screen-registry owners, component and widget catalogs, architecture and design-language guidance, primitive and screen regression tests, and the known-bad scanner fixture in one pass.",
       "requiredChecks": [
         "node tool/design/check_root_screen_composition_contracts.mjs --check",
         "node --test tool/design/check_root_screen_composition_contracts.test.mjs",

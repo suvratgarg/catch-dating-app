@@ -1,8 +1,56 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:test/test.dart';
 
 import '../../tool/architecture/check_ui_composition_contracts.dart';
 
 void main() {
+  test('screen schema accepts exactly the analyzer layout vocabulary', () {
+    final schema =
+        jsonDecode(
+              File(
+                'design/screens/catch.screens.schema.json',
+              ).readAsStringSync(),
+            )
+            as Map<String, Object?>;
+    final definitions = (schema[r'$defs'] as Map).cast<String, Object?>();
+    final layoutExpression = (definitions['layoutExpression'] as Map)
+        .cast<String, Object?>();
+    final schemaExpressions = (layoutExpression['enum'] as List<Object?>)
+        .cast<String>()
+        .toSet();
+
+    expect(schemaExpressions, catchScreenLayoutOwnerExpressions);
+  });
+
+  test('canonical layout constructors match the analyzer vocabulary', () {
+    expect(
+      canonicalLayoutConstructorVocabularyFailures(
+        root: Directory.current.absolute.path,
+      ),
+      isEmpty,
+    );
+  });
+
+  test('rejects an unregistered public layout constructor', () {
+    final failures = canonicalLayoutConstructorVocabularyFailures(
+      root: Directory(
+        'test/tool/fixtures/layout_constructor_vocabulary',
+      ).absolute.path,
+    );
+
+    expect(
+      failures,
+      contains(
+        allOf(
+          contains(screenLayoutConstructorVocabularyCode),
+          contains('CatchRootScreenScaffold.experimental'),
+        ),
+      ),
+    );
+  });
+
   test('accepts a governed standard route owner', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',

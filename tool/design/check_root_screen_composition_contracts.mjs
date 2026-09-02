@@ -79,11 +79,11 @@ export function checkRootScreenCompositionContracts({
     });
   }
 
-  const checkedOwners = new Set();
+  const checkedShells = new Set();
   for (const shell of manifest.shells ?? []) {
     const shellKey = JSON.stringify(shell);
-    if (checkedOwners.has(shellKey)) continue;
-    checkedOwners.add(shellKey);
+    if (checkedShells.has(shellKey)) continue;
+    checkedShells.add(shellKey);
     checkOwner({root, owner: shell, findings, ownerKind: "shell contract"});
   }
   for (const branch of manifest.branches ?? []) {
@@ -96,13 +96,6 @@ export function checkRootScreenCompositionContracts({
         path: routerPath,
         message: `${branch.branchKey} route marker ${branch.routeName} is absent.`,
       });
-    }
-
-    for (const owner of branch.owners ?? []) {
-      const ownerKey = JSON.stringify(owner);
-      if (checkedOwners.has(ownerKey)) continue;
-      checkedOwners.add(ownerKey);
-      checkOwner({root, owner, findings, ownerKind: "scroll owner"});
     }
   }
 
@@ -223,11 +216,11 @@ function checkOwner({root, owner, findings, ownerKind}) {
 }
 
 function validateManifest(manifest, findings, manifestPath) {
-  if (manifest.schemaVersion !== 2) {
+  if (manifest.schemaVersion !== 3) {
     findings.push({
       code: "invalid-schema-version",
       path: manifestPath,
-      message: "schemaVersion must be 2.",
+      message: "schemaVersion must be 3.",
     });
   }
   if (!Array.isArray(manifest.shells) || manifest.shells.length === 0) {
@@ -279,13 +272,6 @@ function validateManifest(manifest, findings, manifestPath) {
       });
     }
     branchKeys.add(branch.branchKey);
-    if (!Array.isArray(branch.owners) || branch.owners.length === 0) {
-      findings.push({
-        code: "missing-owners",
-        path: manifestPath,
-        message: `${branch.branchKey ?? "unknown branch"} requires an owner.`,
-      });
-    }
   }
 }
 
@@ -299,20 +285,14 @@ function resultWith(findings, finding) {
   return {
     shellCount: 0,
     branchCount: 0,
-    ownerCount: 0,
     findings,
   };
 }
 
 function summarize(manifest, findings) {
-  const ownerPaths = new Set();
-  for (const branch of manifest.branches ?? []) {
-    for (const owner of branch.owners ?? []) ownerPaths.add(owner.path);
-  }
   return {
     shellCount: manifest.shells?.length ?? 0,
     branchCount: manifest.branches?.length ?? 0,
-    ownerCount: ownerPaths.size,
     findings,
   };
 }
@@ -322,9 +302,10 @@ function runCli() {
   if (args.includes("--help") || args.includes("-h")) {
     console.log(`Usage: node tool/design/check_root_screen_composition_contracts.mjs [--check|--json]
 
-Checks every StatefulShellBranch against the versioned screen-composition
-manifest, verifies semantic body and terminal ownership, and rejects raw
-empty/error SliverFillRemaining composition in presentation code.`);
+Checks every StatefulShellBranch against the versioned shell-branch manifest,
+verifies adaptive shell adoption, rejects superseded root APIs, and rejects
+raw empty/error SliverFillRemaining composition in presentation code. Semantic
+screen layout roles are owned by check_ui_composition_contracts.dart.`);
     return;
   }
 
@@ -336,8 +317,7 @@ empty/error SliverFillRemaining composition in presentation code.`);
   } else if (result.findings.length === 0) {
     console.log(
       `Root-screen composition contracts: ${result.shellCount} shells, ` +
-        `${result.branchCount} branches, ` +
-        `${result.ownerCount} owner files, 0 findings.`,
+        `${result.branchCount} branches, 0 findings.`,
     );
   } else {
     for (const finding of result.findings) {

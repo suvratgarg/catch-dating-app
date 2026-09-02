@@ -15,14 +15,80 @@ const screenTopBarConformanceCode = 'catch_screen_top_bar_conformance';
 const screenLayoutFamilyCode = 'catch_screen_layout_family_conformance';
 const screenRouteOwnerBindingCode = 'catch_screen_route_owner_binding';
 const screenScaffoldOwnershipCode = 'catch_screen_scaffold_ownership';
+const screenLayoutConstructorVocabularyCode =
+    'catch_screen_layout_constructor_vocabulary';
 
 const _registryPath = 'design/screens/catch.screens.json';
 const _screenCoveragePath = 'design/screens/screen_coverage.json';
 const _routeInventoryPath = 'tool/ui_capture/route_inventory.json';
 const _topBarRegistryPath = 'tool/design/screen_top_bar_contracts.json';
 const _canonicalScaffoldPath = 'lib/core/widgets/catch_screen_scaffold.dart';
+const _canonicalRouteScaffoldPath =
+    'lib/core/widgets/catch_route_scaffold.dart';
 const _canonicalRootScreenBodyPath =
     'lib/core/widgets/catch_root_screen_body.dart';
+
+const _rootScaffoldExpressions = <String>{
+  'CatchRootScreenScaffold.standard',
+  'CatchRootScreenScaffold.fullBleed',
+  'CatchRootScreenScaffold.withPrimaryRail',
+};
+
+const _rootScrollExpressions = <String>{
+  'CatchRootScreenScrollView.standard',
+  'CatchRootScreenScrollView.fullBleed',
+  'CatchRootScreenScrollView.withPrimaryRail',
+};
+
+const _screenScaffoldExpressions = <String>{
+  'CatchScreenScaffold.standalone',
+  'CatchScreenScaffold.stepFlow',
+  'CatchScreenScaffold.workspace',
+};
+
+const catchRootScreenPageScrollExpressions = <String>{
+  'CatchRootScreenPageScrollView.standard',
+  'CatchRootScreenPageScrollView.fullBleed',
+  'CatchRootScreenPageScrollView.embeddedViewport',
+};
+
+const catchRootScreenBodyExpressions = <String>{
+  'CatchRootScreenBody.single',
+  'CatchRootScreenBody.paged',
+};
+
+const catchRootScreenPageSpecExpressions = <String>{
+  'CatchRootScreenPageSpec.scroll',
+  'CatchRootScreenPageSpec.surface',
+  'CatchRootScreenPageSpec.masterDetail',
+};
+
+/// Closed vocabulary shared with the screen-contract schema.
+///
+/// [test/tool/ui_composition_contracts_test.dart] rejects drift between this
+/// executable analyzer vocabulary and the JSON schema accepted by CI.
+const catchScreenLayoutOwnerExpressions = <String>{
+  ..._rootScaffoldExpressions,
+  ..._rootScrollExpressions,
+  'CatchRouteScaffold',
+  ..._screenScaffoldExpressions,
+};
+
+const _canonicalLayoutConstructorsByPath = <String, Map<String, Set<String>>>{
+  _canonicalScaffoldPath: <String, Set<String>>{
+    'CatchScreenScaffold': _screenScaffoldExpressions,
+    'CatchRootScreenScaffold': _rootScaffoldExpressions,
+    'CatchRootScreenScrollView': _rootScrollExpressions,
+  },
+  _canonicalRootScreenBodyPath: <String, Set<String>>{
+    'CatchRootScreenPageScrollView': catchRootScreenPageScrollExpressions,
+    'CatchRootScreenBody': catchRootScreenBodyExpressions,
+    'CatchRootScreenPageSpec': catchRootScreenPageSpecExpressions,
+  },
+  _canonicalRouteScaffoldPath: <String, Set<String>>{
+    'CatchRouteScaffold': <String>{'CatchRouteScaffold'},
+  },
+};
 
 const _rootPageScrollRoles = <String, String>{
   'CatchRootScreenPageScrollView.standard': 'CatchScreenBodyLayout.standard',
@@ -39,22 +105,13 @@ const _rootScreenRoles = <String, String>{
 };
 
 const _familyExpressions = <String, Set<String>>{
-  'root': <String>{
-    'CatchRootScreenScaffold.standard',
-    'CatchRootScreenScaffold.fullBleed',
-    'CatchRootScreenScaffold.withPrimaryRail',
-    'CatchRootScreenScrollView.standard',
-    'CatchRootScreenScrollView.fullBleed',
-    'CatchRootScreenScrollView.withPrimaryRail',
-  },
+  'root': <String>{..._rootScaffoldExpressions, ..._rootScrollExpressions},
   'pushed-route': <String>{'CatchRouteScaffold'},
   'media-hero': <String>{'CatchScreenScaffold.workspace'},
   'immersive': <String>{'CatchScreenScaffold.workspace'},
   'adaptive-workspace': <String>{
     'CatchScreenScaffold.workspace',
-    'CatchRootScreenScrollView.standard',
-    'CatchRootScreenScrollView.fullBleed',
-    'CatchRootScreenScrollView.withPrimaryRail',
+    ..._rootScrollExpressions,
   },
   'standalone': <String>{'CatchScreenScaffold.standalone'},
   'step-flow': <String>{'CatchScreenScaffold.stepFlow'},
@@ -108,6 +165,7 @@ Future<void> main(List<String> arguments) async {
     productionAnalysis,
   );
   final hardFailures = <String>[];
+  hardFailures.addAll(canonicalLayoutConstructorVocabularyFailures(root: root));
 
   _validateLayoutRegistryCoverage(
     screens,
@@ -243,6 +301,58 @@ Future<void> main(List<String> arguments) async {
   if (!check) {
     stdout.writeln('Run with --check to use this as a blocking gate.');
   }
+}
+
+List<String> canonicalLayoutConstructorVocabularyFailures({
+  required String root,
+}) {
+  final failures = <String>[];
+  for (final pathEntry in _canonicalLayoutConstructorsByPath.entries) {
+    final relativePath = pathEntry.key;
+    final absolutePath = _fromRoot(root, relativePath);
+    final file = File(absolutePath);
+    if (!file.existsSync()) {
+      failures.add(
+        '$screenLayoutConstructorVocabularyCode: missing canonical source $relativePath',
+      );
+      continue;
+    }
+    final unit = parseString(
+      content: file.readAsStringSync(),
+      path: absolutePath,
+      throwIfDiagnostics: false,
+    ).unit;
+    final classes = <String, ClassDeclaration>{
+      for (final declaration in unit.declarations.whereType<ClassDeclaration>())
+        declaration.namePart.typeName.lexeme: declaration,
+    };
+    for (final classEntry in pathEntry.value.entries) {
+      final className = classEntry.key;
+      final declaration = classes[className];
+      if (declaration == null) {
+        failures.add(
+          '$screenLayoutConstructorVocabularyCode: $className is not declared in $relativePath',
+        );
+        continue;
+      }
+      final actual = declaration.body.members
+          .whereType<ConstructorDeclaration>()
+          .map((constructor) => constructor.name?.lexeme)
+          .where((name) => name == null || !name.startsWith('_'))
+          .map((name) => name == null ? className : '$className.$name')
+          .toSet();
+      final expected = classEntry.value;
+      final missing = expected.difference(actual).toList()..sort();
+      final unexpected = actual.difference(expected).toList()..sort();
+      if (missing.isEmpty && unexpected.isEmpty) continue;
+      failures.add(
+        '$screenLayoutConstructorVocabularyCode: $className public constructors in $relativePath drifted'
+        '${missing.isEmpty ? '' : '; missing ${missing.join(', ')}'}'
+        '${unexpected.isEmpty ? '' : '; unregistered ${unexpected.join(', ')}'}',
+      );
+    }
+  }
+  return failures;
 }
 
 List<String> evaluateSourceContract(
@@ -476,17 +586,13 @@ List<String> _evaluateBodyGeometryContract({
 
   if (expression == 'CatchRootScreenScaffold.withPrimaryRail' ||
       expression == 'CatchRootScreenScrollView.withPrimaryRail') {
-    const typedBodySignatures = <String>{
-      'CatchRootScreenBody.single',
-      'CatchRootScreenBody.paged',
-    };
     final typed = instantiations.every((instantiation) {
       final body = instantiation.namedArguments['body'];
       return body != null &&
           terminalExpressionUsesInDeclaration(
             declarationSource: declarationSource,
             expressionSource: body,
-            acceptedSignatures: typedBodySignatures,
+            acceptedSignatures: catchRootScreenBodyExpressions,
           );
     });
     if (!typed) {
@@ -497,11 +603,9 @@ List<String> _evaluateBodyGeometryContract({
     }
     final pageSpecs = reachableInstantiations
         .where(
-          (instantiation) => const <String>{
-            'CatchRootScreenPageSpec.scroll',
-            'CatchRootScreenPageSpec.surface',
-            'CatchRootScreenPageSpec.masterDetail',
-          }.contains(instantiation.signature),
+          (instantiation) => catchRootScreenPageSpecExpressions.contains(
+            instantiation.signature,
+          ),
         )
         .toList();
     String? resolvePageOwnerRole(LayoutOwnerInstantiation spec) {
@@ -1298,11 +1402,7 @@ final class _StandardBodyGeometryTraversal {
       return;
     }
 
-    if (const <String>{
-      'CatchRootScreenPageSpec.scroll',
-      'CatchRootScreenPageSpec.surface',
-      'CatchRootScreenPageSpec.masterDetail',
-    }.contains(signature)) {
+    if (catchRootScreenPageSpecExpressions.contains(signature)) {
       final pageName = signature == 'CatchRootScreenPageSpec.masterDetail'
           ? 'master'
           : 'page';

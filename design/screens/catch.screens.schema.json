@@ -61,6 +61,21 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "layoutExpression": {
+      "description": "Canonical layout expressions understood by the executable UI composition checker.",
+      "enum": [
+        "CatchRootScreenScaffold.standard",
+        "CatchRootScreenScaffold.fullBleed",
+        "CatchRootScreenScaffold.withPrimaryRail",
+        "CatchRootScreenScrollView.standard",
+        "CatchRootScreenScrollView.fullBleed",
+        "CatchRootScreenScrollView.withPrimaryRail",
+        "CatchRouteScaffold",
+        "CatchScreenScaffold.standalone",
+        "CatchScreenScaffold.stepFlow",
+        "CatchScreenScaffold.workspace"
+      ]
+    },
     "layoutContract": {
       "description": "A rendered screen or route declares layout owners; a redirect-only historical screen instead declares canonical alias metadata.",
       "type": "object",
@@ -144,16 +159,7 @@
         },
         "expression": {
           "description": "Allowed canonical layout expression that must occur in the named declaration.",
-          "enum": [
-            "CatchRootScreenScaffold",
-            "CatchRootScreenScaffold.withPrimaryRail",
-            "CatchRootScreenScrollView",
-            "CatchRootScreenScrollView.withPrimaryRail",
-            "CatchRouteScaffold",
-            "CatchScreenScaffold.standalone",
-            "CatchScreenScaffold.stepFlow",
-            "CatchScreenScaffold.workspace"
-          ]
+          "$ref": "#/$defs/layoutExpression"
         },
         "bodyGeometry": {
           "description": "Declared body geometry. Explicit standard/full-bleed owner arguments are checked where the owner API exposes them; mixed, intrinsic, and unrepresented arguments remain review metadata.",
@@ -221,16 +227,7 @@
         },
         "expression": {
           "description": "Allowed canonical layout expression that must occur in the named declaration.",
-          "enum": [
-            "CatchRootScreenScaffold",
-            "CatchRootScreenScaffold.withPrimaryRail",
-            "CatchRootScreenScrollView",
-            "CatchRootScreenScrollView.withPrimaryRail",
-            "CatchRouteScaffold",
-            "CatchScreenScaffold.standalone",
-            "CatchScreenScaffold.stepFlow",
-            "CatchScreenScaffold.workspace"
-          ]
+          "$ref": "#/$defs/layoutExpression"
         },
         "bodyGeometry": {
           "enum": ["standard", "full-bleed", "mixed", "intrinsic"]

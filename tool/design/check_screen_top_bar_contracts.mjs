@@ -23,16 +23,15 @@ const manualHeaderClassPattern =
 const screenChromeClassPattern =
   /\bclass\s+([_$A-Za-z][\w$]*(?:Screen|Scaffold|Header|TopBar|HeaderContent))\b/gu;
 const manualHeaderOwnerPattern =
-  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchRootScreenScaffold|CatchTopBar(?:\.identity)?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))(?:\.withPrimaryRail)?\s*\(/gu;
+  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
 const canonicalRootOwners = new Set([
   "CatchScreenHeaderTitle",
   "CatchScreenHeaderTitle.block",
   "CatchScreenTopBar",
-  "CatchRootScreenScaffold",
-  "CatchRootScreenScaffold.withPrimaryRail",
+  "CatchRootScreenHeader.title",
 ]);
 const topBarActionOwnerPattern =
-  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchRootScreenScaffold|CatchTopBar(?:\.identity)?)(?:\.withPrimaryRail)?\s*\(/gu;
+  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?)\s*\(/gu;
 const directPillActionPattern = /\bCatchButton\s*\(/u;
 const rootTitleStylePattern = /\bCatchTextStyles\.headline[A-Za-z]*\s*\(/gu;
 const rootTextScaleOverridePattern =
@@ -79,8 +78,7 @@ const manualHeaderRoleOwners = new Map([
       "CatchScreenHeaderTitle",
       "CatchScreenHeaderTitle.block",
       "CatchScreenTopBar",
-      "CatchRootScreenScaffold",
-      "CatchRootScreenScaffold.withPrimaryRail",
+      "CatchRootScreenHeader.title",
     ]),
   ],
   ["step-flow", new Set(["CatchStepHeader"])],
