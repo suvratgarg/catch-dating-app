@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -171,10 +172,7 @@ void main() {
                 tooltip: 'Search forms',
               ),
             ),
-            primaryRail: PreferredSize(
-              preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-              child: SizedBox(height: CatchLayout.tabRailHeight),
-            ),
+            primaryRail: _TestPrimaryRail(height: CatchLayout.tabRailHeight),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
                 bodyLayout: CatchScreenBodyLayout.standard,
@@ -224,10 +222,7 @@ void main() {
           theme: AppTheme.light,
           home: const CatchRootScreenScaffold.withPrimaryRail(
             header: CatchRootScreenHeader.title(title: 'Workspace'),
-            primaryRail: PreferredSize(
-              preferredSize: Size.fromHeight(48),
-              child: SizedBox(height: 48),
-            ),
+            primaryRail: _TestPrimaryRail(height: 48),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
                 bodyLayout: CatchScreenBodyLayout.standard,
@@ -267,10 +262,7 @@ void main() {
         theme: AppTheme.light,
         home: const CatchRootScreenScaffold.withPrimaryRail(
           header: CatchRootScreenHeader.title(title: 'Workspace'),
-          primaryRail: PreferredSize(
-            preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-            child: SizedBox(height: CatchLayout.tabRailHeight),
-          ),
+          primaryRail: _TestPrimaryRail(height: CatchLayout.tabRailHeight),
           body: CatchRootScreenBody.single(
             page: CatchRootScreenPageSpec.scroll(
               bodyLayout: CatchScreenBodyLayout.standard,
@@ -298,12 +290,9 @@ Widget _wrap({
     theme: AppTheme.light,
     home: CatchRootScreenScaffold.withPrimaryRail(
       header: const CatchRootScreenHeader.title(title: 'Workspace'),
-      primaryRail: const PreferredSize(
-        preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-        child: SizedBox(
-          key: ValueKey('root-page-rail'),
-          height: CatchLayout.tabRailHeight,
-        ),
+      primaryRail: const _TestPrimaryRail(
+        key: ValueKey('root-page-rail'),
+        height: CatchLayout.tabRailHeight,
       ),
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
@@ -330,6 +319,18 @@ Widget _wrap({
       ),
     ),
   );
+}
+
+class _TestPrimaryRail extends StatelessWidget implements CatchPrimaryRail {
+  const _TestPrimaryRail({super.key, required this.height});
+
+  final double height;
+
+  @override
+  Size get preferredSize => Size.fromHeight(height);
+
+  @override
+  Widget build(BuildContext context) => SizedBox(height: height);
 }
 
 class _FullBleedPageOwner extends StatelessWidget

@@ -224,16 +224,11 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
           onSubmitted: (value) => _applySearch(_view, value),
         ),
       ),
-      primaryRail: PreferredSize(
-        preferredSize: const Size.fromHeight(CatchLayout.tabRailHeight),
-        child: AnimatedBuilder(
-          animation: _tabController.animation!,
-          builder: (context, _) => HostAudienceTabRail(
-            selected: _view,
-            selectionPosition: _tabController.animation!.value + 2,
-            onChanged: (view) => _selectAudienceView(view, selectedClub.id),
-          ),
-        ),
+      primaryRail: HostAudienceTabRail(
+        selected: _view,
+        selectionAnimation: _tabController.animation!,
+        animationOffset: 2,
+        onChanged: (view) => _selectAudienceView(view, selectedClub.id),
       ),
       body: CatchRootScreenBody.paged(
         controller: _tabController,

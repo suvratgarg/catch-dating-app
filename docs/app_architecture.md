@@ -546,7 +546,8 @@ title gap, terminal spacer, or field interaction plane.
 
 `CatchInsets.pageBody` owns the 20 pt horizontal gutter and 24 pt standard body
 start. `CatchInsets.primaryRailTitleBlock` owns the 4 pt title-to-rail handoff;
-`CatchRootScreenScaffold.withPrimaryRail` owns and runtime-enforces the 44 pt pinned rail; and
+`CatchRootScreenScaffold.withPrimaryRail` accepts only the typed `CatchPrimaryRail`
+contract, owns the 44 pt pinned rail, and runtime-enforces its reported extent; and
 `CatchRootScreenPageScrollView` reapplies the same 24 pt standard body start after
 the rail. The semantic-layout and tabbed-scaffold tests pin those numeric
 mappings. The composition checker validates semantic roles rather than the

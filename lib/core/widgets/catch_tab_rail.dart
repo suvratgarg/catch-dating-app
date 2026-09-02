@@ -2,9 +2,16 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:flutter/material.dart';
 
+/// Marker contract for the one pinned peer-control rail owned by a root screen.
+///
+/// Root composition accepts this type instead of any [PreferredSizeWidget], so
+/// an arbitrary app bar, wrapper, or hand-rolled tab bar cannot enter the
+/// pinned rail slot merely by reporting the expected height.
+abstract interface class CatchPrimaryRail implements PreferredSizeWidget {}
+
 /// Segmented tab rail for app-bar bottoms: a [CatchOptionGroup] in the
 /// standard rail shell.
-class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
+class CatchTabRail<T> extends StatelessWidget implements CatchPrimaryRail {
   const CatchTabRail({
     super.key,
     required this.selected,
@@ -86,7 +93,7 @@ class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
 /// This keeps tap selection, horizontal pager interpolation, and the standard
 /// option-group chrome on one shared path for root screens with peer views.
 class CatchTabControllerRail<T> extends StatelessWidget
-    implements PreferredSizeWidget {
+    implements CatchPrimaryRail {
   const CatchTabControllerRail({
     super.key,
     required this.controller,

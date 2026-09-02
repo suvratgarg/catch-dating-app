@@ -9049,6 +9049,7 @@
           "theme.light.color.line"
         ],
         "dartRoles": [
+          "CatchPrimaryRail",
           "CatchOptionGroup",
           "CatchOption",
           "CatchLayout.tabRailHeight"

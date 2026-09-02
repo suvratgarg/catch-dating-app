@@ -364,16 +364,10 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
           textInputAction: TextInputAction.search,
         ),
       ),
-      primaryRail: PreferredSize(
-        preferredSize: const Size.fromHeight(CatchLayout.tabRailHeight),
-        child: AnimatedBuilder(
-          animation: _tabController.animation!,
-          builder: (context, _) => HostAudienceTabRail(
-            selected: _view,
-            selectionPosition: _tabController.animation!.value,
-            onChanged: (view) => _selectAudienceView(view, selectedClub.id),
-          ),
-        ),
+      primaryRail: HostAudienceTabRail(
+        selected: _view,
+        selectionAnimation: _tabController.animation!,
+        onChanged: (view) => _selectAudienceView(view, selectedClub.id),
       ),
       body: CatchRootScreenBody.paged(
         controller: _tabController,

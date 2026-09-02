@@ -20,7 +20,7 @@ import 'package:flutter/material.dart';
 ///
 /// Secondary applied-filter chips are deliberately separate so they scroll
 /// with the feed instead of extending the pinned viewport obstruction.
-class ExploreFilterRail extends StatelessWidget implements PreferredSizeWidget {
+class ExploreFilterRail extends StatelessWidget implements CatchPrimaryRail {
   const ExploreFilterRail({
     super.key,
     this.filters = const ExploreFilterSelection(),

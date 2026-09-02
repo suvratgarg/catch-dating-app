@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldVisibilityScope;
 import 'package:catch_dating_app/core/widgets/catch_root_screen_body.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +17,7 @@ export 'package:catch_dating_app/core/widgets/catch_root_screen_body.dart'
         CatchRootScreenPageScrollController,
         CatchRootScreenPageScrollView,
         CatchRootScreenPageSpec;
+
 /// Safe-area ownership for canonical full-screen composition families.
 enum CatchScreenSafeArea { all, top, none }
 
@@ -241,7 +243,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
   final CatchRootScreenHeader? _primaryRailHeader;
   final CatchScreenBodyLayout? bodyLayout;
   final List<Widget>? slivers;
-  final PreferredSizeWidget? primaryRail;
+  final CatchPrimaryRail? primaryRail;
   final CatchRootScreenBody? body;
   final Key? scrollKey;
   final ScrollController? controller;
@@ -352,7 +354,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
   final CatchRootScreenHeader? _primaryRailHeader;
   final CatchScreenBodyLayout? bodyLayout;
   final List<Widget>? slivers;
-  final PreferredSizeWidget? primaryRail;
+  final CatchPrimaryRail? primaryRail;
   final CatchRootScreenBody? body;
   final Key? scrollKey;
   final ScrollController? controller;

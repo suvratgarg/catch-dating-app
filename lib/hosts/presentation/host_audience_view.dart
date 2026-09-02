@@ -69,17 +69,23 @@ class HostAudienceStateScaffold extends StatelessWidget {
   }
 }
 
-class HostAudienceTabRail extends StatelessWidget
-    implements PreferredSizeWidget {
+class HostAudienceTabRail extends StatelessWidget implements CatchPrimaryRail {
   const HostAudienceTabRail({
     super.key,
     required this.selected,
-    required this.selectionPosition,
     required this.onChanged,
-  });
+    this.selectionPosition,
+    this.selectionAnimation,
+    this.animationOffset = 0,
+  }) : assert(
+         (selectionPosition == null) != (selectionAnimation == null),
+         'Provide exactly one static selection position or animation.',
+       );
 
   final HostAudienceView selected;
-  final double selectionPosition;
+  final double? selectionPosition;
+  final Animation<double>? selectionAnimation;
+  final double animationOffset;
   final ValueChanged<HostAudienceView> onChanged;
 
   @override
@@ -87,30 +93,36 @@ class HostAudienceTabRail extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabRail<HostAudienceView>(
-      groupKey: const ValueKey<String>('host-audience-view-tabs'),
-      selected: selected,
-      selectionPosition: selectionPosition,
-      onChanged: onChanged,
-      scrollable: true,
-      options: [
-        CatchOption(
-          value: HostAudienceView.people,
-          label: context.l10n.hostCustomersViewPeople,
-        ),
-        CatchOption(
-          value: HostAudienceView.audiences,
-          label: context.l10n.hostCustomersViewAudiences,
-        ),
-        CatchOption(
-          value: HostAudienceView.forms,
-          label: context.l10n.hostFormsViewForms,
-        ),
-        CatchOption(
-          value: HostAudienceView.responses,
-          label: context.l10n.hostFormsViewResponses,
-        ),
-      ],
+    final animation =
+        selectionAnimation ??
+        AlwaysStoppedAnimation<double>(selectionPosition!);
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, _) => CatchTabRail<HostAudienceView>(
+        groupKey: const ValueKey<String>('host-audience-view-tabs'),
+        selected: selected,
+        selectionPosition: animation.value + animationOffset,
+        onChanged: onChanged,
+        scrollable: true,
+        options: [
+          CatchOption(
+            value: HostAudienceView.people,
+            label: context.l10n.hostCustomersViewPeople,
+          ),
+          CatchOption(
+            value: HostAudienceView.audiences,
+            label: context.l10n.hostCustomersViewAudiences,
+          ),
+          CatchOption(
+            value: HostAudienceView.forms,
+            label: context.l10n.hostFormsViewForms,
+          ),
+          CatchOption(
+            value: HostAudienceView.responses,
+            label: context.l10n.hostFormsViewResponses,
+          ),
+        ],
+      ),
     );
   }
 }

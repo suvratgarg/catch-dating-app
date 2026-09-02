@@ -590,7 +590,7 @@ class _HostAuthRequiredSliver extends StatelessWidget {
 }
 
 class HostMessagingWorkspaceRail extends StatelessWidget
-    implements PreferredSizeWidget {
+    implements CatchPrimaryRail {
   const HostMessagingWorkspaceRail({
     super.key,
     required this.selected,
