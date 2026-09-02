@@ -83,7 +83,7 @@ class MessageBubble extends StatelessWidget {
                   ),
                 ),
                 child: imageUrl == null && text.isNotEmpty
-                    ? TimestampedMessageText(
+                    ? CatchTimestampedMessageText(
                         text: text,
                         timestamp: timeStr,
                         textStyle: messageStyle,
@@ -102,31 +102,6 @@ class MessageBubble extends StatelessWidget {
           if (isMe) gapW4,
         ],
       ),
-    );
-  }
-}
-
-class TimestampedMessageText extends StatelessWidget {
-  const TimestampedMessageText({
-    super.key,
-    required this.text,
-    required this.timestamp,
-    required this.textStyle,
-    required this.timestampStyle,
-  });
-
-  final String text;
-  final String timestamp;
-  final TextStyle textStyle;
-  final TextStyle timestampStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchTimestampedMessageText(
-      text: text,
-      timestamp: timestamp,
-      textStyle: textStyle,
-      timestampStyle: timestampStyle,
     );
   }
 }
