@@ -1,16 +1,5 @@
 part of 'host_customers_screen.dart';
 
-CatchScreenTopBar _hostSavedAudienceEditorTopBar(
-  BuildContext context,
-  bool scrolledUnder, {
-  required String title,
-}) => CatchScreenTopBar(
-  context: context,
-  title: title,
-  leadingType: CatchTopBarLeading.back,
-  divider: scrolledUnder,
-);
-
 class HostSavedAudienceEditorScreen extends ConsumerWidget {
   const HostSavedAudienceEditorScreen({
     super.key,
@@ -40,12 +29,12 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
       loadingBuilder: (_) =>
           HostLoadingScreen(title: context.l10n.hostSavedAudiencesManage),
       errorBuilder: (_, error, _) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) =>
-            _hostSavedAudienceEditorTopBar(
-              context,
-              scrolledUnder,
-              title: context.l10n.hostSavedAudiencesManage,
-            ),
+        topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+          context: context,
+          title: context.l10n.hostSavedAudiencesManage,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorState.fromError(
@@ -62,12 +51,12 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
             .firstOrNull;
         if (audience == null) {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) =>
-                _hostSavedAudienceEditorTopBar(
-                  context,
-                  scrolledUnder,
-                  title: context.l10n.hostSavedAudiencesManage,
-                ),
+            topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+              context: context,
+              title: context.l10n.hostSavedAudiencesManage,
+              leadingType: CatchTopBarLeading.back,
+              divider: scrolledUnder,
+            ),
             body: SafeArea(
               top: false,
               child: CatchErrorState.fromError(

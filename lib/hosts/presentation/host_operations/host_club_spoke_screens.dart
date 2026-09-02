@@ -1,17 +1,5 @@
 part of '../host_operations_screen.dart';
 
-CatchTopBar _hostClubSpokeTopBar(
-  BuildContext context,
-  bool scrolledUnder, {
-  required String title,
-  String? subtitle,
-}) => CatchTopBar(
-  title: title,
-  subtitle: subtitle,
-  leadingType: CatchTopBarLeading.back,
-  divider: scrolledUnder,
-);
-
 class HostClubEventDefaultsScreen extends StatelessWidget {
   const HostClubEventDefaultsScreen({super.key, required this.clubId});
 
@@ -80,8 +68,11 @@ class HostClubSpokeResolver extends ConsumerWidget {
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     if (uidState.hasError) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) =>
-            _hostClubSpokeTopBar(context, scrolledUnder, title: title),
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: title,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorState.fromError(
@@ -96,8 +87,11 @@ class HostClubSpokeResolver extends ConsumerWidget {
     final uid = uidState.value;
     if (uid == null) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) =>
-            _hostClubSpokeTopBar(context, scrolledUnder, title: title),
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: title,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorBody(
@@ -118,8 +112,11 @@ class HostClubSpokeResolver extends ConsumerWidget {
       onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
       loadingBuilder: (_) => HostLoadingScreen(title: title),
       errorBuilder: (_, error, _) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) =>
-            _hostClubSpokeTopBar(context, scrolledUnder, title: title),
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: title,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorState.fromError(
@@ -133,8 +130,11 @@ class HostClubSpokeResolver extends ConsumerWidget {
         final club = clubs.where((item) => item.id == clubId).firstOrNull;
         if (club == null) {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) =>
-                _hostClubSpokeTopBar(context, scrolledUnder, title: title),
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+              title: title,
+              leadingType: CatchTopBarLeading.back,
+              divider: scrolledUnder,
+            ),
             body: SafeArea(
               top: false,
               child: CatchErrorState.fromError(

@@ -1,14 +1,5 @@
 part of 'edit_hosted_event_screen.dart';
 
-PreferredSizeWidget _editHostedEventRouteTopBar(
-  BuildContext context,
-  bool scrolledUnder,
-) => CatchTopBar(
-  title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
-  leadingType: CatchTopBarLeading.back,
-  divider: scrolledUnder,
-);
-
 class EditHostedEventRouteScreen extends ConsumerWidget {
   const EditHostedEventRouteScreen({
     super.key,
@@ -43,7 +34,11 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
         body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
       ),
       HostEventEditRouteStatus.error => CatchRouteScaffold(
-        topBarBuilder: _editHostedEventRouteTopBar,
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorState.fromError(
@@ -57,7 +52,11 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
         ),
       ),
       HostEventEditRouteStatus.notFound => CatchRouteScaffold(
-        topBarBuilder: _editHostedEventRouteTopBar,
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorBody(
@@ -71,7 +70,11 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
         ),
       ),
       HostEventEditRouteStatus.unauthorized => CatchRouteScaffold(
-        topBarBuilder: _editHostedEventRouteTopBar,
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorBody(

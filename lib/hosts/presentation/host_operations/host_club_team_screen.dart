@@ -1,21 +1,5 @@
 part of '../host_operations_screen.dart';
 
-CatchTopBar _hostClubTeamTopBar(
-  BuildContext context,
-  bool scrolledUnder, {
-  required String title,
-  String? subtitle,
-  Widget? leading,
-  PreferredSizeWidget? bottom,
-}) => CatchTopBar(
-  title: title,
-  subtitle: subtitle,
-  leading: leading,
-  leadingType: CatchTopBarLeading.back,
-  divider: scrolledUnder,
-  bottom: bottom,
-);
-
 class HostClubTeamScreen extends ConsumerStatefulWidget {
   const HostClubTeamScreen({super.key, required this.clubId});
 
@@ -58,8 +42,11 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     if (uidState.hasError) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) =>
-            _hostClubTeamTopBar(context, scrolledUnder, title: routeTitle),
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: routeTitle,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorState.fromError(
@@ -77,8 +64,11 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
     final uid = uidState.value;
     if (uid == null) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) =>
-            _hostClubTeamTopBar(context, scrolledUnder, title: routeTitle),
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: routeTitle,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorBody(
@@ -99,8 +89,11 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
     final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
     if (clubsState.hasError) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) =>
-            _hostClubTeamTopBar(context, scrolledUnder, title: routeTitle),
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: routeTitle,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorState.fromError(
@@ -118,8 +111,11 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
     final club = clubs.where((item) => item.id == widget.clubId).firstOrNull;
     if (club == null) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) =>
-            _hostClubTeamTopBar(context, scrolledUnder, title: routeTitle),
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: routeTitle,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorState.fromError(

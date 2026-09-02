@@ -15,26 +15,6 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-PreferredSizeWidget _hostEventOperatorRouteTopBar(
-  BuildContext context,
-  bool scrolledUnder,
-) => CatchTopBar(
-  title: context.l10n.hostsEventOperatorTitle,
-  divider: scrolledUnder,
-  leadingType: CatchTopBarLeading.back,
-);
-
-PreferredSizeWidget _hostEventOperatorAccessTopBar(
-  BuildContext context,
-  bool scrolledUnder,
-  HostEventOperatorAccess access,
-) => CatchTopBar(
-  title: access.title,
-  subtitle: context.l10n.hostsEventOperatorTitle,
-  divider: scrolledUnder,
-  leadingType: CatchTopBarLeading.back,
-);
-
 class HostEventOperatorScreen extends ConsumerWidget {
   const HostEventOperatorScreen({super.key, required this.eventId});
 
@@ -55,7 +35,11 @@ class HostEventOperatorScreen extends ConsumerWidget {
         body: const SafeArea(child: HostRouteLoadingBody()),
       ),
       errorBuilder: (_, error, _) => CatchRouteScaffold(
-        topBarBuilder: _hostEventOperatorRouteTopBar,
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.hostsEventOperatorTitle,
+          divider: scrolledUnder,
+          leadingType: CatchTopBarLeading.back,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorState.fromError(
@@ -69,8 +53,12 @@ class HostEventOperatorScreen extends ConsumerWidget {
       builder: (context, access) {
         if (access.eventStatus == 'cancelled') {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) =>
-                _hostEventOperatorAccessTopBar(context, scrolledUnder, access),
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+              title: access.title,
+              subtitle: context.l10n.hostsEventOperatorTitle,
+              divider: scrolledUnder,
+              leadingType: CatchTopBarLeading.back,
+            ),
             body: SafeArea(
               top: false,
               child: CatchErrorBody(

@@ -2,15 +2,6 @@ part of 'host_event_manage_screen.dart';
 
 typedef _HostEventManageRouteData = ({String? uid, Club? club, Event? event});
 
-PreferredSizeWidget _hostEventManageRouteTopBar(
-  BuildContext context,
-  bool scrolledUnder,
-) => CatchTopBar(
-  title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-  leadingType: CatchTopBarLeading.back,
-  divider: scrolledUnder,
-);
-
 class HostEventManageRouteScreen extends ConsumerWidget {
   const HostEventManageRouteScreen({
     super.key,
@@ -56,7 +47,11 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         body: const SafeArea(child: HostRouteLoadingBody()),
       ),
       errorBuilder: (_, error, _) => CatchRouteScaffold(
-        topBarBuilder: _hostEventManageRouteTopBar,
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
         body: SafeArea(
           top: false,
           child: CatchErrorState.fromError(
@@ -75,7 +70,12 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         final event = routeData.event;
         if (club == null || event == null) {
           return CatchRouteScaffold(
-            topBarBuilder: _hostEventManageRouteTopBar,
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+              title:
+                  context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
+              leadingType: CatchTopBarLeading.back,
+              divider: scrolledUnder,
+            ),
             body: SafeArea(
               top: false,
               child: CatchErrorBody(
@@ -93,7 +93,12 @@ class HostEventManageRouteScreen extends ConsumerWidget {
 
         if (uid == null || !club.isHostedBy(uid)) {
           return CatchRouteScaffold(
-            topBarBuilder: _hostEventManageRouteTopBar,
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+              title:
+                  context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
+              leadingType: CatchTopBarLeading.back,
+              divider: scrolledUnder,
+            ),
             body: SafeArea(
               top: false,
               child: CatchErrorBody(
