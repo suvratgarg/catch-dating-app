@@ -9,7 +9,7 @@ Act as the organizer command centre: show the live or next event, surface every 
 - Primary route: `hostTodayScreen` (`/host/today`)
 - Target root: `lib/hosts/today`
 - Migration status: implemented as a destination-owned vertical slice
-- Responsibility contract updated: 2026-09-01
+- Responsibility contract updated: 2026-09-02
 
 Current implementation roots:
 

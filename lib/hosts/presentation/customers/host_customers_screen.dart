@@ -24,7 +24,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
@@ -371,10 +370,11 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
           ),
         ),
       ),
-      body: TabBarView(
+      body: CatchTabbedScreenBody.paged(
         controller: _tabController,
-        children: [
-          CatchMasterDetailLayout(
+        pages: [
+          CatchTabbedPageSpec.masterDetail(
+            bodyLayout: CatchScreenBodyLayout.standard,
             expanded: screenSize.isExpanded,
             master: CatchTabbedPageScrollView(
               scrollKey: const PageStorageKey<String>('host-customers-people'),
@@ -508,12 +508,15 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                     embedded: true,
                   ),
           ),
-          HostSavedAudiencesWorkspace(
-            organizerId: selectedClub.id,
-            query: _audienceSearch,
-            onCreate: () => _openAudienceEditor(selectedClub),
-            onOpen: (audience) =>
-                _openAudienceEditor(selectedClub, audience: audience),
+          CatchTabbedPageSpec.scroll(
+            bodyLayout: CatchScreenBodyLayout.standard,
+            page: HostSavedAudiencesWorkspace(
+              organizerId: selectedClub.id,
+              query: _audienceSearch,
+              onCreate: () => _openAudienceEditor(selectedClub),
+              onOpen: (audience) =>
+                  _openAudienceEditor(selectedClub, audience: audience),
+            ),
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 part of 'host_customers_screen.dart';
 
-class HostSavedAudiencesWorkspace extends ConsumerWidget {
+class HostSavedAudiencesWorkspace extends ConsumerWidget
+    implements CatchTabbedPageOwner {
   const HostSavedAudiencesWorkspace({
     super.key,
     required this.organizerId,
@@ -15,11 +16,14 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget {
   final ValueChanged<HostSavedAudience> onOpen;
 
   @override
+  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
+
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final audiences = ref.watch(hostAllSavedAudiencesProvider(organizerId));
     return CatchTabbedPageScrollView(
       scrollKey: const PageStorageKey<String>('host-customers-audiences'),
-      bodyLayout: CatchScreenBodyLayout.standard,
+      bodyLayout: bodyLayout,
       constrainToContentWidth: true,
       onRefresh: () async {
         ref.invalidate(hostSavedAudiencesProvider(organizerId));

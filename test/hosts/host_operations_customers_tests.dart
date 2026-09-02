@@ -203,14 +203,19 @@ void _registerHostOperationsCustomersTests() {
       CatchTabbedScreenScaffold(
         title: 'Customers',
         tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: SizedBox(height: 1),
+          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
+          child: SizedBox(height: CatchLayout.tabRailHeight),
         ),
-        body: HostSavedAudiencesWorkspace(
-          organizerId: organizerId,
-          query: null,
-          onCreate: () {},
-          onOpen: (_) {},
+        body: CatchTabbedScreenBody.single(
+          page: CatchTabbedPageSpec.scroll(
+            bodyLayout: CatchScreenBodyLayout.standard,
+            page: HostSavedAudiencesWorkspace(
+              organizerId: organizerId,
+              query: null,
+              onCreate: () {},
+              onOpen: (_) {},
+            ),
+          ),
         ),
       ),
       overrides: [
@@ -234,14 +239,19 @@ void _registerHostOperationsCustomersTests() {
       CatchTabbedScreenScaffold(
         title: 'Customers',
         tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: SizedBox(height: 1),
+          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
+          child: SizedBox(height: CatchLayout.tabRailHeight),
         ),
-        body: HostSavedAudiencesWorkspace(
-          organizerId: organizerId,
-          query: null,
-          onCreate: () {},
-          onOpen: (_) {},
+        body: CatchTabbedScreenBody.single(
+          page: CatchTabbedPageSpec.scroll(
+            bodyLayout: CatchScreenBodyLayout.standard,
+            page: HostSavedAudiencesWorkspace(
+              organizerId: organizerId,
+              query: null,
+              onCreate: () {},
+              onOpen: (_) {},
+            ),
+          ),
         ),
       ),
       overrides: [
@@ -259,14 +269,19 @@ void _registerHostOperationsCustomersTests() {
       CatchTabbedScreenScaffold(
         title: 'Customers',
         tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: SizedBox(height: 1),
+          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
+          child: SizedBox(height: CatchLayout.tabRailHeight),
         ),
-        body: HostSavedAudiencesWorkspace(
-          organizerId: organizerId,
-          query: null,
-          onCreate: () {},
-          onOpen: (_) {},
+        body: CatchTabbedScreenBody.single(
+          page: CatchTabbedPageSpec.scroll(
+            bodyLayout: CatchScreenBodyLayout.standard,
+            page: HostSavedAudiencesWorkspace(
+              organizerId: organizerId,
+              query: null,
+              onCreate: () {},
+              onOpen: (_) {},
+            ),
+          ),
         ),
       ),
       overrides: [
@@ -739,14 +754,19 @@ void _registerHostOperationsCustomersTests() {
       CatchTabbedScreenScaffold(
         title: 'Customers',
         tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: SizedBox(height: 1),
+          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
+          child: SizedBox(height: CatchLayout.tabRailHeight),
         ),
-        body: HostSavedAudiencesWorkspace(
-          organizerId: organizerId,
-          query: null,
-          onCreate: () {},
-          onOpen: (_) {},
+        body: CatchTabbedScreenBody.single(
+          page: CatchTabbedPageSpec.scroll(
+            bodyLayout: CatchScreenBodyLayout.standard,
+            page: HostSavedAudiencesWorkspace(
+              organizerId: organizerId,
+              query: null,
+              onCreate: () {},
+              onOpen: (_) {},
+            ),
+          ),
         ),
       ),
       overrides: [

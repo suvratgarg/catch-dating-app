@@ -70,9 +70,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
               ),
           ],
         ),
-        body: SafeArea(
-          top: false,
-          bottom: false,
+        body: CatchRouteBody.standard(
           child: CatchAsyncValueView<String?>(
             value: uidAsync,
             errorContext: AppErrorContext.auth,
@@ -86,7 +84,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
                 ),
             builder: (context, uid) {
               if (uid == null) {
-                return const CatchResponsiveSectionPage(
+                return const CatchResponsiveSectionLayout(
                   sections: [
                     CatchResponsiveSectionItem(child: ActivitySignedOutState()),
                   ],
@@ -170,7 +168,7 @@ class ActivityScreenLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchResponsiveSectionPage(
+    return const CatchResponsiveSectionLayout(
       sections: [CatchResponsiveSectionItem(child: ActivitySectionSkeleton())],
     );
   }
@@ -190,7 +188,7 @@ class ActivityScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchResponsiveSectionPage(
+    return CatchResponsiveSectionLayout(
       sections: [
         CatchResponsiveSectionItem(
           child: ActivitySection.fromState(

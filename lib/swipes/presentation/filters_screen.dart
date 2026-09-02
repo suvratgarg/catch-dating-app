@@ -137,48 +137,73 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
               ),
             ],
           ),
-          body: profileAsync.when(
-            loading: () => const FiltersContentSkeleton(),
-            error: (error, _) => CatchErrorState.fromError(
-              error,
-              context: AppErrorContext.profile,
-              onRetry: () => ref.invalidate(watchUserProfileProvider),
-            ),
-            data: (user) {
-              if (user == null) {
-                return CatchStateViewport(
-                  accountForBottomOverlay: false,
-                  child: CatchEmptyState(
-                    icon: CatchIcons.personOffOutlined,
-                    title: context
-                        .l10n
-                        .userProfileProfileScreenTitleProfileNotAvailable,
-                    message: context
-                        .l10n
-                        .userProfileProfileScreenMessageFinishOnboardingOrSign,
-                    action: CatchButton(
-                      label: context.l10n.sharedActionTryAgain,
-                      onPressed: () => ref.invalidate(watchUserProfileProvider),
-                      icon: Icon(CatchIcons.refreshRounded),
-                    ),
+          bottomNavigationBar: profileAsync.isLoading
+              ? CatchBottomDock(
+                  includeSafeArea: false,
+                  padding: CatchInsets.formActionDock,
+                  child: CatchSkeleton.box(
+                    width: double.infinity,
+                    height: CatchLayout.buttonLgHeight,
+                    radius: CatchRadius.pill,
                   ),
+                )
+              : preferencesState == null
+              ? null
+              : CatchBottomDock(
+                  includeSafeArea: false,
+                  padding: CatchInsets.formActionDock,
+                  child: CatchButton(
+                    key: SwipeKeys.applyFiltersButton,
+                    label: context.l10n.swipesFiltersScreenLabelApplyFilters,
+                    onPressed: preferencesState.applyEnabled
+                        ? () => _save(preferencesState)
+                        : null,
+                    isLoading: saving,
+                    fullWidth: true,
+                  ),
+                ),
+          body: CatchRouteBody.standard(
+            child: profileAsync.when(
+              loading: () => const FiltersContentSkeleton._route(),
+              error: (error, _) => CatchErrorState.fromError(
+                error,
+                context: AppErrorContext.profile,
+                onRetry: () => ref.invalidate(watchUserProfileProvider),
+              ),
+              data: (user) {
+                if (user == null) {
+                  return CatchStateViewport(
+                    accountForBottomOverlay: false,
+                    child: CatchEmptyState(
+                      icon: CatchIcons.personOffOutlined,
+                      title: context
+                          .l10n
+                          .userProfileProfileScreenTitleProfileNotAvailable,
+                      message: context
+                          .l10n
+                          .userProfileProfileScreenMessageFinishOnboardingOrSign,
+                      action: CatchButton(
+                        label: context.l10n.sharedActionTryAgain,
+                        onPressed: () =>
+                            ref.invalidate(watchUserProfileProvider),
+                        icon: Icon(CatchIcons.refreshRounded),
+                      ),
+                    ),
+                  );
+                }
+                final state = preferencesState!;
+                return FiltersContent._routeFromState(
+                  state: state.content,
+                  onAgeRangeChanged: (values) =>
+                      setState(() => _draftAgeRange = values),
+                  onGenderToggled: (gender) => setState(() {
+                    final next = {...state.content.interestedIn};
+                    if (!next.add(gender)) next.remove(gender);
+                    _draftInterestedIn = next;
+                  }),
                 );
-              }
-              final state =
-                  _stateFor(user: user, saving: saving) ?? preferencesState!;
-
-              return FiltersContent.fromState(
-                state: state.content,
-                onAgeRangeChanged: (values) =>
-                    setState(() => _draftAgeRange = values),
-                onGenderToggled: (gender) => setState(() {
-                  final next = {...state.content.interestedIn};
-                  if (!next.add(gender)) next.remove(gender);
-                  _draftInterestedIn = next;
-                }),
-                onApply: state.applyEnabled ? () => _save(state) : null,
-              );
-            },
+              },
+            ),
           ),
         ),
       ),
@@ -195,7 +220,7 @@ class FiltersContent extends StatelessWidget {
     required this.onAgeRangeChanged,
     required this.onGenderToggled,
     required this.onApply,
-  });
+  }) : _routeOwned = false;
 
   FiltersContent.fromState({
     super.key,
@@ -205,7 +230,18 @@ class FiltersContent extends StatelessWidget {
     required this.onApply,
   }) : ageRange = state.ageRange,
        interestedIn = state.interestedIn,
-       saving = state.saving;
+       saving = state.saving,
+       _routeOwned = false;
+
+  FiltersContent._routeFromState({
+    required FiltersContentState state,
+    required this.onAgeRangeChanged,
+    required this.onGenderToggled,
+  }) : ageRange = state.ageRange,
+       interestedIn = state.interestedIn,
+       saving = state.saving,
+       onApply = null,
+       _routeOwned = true;
 
   final RangeValues ageRange;
   final Set<Gender> interestedIn;
@@ -213,75 +249,73 @@ class FiltersContent extends StatelessWidget {
   final ValueChanged<RangeValues> onAgeRangeChanged;
   final ValueChanged<Gender> onGenderToggled;
   final VoidCallback? onApply;
+  final bool _routeOwned;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: CatchScreenBody(
-            pb: CatchSpacing.s5,
-            child: CatchResponsiveSectionLayout(
-              sections: [
-                CatchResponsiveSectionItem(
-                  child: FiltersSection(
-                    title: context.l10n.swipesFiltersScreenTitleAge,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        FiltersValue(
-                          value: context.l10n
-                              .swipesFiltersScreenVisiblecopyRoundFormatpreferredmatchage(
-                                round: ageRange.start.round(),
-                                formatPreferredMatchAge:
-                                    formatPreferredMatchAge(
-                                      ageRange.end.round(),
-                                    ),
-                              ),
+    final fields = CatchResponsiveSectionLayout(
+      sections: [
+        CatchResponsiveSectionItem(
+          child: FiltersSection(
+            title: context.l10n.swipesFiltersScreenTitleAge,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FiltersValue(
+                  value: context.l10n
+                      .swipesFiltersScreenVisiblecopyRoundFormatpreferredmatchage(
+                        round: ageRange.start.round(),
+                        formatPreferredMatchAge: formatPreferredMatchAge(
+                          ageRange.end.round(),
                         ),
-                        CatchRangeSlider(
-                          key: SwipeKeys.ageRangeSlider,
-                          minimumContract: CatchContractConstraints
-                              .updateUserProfilePatchMinAgePreference,
-                          maximumContract: CatchContractConstraints
-                              .updateUserProfilePatchMaxAgePreference,
-                          min: minimumProfileAge.toDouble(),
-                          max: preferredMatchAgeOpenEndedDisplayAge.toDouble(),
-                          divisions:
-                              preferredMatchAgeOpenEndedDisplayAge -
-                              minimumProfileAge,
-                          values: ageRange,
-                          onChanged: saving ? null : onAgeRangeChanged,
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
                 ),
-                CatchResponsiveSectionItem(
-                  child: FiltersSection(
-                    title: context.l10n.swipesFiltersScreenTitleInterestedIn,
-                    child: Wrap(
-                      spacing: CatchSpacing.s2,
-                      runSpacing: CatchSpacing.s2,
-                      children: [
-                        for (final gender in Gender.values)
-                          CatchChip.selectable(
-                            key: SwipeKeys.genderFilterChip(gender.name),
-                            contract: CatchContractConstraints
-                                .updateUserProfilePatchInterestedInGenders,
-                            contractValue: gender.name,
-                            label: gender.label,
-                            selected: interestedIn.contains(gender),
-                            onChanged: (_) => onGenderToggled(gender),
-                            enabled: !saving,
-                          ),
-                      ],
-                    ),
-                  ),
+                CatchRangeSlider(
+                  key: SwipeKeys.ageRangeSlider,
+                  minimumContract: CatchContractConstraints
+                      .updateUserProfilePatchMinAgePreference,
+                  maximumContract: CatchContractConstraints
+                      .updateUserProfilePatchMaxAgePreference,
+                  min: minimumProfileAge.toDouble(),
+                  max: preferredMatchAgeOpenEndedDisplayAge.toDouble(),
+                  divisions:
+                      preferredMatchAgeOpenEndedDisplayAge - minimumProfileAge,
+                  values: ageRange,
+                  onChanged: saving ? null : onAgeRangeChanged,
                 ),
               ],
             ),
           ),
+        ),
+        CatchResponsiveSectionItem(
+          child: FiltersSection(
+            title: context.l10n.swipesFiltersScreenTitleInterestedIn,
+            child: Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                for (final gender in Gender.values)
+                  CatchChip.selectable(
+                    key: SwipeKeys.genderFilterChip(gender.name),
+                    contract: CatchContractConstraints
+                        .updateUserProfilePatchInterestedInGenders,
+                    contractValue: gender.name,
+                    label: gender.label,
+                    selected: interestedIn.contains(gender),
+                    onChanged: (_) => onGenderToggled(gender),
+                    enabled: !saving,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+    if (_routeOwned) return fields;
+    return Column(
+      children: [
+        Expanded(
+          child: CatchScreenBody(pb: CatchSpacing.s5, child: fields),
         ),
         CatchBottomDock(
           includeSafeArea: false,
@@ -303,32 +337,35 @@ class FiltersContent extends StatelessWidget {
 }
 
 class FiltersContentSkeleton extends StatelessWidget {
-  const FiltersContentSkeleton({super.key});
+  const FiltersContentSkeleton({super.key}) : _routeOwned = false;
+
+  const FiltersContentSkeleton._route() : _routeOwned = true;
+
+  final bool _routeOwned;
 
   @override
   Widget build(BuildContext context) {
+    final fields = CatchResponsiveSectionLayout(
+      sections: [
+        CatchResponsiveSectionItem(
+          child: FiltersSection(
+            title: context.l10n.swipesFiltersScreenTitleAge,
+            child: const AgeFilterSkeleton(),
+          ),
+        ),
+        CatchResponsiveSectionItem(
+          child: FiltersSection(
+            title: context.l10n.swipesFiltersScreenTitleInterestedIn,
+            child: const CatchSkeletonChips(),
+          ),
+        ),
+      ],
+    );
+    if (_routeOwned) return fields;
     return Column(
       children: [
         Expanded(
-          child: CatchScreenBody(
-            pb: CatchSpacing.s5,
-            child: CatchResponsiveSectionLayout(
-              sections: [
-                CatchResponsiveSectionItem(
-                  child: FiltersSection(
-                    title: context.l10n.swipesFiltersScreenTitleAge,
-                    child: const AgeFilterSkeleton(),
-                  ),
-                ),
-                CatchResponsiveSectionItem(
-                  child: FiltersSection(
-                    title: context.l10n.swipesFiltersScreenTitleInterestedIn,
-                    child: const CatchSkeletonChips(),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          child: CatchScreenBody(pb: CatchSpacing.s5, child: fields),
         ),
         CatchBottomDock(
           includeSafeArea: false,

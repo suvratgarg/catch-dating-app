@@ -130,121 +130,126 @@ class _HostEventRehearsalScreenState
           ),
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
-          bottom: false,
-          child: CatchAsyncValueView<EventRehearsalBootstrap>(
-            value: rehearsalAsync,
-            onRetry: () =>
-                ref.invalidate(eventRehearsalProvider(widget.sessionId)),
-            initialLoadTimeout: null,
-            loadingBuilder: (_) =>
-                const CatchPageBody(child: CatchSkeletonRows(count: 9)),
-            errorBuilder: (_, error, _) => CatchPageBody(
-              child: CatchErrorState.fromError(
-                error,
-                context: AppErrorContext.event,
-                onRetry: () =>
-                    ref.invalidate(eventRehearsalProvider(widget.sessionId)),
+        body: CatchRouteBody.fullBleed(
+          child: SafeArea(
+            top: false,
+            bottom: false,
+            child: CatchAsyncValueView<EventRehearsalBootstrap>(
+              value: rehearsalAsync,
+              onRetry: () =>
+                  ref.invalidate(eventRehearsalProvider(widget.sessionId)),
+              initialLoadTimeout: null,
+              loadingBuilder: (_) =>
+                  const CatchPageBody(child: CatchSkeletonRows(count: 9)),
+              errorBuilder: (_, error, _) => CatchPageBody(
+                child: CatchErrorState.fromError(
+                  error,
+                  context: AppErrorContext.event,
+                  onRetry: () =>
+                      ref.invalidate(eventRehearsalProvider(widget.sessionId)),
+                ),
               ),
-            ),
-            builder: (context, rehearsal) {
-              final runtime = buildEventRehearsalRuntimeProjection(
-                rehearsal,
-                practiceGuestLabel:
-                    context.l10n.hostEventRehearsalPracticeGuest,
-                latePracticeGuestLabel:
-                    context.l10n.hostEventRehearsalLatePracticeGuest,
-              );
-              final coachTask = _buildCoachTask(context, rehearsal);
-              _syncCoachTask(coachTask);
-              return Column(
-                children: [
-                  _RehearsalBand(
-                    session: rehearsal.session,
-                    onOpenClock: () => _showRunControls(rehearsal, busy),
-                    onOpenTools: () => _showPracticeTools(rehearsal, busy),
-                  ),
-                  Expanded(
-                    child: EventSuccessHostPanel(
-                      key: ValueKey(
-                        'rehearsal-runtime-${rehearsal.session.id}',
-                      ),
-                      event: runtime.event,
-                      plan: runtime.plan,
-                      planIsPersisted: true,
-                      spatialLayout: runtime.layout,
-                      spatialLayoutState: EventSuccessSpatialLayoutState.ready(
-                        runtime.layout,
-                      ),
-                      roster: runtime.roster,
-                      assignments: runtime.assignments,
-                      assignmentParticipantProfiles: runtime.profiles,
-                      presenceSummary: runtime.presence,
-                      initialTab: switch (rehearsal.session.status) {
-                        EventRehearsalStatus.draft ||
-                        EventRehearsalStatus.ready => EventSuccessHostTab.setup,
-                        EventRehearsalStatus.running ||
-                        EventRehearsalStatus.paused => EventSuccessHostTab.live,
-                        EventRehearsalStatus.complete ||
-                        EventRehearsalStatus.expired =>
-                          EventSuccessHostTab.report,
-                      },
-                      showTabs: false,
-                      compactLiveControls: true,
-                      initialLiveWorkspace: coachTask.workspace,
-                      initialSpatialSelectionUid: coachTask.actorId,
-                      referenceNow: rehearsal.session.virtualNow,
-                      exclusionReferenceNow: rehearsal.session.virtualNow,
-                      liveActionState: EventSuccessLiveActionState(
-                        isChangingStep: controlMutation.isPending,
-                        isCompleting: controlMutation.isPending,
-                      ),
-                      onOpenGuests: () => _showPracticeTools(rehearsal, busy),
-                      onSetLiveStep: (stepIndex) =>
-                          _setCanonicalLiveStep(rehearsal.session, stepIndex),
-                      onCompleteLiveGuide: (_) => _control(
-                        rehearsal.session,
-                        EventRehearsalControlAction.complete,
-                        null,
-                      ),
-                      onResolveLateArrival: (actorId) => _injectBehavior(
-                        rehearsal.session,
-                        actorId,
-                        EventRehearsalBehavior.arrive,
-                      ),
-                      onPreviewSpatial: (assignment) =>
-                          _previewSpatial(runtime, rehearsal, assignment),
-                      onReassignSpatial: (assignment, unitId, scope) =>
-                          _controlSpatial(
-                            rehearsal.session,
-                            assignment.uid,
-                            EventRehearsalSpatialAction.reassign,
-                            destinationUnitId: unitId,
-                            scope: _rehearsalSpatialScope(scope),
-                          ),
-                      onConfirmSpatial: (assignment) => _controlSpatial(
-                        rehearsal.session,
-                        assignment.uid,
-                        EventRehearsalSpatialAction.confirmPosition,
-                      ),
-                      onReleaseSpatial: (assignment) => _controlSpatial(
-                        rehearsal.session,
-                        assignment.uid,
-                        EventRehearsalSpatialAction.releasePinned,
+              builder: (context, rehearsal) {
+                final runtime = buildEventRehearsalRuntimeProjection(
+                  rehearsal,
+                  practiceGuestLabel:
+                      context.l10n.hostEventRehearsalPracticeGuest,
+                  latePracticeGuestLabel:
+                      context.l10n.hostEventRehearsalLatePracticeGuest,
+                );
+                final coachTask = _buildCoachTask(context, rehearsal);
+                _syncCoachTask(coachTask);
+                return Column(
+                  children: [
+                    _RehearsalBand(
+                      session: rehearsal.session,
+                      onOpenClock: () => _showRunControls(rehearsal, busy),
+                      onOpenTools: () => _showPracticeTools(rehearsal, busy),
+                    ),
+                    Expanded(
+                      child: EventSuccessHostPanel(
+                        key: ValueKey(
+                          'rehearsal-runtime-${rehearsal.session.id}',
+                        ),
+                        event: runtime.event,
+                        plan: runtime.plan,
+                        planIsPersisted: true,
+                        spatialLayout: runtime.layout,
+                        spatialLayoutState:
+                            EventSuccessSpatialLayoutState.ready(
+                              runtime.layout,
+                            ),
+                        roster: runtime.roster,
+                        assignments: runtime.assignments,
+                        assignmentParticipantProfiles: runtime.profiles,
+                        presenceSummary: runtime.presence,
+                        initialTab: switch (rehearsal.session.status) {
+                          EventRehearsalStatus.draft ||
+                          EventRehearsalStatus.ready =>
+                            EventSuccessHostTab.setup,
+                          EventRehearsalStatus.running ||
+                          EventRehearsalStatus.paused =>
+                            EventSuccessHostTab.live,
+                          EventRehearsalStatus.complete ||
+                          EventRehearsalStatus.expired =>
+                            EventSuccessHostTab.report,
+                        },
+                        showTabs: false,
+                        compactLiveControls: true,
+                        initialLiveWorkspace: coachTask.workspace,
+                        initialSpatialSelectionUid: coachTask.actorId,
+                        referenceNow: rehearsal.session.virtualNow,
+                        exclusionReferenceNow: rehearsal.session.virtualNow,
+                        liveActionState: EventSuccessLiveActionState(
+                          isChangingStep: controlMutation.isPending,
+                          isCompleting: controlMutation.isPending,
+                        ),
+                        onOpenGuests: () => _showPracticeTools(rehearsal, busy),
+                        onSetLiveStep: (stepIndex) =>
+                            _setCanonicalLiveStep(rehearsal.session, stepIndex),
+                        onCompleteLiveGuide: (_) => _control(
+                          rehearsal.session,
+                          EventRehearsalControlAction.complete,
+                          null,
+                        ),
+                        onResolveLateArrival: (actorId) => _injectBehavior(
+                          rehearsal.session,
+                          actorId,
+                          EventRehearsalBehavior.arrive,
+                        ),
+                        onPreviewSpatial: (assignment) =>
+                            _previewSpatial(runtime, rehearsal, assignment),
+                        onReassignSpatial: (assignment, unitId, scope) =>
+                            _controlSpatial(
+                              rehearsal.session,
+                              assignment.uid,
+                              EventRehearsalSpatialAction.reassign,
+                              destinationUnitId: unitId,
+                              scope: _rehearsalSpatialScope(scope),
+                            ),
+                        onConfirmSpatial: (assignment) => _controlSpatial(
+                          rehearsal.session,
+                          assignment.uid,
+                          EventRehearsalSpatialAction.confirmPosition,
+                        ),
+                        onReleaseSpatial: (assignment) => _controlSpatial(
+                          rehearsal.session,
+                          assignment.uid,
+                          EventRehearsalSpatialAction.releasePinned,
+                        ),
                       ),
                     ),
-                  ),
-                  _RehearsalCoachDock(
-                    task: coachTask,
-                    collapsed: _coachCollapsed,
-                    onWhy: () => _showCoachWhy(rehearsal),
-                    onToggle: () =>
-                        setState(() => _coachCollapsed = !_coachCollapsed),
-                  ),
-                ],
-              );
-            },
+                    _RehearsalCoachDock(
+                      task: coachTask,
+                      collapsed: _coachCollapsed,
+                      onWhy: () => _showCoachWhy(rehearsal),
+                      onToggle: () =>
+                          setState(() => _coachCollapsed = !_coachCollapsed),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),

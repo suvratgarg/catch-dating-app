@@ -17,37 +17,45 @@ enum CatchScreenSafeArea { all, top, none }
 class CatchScreenScaffold extends StatelessWidget {
   const CatchScreenScaffold.standalone({
     super.key,
+    this.scaffoldKey,
     required this.body,
     this.backgroundColor,
     this.resizeToAvoidBottomInset,
     this.safeArea = CatchScreenSafeArea.all,
+    this.extendBody = false,
   }) : appBar = null,
        bottomNavigationBar = null;
 
   const CatchScreenScaffold.stepFlow({
     super.key,
+    this.scaffoldKey,
     required this.body,
     this.backgroundColor,
     this.resizeToAvoidBottomInset,
     this.safeArea = CatchScreenSafeArea.all,
+    this.extendBody = false,
   }) : appBar = null,
        bottomNavigationBar = null;
 
   const CatchScreenScaffold.workspace({
     super.key,
+    this.scaffoldKey,
     required this.body,
     this.backgroundColor,
     this.resizeToAvoidBottomInset,
     this.appBar,
     this.bottomNavigationBar,
+    this.extendBody = false,
   }) : safeArea = CatchScreenSafeArea.none;
 
+  final Key? scaffoldKey;
   final Widget body;
   final Color? backgroundColor;
   final bool? resizeToAvoidBottomInset;
   final CatchScreenSafeArea safeArea;
   final PreferredSizeWidget? appBar;
   final Widget? bottomNavigationBar;
+  final bool extendBody;
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +65,10 @@ class CatchScreenScaffold extends StatelessWidget {
       CatchScreenSafeArea.none => body,
     };
     return Scaffold(
+      key: scaffoldKey,
       backgroundColor: backgroundColor ?? CatchTokens.of(context).bg,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+      extendBody: extendBody,
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
       body: child,

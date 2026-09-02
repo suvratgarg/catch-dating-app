@@ -73,8 +73,8 @@ class HostClubSpokeResolver extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorState.fromError(
             uidState.error!,
             context: AppErrorContext.auth,
@@ -92,8 +92,8 @@ class HostClubSpokeResolver extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorBody(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
@@ -117,8 +117,8 @@ class HostClubSpokeResolver extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorState.fromError(
             error,
             context: AppErrorContext.club,
@@ -135,8 +135,8 @@ class HostClubSpokeResolver extends ConsumerWidget {
               leadingType: CatchTopBarLeading.back,
               divider: scrolledUnder,
             ),
-            body: SafeArea(
-              top: false,
+            body: CatchRouteBody.standard(
+              scrollable: false,
               child: CatchErrorState.fromError(
                 StateError('Organizer unavailable'),
                 context: AppErrorContext.club,
@@ -175,12 +175,8 @@ class HostClubSpokeScaffold extends StatelessWidget {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: CatchResponsiveSectionPage(
-          sections: [CatchResponsiveSectionItem(child: child)],
-        ),
+      body: CatchRouteBody.standardSections(
+        sections: [CatchResponsiveSectionItem(child: child)],
       ),
     );
   }

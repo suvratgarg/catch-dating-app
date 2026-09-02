@@ -1,6 +1,13 @@
 part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsStateEventsTests() {
+  test('HostRouteLoadingBody delegates page geometry to its parent', () {
+    expect(
+      const HostRouteLoadingBody(padding: EdgeInsets.zero).padding,
+      EdgeInsets.zero,
+    );
+  });
+
   test(
     'HostTeamWorkspaceState uses club fallback while profile is loading',
     () {

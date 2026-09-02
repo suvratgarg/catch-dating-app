@@ -109,7 +109,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       outerScrollController: _outerScrollController,
       semanticsLabel: context.l10n.userProfileProfileScreenLabelProfileTabs,
       semanticsHint: context.l10n.userProfileProfileScreenBodyDragLeftOrRight,
-      body: SelfProfileTabBody(
+      body: _selfProfileTabbedBody(
+        context: context,
         state: screenState,
         controller: _tabController,
         previewScrollController: _previewScrollController,
@@ -128,126 +129,143 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         break;
     }
   }
-}
 
-class SelfProfileTabBody extends StatelessWidget {
-  const SelfProfileTabBody({
-    super.key,
-    required this.state,
-    required this.controller,
-    required this.previewScrollController,
-    required this.onPreviewForwardScroll,
-    required this.onPreviewLeadingOverscroll,
-    this.onRetry,
-  });
-
-  final SelfProfileScreenState state;
-  final TabController controller;
-  final ScrollController previewScrollController;
-  final double Function(double scrollDelta) onPreviewForwardScroll;
-  final ValueChanged<double> onPreviewLeadingOverscroll;
-  final VoidCallback? onRetry;
-
-  @override
-  Widget build(BuildContext context) {
+  CatchTabbedScreenBody _selfProfileTabbedBody({
+    required BuildContext context,
+    required SelfProfileScreenState state,
+    required TabController controller,
+    required ScrollController previewScrollController,
+    required double Function(double scrollDelta) onPreviewForwardScroll,
+    required ValueChanged<double> onPreviewLeadingOverscroll,
+    VoidCallback? onRetry,
+  }) {
     switch (state.status) {
       case SelfProfileRouteStatus.loading:
-        return TabBarView(
+        return CatchTabbedScreenBody.paged(
           controller: controller,
-          children: [
-            const CatchTabbedPageScrollView(
-              scrollKey: PageStorageKey('profile-edit-tab-loading'),
+          pages: [
+            const CatchTabbedPageSpec.scroll(
               bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
-              includeTerminalPadding: false,
-              slivers: [ProfileTabSkeletonSliverBody()],
+              page: CatchTabbedPageScrollView(
+                scrollKey: PageStorageKey('profile-edit-tab-loading'),
+                bodyLayout: CatchScreenBodyLayout.standard,
+                constrainToContentWidth: true,
+                includeTerminalPadding: false,
+                slivers: [ProfileTabSkeletonSliverBody()],
+              ),
             ),
-            CatchTabbedPageScrollView(
-              scrollKey: const PageStorageKey('profile-preview-tab-loading'),
+            CatchTabbedPageSpec.scroll(
               bodyLayout: CatchScreenBodyLayout.fullBleed,
-              includeTerminalPadding: false,
-              slivers: [
-                PreviewTabSkeletonSliverBody(
-                  scrollController: previewScrollController,
-                  onForwardScroll: onPreviewForwardScroll,
-                  onLeadingOverscroll: onPreviewLeadingOverscroll,
-                ),
-              ],
+              page: CatchTabbedPageScrollView(
+                scrollKey: const PageStorageKey('profile-preview-tab-loading'),
+                bodyLayout: CatchScreenBodyLayout.fullBleed,
+                includeTerminalPadding: false,
+                slivers: [
+                  PreviewTabSkeletonSliverBody(
+                    scrollController: previewScrollController,
+                    onForwardScroll: onPreviewForwardScroll,
+                    onLeadingOverscroll: onPreviewLeadingOverscroll,
+                  ),
+                ],
+              ),
             ),
-            const CatchTabbedPageScrollView(
-              scrollKey: PageStorageKey('profile-insights-tab-loading'),
+            const CatchTabbedPageSpec.scroll(
               bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
-              includeTerminalPadding: false,
-              slivers: [ProfileInsightsTabSliverBody()],
+              page: CatchTabbedPageScrollView(
+                scrollKey: PageStorageKey('profile-insights-tab-loading'),
+                bodyLayout: CatchScreenBodyLayout.standard,
+                constrainToContentWidth: true,
+                includeTerminalPadding: false,
+                slivers: [ProfileInsightsTabSliverBody()],
+              ),
             ),
           ],
         );
       case SelfProfileRouteStatus.error:
-        return CatchTabbedPageScrollView(
-          scrollKey: const PageStorageKey('profile-error-tab-scroll'),
-          bodyLayout: CatchScreenBodyLayout.standard,
-          constrainToContentWidth: true,
-          slivers: [
-            CatchSliverErrorState.fromError(
-              state.error!,
-              context: AppErrorContext.profile,
-              onRetry: onRetry,
+        return CatchTabbedScreenBody.single(
+          page: CatchTabbedPageSpec.scroll(
+            bodyLayout: CatchScreenBodyLayout.standard,
+            page: CatchTabbedPageScrollView(
+              scrollKey: const PageStorageKey('profile-error-tab-scroll'),
+              bodyLayout: CatchScreenBodyLayout.standard,
+              constrainToContentWidth: true,
+              slivers: [
+                CatchSliverErrorState.fromError(
+                  state.error!,
+                  context: AppErrorContext.profile,
+                  onRetry: onRetry,
+                ),
+              ],
             ),
-          ],
+          ),
         );
       case SelfProfileRouteStatus.unavailable:
-        return CatchTabbedPageScrollView(
-          scrollKey: const PageStorageKey('profile-unavailable-tab-scroll'),
-          bodyLayout: CatchScreenBodyLayout.standard,
-          constrainToContentWidth: true,
-          slivers: [
-            CatchSliverEmptyState(
-              icon: CatchIcons.personOffOutlined,
-              title:
-                  context.l10n.userProfileProfileScreenTitleProfileNotAvailable,
-              message: context
-                  .l10n
-                  .userProfileProfileScreenMessageFinishOnboardingOrSign,
+        return CatchTabbedScreenBody.single(
+          page: CatchTabbedPageSpec.scroll(
+            bodyLayout: CatchScreenBodyLayout.standard,
+            page: CatchTabbedPageScrollView(
+              scrollKey: const PageStorageKey('profile-unavailable-tab-scroll'),
+              bodyLayout: CatchScreenBodyLayout.standard,
+              constrainToContentWidth: true,
+              slivers: [
+                CatchSliverEmptyState(
+                  icon: CatchIcons.personOffOutlined,
+                  title: context
+                      .l10n
+                      .userProfileProfileScreenTitleProfileNotAvailable,
+                  message: context
+                      .l10n
+                      .userProfileProfileScreenMessageFinishOnboardingOrSign,
+                ),
+              ],
             ),
-          ],
+          ),
         );
       case SelfProfileRouteStatus.ready:
         final user = state.user!;
         final previewProfile = state.previewProfile!;
-        return TabBarView(
+        return CatchTabbedScreenBody.paged(
           controller: controller,
-          children: [
-            CatchTabbedPageScrollView(
-              scrollKey: const PageStorageKey('profile-edit-tab-scroll'),
+          pages: [
+            CatchTabbedPageSpec.scroll(
               bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
-              slivers: [
-                ProfileTabSliverBody(
-                  user: user,
-                  uploadState: state.uploadState,
-                ),
-              ],
+              page: CatchTabbedPageScrollView(
+                scrollKey: const PageStorageKey('profile-edit-tab-scroll'),
+                bodyLayout: CatchScreenBodyLayout.standard,
+                constrainToContentWidth: true,
+                slivers: [
+                  ProfileTabSliverBody(
+                    user: user,
+                    uploadState: state.uploadState,
+                  ),
+                ],
+              ),
             ),
-            CatchTabbedPageScrollView(
-              scrollKey: const PageStorageKey('profile-preview-tab-scroll'),
+            CatchTabbedPageSpec.scroll(
               bodyLayout: CatchScreenBodyLayout.fullBleed,
-              includeTerminalPadding: false,
-              slivers: [
-                PreviewTabSliverBody(
-                  profile: previewProfile,
-                  scrollController: previewScrollController,
-                  onForwardScroll: onPreviewForwardScroll,
-                  onLeadingOverscroll: onPreviewLeadingOverscroll,
-                ),
-              ],
+              page: CatchTabbedPageScrollView(
+                scrollKey: const PageStorageKey('profile-preview-tab-scroll'),
+                bodyLayout: CatchScreenBodyLayout.fullBleed,
+                includeTerminalPadding: false,
+                slivers: [
+                  PreviewTabSliverBody(
+                    profile: previewProfile,
+                    scrollController: previewScrollController,
+                    onForwardScroll: onPreviewForwardScroll,
+                    onLeadingOverscroll: onPreviewLeadingOverscroll,
+                  ),
+                ],
+              ),
             ),
-            const CatchTabbedPageScrollView(
-              scrollKey: PageStorageKey('profile-insights-tab-scroll'),
+            const CatchTabbedPageSpec.scroll(
               bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
-              includeTerminalPadding: false,
-              slivers: [ProfileInsightsTabSliverBody()],
+              page: CatchTabbedPageScrollView(
+                scrollKey: PageStorageKey('profile-insights-tab-scroll'),
+                bodyLayout: CatchScreenBodyLayout.standard,
+                constrainToContentWidth: true,
+                includeTerminalPadding: false,
+                slivers: [ProfileInsightsTabSliverBody()],
+              ),
             ),
           ],
         );

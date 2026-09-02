@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,7 @@ class PaymentConfirmationLoadingScreen extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchScreenScaffold.standalone(
       backgroundColor: t.bg,
-      body: SingleChildScrollView(
-        padding: CatchInsets.pageBody,
+      body: CatchScreenBody(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

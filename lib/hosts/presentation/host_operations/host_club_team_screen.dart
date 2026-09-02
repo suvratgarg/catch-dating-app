@@ -47,8 +47,8 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorState.fromError(
             uidState.error!,
             context: AppErrorContext.auth,
@@ -69,8 +69,8 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorBody(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
@@ -94,8 +94,8 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorState.fromError(
             clubsState.error!,
             context: AppErrorContext.club,
@@ -116,8 +116,8 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorState.fromError(
             StateError('Organizer unavailable'),
             context: AppErrorContext.club,
@@ -171,66 +171,49 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
             ],
           ),
         ),
-        body: TabBarView(
+        body: CatchRouteBody.paged(
           controller: _tabController,
-          children: [
-            SafeArea(
-              top: false,
-              bottom: false,
-              child: ListView(
-                key: const PageStorageKey<String>('host-team-edit-scroll'),
-                padding: CatchInsets.pageBody.copyWith(bottom: 0),
+          pages: [
+            CatchRouteBody.standard(
+              constrainToContentWidth: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: CatchLayout.maxContentWidth,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          HostTeamProfileSection(
-                            state: state.profile,
-                            editMode: actions.editMode,
-                            creatingProfile: actions.creatingProfile,
-                            onRetry: () =>
-                                ref.invalidate(watchHostProfileProvider(uid)),
-                            onCreateProfile: actions.canCreateProfile
-                                ? () => unawaited(_createHostProfile())
-                                : null,
-                            displayNameController: _displayNameController,
-                            roleTitleController: _roleTitleController,
-                            bioController: _bioController,
-                            savingProfile: saveMutation.isPending,
-                            onSaveProfile:
-                                actions.canEditProfile &&
-                                    !saveMutation.isPending
-                                ? _saveProfile
-                                : null,
-                          ),
-                          HostTeamManagementSection(
-                            club: club,
-                            currentUid: uid,
-                            canManage: club.isOwnedBy(uid),
-                          ),
-                          HostTeamHostedClubsSection(
-                            actions: actions,
-                            state: state.clubs,
-                            onRetry: () =>
-                                ref.invalidate(_hostClubsForUserProvider(uid)),
-                            onOpenClub: _openHostedClub,
-                          ),
-                        ],
-                      ),
-                    ),
+                  HostTeamProfileSection(
+                    state: state.profile,
+                    editMode: actions.editMode,
+                    creatingProfile: actions.creatingProfile,
+                    onRetry: () =>
+                        ref.invalidate(watchHostProfileProvider(uid)),
+                    onCreateProfile: actions.canCreateProfile
+                        ? () => unawaited(_createHostProfile())
+                        : null,
+                    displayNameController: _displayNameController,
+                    roleTitleController: _roleTitleController,
+                    bioController: _bioController,
+                    savingProfile: saveMutation.isPending,
+                    onSaveProfile:
+                        actions.canEditProfile && !saveMutation.isPending
+                        ? _saveProfile
+                        : null,
                   ),
-                  const CatchScrollTerminalPadding(),
+                  HostTeamManagementSection(
+                    club: club,
+                    currentUid: uid,
+                    canManage: club.isOwnedBy(uid),
+                  ),
+                  HostTeamHostedClubsSection(
+                    actions: actions,
+                    state: state.clubs,
+                    onRetry: () =>
+                        ref.invalidate(_hostClubsForUserProvider(uid)),
+                    onOpenClub: _openHostedClub,
+                  ),
                 ],
               ),
             ),
-            SafeArea(
-              top: false,
-              bottom: false,
+            CatchRouteBody.standard(
+              constrainToContentWidth: true,
               child: HostTeamProfessionalProfilePreview(
                 state: state.profile,
                 clubs: clubs,
@@ -353,9 +336,9 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      HostTeamProfileLoading() => ListView(
-        padding: CatchInsets.pageBody,
-        children: const [CatchSkeletonRows(count: 4, divided: true)],
+      HostTeamProfileLoading() => const CatchSkeletonRows(
+        count: 4,
+        divided: true,
       ),
       HostTeamProfileError(:final error) => CatchErrorState.fromError(
         error,
@@ -391,86 +374,67 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
     final roleTitle = profile.roleTitle?.trim();
     final bio = profile.bio?.trim();
 
-    return ListView(
+    return Column(
       key: const ValueKey<String>('host-team-professional-profile-preview'),
-      padding: CatchInsets.pageBody.copyWith(bottom: 0),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: CatchLayout.maxContentWidth,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CatchSurface(
-                  borderColor: t.line,
-                  padding: CatchInsets.cardContent,
-                  child: Column(
-                    children: [
-                      CatchPersonAvatar(
-                        size: CatchSpacing.s16,
-                        name: profile.displayName,
-                        imageUrl: profile.avatarUrl,
-                        borderWidth: CatchStroke.avatarRing,
-                        borderColor: t.primarySoft,
-                      ),
-                      gapH16,
-                      Text(
-                        profile.displayName,
-                        textAlign: TextAlign.center,
-                        style: CatchTextStyles.headlineS(context),
-                      ),
-                      if (roleTitle?.isNotEmpty == true) ...[
-                        gapH8,
-                        Text(
-                          roleTitle!,
-                          textAlign: TextAlign.center,
-                          style: CatchTextStyles.fieldRowTitle(
-                            context,
-                            color: t.ink2,
-                          ),
-                        ),
-                      ],
-                      gapH12,
-                      CatchBadge.functional(
-                        label: hostProfileStatusLabel(
-                          profile.status,
-                          context.l10n,
-                        ),
-                        tone: profile.isActive
-                            ? CatchBadgeTone.success
-                            : CatchBadgeTone.neutral,
-                      ),
-                      if (bio?.isNotEmpty == true) ...[
-                        gapH16,
-                        Text(
-                          bio!,
-                          textAlign: TextAlign.center,
-                          style: CatchTextStyles.proseM(context, color: t.ink2),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                CatchSection.fieldRows(
-                  title: context.l10n.hostsHostClubTeamScreenTitleClubsYouHost,
-                  children: [
-                    for (final club in hostedClubs)
-                      CatchField.read(
-                        title: club.name,
-                        valueText: club.isOwnedBy(profile.uid)
-                            ? context.l10n.clubsClubHostRoleOwner
-                            : context.l10n.clubsClubHostRoleHost,
-                        icon: CatchIcons.groupOutlined,
-                      ),
-                  ],
+        CatchSurface(
+          borderColor: t.line,
+          padding: CatchInsets.cardContent,
+          child: Column(
+            children: [
+              CatchPersonAvatar(
+                size: CatchSpacing.s16,
+                name: profile.displayName,
+                imageUrl: profile.avatarUrl,
+                borderWidth: CatchStroke.avatarRing,
+                borderColor: t.primarySoft,
+              ),
+              gapH16,
+              Text(
+                profile.displayName,
+                textAlign: TextAlign.center,
+                style: CatchTextStyles.headlineS(context),
+              ),
+              if (roleTitle?.isNotEmpty == true) ...[
+                gapH8,
+                Text(
+                  roleTitle!,
+                  textAlign: TextAlign.center,
+                  style: CatchTextStyles.fieldRowTitle(context, color: t.ink2),
                 ),
               ],
-            ),
+              gapH12,
+              CatchBadge.functional(
+                label: hostProfileStatusLabel(profile.status, context.l10n),
+                tone: profile.isActive
+                    ? CatchBadgeTone.success
+                    : CatchBadgeTone.neutral,
+              ),
+              if (bio?.isNotEmpty == true) ...[
+                gapH16,
+                Text(
+                  bio!,
+                  textAlign: TextAlign.center,
+                  style: CatchTextStyles.proseM(context, color: t.ink2),
+                ),
+              ],
+            ],
           ),
         ),
-        const CatchScrollTerminalPadding(),
+        CatchSection.fieldRows(
+          title: context.l10n.hostsHostClubTeamScreenTitleClubsYouHost,
+          children: [
+            for (final club in hostedClubs)
+              CatchField.read(
+                title: club.name,
+                valueText: club.isOwnedBy(profile.uid)
+                    ? context.l10n.clubsClubHostRoleOwner
+                    : context.l10n.clubsClubHostRoleHost,
+                icon: CatchIcons.groupOutlined,
+              ),
+          ],
+        ),
       ],
     );
   }

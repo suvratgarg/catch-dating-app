@@ -172,15 +172,17 @@ class PublicProfileScreen extends ConsumerWidget {
                 ),
             ],
           ),
-          body: PublicProfileScreenBody(
-            state: screenState,
-            onRetry:
-                screenState.retryIntent ==
-                    PublicProfileRetryIntent.reloadProfile
-                ? () => ref.invalidate(
-                    watchPublicProfileProvider(screenState.uid),
-                  )
-                : null,
+          body: CatchRouteBody.fullBleed(
+            child: PublicProfileScreenBody(
+              state: screenState,
+              onRetry:
+                  screenState.retryIntent ==
+                      PublicProfileRetryIntent.reloadProfile
+                  ? () => ref.invalidate(
+                      watchPublicProfileProvider(screenState.uid),
+                    )
+                  : null,
+            ),
           ),
         ),
       ),

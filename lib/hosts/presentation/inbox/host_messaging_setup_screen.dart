@@ -24,31 +24,26 @@ class HostMessagingSetupScreen extends ConsumerWidget {
         divider: scrolledUnder,
         leadingType: CatchTopBarLeading.back,
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: CatchResponsiveSectionPage(
-          sections: [
-            CatchResponsiveSectionItem(
-              child: club.when(
-                loading: () => const CatchSkeletonRows(),
-                error: (error, _) => CatchErrorState.fromError(
-                  error,
-                  context: AppErrorContext.club,
-                  onRetry: () => ref.invalidate(watchClubProvider(clubId)),
-                ),
-                data: (value) => value == null
-                    ? CatchErrorState.fromError(
-                        StateError('Organizer not found.'),
-                        context: AppErrorContext.club,
-                        onRetry: () =>
-                            ref.invalidate(watchClubProvider(clubId)),
-                      )
-                    : HostWhatsappSetupPane(club: value),
+      body: CatchRouteBody.standardSections(
+        sections: [
+          CatchResponsiveSectionItem(
+            child: club.when(
+              loading: () => const CatchSkeletonRows(),
+              error: (error, _) => CatchErrorState.fromError(
+                error,
+                context: AppErrorContext.club,
+                onRetry: () => ref.invalidate(watchClubProvider(clubId)),
               ),
+              data: (value) => value == null
+                  ? CatchErrorState.fromError(
+                      StateError('Organizer not found.'),
+                      context: AppErrorContext.club,
+                      onRetry: () => ref.invalidate(watchClubProvider(clubId)),
+                    )
+                  : HostWhatsappSetupPane(club: value),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

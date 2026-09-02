@@ -127,7 +127,18 @@ void main() {
               preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
               child: SizedBox(height: CatchLayout.tabRailHeight),
             ),
-            body: SizedBox.shrink(),
+            body: CatchTabbedScreenBody.single(
+              page: CatchTabbedPageSpec.scroll(
+                bodyLayout: CatchScreenBodyLayout.standard,
+                page: CatchTabbedPageScrollView(
+                  scrollKey: PageStorageKey('search-tabbed-page'),
+                  bodyLayout: CatchScreenBodyLayout.standard,
+                  slivers: <Widget>[
+                    SliverToBoxAdapter(child: SizedBox.shrink()),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       );
@@ -169,7 +180,16 @@ void main() {
               preferredSize: Size.fromHeight(48),
               child: SizedBox(height: 48),
             ),
-            body: SizedBox.shrink(),
+            body: CatchTabbedScreenBody.single(
+              page: CatchTabbedPageSpec.scroll(
+                bodyLayout: CatchScreenBodyLayout.standard,
+                page: CatchTabbedPageScrollView(
+                  scrollKey: PageStorageKey('invalid-rail-tabbed-page'),
+                  bodyLayout: CatchScreenBodyLayout.standard,
+                  slivers: <Widget>[],
+                ),
+              ),
+            ),
           ),
         ),
       );
@@ -190,6 +210,35 @@ void main() {
       );
     },
   );
+
+  testWidgets('CatchTabbedPageSpec rejects a page-owner role mismatch', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const CatchTabbedScreenScaffold(
+          title: 'Workspace',
+          tabRail: PreferredSize(
+            preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
+            child: SizedBox(height: CatchLayout.tabRailHeight),
+          ),
+          body: CatchTabbedScreenBody.single(
+            page: CatchTabbedPageSpec.scroll(
+              bodyLayout: CatchScreenBodyLayout.standard,
+              page: _FullBleedPageOwner(),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final error = tester.takeException();
+    expect(error, isA<FlutterError>());
+    expect(error.toString(), contains('disagree on body geometry'));
+    expect(error.toString(), contains('CatchScreenBodyLayout.fullBleed'));
+    expect(error.toString(), contains('CatchScreenBodyLayout.standard'));
+  });
 }
 
 Widget _wrap({
@@ -207,24 +256,40 @@ Widget _wrap({
           height: CatchLayout.tabRailHeight,
         ),
       ),
-      body: CatchTabbedPageScrollView(
-        scrollKey: const PageStorageKey<String>('tabbed-page-test'),
-        bodyLayout: bodyLayout,
-        constrainToContentWidth: constrainToContentWidth,
-        slivers: const [
-          SliverToBoxAdapter(
-            child: SizedBox(
-              key: ValueKey('tabbed-page-frame'),
-              width: double.infinity,
-              height: 80,
-              child: SizedBox(
-                key: ValueKey('tabbed-page-content'),
-                width: double.infinity,
+      body: CatchTabbedScreenBody.single(
+        page: CatchTabbedPageSpec.scroll(
+          bodyLayout: bodyLayout,
+          page: CatchTabbedPageScrollView(
+            scrollKey: const PageStorageKey<String>('tabbed-page-test'),
+            bodyLayout: bodyLayout,
+            constrainToContentWidth: constrainToContentWidth,
+            slivers: const [
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  key: ValueKey('tabbed-page-frame'),
+                  width: double.infinity,
+                  height: 80,
+                  child: SizedBox(
+                    key: ValueKey('tabbed-page-content'),
+                    width: double.infinity,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     ),
   );
+}
+
+class _FullBleedPageOwner extends StatelessWidget
+    implements CatchTabbedPageOwner {
+  const _FullBleedPageOwner();
+
+  @override
+  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.fullBleed;
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }

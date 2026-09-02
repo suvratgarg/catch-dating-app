@@ -9830,26 +9830,32 @@ class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
           CatchOption(value: 'preview', label: 'Preview'),
         ],
       ),
-      body: TabBarView(
+      body: CatchTabbedScreenBody.paged(
         controller: _controller,
-        children: const [
-          CatchTabbedPageScrollView(
-            scrollKey: PageStorageKey<String>('contract-tab-edit'),
+        pages: const [
+          CatchTabbedPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
-            slivers: [
-              SliverToBoxAdapter(
-                child: Text('Edit owns this scroll position.'),
-              ),
-            ],
+            page: CatchTabbedPageScrollView(
+              scrollKey: PageStorageKey<String>('contract-tab-edit'),
+              bodyLayout: CatchScreenBodyLayout.standard,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Text('Edit owns this scroll position.'),
+                ),
+              ],
+            ),
           ),
-          CatchTabbedPageScrollView(
-            scrollKey: PageStorageKey<String>('contract-tab-preview'),
+          CatchTabbedPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
-            slivers: [
-              SliverToBoxAdapter(
-                child: Text('Preview owns a separate scroll position.'),
-              ),
-            ],
+            page: CatchTabbedPageScrollView(
+              scrollKey: PageStorageKey<String>('contract-tab-preview'),
+              bodyLayout: CatchScreenBodyLayout.standard,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Text('Preview owns a separate scroll position.'),
+                ),
+              ],
+            ),
           ),
         ],
       ),

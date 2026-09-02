@@ -88,7 +88,6 @@ export 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_l
 export 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
 
 part 'host_operations/host_clubs_screen.dart';
-part 'host_operations/host_auth_required_screen.dart';
 part 'host_operations/host_loading_screen.dart';
 part 'host_operations/host_clubs_scaffold.dart';
 part 'host_operations/host_organizer.dart';

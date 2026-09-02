@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:flutter/material.dart';
@@ -110,6 +111,78 @@ void main() {
       ),
     );
     expect(find.byType(SafeArea), findsNothing);
+  });
+
+  testWidgets('pushed route standard body owns exact 20 by 24 geometry', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(400, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: CatchRouteScaffold(
+          topBarBuilder: (_, _) => const PreferredSize(
+            preferredSize: Size.fromHeight(56),
+            child: SizedBox(key: ValueKey('route-top-bar'), height: 56),
+          ),
+          body: const CatchRouteBody.standard(
+            child: SizedBox(
+              key: ValueKey('route-standard-content'),
+              width: double.infinity,
+              height: 40,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final topBar = tester.getRect(find.byKey(const ValueKey('route-top-bar')));
+    final body = tester.getRect(
+      find.byKey(const ValueKey('route-standard-content')),
+    );
+    expect(body.top - topBar.bottom, CatchInsets.pageBody.top);
+    expect(body.left, CatchInsets.pageBody.left);
+    expect(body.width, 400 - CatchInsets.pageBody.horizontal);
+  });
+
+  testWidgets('pushed route full bleed delegates no page inset', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(400, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: CatchRouteScaffold(
+          topBarBuilder: (_, _) => const PreferredSize(
+            preferredSize: Size.fromHeight(56),
+            child: SizedBox(key: ValueKey('route-top-bar'), height: 56),
+          ),
+          body: const CatchRouteBody.fullBleed(
+            child: SizedBox(
+              key: ValueKey('route-full-bleed-content'),
+              width: double.infinity,
+              height: 40,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final topBar = tester.getRect(find.byKey(const ValueKey('route-top-bar')));
+    final body = tester.getRect(
+      find.byKey(const ValueKey('route-full-bleed-content')),
+    );
+    expect(body.top, topBar.bottom);
+    expect(body.left, 0);
+    expect(body.width, 400);
   });
 }
 

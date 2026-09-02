@@ -35,8 +35,8 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorState.fromError(
             error,
             context: AppErrorContext.customers,
@@ -57,8 +57,8 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
               leadingType: CatchTopBarLeading.back,
               divider: scrolledUnder,
             ),
-            body: SafeArea(
-              top: false,
+            body: CatchRouteBody.standard(
+              scrollable: false,
               child: CatchErrorState.fromError(
                 StateError(context.l10n.hostSavedAudienceNotFound),
                 context: AppErrorContext.customers,
@@ -151,12 +151,10 @@ class _HostSavedAudienceEditorFormState
           isLoading: _busy,
           onPressed: _busy ? null : _save,
         ),
-        body: SafeArea(
-          top: false,
-          bottom: false,
+        body: CatchRouteBody.standard(
           child: Form(
             key: _formKey,
-            child: CatchResponsiveSectionPage(
+            child: CatchResponsiveSectionLayout(
               sections: [
                 CatchResponsiveSectionItem(
                   child: CatchSection.plain(

@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -74,13 +73,16 @@ class ReviewsHistoryScreen extends ConsumerWidget {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: ReviewsHistoryBody(
-        state: state,
-        onRetryProfile: onRetryProfile,
-        onRetryReviews: onRetryReviews,
-        onEditReview: state is ReviewsHistoryContent
-            ? (row) => _showEditReviewSheet(context, state, row)
-            : null,
+      body: CatchRouteBody.standard(
+        constrainToContentWidth: true,
+        child: ReviewsHistoryBody(
+          state: state,
+          onRetryProfile: onRetryProfile,
+          onRetryReviews: onRetryReviews,
+          onEditReview: state is ReviewsHistoryContent
+              ? (row) => _showEditReviewSheet(context, state, row)
+              : null,
+        ),
       ),
     );
   }
@@ -104,14 +106,11 @@ class ReviewsHistoryBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (state) {
       ReviewsHistoryLoading() => const ReviewsHistorySkeleton(),
-      ReviewsHistoryEmpty(:final title, :final message) => CatchScreenBody(
-        scrollable: false,
-        child: Center(
-          child: CatchEmptyState(
-            icon: CatchIcons.rateReviewOutlined,
-            title: title,
-            message: message,
-          ),
+      ReviewsHistoryEmpty(:final title, :final message) => Center(
+        child: CatchEmptyState(
+          icon: CatchIcons.rateReviewOutlined,
+          title: title,
+          message: message,
         ),
       ),
       ReviewsHistoryError(:final title, :final message, :final retryTarget) =>
@@ -143,12 +142,14 @@ class ReviewsHistoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: CatchInsets.pageBodyRelaxed,
-      itemCount: rows.length,
-      separatorBuilder: (_, _) => gapH14,
-      itemBuilder: (context, index) =>
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var index = 0; index < rows.length; index++) ...[
           ReviewHistoryItem(row: rows[index], onEditReview: onEditReview),
+          if (index < rows.length - 1) gapH14,
+        ],
+      ],
     );
   }
 }
@@ -192,11 +193,14 @@ class ReviewsHistorySkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: CatchInsets.pageBodyRelaxed,
-      itemCount: 4,
-      separatorBuilder: (_, _) => gapH14,
-      itemBuilder: (context, _) => const ReviewHistoryItemSkeleton(),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var index = 0; index < 4; index++) ...[
+          const ReviewHistoryItemSkeleton(),
+          if (index < 3) gapH14,
+        ],
+      ],
     );
   }
 }

@@ -5,35 +5,18 @@ void _registerProfileShellLayoutTests() {
     'Profile terminal empty and error branches use shell-aware placement',
     (tester) async {
       Future<void> pumpState(SelfProfileScreenState state) async {
-        final previewScrollController = ScrollController();
-        addTearDown(previewScrollController.dispose);
         await tester.pumpWidget(
           ProviderScope(
+            overrides: [
+              selfProfileScreenStateProvider.overrideWithValue(state),
+            ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: AppShellActiveTab(
+              home: const AppShellActiveTab(
                 index: appShellProfileTabIndex,
                 bottomBarPlacement: AppShellBottomBarPlacement.floating,
                 bottomOverlayInset: _profileBottomOverlayInset,
-                child: DefaultTabController(
-                  length: 3,
-                  child: Builder(
-                    builder: (context) {
-                      final controller = DefaultTabController.of(context);
-                      return CatchTabbedScreenScaffold(
-                        title: 'Your profile',
-                        tabRail: ProfileTabBar(controller: controller),
-                        body: SelfProfileTabBody(
-                          state: state,
-                          controller: controller,
-                          previewScrollController: previewScrollController,
-                          onPreviewForwardScroll: (delta) => delta,
-                          onPreviewLeadingOverscroll: (_) {},
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                child: ProfileScreen(),
               ),
             ),
           ),

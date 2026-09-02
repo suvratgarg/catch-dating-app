@@ -62,106 +62,108 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
         leadingType: CatchTopBarLeading.close,
         divider: scrolledUnder,
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: CatchGoogleMap(
-              initialCenter: coordinates.isEmpty
-                  ? widget.initialCenter
-                  : coordinates.first,
-              initialZoom: coordinates.isEmpty ? 14 : 15,
-              mapType: widget.enableNetworkTiles
-                  ? CatchMapType.normal
-                  : CatchMapType.none,
-              markers: {
-                for (var index = 0; index < coordinates.length; index++)
-                  CatchMapMarker(
-                    id: 'route-point-$index',
-                    position: coordinates[index],
-                    hue: index == 0
-                        ? CatchMapMarkerHue.green
-                        : index == coordinates.length - 1
-                        ? CatchMapMarkerHue.orange
-                        : CatchMapMarkerHue.azure,
-                    infoTitle: context.l10n.hostsRoutePathBuilderPoint(
-                      index: index + 1,
+      body: CatchRouteBody.fullBleed(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: CatchGoogleMap(
+                initialCenter: coordinates.isEmpty
+                    ? widget.initialCenter
+                    : coordinates.first,
+                initialZoom: coordinates.isEmpty ? 14 : 15,
+                mapType: widget.enableNetworkTiles
+                    ? CatchMapType.normal
+                    : CatchMapType.none,
+                markers: {
+                  for (var index = 0; index < coordinates.length; index++)
+                    CatchMapMarker(
+                      id: 'route-point-$index',
+                      position: coordinates[index],
+                      hue: index == 0
+                          ? CatchMapMarkerHue.green
+                          : index == coordinates.length - 1
+                          ? CatchMapMarkerHue.orange
+                          : CatchMapMarkerHue.azure,
+                      infoTitle: context.l10n.hostsRoutePathBuilderPoint(
+                        index: index + 1,
+                      ),
                     ),
-                  ),
-              },
-              polylines: {
-                if (coordinates.length >= 2)
-                  CatchMapPolyline(
-                    id: 'route-builder-path',
-                    points: coordinates,
-                    color: t.primary,
-                  ),
-              },
-              onTap: _addPoint,
+                },
+                polylines: {
+                  if (coordinates.length >= 2)
+                    CatchMapPolyline(
+                      id: 'route-builder-path',
+                      points: coordinates,
+                      color: t.primary,
+                    ),
+                },
+                onTap: _addPoint,
+              ),
             ),
-          ),
-          Positioned(
-            left: CatchSpacing.s4,
-            right: CatchSpacing.s4,
-            bottom: CatchSpacing.s4,
-            child: SafeArea(
-              top: false,
-              child: CatchSurface(
-                backgroundColor: t.surface,
-                borderColor: t.line,
-                elevation: CatchSurfaceElevation.overlay,
-                padding: CatchInsets.content,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      coordinates.isEmpty
-                          ? context.l10n.hostsRoutePathBuilderEmpty
-                          : context.l10n.hostsRoutePathBuilderCount(
-                              count: coordinates.length,
+            Positioned(
+              left: CatchSpacing.s4,
+              right: CatchSpacing.s4,
+              bottom: CatchSpacing.s4,
+              child: SafeArea(
+                top: false,
+                child: CatchSurface(
+                  backgroundColor: t.surface,
+                  borderColor: t.line,
+                  elevation: CatchSurfaceElevation.overlay,
+                  padding: CatchInsets.content,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        coordinates.isEmpty
+                            ? context.l10n.hostsRoutePathBuilderEmpty
+                            : context.l10n.hostsRoutePathBuilderCount(
+                                count: coordinates.length,
+                              ),
+                        style: CatchTextStyles.supporting(context),
+                      ),
+                      gapH12,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CatchButton(
+                              label: context.l10n.hostsRoutePathBuilderUndo,
+                              variant: CatchButtonVariant.secondary,
+                              onPressed: coordinates.isEmpty
+                                  ? null
+                                  : () => setState(_path.removeLast),
                             ),
-                      style: CatchTextStyles.supporting(context),
-                    ),
-                    gapH12,
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CatchButton(
-                            label: context.l10n.hostsRoutePathBuilderUndo,
-                            variant: CatchButtonVariant.secondary,
-                            onPressed: coordinates.isEmpty
-                                ? null
-                                : () => setState(_path.removeLast),
                           ),
-                        ),
-                        gapW8,
-                        Expanded(
-                          child: CatchButton(
-                            label: context.l10n.hostsRoutePathBuilderClear,
-                            variant: CatchButtonVariant.ghost,
-                            onPressed: coordinates.isEmpty
-                                ? null
-                                : () => setState(_path.clear),
+                          gapW8,
+                          Expanded(
+                            child: CatchButton(
+                              label: context.l10n.hostsRoutePathBuilderClear,
+                              variant: CatchButtonVariant.ghost,
+                              onPressed: coordinates.isEmpty
+                                  ? null
+                                  : () => setState(_path.clear),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    gapH8,
-                    CatchButton(
-                      label: context.l10n.hostsRoutePathBuilderSave,
-                      fullWidth: true,
-                      onPressed: coordinates.length < 2
-                          ? null
-                          : () => Navigator.of(
-                              context,
-                            ).pop(List<RoutePoint>.unmodifiable(_path)),
-                    ),
-                  ],
+                        ],
+                      ),
+                      gapH8,
+                      CatchButton(
+                        label: context.l10n.hostsRoutePathBuilderSave,
+                        fullWidth: true,
+                        onPressed: coordinates.length < 2
+                            ? null
+                            : () => Navigator.of(
+                                context,
+                              ).pop(List<RoutePoint>.unmodifiable(_path)),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

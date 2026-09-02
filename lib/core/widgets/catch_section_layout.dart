@@ -233,8 +233,7 @@ class CatchSliverScreenBody extends StatelessWidget {
     required this.slivers,
     this.constrainToContentWidth = false,
     this.maxContentExtent = CatchLayout.tabbedPageMaxExtent,
-  }) : assert(slivers.length > 0),
-       assert(maxContentExtent > 0);
+  }) : assert(maxContentExtent > 0);
 
   final CatchScreenBodyLayout layout;
   final List<Widget> slivers;
@@ -243,6 +242,10 @@ class CatchSliverScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    assert(
+      slivers.isNotEmpty,
+      'CatchSliverScreenBody requires at least one sliver.',
+    );
     Widget body = SliverMainAxisGroup(slivers: slivers);
     final padding = switch (layout) {
       CatchScreenBodyLayout.standard => CatchInsets.pageBody.copyWith(

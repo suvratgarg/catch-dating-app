@@ -495,20 +495,22 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           ],
           divider: scrolledUnder,
         ),
-        body: HostEventRosterDrawer(
-          open: _rosterOpen,
-          bookedCount: bookedCount,
-          showHandle: false,
-          onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
-          onMessageGuests: () => _openEventMessages(club, event),
-          bodyMaxWidth: screenState.phase == HostEventWorkspacePhase.runtime
-              ? CatchLayout.hostEventLiveWorkspaceMaxContentWidth
-              : CatchLayout.maxContentWidth,
-          body: workspaceBody,
-          roster: ListView(
-            key: const ValueKey<String>('host_event_roster_drawer.scroll'),
-            padding: CatchInsets.pageBody,
-            children: rosterChildren,
+        body: CatchRouteBody.fullBleed(
+          child: HostEventRosterDrawer(
+            open: _rosterOpen,
+            bookedCount: bookedCount,
+            showHandle: false,
+            onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
+            onMessageGuests: () => _openEventMessages(club, event),
+            bodyMaxWidth: screenState.phase == HostEventWorkspacePhase.runtime
+                ? CatchLayout.hostEventLiveWorkspaceMaxContentWidth
+                : CatchLayout.maxContentWidth,
+            body: workspaceBody,
+            roster: ListView(
+              key: const ValueKey<String>('host_event_roster_drawer.scroll'),
+              padding: CatchInsets.pageBody,
+              children: rosterChildren,
+            ),
           ),
         ),
       ),

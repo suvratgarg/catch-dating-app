@@ -130,6 +130,7 @@ class CreateEventSuccessScreen extends StatelessWidget {
       onClose: onDone,
       showCloseButton: false,
       appearance: CatchCelebrationAppearance.paper,
+      surface: CatchCelebrationSurface.stepFlow,
     );
   }
 }

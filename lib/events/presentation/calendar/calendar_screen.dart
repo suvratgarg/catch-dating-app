@@ -174,7 +174,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           ),
         ],
       ),
-      body: SafeArea(bottom: false, child: body),
+      body: CatchRouteBody.fullBleed(
+        child: SafeArea(bottom: false, child: body),
+      ),
     );
   }
 

@@ -70,26 +70,28 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: switch (screenState) {
-        EventRecapLoading() => const EventRecapLoadingBody(),
-        EventRecapError(:final error, :final retryIntent) =>
-          CatchErrorState.fromError(
-            error,
-            context: AppErrorContext.event,
-            onRetry: () => _retry(retryIntent),
+      body: CatchRouteBody.standard(
+        child: switch (screenState) {
+          EventRecapLoading() => const EventRecapLoadingBody(),
+          EventRecapError(:final error, :final retryIntent) =>
+            CatchErrorState.fromError(
+              error,
+              context: AppErrorContext.event,
+              onRetry: () => _retry(retryIntent),
+            ),
+          EventRecapMissingEvent() => CatchErrorState(
+            title: context.l10n.swipesEventRecapScreenTitleEventNotFound,
+            message: context.l10n.swipesEventRecapScreenMessageThisEventIsNo,
+            secondaryAction: const CatchErrorBackAction(),
           ),
-        EventRecapMissingEvent() => CatchErrorState(
-          title: context.l10n.swipesEventRecapScreenTitleEventNotFound,
-          message: context.l10n.swipesEventRecapScreenMessageThisEventIsNo,
-          secondaryAction: const CatchErrorBackAction(),
-        ),
-        EventRecapReady ready => EventRecapReadyBody(
-          state: ready,
-          onToggleVibe: _toggleVibe,
-          onRetryRosterProfiles: _retryRosterProfiles,
-          onOpenCatchesDeck: _openCatchesDeck,
-        ),
-      },
+          EventRecapReady ready => EventRecapReadyBody(
+            state: ready,
+            onToggleVibe: _toggleVibe,
+            onRetryRosterProfiles: _retryRosterProfiles,
+            onOpenCatchesDeck: _openCatchesDeck,
+          ),
+        },
+      ),
     );
   }
 
@@ -156,7 +158,7 @@ class EventRecapReadyBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchResponsiveSectionPage(
+    return CatchResponsiveSectionLayout(
       sections: [
         CatchResponsiveSectionItem(
           child: Column(
@@ -285,7 +287,7 @@ class EventRecapLoadingBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchResponsiveSectionPage(
+    return CatchResponsiveSectionLayout(
       sections: [
         CatchResponsiveSectionItem(
           child: Column(

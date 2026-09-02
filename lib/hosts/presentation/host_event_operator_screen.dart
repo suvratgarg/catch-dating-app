@@ -32,7 +32,10 @@ class HostEventOperatorScreen extends ConsumerWidget {
           divider: scrolledUnder,
           leadingType: CatchTopBarLeading.back,
         ),
-        body: const SafeArea(child: HostRouteLoadingBody()),
+        body: const CatchRouteBody.standard(
+          scrollable: false,
+          child: HostRouteLoadingBody(padding: EdgeInsets.zero),
+        ),
       ),
       errorBuilder: (_, error, _) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
@@ -40,8 +43,8 @@ class HostEventOperatorScreen extends ConsumerWidget {
           divider: scrolledUnder,
           leadingType: CatchTopBarLeading.back,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorState.fromError(
             error,
             context: AppErrorContext.event,
@@ -59,8 +62,8 @@ class HostEventOperatorScreen extends ConsumerWidget {
               divider: scrolledUnder,
               leadingType: CatchTopBarLeading.back,
             ),
-            body: SafeArea(
-              top: false,
+            body: CatchRouteBody.standard(
+              scrollable: false,
               child: CatchErrorBody(
                 title: context.l10n.hostsEventOperatorCancelledTitle,
                 message: context.l10n.hostsEventOperatorCancelledMessage,
@@ -77,57 +80,52 @@ class HostEventOperatorScreen extends ConsumerWidget {
             divider: scrolledUnder,
             leadingType: CatchTopBarLeading.back,
           ),
-          body: SafeArea(
-            top: false,
-            bottom: false,
-            child: CatchResponsiveSectionPage(
-              sections: [
-                CatchResponsiveSectionItem(
-                  child: CatchSection.contained(
-                    title: context.l10n.hostsEventOperatorAccessTitle,
-                    subtitle: context.l10n.hostsEventOperatorAccessSubtitle,
-                    child: Wrap(
-                      spacing: CatchSpacing.s2,
-                      runSpacing: CatchSpacing.s2,
-                      children: [
-                        CatchBadge.functional(
-                          label:
-                              access.actorRole == HostEventOperatorRole.manager
-                              ? context.l10n.hostsEventOperatorRoleManager
-                              : context.l10n.hostsEventOperatorRoleStaff,
-                          tone: CatchBadgeTone.success,
-                        ),
+          body: CatchRouteBody.standardSections(
+            sections: [
+              CatchResponsiveSectionItem(
+                child: CatchSection.contained(
+                  title: context.l10n.hostsEventOperatorAccessTitle,
+                  subtitle: context.l10n.hostsEventOperatorAccessSubtitle,
+                  child: Wrap(
+                    spacing: CatchSpacing.s2,
+                    runSpacing: CatchSpacing.s2,
+                    children: [
+                      CatchBadge.functional(
+                        label: access.actorRole == HostEventOperatorRole.manager
+                            ? context.l10n.hostsEventOperatorRoleManager
+                            : context.l10n.hostsEventOperatorRoleStaff,
+                        tone: CatchBadgeTone.success,
+                      ),
+                      CatchBadge(
+                        label: AppTimeFormatters.dateTime(access.startAt),
+                        icon: CatchIcons.scheduleOutlined,
+                      ),
+                      if (access.grantExpiresAt case final expiresAt?)
                         CatchBadge(
-                          label: AppTimeFormatters.dateTime(access.startAt),
-                          icon: CatchIcons.scheduleOutlined,
-                        ),
-                        if (access.grantExpiresAt case final expiresAt?)
-                          CatchBadge(
-                            label: context.l10n.hostsEventOperatorExpires(
-                              date: AppTimeFormatters.dateTime(expiresAt),
-                            ),
-                            tone: CatchBadgeTone.warning,
+                          label: context.l10n.hostsEventOperatorExpires(
+                            date: AppTimeFormatters.dateTime(expiresAt),
                           ),
-                      ],
-                    ),
+                          tone: CatchBadgeTone.warning,
+                        ),
+                    ],
                   ),
                 ),
-                CatchResponsiveSectionItem(
-                  child: HostOperationalRosterPanel(
-                    eventId: eventId,
-                    organizerId: access.organizerId,
-                    allowAttendanceChanges: access.has(
-                      HostEventOperatorPermission.setAttendance,
-                    ),
-                    allowRuntimeClaimReview: access.has(
-                      HostEventOperatorPermission.reviewRuntimeClaims,
-                    ),
-                    showAudienceInsights:
-                        access.actorRole == HostEventOperatorRole.manager,
+              ),
+              CatchResponsiveSectionItem(
+                child: HostOperationalRosterPanel(
+                  eventId: eventId,
+                  organizerId: access.organizerId,
+                  allowAttendanceChanges: access.has(
+                    HostEventOperatorPermission.setAttendance,
                   ),
+                  allowRuntimeClaimReview: access.has(
+                    HostEventOperatorPermission.reviewRuntimeClaims,
+                  ),
+                  showAudienceInsights:
+                      access.actorRole == HostEventOperatorRole.manager,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

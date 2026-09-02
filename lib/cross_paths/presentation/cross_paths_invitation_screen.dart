@@ -49,21 +49,25 @@ class CrossPathsInvitationScreen extends ConsumerWidget {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: invitationAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => CatchErrorState.fromError(
-          error,
-          context: AppErrorContext.explore,
-          onRetry: () =>
-              ref.invalidate(watchCrossPathsInvitationProvider(invitationId)),
+      body: CatchRouteBody.standard(
+        child: invitationAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.explore,
+            onRetry: () =>
+                ref.invalidate(watchCrossPathsInvitationProvider(invitationId)),
+          ),
+          data: (invitation) => invitation == null
+              ? CatchErrorState(
+                  title:
+                      context.l10n.crossPathsInvitationScreenUnavailableTitle,
+                  message:
+                      context.l10n.crossPathsInvitationScreenUnavailableBody,
+                  secondaryAction: const CatchErrorBackAction(),
+                )
+              : _InvitationDetail(invitation: invitation),
         ),
-        data: (invitation) => invitation == null
-            ? CatchErrorState(
-                title: context.l10n.crossPathsInvitationScreenUnavailableTitle,
-                message: context.l10n.crossPathsInvitationScreenUnavailableBody,
-                secondaryAction: const CatchErrorBackAction(),
-              )
-            : _InvitationDetail(invitation: invitation),
       ),
     );
   }
@@ -159,7 +163,7 @@ class _InvitationDetailBody extends ConsumerWidget {
     );
     final analytics = ref.read(appAnalyticsProvider);
     final photo = profile.primaryPhotoThumbnailUrl;
-    return CatchResponsiveSectionPage(
+    return CatchResponsiveSectionLayout(
       sectionGap: CatchSpacing.s4,
       sections: [
         CatchResponsiveSectionItem(

@@ -31,7 +31,13 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
           title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
           divider: scrolledUnder,
         ),
-        body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
+        body: const CatchRouteBody.standard(
+          scrollable: false,
+          child: HostRouteLoadingBody(
+            showTabRail: true,
+            padding: EdgeInsets.zero,
+          ),
+        ),
       ),
       HostEventEditRouteStatus.error => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
@@ -39,8 +45,8 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorState.fromError(
             state.error!,
             context: AppErrorContext.event,
@@ -57,8 +63,8 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorBody(
             title:
                 context.l10n.hostsEditHostedEventRouteScreenTitleEventNotFound,
@@ -75,8 +81,8 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
+          scrollable: false,
           child: CatchErrorBody(
             title: context
                 .l10n
