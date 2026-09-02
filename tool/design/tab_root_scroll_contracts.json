@@ -299,7 +299,8 @@
           "path": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
           "requires": [
             {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1},
-            {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1}
+            {"text": "implements CatchTabbedPageOwner", "minimumOccurrences": 1},
+            {"text": "get bodyLayout => CatchScreenBodyLayout.standard", "minimumOccurrences": 1}
           ]
         },
         {
@@ -318,7 +319,9 @@
             {"text": "class HostAudienceStateScaffold", "minimumOccurrences": 1},
             {"text": "return CatchTabbedScreenScaffold(", "minimumOccurrences": 1},
             {"text": "tabRail: HostAudienceTabRail(", "minimumOccurrences": 1},
-            {"text": "body: CatchTabbedPageScrollView(", "minimumOccurrences": 1},
+            {"text": "body: CatchTabbedScreenBody.single(", "minimumOccurrences": 1},
+            {"text": "page: CatchTabbedPageSpec.scroll(", "minimumOccurrences": 1},
+            {"text": "page: CatchTabbedPageScrollView(", "minimumOccurrences": 1},
             {"text": "bodyLayout: CatchScreenBodyLayout.standard", "minimumOccurrences": 1}
           ],
           "forbids": [

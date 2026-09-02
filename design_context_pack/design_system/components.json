@@ -13314,9 +13314,10 @@
           },
           {
             "name": "body",
-            "type": "widget",
+            "type": "object",
             "required": true,
-            "dartType": "Widget"
+            "dartType": "CatchTabbedScreenBody",
+            "notes": "Closed single-page or paged body specification. Each entry is a CatchTabbedPageSpec whose primary page implements CatchTabbedPageOwner."
           },
           {
             "name": "eyebrow",
@@ -13390,8 +13391,8 @@
           },
           {
             "name": "body",
-            "kind": "horizontal-tab-pager",
-            "notes": "The route supplies a TabBarView bound to the same controller as the rail."
+            "kind": "typed-screen-body",
+            "notes": "The route supplies CatchTabbedScreenBody.single or CatchTabbedScreenBody.paged. The paged variant owns the TabBarView internally and binds it to the supplied controller."
           }
         ],
         "tokens": [
@@ -13404,6 +13405,9 @@
           "CatchInsets.tabbedScreenTitleBlock",
           "CatchLayout.tabRailHeight",
           "CatchScreenBodyLayout",
+          "CatchTabbedScreenBody",
+          "CatchTabbedPageSpec",
+          "CatchTabbedPageOwner",
           "CatchScreenHeaderTitle.block",
           "CatchSliverHeader",
           "NestedScrollView",
@@ -13472,7 +13476,7 @@
           "catch.tab_rail"
         ],
         "notes": [
-          "The route owns the typed TabController and TabBarView; the shell owns title, pinned rail, overlap, and safe-area composition.",
+          "The route owns the typed TabController and supplies CatchTabbedScreenBody.single or CatchTabbedScreenBody.paged with CatchTabbedPageSpec entries; the closed body builds any TabBarView internally, while the shell owns title, pinned rail, overlap, and safe-area composition.",
           "The shell enforces a 4-point title-to-rail handoff, a 44-point pinned rail, and the standard 24-point rail-to-body content start; feature routes do not restate these values.",
           "Every page uses CatchTabbedPageScrollView with a stable PageStorageKey. Never switch tab children inside one shared vertical ListView.",
           "Feature code retains async state, data policy, route actions, and specialized inner-scroll bridges."
