@@ -21,6 +21,7 @@ import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dar
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -148,7 +149,7 @@ class ClubDetailScreen extends ConsumerWidget {
       }
 
       return wrapMutationListeners(
-        Scaffold(
+        CatchScreenScaffold.workspace(
           body: ClubDetailBody(
             state: bodyState,
             onShareClub: (buttonContext, club) => showClubShareCardSheet(
@@ -189,7 +190,7 @@ class ClubDetailScreen extends ConsumerWidget {
       );
     }
 
-    return Scaffold(
+    return CatchScreenScaffold.workspace(
       body: switch (screenState) {
         HostClubDetailLoading() => const ClubDetailLoadingBody(),
         HostClubDetailError(:final error, :final retryIntent) =>

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/design_fixtures/catches_surface_fixtures.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -44,6 +45,7 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.byType(CatchScreenScaffold), findsOneWidget);
     expect(find.byType(CatchesProfileReviewSkeleton), findsOneWidget);
     expect(find.byType(ProfileSurfaceSkeleton), findsOneWidget);
     expect(find.byType(CatchSkeleton), findsWidgets);

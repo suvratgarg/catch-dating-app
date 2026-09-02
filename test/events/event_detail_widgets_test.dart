@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -82,6 +83,7 @@ void main() {
         ],
       );
 
+      expect(find.byType(CatchScreenScaffold), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
@@ -213,7 +215,7 @@ void main() {
         ],
       );
 
-      expect(find.bySubtype<CatchErrorScaffold>(), findsOneWidget);
+      expect(find.byType(CatchScreenScaffold), findsOneWidget);
       final errorBody = tester.widget<CatchErrorBody>(
         find.byType(CatchErrorBody),
       );

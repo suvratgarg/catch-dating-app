@@ -25,6 +25,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -102,7 +103,7 @@ class CompanionScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final canPop = _companionCanPop(context);
-    return Scaffold(
+    return CatchScreenScaffold.workspace(
       backgroundColor: CatchTokens.of(context).bg,
       appBar: CatchTopBar(
         title: context

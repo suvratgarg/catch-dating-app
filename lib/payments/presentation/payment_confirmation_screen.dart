@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -48,7 +49,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
       value: eventAsync,
       onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
       loadingBuilder: (_) => const PaymentConfirmationLoadingScreen(),
-      errorBuilder: (_, e, _) => Scaffold(
+      errorBuilder: (_, e, _) => CatchScreenScaffold.standalone(
         body: CatchErrorState.fromError(
           e,
           context: AppErrorContext.payments,
@@ -57,7 +58,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
       ),
       builder: (context, event) {
         if (event == null) {
-          return Scaffold(
+          return CatchScreenScaffold.standalone(
             body: CatchErrorState(
               title: context
                   .l10n
@@ -155,7 +156,8 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Scaffold(
+    return CatchScreenScaffold.standalone(
+      safeArea: CatchScreenSafeArea.none,
       backgroundColor: t.bg,
       body: Stack(
         children: [

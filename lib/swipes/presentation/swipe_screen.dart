@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_action.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -127,7 +128,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
       now: widget.now,
     );
 
-    return Scaffold(
+    return CatchScreenScaffold.workspace(
       backgroundColor: t.bg,
       body: switch (state) {
         CatchesEventQueueLoading() => const CatchesProfileReviewSkeleton(),
