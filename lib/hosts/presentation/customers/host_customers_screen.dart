@@ -373,7 +373,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
         controller: _tabController,
         pages: [
           CatchRootScreenPageSpec.masterDetail(
-            bodyLayout: CatchScreenBodyLayout.standard,
             expanded: screenSize.isExpanded,
             master: CatchRootScreenPageScrollView(
               scrollKey: const PageStorageKey<String>('host-customers-people'),
@@ -508,7 +507,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                   ),
           ),
           CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
             page: HostSavedAudiencesWorkspace(
               organizerId: selectedClub.id,
               query: _audienceSearch,

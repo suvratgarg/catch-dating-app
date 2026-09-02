@@ -552,14 +552,14 @@ class ExampleScreen {
   Object build() => CatchRootScreenScaffold.withPrimaryRail(
     body: CatchRootScreenBody.single(
       page: CatchRootScreenPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.fullBleed,
-        page: FullBleedPage(),
+        page: CatchRootScreenPageScrollView(
+          bodyLayout: CatchScreenBodyLayout.fullBleed,
+        ),
       ),
     ),
   );
 
   Object deadPage() => CatchRootScreenPageSpec.scroll(
-    bodyLayout: CatchScreenBodyLayout.standard,
     page: StandardPage(),
   );
 }
@@ -588,7 +588,6 @@ class ExampleScreen {
   Object _body(bool loading) => switch (loading) {
     true => CatchRootScreenBody.single(
       page: CatchRootScreenPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.standard,
         page: CatchRootScreenPageScrollView(
           bodyLayout: CatchScreenBodyLayout.standard,
         ),
@@ -597,7 +596,6 @@ class ExampleScreen {
     false => CatchRootScreenBody.paged(
       pages: [
         CatchRootScreenPageSpec.scroll(
-          bodyLayout: CatchScreenBodyLayout.standard,
           page: CatchRootScreenPageScrollView(
             bodyLayout: CatchScreenBodyLayout.standard,
           ),
@@ -632,7 +630,6 @@ class ExampleScreen {
       ? const LegacyTabbedBody()
       : CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
             page: CatchRootScreenPageScrollView(
               bodyLayout: CatchScreenBodyLayout.standard,
             ),
@@ -711,7 +708,7 @@ class BranchingPageOwner implements CatchRootScreenPageOwner {
     );
   });
 
-  test('rejects an inline root page whose role disagrees with its spec', () {
+  test('derives an inline root page role from the page owner', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',
       owner: <String, Object?>{
@@ -726,7 +723,6 @@ class ExampleScreen {
   Object build() => CatchRootScreenScaffold.withPrimaryRail(
     body: CatchRootScreenBody.single(
       page: CatchRootScreenPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.standard,
         page: CatchRootScreenPageScrollView(
           bodyLayout: CatchScreenBodyLayout.fullBleed,
         ),
@@ -739,7 +735,7 @@ class ExampleScreen {
 
     expect(
       failures,
-      contains(contains('must match its CatchRootScreenPageSpec')),
+      contains(contains('standard root primary-rail bodies must select only')),
     );
   });
 
@@ -758,7 +754,6 @@ class ExampleScreen {
   Object build() => CatchRootScreenScaffold.withPrimaryRail(
     body: CatchRootScreenBody.single(
       page: CatchRootScreenPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.standard,
         page: CatchRootScreenPageScrollView(
           bodyLayout: CatchScreenBodyLayout.standard,
           slivers: [
@@ -802,14 +797,12 @@ class ExampleScreen {
     body: CatchRootScreenBody.paged(
       pages: [
         CatchRootScreenPageSpec.scroll(
-          bodyLayout: CatchScreenBodyLayout.standard,
           page: CatchRootScreenPageScrollView(
             bodyLayout: CatchScreenBodyLayout.standard,
             slivers: [const SliverToBoxAdapter()],
           ),
         ),
         CatchRootScreenPageSpec.scroll(
-          bodyLayout: CatchScreenBodyLayout.fullBleed,
           page: CatchRootScreenPageScrollView(
             bodyLayout: CatchScreenBodyLayout.fullBleed,
             slivers: [
@@ -858,7 +851,7 @@ class SemanticPageOwner implements CatchRootScreenPageOwner {
     );
   });
 
-  test('rejects a semantic root page whose role disagrees with its spec', () {
+  test('derives a semantic root page role from the page owner', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',
       owner: <String, Object?>{
@@ -873,7 +866,6 @@ class ExampleScreen {
   Object build() => CatchRootScreenScaffold.withPrimaryRail(
     body: CatchRootScreenBody.single(
       page: CatchRootScreenPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.fullBleed,
         page: StandardSemanticPage(),
       ),
     ),
@@ -887,7 +879,9 @@ class ExampleScreen {
 
     expect(
       failures,
-      contains(contains('semantic CatchRootScreenPageOwner must match')),
+      contains(
+        contains('full-bleed root primary-rail bodies must select only'),
+      ),
     );
   });
 
@@ -1145,7 +1139,6 @@ class ExampleScreen {
   Object build() => CatchRootScreenScaffold.withPrimaryRail(
     body: CatchRootScreenBody.single(
       page: CatchRootScreenPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.standard,
         page: $pageExpression,
       ),
     ),

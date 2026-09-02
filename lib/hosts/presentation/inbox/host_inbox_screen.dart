@@ -207,7 +207,6 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
         ),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.fullBleed,
             page: CatchRootScreenPageScrollView(
               scrollKey: PageStorageKey<String>(
                 'host-messaging-${_workspace.name}',

@@ -26,63 +26,39 @@ abstract interface class CatchRootScreenPageOwner implements Widget {
 /// geometry owner. Surface decoration and expanded master-detail composition
 /// remain explicit adapters rather than arbitrary page children.
 final class CatchRootScreenPageSpec {
-  const CatchRootScreenPageSpec.scroll({
-    required CatchScreenBodyLayout bodyLayout,
-    required CatchRootScreenPageOwner page,
-  }) : _kind = _CatchRootScreenPageKind.scroll,
-       _bodyLayout = bodyLayout,
-       _page = page,
-       _backgroundColor = null,
-       _expanded = false,
-       _detail = null;
+  const CatchRootScreenPageSpec.scroll({required CatchRootScreenPageOwner page})
+    : _kind = _CatchRootScreenPageKind.scroll,
+      _page = page,
+      _backgroundColor = null,
+      _expanded = false,
+      _detail = null;
 
   const CatchRootScreenPageSpec.surface({
-    required CatchScreenBodyLayout bodyLayout,
     required CatchRootScreenPageOwner page,
     required Color backgroundColor,
   }) : _kind = _CatchRootScreenPageKind.surface,
-       _bodyLayout = bodyLayout,
        _page = page,
        _backgroundColor = backgroundColor,
        _expanded = false,
        _detail = null;
 
   const CatchRootScreenPageSpec.masterDetail({
-    required CatchScreenBodyLayout bodyLayout,
     required bool expanded,
     required CatchRootScreenPageOwner master,
     required Widget detail,
   }) : _kind = _CatchRootScreenPageKind.masterDetail,
-       _bodyLayout = bodyLayout,
        _page = master,
        _backgroundColor = null,
        _expanded = expanded,
        _detail = detail;
 
   final _CatchRootScreenPageKind _kind;
-  final CatchScreenBodyLayout _bodyLayout;
   final CatchRootScreenPageOwner _page;
   final Color? _backgroundColor;
   final bool _expanded;
   final Widget? _detail;
 
   Widget build() {
-    if (_page.bodyLayout != _bodyLayout) {
-      throw FlutterError.fromParts([
-        ErrorSummary(
-          'CatchRootScreenPageSpec and its page owner disagree on body geometry.',
-        ),
-        ErrorDescription(
-          '${_page.runtimeType} declares ${_page.bodyLayout}, while the page '
-          'spec declares $_bodyLayout.',
-        ),
-        ErrorHint(
-          'Use the same explicit CatchScreenBodyLayout on the page spec and '
-          'its CatchRootScreenPageOwner. Semantic wrappers must forward that role '
-          'to CatchRootScreenPageScrollView.',
-        ),
-      ]);
-    }
     return switch (_kind) {
       _CatchRootScreenPageKind.scroll => _page as Widget,
       _CatchRootScreenPageKind.surface => ColoredBox(

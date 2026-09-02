@@ -53,7 +53,6 @@ class HostOrganizerStateScaffold extends StatelessWidget {
       semanticsLabel: context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
-          bodyLayout: CatchScreenBodyLayout.standard,
           page: CatchRootScreenPageScrollView(
             scrollKey: scrollKey,
             bodyLayout: CatchScreenBodyLayout.standard,
@@ -205,7 +204,6 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
           controller: _tabController,
           pages: [
             CatchRootScreenPageSpec.scroll(
-              bodyLayout: CatchScreenBodyLayout.standard,
               page: CatchRootScreenPageScrollView(
                 scrollStateController: _pageScrollControllers[HostClubTab.edit],
                 bodyLayout: CatchScreenBodyLayout.standard,
@@ -233,7 +231,6 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               ),
             ),
             CatchRootScreenPageSpec.scroll(
-              bodyLayout: CatchScreenBodyLayout.standard,
               page: CatchRootScreenPageScrollView(
                 scrollStateController:
                     _pageScrollControllers[HostClubTab.insights],
@@ -258,7 +255,6 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               ),
             ),
             CatchRootScreenPageSpec.surface(
-              bodyLayout: CatchScreenBodyLayout.fullBleed,
               backgroundColor: t.surface,
               page: CatchRootScreenPageScrollView(
                 scrollStateController:

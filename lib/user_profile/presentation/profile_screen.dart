@@ -148,7 +148,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           controller: controller,
           pages: [
             const CatchRootScreenPageSpec.scroll(
-              bodyLayout: CatchScreenBodyLayout.standard,
               page: CatchRootScreenPageScrollView(
                 scrollKey: PageStorageKey('profile-edit-tab-loading'),
                 bodyLayout: CatchScreenBodyLayout.standard,
@@ -158,7 +157,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               ),
             ),
             CatchRootScreenPageSpec.scroll(
-              bodyLayout: CatchScreenBodyLayout.fullBleed,
               page: CatchRootScreenPageScrollView(
                 scrollKey: const PageStorageKey('profile-preview-tab-loading'),
                 bodyLayout: CatchScreenBodyLayout.fullBleed,
@@ -173,7 +171,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               ),
             ),
             const CatchRootScreenPageSpec.scroll(
-              bodyLayout: CatchScreenBodyLayout.standard,
               page: CatchRootScreenPageScrollView(
                 scrollKey: PageStorageKey('profile-insights-tab-loading'),
                 bodyLayout: CatchScreenBodyLayout.standard,
@@ -187,7 +184,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       case SelfProfileRouteStatus.error:
         return CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
             page: CatchRootScreenPageScrollView(
               scrollKey: const PageStorageKey('profile-error-tab-scroll'),
               bodyLayout: CatchScreenBodyLayout.standard,
@@ -205,7 +201,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       case SelfProfileRouteStatus.unavailable:
         return CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
             page: CatchRootScreenPageScrollView(
               scrollKey: const PageStorageKey('profile-unavailable-tab-scroll'),
               bodyLayout: CatchScreenBodyLayout.standard,
@@ -231,7 +226,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           controller: controller,
           pages: [
             CatchRootScreenPageSpec.scroll(
-              bodyLayout: CatchScreenBodyLayout.standard,
               page: CatchRootScreenPageScrollView(
                 scrollKey: const PageStorageKey('profile-edit-tab-scroll'),
                 bodyLayout: CatchScreenBodyLayout.standard,
@@ -245,7 +239,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               ),
             ),
             CatchRootScreenPageSpec.scroll(
-              bodyLayout: CatchScreenBodyLayout.fullBleed,
               page: CatchRootScreenPageScrollView(
                 scrollKey: const PageStorageKey('profile-preview-tab-scroll'),
                 bodyLayout: CatchScreenBodyLayout.fullBleed,
@@ -261,7 +254,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               ),
             ),
             const CatchRootScreenPageSpec.scroll(
-              bodyLayout: CatchScreenBodyLayout.standard,
               page: CatchRootScreenPageScrollView(
                 scrollKey: PageStorageKey('profile-insights-tab-scroll'),
                 bodyLayout: CatchScreenBodyLayout.standard,

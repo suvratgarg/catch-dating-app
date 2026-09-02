@@ -487,67 +487,34 @@ List<String> _evaluateBodyGeometryContract({
           }.contains(instantiation.signature),
         )
         .toList();
-    final roles = pageSpecs
-        .map((spec) => spec.namedArguments['bodyLayout'])
-        .toList();
-    if (pageSpecs.isEmpty || roles.any((role) => role == null)) {
-      failures.add(
-        '$screenLayoutFamilyCode $screenId: every typed root page must declare an explicit bodyLayout role',
-      );
-      return failures;
-    }
-    final inlineRoleMismatch = pageSpecs.any((spec) {
+    String? resolvePageOwnerRole(LayoutOwnerInstantiation spec) {
       final pageArgument =
           spec.signature == 'CatchRootScreenPageSpec.masterDetail'
           ? spec.namedArguments['master']
           : spec.namedArguments['page'];
-      if (pageArgument == null) return true;
+      if (pageArgument == null) return null;
+      final ownerSignature = _rootConstructorSignature(pageArgument);
+      if (ownerSignature != 'CatchRootScreenPageScrollView') {
+        return semanticRootPageOwnerRoles[ownerSignature];
+      }
       final inlineOwners =
           layoutOwnerInstantiations('Object _page() => $pageArgument;').where(
             (instantiation) =>
                 instantiation.signature == 'CatchRootScreenPageScrollView',
           );
-      return inlineOwners.any(
-        (page) =>
-            page.namedArguments['bodyLayout'] !=
-            spec.namedArguments['bodyLayout'],
-      );
-    });
-    if (inlineRoleMismatch) {
-      failures.add(
-        '$screenLayoutFamilyCode $screenId: every inline CatchRootScreenPageScrollView must match its CatchRootScreenPageSpec bodyLayout',
-      );
+      final inlineRoles = inlineOwners
+          .map((owner) => owner.namedArguments['bodyLayout'])
+          .whereType<String>()
+          .toSet();
+      return inlineRoles.length == 1 ? inlineRoles.single : null;
     }
-    final unresolvedPageOwner = pageSpecs.any((spec) {
-      final pageArgument =
-          spec.signature == 'CatchRootScreenPageSpec.masterDetail'
-          ? spec.namedArguments['master']
-          : spec.namedArguments['page'];
-      if (pageArgument == null) return true;
-      final ownerSignature = _rootConstructorSignature(pageArgument);
-      return ownerSignature != 'CatchRootScreenPageScrollView' &&
-          !semanticRootPageOwnerRoles.containsKey(ownerSignature);
-    });
-    if (unresolvedPageOwner) {
+
+    final roles = pageSpecs.map(resolvePageOwnerRole).toList();
+    if (pageSpecs.isEmpty || roles.any((role) => role == null)) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: every typed root page must resolve directly to CatchRootScreenPageScrollView or a known semantic CatchRootScreenPageOwner',
+        '$screenLayoutFamilyCode $screenId: every typed root page must resolve directly to CatchRootScreenPageScrollView or a known semantic CatchRootScreenPageOwner with one explicit bodyLayout role',
       );
-    }
-    final semanticOwnerRoleMismatch = pageSpecs.any((spec) {
-      final pageArgument =
-          spec.signature == 'CatchRootScreenPageSpec.masterDetail'
-          ? spec.namedArguments['master']
-          : spec.namedArguments['page'];
-      if (pageArgument == null) return true;
-      final ownerSignature = _rootConstructorSignature(pageArgument);
-      final ownerRole = semanticRootPageOwnerRoles[ownerSignature];
-      return ownerRole != null &&
-          ownerRole != spec.namedArguments['bodyLayout'];
-    });
-    if (semanticOwnerRoleMismatch) {
-      failures.add(
-        '$screenLayoutFamilyCode $screenId: every semantic CatchRootScreenPageOwner must match its CatchRootScreenPageSpec bodyLayout',
-      );
+      return failures;
     }
     final competingGeometry = terminalStandardBodyGeometryConflicts(
       declarationSource,
@@ -1357,12 +1324,10 @@ final class _StandardBodyGeometryTraversal {
     }
 
     if (const <String>{
-          'CatchRootScreenPageSpec.scroll',
-          'CatchRootScreenPageSpec.surface',
-          'CatchRootScreenPageSpec.masterDetail',
-        }.contains(signature) &&
-        _namedArgumentExpression(arguments, 'bodyLayout')?.toSource() ==
-            'CatchScreenBodyLayout.standard') {
+      'CatchRootScreenPageSpec.scroll',
+      'CatchRootScreenPageSpec.surface',
+      'CatchRootScreenPageSpec.masterDetail',
+    }.contains(signature)) {
       final pageName = signature == 'CatchRootScreenPageSpec.masterDetail'
           ? 'master'
           : 'page';
@@ -1370,7 +1335,9 @@ final class _StandardBodyGeometryTraversal {
       final pageArguments = page == null ? null : _rootArgumentList(page);
       if (pageArguments != null &&
           _rootConstructorSignature(page!.toSource()) ==
-              'CatchRootScreenPageScrollView') {
+              'CatchRootScreenPageScrollView' &&
+          _namedArgumentExpression(pageArguments, 'bodyLayout')?.toSource() ==
+              'CatchScreenBodyLayout.standard') {
         if (_namedArgumentExpression(pageArguments, 'slivers')
             case final slivers?) {
           walk(slivers, withinStandardContent: true);

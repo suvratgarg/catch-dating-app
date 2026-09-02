@@ -596,7 +596,6 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             ),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
-                bodyLayout: CatchScreenBodyLayout.fullBleed,
                 page: CatchRootScreenPageScrollView(
                   scrollKey: ExploreScreenKeys.scrollView,
                   bodyLayout: CatchScreenBodyLayout.fullBleed,

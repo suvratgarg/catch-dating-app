@@ -49,7 +49,6 @@ class HostAudienceStateScaffold extends StatelessWidget {
       ),
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
-          bodyLayout: CatchScreenBodyLayout.standard,
           page: CatchRootScreenPageScrollView(
             scrollKey: scrollKey,
             bodyLayout: CatchScreenBodyLayout.standard,

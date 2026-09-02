@@ -175,7 +175,6 @@ void main() {
             primaryRail: _TestPrimaryRail(height: CatchLayout.tabRailHeight),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
-                bodyLayout: CatchScreenBodyLayout.standard,
                 page: CatchRootScreenPageScrollView(
                   scrollKey: PageStorageKey('search-root-page'),
                   bodyLayout: CatchScreenBodyLayout.standard,
@@ -225,7 +224,6 @@ void main() {
             primaryRail: _TestPrimaryRail(height: 48),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
-                bodyLayout: CatchScreenBodyLayout.standard,
                 page: CatchRootScreenPageScrollView(
                   scrollKey: PageStorageKey('invalid-rail-root-page'),
                   bodyLayout: CatchScreenBodyLayout.standard,
@@ -254,7 +252,7 @@ void main() {
     },
   );
 
-  testWidgets('CatchRootScreenPageSpec rejects a page-owner role mismatch', (
+  testWidgets('CatchRootScreenPageSpec takes geometry from the page owner', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -264,20 +262,14 @@ void main() {
           header: CatchRootScreenHeader.title(title: 'Workspace'),
           primaryRail: _TestPrimaryRail(height: CatchLayout.tabRailHeight),
           body: CatchRootScreenBody.single(
-            page: CatchRootScreenPageSpec.scroll(
-              bodyLayout: CatchScreenBodyLayout.standard,
-              page: _FullBleedPageOwner(),
-            ),
+            page: CatchRootScreenPageSpec.scroll(page: _FullBleedPageOwner()),
           ),
         ),
       ),
     );
 
-    final error = tester.takeException();
-    expect(error, isA<FlutterError>());
-    expect(error.toString(), contains('disagree on body geometry'));
-    expect(error.toString(), contains('CatchScreenBodyLayout.fullBleed'));
-    expect(error.toString(), contains('CatchScreenBodyLayout.standard'));
+    expect(tester.takeException(), isNull);
+    expect(find.byType(_FullBleedPageOwner), findsOneWidget);
   });
 }
 
@@ -296,7 +288,6 @@ Widget _wrap({
       ),
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
-          bodyLayout: bodyLayout,
           page: CatchRootScreenPageScrollView(
             scrollKey: const PageStorageKey<String>('root-page-test'),
             bodyLayout: bodyLayout,

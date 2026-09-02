@@ -202,13 +202,9 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
+        primaryRail: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -238,13 +234,9 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
+        primaryRail: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -268,13 +260,9 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
+        primaryRail: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -753,13 +741,9 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
+        primaryRail: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -860,4 +844,16 @@ void _registerHostOperationsCustomersTests() {
     expect(find.text('Refresh exact preview'), findsOneWidget);
     expect(find.text('Archive'), findsOneWidget);
   });
+}
+
+class _CustomersTestPrimaryRail extends StatelessWidget
+    implements CatchPrimaryRail {
+  const _CustomersTestPrimaryRail();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+
+  @override
+  Widget build(BuildContext context) =>
+      const SizedBox(height: CatchLayout.tabRailHeight);
 }

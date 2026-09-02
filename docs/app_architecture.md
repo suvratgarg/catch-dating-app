@@ -517,8 +517,10 @@ Screen composition is a closed family, not a per-feature assembly exercise:
   field-obstruction scope, refresh wrapper, and terminal shell clearance.
 - A root destination with pinned peer tabs uses `CatchRootScreenScaffold.withPrimaryRail`
   and one `CatchRootScreenPageScrollView` per page. Every page must declare
-  `bodyLayout`; overlap injection, restoration, focus isolation, body geometry,
-  refresh, and terminal clearance remain shared mechanics.
+  `bodyLayout` on that page owner; `CatchRootScreenPageSpec` only selects the
+  scroll, surface, or master-detail adapter and cannot redeclare geometry.
+  Overlap injection, restoration, focus isolation, body geometry, refresh, and
+  terminal clearance remain shared mechanics.
 - A section-composed page without root-title chrome uses
   `CatchResponsiveSectionPage`; master-detail workspaces use
   `CatchAdaptiveMasterDetailLayout` at their actual responsive boundary.
@@ -1035,7 +1037,8 @@ For `NestedScrollView` plus pinned tab rows:
 - Each tab body starts with the matching `SliverOverlapInjector`.
 - Body padding belongs to the tab body, not to the pinned tab row.
 - Route-owned tab pages use `CatchRootScreenPageScrollView`. Box-content pages opt
-  into an explicit `bodyLayout` and may opt into `constrainToContentWidth`; the
+  into an explicit `bodyLayout` on that sole page owner and may opt into
+  `constrainToContentWidth`; the
   body role owns title/tab-to-content rhythm and page gutters, while the width
   option preserves the canonical 600 px content
   lane plus page gutters only when the viewport has surplus width. A page may
@@ -1085,7 +1088,8 @@ CatchRootScreenPageScrollView(
 `CatchRootScreenPageScrollView` owns overlap injection, focus isolation, independent
 offset restoration, semantic body geometry, and terminal clearance. Feature
 pages own their slivers, refresh policy, controllers, and typed tab state. Do not reintroduce
-feature-local `Center`/`ConstrainedBox` wrappers or box the Preview slivers.
+feature-local `Center`/`ConstrainedBox` wrappers, redeclare the body role on
+`CatchRootScreenPageSpec`, or box the Preview slivers.
 
 ### Current Screen Layout Decisions
 

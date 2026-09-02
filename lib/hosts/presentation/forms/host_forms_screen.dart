@@ -234,7 +234,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         controller: _tabController,
         pages: [
           CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
             page: _HostFormsLibraryPage(
               request: request,
               directory: directory,
@@ -248,7 +247,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
             ),
           ),
           CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
             page: CatchRootScreenPageScrollView(
               scrollKey: const PageStorageKey<String>('host-forms-responses'),
               bodyLayout: CatchScreenBodyLayout.standard,
