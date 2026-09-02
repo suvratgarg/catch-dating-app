@@ -2756,6 +2756,10 @@ owns surface color and the scroll-under divider. Loading, empty, error, and
 content branches retain the same title voice and back behavior instead of
 building competing scaffolds.
 
+`CatchTopBar.divider` is the only separator input. The surface flag changes
+background treatment only; it cannot silently opt into a border, and the
+retired `border` alias must not be reintroduced.
+
 Its closed `CatchRouteBody` API makes viewport behavior explicit:
 `standard` scrolls in the canonical lane, `standardViewport` is fixed,
 `standardConstrained` centers a scrolling content-width lane,

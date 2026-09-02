@@ -385,7 +385,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
           count: _photos.length,
         ),
         leadingType: CatchTopBarLeading.close,
-        border: scrolledUnder,
+        divider: scrolledUnder,
         actions: widget.showDoneAction
             ? [
                 CatchTextButton(

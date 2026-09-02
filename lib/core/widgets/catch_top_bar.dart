@@ -271,8 +271,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     CrossAxisAlignment rowCrossAxisAlignment = CrossAxisAlignment.center,
     Color? backgroundColor,
     bool surface = false,
-    bool border = false,
-    bool? divider,
+    bool divider = false,
     bool gutter = false,
     bool applySafeArea = true,
     PreferredSizeWidget? bottom,
@@ -299,7 +298,6 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     rowCrossAxisAlignment: rowCrossAxisAlignment,
     backgroundColor: backgroundColor,
     surface: surface,
-    border: border,
     divider: divider,
     gutter: gutter,
     applySafeArea: applySafeArea,
@@ -347,7 +345,6 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     rowCrossAxisAlignment: rowCrossAxisAlignment,
     backgroundColor: null,
     surface: false,
-    border: false,
     divider: false,
     gutter: false,
     applySafeArea: false,
@@ -371,7 +368,6 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     required this.rowCrossAxisAlignment,
     required this.backgroundColor,
     required this.surface,
-    required this.border,
     required this.divider,
     required this.gutter,
     required this.applySafeArea,
@@ -392,8 +388,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
   final CrossAxisAlignment rowCrossAxisAlignment;
   final Color? backgroundColor;
   final bool surface;
-  final bool border;
-  final bool? divider;
+  final bool divider;
   final bool gutter;
   final bool applySafeArea;
   final EdgeInsetsGeometry? contentPadding;
@@ -489,7 +484,6 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       actions: largeText ? const <Widget>[] : actions,
       backgroundColor: backgroundColor,
       surface: surface,
-      border: border,
       divider: divider,
       gutter: gutter,
       applySafeArea: applySafeArea,
@@ -528,8 +522,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.onBack,
     this.backgroundColor,
     this.surface = false,
-    this.border = false,
-    this.divider,
+    this.divider = false,
     this.gutter = true,
     this.applySafeArea = true,
     this.contentPadding,
@@ -558,8 +551,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.onBack,
     this.backgroundColor,
     this.surface = false,
-    this.border = false,
-    this.divider,
+    this.divider = false,
     this.gutter = true,
     this.applySafeArea = true,
     this.contentPadding,
@@ -600,8 +592,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onBack;
   final Color? backgroundColor;
   final bool surface;
-  final bool border;
-  final bool? divider;
+  final bool divider;
   final bool gutter;
   final bool applySafeArea;
   final EdgeInsetsGeometry? contentPadding;
@@ -664,7 +655,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final showDivider = widget.divider ?? (widget.border || widget.surface);
+    final showDivider = widget.divider;
     final background =
         widget.backgroundColor ?? (widget.surface ? t.surface : t.bg);
 

@@ -6495,7 +6495,7 @@
       "name": "CatchTopBar",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical app-bar primitive for semantic compact/large title chrome, back/close leading, trailing actions, and expanding search.",
+      "summary": "Canonical app-bar primitive for semantic compact/large title chrome, back/close leading, trailing actions, expanding search, and an explicit divider input independent from surface selection.",
       "dart": {
         "symbol": "CatchTopBar",
         "file": "lib/core/widgets/catch_top_bar.dart",
