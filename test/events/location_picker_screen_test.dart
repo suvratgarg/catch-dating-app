@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -33,6 +34,7 @@ void main() {
         const LocationPickerScreen(loadMapTiles: false),
       );
 
+      expect(find.byType(CatchScreenScaffold), findsOneWidget);
       expect(find.text('Pick starting point'), findsNothing);
       expect(find.byTooltip('Back'), findsOneWidget);
       expect(find.text('Choose meeting location'), findsNothing);

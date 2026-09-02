@@ -11,6 +11,8 @@ import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
@@ -53,7 +55,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_s
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
@@ -410,7 +412,7 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
       GoRoute(
         path: Routes.startScreen.path,
         name: Routes.startScreen.name,
-        builder: (context, state) => const WelcomePage(),
+        builder: (context, state) => const StartWelcomeRouteScreen(),
       ),
       GoRoute(
         path: Routes.authScreen.path,
@@ -675,22 +677,20 @@ class _RouteLoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Scaffold(
+    return CatchScreenScaffold.standalone(
       backgroundColor: t.bg,
-      body: SafeArea(
-        child: Padding(
-          padding: CatchInsets.pageBody,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CatchSkeleton.text(width: CatchLayout.skeletonTextPageTitleWidth),
-              const SizedBox(height: CatchSpacing.s5),
-              const CatchSkeletonRows(
-                leading: CatchSkeletonRowLeading.mediaTile,
-                divided: true,
-              ),
-            ],
-          ),
+      body: CatchScreenBody(
+        scrollable: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchSkeleton.text(width: CatchLayout.skeletonTextPageTitleWidth),
+            const SizedBox(height: CatchSpacing.s5),
+            const CatchSkeletonRows(
+              leading: CatchSkeletonRowLeading.mediaTile,
+              divided: true,
+            ),
+          ],
         ),
       ),
     );

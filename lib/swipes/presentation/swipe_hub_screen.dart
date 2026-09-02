@@ -9,10 +9,12 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -43,9 +45,32 @@ class SwipeHubScreen extends ConsumerWidget {
       now: referenceNow,
     );
 
-    return Scaffold(
-      backgroundColor: CatchTokens.of(context).bg,
-      body: CatchesHubStateView(state: state),
+    final showHubChrome = state is CatchesHubEmpty || state is CatchesHubReady;
+    final t = CatchTokens.of(context);
+
+    return CatchRootScreenScaffold(
+      header: showHubChrome
+          ? CatchScreenHeaderTitle.block(
+              eyebrow: context.l10n.swipesSwipeHubScreenTitleCatches,
+              title: context.l10n.swipesSwipeHubScreenTextAfterTheEvent,
+              actions: [
+                CatchIconTile(
+                  icon: CatchIcons.favoriteRounded,
+                  iconColor: t.primary,
+                  backgroundColor: t.primarySoft,
+                  borderColor: t.primarySoft,
+                  size: CatchIconButton.navSize,
+                  iconSize: CatchIcon.md,
+                  radius: CatchRadius.pill,
+                ),
+              ],
+            )
+          : const SizedBox.shrink(),
+      bodyLayout: showHubChrome
+          ? CatchScreenBodyLayout.standard
+          : CatchScreenBodyLayout.fullBleed,
+      constrainToContentWidth: showHubChrome,
+      slivers: [CatchesHubStateView(state: state)],
     );
   }
 }
@@ -58,27 +83,37 @@ class CatchesHubStateView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return switch (state) {
-      CatchesHubAccessLoading() => const CatchSkeletonList(),
-      CatchesHubAccessError(:final error) => CatchErrorState.fromError(
+      CatchesHubAccessLoading() => const SliverToBoxAdapter(
+        child: CatchSkeletonList(),
+      ),
+      CatchesHubAccessError(:final error) => CatchSliverErrorState.fromError(
         error,
         context: AppErrorContext.auth,
         onRetry: () => ref.invalidate(uidProvider),
       ),
-      CatchesHubSignedOut() => const SizedBox.shrink(),
-      CatchesHubEventsLoading() => const CatchSkeletonList(),
+      CatchesHubSignedOut() => const SliverToBoxAdapter(
+        child: SizedBox.shrink(),
+      ),
+      CatchesHubEventsLoading() => const SliverToBoxAdapter(
+        child: CatchSkeletonList(),
+      ),
       CatchesHubEventsError(:final uid, :final error) =>
-        CatchErrorState.fromError(
+        CatchSliverErrorState.fromError(
           error,
           context: AppErrorContext.event,
           onRetry: () => ref.invalidate(watchAttendedEventsProvider(uid)),
         ),
-      CatchesHubEmpty() => CatchesHubEmptyState(
-        onFindEvent: () => context.go(Routes.exploreScreen.path),
+      CatchesHubEmpty() => CatchSliverStateViewport(
+        child: CatchesHubEmptyState(
+          onFindEvent: () => context.go(Routes.exploreScreen.path),
+        ),
       ),
-      final CatchesHubReady ready => CatchesHubContent(
-        state: ready,
-        onOpenCatch: (row) => context.push(row.openCatchRoute),
-        onOpenRecap: (row) => context.push(row.recapRoute),
+      final CatchesHubReady ready => SliverToBoxAdapter(
+        child: CatchesHubContent(
+          state: ready,
+          onOpenCatch: (row) => context.push(row.openCatchRoute),
+          onOpenRecap: (row) => context.push(row.recapRoute),
+        ),
       ),
     };
   }
@@ -101,92 +136,36 @@ class CatchesHubContent extends StatelessWidget {
     final t = CatchTokens.of(context);
     final featuredRun = state.featuredRow;
 
-    return SafeArea(
-      child: ListView(
-        padding: CatchInsets.pageBodyHero,
-        children: [
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: CatchLayout.maxContentWidth,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const CatchesHubHeader(),
-                  gapH16,
-                  CatchesIntroCard(
-                    row: featuredRun,
-                    onTap: () => onOpenCatch(featuredRun),
-                  ),
-                  gapH24,
-                  CatchSectionHeader(
-                    title:
-                        context.l10n.swipesSwipeHubScreenTitleOpenCatchWindows,
-                    heavy: true,
-                    padding: CatchInsets.sectionItemBottomGap,
-                    trailing: Text(
-                      context.l10n.swipesSwipeHubScreenTextLength(
-                        length: state.rows.length,
-                      ),
-                      style: CatchTextStyles.mono(context, color: t.primary),
-                    ),
-                  ),
-                  CatchSectionList(
-                    emptyStateOmitted: true,
-                    gap: CatchSpacing.s3,
-                    children: [
-                      for (final row in state.rows)
-                        AttendedEventTile(
-                          row: row,
-                          onOpenCatch: () => onOpenCatch(row),
-                          onOpenRecap: () => onOpenRecap(row),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class CatchesHubHeader extends StatelessWidget {
-  const CatchesHubHeader({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CatchSectionHeader(
-                title: context.l10n.swipesSwipeHubScreenTitleCatches,
-                heavy: true,
-              ),
-              gapH2,
-              Text(
-                context.l10n.swipesSwipeHubScreenTextAfterTheEvent,
-                style: CatchTextStyles.headline(context),
-              ),
-            ],
+        CatchesIntroCard(
+          row: featuredRun,
+          onTap: () => onOpenCatch(featuredRun),
+        ),
+        gapH24,
+        CatchSectionHeader(
+          title: context.l10n.swipesSwipeHubScreenTitleOpenCatchWindows,
+          heavy: true,
+          padding: CatchInsets.sectionItemBottomGap,
+          trailing: Text(
+            context.l10n.swipesSwipeHubScreenTextLength(
+              length: state.rows.length,
+            ),
+            style: CatchTextStyles.mono(context, color: t.primary),
           ),
         ),
-        CatchIconTile(
-          icon: CatchIcons.favoriteRounded,
-          iconColor: t.primary,
-          backgroundColor: t.primarySoft,
-          borderColor: t.primarySoft,
-          size: CatchIconButton.navSize,
-          iconSize: CatchIcon.md,
-          radius: CatchRadius.pill,
+        CatchSectionList(
+          emptyStateOmitted: true,
+          gap: CatchSpacing.s3,
+          children: [
+            for (final row in state.rows)
+              AttendedEventTile(
+                row: row,
+                onOpenCatch: () => onOpenCatch(row),
+                onOpenRecap: () => onOpenRecap(row),
+              ),
+          ],
         ),
       ],
     );
@@ -324,97 +303,43 @@ class CatchesHubEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return SafeArea(
-      child: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: CatchInsets.pageBodyHero.copyWith(bottom: 0),
-            sliver: SliverToBoxAdapter(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: CatchLayout.maxContentWidth,
-                  ),
-                  child: const CatchesHubHeader(),
-                ),
-              ),
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchEmptyState(
+            icon: CatchIcons.directionsRunRounded,
+            title: context.l10n.swipesSwipeHubScreenTitleNoActiveCatches,
+            message: context.l10n.swipesSwipeHubScreenMessageBookAGroupEvent,
+            action: CatchButton(
+              label: context.l10n.swipesSwipeHubScreenLabelFindAnEvent,
+              onPressed: onFindEvent,
+              variant: CatchButtonVariant.secondary,
             ),
           ),
-          SliverLayoutBuilder(
-            builder: (context, constraints) {
-              final remainingHeight =
-                  constraints.viewportMainAxisExtent -
-                  constraints.precedingScrollExtent;
-              return SliverToBoxAdapter(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: remainingHeight.clamp(0.0, double.infinity),
-                  ),
-                  child: Padding(
-                    padding: CatchInsets.pageBodyHero.copyWith(
-                      top: CatchSpacing.s4,
-                    ),
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: CatchLayout.maxContentWidth,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            CatchEmptyState(
-                              icon: CatchIcons.directionsRunRounded,
-                              title: context
-                                  .l10n
-                                  .swipesSwipeHubScreenTitleNoActiveCatches,
-                              message: context
-                                  .l10n
-                                  .swipesSwipeHubScreenMessageBookAGroupEvent,
-                              action: CatchButton(
-                                label: context
-                                    .l10n
-                                    .swipesSwipeHubScreenLabelFindAnEvent,
-                                onPressed: onFindEvent,
-                                variant: CatchButtonVariant.secondary,
-                              ),
-                            ),
-                            gapH18,
-                            CatchSurface(
-                              padding: CatchInsets.content,
-                              tone: CatchSurfaceTone.raised,
-                              borderColor: t.line,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    CatchIcons.lockClockRounded,
-                                    color: t.primary,
-                                    size: CatchIcon.control,
-                                  ),
-                                  gapW10,
-                                  Expanded(
-                                    child: Text(
-                                      context
-                                          .l10n
-                                          .swipesSwipeHubScreenTextDatingStaysLockedUntil,
-                                      style: CatchTextStyles.proseM(
-                                        context,
-                                        color: t.ink2,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+          gapH18,
+          CatchSurface(
+            padding: CatchInsets.content,
+            tone: CatchSurfaceTone.raised,
+            borderColor: t.line,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  CatchIcons.lockClockRounded,
+                  color: t.primary,
+                  size: CatchIcon.control,
+                ),
+                gapW10,
+                Expanded(
+                  child: Text(
+                    context.l10n.swipesSwipeHubScreenTextDatingStaysLockedUntil,
+                    style: CatchTextStyles.proseM(context, color: t.ink2),
                   ),
                 ),
-              );
-            },
+              ],
+            ),
           ),
         ],
       ),

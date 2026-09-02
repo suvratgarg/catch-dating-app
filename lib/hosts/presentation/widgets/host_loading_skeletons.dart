@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 class HostRouteLoadingBody extends StatelessWidget {
   const HostRouteLoadingBody({
     super.key,
+    required this.padding,
     this.showTabRail = false,
-    this.padding = CatchInsets.pageBody,
   });
 
   final bool showTabRail;

@@ -9,7 +9,7 @@ Own the participant relationship system as one destination: People, saved Audien
 - Primary route: `hostAudienceScreen` (`/host/audience`)
 - Target root: `lib/hosts/audience`
 - Migration status: target boundary defined; implementation still lives in listed legacy Host roots
-- Responsibility contract updated: 2026-09-01
+- Responsibility contract updated: 2026-09-02
 
 Current implementation roots:
 

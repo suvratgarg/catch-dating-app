@@ -2,7 +2,16 @@ name: Flutter CI
 
 on:
   workflow_call:
+    inputs:
+      base_sha:
+        required: true
+        type: string
   workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Exact reachable base commit used for delta-based Flutter gates.
+        required: true
+        type: string
 
 jobs:
   analysis-gates:
@@ -14,6 +23,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -30,6 +41,22 @@ jobs:
         run: node tool/ci/check_flutter_workspace_analysis.mjs
 
       - run: npm ci
+
+      - name: New widget inventory gate
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$BASE_SHA" ]]; then
+            echo "Missing exact base SHA for the new-widget inventory gate." >&2
+            exit 64
+          fi
+          git cat-file -e "${BASE_SHA}^{commit}"
+          git merge-base --is-ancestor "$BASE_SHA" "$GITHUB_SHA"
+          node tool/design/check_new_widget_inventory.mjs \
+            --base "$BASE_SHA" \
+            --check \
+            --no-write
 
       - name: Form and schema constraint alignment
         run: flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart

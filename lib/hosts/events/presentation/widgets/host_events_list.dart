@@ -172,7 +172,7 @@ class HostEventsClubSection extends StatelessWidget {
             children: [
               if (state.activeSections.isNotEmpty) ...[
                 Padding(
-                  padding: CatchInsets.hostEventSectionLabel,
+                  padding: CatchInsets.hostEventFirstSectionLabel,
                   child: Text(
                     context.l10n.hostEventsTimelineSchedule.toUpperCase(),
                     style: CatchTextStyles.monoLabel(
@@ -224,7 +224,9 @@ class HostEventsClubSection extends StatelessWidget {
               if (state.pastSections.isNotEmpty) ...[
                 if (hasScheduleRegion) gapH24,
                 Padding(
-                  padding: CatchInsets.hostEventSectionLabel,
+                  padding: hasScheduleRegion
+                      ? CatchInsets.hostEventSectionLabel
+                      : CatchInsets.hostEventFirstSectionLabel,
                   child: Text(
                     context.l10n.hostEventsTimelineHistory.toUpperCase(),
                     style: CatchTextStyles.monoLabel(

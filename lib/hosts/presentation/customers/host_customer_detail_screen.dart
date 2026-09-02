@@ -92,9 +92,7 @@ class _HostCustomerDetailScreenState
             : CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
+      body: CatchRouteBody.standard(
         child: CatchAsyncValueView<HostAudienceContactDetail>(
           value: detail,
           onRetry: () => ref.invalidate(
@@ -135,15 +133,13 @@ class _HostCustomerDetailScreenState
               onUndoMerge: (_) {},
             ),
           ),
-          errorBuilder: (_, error, _) => CatchPageBody(
-            child: CatchErrorState.fromError(
-              error,
-              context: AppErrorContext.customer,
-              onRetry: () => ref.invalidate(
-                hostAudienceContactDetailProvider(
-                  widget.organizerId,
-                  widget.contactId,
-                ),
+          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.customer,
+            onRetry: () => ref.invalidate(
+              hostAudienceContactDetailProvider(
+                widget.organizerId,
+                widget.contactId,
               ),
             ),
           ),
@@ -665,8 +661,8 @@ class HostCustomerDetailBody extends StatelessWidget {
             onPressed: openingConversation ? null : onMessage,
           )
         : null;
-    return ListView(
-      padding: CatchInsets.pageBody.copyWith(bottom: 0),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchSectionList(
           emptyStateOmitted: true,
@@ -728,7 +724,6 @@ class HostCustomerDetailBody extends StatelessWidget {
             ),
           ],
         ),
-        const CatchScrollTerminalPadding(),
       ],
     );
   }

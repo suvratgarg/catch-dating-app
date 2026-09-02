@@ -15,7 +15,6 @@ void _registerHostOperationsClubWorkspaceTests() {
         expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
         expect(find.byType(CatchSliverStateViewport), findsOneWidget);
         expect(find.byType(CatchErrorScaffold), findsNothing);
-        expect(find.byType(HostAuthRequiredScreen), findsNothing);
         expect(find.byType(HostLoadingScreen), findsNothing);
         expect(find.byType(CatchRouteScaffold), findsNothing);
         expect(
@@ -473,10 +472,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     final historyRect = tester.getRect(find.text('HISTORY'));
     expect(
       historyRect.top - headerRect.bottom,
-      closeTo(
-        CatchInsets.pageBody.top + CatchInsets.hostEventSectionLabel.top,
-        0.5,
-      ),
+      closeTo(CatchInsets.pageBody.top, 0.5),
     );
   });
 

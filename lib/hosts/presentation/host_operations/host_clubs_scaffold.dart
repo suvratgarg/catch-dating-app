@@ -49,11 +49,16 @@ class HostOrganizerStateScaffold extends StatelessWidget {
         options: _hostClubTabOptions(context),
       ),
       semanticsLabel: context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
-      body: CatchTabbedPageScrollView(
-        scrollKey: scrollKey,
-        bodyLayout: CatchScreenBodyLayout.standard,
-        constrainToContentWidth: true,
-        slivers: slivers,
+      body: CatchTabbedScreenBody.single(
+        page: CatchTabbedPageSpec.scroll(
+          bodyLayout: CatchScreenBodyLayout.standard,
+          page: CatchTabbedPageScrollView(
+            scrollKey: scrollKey,
+            bodyLayout: CatchScreenBodyLayout.standard,
+            constrainToContentWidth: true,
+            slivers: slivers,
+          ),
+        ),
       ),
     );
   }
@@ -192,59 +197,66 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
         semanticsLabel:
             context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
         semanticsHint: context.l10n.hostsHostClubsScaffoldBodyDragLeftOrRight,
-        body: TabBarView(
+        body: CatchTabbedScreenBody.paged(
           controller: _tabController,
-          children: [
-            CatchTabbedPageScrollView(
-              scrollStateController: _pageScrollControllers[HostClubTab.edit],
+          pages: [
+            CatchTabbedPageSpec.scroll(
               bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
-              scrollKey: PageStorageKey(
-                'host-club-${selectedClub.id}-edit-scroll',
-              ),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: KeyedSubtree(
-                      key: _profileSectionsKey,
-                      child: HostClubEditTab(
-                        key: ValueKey('host-club-${selectedClub.id}-edit'),
-                        club: selectedClub,
-                        currentUid: state.currentUid,
-                        isOwner: state.selectedClubIsOwner,
-                        initialExpandedField: widget.initialExpandedEditField,
+              page: CatchTabbedPageScrollView(
+                scrollStateController: _pageScrollControllers[HostClubTab.edit],
+                bodyLayout: CatchScreenBodyLayout.standard,
+                constrainToContentWidth: true,
+                scrollKey: PageStorageKey(
+                  'host-club-${selectedClub.id}-edit-scroll',
+                ),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: KeyedSubtree(
+                        key: _profileSectionsKey,
+                        child: HostClubEditTab(
+                          key: ValueKey('host-club-${selectedClub.id}-edit'),
+                          club: selectedClub,
+                          currentUid: state.currentUid,
+                          isOwner: state.selectedClubIsOwner,
+                          initialExpandedField: widget.initialExpandedEditField,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            CatchTabbedPageScrollView(
-              scrollStateController:
-                  _pageScrollControllers[HostClubTab.insights],
-              bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
-              onRefresh: _insightsRefreshController.refresh,
-              scrollKey: PageStorageKey(
-                'host-club-${selectedClub.id}-insights-scroll',
+                ],
               ),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: HostClubInsightsPane(
-                      key: ValueKey('host-club-${selectedClub.id}-insights'),
-                      club: selectedClub,
-                      refreshController: _insightsRefreshController,
+            ),
+            CatchTabbedPageSpec.scroll(
+              bodyLayout: CatchScreenBodyLayout.standard,
+              page: CatchTabbedPageScrollView(
+                scrollStateController:
+                    _pageScrollControllers[HostClubTab.insights],
+                bodyLayout: CatchScreenBodyLayout.standard,
+                constrainToContentWidth: true,
+                onRefresh: _insightsRefreshController.refresh,
+                scrollKey: PageStorageKey(
+                  'host-club-${selectedClub.id}-insights-scroll',
+                ),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: HostClubInsightsPane(
+                        key: ValueKey('host-club-${selectedClub.id}-insights'),
+                        club: selectedClub,
+                        refreshController: _insightsRefreshController,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            ColoredBox(
-              color: t.surface,
-              child: CatchTabbedPageScrollView(
+            CatchTabbedPageSpec.surface(
+              bodyLayout: CatchScreenBodyLayout.fullBleed,
+              backgroundColor: t.surface,
+              page: CatchTabbedPageScrollView(
                 scrollStateController:
                     _pageScrollControllers[HostClubTab.preview],
                 bodyLayout: CatchScreenBodyLayout.fullBleed,

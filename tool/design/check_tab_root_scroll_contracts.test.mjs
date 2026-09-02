@@ -16,11 +16,28 @@ test("accepts a registered shell branch with a semantic terminal owner", () => {
 
 test("accepts a tab root that delegates scroll ownership to the shared shell", () => {
   const root = fixtureRoot({
-    ownerSource:
-      "CatchTabbedScreenScaffold(body: CatchTabbedPageScrollView());",
+    ownerSource: `
+      class ExamplePage extends Widget implements CatchTabbedPageOwner {
+        CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
+        Widget build(BuildContext context) => CatchTabbedPageScrollView(
+          bodyLayout: bodyLayout,
+        );
+      }
+      CatchTabbedScreenScaffold(
+        body: CatchTabbedScreenBody.single(
+          page: CatchTabbedPageSpec.scroll(
+            bodyLayout: CatchScreenBodyLayout.standard,
+            page: ExamplePage(),
+          ),
+        ),
+      );
+    `,
     requires: [
       {text: "CatchTabbedScreenScaffold", minimumOccurrences: 1},
       {text: "CatchTabbedPageScrollView", minimumOccurrences: 1},
+      {text: "implements CatchTabbedPageOwner", minimumOccurrences: 1},
+      {text: "CatchTabbedScreenBody.single", minimumOccurrences: 1},
+      {text: "CatchTabbedPageSpec.scroll", minimumOccurrences: 1},
     ],
   });
   const result = checkTabRootScrollContracts({root});

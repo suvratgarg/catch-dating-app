@@ -309,6 +309,54 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     search: search,
   );
 
+  /// Root-title chrome embedded in [CatchTabbedScreenScaffold].
+  ///
+  /// The tabbed owner supplies the safe area and pinned rail, so this variant
+  /// uses the same content-sized title band and 4 pt rail handoff as the
+  /// non-search title path instead of inheriting the 56 pt app-bar minimum.
+  factory CatchScreenTopBar.tabbed({
+    Key? key,
+    required BuildContext context,
+    required String title,
+    String? eyebrow,
+    String? subtitle,
+    Widget? leading,
+    List<Widget> actions = const <Widget>[],
+    int titleMaxLines = 1,
+    CrossAxisAlignment rowCrossAxisAlignment = CrossAxisAlignment.center,
+    CatchTopBarSearch? search,
+  }) => CatchScreenTopBar._(
+    _heightFor(
+      context: context,
+      hasEyebrow: eyebrow?.isNotEmpty ?? false,
+      hasSubtitle: subtitle?.isNotEmpty ?? false,
+      titleMaxLines: titleMaxLines,
+      hasActions: actions.isNotEmpty,
+      contentPadding: CatchInsets.tabbedScreenTitleBlock,
+      minimumHeight: 0,
+    ),
+    key: key,
+    title: title,
+    eyebrow: eyebrow,
+    subtitle: subtitle,
+    leading: leading,
+    leadingType: CatchTopBarLeading.none,
+    actions: actions,
+    titleMaxLines: titleMaxLines,
+    titleStyle: null,
+    rowCrossAxisAlignment: rowCrossAxisAlignment,
+    backgroundColor: null,
+    surface: false,
+    border: false,
+    divider: false,
+    gutter: false,
+    applySafeArea: false,
+    contentPadding: CatchInsets.tabbedScreenTitleBlock,
+    bottom: null,
+    trailing: null,
+    search: search,
+  );
+
   const CatchScreenTopBar._(
     this._resolvedHeight, {
     super.key,
@@ -361,12 +409,32 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     int titleMaxLines = 1,
     bool hasActions = false,
     TextStyle? titleStyle,
+  }) => _heightFor(
+    context: context,
+    hasEyebrow: hasEyebrow,
+    hasSubtitle: hasSubtitle,
+    titleMaxLines: titleMaxLines,
+    hasActions: hasActions,
+    titleStyle: titleStyle,
+    contentPadding: CatchInsets.screenTitleBlock,
+    minimumHeight: hasEyebrow || hasSubtitle || titleMaxLines > 1
+        ? CatchLayout.browseHeaderHeight
+        : CatchLayout.topBarHeight,
+  );
+
+  static double _heightFor({
+    required BuildContext context,
+    required bool hasEyebrow,
+    required bool hasSubtitle,
+    required int titleMaxLines,
+    required bool hasActions,
+    TextStyle? titleStyle,
+    required EdgeInsetsGeometry contentPadding,
+    required double minimumHeight,
   }) {
     final textScaler = MediaQuery.textScalerOf(context);
     final largeText = textScaler.scale(1) >= 1.5;
-    final resolvedPadding = CatchInsets.screenTitleBlock.resolve(
-      Directionality.of(context),
-    );
+    final resolvedPadding = contentPadding.resolve(Directionality.of(context));
     double lineHeight(TextStyle style) =>
         textScaler.scale(style.fontSize!) * (style.height ?? 1);
 
@@ -386,9 +454,6 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       textHeight += CatchLayout.topBarLargeTextActionReserve;
     }
 
-    final baseline = hasEyebrow || hasSubtitle || titleMaxLines > 1
-        ? CatchLayout.browseHeaderHeight
-        : CatchLayout.topBarHeight;
     final contentHeight = textHeight > CatchIconButton.navSize
         ? textHeight
         : CatchIconButton.navSize;
@@ -396,7 +461,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     // style height, so reserve the next logical pixel in the preferred size.
     final requiredHeight = (contentHeight + resolvedPadding.vertical)
         .ceilToDouble();
-    return requiredHeight > baseline ? requiredHeight : baseline;
+    return requiredHeight > minimumHeight ? requiredHeight : minimumHeight;
   }
 
   double get height => _resolvedHeight;

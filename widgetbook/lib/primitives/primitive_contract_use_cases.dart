@@ -65,6 +65,7 @@ import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -4939,6 +4940,68 @@ Widget catchJourneyStepNodeContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchScreenScaffold,
+  path: '[Core primitives]/Sections',
+)
+Widget catchScreenScaffoldContractStates(BuildContext context) {
+  final mediaQuery = MediaQuery.of(context);
+  final t = CatchTokens.of(context);
+
+  return CatchScreenScaffold.standalone(
+    body: _ContractScreen(
+      title: 'CatchScreenScaffold',
+      contractId: 'catch.screen_body.screen_scaffold',
+      states: const [
+        'standalone-safe-area',
+        'step-flow-safe-area',
+        'workspace-owned-insets',
+        'keyboard-resize',
+      ],
+      children: [
+        const _StateCard(
+          label: 'role-owned surface',
+          child: _BodySpec(
+            label: 'The named constructor owns surface and safe-area policy.',
+          ),
+        ),
+        _StateCard(
+          label: 'keyboard-resize',
+          description:
+              'A simulated keyboard inset shortens the scaffold body so its '
+              'bottom action remains above the obstruction.',
+          child: _BodyFrame(
+            child: MediaQuery(
+              data: mediaQuery.copyWith(
+                viewInsets: const EdgeInsets.only(
+                  bottom: WidgetbookPreviewLayout.compactPanelHeight,
+                ),
+              ),
+              child: CatchScreenScaffold.standalone(
+                safeArea: CatchScreenSafeArea.none,
+                resizeToAvoidBottomInset: true,
+                body: ColoredBox(
+                  color: t.surface,
+                  child: const Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: CatchInsets.content,
+                      child: _BodySpec(
+                        label: 'Bottom action clears the keyboard inset.',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchScreenBody,
   path: '[Core primitives]/Sections',
 )
@@ -9802,26 +9865,32 @@ class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
           CatchOption(value: 'preview', label: 'Preview'),
         ],
       ),
-      body: TabBarView(
+      body: CatchTabbedScreenBody.paged(
         controller: _controller,
-        children: const [
-          CatchTabbedPageScrollView(
-            scrollKey: PageStorageKey<String>('contract-tab-edit'),
+        pages: const [
+          CatchTabbedPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
-            slivers: [
-              SliverToBoxAdapter(
-                child: Text('Edit owns this scroll position.'),
-              ),
-            ],
+            page: CatchTabbedPageScrollView(
+              scrollKey: PageStorageKey<String>('contract-tab-edit'),
+              bodyLayout: CatchScreenBodyLayout.standard,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Text('Edit owns this scroll position.'),
+                ),
+              ],
+            ),
           ),
-          CatchTabbedPageScrollView(
-            scrollKey: PageStorageKey<String>('contract-tab-preview'),
+          CatchTabbedPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
-            slivers: [
-              SliverToBoxAdapter(
-                child: Text('Preview owns a separate scroll position.'),
-              ),
-            ],
+            page: CatchTabbedPageScrollView(
+              scrollKey: PageStorageKey<String>('contract-tab-preview'),
+              bodyLayout: CatchScreenBodyLayout.standard,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Text('Preview owns a separate scroll position.'),
+                ),
+              ],
+            ),
           ),
         ],
       ),

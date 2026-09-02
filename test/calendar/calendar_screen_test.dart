@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -105,7 +106,9 @@ void main() {
       );
 
       final monthLabel = _monthYearLabel(event.startTime);
-      expect(find.byType(CatchScreenTopBar), findsOneWidget);
+      expect(find.byType(CatchRouteScaffold), findsOneWidget);
+      final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+      expect(topBar.leadingType, CatchTopBarLeading.back);
       expect(find.text(monthLabel), findsOneWidget);
       expect(
         tester.widget<Text>(find.text(monthLabel)).style?.fontFamily,

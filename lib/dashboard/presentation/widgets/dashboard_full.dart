@@ -66,41 +66,34 @@ class _DashboardFullSliverBodyState
     );
 
     return SliverToBoxAdapter(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: CatchSectionStack(
-            padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
-            gap: CatchSpacing.micro18,
-            children: [
-              if (focusEvents.isEmpty)
-                EmptyHeroCard(onFindEvent: () => _openExplore(context))
-              else
-                EventFocusRail(
-                  upcomingEvents: widget.viewModel.upcomingEvents,
-                  arrivalAction: widget.viewModel.arrivalAction,
-                  activeSwipeEvent: widget.viewModel.activeSwipeEvent,
-                  pendingReviewEvent: widget.viewModel.pendingReviewEvent,
-                  clubNameBuilder: (event) => clubNames?[event.clubId],
-                  checkInState: EventFocusCheckInState(
-                    isPending: checkInMutation.isPending,
-                    error: checkInMutation.hasError
-                        ? (checkInMutation as MutationError).error
-                        : null,
-                  ),
-                  actions: _buildEventFocusActions(context),
-                ),
-              if (widget.viewModel.clubPostNotifications.isNotEmpty)
-                ClubPostsHomeSection(
-                  notifications: widget.viewModel.clubPostNotifications,
-                  onOpenPost: (notification) =>
-                      _openClubPost(context, notification),
-                ),
-            ],
-          ),
-        ),
+      child: CatchSectionList(
+        emptyStateOmitted: true,
+        gap: CatchSpacing.micro18,
+        children: [
+          if (focusEvents.isEmpty)
+            EmptyHeroCard(onFindEvent: () => _openExplore(context))
+          else
+            EventFocusRail(
+              upcomingEvents: widget.viewModel.upcomingEvents,
+              arrivalAction: widget.viewModel.arrivalAction,
+              activeSwipeEvent: widget.viewModel.activeSwipeEvent,
+              pendingReviewEvent: widget.viewModel.pendingReviewEvent,
+              clubNameBuilder: (event) => clubNames?[event.clubId],
+              checkInState: EventFocusCheckInState(
+                isPending: checkInMutation.isPending,
+                error: checkInMutation.hasError
+                    ? (checkInMutation as MutationError).error
+                    : null,
+              ),
+              actions: _buildEventFocusActions(context),
+            ),
+          if (widget.viewModel.clubPostNotifications.isNotEmpty)
+            ClubPostsHomeSection(
+              notifications: widget.viewModel.clubPostNotifications,
+              onOpenPost: (notification) =>
+                  _openClubPost(context, notification),
+            ),
+        ],
       ),
     );
   }

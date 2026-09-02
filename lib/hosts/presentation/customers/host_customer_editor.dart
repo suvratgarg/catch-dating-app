@@ -47,12 +47,10 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
         isLoading: _saving,
         onPressed: _saving ? null : _submit,
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
+      body: CatchRouteBody.standard(
         child: Form(
           key: _formKey,
-          child: CatchResponsiveSectionPage(
+          child: CatchResponsiveSectionLayout(
             sections: [
               CatchResponsiveSectionItem(
                 child: CatchSection.plain(

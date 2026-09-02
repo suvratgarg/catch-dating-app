@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -224,160 +225,143 @@ class _ProfilePhotoEditorScreenState
         ? (uploadJob!.progress * 100).round()
         : null;
 
-    return Scaffold(
+    return CatchRouteScaffold(
       backgroundColor: t.bg,
-      appBar: CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: widget.photo == null
             ? context.l10n.imageUploadsProfilePhotoEditorScreenTitleAddPhoto
             : context.l10n.imageUploadsProfilePhotoEditorScreenTitleEditPhoto,
+        border: scrolledUnder,
       ),
-      body: SafeArea(
-        child: ListView(
-          padding: CatchInsets.pageBodyTight,
+      body: CatchRouteBody.standard(
+        constrainToContentWidth: true,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: CatchLayout.maxContentWidth,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    CatchSurface(
-                      backgroundColor: t.raised,
-                      borderColor: t.line,
-                      clipBehavior: Clip.antiAlias,
-                      child: AspectRatio(
-                        aspectRatio: profilePhotoAspectRatio,
-                        child: ProfilePhotoEditorPreview(
-                          cropKey: _cropKey,
-                          bytes: _imageBytes,
-                          url: widget.photo?.url,
-                          loading: _loadingImage,
-                        ),
-                      ),
-                    ),
-                    gapH16,
-                    CatchField.choices<_PhotoPromptChoice>(
-                      key: const ValueKey('profile-photo-prompt-field'),
-                      title: context
-                          .l10n
-                          .imageUploadsProfilePhotoEditorScreenTitlePhotoPrompt,
-                      contract:
-                          CatchContractConstraints.photoPromptAnswerPromptId,
-                      contractValue: (choice) => choice.id ?? '',
-                      values: promptChoices,
-                      itemLabel: (choice) => choice.label,
-                      selected: {selectedPromptChoice},
-                      onSelectionChanged: _saving || _deleting
-                          ? null
-                          : (selection) {
-                              if (selection.isEmpty) return;
-                              setState(
-                                () => _draftPromptId = selection.single.id,
-                              );
-                            },
-                      open: _promptOpen,
-                      onOpenChanged: _saving || _deleting
-                          ? null
-                          : (open) {
-                              setState(() {
-                                _promptOpen = open;
-                                _draftPromptId = _promptId;
-                              });
-                            },
-                      onCancel: () {
-                        setState(() {
-                          _draftPromptId = _promptId;
-                          _promptOpen = false;
-                        });
-                      },
-                      onSubmit: () {
-                        setState(() {
-                          _promptId = _draftPromptId;
-                          _promptOpen = false;
-                        });
-                      },
-                      enabled: !_saving && !_deleting,
-                      icon: CatchIcons.autoAwesomeOutlined,
-                    ),
-                    gapH20,
-                    if (uploadMutation.hasError) ...[
-                      CatchMutationErrorBanner(mutation: uploadMutation),
-                      gapH12,
-                    ],
-                    CatchButton(
-                      label: _saving
-                          ? uploadPercent == null
-                                ? context
-                                      .l10n
-                                      .imageUploadsProfilePhotoEditorScreenLabelSaving
-                                : '${context.l10n.imageUploadsProfilePhotoEditorScreenLabelSaving} '
-                                      '$uploadPercent%'
-                          : context
-                                .l10n
-                                .imageUploadsProfilePhotoEditorScreenLabelSaveChanges,
-                      onPressed: canSave ? _save : null,
-                      isLoading: _saving,
-                      fullWidth: true,
-                    ),
-                    gapH12,
-                    CatchButton(
-                      label: widget.photo == null
-                          ? context
-                                .l10n
-                                .imageUploadsProfilePhotoEditorScreenLabelChoosePhoto
-                          : context
-                                .l10n
-                                .imageUploadsProfilePhotoEditorScreenLabelChangePhoto,
-                      onPressed: _saving || _deleting ? null : _replaceImage,
-                      icon: Icon(CatchIcons.photoLibraryOutlined),
-                      variant: CatchButtonVariant.secondary,
-                      fullWidth: true,
-                    ),
-                    if (widget.photo != null) ...[
-                      gapH12,
-                      CatchButton(
-                        label: _deleting
-                            ? context
-                                  .l10n
-                                  .imageUploadsProfilePhotoEditorScreenLabelDeleting
-                            : context
-                                  .l10n
-                                  .imageUploadsProfilePhotoEditorScreenLabelDeletePhoto,
-                        onPressed: canDelete ? _deletePhoto : null,
-                        isLoading: _deleting,
-                        icon: Icon(CatchIcons.deleteOutlineRounded),
-                        variant: CatchButtonVariant.danger,
-                        fullWidth: true,
-                        semanticsLabel: canDelete
-                            ? context.l10n
-                                  .imageUploadsProfilePhotoEditorScreenCatchbuttonDeletePhotoValue1(
-                                    value1: widget.index + 1,
-                                  )
-                            : context
-                                  .l10n
-                                  .imageUploadsProfilePhotoEditorScreenCatchbuttonDeletePhotoUnavailable,
-                      ),
-                      if (!widget.canDelete) ...[
-                        gapH8,
-                        Text(
-                          context.l10n
-                              .imageUploadsProfilePhotoEditorScreenTextKeepAtLeastMinimumprofilephotocount(
-                                minimumProfilePhotoCount:
-                                    minimumProfilePhotoCount,
-                              ),
-                          style: CatchTextStyles.supporting(
-                            context,
-                            color: t.ink2,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ],
+            CatchSurface(
+              backgroundColor: t.raised,
+              borderColor: t.line,
+              clipBehavior: Clip.antiAlias,
+              child: AspectRatio(
+                aspectRatio: profilePhotoAspectRatio,
+                child: ProfilePhotoEditorPreview(
+                  cropKey: _cropKey,
+                  bytes: _imageBytes,
+                  url: widget.photo?.url,
+                  loading: _loadingImage,
                 ),
               ),
             ),
+            gapH16,
+            CatchField.choices<_PhotoPromptChoice>(
+              key: const ValueKey('profile-photo-prompt-field'),
+              title: context
+                  .l10n
+                  .imageUploadsProfilePhotoEditorScreenTitlePhotoPrompt,
+              contract: CatchContractConstraints.photoPromptAnswerPromptId,
+              contractValue: (choice) => choice.id ?? '',
+              values: promptChoices,
+              itemLabel: (choice) => choice.label,
+              selected: {selectedPromptChoice},
+              onSelectionChanged: _saving || _deleting
+                  ? null
+                  : (selection) {
+                      if (selection.isEmpty) return;
+                      setState(() => _draftPromptId = selection.single.id);
+                    },
+              open: _promptOpen,
+              onOpenChanged: _saving || _deleting
+                  ? null
+                  : (open) {
+                      setState(() {
+                        _promptOpen = open;
+                        _draftPromptId = _promptId;
+                      });
+                    },
+              onCancel: () {
+                setState(() {
+                  _draftPromptId = _promptId;
+                  _promptOpen = false;
+                });
+              },
+              onSubmit: () {
+                setState(() {
+                  _promptId = _draftPromptId;
+                  _promptOpen = false;
+                });
+              },
+              enabled: !_saving && !_deleting,
+              icon: CatchIcons.autoAwesomeOutlined,
+            ),
+            gapH20,
+            if (uploadMutation.hasError) ...[
+              CatchMutationErrorBanner(mutation: uploadMutation),
+              gapH12,
+            ],
+            CatchButton(
+              label: _saving
+                  ? uploadPercent == null
+                        ? context
+                              .l10n
+                              .imageUploadsProfilePhotoEditorScreenLabelSaving
+                        : '${context.l10n.imageUploadsProfilePhotoEditorScreenLabelSaving} '
+                              '$uploadPercent%'
+                  : context
+                        .l10n
+                        .imageUploadsProfilePhotoEditorScreenLabelSaveChanges,
+              onPressed: canSave ? _save : null,
+              isLoading: _saving,
+              fullWidth: true,
+            ),
+            gapH12,
+            CatchButton(
+              label: widget.photo == null
+                  ? context
+                        .l10n
+                        .imageUploadsProfilePhotoEditorScreenLabelChoosePhoto
+                  : context
+                        .l10n
+                        .imageUploadsProfilePhotoEditorScreenLabelChangePhoto,
+              onPressed: _saving || _deleting ? null : _replaceImage,
+              icon: Icon(CatchIcons.photoLibraryOutlined),
+              variant: CatchButtonVariant.secondary,
+              fullWidth: true,
+            ),
+            if (widget.photo != null) ...[
+              gapH12,
+              CatchButton(
+                label: _deleting
+                    ? context
+                          .l10n
+                          .imageUploadsProfilePhotoEditorScreenLabelDeleting
+                    : context
+                          .l10n
+                          .imageUploadsProfilePhotoEditorScreenLabelDeletePhoto,
+                onPressed: canDelete ? _deletePhoto : null,
+                isLoading: _deleting,
+                icon: Icon(CatchIcons.deleteOutlineRounded),
+                variant: CatchButtonVariant.danger,
+                fullWidth: true,
+                semanticsLabel: canDelete
+                    ? context.l10n
+                          .imageUploadsProfilePhotoEditorScreenCatchbuttonDeletePhotoValue1(
+                            value1: widget.index + 1,
+                          )
+                    : context
+                          .l10n
+                          .imageUploadsProfilePhotoEditorScreenCatchbuttonDeletePhotoUnavailable,
+              ),
+              if (!widget.canDelete) ...[
+                gapH8,
+                Text(
+                  context.l10n
+                      .imageUploadsProfilePhotoEditorScreenTextKeepAtLeastMinimumprofilephotocount(
+                        minimumProfilePhotoCount: minimumProfilePhotoCount,
+                      ),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+              ],
+            ],
           ],
         ),
       ),

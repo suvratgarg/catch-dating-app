@@ -1001,9 +1001,20 @@
       "applies_to": [
         "lib/**/presentation/**",
         "lib/core/widgets/**",
-        "docs/widget_catalog.md"
+        "apps/consumer/lib/**",
+        "apps/host/lib/**",
+        "docs/widget_catalog.md",
+        "widgetbook/**",
+        "design/components/catch.components.json",
+        "tool/design/check_new_widget_inventory.mjs",
+        "tool/design/check_new_widget_inventory.test.mjs",
+        "tool/design/lib/new_widget_inventory_declarations.mjs",
+        "tool/design/check_widget_classification.mjs",
+        "tool/design/generate_widget_classification.mjs",
+        "tool/design/component_concepts.mjs",
+        "tool/design/component_concepts.test.mjs"
       ],
-      "instruction": "Keep docs/widget_catalog.md as current inventory only. Update the affected row in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings, and do not update the catalog for tiny implementation-only edits that do not change inventory or usage guidance. Increment its semantic document version only when the catalog reader contract or structure changes.",
+      "instruction": "Keep docs/widget_catalog.md as current inventory only. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook and catalog coverage; a widget moved into or added under lib/core/widgets must also use the canonical Catch* namespace and have a component contract. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Update affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
       "sunset_when": [
         "A generated widget inventory or CI check makes catalog drift visible automatically"
       ],
@@ -1013,6 +1024,16 @@
         }
       ],
       "enforcement": [
+        {
+          "tool": "design:new-widget-inventory",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
+        },
+        {
+          "tool": "design:widget-classification-check",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
+        },
         {
           "tool": "docs:metadata",
           "stage": "scanner-gate",
@@ -1085,7 +1106,9 @@
         "tool/check_riverpod_lint.sh",
         ".github/workflows/**",
         "lib/**",
-        "lib/core/widgets/**"
+        "lib/core/widgets/**",
+        "apps/consumer/lib/**",
+        "apps/host/lib/**"
       ],
       "instruction": "When a UI surface invariant is deterministic, move it into packages/catch_ui_lints as an analysis_server_plugin diagnostic that runs across handwritten lib/** by default. Verify Catch diagnostics with the seeded harness or repository-root dart analyze, never flutter analyze or a targeted subdirectory analysis. Generate steering tables from component contracts, use the resolved checker for cross-file composition, exempt only semantic source-of-truth folders or generated code, and keep broad scanners only for triage and migration discovery.",
       "sunset_when": [
@@ -1130,7 +1153,7 @@
         },
         {
           "tool": "architecture:ui-composition-contracts",
-          "stage": "scanner-ratchet",
+          "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
         },
         {

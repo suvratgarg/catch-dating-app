@@ -11,6 +11,8 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -57,36 +59,39 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
       selectedVibeIds: _selectedVibes,
     );
 
-    return Scaffold(
+    return CatchRouteScaffold(
       backgroundColor: CatchTokens.of(context).bg,
-      appBar: CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.swipesEventRecapScreenTitleEventRecap,
+        divider: scrolledUnder,
         leading: CatchIconAction(
           icon: CatchIcons.closeRounded,
           tooltip: context.l10n.swipesEventRecapScreenTooltipCloseRecap,
           onPressed: () => context.pop(),
         ),
       ),
-      body: switch (screenState) {
-        EventRecapLoading() => const EventRecapLoadingBody(),
-        EventRecapError(:final error, :final retryIntent) =>
-          CatchErrorState.fromError(
-            error,
-            context: AppErrorContext.event,
-            onRetry: () => _retry(retryIntent),
+      body: CatchRouteBody.standard(
+        child: switch (screenState) {
+          EventRecapLoading() => const EventRecapLoadingBody(),
+          EventRecapError(:final error, :final retryIntent) =>
+            CatchErrorState.fromError(
+              error,
+              context: AppErrorContext.event,
+              onRetry: () => _retry(retryIntent),
+            ),
+          EventRecapMissingEvent() => CatchErrorState(
+            title: context.l10n.swipesEventRecapScreenTitleEventNotFound,
+            message: context.l10n.swipesEventRecapScreenMessageThisEventIsNo,
+            secondaryAction: const CatchErrorBackAction(),
           ),
-        EventRecapMissingEvent() => CatchErrorState(
-          title: context.l10n.swipesEventRecapScreenTitleEventNotFound,
-          message: context.l10n.swipesEventRecapScreenMessageThisEventIsNo,
-          secondaryAction: const CatchErrorBackAction(),
-        ),
-        EventRecapReady ready => EventRecapReadyBody(
-          state: ready,
-          onToggleVibe: _toggleVibe,
-          onRetryRosterProfiles: _retryRosterProfiles,
-          onOpenCatchesDeck: _openCatchesDeck,
-        ),
-      },
+          EventRecapReady ready => EventRecapReadyBody(
+            state: ready,
+            onToggleVibe: _toggleVibe,
+            onRetryRosterProfiles: _retryRosterProfiles,
+            onOpenCatchesDeck: _openCatchesDeck,
+          ),
+        },
+      ),
     );
   }
 
@@ -153,66 +158,58 @@ class EventRecapReadyBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return ListView(
-      padding: CatchInsets.pageBodyTight,
-      children: [
-        Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: CatchLayout.maxContentWidth,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                RecapHero(state: state.hero),
-                gapH24,
-                Text(
-                  context.l10n.swipesEventRecapScreenTextWhoBroughtTheVibe,
-                  style: CatchTextStyles.titleL(context),
-                ),
-                gapH4,
-                Text(
-                  context.l10n.swipesEventRecapScreenTextTapPeopleYouRemember,
-                  style: CatchTextStyles.proseM(context, color: t.ink2),
-                ),
-                gapH14,
-                if (!state.hasAttendees)
-                  CatchEmptyState(
-                    icon: CatchIcons.groupOffRounded,
-                    title: context
-                        .l10n
-                        .swipesEventRecapScreenTitleNoAttendeesToTag,
-                    message: context
-                        .l10n
-                        .swipesEventRecapScreenMessageNoOtherCheckedIn,
-                  )
-                else
-                  switch (state.profileLookupStatus) {
-                    EventRecapProfileLookupStatus.loading =>
-                      const VibeGridSkeleton(),
-                    EventRecapProfileLookupStatus.error =>
-                      CatchInlineErrorState.fromError(
-                        state.profileLookupError!,
-                        context: AppErrorContext.profile,
-                        onRetry: () => onRetryRosterProfiles(state.attendeeIds),
-                      ),
-                    EventRecapProfileLookupStatus.ready => VibeGrid(
-                      rows: state.attendeeRows,
-                      onToggleVibe: onToggleVibe,
+    return CatchResponsiveSectionLayout(
+      sections: [
+        CatchResponsiveSectionItem(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              RecapHero(state: state.hero),
+              gapH24,
+              Text(
+                context.l10n.swipesEventRecapScreenTextWhoBroughtTheVibe,
+                style: CatchTextStyles.titleL(context),
+              ),
+              gapH4,
+              Text(
+                context.l10n.swipesEventRecapScreenTextTapPeopleYouRemember,
+                style: CatchTextStyles.proseM(context, color: t.ink2),
+              ),
+              gapH14,
+              if (!state.hasAttendees)
+                CatchEmptyState(
+                  icon: CatchIcons.groupOffRounded,
+                  title:
+                      context.l10n.swipesEventRecapScreenTitleNoAttendeesToTag,
+                  message: context
+                      .l10n
+                      .swipesEventRecapScreenMessageNoOtherCheckedIn,
+                )
+              else
+                switch (state.profileLookupStatus) {
+                  EventRecapProfileLookupStatus.loading =>
+                    const VibeGridSkeleton(),
+                  EventRecapProfileLookupStatus.error =>
+                    CatchInlineErrorState.fromError(
+                      state.profileLookupError!,
+                      context: AppErrorContext.profile,
+                      onRetry: () => onRetryRosterProfiles(state.attendeeIds),
                     ),
-                  },
-                gapH24,
-                CatchButton(
-                  key: SwipeKeys.openCatchesDeckButton,
-                  label:
-                      context.l10n.swipesEventRecapScreenLabelOpenCatchesDeck,
-                  onPressed: state.openDeckActionEnabled
-                      ? () => onOpenCatchesDeck(state.openDeckIntent)
-                      : null,
-                  fullWidth: true,
-                ),
-              ],
-            ),
+                  EventRecapProfileLookupStatus.ready => VibeGrid(
+                    rows: state.attendeeRows,
+                    onToggleVibe: onToggleVibe,
+                  ),
+                },
+              gapH24,
+              CatchButton(
+                key: SwipeKeys.openCatchesDeckButton,
+                label: context.l10n.swipesEventRecapScreenLabelOpenCatchesDeck,
+                onPressed: state.openDeckActionEnabled
+                    ? () => onOpenCatchesDeck(state.openDeckIntent)
+                    : null,
+                fullWidth: true,
+              ),
+            ],
           ),
         ),
       ],
@@ -290,37 +287,31 @@ class EventRecapLoadingBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return ListView(
-      padding: CatchInsets.pageBodyTight,
-      children: [
-        Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: CatchLayout.maxContentWidth,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const RecapHeroSkeleton(),
-                gapH24,
-                CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-                gapH8,
-                FractionallySizedBox(
-                  widthFactor: 0.88,
-                  alignment: Alignment.centerLeft,
-                  child: CatchSkeleton.text(),
-                ),
-                gapH14,
-                const VibeGridSkeleton(),
-                gapH24,
-                CatchSkeleton.box(
-                  width: double.infinity,
-                  height: CatchLayout.buttonLgHeight,
-                  radius: CatchRadius.pill,
-                  borderColor: t.line,
-                ),
-              ],
-            ),
+    return CatchResponsiveSectionLayout(
+      sections: [
+        CatchResponsiveSectionItem(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const RecapHeroSkeleton(),
+              gapH24,
+              CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+              gapH8,
+              FractionallySizedBox(
+                widthFactor: 0.88,
+                alignment: Alignment.centerLeft,
+                child: CatchSkeleton.text(),
+              ),
+              gapH14,
+              const VibeGridSkeleton(),
+              gapH24,
+              CatchSkeleton.box(
+                width: double.infinity,
+                height: CatchLayout.buttonLgHeight,
+                radius: CatchRadius.pill,
+                borderColor: t.line,
+              ),
+            ],
           ),
         ),
       ],

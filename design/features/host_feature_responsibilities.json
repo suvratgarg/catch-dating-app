@@ -1,7 +1,7 @@
 {
   "$schema": "./host_feature_responsibilities.schema.json",
   "version": 1,
-  "updated": "2026-09-01",
+  "updated": "2026-09-02",
   "owner": "hosts",
   "sourceOfTruth": "Defines the ordered responsibility, route ownership, current implementation seams, and explicit exclusions for the five authenticated Host destinations. Runtime behavior remains owned by production code and its specialist data contracts.",
   "features": [
@@ -404,7 +404,6 @@
             "team_controller",
             "profile_controller",
             "auth_controller",
-            "auth_required",
             "host_shell"
           ],
           "includeDataContracts": true

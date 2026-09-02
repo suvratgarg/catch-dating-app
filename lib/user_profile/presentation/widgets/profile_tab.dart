@@ -87,22 +87,12 @@ class ProfileTabSliverBody extends ConsumerWidget {
     return ProfileTabContent(
       user: user,
       uploadState: uploadState,
-      builder: (context, children) => SliverPadding(
-        padding: CatchInsets.formEditBodyRelaxed,
-        sliver: SliverToBoxAdapter(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: CatchLayout.maxContentWidth,
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: children,
-                ),
-              ),
-            ),
+      builder: (context, children) => SliverToBoxAdapter(
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: children,
           ),
         ),
       ),

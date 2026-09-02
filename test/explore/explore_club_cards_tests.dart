@@ -50,7 +50,7 @@ void _registerExploreClubCardsTests() {
     expect(find.byType(TextField), findsOneWidget);
     expect(
       tester.getSize(find.byType(ExploreCityPicker)).height,
-      CatchSpacing.s11,
+      CatchSpacing.s12,
     );
     expect(
       tester.getSize(_topLevelSearchField()).height,
@@ -766,7 +766,7 @@ void _registerExploreClubCardsTests() {
     final initialCityTriggerSize = tester.getSize(
       find.byType(ExploreCityPicker),
     );
-    expect(initialCityTriggerSize.height, CatchSpacing.s11);
+    expect(initialCityTriggerSize.height, CatchSpacing.s12);
     expect(
       initialCityTriggerSize.width,
       greaterThan(initialCityTriggerSize.height),

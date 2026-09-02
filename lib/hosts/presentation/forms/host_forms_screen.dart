@@ -233,36 +233,42 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
           ),
         ),
       ),
-      body: TabBarView(
+      body: CatchTabbedScreenBody.paged(
         controller: _tabController,
-        children: [
-          _HostFormsLibraryPage(
-            request: request,
-            directory: directory,
-            query: _query,
-            status: _status,
-            onStatusChanged: (status) => setState(() => _status = status),
-            onCreate: () => _openTemplates(selectedClub.id),
-            onOpenForm: _openForm,
-            onRowAction: (action, form) =>
-                _handleRowAction(action, form, request),
-          ),
-          CatchTabbedPageScrollView(
-            scrollKey: const PageStorageKey<String>('host-forms-responses'),
+        pages: [
+          CatchTabbedPageSpec.scroll(
             bodyLayout: CatchScreenBodyLayout.standard,
-            constrainToContentWidth: true,
-            slivers: [
-              SliverToBoxAdapter(
-                child: HostFormResponsesPanel(
-                  organizerId: selectedClub.id,
-                  query: _responseQuery,
-                  formId: _responseFormId,
-                  onClearFormFilter: () => setState(() {
-                    _responseFormId = null;
-                  }),
+            page: _HostFormsLibraryPage(
+              request: request,
+              directory: directory,
+              query: _query,
+              status: _status,
+              onStatusChanged: (status) => setState(() => _status = status),
+              onCreate: () => _openTemplates(selectedClub.id),
+              onOpenForm: _openForm,
+              onRowAction: (action, form) =>
+                  _handleRowAction(action, form, request),
+            ),
+          ),
+          CatchTabbedPageSpec.scroll(
+            bodyLayout: CatchScreenBodyLayout.standard,
+            page: CatchTabbedPageScrollView(
+              scrollKey: const PageStorageKey<String>('host-forms-responses'),
+              bodyLayout: CatchScreenBodyLayout.standard,
+              constrainToContentWidth: true,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: HostFormResponsesPanel(
+                    organizerId: selectedClub.id,
+                    query: _responseQuery,
+                    formId: _responseFormId,
+                    onClearFormFilter: () => setState(() {
+                      _responseFormId = null;
+                    }),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -413,7 +419,8 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   }
 }
 
-class _HostFormsLibraryPage extends ConsumerWidget {
+class _HostFormsLibraryPage extends ConsumerWidget
+    implements CatchTabbedPageOwner {
   const _HostFormsLibraryPage({
     required this.request,
     required this.directory,
@@ -435,11 +442,14 @@ class _HostFormsLibraryPage extends ConsumerWidget {
   final Future<void> Function(_HostFormRowAction, HostFormSummary) onRowAction;
 
   @override
+  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
+
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tokens = CatchTokens.of(context);
     return CatchTabbedPageScrollView(
       scrollKey: const PageStorageKey<String>('host-forms-library'),
-      bodyLayout: CatchScreenBodyLayout.standard,
+      bodyLayout: bodyLayout,
       constrainToContentWidth: true,
       maxContentExtent: CatchLayout.hostFormsDirectoryPageMaxExtent,
       slivers: [

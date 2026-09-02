@@ -1,7 +1,7 @@
 ---
 doc_id: component_contract_registry
-version: 1.5.0
-updated: 2026-08-11
+version: 1.5.1
+updated: 2026-09-02
 owner: ui_elevation_initiative
 status: active
 ---
@@ -29,6 +29,8 @@ It is also the exhaustive UI-enforcement source. Every component must declare
 either `enforcement` or an expiring `waiver`. Steering entries generate the
 analyzer plugin constructor tables and violation probes; all other plugin/API/
 checker codes still map back to an owning component through `code`/`codes`.
+`vehicle` names the implementation of the primary `code`; supplemental `codes`
+may span vehicles when one component is protected by complementary gates.
 
 ## Files
 

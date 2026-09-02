@@ -13,6 +13,9 @@ const routeTopBarBuilderPattern =
   /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchScreenTopBar|CatchTopBar(?:\.identity)?)/gu;
 const canonicalRouteScaffoldPath =
   "lib/core/widgets/catch_route_scaffold.dart";
+const canonicalScreenScaffoldPath =
+  "lib/core/widgets/catch_screen_scaffold.dart";
+const canonicalScreenScaffoldSymbol = "CatchScreenScaffold";
 const rawChromePattern =
   /\b(AppBar|SliverAppBar|CupertinoNavigationBar|CupertinoSliverNavigationBar)\s*\(/gu;
 const manualHeaderClassPattern =
@@ -121,7 +124,11 @@ export function checkScreenTopBarContracts({
   const manualHeaders = manifest.manualHeaders ?? [];
   validateManifest(manifest, findings, manifestPath);
 
-  const appBarsByPath = collectAppBars(root);
+  const canonicalScreenScaffoldAppBarIndex =
+    checkCanonicalScreenScaffoldAppBar({root, findings});
+  const appBarsByPath = collectAppBars(root, {
+    canonicalScreenScaffoldAppBarIndex,
+  });
   const rawChromeByPath = collectRawChrome(root);
   const manualHeadersByPath = collectManualHeaders(root);
   const trackedRootHeaderPaths = collectTrackedRootHeaderPaths(root);
@@ -282,7 +289,77 @@ function readUntilTopLevelSemicolon(source, start) {
   return source.slice(start);
 }
 
-function collectAppBars(root) {
+function checkCanonicalScreenScaffoldAppBar({root, findings}) {
+  const absolutePath = path.join(root, canonicalScreenScaffoldPath);
+  if (!fs.existsSync(absolutePath)) return null;
+
+  const source = maskDartCommentsAndStrings(
+    fs.readFileSync(absolutePath, "utf8"),
+  );
+  const appBarIndex = findCanonicalScreenScaffoldAppBarIndex(source);
+  if (appBarIndex == null) {
+    findings.push({
+      code: "canonical-screen-scaffold-app-bar-drift",
+      path: canonicalScreenScaffoldPath,
+      message:
+        `${canonicalScreenScaffoldSymbol}.build must contain exactly one ` +
+        "returned Scaffold whose top-level appBar argument forwards the " +
+        "class appBar field directly. Only that exact infrastructure " +
+        "declaration is exempt from per-screen chrome registration.",
+    });
+  }
+  return appBarIndex;
+}
+
+function findCanonicalScreenScaffoldAppBarIndex(source) {
+  const classPattern = new RegExp(
+    `\\bclass\\s+${canonicalScreenScaffoldSymbol}\\s+extends\\s+StatelessWidget\\b`,
+    "u",
+  );
+  const classMatch = classPattern.exec(source);
+  if (classMatch == null) return null;
+  const classOpenBrace = source.indexOf(
+    "{",
+    classMatch.index + classMatch[0].length,
+  );
+  if (classOpenBrace < 0) return null;
+  const classBody = readBalanced(source, classOpenBrace, "{", "}");
+  if (!/\bfinal\s+PreferredSizeWidget\?\s+appBar\s*;/u.test(classBody)) {
+    return null;
+  }
+
+  const buildMatches = [
+    ...classBody.matchAll(
+      /\bWidget\s+build\s*\(\s*BuildContext\s+context\s*\)\s*\{/gu,
+    ),
+  ];
+  if (buildMatches.length !== 1) return null;
+  const buildMatch = buildMatches[0];
+  const buildOpenBrace =
+    classOpenBrace + (buildMatch.index ?? 0) + buildMatch[0].lastIndexOf("{");
+  const buildBody = readBalanced(source, buildOpenBrace, "{", "}");
+  const scaffoldMatches = [...buildBody.matchAll(/\breturn\s+Scaffold\s*\(/gu)];
+  if (scaffoldMatches.length !== 1) return null;
+
+  const scaffoldMatch = scaffoldMatches[0];
+  const scaffoldOpenParen =
+    buildOpenBrace +
+    (scaffoldMatch.index ?? 0) +
+    scaffoldMatch[0].lastIndexOf("(");
+  const scaffoldCall = readBalanced(source, scaffoldOpenParen, "(", ")");
+  if (readNamedArgument(scaffoldCall, "appBar") !== "appBar") return null;
+
+  const appBarMatches = [...scaffoldCall.matchAll(appBarPattern)];
+  if (
+    appBarMatches.length !== 1 ||
+    appBarMatches[0][1] !== "appBar"
+  ) {
+    return null;
+  }
+  return scaffoldOpenParen + (appBarMatches[0].index ?? 0);
+}
+
+function collectAppBars(root, {canonicalScreenScaffoldAppBarIndex = null} = {}) {
   const result = new Map();
   const libRoot = path.join(root, "lib");
   if (!fs.existsSync(libRoot)) return result;
@@ -293,16 +370,22 @@ function collectAppBars(root) {
     const source = maskDartCommentsAndStrings(
       fs.readFileSync(absolutePath, "utf8"),
     );
-    const directMatches = [...source.matchAll(appBarPattern)].map((match) => {
-      const matchIndex = match.index ?? 0;
-      const expressionOffset = match[0].lastIndexOf(match[1]);
-      const valueStart = matchIndex + expressionOffset;
-      return {
-        expression: match[1],
-        line: lineNumberAt(source, matchIndex),
-        value: readAppBarValue(source, valueStart),
-      };
-    });
+    const directMatches = [...source.matchAll(appBarPattern)]
+      .filter(
+        (match) =>
+          relativePath !== canonicalScreenScaffoldPath ||
+          (match.index ?? 0) !== canonicalScreenScaffoldAppBarIndex,
+      )
+      .map((match) => {
+        const matchIndex = match.index ?? 0;
+        const expressionOffset = match[0].lastIndexOf(match[1]);
+        const valueStart = matchIndex + expressionOffset;
+        return {
+          expression: match[1],
+          line: lineNumberAt(source, matchIndex),
+          value: readAppBarValue(source, valueStart),
+        };
+      });
     const builderMatches = [...source.matchAll(routeTopBarBuilderPattern)].map(
       (match) => {
         const matchIndex = match.index ?? 0;

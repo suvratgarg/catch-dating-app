@@ -9,7 +9,7 @@ Own the organizer as an operating entity: profile and media, publication readine
 - Primary route: `hostOrganizerScreen` (`/host/organizer`)
 - Target root: `lib/hosts/organizer`
 - Migration status: target boundary defined; implementation still lives in listed legacy Host roots
-- Responsibility contract updated: 2026-09-01
+- Responsibility contract updated: 2026-09-02
 
 Current implementation roots:
 
@@ -53,7 +53,7 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostClubsScreen` | `lib/hosts/presentation/host_operations/host_clubs_screen.dart` | Feature-contract actions: retry_organizer_workspace. |
+| `HostClubsScreen` | `lib/hosts/presentation/host_operations/host_clubs_screen.dart` | Feature-contract actions: sign_in, retry_organizer_workspace. |
 | `HostClubsScaffold` | `lib/hosts/presentation/host_operations/host_clubs_scaffold.dart` | Feature-contract actions: create_organizer, select_workspace_tab. |
 | `HostClubEditTab` | `lib/hosts/presentation/host_operations/host_club_edit_tab.dart` | Feature-contract actions: open_organizer_setting. |
 | `HostClubEditController` | `lib/hosts/presentation/club_management/host_club_edit_controller.dart` | Feature-contract actions: update_organizer, update_organizer_media. |
@@ -67,7 +67,6 @@ Typed handoffs:
 | `HostTeamManagementController` | `lib/hosts/presentation/club_management/host_team_management_controller.dart` | Feature-contract actions: add_host, remove_host, transfer_organizer_ownership. |
 | `HostProfileController` | `lib/hosts/presentation/host_profile_controller.dart` | Feature-contract actions: create_host_profile, save_host_profile. |
 | `AuthSessionController` | `lib/auth/presentation/auth_session_controller.dart` | Feature-contract actions: sign_out. |
-| `HostAuthRequiredScreen` | `lib/hosts/presentation/host_operations/host_auth_required_screen.dart` | Feature-contract actions: sign_in. |
 | `HostAppShell` | `lib/core/presentation/host_app_shell.dart` | Feature-contract actions: switch_organizer. |
 
 ## Shared dependencies

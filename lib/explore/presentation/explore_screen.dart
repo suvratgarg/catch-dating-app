@@ -24,6 +24,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -103,7 +104,6 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final uidAsync = ref.watch(uidProvider);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
     final crossPathsSuggestions =
@@ -537,107 +537,98 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             ],
           };
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: Stack(
-        children: [
-          CatchMutationErrorListener(
-            mutation: ClubMembershipController.joinMutation,
-            child: RefreshIndicator.adaptive(
-              onRefresh: _refreshExploreData,
-              child: CustomScrollView(
-                key: ExploreScreenKeys.scrollView,
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: ExploreDiscoveryCoverHeader(
-                      cityPickerState: cityPickerState,
-                      query: query,
-                      featuredItem: featuredItem,
-                      onCitySelected: (selectedCity) => ref
-                          .read(selectedExploreCityProvider.notifier)
-                          .setCity(selectedCity),
-                      onQueryChanged: (value) => ref
-                          .read(exploreSearchQueryProvider.notifier)
-                          .setQuery(value),
-                      actions: showAccountControls
-                          ? [savedEventsAction()]
-                          : const [],
-                      heroActions: showAccountControls
-                          ? [savedEventsAction(onDarkBackdrop: true)]
-                          : const [],
-                      searchRequested: _searchRequested,
-                      onSearchRequestedChanged: (expanded) {
-                        if (_searchRequested == expanded) return;
-                        setState(() => _searchRequested = expanded);
-                      },
-                      onFeaturedEventSelected: openFeaturedEvent,
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: ExploreFilterRail(
-                      filters: visibleFilters,
-                      state: filterRailState,
-                      dateStripState: dateStripState,
-                      sheetState: filterSheetState,
-                      onTimeFilterSelected: (filter) => ref
-                          .read(exploreFiltersProvider.notifier)
-                          .setTimeFilter(filter),
-                      onDistanceFilterSelected: (filter) =>
-                          unawaited(_applyDistanceFilter(filter)),
-                      onToggleJoinedOnly: showAccountControls
-                          ? () => ref
-                                .read(exploreFiltersProvider.notifier)
-                                .toggleJoinedOnly()
-                          : null,
-                      onToggleHighRatedOnly: () => ref
-                          .read(exploreFiltersProvider.notifier)
-                          .toggleHighRatedOnly(),
-                      onToggleActivityTag: (tag) => ref
-                          .read(exploreFiltersProvider.notifier)
-                          .toggleActivityTag(tag),
-                      onToggleArea: (area) => ref
-                          .read(exploreFiltersProvider.notifier)
-                          .toggleArea(area),
-                      onClearFilters: () =>
-                          ref.read(exploreFiltersProvider.notifier).clear(),
-                      onOpenFilters: openExploreFilters,
-                      showJoinedOnly: showAccountControls,
-                    ),
-                  ),
-                  ...bodySlivers,
-                  const CatchSliverTerminalPadding(),
-                ],
-              ),
+    return Stack(
+      children: [
+        CatchMutationErrorListener(
+          mutation: ClubMembershipController.joinMutation,
+          child: CatchRootScreenScaffold(
+            scrollKey: ExploreScreenKeys.scrollView,
+            topEdge: CatchRootScreenTopEdge.headerOwned,
+            header: ExploreDiscoveryCoverHeader(
+              cityPickerState: cityPickerState,
+              query: query,
+              featuredItem: featuredItem,
+              onCitySelected: (selectedCity) => ref
+                  .read(selectedExploreCityProvider.notifier)
+                  .setCity(selectedCity),
+              onQueryChanged: (value) =>
+                  ref.read(exploreSearchQueryProvider.notifier).setQuery(value),
+              actions: showAccountControls ? [savedEventsAction()] : const [],
+              heroActions: showAccountControls
+                  ? [savedEventsAction(onDarkBackdrop: true)]
+                  : const [],
+              searchRequested: _searchRequested,
+              onSearchRequestedChanged: (expanded) {
+                if (_searchRequested == expanded) return;
+                setState(() => _searchRequested = expanded);
+              },
+              onFeaturedEventSelected: openFeaturedEvent,
             ),
+            bodyLayout: CatchScreenBodyLayout.fullBleed,
+            physics: const AlwaysScrollableScrollPhysics(),
+            onRefresh: _refreshExploreData,
+            slivers: [
+              SliverToBoxAdapter(
+                child: ExploreFilterRail(
+                  filters: visibleFilters,
+                  state: filterRailState,
+                  dateStripState: dateStripState,
+                  sheetState: filterSheetState,
+                  onTimeFilterSelected: (filter) => ref
+                      .read(exploreFiltersProvider.notifier)
+                      .setTimeFilter(filter),
+                  onDistanceFilterSelected: (filter) =>
+                      unawaited(_applyDistanceFilter(filter)),
+                  onToggleJoinedOnly: showAccountControls
+                      ? () => ref
+                            .read(exploreFiltersProvider.notifier)
+                            .toggleJoinedOnly()
+                      : null,
+                  onToggleHighRatedOnly: () => ref
+                      .read(exploreFiltersProvider.notifier)
+                      .toggleHighRatedOnly(),
+                  onToggleActivityTag: (tag) => ref
+                      .read(exploreFiltersProvider.notifier)
+                      .toggleActivityTag(tag),
+                  onToggleArea: (area) => ref
+                      .read(exploreFiltersProvider.notifier)
+                      .toggleArea(area),
+                  onClearFilters: () =>
+                      ref.read(exploreFiltersProvider.notifier).clear(),
+                  onOpenFilters: openExploreFilters,
+                  showJoinedOnly: showAccountControls,
+                ),
+              ),
+              ...bodySlivers,
+            ],
           ),
-          if (screenState.mapLauncherState.isVisible)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: _mapLauncherBottomOffset(context),
-              child: SafeArea(
-                top: false,
-                child: Center(
-                  child: CatchCountPill.label(
-                    label: screenState.mapLauncherState.actionLabel,
-                    count:
-                        int.tryParse(
-                          screenState.mapLauncherState.countLabel ?? '',
-                        ) ??
-                        0,
-                    icon: CatchIcons.map,
-                    semanticLabel: screenState.mapLauncherState.semanticLabel,
-                    onPressed: () {
-                      catchTransitionHaptic();
-                      context.pushNamed(Routes.exploreMapScreen.name);
-                    },
-                  ),
+        ),
+        if (screenState.mapLauncherState.isVisible)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: _mapLauncherBottomOffset(context),
+            child: SafeArea(
+              top: false,
+              child: Center(
+                child: CatchCountPill.label(
+                  label: screenState.mapLauncherState.actionLabel,
+                  count:
+                      int.tryParse(
+                        screenState.mapLauncherState.countLabel ?? '',
+                      ) ??
+                      0,
+                  icon: CatchIcons.map,
+                  semanticLabel: screenState.mapLauncherState.semanticLabel,
+                  onPressed: () {
+                    catchTransitionHaptic();
+                    context.pushNamed(Routes.exploreMapScreen.name);
+                  },
                 ),
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 

@@ -50,7 +50,7 @@ class CompanionStageScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stageTheme = _stageTheme;
-    return Scaffold(
+    return CatchScreenScaffold.workspace(
       key: const ValueKey('eventSuccessCompanionStage'),
       backgroundColor: stageTheme.background,
       body: CatchSurface(
@@ -133,7 +133,7 @@ class CompanionPaperScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Scaffold(
+    return CatchScreenScaffold.workspace(
       key: const ValueKey('eventSuccessCompanionPaper'),
       backgroundColor: t.bg,
       bottomNavigationBar: showSelfCheckIn

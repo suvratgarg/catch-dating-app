@@ -1,9 +1,9 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-08-29",
+  "updated": "2026-09-02",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
-  "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for a future screen contract, or explicitly excluded from baseline design parity.",
+  "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for future design-parity work, or explicitly excluded from baseline design parity. The schema admits planned as a lifecycle value, but the zero-debt UI composition gate accepts no planned route: rendered routes must be contracted or excluded with typed owners, and redirect-only routes must be aliases.",
   "routes": [
     {
       "routeId": "loadingScreen",
@@ -139,10 +139,10 @@
     },
     {
       "routeId": "swipeHubScreen",
-      "status": "contracted",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Legacy screen.catches.hub contract remains until Home+Catches U1/U2/U4 absorb the hub states; runtime /catches now redirects to Dashboard Home after the Catches tab removal.",
-      "screenId": "screen.catches.hub"
+      "canonicalRouteId": "dashboardScreen",
+      "reason": "The runtime /catches GoRoute is redirect-only and resolves to Dashboard Home; screen.catches.hub remains historical design evidence."
     },
     {
       "routeId": "swipeEventScreen",
@@ -355,10 +355,10 @@
     },
     {
       "routeId": "hostOperatorEventScreen",
-      "status": "alias",
+      "status": "contracted",
       "priority": "P1",
-      "canonicalRouteId": "hostAppEventManageScreen",
-      "reason": "Least-privilege staff variant of the canonical per-event Host roster workspace; it intentionally removes manager-only sections and actions."
+      "screenId": "screen.host.event.manage",
+      "reason": "Covered by screen.host.event.manage as the rendered least-privilege staff variant of the canonical per-event Host roster workspace; it intentionally removes manager-only sections and actions."
     },
     {
       "routeId": "hostOrganizerScreen",
@@ -376,10 +376,10 @@
     },
     {
       "routeId": "hostClubsScreen",
-      "status": "contracted",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Covered by screen.host.clubs as the legacy Host club-management route; the exact root redirects to Organizer while nested deep links remain stable.",
-      "screenId": "screen.host.clubs"
+      "canonicalRouteId": "hostOrganizerScreen",
+      "reason": "The exact Host organizers index is redirect-only and resolves to the canonical Organizer root; nested child routes remain independently contracted."
     },
     {
       "routeId": "hostClubEventDefaultsScreen",
@@ -467,17 +467,17 @@
     },
     {
       "routeId": "hostAppAttendanceSheet",
-      "status": "alias",
+      "status": "contracted",
       "priority": "P2",
-      "canonicalRouteId": "hostAppEventManageScreen",
-      "reason": "Alias remains covered by screen.host.event.manage; the attendance route opens the canonical Live roster section of Host Event Manage."
+      "screenId": "screen.host.event.manage",
+      "reason": "The rendered attendance route opens the canonical Live roster section of Host Event Manage."
     },
     {
       "routeId": "hostAppEventSuccessScreen",
-      "status": "alias",
+      "status": "contracted",
       "priority": "P2",
-      "canonicalRouteId": "hostAppEventManageScreen",
-      "reason": "Alias remains covered by screen.host.event.manage; the Event Success route enters the canonical Host Event Manage surface."
+      "screenId": "screen.host.event.manage",
+      "reason": "The rendered Event Success route enters the canonical Host Event Manage surface."
     },
     {
       "routeId": "hostInboxScreen",

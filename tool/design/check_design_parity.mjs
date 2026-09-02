@@ -32,6 +32,7 @@ function runGate() {
     "node --test tool/design/component_concepts.test.mjs",
     "node tool/design/check_component_contracts.mjs",
     "node tool/design/check_widget_classification.mjs",
+    "node tool/design/check_new_widget_inventory.mjs --check --no-write",
     `node tool/design/build_widget_similarity.mjs --fingerprints ${fingerprintsArg} --fingerprints-label artifacts/widget_dedupe/fingerprints.json --check`,
     "node tool/design/check_widget_pattern_families.mjs --check",
     "node tool/design/import_figma_library_snapshot.mjs --check",
@@ -92,8 +93,8 @@ function printHelp() {
   node tool/design/check_design_parity.mjs --check
 
 Runs the standard local design parity gate. Blocking checks validate component
-concept topology, contracts, classification, normalized-member-set decision
-coverage, pattern-family decisions, Figma/Claude sync drift, quantitative
+concept topology, contracts, classification, new-widget inventory policy,
+normalized-member-set decision coverage, pattern-family decisions, Figma/Claude sync drift, quantitative
 report drift, role-derived Widgetbook obligations, seeded dedupe probes, route
 inventory, capture coverage, Host shell coverage, screen coverage, screen
 contracts, screen-chrome ownership, state matrix, comprehensive todo summaries,

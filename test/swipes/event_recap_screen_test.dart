@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -45,6 +46,7 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.text('Event recap'), findsOneWidget);
     expect(find.byType(EventRecapLoadingBody), findsOneWidget);
     expect(find.byType(CatchSkeleton), findsWidgets);

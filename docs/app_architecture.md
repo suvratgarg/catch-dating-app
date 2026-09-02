@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.21.0
-updated: 2026-09-01
+version: 1.22.0
+updated: 2026-09-02
 owner: app_architecture
 status: active
 ---
@@ -502,6 +502,13 @@ lazy slivers.
 
 Screen composition is a closed family, not a per-feature assembly exercise:
 
+- Every full-screen composition terminates in a named
+  `CatchScreenScaffold.standalone`, `.stepFlow`, or `.workspace` role. That
+  canonical owner is the only production location allowed to instantiate
+  Material `Scaffold`; higher-level root, tabbed, and pushed-route owners
+  delegate to it. It centralizes page surface, keyboard resize, safe-area
+  policy, bottom chrome, and edge-to-edge behavior without forcing unlike
+  routes into one visual form.
 - A root shell destination uses `CatchRootScreenScaffold`, or
   `CatchRootScreenScrollView` when an adaptive parent already owns the
   `Scaffold`. It provides a scroll-content header, an explicit
@@ -518,13 +525,77 @@ Screen composition is a closed family, not a per-feature assembly exercise:
 - A pushed utility or detail route uses `CatchRouteScaffold` with its compact
   `CatchTopBar`. A pushed route must not be restyled to resemble a root title.
 
-`CatchScreenBodyLayout.standard` is the normal title/tab-to-content rhythm,
-`compact` is reserved for dense chrome whose first child already carries
-hierarchy, and `fullBleed` is for intrinsically edge-owned slivers such as a
-conversation list or embedded preview. Feature code selects a role; it does
-not restate its `EdgeInsets`, title gap, terminal spacer, or field interaction
-plane. Loading, error, empty, and populated branches of one destination use the
-same family owner so state changes cannot move the screen geometry.
+`CatchScreenBodyLayout.standard` is the one regular body contract: 20 pt phone
+gutters and 24 pt from the preceding title/tab boundary to the standard body
+content box. `fullBleed` is the explicit alternative for intrinsically
+edge-owned slivers such as a conversation canvas, media hero, map, or embedded
+preview. Full bleed removes the outer page inset; it does not create a second
+body standard. A nested content lane may use a named semantic gutter, such as
+`CatchInsets.chatListGutter`, which maps Consumer Chats and Host Inbox to the
+same 20 pt horizontal rhythm. There is no compact body role. Feature code
+selects one of these semantic roles; it does not restate its horizontal gutter,
+title gap, terminal spacer, or field interaction plane.
+
+`CatchInsets.pageBody` owns the 20 pt horizontal gutter and 24 pt standard body
+start. `CatchInsets.tabbedScreenTitleBlock` owns the 4 pt title-to-rail handoff;
+`CatchTabbedScreenScaffold` owns and runtime-enforces the 44 pt pinned rail; and
+`CatchTabbedPageScrollView` reapplies the same 24 pt standard body start after
+the rail. The semantic-layout and tabbed-scaffold tests pin those numeric
+mappings. The composition checker validates semantic roles rather than the
+literal numbers.
+
+All registered layout-bearing declarations reachable for one route, including
+state-specific and responsive alternatives, must remain in the same layout
+family. Each owner separately declares any intentional geometry and top-edge
+policy. Owner rows identify declarations and layout expressions; they do not
+label or exhaust runtime states.
+
+`design/screens/catch.screens.json.layoutContracts` declares presentation
+owners for every rendered registered route, `layoutOnlyRoutes` covers rendered
+routes excluded from design parity, and `imperativePageContracts` covers every
+supported full-screen imperative target outside the named GoRouter graph. The
+generated route inventory records each direct `MaterialPageRoute` construction
+site separately so multiple callers of one target cannot hide a stale or
+unregistered edge. Analyzer discovery is broader than that inventory: it finds
+every full-screen `PageRoute` construction form. A typedef alias, constructor
+tear-off, factory/wrapper, `CupertinoPageRoute`, `PageRouteBuilder`, or custom
+subclass therefore fails closed rather than becoming an uninventoried escape.
+Only a direct `MaterialPageRoute` constructor is supported. Modal sheets and
+dialogs are not page routes and remain governed by their own surface contracts.
+The analyzer-resolved
+`architecture:ui-composition-contracts` gate reconciles route, coverage, and
+registry membership; resolves each named declaration; verifies an allowed
+family expression; checks selected explicit body and top-edge arguments; and
+rejects analyzer-resolved Flutter `Scaffold` construction, constructor/type
+aliases, and direct or indirect subclasses outside `CatchScreenScaffold` in
+hand-authored production source. It compares every generated `builder` or
+`pageBuilder` expression with the analyzer-resolved `GoRoute`, proves
+conservative static reachability from each named or imperative presentation
+target to every registered owner declaration, and requires branch-universal
+static proof across all statically reachable widget-producing terminals. Every
+build/return branch, approved widget-builder callback, followed local value or
+helper, and registered same-family delegate must resolve to the declared layout
+family; an unused canonical helper cannot bless a rogue branch, and a behavior
+callback cannot masquerade as rendered composition. The gate does not execute
+predicates, so it treats every statically reachable branch as possible and
+requires all of them to pass. Geometry and top-edge roles not represented by a
+checked owner argument remain review metadata. Focused widget and router tests
+remain responsible for runtime branch and redirect behavior.
+
+The gate has no debt baseline or feature waiver, and planned coverage cannot
+bypass it. At the 2026-09-02 migration baseline, the generated inventory has 70
+routes: 65 rendered presentations (60 `builder`, 5 `pageBuilder`) and 5
+redirect-only routes. Of the rendered routes, 63 are contracted screen routes;
+the excluded `loadingScreen` and `paymentConfirmationScreen` routes remain
+governed through `layoutOnlyRoutes`. Layout-only means excluded from baseline
+design parity, not exempt from typed layout ownership. A historical screen
+record may remain for design evidence after its route becomes a redirect, but
+coverage models that route as an alias with no rendered layout owner. The
+composition gate verifies that the alias names a typed canonical target, but it
+does not traverse the redirect expression; focused router tests prove the
+actual redirect result. The same baseline contains 11 imperative page
+construction sites across 7 registered targets; each site must remain present
+in the generated inventory and analyzer-resolve to its target's typed owner.
 
 The contract manifest at `tool/design/tab_root_scroll_contracts.json` records
 every shell branch and its real composition owners. Its scanner rejects an
@@ -1016,10 +1087,10 @@ feature-local `Center`/`ConstrainedBox` wrappers or box the Preview slivers.
 | Chats list | Keep sliver shell; make populated body sliver-native only if list scale or tests demand it. |
 | Event detail | Keep sliver-native because the collapsing hero justifies it. |
 | Club detail | Keep sliver-native with agenda-style event list. |
-| User profile | Keep the tested `ProfileTabScrollView` contract: preserve overlap injection and the preview-card scroll bridge, while only the Edit tab publishes field obstruction and terminal clearance for expanding field actions. |
-| Map-heavy screens | Audit before migrating. Stable map viewport may matter more than sliver composition. |
+| User profile | Use the shared `CatchTabbedPageScrollView` contract for every tab, preserving overlap injection and the Preview card scroll bridge. The shared owner always publishes shell obstruction; each page explicitly selects terminal clearance according to whether its final content can expand. |
+| Map-heavy screens | Keep the stable full-bleed viewport, but declare it as an immersive `CatchScreenScaffold.workspace`; overlays continue to own their local safe-area insets. |
 | Attendance sheet | Keep box-based while it remains a modal/sheet. |
-| Create event, onboarding, auth | Do not migrate just for consistency. |
+| Create event, onboarding, auth | Use the typed `stepFlow` or `standalone` surface role while preserving their task-specific header, safe-area, keyboard, and footer behavior. |
 | Host Forms | Keep Forms / Responses as peer pages in the direct Forms destination. The Forms directory uses an 840 px operational content lane on capable widths so lifecycle, response, and consequence summaries remain legible. The builder stays single-task on phone and uses outline / respondent preview / inspector panes from 960 px; phone publication stays in `CatchBottomAction`, while tablet and desktop publication belongs in the top command bar rather than a full-viewport footer. |
 
 ### Design Tooling And Component Contracts
@@ -1070,6 +1141,17 @@ covers all handwritten app code, including shared widgets and 1 px literals;
 zero remains the explicit no-border value, while decorative `CustomPainter`
 artwork is outside this UI-boundary diagnostic.
 
+Widget identity is checked globally rather than one folder at a time. The
+source-derived classification and new-widget gates scan `lib/**`,
+`apps/consumer/lib/**`, and `apps/host/lib/**` together, resolve widget ancestry
+transitively so an indirect subclass cannot evade discovery, and reject exact
+public-class duplicates or ungoverned normalized-name collisions across those
+roots. Generated exclusions are deliberately narrow: `.g.dart`,
+`.freezed.dart`, and the two named localization outputs are excluded, but a
+hand-authored file inside a directory called `generated` is still production
+source. Widget-returning functions and getters are separately inventoried so
+moving composition out of a class does not bypass the naming policy.
+
 Implemented diagnostics include raw spacing, token arithmetic, section-list
 composition, semantic inset preference, event-detail photo thumbnail preference,
 raw Material control use, raw color/text/font/radius/content dimension/local
@@ -1088,7 +1170,9 @@ callers provide `emptyBuilder` or name the deliberate
 Cross-file rules use
 `tool/architecture/check_ui_composition_contracts.dart`, which resolves every
 registered source before checking its symbol, state policy, top-bar contract,
-and shell-owned Scaffold boundary. Component enforcement metadata generates
+per-route typed layout owner, static `GoRoute` presentation-to-owner
+reachability, and the global single-owner Scaffold boundary.
+Component enforcement metadata generates
 the plugin steering tables and probe corpus; the bidirectional coverage gate
 requires every primitive to have enforcement or an unexpired waiver and every
 implemented `catch_*` code to have a catalog owner.
@@ -1101,6 +1185,8 @@ bash tool/check_catch_ui_lint_drift.sh --check
 bash tool/check_catch_ui_lint_drift.sh --all --json /private/tmp/catch-ui-lint-drift.json
 node tool/design/build_lint_enforcement_tables.mjs --check
 node tool/design/check_component_enforcement_coverage.mjs
+dart test test/tool/ui_composition_contracts_test.dart
+dart test test/tool/route_discovery_adversarial_test.dart
 dart run tool/architecture/check_ui_composition_contracts.dart --check
 flutter analyze --no-fatal-infos
 ```

@@ -23,6 +23,55 @@ export function collisionKeyFor({conceptRole, conceptId, symbol}) {
   return normalizeSymbol(symbol);
 }
 
+export function newWidgetPolicyIssues(
+  entry,
+  {widgetbookCovered, catalogMentioned, componentContracted},
+) {
+  if (entry.visibility === "private") return ["private-widget-class"];
+
+  const issues = [];
+  if (!widgetbookCovered) issues.push("missing-widgetbook");
+  if (!catalogMentioned) issues.push("missing-widget-catalog");
+  if (entry.file.startsWith("lib/core/widgets/")) {
+    if (!/^Catch[A-Z0-9]/u.test(entry.name)) {
+      issues.push("noncanonical-core-widget-name");
+    }
+    if (!componentContracted) issues.push("missing-component-contract");
+  }
+  return issues;
+}
+
+export function publicWidgetNamingProblems(rows) {
+  const problems = [];
+  const publicWidgets = rows.filter(
+    (row) => row.classKind === "widget" && row.visibility === "public",
+  );
+  const byName = groupBy(publicWidgets, (row) => row.name);
+  for (const [name, declarations] of byName.entries()) {
+    const files = [...new Set(declarations.map((row) => row.file))].sort();
+    if (files.length > 1) {
+      problems.push(`duplicate public widget class ${name}: ${files.join(", ")}`);
+    }
+  }
+
+  const byCollisionKey = groupBy(publicWidgets, (row) => normalizeSymbol(row.name));
+  for (const [key, declarations] of byCollisionKey.entries()) {
+    const names = [...new Set(declarations.map((row) => row.name))].sort();
+    if (names.length < 2) continue;
+    const conceptIds = new Set(declarations.map((row) => row.conceptId));
+    const governedFamily =
+      conceptIds.size === 1 &&
+      !conceptIds.has(null) &&
+      declarations.every((row) =>
+        row.conceptRole === "concept" || row.conceptRole === "member",
+      );
+    if (!governedFamily) {
+      problems.push(`ungoverned normalized widget collision ${key}: ${names.join(", ")}`);
+    }
+  }
+  return problems.sort();
+}
+
 export function contractEntries(components) {
   const entries = [];
   for (const component of components) {
@@ -144,4 +193,15 @@ function countBy(values, keyFor) {
     result[key] = (result[key] ?? 0) + 1;
   }
   return Object.fromEntries(Object.entries(result).sort(([a], [b]) => a.localeCompare(b)));
+}
+
+function groupBy(values, keyFor) {
+  const result = new Map();
+  for (const value of values) {
+    const key = keyFor(value);
+    const rows = result.get(key) ?? [];
+    rows.push(value);
+    result.set(key, rows);
+  }
+  return result;
 }

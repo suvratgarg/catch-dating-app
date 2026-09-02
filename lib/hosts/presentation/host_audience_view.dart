@@ -44,11 +44,16 @@ class HostAudienceStateScaffold extends StatelessWidget {
         selectionPosition: selected.index.toDouble(),
         onChanged: onChanged ?? (view) => _openView(context, view),
       ),
-      body: CatchTabbedPageScrollView(
-        scrollKey: scrollKey,
-        bodyLayout: CatchScreenBodyLayout.standard,
-        constrainToContentWidth: true,
-        slivers: slivers,
+      body: CatchTabbedScreenBody.single(
+        page: CatchTabbedPageSpec.scroll(
+          bodyLayout: CatchScreenBodyLayout.standard,
+          page: CatchTabbedPageScrollView(
+            scrollKey: scrollKey,
+            bodyLayout: CatchScreenBodyLayout.standard,
+            constrainToContentWidth: true,
+            slivers: slivers,
+          ),
+        ),
       ),
     );
   }

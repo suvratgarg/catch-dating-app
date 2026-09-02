@@ -4769,7 +4769,7 @@
               "id": "uid_missing",
               "kind": "permission",
               "status": "captured",
-              "notes": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry. Signed-out/access capture is registered.",
+              "notes": "Null uid renders the signed-out Host Home route state with Sign in required copy and an auth route retry. Signed-out/access capture is registered.",
               "previewIds": [
                 "hostHomeRouteStates"
               ],

@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_organizers.feature.json",
-  "generatedFor": "2026-08-20",
-  "sourceDigest": "sha256:e8e5f53e89154003f3fef6dfc99cc161c6d3091bc716dedd3dedb7560f9d791c",
+  "generatedFor": "2026-09-02",
+  "sourceDigest": "sha256:591a1f87f529c3f4fe194a62cccdb39d9515d9299b8d2677e85da90bf3c5ce55",
   "resolvedDigest": "sha256:9b11a31737e485e2bbedce4feb8f642430f2d75051b9ac2411a46a462330ef1e",
   "feature": {
     "id": "feature.host_organizers",
@@ -126,12 +126,6 @@
             "language": "dart",
             "file": "lib/auth/presentation/auth_session_controller.dart",
             "symbol": "AuthSessionController"
-          },
-          {
-            "id": "auth_required",
-            "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
-            "symbol": "HostAuthRequiredScreen"
           },
           {
             "id": "host_shell",
@@ -277,7 +271,7 @@
       "actions": [
         {
           "id": "sign_in",
-          "owner": "auth_required",
+          "owner": "route_screen",
           "codeValue": "go",
           "cardinality": "singleton",
           "scopeKeys": [

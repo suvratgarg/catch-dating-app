@@ -3423,6 +3423,21 @@
               "id": "hostAppEventManageScreen",
               "path": "/host/organizers/:clubId/events/:eventId/manage",
               "role": "primary"
+            },
+            {
+              "id": "hostOperatorEventScreen",
+              "path": "/host/operator/:eventId",
+              "role": "host"
+            },
+            {
+              "id": "hostAppAttendanceSheet",
+              "path": "/host/organizers/:clubId/events/:eventId/attendance",
+              "role": "host"
+            },
+            {
+              "id": "hostAppEventSuccessScreen",
+              "path": "/host/organizers/:clubId/events/:eventId/success",
+              "role": "host"
             }
           ]
         },

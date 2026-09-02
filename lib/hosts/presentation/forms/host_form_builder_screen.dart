@@ -165,90 +165,93 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             ? null
             : () => _reviewAndPublish(notifier, editorValue),
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: CatchAsyncValueView<HostFormEditorState>(
-          value: editor,
-          onRetry: notifier.reload,
-          initialLoadTimeout: null,
-          loadingBuilder: (_) =>
-              const CatchPageBody(child: CatchSkeletonRows(count: 8)),
-          errorBuilder: (_, error, _) => CatchPageBody(
-            child: CatchErrorState.fromError(
-              error,
-              context: AppErrorContext.forms,
-              onRetry: notifier.reload,
+      body: CatchRouteBody.fullBleed(
+        child: SafeArea(
+          top: false,
+          bottom: false,
+          child: CatchAsyncValueView<HostFormEditorState>(
+            value: editor,
+            onRetry: notifier.reload,
+            initialLoadTimeout: null,
+            loadingBuilder: (_) =>
+                const CatchPageBody(child: CatchSkeletonRows(count: 8)),
+            errorBuilder: (_, error, _) => CatchPageBody(
+              child: CatchErrorState.fromError(
+                error,
+                context: AppErrorContext.forms,
+                onRetry: notifier.reload,
+              ),
             ),
-          ),
-          builder: (context, value) => commandCenter
-              ? CatchScreenBody(
-                  key: const ValueKey('host-form-command-center'),
-                  pb: CatchSpacing.s10,
-                  child: _PublishedFormCommandCenter(
-                    organizerId: widget.organizerId,
-                    state: value,
-                    onEdit: () => setState(() => _editingPublishedForm = true),
-                    onReviewResponses: () =>
-                        setState(() => _view = _BuilderView.responses),
-                    onQuestions: () =>
-                        setState(() => _editingPublishedForm = true),
-                    onAudience: () => _showFormSettingsSheet(
-                      context,
-                      definition: value.editor.definition,
-                      notifier: notifier,
-                    ),
-                    onShare: () =>
-                        _runBuilderAction(notifier, _BuilderAction.share),
-                    onPreview: _openPreview,
-                  ),
-                )
-              : _view == _BuilderView.responses
-              ? CatchScreenBody(
-                  key: const ValueKey('host-form-builder-responses'),
-                  pb: CatchSpacing.s10,
-                  child: HostFormResponsesPanel(
-                    organizerId: widget.organizerId,
-                    formId: widget.formId,
-                    formTitle: value.editor.definition.title,
-                    showFormContext: false,
-                  ),
-                )
-              : ComponentResponsiveBuilder(
-                  breakpoint: CatchLayout.formBuilderExpandedBreakpoint,
-                  compact: (context) => CatchScreenBody(
-                    key: const ValueKey('host-form-builder-build'),
+            builder: (context, value) => commandCenter
+                ? CatchScreenBody(
+                    key: const ValueKey('host-form-command-center'),
                     pb: CatchSpacing.s10,
-                    child: _CompactFormEditor(
+                    child: _PublishedFormCommandCenter(
+                      organizerId: widget.organizerId,
+                      state: value,
+                      onEdit: () =>
+                          setState(() => _editingPublishedForm = true),
+                      onReviewResponses: () =>
+                          setState(() => _view = _BuilderView.responses),
+                      onQuestions: () =>
+                          setState(() => _editingPublishedForm = true),
+                      onAudience: () => _showFormSettingsSheet(
+                        context,
+                        definition: value.editor.definition,
+                        notifier: notifier,
+                      ),
+                      onShare: () =>
+                          _runBuilderAction(notifier, _BuilderAction.share),
+                      onPreview: _openPreview,
+                    ),
+                  )
+                : _view == _BuilderView.responses
+                ? CatchScreenBody(
+                    key: const ValueKey('host-form-builder-responses'),
+                    pb: CatchSpacing.s10,
+                    child: HostFormResponsesPanel(
                       organizerId: widget.organizerId,
                       formId: widget.formId,
-                      state: value,
-                      notifier: notifier,
-                      onSelectionChanged: (section, question) => setState(() {
-                        _selectedSection = section;
-                        _selectedQuestion = question;
-                      }),
+                      formTitle: value.editor.definition.title,
+                      showFormContext: false,
                     ),
+                  )
+                : ComponentResponsiveBuilder(
+                    breakpoint: CatchLayout.formBuilderExpandedBreakpoint,
+                    compact: (context) => CatchScreenBody(
+                      key: const ValueKey('host-form-builder-build'),
+                      pb: CatchSpacing.s10,
+                      child: _CompactFormEditor(
+                        organizerId: widget.organizerId,
+                        formId: widget.formId,
+                        state: value,
+                        notifier: notifier,
+                        onSelectionChanged: (section, question) => setState(() {
+                          _selectedSection = section;
+                          _selectedQuestion = question;
+                        }),
+                      ),
+                    ),
+                    expanded: (context) {
+                      final definition = value.editor.definition;
+                      final sectionIndex = _validSectionIndex(definition);
+                      final questionIndex = _validQuestionIndex(
+                        definition,
+                        sectionIndex,
+                      );
+                      return _ExpandedFormEditor(
+                        state: value,
+                        notifier: notifier,
+                        sectionIndex: sectionIndex,
+                        questionIndex: questionIndex,
+                        onSelectionChanged: (section, question) => setState(() {
+                          _selectedSection = section;
+                          _selectedQuestion = question;
+                        }),
+                      );
+                    },
                   ),
-                  expanded: (context) {
-                    final definition = value.editor.definition;
-                    final sectionIndex = _validSectionIndex(definition);
-                    final questionIndex = _validQuestionIndex(
-                      definition,
-                      sectionIndex,
-                    );
-                    return _ExpandedFormEditor(
-                      state: value,
-                      notifier: notifier,
-                      sectionIndex: sectionIndex,
-                      questionIndex: questionIndex,
-                      onSelectionChanged: (section, question) => setState(() {
-                        _selectedSection = section;
-                        _selectedQuestion = question;
-                      }),
-                    );
-                  },
-                ),
+          ),
         ),
       ),
     );

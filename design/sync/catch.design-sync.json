@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-09-01",
+  "updated": "2026-09-02",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "e4d82d166ace5e2e8999a6022d9fe74ac440cd628651d8351e17277110a06897",
+  "sourceDigest": "132a6fb164d65a104c724ce08645ccc826513d23435475a2d62cdb1f013f621b",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "e4d82d166ace5e2e8999a6022d9fe74ac440cd628651d8351e17277110a06897",
-    "contractDigest": "e4d82d166ace5e2e8999a6022d9fe74ac440cd628651d8351e17277110a06897"
+    "digest": "132a6fb164d65a104c724ce08645ccc826513d23435475a2d62cdb1f013f621b",
+    "contractDigest": "132a6fb164d65a104c724ce08645ccc826513d23435475a2d62cdb1f013f621b"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "4e37fff2cfdcba5cc7a6a8fed8a6ce4259c133b66823593770872b18a5f427b6",
+    "handoffRequestDigest": "fca581be75fac9e21fe0e07b3eda68740c0c81f1866179bc116db31cd730b813",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 71,
-    "publicClassCount": 213,
+    "publicClassCount": 214,
     "conceptCount": 65,
-    "memberCount": 130,
-    "membersPerConcept": 2,
+    "memberCount": 131,
+    "membersPerConcept": 2.02,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 65,
-      "member": 130,
+      "member": 131,
       "screen": 15
     },
     "collisionCount": 33,
@@ -326,6 +326,7 @@
           "CatchResponsiveSectionPage",
           "CatchRootScreenScaffold",
           "CatchScreenBody",
+          "CatchScreenScaffold",
           "CatchSliverPageBody",
           "CatchSliverScreenBody"
         ]
@@ -1465,7 +1466,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ScreenBody",
       "claudeAllowed": true,
-      "contractDigest": "198f8bff7d02cb19f40912a4804d56184c52872c5bd22ffe17aea336e7a5d723"
+      "contractDigest": "bebae6cda65fa680871871fbcc50159b4ea184946d67f702035ffe01651a9693"
     },
     {
       "contractId": "catch.section_stack",
@@ -2553,7 +2554,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TabbedScreen",
       "claudeAllowed": true,
-      "contractDigest": "60e28ad88fa73ae1d2947937848596ad8c955303df2b2f4a1d27fa332b22aab9"
+      "contractDigest": "ca4456440a6002112b4b37029830db1cb472377de79e6c1feb4c34b1f7716271"
     },
     {
       "contractId": "catch.bottom_action",

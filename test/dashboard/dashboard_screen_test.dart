@@ -12,6 +12,9 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
@@ -307,6 +310,10 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
+      final rootScaffold = tester.widget<CatchRootScreenScaffold>(
+        find.byType(CatchRootScreenScaffold),
+      );
+      expect(rootScaffold.bodyLayout, CatchScreenBodyLayout.standard);
       expect(
         find.text('Your catches unlock\nafter your first event.'),
         findsOneWidget,
@@ -698,6 +705,7 @@ void main() {
       await _pumpDashboardUi(tester);
       await _pumpDashboardUi(tester);
 
+      expect(find.byType(CatchRouteScaffold), findsOneWidget);
       expect(find.text('Activity'), findsOneWidget);
       expect(find.text("It's a catch"), findsNWidgets(2));
       expect(find.text('Mark all read'), findsOneWidget);
@@ -912,8 +920,14 @@ void main() {
           .first;
       final viewWidth =
           tester.view.physicalSize.width / tester.view.devicePixelRatio;
-      expect(fieldRect.left, CatchSpacing.screenPx);
-      expect(fieldRect.right, viewWidth - CatchSpacing.screenPx);
+      final availableWidth = viewWidth - CatchSpacing.screenPx * 2;
+      final laneWidth = availableWidth < CatchLayout.maxContentWidth
+          ? availableWidth
+          : CatchLayout.maxContentWidth;
+      final laneInset =
+          CatchSpacing.screenPx + (availableWidth - laneWidth) / 2;
+      expect(fieldRect.left, laneInset);
+      expect(fieldRect.right, viewWidth - laneInset);
       expect(tester.getRect(leadingIcon).left, fieldRect.left);
     });
   });

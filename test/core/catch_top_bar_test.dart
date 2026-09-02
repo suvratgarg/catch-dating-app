@@ -140,10 +140,12 @@ void main() {
             leadingType: CatchTopBarLeading.back,
             divider: scrolledUnder,
           ),
-          body: ListView.builder(
-            itemCount: 40,
-            itemBuilder: (_, index) =>
-                SizedBox(height: 48, child: Text('Payment $index')),
+          body: CatchRouteBody.fullBleed(
+            child: ListView.builder(
+              itemCount: 40,
+              itemBuilder: (_, index) =>
+                  SizedBox(height: 48, child: Text('Payment $index')),
+            ),
           ),
         ),
       ),

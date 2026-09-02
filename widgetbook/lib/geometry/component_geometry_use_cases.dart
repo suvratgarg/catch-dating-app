@@ -1117,16 +1117,20 @@ Widget _responsiveGeometryShell({
         leadingType: CatchTopBarLeading.none,
         divider: scrolledUnder,
       ),
-      body: CatchResponsiveSectionPage(
-        composition: composition,
-        sections: [
-          CatchResponsiveSectionItem(child: _responsiveEventSettingsSection()),
-          CatchResponsiveSectionItem(
-            lane: CatchResponsiveSectionLane.secondary,
-            child: _responsiveNotificationSection(),
-          ),
-          CatchResponsiveSectionItem(child: _responsivePrivacySection()),
-        ],
+      body: CatchRouteBody.fullBleed(
+        child: CatchResponsiveSectionPage(
+          composition: composition,
+          sections: [
+            CatchResponsiveSectionItem(
+              child: _responsiveEventSettingsSection(),
+            ),
+            CatchResponsiveSectionItem(
+              lane: CatchResponsiveSectionLane.secondary,
+              child: _responsiveNotificationSection(),
+            ),
+            CatchResponsiveSectionItem(child: _responsivePrivacySection()),
+          ],
+        ),
       ),
     ),
   );

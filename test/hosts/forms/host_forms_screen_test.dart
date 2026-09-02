@@ -336,7 +336,6 @@ void _expectFormsAudienceStateOwner(
   expect(find.byType(HostAudienceTabRail), findsOneWidget);
   expect(find.byType(CatchErrorScaffold), findsNothing);
   expect(find.byType(HostLoadingScreen), findsNothing);
-  expect(find.byType(HostAuthRequiredScreen), findsNothing);
   expect(
     tester
         .widget<HostAudienceTabRail>(find.byType(HostAudienceTabRail))
