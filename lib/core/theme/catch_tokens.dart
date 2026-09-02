@@ -931,7 +931,15 @@ abstract final class CatchInsets {
     bottom: CatchSpacing.s3,
   );
 
-  /// Host lifecycle section label above a group of event rows.
+  /// First Host lifecycle section label at the page-body boundary.
+  ///
+  /// The page owner already supplies the standard 24 pt body inset, so the
+  /// first visible label must not add another leading inset of its own.
+  static const EdgeInsets hostEventFirstSectionLabel = EdgeInsets.only(
+    bottom: CatchSpacing.micro10,
+  );
+
+  /// Host lifecycle section label following content within the page body.
   static const EdgeInsets hostEventSectionLabel = EdgeInsets.only(
     top: CatchSpacing.s1,
     bottom: CatchSpacing.micro10,

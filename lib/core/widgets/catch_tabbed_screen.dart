@@ -39,6 +39,13 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
   final CatchTopBarSearch? search;
   final int titleMaxLines;
   final CrossAxisAlignment rowCrossAxisAlignment;
+
+  /// Typed tab content for the pinned rail slot.
+  ///
+  /// The supplied widget may adapt `CatchTabRail` for feature-specific labels
+  /// or controller wiring, but it must declare the canonical rail height. This
+  /// scaffold validates that contract at runtime and owns the actual pinned
+  /// extent so route code cannot introduce local tab geometry.
   final PreferredSizeWidget tabRail;
   final Widget body;
   final ScrollController? outerScrollController;
@@ -47,6 +54,7 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _validateTabRailGeometry();
     final t = CatchTokens.of(context);
     Widget scrollView = NestedScrollView(
       controller: outerScrollController,
@@ -62,22 +70,20 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
                 rowCrossAxisAlignment: rowCrossAxisAlignment,
                 padding: CatchInsets.tabbedScreenTitleBlock,
               )
-            : CatchScreenTopBar(
+            : CatchScreenTopBar.tabbed(
                 context: context,
                 eyebrow: eyebrow,
                 title: title,
                 subtitle: subtitle,
                 leading: leading,
-                leadingType: CatchTopBarLeading.none,
                 actions: actions,
                 titleMaxLines: titleMaxLines,
                 rowCrossAxisAlignment: rowCrossAxisAlignment,
-                applySafeArea: false,
                 search: search,
               );
         final headerSlivers = CatchSliverHeader(
           title: headerTitle,
-          bottomHeight: tabRail.preferredSize.height,
+          bottomHeight: CatchLayout.tabRailHeight,
           bottom: tabRail,
         ).buildSlivers(context);
         final collapsibleSlivers = headerSlivers.take(headerSlivers.length - 1);
@@ -106,6 +112,27 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
       backgroundColor: t.bg,
       body: SafeArea(bottom: false, child: scrollView),
     );
+  }
+
+  void _validateTabRailGeometry() {
+    final declaredHeight = tabRail.preferredSize.height;
+    if (declaredHeight == CatchLayout.tabRailHeight) return;
+
+    throw FlutterError.fromParts([
+      ErrorSummary(
+        'CatchTabbedScreenScaffold requires a '
+        '${CatchLayout.tabRailHeight}-point tab rail.',
+      ),
+      ErrorDescription(
+        '${tabRail.runtimeType} declared a preferred height of '
+        '$declaredHeight points.',
+      ),
+      ErrorHint(
+        'Use CatchTabRail or CatchTabControllerRail, or make the '
+        'feature adapter report CatchLayout.tabRailHeight. The scaffold owns '
+        'the pinned extent; screens must not define local tab-rail geometry.',
+      ),
+    ]);
   }
 }
 

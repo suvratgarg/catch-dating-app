@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -110,40 +111,85 @@ void main() {
     expect(CatchInsets.pageBody.top, 24);
   });
 
-  testWidgets('CatchTabbedScreenScaffold composes expanding header search', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: const CatchTabbedScreenScaffold(
-          title: 'Forms',
-          search: CatchTopBarSearch(
-            placeholder: 'Search forms',
-            tooltip: 'Search forms',
+  testWidgets(
+    'CatchTabbedScreenScaffold gives search the compact tabbed title band',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const CatchTabbedScreenScaffold(
+            title: 'Forms',
+            search: CatchTopBarSearch(
+              placeholder: 'Search forms',
+              tooltip: 'Search forms',
+            ),
+            tabRail: PreferredSize(
+              preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
+              child: SizedBox(height: CatchLayout.tabRailHeight),
+            ),
+            body: SizedBox.shrink(),
           ),
-          tabRail: PreferredSize(
-            preferredSize: Size.fromHeight(1),
-            child: SizedBox(height: 1),
-          ),
-          body: SizedBox.shrink(),
         ),
-      ),
-    );
+      );
 
-    expect(find.text('Forms'), findsOneWidget);
-    expect(find.byType(CatchScreenTopBar), findsOneWidget);
-    await tester.tap(find.byIcon(CatchIcons.search));
-    await tester.pump(CatchMotion.base);
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchSearchField &&
-            widget.mode == CatchSearchFieldMode.expanding,
-      ),
-      findsOneWidget,
-    );
-  });
+      expect(find.text('Forms'), findsOneWidget);
+      final titleBar = tester.widget<CatchScreenTopBar>(
+        find.byType(CatchScreenTopBar),
+      );
+      final expectedContentHeight =
+          CatchIconButton.navSize + CatchInsets.tabbedScreenTitleBlock.vertical;
+      expect(titleBar.contentPadding, CatchInsets.tabbedScreenTitleBlock);
+      expect(titleBar.applySafeArea, isFalse);
+      expect(titleBar.leadingType, CatchTopBarLeading.none);
+      expect(titleBar.height, expectedContentHeight);
+      expect(titleBar.height, lessThan(CatchLayout.topBarHeight));
+
+      await tester.tap(find.byIcon(CatchIcons.search));
+      await tester.pump(CatchMotion.base);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchSearchField &&
+              widget.mode == CatchSearchFieldMode.expanding,
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'CatchTabbedScreenScaffold rejects noncanonical tab rail heights',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const CatchTabbedScreenScaffold(
+            title: 'Workspace',
+            tabRail: PreferredSize(
+              preferredSize: Size.fromHeight(48),
+              child: SizedBox(height: 48),
+            ),
+            body: SizedBox.shrink(),
+          ),
+        ),
+      );
+
+      final error = tester.takeException();
+      expect(error, isA<FlutterError>());
+      expect(
+        error.toString(),
+        contains(
+          'CatchTabbedScreenScaffold requires a '
+          '${CatchLayout.tabRailHeight}-point tab rail.',
+        ),
+      );
+      expect(error.toString(), contains('declared a preferred height of 48.0'));
+      expect(
+        error.toString(),
+        contains('screens must not define local tab-rail geometry'),
+      );
+    },
+  );
 }
 
 Widget _wrap({
@@ -155,8 +201,11 @@ Widget _wrap({
     home: CatchTabbedScreenScaffold(
       title: 'Workspace',
       tabRail: const PreferredSize(
-        preferredSize: Size.fromHeight(1),
-        child: SizedBox(key: ValueKey('tabbed-page-rail'), height: 1),
+        preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
+        child: SizedBox(
+          key: ValueKey('tabbed-page-rail'),
+          height: CatchLayout.tabRailHeight,
+        ),
       ),
       body: CatchTabbedPageScrollView(
         scrollKey: const PageStorageKey<String>('tabbed-page-test'),
