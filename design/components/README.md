@@ -1,7 +1,7 @@
 ---
 doc_id: component_contract_registry
-version: 1.5.1
-updated: 2026-09-02
+version: 1.6.0
+updated: 2026-09-03
 owner: ui_elevation_initiative
 status: active
 ---
@@ -25,12 +25,19 @@ acceptance metadata. The registry requires support for text scale 2.0, a stable
 reduced-motion resting state, and both Light and Dark semantic themes. A
 component-specific policy may be stricter, but it cannot omit those baselines.
 
-It is also the exhaustive UI-enforcement source. Every component must declare
-either `enforcement` or an expiring `waiver`. Steering entries generate the
-analyzer plugin constructor tables and violation probes; all other plugin/API/
-checker codes still map back to an owning component through `code`/`codes`.
-`vehicle` names the implementation of the primary `code`; supplemental `codes`
-may span vehicles when one component is protected by complementary gates.
+It is also the exhaustive UI-governance source. Every component must declare
+exactly one decision: static `enforcement`, executable `verification`, or an
+expiring exceptional `waiver`. Steering entries generate the analyzer plugin
+constructor tables and violation probes; all other plugin/API/checker codes
+still map back to an owning component through `code`/`codes`. `vehicle` names
+the implementation of the primary `code`; supplemental `codes` may span
+vehicles when one component is protected by complementary gates.
+
+Use `verification.vehicle: widgetbook-contract` when the canonical component
+has no distinct static misuse pattern. The coverage checker derives the target
+from `dart.symbol` and requires that exact generated Widgetbook component, so
+the decision cannot be satisfied by prose. A `waiver` is only for a temporary
+gap with a named owner, a specific reason, and a review expiry.
 
 ## Files
 
@@ -46,8 +53,9 @@ may span vehicles when one component is protected by complementary gates.
 2. Update the matching contract entry here, including props, states, slots, and
    DTCG token references. Confirm its accessibility policy preserves primary
    meaning and actions at text scale 2.0 and does not depend on motion.
-3. Add or revise the enforcement decision; new waivers need a reason, owner,
-   and review expiry.
+3. Add or revise the governance decision. Prefer static enforcement when a
+   misuse pattern is mechanically detectable; otherwise use executable
+   verification. New waivers need a specific reason, owner, and review expiry.
 4. Run `node tool/design/build_lint_enforcement_tables.mjs`, then
    `node tool/design/check_component_enforcement_coverage.mjs`.
 5. Run `node tool/design/check_component_contracts.mjs`.

@@ -178,6 +178,22 @@ test("rejects duplicate remediation values and summary drift", () => {
   ));
 });
 
+test("rejects a public widget that falls out of concept classification", () => {
+  const invalid = clone(classification);
+  const index = invalid.widgets.findIndex(
+    (widget) => widget.classKind === "widget" && widget.visibility === "public",
+  );
+  assert.notEqual(index, -1, "fixture requires a current public widget");
+  invalid.widgets[index].conceptRole = "unclassified";
+  invalid.widgets[index].conceptId = null;
+  invalid.widgets[index].parentConceptId = null;
+  invalid.widgets[index].qualifier = null;
+
+  assert.ok(validate(invalid).some((failure) =>
+    failure.includes("public widget cannot remain unclassified"),
+  ));
+});
+
 test("retains the private-widget remediation rule", () => {
   const privateIndex = classification.widgets.findIndex(
     (widget) => widget.classKind === "widget" && widget.visibility === "private",

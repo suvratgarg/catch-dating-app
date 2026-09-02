@@ -17,22 +17,48 @@ export function checkComponentEnforcementCoverage({
   checkerCodes,
   harnessSource,
   generatedProbeMinimums,
+  widgetbookNames = new Set(),
   today,
 }) {
   const failures = [];
   const codeToComponents = new Map();
   let enforcementCount = 0;
+  let verificationCount = 0;
   let waiverCount = 0;
 
   for (const component of registry.components ?? []) {
     const hasEnforcement = component.enforcement != null;
+    const hasVerification = component.verification != null;
     const hasWaiver = component.waiver != null;
-    if (hasEnforcement === hasWaiver) {
-      failures.push(`${component.id}: exactly one of enforcement or waiver is required`);
+    if ([hasEnforcement, hasVerification, hasWaiver].filter(Boolean).length !== 1) {
+      failures.push(
+        `${component.id}: exactly one of enforcement, verification, or waiver is required`,
+      );
+      continue;
+    }
+    if (hasVerification) {
+      verificationCount += 1;
+      if (component.verification.vehicle !== "widgetbook-contract") {
+        failures.push(
+          `${component.id}: unsupported verification vehicle ${component.verification.vehicle}`,
+        );
+      }
+      const symbol = component.dart?.symbol;
+      if (!symbol || !widgetbookNames.has(symbol)) {
+        failures.push(
+          `${component.id}: verification requires generated Widgetbook contract ${symbol ?? "<missing Dart symbol>"}`,
+        );
+      }
       continue;
     }
     if (hasWaiver) {
       waiverCount += 1;
+      if ((component.waiver.reason ?? "").trim().length < 12) {
+        failures.push(`${component.id}: enforcement waiver requires a specific reason`);
+      }
+      if (!(component.waiver.owner ?? "").trim()) {
+        failures.push(`${component.id}: enforcement waiver requires an owner`);
+      }
       if (!/^\d{4}-\d{2}-\d{2}$/u.test(component.waiver.expires ?? "") ||
           component.waiver.expires < today) {
         failures.push(`${component.id}: enforcement waiver expired ${component.waiver.expires}`);
@@ -94,11 +120,12 @@ export function checkComponentEnforcementCoverage({
     metrics: {
       components: registry.components?.length ?? 0,
       enforcementCount,
+      verificationCount,
       waiverCount,
       implementedCodes: implementedCodes.size,
       mappedCodes: catalogCodes.size,
       componentsWithoutDecision: failures.filter((failure) =>
-        failure.includes("exactly one of enforcement or waiver")
+        failure.includes("exactly one of enforcement, verification, or waiver")
       ).length,
       orphanLintCodes: [...implementedCodes].filter((code) => !catalogCodes.has(code)).length,
       expiredWaivers: failures.filter((failure) => failure.includes("waiver expired")).length,
@@ -115,6 +142,7 @@ function runCli() {
   const pluginSource = read("packages/catch_ui_lints/lib/src/catch_ui_rules.dart");
   const checkerSource = read("tool/architecture/check_ui_composition_contracts.dart");
   const harnessSource = read("tool/check_catch_ui_lints.sh");
+  const widgetbookSource = read("widgetbook/lib/main.directories.g.dart");
   const expectations = readJson("tool/design/generated/enforcement_expectations.json");
   const generated = buildLintEnforcementOutputs(registry);
   const generatedFiles = {
@@ -131,6 +159,7 @@ function runCli() {
     checkerCodes: extractCheckerCodes(checkerSource),
     harnessSource,
     generatedProbeMinimums: expectations.generatedProbeMinimums ?? {},
+    widgetbookNames: extractWidgetbookNames(widgetbookSource),
     today: new Date().toISOString().slice(0, 10),
   });
   for (const relative of stale) {
@@ -145,8 +174,17 @@ function runCli() {
   const metrics = result.metrics;
   console.log(
     `Catch component enforcement coverage passed (${metrics.components} components; ` +
-      `${metrics.componentsWithoutDecision} without decisions; ${metrics.orphanLintCodes} orphan codes; ` +
-      `${metrics.expiredWaivers} expired waivers; ${metrics.mappedCodes} mapped codes).`,
+      `${metrics.enforcementCount} statically enforced; ${metrics.verificationCount} contract-verified; ` +
+      `${metrics.waiverCount} temporary waivers; ${metrics.componentsWithoutDecision} without decisions; ` +
+      `${metrics.orphanLintCodes} orphan codes; ${metrics.mappedCodes} mapped codes).`,
+  );
+}
+
+export function extractWidgetbookNames(source) {
+  return new Set(
+    [...source.matchAll(/WidgetbookComponent\(\s*name:\s*'([^']+)'/gu)].map(
+      (match) => match[1],
+    ),
   );
 }
 
