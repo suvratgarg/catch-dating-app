@@ -29,8 +29,11 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart'
+    show CatchOption;
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -363,13 +366,15 @@ Widget hostSavedAudiencesStates(BuildContext context) {
       ],
       child: CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
+        primaryRail: const CatchTabRail<String>(
+          selected: 'audiences',
+          options: [
+            CatchOption(value: 'people', label: 'People'),
+            CatchOption(value: 'audiences', label: 'Audiences'),
+          ],
         ),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,

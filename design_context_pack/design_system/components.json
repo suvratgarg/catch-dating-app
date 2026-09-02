@@ -6602,7 +6602,7 @@
             "dartType": "bool"
           },
           {
-            "name": "border",
+            "name": "divider",
             "type": "bool",
             "required": false,
             "default": false,
@@ -6636,7 +6636,7 @@
           "with-search",
           "conversation-title",
           "surface",
-          "bordered",
+          "divider",
           "plain-actions"
         ],
         "slots": [

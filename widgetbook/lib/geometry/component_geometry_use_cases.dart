@@ -698,7 +698,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
           identityPhotoUrl: null,
           onIdentityTap: _noop,
           surface: true,
-          border: true,
+          divider: true,
           actions: [
             CatchActionMenu<String>(
               tooltip: 'Conversation actions',

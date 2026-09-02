@@ -358,7 +358,6 @@ class CatchRootScreenScrollView extends StatelessWidget {
        assert(slivers.length > 0);
 
   const CatchRootScreenScrollView._({
-    super.key,
     required Widget header,
     required this.bodyLayout,
     required List<Widget> slivers,

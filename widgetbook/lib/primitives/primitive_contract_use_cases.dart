@@ -4514,7 +4514,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       'with-search',
       'conversation-title',
       'surface',
-      'bordered',
+      'divider',
       'plain-actions',
     ],
     children: [
@@ -4612,7 +4612,7 @@ Widget catchTopBarContractStates(BuildContext context) {
             identityPhotoUrl: null,
             onIdentityTap: _noop,
             surface: true,
-            border: true,
+            divider: true,
             actions: [
               CatchTopBarMenuAction<String>(
                 tooltip: 'Chat actions',
@@ -4649,9 +4649,9 @@ Widget catchTopBarContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'bordered',
+        label: 'divider',
         child: const _TopBarFrame(
-          child: CatchTopBar(title: 'Bordered', border: true),
+          child: CatchTopBar(title: 'Divider', divider: true),
         ),
       ),
     ],
@@ -9874,10 +9874,8 @@ class _RootScreenPrimaryRailContractDemoState
         controller: _controller,
         pages: const [
           CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
-            page: CatchRootScreenPageScrollView(
+            page: CatchRootScreenPageScrollView.standard(
               scrollKey: PageStorageKey<String>('contract-tab-edit'),
-              bodyLayout: CatchScreenBodyLayout.standard,
               slivers: [
                 SliverToBoxAdapter(
                   child: Text('Edit owns this scroll position.'),
@@ -9886,10 +9884,8 @@ class _RootScreenPrimaryRailContractDemoState
             ),
           ),
           CatchRootScreenPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
-            page: CatchRootScreenPageScrollView(
+            page: CatchRootScreenPageScrollView.standard(
               scrollKey: PageStorageKey<String>('contract-tab-preview'),
-              bodyLayout: CatchScreenBodyLayout.standard,
               slivers: [
                 SliverToBoxAdapter(
                   child: Text('Preview owns a separate scroll position.'),

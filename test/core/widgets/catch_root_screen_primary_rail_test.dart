@@ -327,14 +327,14 @@ Widget _wrap({
 Widget _wrapEmbeddedViewport() {
   return MaterialApp(
     theme: AppTheme.light,
-    home: CatchRootScreenScaffold.withPrimaryRail(
-      header: const CatchRootScreenHeader.title(title: 'Workspace'),
-      primaryRail: const _TestPrimaryRail(height: CatchLayout.tabRailHeight),
+    home: const CatchRootScreenScaffold.withPrimaryRail(
+      header: CatchRootScreenHeader.title(title: 'Workspace'),
+      primaryRail: _TestPrimaryRail(height: CatchLayout.tabRailHeight),
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
           page: CatchRootScreenPageScrollView.embeddedViewport(
-            scrollKey: const PageStorageKey<String>('root-page-embedded-test'),
-            slivers: const [SliverFillRemaining(child: SizedBox.shrink())],
+            scrollKey: PageStorageKey<String>('root-page-embedded-test'),
+            slivers: [SliverFillRemaining(child: SizedBox.shrink())],
           ),
         ),
       ),
