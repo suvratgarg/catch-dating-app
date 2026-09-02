@@ -599,6 +599,16 @@ List<String> _evaluateBodyGeometryContract({
         '$screenLayoutFamilyCode $screenId: $bodyGeometry $family bodies must explicitly select $requiredRole on every build/return terminal',
       );
     }
+    if (bodyGeometry == 'standard') {
+      final competingGeometry = terminalStandardBodyGeometryConflicts(
+        declarationSource,
+      );
+      if (competingGeometry.isNotEmpty) {
+        failures.add(
+          '$screenLayoutFamilyCode $screenId: standard root content must not nest competing page geometry (${competingGeometry.join(', ')}); CatchRootScreenScrollView owns the 20-point horizontal gutter and 24-point top rhythm',
+        );
+      }
+    }
     return failures;
   }
 
@@ -1318,6 +1328,18 @@ final class _StandardBodyGeometryTraversal {
       if (_namedArgumentExpression(arguments, standardContentName)
           case final content?) {
         walk(content, withinStandardContent: true);
+      }
+      return;
+    }
+
+    if (const <String>{
+          'CatchRootScreenScaffold',
+          'CatchRootScreenScrollView',
+        }.contains(signature) &&
+        _namedArgumentExpression(arguments, 'bodyLayout')?.toSource() ==
+            'CatchScreenBodyLayout.standard') {
+      if (_namedArgumentExpression(arguments, 'slivers') case final slivers?) {
+        walk(slivers, withinStandardContent: true);
       }
       return;
     }

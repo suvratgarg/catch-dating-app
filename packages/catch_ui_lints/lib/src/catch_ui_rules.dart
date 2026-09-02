@@ -16,7 +16,7 @@ const _eventDetailPathFragments = <String>[
 const _excludedPathFragments = <String>[
   '/lib/core/theme/',
   '/lib/core/schema_contracts/generated/',
-  '/generated/',
+  '/lib/l10n/generated/',
 ];
 
 const _spacingNamedArguments = <String>{
@@ -2133,8 +2133,10 @@ class _CatchUiTestVisitor extends SimpleAstVisitor<void> {
 }
 
 String _constructorTypeName(InstanceCreationExpression node) {
+  final resolvedName = node.constructorName.element?.enclosingElement.name;
+  if (resolvedName != null && resolvedName.isNotEmpty) return resolvedName;
   final raw = node.constructorName.type.toSource();
-  return raw.split('<').first;
+  return raw.split('<').first.split('.').last;
 }
 
 bool isCatchUiDateArithmeticDuration(InstanceCreationExpression node) {

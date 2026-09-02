@@ -36,6 +36,10 @@ if grep -Fq "explore_concept" "$sizing_rule_source"; then
   echo "Catch UI sizing enforcement still references the retired Explore concept path." >&2
   exit 1
 fi
+if grep -Fq "'/generated/'" "$sizing_rule_source"; then
+  echo "Catch UI enforcement must not exempt every source directory named generated." >&2
+  exit 1
+fi
 
 cleanup() {
   rm -rf "$probe_root"
@@ -449,6 +453,27 @@ DART
 expect_code_count \
   "Host route-edge async-state violation" \
   "catch_async_requires_state_surface" \
+  1
+
+probe_path="$probe_root/lib/events/presentation/generated/prefixed_constructor_probe.dart"
+run_analyze_probe "prefixed constructor in authored generated-named directory" <<'DART'
+import 'package:flutter/material.dart' as material;
+
+class PrefixedConstructorProbe extends material.StatelessWidget {
+  const PrefixedConstructorProbe({super.key});
+
+  @override
+  material.Widget build(material.BuildContext context) {
+    return const material.Chip(
+      label: material.Text('Raw prefixed control'),
+    );
+  }
+}
+DART
+
+expect_code_count \
+  "prefixed constructor in authored generated-named directory" \
+  "catch_no_raw_material_control" \
   1
 
 probe_path="$probe_root/lib/events/presentation/widgets/event_detail_lint_probe.dart"

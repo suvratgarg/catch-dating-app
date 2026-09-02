@@ -99,6 +99,47 @@ class ExampleScreen {
     );
   });
 
+  test('rejects nested page geometry inside an ordinary standard root', () {
+    final failures = evaluateLayoutOwnerContract(
+      screenId: 'screen.fixture',
+      owner: <String, Object?>{
+        'symbol': 'ExampleScreen',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold',
+        'bodyGeometry': 'standard',
+        'topEdge': 'safe-area',
+      },
+      declarationSource: '''
+class ExampleScreen {
+  Object build() => CatchRootScreenScaffold(
+    bodyLayout: CatchScreenBodyLayout.standard,
+    slivers: [
+      CatchSliverScreenBody(
+        layout: CatchScreenBodyLayout.standard,
+        slivers: const [SliverToBoxAdapter()],
+      ),
+      SliverPadding(
+        padding: CatchInsets.pageBody,
+        sliver: const SliverToBoxAdapter(),
+      ),
+    ],
+  );
+}
+''',
+    );
+
+    expect(
+      failures,
+      contains(
+        allOf(
+          contains('standard root content'),
+          contains('CatchSliverScreenBody'),
+          contains('CatchInsets.pageBody'),
+        ),
+      ),
+    );
+  });
+
   test('allows component insets and ignores dead competing geometry', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',
