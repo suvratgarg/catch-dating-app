@@ -247,10 +247,8 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
             ),
           ),
           CatchRootScreenPageSpec.scroll(
-            page: CatchRootScreenPageScrollView(
+            page: CatchRootScreenPageScrollView.standard(
               scrollKey: const PageStorageKey<String>('host-forms-responses'),
-              bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
               slivers: [
                 SliverToBoxAdapter(
                   child: HostFormResponsesPanel(
@@ -437,15 +435,10 @@ class _HostFormsLibraryPage extends ConsumerWidget
   final Future<void> Function(_HostFormRowAction, HostFormSummary) onRowAction;
 
   @override
-  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
-
-  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tokens = CatchTokens.of(context);
-    return CatchRootScreenPageScrollView(
+    return CatchRootScreenPageScrollView.standard(
       scrollKey: const PageStorageKey<String>('host-forms-library'),
-      bodyLayout: bodyLayout,
-      constrainToContentWidth: true,
       maxContentExtent: CatchLayout.hostFormsDirectoryPageMaxExtent,
       slivers: [
         SliverList.list(

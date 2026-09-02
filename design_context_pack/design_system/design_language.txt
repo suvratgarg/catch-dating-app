@@ -315,9 +315,11 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
 - Root title screens route through `CatchRootScreenScaffold` (or its
   parent-scaffold `CatchRootScreenScrollView` variant). Roots with pinned peer
   navigation use `CatchRootScreenScaffold.withPrimaryRail` plus
-  `CatchRootScreenPageScrollView`. Every body declares the one regular `standard`
-  geometry (20 pt phone gutter, 24 pt body start) or explicitly edge-owned
-  `fullBleed` geometry through `CatchScreenBodyLayout`; feature screens do not
+  a closed `CatchRootScreenPageScrollView.standard`, `.fullBleed`, or
+  `.embeddedViewport` role. Standard owns the 20 pt phone gutter, 24 pt body
+  start, responsive lane, and shell clearance; full bleed retains shell
+  clearance without outer body geometry; embedded viewport delegates scrolling
+  and clearance to its fill-remaining child. Feature screens do not
   reconstruct title gaps, page gutters, terminal navigation clearance,
   responsive content lanes, or state-viewport placement. Primary-rail roots use a
   4 pt title-to-rail handoff, 44 pt rail, and the same 24 pt body start.

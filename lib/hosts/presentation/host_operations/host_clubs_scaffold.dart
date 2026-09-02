@@ -53,10 +53,8 @@ class HostOrganizerStateScaffold extends StatelessWidget {
       semanticsLabel: context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
-          page: CatchRootScreenPageScrollView(
+          page: CatchRootScreenPageScrollView.standard(
             scrollKey: scrollKey,
-            bodyLayout: CatchScreenBodyLayout.standard,
-            constrainToContentWidth: true,
             slivers: slivers,
           ),
         ),
@@ -204,10 +202,8 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
           controller: _tabController,
           pages: [
             CatchRootScreenPageSpec.scroll(
-              page: CatchRootScreenPageScrollView(
+              page: CatchRootScreenPageScrollView.standard(
                 scrollStateController: _pageScrollControllers[HostClubTab.edit],
-                bodyLayout: CatchScreenBodyLayout.standard,
-                constrainToContentWidth: true,
                 scrollKey: PageStorageKey(
                   'host-club-${selectedClub.id}-edit-scroll',
                 ),
@@ -231,11 +227,9 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               ),
             ),
             CatchRootScreenPageSpec.scroll(
-              page: CatchRootScreenPageScrollView(
+              page: CatchRootScreenPageScrollView.standard(
                 scrollStateController:
                     _pageScrollControllers[HostClubTab.insights],
-                bodyLayout: CatchScreenBodyLayout.standard,
-                constrainToContentWidth: true,
                 onRefresh: _insightsRefreshController.refresh,
                 scrollKey: PageStorageKey(
                   'host-club-${selectedClub.id}-insights-scroll',
@@ -256,10 +250,9 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
             ),
             CatchRootScreenPageSpec.surface(
               backgroundColor: t.surface,
-              page: CatchRootScreenPageScrollView(
+              page: CatchRootScreenPageScrollView.fullBleed(
                 scrollStateController:
                     _pageScrollControllers[HostClubTab.preview],
-                bodyLayout: CatchScreenBodyLayout.fullBleed,
                 scrollKey: PageStorageKey(
                   'host-club-${selectedClub.id}-preview-scroll',
                 ),

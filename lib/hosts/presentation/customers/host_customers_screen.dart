@@ -374,10 +374,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
         pages: [
           CatchRootScreenPageSpec.masterDetail(
             expanded: screenSize.isExpanded,
-            master: CatchRootScreenPageScrollView(
+            master: CatchRootScreenPageScrollView.standard(
               scrollKey: const PageStorageKey<String>('host-customers-people'),
-              bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
               slivers: [
                 SliverList.list(
                   children: [

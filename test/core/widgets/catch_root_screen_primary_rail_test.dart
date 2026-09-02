@@ -23,7 +23,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
 
-      await tester.pumpWidget(_wrap(constrainToContentWidth: true));
+      await tester.pumpWidget(_wrap());
       await tester.pump();
 
       expect(find.byType(SliverCrossAxisGroup), findsOneWidget);
@@ -41,21 +41,23 @@ void main() {
   );
 
   testWidgets(
-    'CatchRootScreenPageScrollView keeps standard gutters without a width clamp',
+    'CatchRootScreenPageScrollView keeps full bleed free of a width clamp',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(1000, 800);
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
 
-      await tester.pumpWidget(_wrap(constrainToContentWidth: false));
+      await tester.pumpWidget(
+        _wrap(bodyLayout: CatchScreenBodyLayout.fullBleed),
+      );
       await tester.pump();
 
       expect(find.byType(SliverCrossAxisGroup), findsNothing);
       expect(find.byType(SliverConstrainedCrossAxis), findsNothing);
       expect(
         tester.getSize(find.byKey(const ValueKey('root-page-frame'))).width,
-        1000 - CatchInsets.pageBody.horizontal,
+        1000,
       );
     },
   );
@@ -72,9 +74,7 @@ void main() {
       (CatchScreenBodyLayout.standard, CatchInsets.pageBody.top),
       (CatchScreenBodyLayout.fullBleed, 0.0),
     ]) {
-      await tester.pumpWidget(
-        _wrap(constrainToContentWidth: false, bodyLayout: layout),
-      );
+      await tester.pumpWidget(_wrap(bodyLayout: layout));
       await tester.pump();
 
       final rail = tester.getRect(find.byKey(const ValueKey('root-page-rail')));
@@ -97,7 +97,7 @@ void main() {
         index: 0,
         bottomBarPlacement: AppShellBottomBarPlacement.floating,
         bottomOverlayInset: 96,
-        child: _wrap(constrainToContentWidth: false),
+        child: _wrap(),
       ),
     );
 
@@ -105,6 +105,19 @@ void main() {
       find.byType(CatchFieldVisibilityScope),
     );
     expect(scope.bottomObstruction, 96);
+  });
+
+  testWidgets('root page roles close terminal-clearance ownership', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_wrap());
+    expect(find.byType(CatchSliverTerminalPadding), findsOneWidget);
+
+    await tester.pumpWidget(_wrap(bodyLayout: CatchScreenBodyLayout.fullBleed));
+    expect(find.byType(CatchSliverTerminalPadding), findsOneWidget);
+
+    await tester.pumpWidget(_wrapEmbeddedViewport());
+    expect(find.byType(CatchSliverTerminalPadding), findsNothing);
   });
 
   test('root primary-rail geometry uses the approved compact rhythm', () {
@@ -121,9 +134,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    await tester.pumpWidget(
-      _wrap(constrainToContentWidth: false, contentHeight: 1800),
-    );
+    await tester.pumpWidget(_wrap(contentHeight: 1800));
     final titleBefore = tester.getRect(find.text('Workspace'));
     final railBefore = tester.getRect(
       find.byKey(const ValueKey('root-page-rail')),
@@ -175,9 +186,8 @@ void main() {
             primaryRail: _TestPrimaryRail(height: CatchLayout.tabRailHeight),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
-                page: CatchRootScreenPageScrollView(
+                page: CatchRootScreenPageScrollView.standard(
                   scrollKey: PageStorageKey('search-root-page'),
-                  bodyLayout: CatchScreenBodyLayout.standard,
                   slivers: <Widget>[
                     SliverToBoxAdapter(child: SizedBox.shrink()),
                   ],
@@ -224,9 +234,8 @@ void main() {
             primaryRail: _TestPrimaryRail(height: 48),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
-                page: CatchRootScreenPageScrollView(
+                page: CatchRootScreenPageScrollView.standard(
                   scrollKey: PageStorageKey('invalid-rail-root-page'),
-                  bodyLayout: CatchScreenBodyLayout.standard,
                   slivers: <Widget>[],
                 ),
               ),
@@ -252,7 +261,7 @@ void main() {
     },
   );
 
-  testWidgets('CatchRootScreenPageSpec takes geometry from the page owner', (
+  testWidgets('CatchRootScreenPageSpec accepts a typed semantic page owner', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -262,22 +271,44 @@ void main() {
           header: CatchRootScreenHeader.title(title: 'Workspace'),
           primaryRail: _TestPrimaryRail(height: CatchLayout.tabRailHeight),
           body: CatchRootScreenBody.single(
-            page: CatchRootScreenPageSpec.scroll(page: _FullBleedPageOwner()),
+            page: CatchRootScreenPageSpec.scroll(page: _TestPageOwner()),
           ),
         ),
       ),
     );
 
     expect(tester.takeException(), isNull);
-    expect(find.byType(_FullBleedPageOwner), findsOneWidget);
+    expect(find.byType(_TestPageOwner), findsOneWidget);
   });
 }
 
 Widget _wrap({
-  required bool constrainToContentWidth,
   CatchScreenBodyLayout bodyLayout = CatchScreenBodyLayout.standard,
   double contentHeight = 80,
 }) {
+  final slivers = <Widget>[
+    SliverToBoxAdapter(
+      child: SizedBox(
+        key: const ValueKey('root-page-frame'),
+        width: double.infinity,
+        height: contentHeight,
+        child: const SizedBox(
+          key: ValueKey('root-page-content'),
+          width: double.infinity,
+        ),
+      ),
+    ),
+  ];
+  final page = switch (bodyLayout) {
+    CatchScreenBodyLayout.standard => CatchRootScreenPageScrollView.standard(
+      scrollKey: const PageStorageKey<String>('root-page-test'),
+      slivers: slivers,
+    ),
+    CatchScreenBodyLayout.fullBleed => CatchRootScreenPageScrollView.fullBleed(
+      scrollKey: const PageStorageKey<String>('root-page-test'),
+      slivers: slivers,
+    ),
+  };
   return MaterialApp(
     theme: AppTheme.light,
     home: CatchRootScreenScaffold.withPrimaryRail(
@@ -287,24 +318,23 @@ Widget _wrap({
         height: CatchLayout.tabRailHeight,
       ),
       body: CatchRootScreenBody.single(
+        page: CatchRootScreenPageSpec.scroll(page: page),
+      ),
+    ),
+  );
+}
+
+Widget _wrapEmbeddedViewport() {
+  return MaterialApp(
+    theme: AppTheme.light,
+    home: CatchRootScreenScaffold.withPrimaryRail(
+      header: const CatchRootScreenHeader.title(title: 'Workspace'),
+      primaryRail: const _TestPrimaryRail(height: CatchLayout.tabRailHeight),
+      body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
-          page: CatchRootScreenPageScrollView(
-            scrollKey: const PageStorageKey<String>('root-page-test'),
-            bodyLayout: bodyLayout,
-            constrainToContentWidth: constrainToContentWidth,
-            slivers: [
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  key: const ValueKey('root-page-frame'),
-                  width: double.infinity,
-                  height: contentHeight,
-                  child: const SizedBox(
-                    key: ValueKey('root-page-content'),
-                    width: double.infinity,
-                  ),
-                ),
-              ),
-            ],
+          page: CatchRootScreenPageScrollView.embeddedViewport(
+            scrollKey: const PageStorageKey<String>('root-page-embedded-test'),
+            slivers: const [SliverFillRemaining(child: SizedBox.shrink())],
           ),
         ),
       ),
@@ -324,12 +354,9 @@ class _TestPrimaryRail extends StatelessWidget implements CatchPrimaryRail {
   Widget build(BuildContext context) => SizedBox(height: height);
 }
 
-class _FullBleedPageOwner extends StatelessWidget
+class _TestPageOwner extends StatelessWidget
     implements CatchRootScreenPageOwner {
-  const _FullBleedPageOwner();
-
-  @override
-  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.fullBleed;
+  const _TestPageOwner();
 
   @override
   Widget build(BuildContext context) => const SizedBox.shrink();

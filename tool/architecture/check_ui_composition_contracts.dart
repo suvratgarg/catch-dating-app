@@ -24,6 +24,13 @@ const _canonicalScaffoldPath = 'lib/core/widgets/catch_screen_scaffold.dart';
 const _canonicalRootScreenBodyPath =
     'lib/core/widgets/catch_root_screen_body.dart';
 
+const _rootPageScrollRoles = <String, String>{
+  'CatchRootScreenPageScrollView.standard': 'CatchScreenBodyLayout.standard',
+  'CatchRootScreenPageScrollView.fullBleed': 'CatchScreenBodyLayout.fullBleed',
+  'CatchRootScreenPageScrollView.embeddedViewport':
+      'CatchScreenBodyLayout.fullBleed',
+};
+
 const _familyExpressions = <String, Set<String>>{
   'root': <String>{
     'CatchRootScreenScaffold',
@@ -494,16 +501,16 @@ List<String> _evaluateBodyGeometryContract({
           : spec.namedArguments['page'];
       if (pageArgument == null) return null;
       final ownerSignature = _rootConstructorSignature(pageArgument);
-      if (ownerSignature != 'CatchRootScreenPageScrollView') {
+      if (!_rootPageScrollRoles.containsKey(ownerSignature)) {
         return semanticRootPageOwnerRoles[ownerSignature];
       }
       final inlineOwners =
           layoutOwnerInstantiations('Object _page() => $pageArgument;').where(
             (instantiation) =>
-                instantiation.signature == 'CatchRootScreenPageScrollView',
+                _rootPageScrollRoles.containsKey(instantiation.signature),
           );
       final inlineRoles = inlineOwners
-          .map((owner) => owner.namedArguments['bodyLayout'])
+          .map((owner) => _rootPageScrollRoles[owner.signature])
           .whereType<String>()
           .toSet();
       return inlineRoles.length == 1 ? inlineRoles.single : null;
@@ -512,7 +519,7 @@ List<String> _evaluateBodyGeometryContract({
     final roles = pageSpecs.map(resolvePageOwnerRole).toList();
     if (pageSpecs.isEmpty || roles.any((role) => role == null)) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: every typed root page must resolve directly to CatchRootScreenPageScrollView or a known semantic CatchRootScreenPageOwner with one explicit bodyLayout role',
+        '$screenLayoutFamilyCode $screenId: every typed root page must resolve directly to one semantic CatchRootScreenPageScrollView geometry constructor or a known semantic CatchRootScreenPageOwner',
       );
       return failures;
     }
@@ -808,43 +815,35 @@ List<String> evaluateRootPageOwnerContract({
       '$screenLayoutFamilyCode $symbol: semantic root page owner is not a class declaration',
     ];
   }
-  final declaration = firstDeclaration;
-  final declaredRole = _declaredRootPageOwnerRole(declaration);
   final pageScrollOwners = terminalLayoutOwnerInstantiations(declarationSource)
       .where(
         (instantiation) =>
-            instantiation.signature == 'CatchRootScreenPageScrollView',
+            _rootPageScrollRoles.containsKey(instantiation.signature),
       )
       .toList();
   final everyTerminalOwnsPageScroll = terminalLayoutOwnerOnEveryBranch(
     declarationSource,
-    const <String>{'CatchRootScreenPageScrollView'},
+    _rootPageScrollRoles.keys.toSet(),
   );
+  final roles = pageScrollOwners
+      .map((owner) => _rootPageScrollRoles[owner.signature])
+      .whereType<String>()
+      .toSet();
+  final resolvedRole = roles.length == 1 ? roles.single : null;
   final failures = <String>[];
-  if (declaredRole != 'CatchScreenBodyLayout.standard' &&
-      declaredRole != 'CatchScreenBodyLayout.fullBleed') {
-    failures.add(
-      '$screenLayoutFamilyCode $symbol: semantic root page owner must declare an explicit bodyLayout getter',
-    );
-  }
   if (pageScrollOwners.isEmpty || !everyTerminalOwnsPageScroll) {
     failures.add(
       '$screenLayoutFamilyCode $symbol: every semantic root page owner build/return terminal must terminate in CatchRootScreenPageScrollView',
     );
-  } else if (declaredRole != null &&
-      pageScrollOwners.any(
-        (owner) =>
-            owner.namedArguments['bodyLayout'] != declaredRole &&
-            owner.namedArguments['bodyLayout'] != 'bodyLayout',
-      )) {
+  } else if (resolvedRole == null) {
     failures.add(
-      '$screenLayoutFamilyCode $symbol: semantic root page owner must forward its declared bodyLayout to every CatchRootScreenPageScrollView terminal',
+      '$screenLayoutFamilyCode $symbol: every semantic root page owner terminal must select one consistent CatchRootScreenPageScrollView geometry constructor',
     );
   }
-  if (declaredRole == 'CatchScreenBodyLayout.standard') {
+  if (resolvedRole == 'CatchScreenBodyLayout.standard') {
     final competingGeometry = terminalStandardBodyGeometryConflicts(
       declarationSource,
-      semanticRootPageOwnerRole: declaredRole,
+      semanticRootPageOwnerRole: resolvedRole,
     );
     if (competingGeometry.isNotEmpty) {
       failures.add(
@@ -853,28 +852,6 @@ List<String> evaluateRootPageOwnerContract({
     }
   }
   return failures;
-}
-
-String? _declaredRootPageOwnerRole(ClassDeclaration declaration) {
-  final bodyLayoutMember = declaration.body.members
-      .whereType<MethodDeclaration>()
-      .where((method) => method.isGetter && method.name.lexeme == 'bodyLayout')
-      .firstOrNull;
-  return bodyLayoutMember == null
-      ? null
-      : _singleReturnExpression(bodyLayoutMember.body)?.toSource();
-}
-
-Expression? _singleReturnExpression(FunctionBody body) {
-  if (body case final ExpressionFunctionBody expressionBody) {
-    return expressionBody.expression;
-  }
-  final visitor = _DirectReturnExpressionVisitor();
-  body.accept(visitor);
-  return visitor.expressions.length == 1 &&
-          visitor.expressions.single is Expression
-      ? visitor.expressions.single as Expression
-      : null;
 }
 
 const _transparentWidgetArgumentNames = <String>{
@@ -1333,10 +1310,11 @@ final class _StandardBodyGeometryTraversal {
           : 'page';
       final page = _namedArgumentExpression(arguments, pageName);
       final pageArguments = page == null ? null : _rootArgumentList(page);
+      final pageSignature = page == null
+          ? null
+          : _rootConstructorSignature(page.toSource());
       if (pageArguments != null &&
-          _rootConstructorSignature(page!.toSource()) ==
-              'CatchRootScreenPageScrollView' &&
-          _namedArgumentExpression(pageArguments, 'bodyLayout')?.toSource() ==
+          _rootPageScrollRoles[pageSignature] ==
               'CatchScreenBodyLayout.standard') {
         if (_namedArgumentExpression(pageArguments, 'slivers')
             case final slivers?) {
@@ -1346,7 +1324,7 @@ final class _StandardBodyGeometryTraversal {
       return;
     }
 
-    if (signature == 'CatchRootScreenPageScrollView' &&
+    if (_rootPageScrollRoles.containsKey(signature) &&
         semanticRootPageOwnerRole == 'CatchScreenBodyLayout.standard') {
       if (_namedArgumentExpression(arguments, 'slivers') case final slivers?) {
         walk(slivers, withinStandardContent: true);
@@ -2402,13 +2380,16 @@ Future<Map<String, String>> _productionRootPageOwnerRoles(
       if (element == null || !_implementsCatchRootScreenPageOwner(element)) {
         continue;
       }
-      final role = _declaredRootPageOwnerRole(declaration);
-      if (role != null &&
-          const <String>{
-            'CatchScreenBodyLayout.standard',
-            'CatchScreenBodyLayout.fullBleed',
-          }.contains(role)) {
-        roles[_interfaceElementKey(element)] = role;
+      final declarationSource = unit.result.content.substring(
+        declaration.offset,
+        declaration.end,
+      );
+      final ownerRoles = terminalLayoutOwnerInstantiations(declarationSource)
+          .map((owner) => _rootPageScrollRoles[owner.signature])
+          .whereType<String>()
+          .toSet();
+      if (ownerRoles.length == 1) {
+        roles[_interfaceElementKey(element)] = ownerRoles.single;
       }
     }
   }

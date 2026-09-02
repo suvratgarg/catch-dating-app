@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -49,10 +48,8 @@ class HostAudienceStateScaffold extends StatelessWidget {
       ),
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
-          page: CatchRootScreenPageScrollView(
+          page: CatchRootScreenPageScrollView.standard(
             scrollKey: scrollKey,
-            bodyLayout: CatchScreenBodyLayout.standard,
-            constrainToContentWidth: true,
             slivers: slivers,
           ),
         ),

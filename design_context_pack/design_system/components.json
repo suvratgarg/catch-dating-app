@@ -7312,7 +7312,7 @@
           {
             "id": "catch.screen_body.root_screen_page_scroll_view",
             "symbol": "CatchRootScreenPageScrollView",
-            "summary": "Typed inner root-page scroll owner and sole declarer of standard or full-bleed geometry, plus overlap injection, focus isolation, stable PageStorage restoration, refresh, and terminal clearance below an optional pinned primary rail. CatchRootScreenPageSpec selects only the surrounding page adapter.",
+            "summary": "Typed inner root-page scroll owner whose closed standard, fullBleed, and embeddedViewport constructors jointly select geometry, responsive width, and terminal-clearance policy. It also owns overlap injection, focus isolation, stable PageStorage restoration, and refresh; CatchRootScreenPageSpec selects only the surrounding page adapter.",
             "states": [
               "top",
               "scrolled",

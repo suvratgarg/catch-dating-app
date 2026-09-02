@@ -16,9 +16,7 @@ enum _CatchRootScreenPageKind { scroll, surface, masterDetail }
 /// Canonical pages use [CatchRootScreenPageScrollView] directly. Feature owners
 /// may implement this interface only when their build terminal delegates to
 /// that scroll owner; the resolved composition checker enforces that boundary.
-abstract interface class CatchRootScreenPageOwner implements Widget {
-  CatchScreenBodyLayout get bodyLayout;
-}
+abstract interface class CatchRootScreenPageOwner implements Widget {}
 
 /// Typed page entry accepted by [CatchRootScreenBody].
 ///
@@ -129,22 +127,52 @@ final class CatchRootScreenBody {
 /// converting sliver-native pages into box layouts.
 class CatchRootScreenPageScrollView extends StatefulWidget
     implements CatchRootScreenPageOwner {
-  const CatchRootScreenPageScrollView({
+  /// Standard root page: canonical body rhythm, responsive content lane, and
+  /// shell-aware terminal clearance.
+  const CatchRootScreenPageScrollView.standard({
     super.key,
     required this.scrollKey,
-    required this.bodyLayout,
     required this.slivers,
-    this.includeTerminalPadding = true,
-    this.constrainToContentWidth = false,
-    this.maxContentExtent,
+    this.maxContentExtent = CatchLayout.screenPageMaxExtent,
     this.controller,
     this.scrollStateController,
     this.physics,
     this.onRefresh,
-  });
+  }) : bodyLayout = CatchScreenBodyLayout.standard,
+       includeTerminalPadding = true,
+       constrainToContentWidth = true;
+
+  /// Full-bleed root page whose slivers still use shell-owned terminal
+  /// clearance.
+  const CatchRootScreenPageScrollView.fullBleed({
+    super.key,
+    required this.scrollKey,
+    required this.slivers,
+    this.controller,
+    this.scrollStateController,
+    this.physics,
+    this.onRefresh,
+  }) : bodyLayout = CatchScreenBodyLayout.fullBleed,
+       includeTerminalPadding = true,
+       constrainToContentWidth = false,
+       maxContentExtent = null;
+
+  /// Full-bleed page whose single fill-remaining child owns its own scrolling
+  /// viewport and terminal shell clearance.
+  const CatchRootScreenPageScrollView.embeddedViewport({
+    super.key,
+    required this.scrollKey,
+    required this.slivers,
+    this.controller,
+    this.scrollStateController,
+    this.physics,
+    this.onRefresh,
+  }) : bodyLayout = CatchScreenBodyLayout.fullBleed,
+       includeTerminalPadding = false,
+       constrainToContentWidth = false,
+       maxContentExtent = null;
 
   final PageStorageKey<String> scrollKey;
-  @override
   final CatchScreenBodyLayout bodyLayout;
   final List<Widget> slivers;
   final bool includeTerminalPadding;
@@ -152,9 +180,8 @@ class CatchRootScreenPageScrollView extends StatefulWidget
   /// Centers each supplied sliver around a [CatchLayout.maxContentWidth]
   /// content lane plus the canonical [CatchInsets.pageBody] side gutters.
   ///
-  /// Leave this false for full-bleed or intrinsically sliver-native pages such
-  /// as read-only previews. The overlap injector and terminal-padding sliver
-  /// always retain the viewport's full cross-axis extent.
+  /// Full-bleed variants leave this false. The overlap injector and terminal
+  /// padding always retain the viewport's full cross-axis extent.
   final bool constrainToContentWidth;
 
   /// Optional cross-axis extent for a content-width-constrained page.

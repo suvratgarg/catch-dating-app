@@ -517,8 +517,10 @@ Screen composition is a closed family, not a per-feature assembly exercise:
   field-obstruction scope, refresh wrapper, and terminal shell clearance.
 - A root destination with pinned peer tabs uses `CatchRootScreenScaffold.withPrimaryRail`
   and one `CatchRootScreenPageScrollView` per page. Every page must declare
-  `bodyLayout` on that page owner; `CatchRootScreenPageSpec` only selects the
-  scroll, surface, or master-detail adapter and cannot redeclare geometry.
+  geometry through the page owner's `standard`, `fullBleed`, or
+  `embeddedViewport` constructor; `CatchRootScreenPageSpec` only selects the
+  scroll, surface, or master-detail adapter and cannot redeclare geometry or
+  terminal-clearance policy.
   Overlap injection, restoration, focus isolation, body geometry, refresh, and
   terminal clearance remain shared mechanics.
 - A section-composed page without root-title chrome uses
@@ -1036,9 +1038,11 @@ For `NestedScrollView` plus pinned tab rows:
   title group.
 - Each tab body starts with the matching `SliverOverlapInjector`.
 - Body padding belongs to the tab body, not to the pinned tab row.
-- Route-owned tab pages use `CatchRootScreenPageScrollView`. Box-content pages opt
-  into an explicit `bodyLayout` on that sole page owner and may opt into
-  `constrainToContentWidth`; the
+- Route-owned tab pages use a semantic `CatchRootScreenPageScrollView`
+  constructor. `standard` owns the responsive width clamp, 20 pt gutter, 24 pt
+  body start, and terminal clearance. `fullBleed` removes only the outer body
+  geometry while retaining terminal clearance. `embeddedViewport` is reserved
+  for a fill-remaining child that owns its own scroll and terminal clearance. The
   body role owns title/tab-to-content rhythm and page gutters, while the width
   option preserves the canonical 600 px content
   lane plus page gutters only when the viewport has surplus width. A page may
@@ -1071,16 +1075,13 @@ Host Clubs is the reference for mixing bounded box content with a sliver-native
 preview under one root-owned primary-rail path:
 
 ```dart
-CatchRootScreenPageScrollView(
+CatchRootScreenPageScrollView.standard(
   scrollKey: editScrollKey,
-  bodyLayout: CatchScreenBodyLayout.standard,
-  constrainToContentWidth: true,
   slivers: editSlivers,
 )
 
-CatchRootScreenPageScrollView(
+CatchRootScreenPageScrollView.fullBleed(
   scrollKey: previewScrollKey,
-  bodyLayout: CatchScreenBodyLayout.fullBleed,
   slivers: previewSlivers, // Full-bleed and sliver-native.
 )
 ```
@@ -1089,7 +1090,8 @@ CatchRootScreenPageScrollView(
 offset restoration, semantic body geometry, and terminal clearance. Feature
 pages own their slivers, refresh policy, controllers, and typed tab state. Do not reintroduce
 feature-local `Center`/`ConstrainedBox` wrappers, redeclare the body role on
-`CatchRootScreenPageSpec`, or box the Preview slivers.
+`CatchRootScreenPageSpec`, restore independent width/terminal booleans, or box
+the Preview slivers.
 
 ### Current Screen Layout Decisions
 

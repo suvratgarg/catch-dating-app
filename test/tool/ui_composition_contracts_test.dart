@@ -552,9 +552,7 @@ class ExampleScreen {
   Object build() => CatchRootScreenScaffold.withPrimaryRail(
     body: CatchRootScreenBody.single(
       page: CatchRootScreenPageSpec.scroll(
-        page: CatchRootScreenPageScrollView(
-          bodyLayout: CatchScreenBodyLayout.fullBleed,
-        ),
+        page: CatchRootScreenPageScrollView.fullBleed(),
       ),
     ),
   );
@@ -588,17 +586,13 @@ class ExampleScreen {
   Object _body(bool loading) => switch (loading) {
     true => CatchRootScreenBody.single(
       page: CatchRootScreenPageSpec.scroll(
-        page: CatchRootScreenPageScrollView(
-          bodyLayout: CatchScreenBodyLayout.standard,
-        ),
+        page: CatchRootScreenPageScrollView.standard(),
       ),
     ),
     false => CatchRootScreenBody.paged(
       pages: [
         CatchRootScreenPageSpec.scroll(
-          page: CatchRootScreenPageScrollView(
-            bodyLayout: CatchScreenBodyLayout.standard,
-          ),
+          page: CatchRootScreenPageScrollView.standard(),
         ),
       ],
     ),
@@ -630,9 +624,7 @@ class ExampleScreen {
       ? const LegacyTabbedBody()
       : CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            page: CatchRootScreenPageScrollView(
-              bodyLayout: CatchScreenBodyLayout.standard,
-            ),
+            page: CatchRootScreenPageScrollView.standard(),
           ),
         );
 }
@@ -664,25 +656,19 @@ class ExampleScreen {
     expect(failures, contains(contains('root primary-rail bodies must use')));
   });
 
-  test('rejects a semantic root page owner that lies about its role', () {
+  test('rejects a semantic root page owner with mixed geometry terminals', () {
     final failures = evaluateRootPageOwnerContract(
-      symbol: 'LyingPageOwner',
+      symbol: 'MixedPageOwner',
       declarationSource: '''
-class LyingPageOwner implements CatchRootScreenPageOwner {
-  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
-
-  Object build() => CatchRootScreenPageScrollView(
-    bodyLayout: CatchScreenBodyLayout.fullBleed,
-  );
-
-  Object deadHelper() => CatchRootScreenPageScrollView(
-    bodyLayout: CatchScreenBodyLayout.standard,
-  );
+class MixedPageOwner implements CatchRootScreenPageOwner {
+  Object build(bool standard) => standard
+      ? CatchRootScreenPageScrollView.standard()
+      : CatchRootScreenPageScrollView.fullBleed();
 }
 ''',
     );
 
-    expect(failures, contains(contains('must forward its declared')));
+    expect(failures, contains(contains('one consistent')));
   });
 
   test('rejects a rogue semantic root page return branch', () {
@@ -690,11 +676,9 @@ class LyingPageOwner implements CatchRootScreenPageOwner {
       symbol: 'BranchingPageOwner',
       declarationSource: '''
 class BranchingPageOwner implements CatchRootScreenPageOwner {
-  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
-
   Object build(bool rogue) {
     if (rogue) return const SizedBox();
-    return CatchRootScreenPageScrollView(bodyLayout: bodyLayout);
+    return CatchRootScreenPageScrollView.standard();
   }
 }
 ''',
@@ -723,9 +707,7 @@ class ExampleScreen {
   Object build() => CatchRootScreenScaffold.withPrimaryRail(
     body: CatchRootScreenBody.single(
       page: CatchRootScreenPageSpec.scroll(
-        page: CatchRootScreenPageScrollView(
-          bodyLayout: CatchScreenBodyLayout.fullBleed,
-        ),
+        page: CatchRootScreenPageScrollView.fullBleed(),
       ),
     ),
   );
@@ -754,8 +736,7 @@ class ExampleScreen {
   Object build() => CatchRootScreenScaffold.withPrimaryRail(
     body: CatchRootScreenBody.single(
       page: CatchRootScreenPageSpec.scroll(
-        page: CatchRootScreenPageScrollView(
-          bodyLayout: CatchScreenBodyLayout.standard,
+        page: CatchRootScreenPageScrollView.standard(
           slivers: [
             SliverPadding(
               padding: CatchInsets.pageBody,
@@ -797,14 +778,12 @@ class ExampleScreen {
     body: CatchRootScreenBody.paged(
       pages: [
         CatchRootScreenPageSpec.scroll(
-          page: CatchRootScreenPageScrollView(
-            bodyLayout: CatchScreenBodyLayout.standard,
+          page: CatchRootScreenPageScrollView.standard(
             slivers: [const SliverToBoxAdapter()],
           ),
         ),
         CatchRootScreenPageSpec.scroll(
-          page: CatchRootScreenPageScrollView(
-            bodyLayout: CatchScreenBodyLayout.fullBleed,
+          page: CatchRootScreenPageScrollView.fullBleed(
             slivers: [
               SliverPadding(
                 padding: CatchInsets.pageBody,
@@ -828,10 +807,7 @@ class ExampleScreen {
       symbol: 'SemanticPageOwner',
       declarationSource: '''
 class SemanticPageOwner implements CatchRootScreenPageOwner {
-  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
-
-  Object build() => CatchRootScreenPageScrollView(
-    bodyLayout: bodyLayout,
+  Object build() => CatchRootScreenPageScrollView.standard(
     slivers: [
       CatchSliverPageBody(sliver: const SliverToBoxAdapter()),
     ],

@@ -7,7 +7,6 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -148,19 +147,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           controller: controller,
           pages: [
             const CatchRootScreenPageSpec.scroll(
-              page: CatchRootScreenPageScrollView(
+              page: CatchRootScreenPageScrollView.standard(
                 scrollKey: PageStorageKey('profile-edit-tab-loading'),
-                bodyLayout: CatchScreenBodyLayout.standard,
-                constrainToContentWidth: true,
-                includeTerminalPadding: false,
                 slivers: [ProfileTabSkeletonSliverBody()],
               ),
             ),
             CatchRootScreenPageSpec.scroll(
-              page: CatchRootScreenPageScrollView(
+              page: CatchRootScreenPageScrollView.embeddedViewport(
                 scrollKey: const PageStorageKey('profile-preview-tab-loading'),
-                bodyLayout: CatchScreenBodyLayout.fullBleed,
-                includeTerminalPadding: false,
                 slivers: [
                   PreviewTabSkeletonSliverBody(
                     scrollController: previewScrollController,
@@ -171,11 +165,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               ),
             ),
             const CatchRootScreenPageSpec.scroll(
-              page: CatchRootScreenPageScrollView(
+              page: CatchRootScreenPageScrollView.standard(
                 scrollKey: PageStorageKey('profile-insights-tab-loading'),
-                bodyLayout: CatchScreenBodyLayout.standard,
-                constrainToContentWidth: true,
-                includeTerminalPadding: false,
                 slivers: [ProfileInsightsTabSliverBody()],
               ),
             ),
@@ -184,10 +175,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       case SelfProfileRouteStatus.error:
         return CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            page: CatchRootScreenPageScrollView(
+            page: CatchRootScreenPageScrollView.standard(
               scrollKey: const PageStorageKey('profile-error-tab-scroll'),
-              bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
               slivers: [
                 CatchSliverErrorState.fromError(
                   state.error!,
@@ -201,10 +190,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       case SelfProfileRouteStatus.unavailable:
         return CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
-            page: CatchRootScreenPageScrollView(
+            page: CatchRootScreenPageScrollView.standard(
               scrollKey: const PageStorageKey('profile-unavailable-tab-scroll'),
-              bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
               slivers: [
                 CatchSliverEmptyState(
                   icon: CatchIcons.personOffOutlined,
@@ -226,10 +213,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           controller: controller,
           pages: [
             CatchRootScreenPageSpec.scroll(
-              page: CatchRootScreenPageScrollView(
+              page: CatchRootScreenPageScrollView.standard(
                 scrollKey: const PageStorageKey('profile-edit-tab-scroll'),
-                bodyLayout: CatchScreenBodyLayout.standard,
-                constrainToContentWidth: true,
                 slivers: [
                   ProfileTabSliverBody(
                     user: user,
@@ -239,10 +224,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               ),
             ),
             CatchRootScreenPageSpec.scroll(
-              page: CatchRootScreenPageScrollView(
+              page: CatchRootScreenPageScrollView.embeddedViewport(
                 scrollKey: const PageStorageKey('profile-preview-tab-scroll'),
-                bodyLayout: CatchScreenBodyLayout.fullBleed,
-                includeTerminalPadding: false,
                 slivers: [
                   PreviewTabSliverBody(
                     profile: previewProfile,
@@ -254,11 +237,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               ),
             ),
             const CatchRootScreenPageSpec.scroll(
-              page: CatchRootScreenPageScrollView(
+              page: CatchRootScreenPageScrollView.standard(
                 scrollKey: PageStorageKey('profile-insights-tab-scroll'),
-                bodyLayout: CatchScreenBodyLayout.standard,
-                constrainToContentWidth: true,
-                includeTerminalPadding: false,
                 slivers: [ProfileInsightsTabSliverBody()],
               ),
             ),

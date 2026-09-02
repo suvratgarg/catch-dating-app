@@ -25,7 +25,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
@@ -596,9 +595,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             ),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
-                page: CatchRootScreenPageScrollView(
+                page: CatchRootScreenPageScrollView.fullBleed(
                   scrollKey: ExploreScreenKeys.scrollView,
-                  bodyLayout: CatchScreenBodyLayout.fullBleed,
                   physics: const AlwaysScrollableScrollPhysics(),
                   onRefresh: _refreshExploreData,
                   slivers: [
