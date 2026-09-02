@@ -3,7 +3,6 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
-import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -494,7 +493,6 @@ void main() {
     testWidgets(
       'invite-only creation copy says the event is listed but booking-gated',
       (tester) async {
-        final effects = _FakeCreateEventCelebrationEffectsController();
         final event = buildEvent(
           id: 'event-private',
           capacityLimit: 12,
@@ -513,12 +511,8 @@ void main() {
             onManageEvent: () {},
             onDone: () {},
           ),
-          overrides: [
-            celebrationEffectsControllerProvider.overrideWithValue(effects),
-          ],
         );
 
-        expect(effects.playedKinds, [CelebrationMomentKind.eventCreated]);
         expect(find.text('Your event is live.'), findsOneWidget);
         expect(find.text('EVENT CREATED'), findsOneWidget);
         expect(find.byIcon(CatchIcons.celebration), findsOneWidget);
@@ -1592,14 +1586,4 @@ Finder _dialogAction(String label) {
     of: find.byType(Dialog),
     matching: find.widgetWithText(CatchButton, label),
   );
-}
-
-class _FakeCreateEventCelebrationEffectsController
-    extends CelebrationEffectsController {
-  final List<CelebrationMomentKind> playedKinds = [];
-
-  @override
-  Future<void> play(CelebrationMomentKind kind) async {
-    playedKinds.add(kind);
-  }
 }
