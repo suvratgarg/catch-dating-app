@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -151,6 +152,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
+    expect(find.byType(CatchScreenScaffold), findsOneWidget);
     expect(
       find.byKey(const ValueKey('catch-master-detail-divider')),
       findsOneWidget,

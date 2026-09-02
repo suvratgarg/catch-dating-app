@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/presentation/otp_page.dart';
 import 'package:catch_dating_app/auth/presentation/phone_page.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -64,16 +65,15 @@ class AuthScreen extends ConsumerWidget {
       );
     }
 
-    return Scaffold(
-      body: SafeArea(
-        child: switch (step) {
-          AuthStep.phone => const PhonePage(),
-          AuthStep.otp => OtpPage(
-            initialCode: initialOtpCode,
-            initialSecondsUntilResend: initialResendSeconds,
-          ),
-        },
-      ),
+    return CatchScreenScaffold.standalone(
+      safeArea: CatchScreenSafeArea.all,
+      body: switch (step) {
+        AuthStep.phone => const PhonePage(),
+        AuthStep.otp => OtpPage(
+          initialCode: initialOtpCode,
+          initialSecondsUntilResend: initialResendSeconds,
+        ),
+      },
     );
   }
 }
@@ -90,33 +90,31 @@ class HostAuthFlowFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Scaffold(
+    return CatchScreenScaffold.standalone(
       backgroundColor: t.bg,
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const CatchStartupBrandStage(appRole: AppRole.host),
-            Expanded(
-              child: SingleChildScrollView(
-                key: contentKey,
-                reverse: true,
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: CatchInsets.hostAuthStage,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: CatchLayout.maxContentWidth,
-                    ),
-                    child: _HostAuthContentEntrance(child: child),
+      safeArea: CatchScreenSafeArea.all,
+      body: Column(
+        children: [
+          const CatchStartupBrandStage(appRole: AppRole.host),
+          Expanded(
+            child: SingleChildScrollView(
+              key: contentKey,
+              reverse: true,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: CatchInsets.hostAuthStage,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: CatchLayout.maxContentWidth,
                   ),
+                  child: _HostAuthContentEntrance(child: child),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

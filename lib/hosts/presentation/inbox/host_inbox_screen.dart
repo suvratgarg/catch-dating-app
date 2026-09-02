@@ -223,7 +223,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             embedded: true,
           );
 
-    return Scaffold(
+    return CatchScreenScaffold.workspace(
       backgroundColor: t.bg,
       body: isInbox
           ? CatchAdaptiveMasterDetailLayout(
