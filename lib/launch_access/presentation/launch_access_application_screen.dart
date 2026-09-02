@@ -34,6 +34,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
         title: context
             .l10n
             .launchAccessLaunchAccessApplicationScreenTitleApplyForAccess,
+        leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
       body: SafeArea(

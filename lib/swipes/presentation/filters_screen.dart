@@ -10,6 +10,8 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -117,10 +119,11 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
       mutation: FiltersController.saveFiltersMutation,
       child: PopScope(
         canPop: !saving,
-        child: Scaffold(
+        child: CatchRouteScaffold(
           backgroundColor: t.bg,
-          appBar: CatchTopBar(
+          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
             title: context.l10n.swipesFiltersScreenTitleFilters,
+            divider: scrolledUnder,
             leading: CatchIconAction(
               icon: CatchIcons.closeRounded,
               tooltip: context.l10n.swipesFiltersScreenTooltipCloseFilters,
@@ -216,64 +219,68 @@ class FiltersContent extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            padding: CatchInsets.pageBody.copyWith(
-              top: CatchSpacing.s2,
-              bottom: CatchSpacing.s5,
-            ),
-            children: [
-              FiltersSection(
-                title: context.l10n.swipesFiltersScreenTitleAge,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FiltersValue(
-                      value: context.l10n
-                          .swipesFiltersScreenVisiblecopyRoundFormatpreferredmatchage(
-                            round: ageRange.start.round(),
-                            formatPreferredMatchAge: formatPreferredMatchAge(
-                              ageRange.end.round(),
-                            ),
+          child: CatchScreenBody(
+            pb: CatchSpacing.s5,
+            child: CatchResponsiveSectionLayout(
+              sections: [
+                CatchResponsiveSectionItem(
+                  child: FiltersSection(
+                    title: context.l10n.swipesFiltersScreenTitleAge,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        FiltersValue(
+                          value: context.l10n
+                              .swipesFiltersScreenVisiblecopyRoundFormatpreferredmatchage(
+                                round: ageRange.start.round(),
+                                formatPreferredMatchAge:
+                                    formatPreferredMatchAge(
+                                      ageRange.end.round(),
+                                    ),
+                              ),
+                        ),
+                        CatchRangeSlider(
+                          key: SwipeKeys.ageRangeSlider,
+                          minimumContract: CatchContractConstraints
+                              .updateUserProfilePatchMinAgePreference,
+                          maximumContract: CatchContractConstraints
+                              .updateUserProfilePatchMaxAgePreference,
+                          min: minimumProfileAge.toDouble(),
+                          max: preferredMatchAgeOpenEndedDisplayAge.toDouble(),
+                          divisions:
+                              preferredMatchAgeOpenEndedDisplayAge -
+                              minimumProfileAge,
+                          values: ageRange,
+                          onChanged: saving ? null : onAgeRangeChanged,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                CatchResponsiveSectionItem(
+                  child: FiltersSection(
+                    title: context.l10n.swipesFiltersScreenTitleInterestedIn,
+                    child: Wrap(
+                      spacing: CatchSpacing.s2,
+                      runSpacing: CatchSpacing.s2,
+                      children: [
+                        for (final gender in Gender.values)
+                          CatchChip.selectable(
+                            key: SwipeKeys.genderFilterChip(gender.name),
+                            contract: CatchContractConstraints
+                                .updateUserProfilePatchInterestedInGenders,
+                            contractValue: gender.name,
+                            label: gender.label,
+                            selected: interestedIn.contains(gender),
+                            onChanged: (_) => onGenderToggled(gender),
+                            enabled: !saving,
                           ),
+                      ],
                     ),
-                    CatchRangeSlider(
-                      key: SwipeKeys.ageRangeSlider,
-                      minimumContract: CatchContractConstraints
-                          .updateUserProfilePatchMinAgePreference,
-                      maximumContract: CatchContractConstraints
-                          .updateUserProfilePatchMaxAgePreference,
-                      min: minimumProfileAge.toDouble(),
-                      max: preferredMatchAgeOpenEndedDisplayAge.toDouble(),
-                      divisions:
-                          preferredMatchAgeOpenEndedDisplayAge -
-                          minimumProfileAge,
-                      values: ageRange,
-                      onChanged: saving ? null : onAgeRangeChanged,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              FiltersSection(
-                title: context.l10n.swipesFiltersScreenTitleInterestedIn,
-                child: Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s2,
-                  children: [
-                    for (final gender in Gender.values)
-                      CatchChip.selectable(
-                        key: SwipeKeys.genderFilterChip(gender.name),
-                        contract: CatchContractConstraints
-                            .updateUserProfilePatchInterestedInGenders,
-                        contractValue: gender.name,
-                        label: gender.label,
-                        selected: interestedIn.contains(gender),
-                        onChanged: (_) => onGenderToggled(gender),
-                        enabled: !saving,
-                      ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         CatchBottomDock(
@@ -303,21 +310,24 @@ class FiltersContentSkeleton extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            padding: CatchInsets.pageBody.copyWith(
-              top: CatchSpacing.s2,
-              bottom: CatchSpacing.s5,
+          child: CatchScreenBody(
+            pb: CatchSpacing.s5,
+            child: CatchResponsiveSectionLayout(
+              sections: [
+                CatchResponsiveSectionItem(
+                  child: FiltersSection(
+                    title: context.l10n.swipesFiltersScreenTitleAge,
+                    child: const AgeFilterSkeleton(),
+                  ),
+                ),
+                CatchResponsiveSectionItem(
+                  child: FiltersSection(
+                    title: context.l10n.swipesFiltersScreenTitleInterestedIn,
+                    child: const CatchSkeletonChips(),
+                  ),
+                ),
+              ],
             ),
-            children: [
-              FiltersSection(
-                title: context.l10n.swipesFiltersScreenTitleAge,
-                child: const AgeFilterSkeleton(),
-              ),
-              FiltersSection(
-                title: context.l10n.swipesFiltersScreenTitleInterestedIn,
-                child: const CatchSkeletonChips(),
-              ),
-            ],
           ),
         ),
         CatchBottomDock(

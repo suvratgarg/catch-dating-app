@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
@@ -159,11 +160,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     }
 
     final t = CatchTokens.of(context);
-    return Scaffold(
+    return CatchRouteScaffold(
       backgroundColor: t.bg,
-      appBar: CatchScreenTopBar(
-        context: context,
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: _calendarMonthLabel(topBarSelectedDate),
+        leadingType: CatchTopBarLeading.back,
+        divider: scrolledUnder,
         actions: [
           CatchTopBarTextAction(
             label: context.l10n.eventsCalendarScreenLabelToday,

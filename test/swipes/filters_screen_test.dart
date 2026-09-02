@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
@@ -74,6 +75,7 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.text('Filters'), findsOneWidget);
     expect(find.byType(FiltersContentSkeleton), findsOneWidget);
     expect(find.byType(CatchSkeleton), findsWidgets);

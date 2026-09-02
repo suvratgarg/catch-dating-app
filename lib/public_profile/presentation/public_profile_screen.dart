@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -119,12 +120,14 @@ class PublicProfileScreen extends ConsumerWidget {
       mutation: PublicProfileController.blockUserMutation,
       child: CatchMutationErrorListener(
         mutation: PublicProfileController.reportUserMutation,
-        child: Scaffold(
-          appBar: CatchTopBar(
+        child: CatchRouteScaffold(
+          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
             title: screenState.title(context.l10n),
+            leadingType: CatchTopBarLeading.back,
             titleRole: profile == null
                 ? CatchTopBarTitleRole.route
                 : CatchTopBarTitleRole.identity,
+            divider: scrolledUnder,
             actions: [
               if (screenState.showSafetyActions)
                 CatchTopBarMenuAction<String>(

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_pair_hold.dart';
@@ -23,6 +24,7 @@ void main() {
     await _pumpInvitation(tester, fixture.invitation, fixture);
     await tester.scrollUntilVisible(find.text('Accept and make a plan'), 180);
 
+    expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.text('Cross Paths invitation'), findsOneWidget);
     expect(find.text('Rhea Kapoor, 29'), findsOneWidget);
     expect(find.text('Accept and make a plan'), findsOneWidget);

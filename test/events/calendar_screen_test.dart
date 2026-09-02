@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -16,6 +17,7 @@ void main() {
     ) async {
       await _pumpCalendar(tester, uid: const AsyncLoading<String?>());
 
+      expect(find.byType(CatchRouteScaffold), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.text('No planned events yet'), findsNothing);
     });
