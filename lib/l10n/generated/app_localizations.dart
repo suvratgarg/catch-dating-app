@@ -23273,7 +23273,7 @@ abstract class AppLocalizations {
   /// Application approval action.
   ///
   /// In en, this message translates to:
-  /// **'Approve'**
+  /// **'Accept and add to People'**
   String get hostApplicationApprove;
 
   /// Application waitlist action.
@@ -27096,6 +27096,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Needs attention'**
   String get eventSuccessRoomWorkspaceNeedsAttention;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review applications'**
+  String get hostApplicationsReviewQueue;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submissions, accept people, or keep them on your waitlist.'**
+  String get hostApplicationsReviewQueueBody;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Open person in People'**
+  String get hostApplicationOpenPerson;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Open original response'**
+  String get hostApplicationOpenResponse;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'View this person’s applications and review decisions.'**
+  String get hostCustomerApplicationsBody;
 }
 
 class _AppLocalizationsDelegate

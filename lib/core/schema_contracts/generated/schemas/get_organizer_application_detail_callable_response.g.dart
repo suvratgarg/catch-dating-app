@@ -88,6 +88,7 @@ const schemaGetOrganizerApplicationDetailCallableResponseSchema = <String, Objec
         'organizerImported',
         'activeParticipantGrant',
         'revokedParticipantGrant',
+        'submittedFormResponse',
       ],
     },
     'answers': <String, Object?>{
@@ -342,6 +343,22 @@ const schemaGetOrganizerApplicationDetailCallableResponseSchema = <String, Objec
       'type': 'integer',
       'minimum': 1,
       'maximum': 9007199254740991,
+    },
+    'contactId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'sourceResponseId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
     },
   },
   'definitions': <String, Object?>{

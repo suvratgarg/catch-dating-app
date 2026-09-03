@@ -21,4 +21,5 @@ export interface ListOrganizerApplicationsCallablePayload {
   sort?: "newest" | "oldest" | "name";
   limit?: number;
   cursor?: string | null;
+  contactId?: string | null;
 }

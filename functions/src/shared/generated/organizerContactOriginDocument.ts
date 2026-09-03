@@ -22,7 +22,8 @@ export interface OrganizerContactOriginDocument {
     | "hostFormResponse"
     | "providerRecord"
     | "importBatch"
-    | "webRegistration";
+    | "webRegistration"
+    | "hostApplicationResponse";
   sourceEntityId: string;
   eventId: string | null;
   formId: string | null;

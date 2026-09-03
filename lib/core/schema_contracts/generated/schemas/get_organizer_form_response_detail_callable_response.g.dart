@@ -396,5 +396,21 @@ const schemaGetOrganizerFormResponseDetailCallableResponseSchema = <String, Obje
       'minimum': 0,
       'maximum': 604800000,
     },
+    'applicationId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'contactId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+    },
   },
 };

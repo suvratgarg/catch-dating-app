@@ -27,11 +27,14 @@ export interface ListOrganizerApplicationsCallableResponse {
     dataAccessState:
       | "organizerImported"
       | "activeParticipantGrant"
-      | "revokedParticipantGrant";
+      | "revokedParticipantGrant"
+      | "submittedFormResponse";
     sourceKind: "native" | "tabularImport" | "connector";
     providerId: string | null;
     submittedAtMillis: number;
     revision: number;
+    contactId?: string | null;
+    sourceResponseId?: string | null;
   }[];
   nextCursor: string | null;
 }

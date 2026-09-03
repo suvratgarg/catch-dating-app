@@ -260,6 +260,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
               'providerRecord',
               'importBatch',
               'webRegistration',
+              'hostApplicationResponse',
             ],
           },
           'formId': <String, Object?>{
@@ -1473,6 +1474,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'providerRecord',
             'importBatch',
             'webRegistration',
+            'hostApplicationResponse',
           ],
         },
         'formId': <String, Object?>{

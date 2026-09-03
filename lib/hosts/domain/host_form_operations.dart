@@ -339,6 +339,8 @@ class HostFormResponseAnswer {
 class HostFormResponseDetail {
   const HostFormResponseDetail({
     required this.response,
+    this.applicationId,
+    this.contactId,
     required this.answers,
     required this.consentVersion,
     required this.completionMillis,
@@ -347,6 +349,8 @@ class HostFormResponseDetail {
   factory HostFormResponseDetail.fromCallableData(Object? data) {
     final map = _requiredMap(data, 'form response detail');
     return HostFormResponseDetail(
+      applicationId: _nullableString(map['applicationId']),
+      contactId: _nullableString(map['contactId']),
       response: HostFormResponseSummary.fromMap(
         _requiredMap(map['response'], 'form response'),
       ),
@@ -360,6 +364,8 @@ class HostFormResponseDetail {
   }
 
   final HostFormResponseSummary response;
+  final String? applicationId;
+  final String? contactId;
   final List<HostFormResponseAnswer> answers;
   final String consentVersion;
   final int completionMillis;

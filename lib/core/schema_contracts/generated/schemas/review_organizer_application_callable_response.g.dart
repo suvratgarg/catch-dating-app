@@ -47,5 +47,13 @@ const schemaReviewOrganizerApplicationCallableResponseSchema = <String, Object?>
       'minimum': 2,
       'maximum': 9007199254740991,
     },
+    'contactId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+    },
   },
 };

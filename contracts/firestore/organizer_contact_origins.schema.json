@@ -35,7 +35,7 @@
     },
     "sourceEntityKind": {
       "type": "string",
-      "enum": ["eventAttendee", "manualEntry", "hostFormResponse", "providerRecord", "importBatch", "webRegistration"]
+      "enum": ["eventAttendee", "manualEntry", "hostFormResponse", "providerRecord", "importBatch", "webRegistration", "hostApplicationResponse"]
     },
     "sourceEntityId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "eventId": {

@@ -11,4 +11,5 @@ export interface ReviewOrganizerApplicationCallableResponse {
   reviewStatus: "inReview" | "approved" | "waitlisted" | "declined";
   reviewedAtMillis: number;
   revision: number;
+  contactId?: string | null;
 }

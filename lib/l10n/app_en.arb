@@ -22385,7 +22385,7 @@
   "@hostApplicationReviewNoteHint": {"description": "Organizer-only application review note hint.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationMarkInReview": "Mark in review",
   "@hostApplicationMarkInReview": {"description": "Application review transition action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
-  "hostApplicationApprove": "Approve",
+  "hostApplicationApprove": "Accept and add to People",
   "@hostApplicationApprove": {"description": "Application approval action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationWaitlist": "Waitlist",
   "@hostApplicationWaitlist": {"description": "Application waitlist action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
@@ -23646,5 +23646,25 @@
   "eventSuccessRoomWorkspaceUnconfirmed": "Unconfirmed",
   "@eventSuccessRoomWorkspaceUnconfirmed": {"description": "Unconfirmed placement count label.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
   "eventSuccessRoomWorkspaceNeedsAttention": "Needs attention",
-  "@eventSuccessRoomWorkspaceNeedsAttention": {"description": "Room placement attention count label.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"}
+  "@eventSuccessRoomWorkspaceNeedsAttention": {"description": "Room placement attention count label.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
+  "hostApplicationsReviewQueue": "Review applications",
+  "hostApplicationsReviewQueueBody": "Review submissions, accept people, or keep them on your waitlist.",
+  "hostApplicationOpenPerson": "Open person in People",
+  "hostApplicationOpenResponse": "Open original response",
+  "hostCustomerApplicationsBody": "View this person’s applications and review decisions.",
+  "@hostApplicationsReviewQueue": {
+    "description": "Audience intake workflow label."
+  },
+  "@hostApplicationsReviewQueueBody": {
+    "description": "Audience intake workflow label."
+  },
+  "@hostApplicationOpenPerson": {
+    "description": "Audience intake workflow label."
+  },
+  "@hostApplicationOpenResponse": {
+    "description": "Audience intake workflow label."
+  },
+  "@hostCustomerApplicationsBody": {
+    "description": "Audience intake workflow label."
+  }
 }

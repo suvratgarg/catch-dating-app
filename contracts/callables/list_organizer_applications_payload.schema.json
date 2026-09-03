@@ -14,6 +14,14 @@
     "query": {"type": ["string", "null"], "maxLength": 160},
     "sort": {"type": "string", "enum": ["newest", "oldest", "name"], "default": "newest"},
     "limit": {"type": "integer", "minimum": 1, "maximum": 100},
-    "cursor": {"type": ["string", "null"], "maxLength": 1000}
+    "cursor": {"type": ["string", "null"], "maxLength": 1000},
+    "contactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    }
   }
 }

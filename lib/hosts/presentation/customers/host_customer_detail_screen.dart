@@ -695,6 +695,22 @@ class HostCustomerDetailBody extends StatelessWidget {
                   ? onReviewDuplicates
                   : null,
             ),
+            CatchSection.fieldRows(
+              children: [
+                CatchField.nav(
+                  key: const ValueKey('host-customer-applications'),
+                  title: context.l10n.hostApplicationsTitle,
+                  body: context.l10n.hostCustomerApplicationsBody,
+                  onTap: () => context.pushNamed(
+                    Routes.hostApplicationsScreen.name,
+                    queryParameters: {
+                      'organizerId': customer.organizerId,
+                      'contactId': customer.contactId,
+                    },
+                  ),
+                ),
+              ],
+            ),
             HostCustomerRevenueCard(revenue: customer.revenue),
             HostCustomerTimelineSection(
               customer: customer,

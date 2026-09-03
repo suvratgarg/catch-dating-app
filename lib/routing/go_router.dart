@@ -910,6 +910,8 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         parentNavigatorKey: keys.root,
         builder: (context, state) => HostApplicationsScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
+          formId: state.uri.queryParameters['formId'],
+          contactId: state.uri.queryParameters['contactId'],
         ),
         routes: [
           GoRoute(

@@ -62,7 +62,7 @@
       "properties": {
         "originId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "sourceKind": {"type": "string", "enum": ["catchBooking", "hostImport", "hostManual", "webOtp", "providerSync", "hostForm"]},
-        "sourceEntityKind": {"type": "string", "enum": ["eventAttendee", "manualEntry", "hostFormResponse", "providerRecord", "importBatch", "webRegistration"]},
+        "sourceEntityKind": {"type": "string", "enum": ["eventAttendee", "manualEntry", "hostFormResponse", "providerRecord", "importBatch", "webRegistration", "hostApplicationResponse"]},
         "formId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
         "formTitle": {"type": ["string", "null"], "minLength": 1, "maxLength": 160},
         "eventId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},

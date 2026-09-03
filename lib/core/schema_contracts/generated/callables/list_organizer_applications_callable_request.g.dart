@@ -16,6 +16,7 @@ final class ListOrganizerApplicationsCallableRequest {
     this.sort,
     this.limit,
     this.cursor,
+    this.contactId,
   });
 
   final String organizerId;
@@ -26,6 +27,7 @@ final class ListOrganizerApplicationsCallableRequest {
   final String? sort;
   final int? limit;
   final String? cursor;
+  final String? contactId;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -36,5 +38,6 @@ final class ListOrganizerApplicationsCallableRequest {
     'sort': ?sort,
     'limit': ?limit,
     'cursor': ?cursor,
+    'contactId': ?contactId,
   };
 }

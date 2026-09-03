@@ -15001,7 +15001,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationMarkInReview => 'Mark in review';
 
   @override
-  String get hostApplicationApprove => 'Approve';
+  String get hostApplicationApprove => 'Accept and add to People';
 
   @override
   String get hostApplicationWaitlist => 'Waitlist';
@@ -17240,4 +17240,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessRoomWorkspaceNeedsAttention => 'Needs attention';
+
+  @override
+  String get hostApplicationsReviewQueue => 'Review applications';
+
+  @override
+  String get hostApplicationsReviewQueueBody =>
+      'Review submissions, accept people, or keep them on your waitlist.';
+
+  @override
+  String get hostApplicationOpenPerson => 'Open person in People';
+
+  @override
+  String get hostApplicationOpenResponse => 'Open original response';
+
+  @override
+  String get hostCustomerApplicationsBody =>
+      'View this person’s applications and review decisions.';
 }

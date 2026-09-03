@@ -79,5 +79,13 @@ const schemaListOrganizerApplicationsCallablePayloadSchema = <String, Object?>{
       ],
       'maxLength': 1000,
     },
+    'contactId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+    },
   },
 };
