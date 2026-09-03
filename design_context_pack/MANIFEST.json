@@ -15,17 +15,17 @@
     },
     {
       "path": "design_system/claude_design_handoff_request.json",
-      "sha256": "9d90e445c44a5ea6a00139c137ee010e1775d210f4fdb3df19f921cbc529b595",
+      "sha256": "9ec7d09ace168816710bbc6d5b4dc434c7a95a4cffdc601342e930f46ba229a0",
       "bytes": 4889
     },
     {
       "path": "design_system/components.json",
-      "sha256": "9b4bbff20ce15af7fa891d43fd73dec3dbad8faeedfd8609b710ddd0a7d5d7c4",
-      "bytes": 480053
+      "sha256": "62c609cb535c8000db2b89fa9af3e753bf8745bb2e401b59ce4c74881b8df9b6",
+      "bytes": 480256
     },
     {
       "path": "design_system/design_language.txt",
-      "sha256": "91551ff8f75b01b80054d807e5ce94df4872fb542c717da527a333741200b8e7",
+      "sha256": "7c1852488459e39bf6b546e11765f988c4da69e1207f4b1205579f2d77d9202f",
       "bytes": 36825
     },
     {
@@ -35,7 +35,7 @@
     },
     {
       "path": "design_system/tokens.json",
-      "sha256": "6f71c635f7e9e178841c0cc93b902ddc8555a1c1428d8ca2d8aa59601ea57989",
+      "sha256": "852ec5ad564b4bae5fbb5f3b59606d373765aa63bf19bf3741bce7d83e4231a0",
       "bytes": 27907
     },
     {

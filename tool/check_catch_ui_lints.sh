@@ -271,6 +271,9 @@ class CatchUiLintProbe extends StatelessWidget {
         const CatchSection(
           child: CatchField.read(title: 'Name'),
         ),
+        const CatchSection.contained(
+          child: CatchField.read(title: 'Flat field inside one section'),
+        ),
         const CatchField(title: 'Legacy field'),
         _buildHeader(),
         const _ProviderProbe(),

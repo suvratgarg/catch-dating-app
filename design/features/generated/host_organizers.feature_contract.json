@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:591a1f87f529c3f4fe194a62cccdb39d9515d9299b8d2677e85da90bf3c5ce55",
-  "resolvedDigest": "sha256:9b11a31737e485e2bbedce4feb8f642430f2d75051b9ac2411a46a462330ef1e",
+  "resolvedDigest": "sha256:07261e3e83c4de7a3beaace3bc24067137c64a3b5d29979cdc566182f598b622",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5127,7 +5127,8 @@
                 "CatchBadge.live",
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
-                "CatchBadge.privacy"
+                "CatchBadge.privacy",
+                "CatchBadge.status"
               ]
             }
           },
@@ -5138,7 +5139,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },

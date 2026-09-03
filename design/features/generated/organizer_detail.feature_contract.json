@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6131ab690ee227a9626bb3aa9c5cce744b79baecad1c677fbc2059db0e7cb31d",
-  "resolvedDigest": "sha256:a7c1f084cf0528bd79aab4ad802629fc7bc13c83a08eba3e7b484e074f8af8a7",
+  "resolvedDigest": "sha256:46a203b96b111c684445288e29896e747ad5ab41233ab1b47873109e20d5c8d6",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
@@ -1141,7 +1141,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },
@@ -2410,7 +2411,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },

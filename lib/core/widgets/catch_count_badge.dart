@@ -40,12 +40,9 @@ class CatchCountBadge extends StatelessWidget {
       textDirection: Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
     )..layout();
-    final width = painter.width + CatchLayout.countBadgeHorizontalPadding * 2;
+    final width = CatchLayout.countBadgeWidth(painter.width);
     painter.dispose();
-    return (width < CatchLayout.countBadgeMinExtent
-            ? CatchLayout.countBadgeMinExtent
-            : width) +
-        CatchLayout.countBadgeBorderWidth * 2;
+    return width;
   }
 
   @override

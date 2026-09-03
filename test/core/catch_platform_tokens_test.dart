@@ -8,6 +8,8 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -70,17 +72,17 @@ void main() {
             builder: (context, child) => MediaQuery(
               data: MediaQuery.of(
                 context,
-              ).copyWith(textScaler: TextScaler.linear(2)),
+              ).copyWith(textScaler: const TextScaler.linear(2)),
               child: child!,
             ),
-            home: Scaffold(
+            home: const Scaffold(
               appBar: CatchTopBar(
                 title: 'Ananya Rao',
                 titleRole: CatchTopBarTitleRole.identity,
                 divider: true,
                 leadingType: CatchTopBarLeading.none,
               ),
-              body: const SizedBox.shrink(),
+              body: SizedBox.shrink(),
             ),
           ),
         );
@@ -92,6 +94,48 @@ void main() {
         debugDefaultTargetPlatformOverride = null;
       },
     );
+
+    testWidgets('scaled tab rail reserves its actual height on $platform', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = platform;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: const CatchScreenScaffold.workspace(
+            appBar: CatchTopBar(
+              title: 'Customers',
+              bottom: CatchTabRail<int>(
+                selected: 0,
+                options: [
+                  CatchOption(value: 0, label: 'Overview'),
+                  CatchOption(value: 1, label: 'History'),
+                ],
+              ),
+            ),
+            body: SizedBox.expand(key: ValueKey('scaled-header-body')),
+          ),
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      final rail = find.byType(CatchTabRail<int>);
+      expect(
+        tester.getSize(rail).height,
+        CatchTabRail.heightFor(tester.element(rail)),
+      );
+      expect(
+        tester.getRect(rail).bottom,
+        tester.getRect(find.byKey(const ValueKey('scaled-header-body'))).top,
+      );
+      debugDefaultTargetPlatformOverride = null;
+    });
 
     for (final direction in TextDirection.values) {
       testWidgets(

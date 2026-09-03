@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "4133160e13d6de968a251e41dc6bb0448754e645af1bfa9b4b1a933210ffbdf3",
+  "sourceDigest": "141ce4db7e75be229fb618b401b3f03d90115762538eb72977569925c1b31716",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "4133160e13d6de968a251e41dc6bb0448754e645af1bfa9b4b1a933210ffbdf3",
-    "contractDigest": "4133160e13d6de968a251e41dc6bb0448754e645af1bfa9b4b1a933210ffbdf3"
+    "digest": "141ce4db7e75be229fb618b401b3f03d90115762538eb72977569925c1b31716",
+    "contractDigest": "141ce4db7e75be229fb618b401b3f03d90115762538eb72977569925c1b31716"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "94706825b4210ee0e233ad7d62f966ac913cb56a28f04fa2e80f81dc28e83bae",
+    "handoffRequestDigest": "8217c80a90a5a48e85aa553ccf8d690ca5b98c0b26f7e7edd01acbfb4e54975c",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1106,8 +1106,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "9f2cc1368cc4c9107c85e40829beb6b8bdf8445618dacc8efd37bf534da498cd",
+      "figmaExpectedPropertyCount": 7,
+      "figmaExpectedPropertyDigest": "5be561a9e63375b9c80aa1bfc4ad0c6a1441710c0cb7115021e203a95b7de3fd",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1115,7 +1115,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
-      "contractDigest": "ab613932afa71edb4b92507acfa46450fc50ab7f5670d355eabb4020835d87ba"
+      "contractDigest": "d4c151d1ee9887ffd8fceb869f528094ca0e4a629fd8134930392094be14f843"
     },
     {
       "contractId": "catch.icon_button",

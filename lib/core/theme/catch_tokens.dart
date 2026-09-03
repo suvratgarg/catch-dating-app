@@ -355,7 +355,7 @@ abstract final class CatchSpacing {
 
   /// App-wide page gutter and body padding from the design handoff.
   static const double screenPx = CatchSpacing.s5;
-  static const double screenPt = CatchSpacing.s6;
+  static const double screenPt = CatchSpacing.s4;
   static const double screenPb = CatchSpacing.s5;
 }
 
@@ -395,7 +395,7 @@ abstract final class CatchInsets {
   /// Default scroll/body padding for app pages with top chrome.
   static const EdgeInsets pageBody = EdgeInsets.fromLTRB(
     CatchSpacing.screenPx,
-    CatchSpacing.s4,
+    CatchSpacing.screenPt,
     CatchSpacing.screenPx,
     CatchSpacing.screenPb,
   );
@@ -2459,6 +2459,13 @@ abstract final class CatchLayout {
   static const double countBadgeHorizontalPadding = CatchSpacing.s1;
   static const double countBadgeVerticalPadding = CatchStroke.hairline;
   static const double countBadgeBorderWidth = CatchStroke.underline;
+
+  static double countBadgeWidth(double textWidth) {
+    final padded = textWidth + countBadgeHorizontalPadding * 2;
+    return (padded < countBadgeMinExtent ? countBadgeMinExtent : padded) +
+        countBadgeBorderWidth * 2;
+  }
+
   static const double countPillIconSize = CatchIcon.sm + CatchSpacing.micro2;
   static const double countPillMinExtent = CatchSpacing.s11;
   static const double countPillLabelVerticalPadding =

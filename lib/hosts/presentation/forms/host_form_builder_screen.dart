@@ -365,6 +365,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final shouldPublish = await showCatchBottomSheet<bool>(
       context: context,
       builder: (sheetContext) => CatchBottomSheetScaffold(
+        scrollable: true,
         title: state.editor.form.status == HostFormLifecycleStatus.published
             ? context.l10n.hostFormReviewChangesTitle
             : context.l10n.hostFormReviewPublishTitle,

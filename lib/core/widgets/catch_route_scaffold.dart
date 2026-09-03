@@ -21,7 +21,7 @@ enum _CatchRouteBodyKind {
 
 /// Closed body specification for [CatchRouteScaffold].
 ///
-/// Standard variants own the canonical 20 point horizontal gutter and 24
+/// Standard variants own the canonical 20 point horizontal gutter and 16
 /// point top rhythm. The explicit full-bleed variant preserves intrinsically
 /// edge-owned canvases. Route features provide content, never local padding.
 final class CatchRouteBody {

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:0b571987a8c839ee3600498124aa97f227e62f348eb037b8c4b8075255e549bb",
-  "resolvedDigest": "sha256:e105a762b27c5b17cd3d9c814b70d3104d2507bcc24f7f911c0ce2aa9716dfe2",
+  "resolvedDigest": "sha256:5af43891537d1b915b2566f9b2ea50a8bb32c2268cbb71d92e587ed7bd40fb24",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -5822,7 +5822,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },
@@ -5915,7 +5916,8 @@
               "symbol": "CatchPersonRow",
               "file": "lib/core/widgets/catch_person_row.dart",
               "constructors": [
-                "CatchPersonRow"
+                "CatchPersonRow",
+                "CatchPersonRow.directory"
               ]
             }
           },

@@ -410,14 +410,14 @@ void main() {
       Color? labelColor() =>
           tester.widget<Text>(find.text('Religion')).style?.color;
 
-      expect(labelColor(), CatchTokens.editorialLight.ink3);
+      expect(labelColor(), CatchTokens.editorialLight.ink2);
 
       final gesture = await tester.startGesture(
         tester.getCenter(find.text('Religion')),
       );
       await tester.pump();
 
-      expect(labelColor(), CatchTokens.editorialLight.ink3);
+      expect(labelColor(), CatchTokens.editorialLight.ink2);
 
       await gesture.up();
       await tester.pump();
@@ -431,7 +431,7 @@ void main() {
       await tester.tap(find.text('Religion'));
       await tester.pump();
 
-      expect(labelColor(), CatchTokens.editorialLight.ink3);
+      expect(labelColor(), CatchTokens.editorialLight.ink2);
     },
   );
 
@@ -481,7 +481,7 @@ void main() {
     );
 
     Text label() => tester.widget<Text>(find.text('City'));
-    expect(label().style?.color, CatchTokens.editorialLight.ink3);
+    expect(label().style?.color, CatchTokens.editorialLight.ink2);
 
     await tester.tap(find.text('City'));
     await tester.pump();

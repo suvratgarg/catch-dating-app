@@ -365,11 +365,11 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   parent-scaffold `CatchRootScreenScrollView` variant), and pinned peer-tab
   screens route through `CatchTabbedScreenScaffold` plus
   `CatchTabbedPageScrollView`. Every body declares the one regular `standard`
-  geometry (20 pt phone gutter, 24 pt body start) or explicitly edge-owned
+  geometry (20 pt phone gutter, 16 pt body start) or explicitly edge-owned
   `fullBleed` geometry through `CatchScreenBodyLayout`; feature screens do not
   reconstruct title gaps, page gutters, terminal navigation clearance,
   responsive content lanes, or state-viewport placement. Tabbed roots use a
-  4 pt title-to-rail handoff, 44 pt rail, and the same 24 pt body start.
+  4 pt title-to-rail handoff, 44 pt rail, and the same 16 pt body start.
   `CatchInsets.pageBody`, `CatchInsets.tabbedScreenTitleBlock`, and
   `CatchLayout.tabRailHeight` own those values. Full bleed removes only the
   outer inset; named nested lanes such as `CatchInsets.chatListGutter` keep

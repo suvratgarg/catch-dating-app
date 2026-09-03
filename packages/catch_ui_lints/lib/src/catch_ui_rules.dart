@@ -1541,9 +1541,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       return _isContainedCatchSection(node);
     }
 
-    if (typeName == 'CatchField') {
-      return _isRoundedCatchField(node);
-    }
+    // CatchField's closed row/underline/bare variants have no rounded shell.
+    // Contained fields inherit the section's rectangular press band.
+    if (typeName == 'CatchField') return false;
 
     if (typeName == 'Card') return true;
 
@@ -1600,34 +1600,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool _isContainedCatchSection(InstanceCreationExpression node) {
     return _constructorMemberName(node) == 'contained';
-  }
-
-  bool _isRoundedCatchField(InstanceCreationExpression node) {
-    if (_namedArgumentSourceContains(
-      node,
-      'variant',
-      'CatchFieldVariant.row',
-    )) {
-      return false;
-    }
-
-    if (_namedArgumentSourceContains(
-      node,
-      'variant',
-      'CatchFieldVariant.bare',
-    )) {
-      return false;
-    }
-
-    if (_namedArgumentSourceContains(
-      node,
-      'variant',
-      'CatchFieldVariant.underline',
-    )) {
-      return false;
-    }
-
-    return true;
   }
 
   bool _hasRoundedRectangleDecoration(InstanceCreationExpression node) {

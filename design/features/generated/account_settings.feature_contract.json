@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:303b25fbc307b84eb1a012446807bda3b0939a501847f786869cea3122e97904",
-  "resolvedDigest": "sha256:500bf37173807343555a5ccfd6434e7a87fcf5a5aed673ac8cc71a505111e2ca",
+  "resolvedDigest": "sha256:0da937845d14f9e5bb587db6ed4d0d63e065a0aac61fe5863100fa181932bbbd",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -2041,7 +2041,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },
@@ -2109,7 +2110,8 @@
               "symbol": "CatchPersonRow",
               "file": "lib/core/widgets/catch_person_row.dart",
               "constructors": [
-                "CatchPersonRow"
+                "CatchPersonRow",
+                "CatchPersonRow.directory"
               ]
             }
           },

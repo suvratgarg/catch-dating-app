@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ff49455e7af2180caafaad070d47ce286abfc50c4649f5e311dd8356a54e0976",
-  "resolvedDigest": "sha256:c2c2a1c3bc368d61b57e551f75fe12397139ecd5f40e848a0ad467c9061e48a6",
+  "resolvedDigest": "sha256:2bc94a3b3381296557fd50021d9842236014619854286dab0495b44e9e5f8723",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1418,7 +1418,8 @@
                 "CatchBadge.live",
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
-                "CatchBadge.privacy"
+                "CatchBadge.privacy",
+                "CatchBadge.status"
               ]
             }
           },
@@ -1440,7 +1441,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/phone_auth.feature.json",
   "generatedFor": "2026-08-30",
   "sourceDigest": "sha256:8c99c2419256b4e8cf232e233bd1bcc6e3607e5a6078fac001d391a47f3bc653",
-  "resolvedDigest": "sha256:0f7305fe791743d4694b54c18145df02356325ee6059675e6bd1ea76d3dd23e9",
+  "resolvedDigest": "sha256:1368be0e990a96d26bba882c5c542ab6be8891963bc7e0846a00764290050bfd",
   "feature": {
     "id": "feature.phone_auth",
     "name": "Phone Authentication",
@@ -800,7 +800,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:4fdc792050fdf521693ce53e99c56d3fc6a1c09bc9565e6abef8edb5a4ff79a2",
-  "resolvedDigest": "sha256:4213724c9301a25eb19f37d5c304aecafbd6773b3f008cf62418ee797699a01a",
+  "resolvedDigest": "sha256:b2a3335562ae6304131ad3d78b48bf59d3c13c1f7e919317e077baf04ae897c5",
   "feature": {
     "id": "feature.matches_list",
     "name": "Matches List",
@@ -893,7 +893,8 @@
                 "CatchBadge.live",
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
-                "CatchBadge.privacy"
+                "CatchBadge.privacy",
+                "CatchBadge.status"
               ]
             }
           },
@@ -904,7 +905,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },

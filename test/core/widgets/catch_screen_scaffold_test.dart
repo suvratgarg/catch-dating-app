@@ -113,7 +113,7 @@ void main() {
     expect(find.byType(SafeArea), findsNothing);
   });
 
-  testWidgets('pushed route standard body owns exact 20 by 24 geometry', (
+  testWidgets('pushed route standard body owns canonical page-body geometry', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;

@@ -4954,6 +4954,13 @@
             "required": false,
             "default": false,
             "dartType": "bool"
+          },
+          {
+            "name": "scrollable",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
           }
         ],
         "states": [
@@ -4962,6 +4969,7 @@
           "badge",
           "action",
           "keyboard-safe",
+          "scrollable",
           "without-grabber"
         ],
         "slots": [

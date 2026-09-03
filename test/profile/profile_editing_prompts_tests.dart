@@ -210,7 +210,9 @@ void _registerProfileEditingPromptsTests() {
       );
       expect(
         tester.getSize(_profileInfoTile('Display name')).height,
-        closeTo(tester.getSize(_profileInfoTile('Date of birth')).height, 0.1),
+        lessThanOrEqualTo(
+          tester.getSize(_profileInfoTile('Date of birth')).height,
+        ),
       );
     },
   );

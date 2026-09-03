@@ -536,10 +536,10 @@ same 20 pt horizontal rhythm. There is no compact body role. Feature code
 selects one of these semantic roles; it does not restate its horizontal gutter,
 title gap, terminal spacer, or field interaction plane.
 
-`CatchInsets.pageBody` owns the 20 pt horizontal gutter and 24 pt standard body
+`CatchInsets.pageBody` owns the 20 pt horizontal gutter and 16 pt standard body
 start. `CatchInsets.tabbedScreenTitleBlock` owns the 4 pt title-to-rail handoff;
 `CatchTabbedScreenScaffold` owns and runtime-enforces the 44 pt pinned rail; and
-`CatchTabbedPageScrollView` reapplies the same 24 pt standard body start after
+`CatchTabbedPageScrollView` reapplies the same 16 pt standard body start after
 the rail. The semantic-layout and tabbed-scaffold tests pin those numeric
 mappings. The composition checker validates semantic roles rather than the
 literal numbers.

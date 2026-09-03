@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_scaled_preferred_size.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -508,7 +509,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
 /// Mirrors the design handoff's `AppBar`: compact or large title chrome,
 /// standard back/close [CatchIconButton] composition, optional trailing action, and
 /// declarative expanding search.
-class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
+class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
   const CatchTopBar({
     super.key,
     this.title,
@@ -617,6 +618,17 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   Size get preferredSize => Size.fromHeight(
     (isLarge ? largeHeight : height) + (bottom?.preferredSize.height ?? 0),
   );
+
+  @override
+  Size preferredSizeFor(BuildContext context) {
+    final bottomHeight = switch (bottom) {
+      final CatchScaledPreferredSize scaled =>
+        scaled.preferredSizeFor(context).height,
+      final bar? => bar.preferredSize.height,
+      null => 0.0,
+    };
+    return Size.fromHeight((isLarge ? largeHeight : height) + bottomHeight);
+  }
 
   bool get isLarge => large ?? (kicker != null && kicker!.isNotEmpty);
 

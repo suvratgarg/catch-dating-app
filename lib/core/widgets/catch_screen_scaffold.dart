@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldVisibilityScope;
+import 'package:catch_dating_app/core/widgets/catch_scaled_preferred_size.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:flutter/material.dart';
 
@@ -69,7 +70,13 @@ class CatchScreenScaffold extends StatelessWidget {
       backgroundColor: backgroundColor ?? CatchTokens.of(context).bg,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       extendBody: extendBody,
-      appBar: appBar,
+      appBar: switch (appBar) {
+        final CatchScaledPreferredSize scaled => PreferredSize(
+          preferredSize: scaled.preferredSizeFor(context),
+          child: scaled,
+        ),
+        final bar => bar,
+      },
       bottomNavigationBar: bottomNavigationBar,
       body: child,
     );
