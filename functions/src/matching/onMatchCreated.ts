@@ -11,7 +11,9 @@ import {
   activityNotificationId,
   sendFcmNotification,
   setActivityNotification,
+  notificationProfileAvatar,
 } from "../shared/notifications";
+import {resolveConversationPushTokens} from "../shared/conversationPushTargets";
 import {demoMetadataFromSources} from "../shared/demoMetadata";
 import {withEventReceipt} from "../shared/eventReceipts";
 import {buildMatchSignalFacts} from "../marketplace/signalBuilders";
@@ -30,6 +32,7 @@ interface MatchCreatedDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   sendNotification: typeof sendFcmNotification;
+  resolvePushTokens?: typeof resolveConversationPushTokens;
   recordSignalFacts?: typeof recordParticipantSignalFactsBestEffort;
 }
 
@@ -68,12 +71,10 @@ export async function onMatchCreatedHandler(
 
   const user1 = user1Doc.data() as UserProfileDocument | undefined;
   const user2 = user2Doc.data() as UserProfileDocument | undefined;
-  const profile1Name =
-    (profile1Doc.data() as PublicProfileDocument | undefined)?.name ??
-      "Someone";
-  const profile2Name =
-    (profile2Doc.data() as PublicProfileDocument | undefined)?.name ??
-      "Someone";
+  const profile1 = profile1Doc.data() as PublicProfileDocument | undefined;
+  const profile2 = profile2Doc.data() as PublicProfileDocument | undefined;
+  const profile1Name = profile1?.name ?? "Someone";
+  const profile2Name = profile2?.name ?? "Someone";
   const latestEventId = latestMatchEventId(match);
 
   if (deps.recordSignalFacts) {
@@ -109,24 +110,30 @@ export async function onMatchCreatedHandler(
     }),
   ]);
 
-  const pushTargets = [
+  const resolveTokens = deps.resolvePushTokens ?? resolveConversationPushTokens;
+  const recipients = [
     {
-      token: user1?.fcmToken,
+      uid: user1Id,
+      user: user1,
+      actor: profile2,
       enabled: allowsPushPreference(user1, "matches"),
       body: `You and ${profile2Name} matched. Say hi!`,
     },
     {
-      token: user2?.fcmToken,
+      uid: user2Id,
+      user: user2,
+      actor: profile1,
       enabled: allowsPushPreference(user2, "matches"),
       body: `You and ${profile1Name} matched. Say hi!`,
     },
-  ].flatMap((target) =>
-    target.enabled &&
-    typeof target.token === "string" &&
-    target.token.length > 0 ?
-      [{token: target.token, body: target.body}] :
-      []
-  );
+  ];
+  const pushTargets = (await Promise.all(recipients.map(async (recipient) => {
+    if (!recipient.enabled) return [];
+    const tokens = await resolveTokens(
+      db, recipient.uid, "consumer", recipient.user
+    );
+    return tokens.map((token) => ({...recipient, token}));
+  }))).flat();
 
   if (pushTargets.length === 0) return;
 
@@ -155,6 +162,11 @@ export async function onMatchCreatedHandler(
             body: target.body,
             type: "match",
             matchId,
+            notificationId: activityNotificationId("match", matchId),
+            recipientUid: target.uid,
+            appRole: "consumer",
+            actorName: target.actor?.name,
+            actorAvatarUrl: notificationProfileAvatar(target.actor),
           })
         )
       );
