@@ -7,11 +7,15 @@
  */
 export interface OrganizerFormAutomationRunDocument {
   organizerId: string;
-  formId: string;
+  formId: string | null;
   ruleId: string;
   ruleRevision: number;
-  responseId: string;
-  eventKind: "submitted" | "withdrawn";
+  responseId: string | null;
+  eventKind:
+    | "submitted"
+    | "withdrawn"
+    | "applicationAccepted"
+    | "eventAttended";
   status:
     | "pending"
     | "running"
@@ -54,6 +58,23 @@ export interface OrganizerFormAutomationRunDocument {
     _nanoseconds: number;
   };
   completedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  sourceId?: string;
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  sourceOccurredAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  dueAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  leaseOwner?: string | null;
+  leaseExpiresAt?: {
     _seconds: number;
     _nanoseconds: number;
   } | null;

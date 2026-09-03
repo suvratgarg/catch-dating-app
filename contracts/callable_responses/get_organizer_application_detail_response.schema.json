@@ -15,14 +15,30 @@
     "targetId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
     "applicantDisplayName": {"type": "string", "minLength": 1, "maxLength": 160},
     "reviewStatus": {"type": "string", "enum": ["submitted", "inReview", "approved", "waitlisted", "declined", "withdrawn"]},
-    "dataAccessState": {"type": "string", "enum": ["organizerImported", "activeParticipantGrant", "revokedParticipantGrant"]},
+    "dataAccessState": {"type": "string", "enum": ["organizerImported", "activeParticipantGrant", "revokedParticipantGrant", "submittedFormResponse"]},
     "answers": {"type": "array", "maxItems": 100, "items": {"$ref": "../shared/organizer_application_common.schema.json#/definitions/answerSnapshot"}},
     "outreach": {"$ref": "#/definitions/outreach"},
     "reviewNote": {"type": ["string", "null"], "maxLength": 2000},
     "assignedReviewerUid": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
     "submittedAtMillis": {"type": "integer", "minimum": 0},
     "reviewedAtMillis": {"type": ["integer", "null"], "minimum": 0},
-    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "contactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceResponseId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    }
   },
   "definitions": {
     "outreach": {

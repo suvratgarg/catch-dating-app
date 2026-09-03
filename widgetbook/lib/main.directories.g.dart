@@ -39,6 +39,8 @@ import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
 import 'package:widgetbook_workspace/hosts/host_operations_use_cases.dart'
     as _widgetbook_workspace_hosts_host_operations_use_cases;
+import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
 import 'package:widgetbook_workspace/matches/matches_chat_use_cases.dart'
     as _widgetbook_workspace_matches_matches_chat_use_cases;
 import 'package:widgetbook_workspace/onboarding/onboarding_use_cases.dart'
@@ -7971,6 +7973,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostAudienceSourceRuleFields',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Published source filters',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostAudienceSourceRuleStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostAutomationRuleEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Acceptance automation editor',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostAutomationEditorState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerAttendanceCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8125,6 +8149,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormAutomationsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Organizer automations empty',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostAutomationsEmptyState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostSavedAudienceOverview',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Members, rules and evaluated reach',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostSavedAudienceOverviewOnlyState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostSavedAudienceWorkspace',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Overview and explicit editing',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostSavedAudienceOverviewState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostSavedAudiencesWorkspace',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8132,6 +8189,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostSavedAudiencesStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostStaticAudienceMembersEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Selected and unavailable people',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostStaticAudienceMembersState,
                   ),
                 ],
               ),

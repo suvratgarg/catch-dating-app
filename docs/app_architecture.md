@@ -2306,6 +2306,13 @@ Rules:
   No screen or repository model may collapse one into another. A linked Catch
   account does not grant organizer marketing permission; a phone number does
   not prove identity; opening an external app does not prove a send.
+- Responses exposes application review, while People remains the complete
+  organizer contact directory. Accepting an accessible application atomically
+  creates or links a unique active contact and appends deterministic provenance.
+  Duplicate conflicts fail before either write; generic forms use their exact
+  submitted response, while legacy native applications require their grant.
+  Applications, responses and People expose links without changing the source
+  snapshots or inventing permission, verified identity or event admission.
 - Contacts may be created by approved server workflows for Catch bookings,
   verified web registration, provider sync, host import, Host Forms conversion,
   or manager-entered Customers data. Every writer must append deterministic
@@ -3071,7 +3078,7 @@ Reference files:
 Customers owns reusable CRM audience definitions through its first-class
 Audiences peer workspace. The top-level directory is a flat divided list; one
 section action opens the full-page create route, and selecting a row opens the
-full-page detail/editor route. The Customers top bar does not silently repurpose
+full-page audience overview with a separate edit action. The Customers top bar does not silently repurpose
 the People add-customer action, and the removed management modal must not return
 as a parallel surface. Sends can select one saved audience id, but it cannot
 author a parallel filter expression. Event-scoped Booked or Prospective groups
@@ -3079,8 +3086,13 @@ remain event authority and do not enter this organizer-CRM collection.
 
 The server accepts only a versioned, closed predicate vocabulary: reviewed
 computed segments, organizer tags, attendance count, last-seen recency, and
-reachability for a named intent. It canonicalizes the definition before hashing
-it, rejects duplicate predicates, validates tag ownership, and uses optimistic
+reachability for a named intent, application status for a selected form,
+versioned filterable choice/boolean answers, and attendance at a named event.
+`organizerSavedAudienceSources.ts` validates organizer ownership and immutable
+question/value references. It evaluates current submitted responses and source
+origins, following contact merges; withdrawn evidence never supplies membership.
+It canonicalizes the definition before hashing it, rejects duplicate predicates,
+validates tag ownership, and uses optimistic
 revisions for edits and archives. Neither arbitrary queries nor client-provided
 collection paths are executable audience definitions.
 
@@ -3088,6 +3100,13 @@ Preview is an exact server computation or an explicit failure. It refuses
 partial source coverage and refuses organizers above the bounded 2,500-contact
 evaluation limit rather than returning a plausible-looking subset. The client
 labels stored counts as last-preview facts and never presents them as live.
+`HostSavedAudienceOverview` owns rule summaries, evaluated time, reach, member
+links and the scoped Inbox handoff. `HostSavedAudienceMembersController` pages
+exact membership; cursors bind organizer, audience revision and all ordered
+member ids. Membership changes require a refresh instead of mixing pages.
+Source joins are capped at 5,000 records; authoring catalogs are bounded at 200
+records per source category and 100 filterable versioned questions. Exceeding
+these bounds is an explicit failure, never a truncated exact result.
 
 A draft campaign stores the selected audience id, revision, and definition
 hash. Preview stores an exact audience-state hash; approval refuses a changed

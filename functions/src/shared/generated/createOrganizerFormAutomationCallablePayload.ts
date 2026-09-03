@@ -7,13 +7,18 @@
  */
 export interface CreateOrganizerFormAutomationCallablePayload {
   organizerId: string;
-  formId: string;
+  formId: string | null;
   ruleId: string | null;
   requestId: string;
   expectedRevision: number | null;
   name: string;
   enabled: boolean;
-  trigger: "responseSubmitted" | "responseWithdrawn" | "answerMatches";
+  trigger:
+    | "responseSubmitted"
+    | "responseWithdrawn"
+    | "answerMatches"
+    | "applicationAccepted"
+    | "eventAttended";
   condition: {
     questionId: string;
     operator:
@@ -49,5 +54,9 @@ export interface CreateOrganizerFormAutomationCallablePayload {
     webhookUrl: string | null;
     webhookSecret: string | null;
     channel: null | "whatsapp" | "email";
+    campaignId?: string | null;
+    campaignRevision?: number | null;
   }[];
+  triggerEventId?: string | null;
+  delayMinutes?: number;
 }

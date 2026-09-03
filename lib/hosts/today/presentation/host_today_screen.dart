@@ -207,10 +207,12 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
         return;
       case HostAttentionDestinationRoute.hostAudienceForms:
         final formId = destination.formId;
-        if (formId != null && destination.section == 'automations') {
+        if (destination.section == 'automations') {
           context.pushNamed(
-            Routes.hostFormAutomationsScreen.name,
-            pathParameters: {'formId': formId},
+            formId == null
+                ? Routes.hostAudienceAutomationsScreen.name
+                : Routes.hostFormAutomationsScreen.name,
+            pathParameters: {'formId': ?formId},
             queryParameters: {'organizerId': organizer.id},
           );
           return;

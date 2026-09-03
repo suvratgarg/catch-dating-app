@@ -771,6 +771,9 @@ void _registerHostOperationsCustomersTests() {
       tester,
       const HostSavedAudienceEditorScreen(organizerId: organizerId),
       overrides: [
+        hostSavedAudienceFilterOptionsProvider(organizerId).overrideWith(
+          (_) async => const HostSavedAudienceFilterOptions.empty(),
+        ),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             [],
@@ -796,6 +799,9 @@ void _registerHostOperationsCustomersTests() {
         initialAudience: audience,
       ),
       overrides: [
+        hostSavedAudienceFilterOptionsProvider(organizerId).overrideWith(
+          (_) async => const HostSavedAudienceFilterOptions.empty(),
+        ),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             [],
@@ -806,6 +812,12 @@ void _registerHostOperationsCustomersTests() {
     );
 
     expect(find.text('Repeat runners'), findsWidgets);
+    expect(
+      find.byKey(const ValueKey('host-saved-audience-edit')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('host-saved-audience-edit')));
+    await pumpFeatureUi(tester);
     expect(find.text('Save changes'), findsOneWidget);
     expect(find.text('CURRENT PREVIEW'), findsOneWidget);
     expect(find.text('Refresh exact preview'), findsOneWidget);

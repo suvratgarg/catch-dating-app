@@ -96,6 +96,7 @@ const schemaListOrganizerApplicationsCallableResponseSchema = <String, Object?>{
               'organizerImported',
               'activeParticipantGrant',
               'revokedParticipantGrant',
+              'submittedFormResponse',
             ],
           },
           'sourceKind': <String, Object?>{
@@ -122,6 +123,22 @@ const schemaListOrganizerApplicationsCallableResponseSchema = <String, Object?>{
             'type': 'integer',
             'minimum': 1,
             'maximum': 9007199254740991,
+          },
+          'contactId': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'sourceResponseId': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'minLength': 1,
+            'maxLength': 180,
           },
         },
       },
@@ -206,6 +223,7 @@ const schemaListOrganizerApplicationsCallableResponseSchema = <String, Object?>{
             'organizerImported',
             'activeParticipantGrant',
             'revokedParticipantGrant',
+            'submittedFormResponse',
           ],
         },
         'sourceKind': <String, Object?>{
@@ -232,6 +250,22 @@ const schemaListOrganizerApplicationsCallableResponseSchema = <String, Object?>{
           'type': 'integer',
           'minimum': 1,
           'maximum': 9007199254740991,
+        },
+        'contactId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'sourceResponseId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 180,
         },
       },
     },

@@ -200,6 +200,14 @@
       "leading": "back"
     },
     {
+      "path": "lib/hosts/presentation/forms/host_automation_rule_editor.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
       "path": "lib/hosts/presentation/forms/host_form_automations_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
@@ -264,6 +272,12 @@
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 5
+    },
+    {
+      "path": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
+      "role": "screen", "expression": "CatchScreenTopBar",
+      "owner": "CatchScreenTopBar", "surface": "CatchRouteScaffold",
+      "leading": "back", "occurrences": 1
     },
     {
       "path": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",

@@ -12,17 +12,20 @@ final class ListOrganizerSavedAudiencesCallableRequest {
     this.status,
     this.limit,
     this.cursor,
+    this.includeFilterOptions,
   });
 
   final String organizerId;
   final String? status;
   final int? limit;
   final String? cursor;
+  final bool? includeFilterOptions;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
     'status': ?status,
     'limit': ?limit,
     'cursor': ?cursor,
+    'includeFilterOptions': ?includeFilterOptions,
   };
 }

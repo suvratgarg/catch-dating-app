@@ -39,7 +39,47 @@
     "approvedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "dispatchedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "completedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
-    "cancelledAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
+    "cancelledAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "automationOrigin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ruleId",
+        "ruleRevision",
+        "actionId",
+        "sourceId",
+        "eventKind",
+        "contactId"
+      ],
+      "properties": {
+        "ruleId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "ruleRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "actionId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "sourceId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "eventKind": {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "withdrawn",
+            "applicationAccepted",
+            "eventAttended"
+          ]
+        },
+        "contactId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    }
   },
   "definitions": {
     "count": {"type": "integer", "minimum": 0, "maximum": 1000000},

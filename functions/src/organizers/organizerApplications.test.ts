@@ -6,6 +6,7 @@ import {
   applicationOutreach,
   canonicalFieldForNormalizedHeader,
   customerApplicationAccountUid,
+  customerApplicationMatches,
   normalizeHeader,
   normalizeTabularPayload,
   prepareApplicationRows,
@@ -208,5 +209,31 @@ it("keeps preview normalization free of import-only properties", () => {
     headers: ["Name"],
     mappings: [],
     rows: [],
+  });
+});
+
+
+describe("customer application association", () => {
+  it("finds source records moved to the current contact", () => {
+    assert.equal(customerApplicationMatches({
+      contactId: "merged-contact", linkedUid: null,
+    }, "merged-contact", null), true);
+  });
+
+  it("finds verified account applications before admission", () => {
+    assert.equal(customerApplicationMatches({
+      contactId: null, linkedUid: "participant-1",
+    }, "customer-1", "participant-1"), true);
+  });
+
+  it("does not associate unrelated or unverified identities", () => {
+    for (const linkedUid of [null, "participant-1", "other-person"]) {
+      assert.equal(customerApplicationMatches({
+        contactId: "other-contact", linkedUid,
+      }, "customer-1", null), false);
+    }
+    assert.equal(customerApplicationMatches({
+      contactId: null, linkedUid: "other-person",
+    }, "customer-1", "participant-1"), false);
   });
 });

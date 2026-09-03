@@ -950,3 +950,178 @@ final class HostWhatsappThreadsFamily extends $Family
   @override
   String toString() => r'hostWhatsappThreadsProvider';
 }
+
+@ProviderFor(hostStaticAudienceMembers)
+final hostStaticAudienceMembersProvider = HostStaticAudienceMembersFamily._();
+
+final class HostStaticAudienceMembersProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<HostStaticAudienceMember>>,
+          List<HostStaticAudienceMember>,
+          FutureOr<List<HostStaticAudienceMember>>
+        >
+    with
+        $FutureModifier<List<HostStaticAudienceMember>>,
+        $FutureProvider<List<HostStaticAudienceMember>> {
+  HostStaticAudienceMembersProvider._({
+    required HostStaticAudienceMembersFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostStaticAudienceMembersProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostStaticAudienceMembersHash();
+
+  @override
+  String toString() {
+    return r'hostStaticAudienceMembersProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<HostStaticAudienceMember>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<HostStaticAudienceMember>> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return hostStaticAudienceMembers(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostStaticAudienceMembersProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostStaticAudienceMembersHash() =>
+    r'569604def0c06c0ac215e61fcdfaeef7dbaf50e9';
+
+final class HostStaticAudienceMembersFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<HostStaticAudienceMember>>,
+          (String, String)
+        > {
+  HostStaticAudienceMembersFamily._()
+    : super(
+        retry: null,
+        name: r'hostStaticAudienceMembersProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostStaticAudienceMembersProvider call(
+    String organizerId,
+    String selectionKey,
+  ) => HostStaticAudienceMembersProvider._(
+    argument: (organizerId, selectionKey),
+    from: this,
+  );
+
+  @override
+  String toString() => r'hostStaticAudienceMembersProvider';
+}
+
+@ProviderFor(hostSavedAudienceFilterOptions)
+final hostSavedAudienceFilterOptionsProvider =
+    HostSavedAudienceFilterOptionsFamily._();
+
+final class HostSavedAudienceFilterOptionsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostSavedAudienceFilterOptions>,
+          HostSavedAudienceFilterOptions,
+          FutureOr<HostSavedAudienceFilterOptions>
+        >
+    with
+        $FutureModifier<HostSavedAudienceFilterOptions>,
+        $FutureProvider<HostSavedAudienceFilterOptions> {
+  HostSavedAudienceFilterOptionsProvider._({
+    required HostSavedAudienceFilterOptionsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostSavedAudienceFilterOptionsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostSavedAudienceFilterOptionsHash();
+
+  @override
+  String toString() {
+    return r'hostSavedAudienceFilterOptionsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostSavedAudienceFilterOptions> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostSavedAudienceFilterOptions> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostSavedAudienceFilterOptions(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostSavedAudienceFilterOptionsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostSavedAudienceFilterOptionsHash() =>
+    r'4b9346ad9d975d12692bd6a5d5006ed85d297647';
+
+final class HostSavedAudienceFilterOptionsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostSavedAudienceFilterOptions>,
+          String
+        > {
+  HostSavedAudienceFilterOptionsFamily._()
+    : super(
+        retry: null,
+        name: r'hostSavedAudienceFilterOptionsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostSavedAudienceFilterOptionsProvider call(String organizerId) =>
+      HostSavedAudienceFilterOptionsProvider._(
+        argument: organizerId,
+        from: this,
+      );
+
+  @override
+  String toString() => r'hostSavedAudienceFilterOptionsProvider';
+}

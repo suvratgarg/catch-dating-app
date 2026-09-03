@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
@@ -7,6 +9,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_crm_repository.g.dart';
+part 'host_saved_audience_filters.dart';
 
 enum HostCrmChannelReadiness {
   currentEventOnly,
@@ -2026,6 +2029,38 @@ sealed class HostSavedAudiencePredicate {
 
   factory HostSavedAudiencePredicate.fromMap(Map<Object?, Object?> map) =>
       switch (_requiredString(map, 'kind')) {
+        'staticMembers' => HostSavedAudienceStaticMembers(
+          _stringList(map['contactIds']),
+        ),
+        'spend' => HostSavedAudienceSpend(
+          operator: _enumByName(
+            HostSavedAudienceAttendanceOperator.values,
+            _requiredString(map, 'operator'),
+            'spend comparison',
+          ),
+          currency: _requiredString(map, 'currency'),
+          amountMinor: _requiredInt(map, 'amountMinor'),
+          withinDays: map['withinDays'] == null
+              ? null
+              : _requiredInt(map, 'withinDays'),
+        ),
+        'applicationStatus' => HostSavedAudienceApplicationStatusRule(
+          formId: _requiredString(map, 'formId'),
+          reviewStatus: _enumByName(
+            HostSavedAudienceApplicationStatus.values,
+            _requiredString(map, 'reviewStatus'),
+            'application status',
+          ),
+        ),
+        'formAnswer' => HostSavedAudienceFormAnswer(
+          formId: _requiredString(map, 'formId'),
+          versionId: _requiredString(map, 'versionId'),
+          questionId: _requiredString(map, 'questionId'),
+          value: _audienceAnswerValue(map['value']),
+        ),
+        'attendedEvent' => HostSavedAudienceAttendedEvent(
+          _requiredString(map, 'eventId'),
+        ),
         'computedSegment' => HostSavedAudienceComputedSegment(
           _requiredAudienceSegment(map, 'segmentId'),
         ),
@@ -2144,6 +2179,13 @@ class HostSavedAudienceDefinition {
 
   final HostSavedAudienceJoin join;
   final List<HostSavedAudiencePredicate> predicates;
+
+  bool get isStatic =>
+      predicates.length == 1 &&
+      predicates.single is HostSavedAudienceStaticMembers;
+  List<String> get selectedContactIds => isStatic
+      ? (predicates.single as HostSavedAudienceStaticMembers).contactIds
+      : const [];
 
   Map<String, Object?> toJson() => {
     'join': join.name,
@@ -2279,6 +2321,7 @@ class HostSavedAudiencePreviewContact {
 class HostSavedAudiencePreview {
   const HostSavedAudiencePreview({
     required this.audience,
+    this.nextCursor,
     required this.matchCount,
     required this.reachSummary,
     required this.sample,
@@ -2291,6 +2334,7 @@ class HostSavedAudiencePreview {
       throw const FormatException('Saved audience preview was not exact.');
     }
     return HostSavedAudiencePreview(
+      nextCursor: _nullableString(map['nextCursor']),
       audience: HostSavedAudience.fromMap(
         _requiredMap(map['audience'], 'saved audience'),
       ),
@@ -2307,6 +2351,7 @@ class HostSavedAudiencePreview {
   }
 
   final HostSavedAudience audience;
+  final String? nextCursor;
   final int matchCount;
   final HostAudienceReachSummary reachSummary;
   final List<HostSavedAudiencePreviewContact> sample;
@@ -2803,6 +2848,22 @@ class HostCrmRepository {
         parse: HostEventRosterInsights.fromCallableData,
       );
 
+  Future<List<HostStaticAudienceMember>> resolveAudienceMembers(
+    String organizerId,
+    List<String> contactIds,
+  ) => _call(
+    name: 'resolveOrganizerAudienceMembers',
+    payload: ResolveOrganizerAudienceMembersCallableRequest(
+      organizerId: organizerId,
+      contactIds: contactIds,
+    ).toJson(),
+    action: 'load selected audience people',
+    parse: (data) => _mapList(
+      _requiredMap(data, 'selected audience people')['members'],
+      'selected audience people',
+    ).map(HostStaticAudienceMember.fromMap).toList(growable: false),
+  );
+
   Future<HostAudiencePage> listContacts(
     String organizerId, {
     HostAudienceQuery query = const HostAudienceQuery(),
@@ -3153,6 +3214,19 @@ class HostCrmRepository {
     parse: HostMessagingSetup.fromCallableData,
   );
 
+  Future<HostSavedAudienceFilterOptions> savedAudienceFilterOptions(
+    String organizerId,
+  ) => _call(
+    name: 'listOrganizerSavedAudiences',
+    payload: ListOrganizerSavedAudiencesCallableRequest(
+      organizerId: organizerId,
+      limit: 1,
+      includeFilterOptions: true,
+    ).toJson(),
+    action: 'load audience filter choices',
+    parse: HostSavedAudienceFilterOptions.fromCallableData,
+  );
+
   Future<HostSavedAudiencePage> listSavedAudiences(
     String organizerId, {
     String status = 'active',
@@ -3197,6 +3271,7 @@ class HostCrmRepository {
     required String organizerId,
     required HostSavedAudience audience,
     int sampleLimit = 10,
+    String? cursor,
   }) => _call(
     name: 'previewOrganizerSavedAudience',
     payload: PreviewOrganizerSavedAudienceCallableRequest(
@@ -3204,6 +3279,7 @@ class HostCrmRepository {
       audienceId: audience.audienceId,
       expectedRevision: audience.revision,
       sampleLimit: sampleLimit,
+      cursor: cursor,
     ).toJson(),
     action: 'preview organizer audience',
     parse: HostSavedAudiencePreview.fromCallableData,
@@ -3535,6 +3611,15 @@ Future<HostWhatsappThreadPage> hostWhatsappThreads(
   String organizerId,
 ) => ref.read(hostCrmRepositoryProvider).listWhatsappThreads(organizerId);
 
+@riverpod
+Future<List<HostStaticAudienceMember>> hostStaticAudienceMembers(
+  Ref ref,
+  String organizerId,
+  String selectionKey,
+) => ref
+    .read(hostCrmRepositoryProvider)
+    .resolveAudienceMembers(organizerId, _stringList(jsonDecode(selectionKey)));
+
 Map<Object?, Object?> _requiredMap(Object? value, String label) {
   if (value is Map<Object?, Object?>) return value;
   throw FormatException('Invalid $label.');
@@ -3622,3 +3707,10 @@ HostCrmChannelReadiness _readiness(Object? value) => switch (value) {
     HostCrmChannelReadiness.providerAndDltSetupRequired,
   _ => throw const FormatException('CRM response had invalid readiness.'),
 };
+
+@riverpod
+Future<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptions(
+  Ref ref,
+  String organizerId,
+) =>
+    ref.read(hostCrmRepositoryProvider).savedAudienceFilterOptions(organizerId);

@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "e5ee13cd737be53d75470372e1969af317d98bf8866eea49bcc261c8fc6f73e7",
-    "routeContractSha256": "32b285ddbdf2ee372853a57ee65123f8d9ff6f334760dfd545072b4e234d8412",
-    "goRouteCount": 85,
+    "normalizedFileSha256": "e0da56ed0c94967244895c8d3473df04c7872efb26ad2216662f9d2a8a18a930",
+    "routeContractSha256": "20c3b0a3b3246b813c5e2f0bed4deb48d45f4673ba532414c658f56818242987",
+    "goRouteCount": 86,
     "shellBranchCount": 9,
-    "enumRouteCount": 70,
-    "referencedRouteCount": 70,
-    "runtimeRouteCount": 70,
+    "enumRouteCount": 71,
+    "referencedRouteCount": 71,
+    "runtimeRouteCount": 71,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -725,6 +725,21 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostAudienceAutomationsScreen",
+      "path": "/host/audience/automations",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/audience/automations",
+      "runtimeParentId": "hostAudienceScreen",
+      "runtimePathExpression": "'automations'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostFormAutomationsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "HostFormAutomationsScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostFormAutomationsScreen",
       "path": "/host/audience/forms/:formId/automations",
       "pathParameters": [
@@ -751,7 +766,7 @@
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'applications'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostApplicationsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationExpression": "(context,state)=>HostApplicationsScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.uri.queryParameters['formId'],contactId:state.uri.queryParameters['contactId'])",
       "presentationTarget": "HostApplicationsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1276,6 +1291,7 @@
     "hostAppEventSuccessScreen",
     "hostApplicationDetailScreen",
     "hostApplicationsScreen",
+    "hostAudienceAutomationsScreen",
     "hostAudienceScreen",
     "hostChatScreen",
     "hostClubDetailScreen",

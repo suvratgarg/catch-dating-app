@@ -22379,7 +22379,7 @@
   "@hostApplicationReviewNoteHint": {"description": "Organizer-only application review note hint.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationMarkInReview": "Mark in review",
   "@hostApplicationMarkInReview": {"description": "Application review transition action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
-  "hostApplicationApprove": "Approve",
+  "hostApplicationApprove": "Accept and add to People",
   "@hostApplicationApprove": {"description": "Application approval action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationWaitlist": "Waitlist",
   "@hostApplicationWaitlist": {"description": "Application waitlist action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
@@ -23011,15 +23011,13 @@
   "@hostFormExportReady": {"description": "Completed form response export feedback.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormAutomationsTitle": "Automations",
   "@hostFormAutomationsTitle": {"description": "Form automations screen title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostFormAutomationsSubtitle": "Run explicit, observable actions after a response changes. You can disable any rule instantly.",
-  "@hostFormAutomationsSubtitle": {"description": "Explains form automations.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormAutomationsRules": "Rules",
   "@hostFormAutomationsRules": {"description": "Form automation rules section title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormAutomationsRuns": "Recent runs",
   "@hostFormAutomationsRuns": {"description": "Form automation execution history section title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormAutomationsEmptyTitle": "No automations yet",
   "@hostFormAutomationsEmptyTitle": {"description": "Empty automation rules title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostFormAutomationsEmptyBody": "Start with a safe preset. Every run is recorded and can be disabled.",
+  "hostFormAutomationsEmptyBody": "Create a rule for future activity. Review its actions, enable it when ready, and follow each run here.",
   "@hostFormAutomationsEmptyBody": {"description": "Empty automation rules guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormAutomationNotifyPreset": "Notify my team",
   "@hostFormAutomationNotifyPreset": {"description": "Creates a team notification response automation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
@@ -23680,5 +23678,411 @@
   "hostCustomersSourceUnavailable": "Source not recorded",
   "@hostCustomersSourceUnavailable": {"description": "Title for a customer with no available origin receipts.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersSourcesTruncated": "More source records exist. Only the loaded records are shown.",
-  "@hostCustomersSourcesTruncated": {"description": "Explicit boundary when the backend returns a truncated set of customer origin receipts.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"}
+  "@hostCustomersSourcesTruncated": {"description": "Explicit boundary when the backend returns a truncated set of customer origin receipts.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostApplicationsReviewQueue": "Review applications",
+  "hostApplicationsReviewQueueBody": "Review submissions, accept people, or keep them on your waitlist.",
+  "hostApplicationOpenPerson": "Open person in People",
+  "hostApplicationOpenResponse": "Open original response",
+  "hostCustomerApplicationsBody": "View this person’s applications and review decisions.",
+  "@hostApplicationsReviewQueue": {
+    "description": "Audience intake workflow label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "@hostApplicationsReviewQueueBody": {
+    "description": "Audience intake workflow label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "@hostApplicationOpenPerson": {
+    "description": "Audience intake workflow label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.applications"
+  },
+  "@hostApplicationOpenResponse": {
+    "description": "Audience intake workflow label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.applications"
+  },
+  "@hostCustomerApplicationsBody": {
+    "description": "Audience intake workflow label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostSavedAudienceEditRules": "Edit audience",
+  "@hostSavedAudienceEditRules": {
+    "description": "Saved audience overview label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostSavedAudienceEvaluated": "Last evaluated",
+  "@hostSavedAudienceEvaluated": {
+    "description": "Saved audience overview label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostSavedAudienceMessage": "Message this audience",
+  "@hostSavedAudienceMessage": {
+    "description": "Saved audience overview label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostSavedAudienceMembers": "People in this audience",
+  "@hostSavedAudienceMembers": {
+    "description": "Saved audience overview label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostSavedAudienceNoMembers": "No people in this audience",
+  "@hostSavedAudienceNoMembers": {
+    "description": "Saved audience overview label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceRuleApplication": "Application status",
+  "@hostAudienceRuleApplication": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceRuleFormAnswer": "Form answer",
+  "@hostAudienceRuleFormAnswer": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceRuleNamedEvent": "Attended event",
+  "@hostAudienceRuleNamedEvent": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceChooseForm": "Choose a form",
+  "@hostAudienceChooseForm": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceChooseEvent": "Choose an event",
+  "@hostAudienceChooseEvent": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceChooseQuestion": "Choose a published question",
+  "@hostAudienceChooseQuestion": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceChooseAnswer": "Answer contains or equals",
+  "@hostAudienceChooseAnswer": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSourceUnavailable": "Source unavailable",
+  "@hostAudienceSourceUnavailable": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceFilterableQuestionsHelp": "Only choice and yes/no questions marked filterable appear here. Each rule uses the selected published version.",
+  "@hostAudienceFilterableQuestionsHelp": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSelectedCount": "{count, plural, =1{1 selected person} other{{count} selected people}}",
+  "@hostAudienceSelectedCount": {
+    "description": "Saved audience SelectedCount control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hostAudienceStaticHelp": "Choose up to 2,500 people. Membership stays as selected until you edit it. Messaging permission is checked separately.",
+  "@hostAudienceStaticHelp": {
+    "description": "Saved audience StaticHelp control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceUnavailablePerson": "Unavailable person",
+  "@hostAudienceUnavailablePerson": {
+    "description": "Saved audience UnavailablePerson control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceRemoveSelected": "Remove from this audience",
+  "@hostAudienceRemoveSelected": {
+    "description": "Saved audience RemoveSelected control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudiencePreviousPeople": "Previous people",
+  "@hostAudiencePreviousPeople": {
+    "description": "Saved audience PreviousPeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceNextPeople": "Next people",
+  "@hostAudienceNextPeople": {
+    "description": "Saved audience NextPeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceChoosePeople": "Choose people",
+  "@hostAudienceChoosePeople": {
+    "description": "Saved audience ChoosePeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSearchPeople": "Search by name",
+  "@hostAudienceSearchPeople": {
+    "description": "Saved audience SearchPeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceAvailablePeople": "People you can select",
+  "@hostAudienceAvailablePeople": {
+    "description": "Saved audience AvailablePeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceNoPeopleFound": "No people found",
+  "@hostAudienceNoPeopleFound": {
+    "description": "Saved audience NoPeopleFound control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceNoSelectedPeople": "No people selected yet",
+  "@hostAudienceNoSelectedPeople": {
+    "description": "Saved audience NoSelectedPeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSelectionLimit": "You have selected the maximum of 2,500 people.",
+  "@hostAudienceSelectionLimit": {
+    "description": "Saved audience SelectionLimit control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceMembershipMode": "Audience membership",
+  "@hostAudienceMembershipMode": {
+    "description": "Saved audience MembershipMode control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceRuleMembership": "Match conditions automatically",
+  "@hostAudienceRuleMembership": {
+    "description": "Saved audience RuleMembership control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceStaticMembership": "Choose people manually",
+  "@hostAudienceStaticMembership": {
+    "description": "Saved audience StaticMembership control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpend": "Catch spend",
+  "@hostAudienceSpend": {
+    "description": "Saved audience Spend control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendHelp": "Uses completed Catch payments for your events, excluding refunds. Only uniquely verified Catch accounts are included. Currencies are counted separately; changing currency resets the amount.",
+  "@hostAudienceSpendHelp": {
+    "description": "Saved audience SpendHelp control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendCurrency": "Currency",
+  "@hostAudienceSpendCurrency": {
+    "description": "Saved audience SpendCurrency control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendAmount": "Amount",
+  "@hostAudienceSpendAmount": {
+    "description": "Saved audience SpendAmount control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendAmountInvalid": "Enter a valid amount within 10 billion minor currency units.",
+  "@hostAudienceSpendAmountInvalid": {
+    "description": "Saved audience SpendAmountInvalid control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendDays": "Past number of days",
+  "@hostAudienceSpendDays": {
+    "description": "Saved audience SpendDays control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendDaysHelp": "Leave blank to include all recorded Catch payments.",
+  "@hostAudienceSpendDaysHelp": {
+    "description": "Saved audience SpendDaysHelp control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendDaysInvalid": "Enter a whole number from 1 to 3,650, or leave blank.",
+  "@hostAudienceSpendDaysInvalid": {
+    "description": "Saved audience SpendDaysInvalid control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendLifetime": "All recorded payments",
+  "@hostAudienceSpendLifetime": {
+    "description": "Saved audience SpendLifetime control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendWindow": "Past {days} days",
+  "@hostAudienceSpendWindow": {
+    "description": "Saved audience SpendWindow control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hostAutomationNew": "New automation",
+  "@hostAutomationNew": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationEdit": "Edit automation",
+  "@hostAutomationEdit": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationName": "Automation name",
+  "@hostAutomationName": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationTrigger": "When",
+  "@hostAutomationTrigger": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationAccepted": "When an application is accepted",
+  "@hostAutomationAccepted": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationAttended": "After a person attends an event",
+  "@hostAutomationAttended": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationAnyForm": "Any application form",
+  "@hostAutomationAnyForm": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationAnyEvent": "Any event",
+  "@hostAutomationAnyEvent": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationForm": "Form",
+  "@hostAutomationForm": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationEvent": "Event",
+  "@hostAutomationEvent": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationDelay": "Delay in minutes",
+  "@hostAutomationDelay": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationDelayHelp": "0 runs as soon as eligible. Attendance follow-ups wait until the event ends, then apply this delay. Maximum: 10,080 minutes (7 days).",
+  "@hostAutomationDelayHelp": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationDelayInvalid": "Enter a whole number from 0 to 10,080.",
+  "@hostAutomationDelayInvalid": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationAnswer": "Answer includes",
+  "@hostAutomationAnswer": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationQuestion": "Published question",
+  "@hostAutomationQuestion": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationQuestionHelp": "Choose a filterable choice or yes/no question from the current published form. Publishing a new version requires reviewing the condition again.",
+  "@hostAutomationQuestionHelp": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationAction": "Action",
+  "@hostAutomationAction": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationAddAction": "Add action",
+  "@hostAutomationAddAction": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationRemoveAction": "Remove action",
+  "@hostAutomationRemoveAction": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationTag": "Add organizer tag",
+  "@hostAutomationTag": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationQueue": "Add to application review",
+  "@hostAutomationQueue": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationAttendee": "Propose event attendee",
+  "@hostAutomationAttendee": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationWebhook": "Send signed webhook",
+  "@hostAutomationWebhook": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationMessage": "Send WhatsApp message",
+  "@hostAutomationMessage": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationWebhookUrl": "Webhook URL",
+  "@hostAutomationWebhookUrl": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationWebhookSecret": "Signing secret",
+  "@hostAutomationWebhookSecret": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationWebhookHelp": "Send event identifiers to your HTTPS endpoint. Verify the HMAC SHA-256 signature and deduplicate X-Catch-Delivery-Id. Answers and contact details are excluded.",
+  "@hostAutomationWebhookHelp": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationSecretHelp": "Use 32–256 characters. An existing secret stays unchanged when left blank and the URL stays the same.",
+  "@hostAutomationSecretHelp": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationSecretInvalid": "Enter a signing secret of 32–256 characters.",
+  "@hostAutomationSecretInvalid": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationUrlInvalid": "Enter a public HTTPS URL using port 443.",
+  "@hostAutomationUrlInvalid": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationDraft": "Message draft",
+  "@hostAutomationDraft": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationDraftHelp": "Create an unscheduled WhatsApp draft in Messaging, with a saved audience. Only the triggering person is targeted, if they match that audience and can receive the message. Select the draft again after editing it.",
+  "@hostAutomationDraftHelp": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationDraftsMore": "Load more message drafts",
+  "@hostAutomationDraftsMore": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationDraftsEmpty": "No message drafts on this page. Create a draft in Messaging or load more.",
+  "@hostAutomationDraftsEmpty": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationEnabled": "Enabled",
+  "@hostAutomationEnabled": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationEnableHelp": "Enabling approves these actions for future matching events. Pausing stops queued actions at their next check; completed actions remain in history.",
+  "@hostAutomationEnableHelp": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationSave": "Save automation",
+  "@hostAutomationSave": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationRequired": "Complete the trigger, condition and action settings.",
+  "@hostAutomationRequired": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationOverview": "Welcome accepted applicants, follow up after attendance, and connect form activity to your team and tools.",
+  "@hostAutomationOverview": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationRunHelp": "A successful message action means the send was queued. Check its delivery in Messaging. Temporary failures retry up to five times; successful actions are retained.",
+  "@hostAutomationRunHelp": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationDue": "Next check",
+  "@hostAutomationDue": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationCurrentDraft": "Selected draft",
+  "@hostAutomationCurrentDraft": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationNoForm": "No published form is available for this trigger.",
+  "@hostAutomationNoForm": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAutomationConfigured": "Configured",
+  "@hostAutomationConfigured": {"description": "Audience automation configuration and execution copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"}
 }

@@ -1,3 +1,4 @@
+import {requireAutomationCampaignAuthority} from "./organizerAutomationSource";
 import * as crypto from "node:crypto";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
@@ -412,6 +413,8 @@ async function deliverRecipient(
   if (!credential || !phoneNumberId || !claimed.recipient.endpointE164) {
     throw new Error("Sender or recipient endpoint is incomplete.");
   }
+  await requireAutomationCampaignAuthority(
+    deps.firestore(), claimed.campaign, deps.now().toMillis());
   const accessToken = await deps.tokenStore.access(credential);
   const result = await deps.provider().sendTemplate({
     accessToken,

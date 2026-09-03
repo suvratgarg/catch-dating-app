@@ -36,6 +36,19 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
               ),
             ),
             gapH24,
+            CatchSection.fieldRows(
+              children: [
+                CatchField.nav(
+                  title: context.l10n.hostFormAutomationsTitle,
+                  body: context.l10n.hostAutomationOverview,
+                  onTap: () => context.pushNamed(
+                    Routes.hostAudienceAutomationsScreen.name,
+                    queryParameters: {'organizerId': organizerId},
+                  ),
+                ),
+              ],
+            ),
+            gapH24,
             CatchAsyncValueView<HostSavedAudiencePage>(
               value: audiences,
               onRetry: () =>

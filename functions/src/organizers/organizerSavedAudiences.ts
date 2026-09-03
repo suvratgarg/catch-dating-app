@@ -30,6 +30,7 @@ import {PreviewOrganizerSavedAudienceCallableResponse} from
 import {UpsertOrganizerSavedAudienceCallablePayload} from
   "../shared/generated/upsertOrganizerSavedAudienceCallablePayload";
 import {
+  validateResolveOrganizerAudienceMembersCallablePayload,
   validateArchiveOrganizerSavedAudienceCallablePayload,
   validateListOrganizerSavedAudiencesCallablePayload,
   validatePreviewOrganizerSavedAudienceCallablePayload,
@@ -50,7 +51,17 @@ import {organizerContactTraitMatchesSegment} from "./organizerAudienceModel";
 import {resolveOrganizerAudienceCoverage} from
   "./organizerAudienceCoverage";
 
-export const organizerSavedAudienceDefinitionVersion = 1;
+import {assertSavedAudienceSources, savedAudienceSourceMatches,
+  savedAudienceFilterOptions} from "./organizerSavedAudienceSources";
+import {ResolveOrganizerAudienceMembersCallablePayload} from
+  "../shared/generated/resolveOrganizerAudienceMembersCallablePayload";
+import {ResolveOrganizerAudienceMembersCallableResponse} from
+  "../shared/generated/resolveOrganizerAudienceMembersCallableResponse";
+import {resolveStaticAudienceSelection} from
+  "./organizerSavedAudienceMembership";
+import {savedAudienceMemberPage} from "./organizerSavedAudienceMembers";
+
+export const organizerSavedAudienceDefinitionVersion = 3;
 export const organizerSavedAudienceEvaluationLimit = 2500;
 const savedAudienceListDefaultLimit = 25;
 const getAllChunkSize = 250;
@@ -64,6 +75,7 @@ export interface SavedAudienceEvaluationRow {
   trait: OrganizerContactTraitDocument;
   preference: OrganizerCommunicationPreferenceDocument | null;
   channelState: OrganizerContactChannelStateDocument | null;
+  sourcePredicateKeys?: Set<string>;
 }
 
 interface SavedAudienceDeps {
@@ -77,6 +89,22 @@ const defaultDeps: SavedAudienceDeps = {
   checkRateLimit,
   now: () => admin.firestore.Timestamp.now(),
 };
+
+/** Returns one bounded selected-contact projection without per-row lookups. */
+export async function resolveOrganizerAudienceMembersHandler(
+  request: CallableRequest<unknown>, deps: SavedAudienceDeps = defaultDeps
+): Promise<ResolveOrganizerAudienceMembersCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<
+    ResolveOrganizerAudienceMembersCallablePayload
+  >(
+    request, validateResolveOrganizerAudienceMembersCallablePayload);
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "resolveOrganizerAudienceMembers");
+  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  return {members: await resolveStaticAudienceSelection(db, data.organizerId,
+    data.contactIds, false)};
+}
 
 export async function upsertOrganizerSavedAudienceHandler(
   request: CallableRequest<unknown>,
@@ -94,6 +122,7 @@ export async function upsertOrganizerSavedAudienceHandler(
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const definition = canonicalSavedAudienceDefinition(data.definition);
   await assertManualTagsExist(db, data.organizerId, definition);
+  await assertSavedAudienceSources(db, data.organizerId, definition);
   const audienceId = data.audienceId ?? savedAudienceId(
     data.organizerId,
     actorUid,
@@ -188,6 +217,8 @@ export async function listOrganizerSavedAudiencesHandler(
   const final = visible.at(-1);
   return {
     organizerId: data.organizerId,
+    ...(data.includeFilterOptions ? {filterOptions:
+      await savedAudienceFilterOptions(db, data.organizerId)} : {}),
     audiences: visible.map((doc) =>
       savedAudienceResponse(doc.data() as OrganizerSavedAudienceDocument),
     ),
@@ -228,10 +259,18 @@ export async function previewOrganizerSavedAudienceHandler(
     now,
   });
   const reachSummary = savedAudienceReachSummary(rows);
-  await ref.update({
-    lastPreviewMatchCount: rows.length,
-    lastPreviewReachSummary: reachSummary,
-    lastPreviewAt: now,
+  const page = savedAudienceMemberPage({
+    organizerId: data.organizerId, audienceId: data.audienceId,
+    revision: audience!.revision, rows, cursor: data.cursor,
+    limit: data.sampleLimit ?? 10,
+  });
+  await db.runTransaction(async (tx) => {
+    const current = (await tx.get(ref)).data() as
+      OrganizerSavedAudienceDocument | undefined;
+    assertActiveAudience(current, data.organizerId);
+    assertAudienceRevision(current!, audience!.revision);
+    tx.update(ref, {lastPreviewMatchCount: rows.length,
+      lastPreviewReachSummary: reachSummary, lastPreviewAt: now});
   });
   const refreshed: OrganizerSavedAudienceDocument = {
     ...audience!,
@@ -244,7 +283,8 @@ export async function previewOrganizerSavedAudienceHandler(
     coverage: "exact",
     matchCount: rows.length,
     reachSummary,
-    sample: rows.slice(0, data.sampleLimit ?? 10).map((row) => ({
+    nextCursor: page.nextCursor,
+    sample: page.rows.map((row) => ({
       contactId: row.contactId,
       displayName: row.contact.displayNameOverride ?? row.contact.displayName,
     })),
@@ -405,12 +445,18 @@ export async function resolveSavedAudienceRows(params: {
       const value = snap.data() as OrganizerContactChannelStateDocument;
       return [value.contactId, value] as const;
     }));
+  const sourceMatches = await savedAudienceSourceMatches(
+    params.db, params.organizerId, params.definition, params.now.toMillis());
   return contacts.flatMap((row): SavedAudienceEvaluationRow[] => {
+    if (row.contact.mergedIntoContactId != null ||
+        row.contact.identityState === "merged") return [];
     const trait = traits.get(row.contactId);
     if (!trait || trait.organizerId !== params.organizerId) return [];
     const candidate: SavedAudienceEvaluationRow = {
       ...row,
       trait,
+      sourcePredicateKeys: new Set([...sourceMatches.entries()]
+        .filter(([, ids]) => ids.has(row.contactId)).map(([key]) => key)),
       preference: row.contact.linkedUid ?
         preferences.get(row.contact.linkedUid) ?? null : null,
       channelState: channels.get(row.contactId) ?? null,
@@ -441,6 +487,12 @@ function savedAudiencePredicateMatches(
   now: FirebaseFirestore.Timestamp,
 ): boolean {
   switch (predicate.kind) {
+  case "spend":
+  case "staticMembers":
+  case "applicationStatus":
+  case "formAnswer":
+  case "attendedEvent":
+    return row.sourcePredicateKeys?.has(JSON.stringify(predicate)) ?? false;
   case "computedSegment":
     return organizerContactTraitMatchesSegment(
       row.trait,
@@ -484,8 +536,15 @@ export function isReachableForOrganizerWhatsappCampaign(
 export function canonicalSavedAudienceDefinition(
   definition: AudienceDefinition,
 ): AudienceDefinition {
+  if (definition.predicates.some((p) => p.kind === "staticMembers") &&
+      (definition.predicates.length !== 1 || definition.join !== "all")) {
+    throw new HttpsError("invalid-argument",
+      "Static lists cannot be combined with automatic audience rules.");
+  }
   const predicates = definition.predicates
-    .map((predicate) => ({...predicate}))
+    .map((predicate) => predicate.kind === "staticMembers" ?
+      {...predicate, contactIds: [...new Set(predicate.contactIds)].sort()} :
+      {...predicate})
     .sort((left, right) =>
       JSON.stringify(left).localeCompare(JSON.stringify(right)));
   const keys = predicates.map((predicate) => JSON.stringify(predicate));
@@ -681,4 +740,9 @@ export const previewOrganizerSavedAudience = onCall(
 export const archiveOrganizerSavedAudience = onCall(
   appCheckCallableOptionsWithLimits(savedAudienceCallableLimits),
   (request) => archiveOrganizerSavedAudienceHandler(request),
+);
+
+export const resolveOrganizerAudienceMembers = onCall(
+  appCheckCallableOptionsWithLimits(savedAudienceCallableLimits),
+  (request) => resolveOrganizerAudienceMembersHandler(request),
 );

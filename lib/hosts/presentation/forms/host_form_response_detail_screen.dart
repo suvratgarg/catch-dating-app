@@ -24,8 +24,10 @@ import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class HostFormResponseDetailScreen extends ConsumerStatefulWidget {
   const HostFormResponseDetailScreen({
@@ -65,6 +67,7 @@ class _HostFormResponseDetailScreenState
           loadedDetail?.response.status == HostFormResponseStatus.submitted
           ? _ResponseConversionDock(
               detail: loadedDetail!,
+              organizerId: widget.organizerId,
               converting: _converting,
               onConvert: (kind) => _reviewConversion(loadedDetail, kind),
             )
@@ -514,11 +517,13 @@ class _ResponseTechnicalDetails extends StatelessWidget {
 class _ResponseConversionDock extends StatelessWidget {
   const _ResponseConversionDock({
     required this.detail,
+    required this.organizerId,
     required this.converting,
     required this.onConvert,
   });
 
   final HostFormResponseDetail detail;
+  final String organizerId;
   final HostFormConversionKind? converting;
   final ValueChanged<HostFormConversionKind> onConvert;
 
@@ -536,22 +541,42 @@ class _ResponseConversionDock extends StatelessWidget {
     final accessibleStack = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     final applicationAction = CatchButton(
       key: const ValueKey('host-form-response-convert-application'),
-      label: context.l10n.hostFormConvertApplication,
+      label: detail.applicationId != null
+          ? context.l10n.hostApplicationsReviewQueue
+          : context.l10n.hostFormConvertApplication,
       shape: CatchButtonShape.rounded,
       fullWidth: true,
       isLoading: converting == HostFormConversionKind.application,
-      onPressed: applicationComplete || busy
+      onPressed: busy
+          ? null
+          : detail.applicationId != null
+          ? () => context.pushNamed(
+              Routes.hostApplicationDetailScreen.name,
+              pathParameters: {'applicationId': detail.applicationId!},
+              queryParameters: {'organizerId': organizerId},
+            )
+          : applicationComplete
           ? null
           : () => onConvert(HostFormConversionKind.application),
     );
     final crmAction = CatchButton(
       key: const ValueKey('host-form-response-convert-crm'),
-      label: context.l10n.hostFormConvertCrm,
+      label: detail.contactId != null
+          ? context.l10n.hostApplicationOpenPerson
+          : context.l10n.hostFormConvertCrm,
       shape: CatchButtonShape.rounded,
       variant: CatchButtonVariant.secondary,
       fullWidth: true,
       isLoading: converting == HostFormConversionKind.crmContact,
-      onPressed: crmComplete || busy
+      onPressed: busy
+          ? null
+          : detail.contactId != null
+          ? () => context.pushNamed(
+              Routes.hostCustomerDetailScreen.name,
+              pathParameters: {'contactId': detail.contactId!},
+              queryParameters: {'organizerId': organizerId},
+            )
+          : crmComplete
           ? null
           : () => onConvert(HostFormConversionKind.crmContact),
     );

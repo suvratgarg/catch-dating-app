@@ -194,6 +194,9 @@ export {
   createOrganizerFormAutomation,
   listOrganizerFormAutomationRuns,
   onOrganizerFormResponseAutomated,
+  onOrganizerApplicationAutomated,
+  onOrganizerAttendanceAutomated,
+  retryOrganizerAutomations,
   setOrganizerFormAutomationState,
 } from "./organizers/organizerFormAutomations";
 export {
@@ -210,6 +213,7 @@ export {
   reviewOrganizerContactMergeCandidate,
 } from "./organizers/organizerContactMergeReview";
 export {
+  resolveOrganizerAudienceMembers,
   archiveOrganizerSavedAudience,
   listOrganizerSavedAudiences,
   previewOrganizerSavedAudience,

@@ -288,6 +288,33 @@
       ]
     },
     {
+      "collectionGroup": "organizerFormAutomationRules",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "enabled", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormAutomationRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormAutomationRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "ruleId", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerFormAutomationRuns",
       "queryScope": "COLLECTION",
       "fields": [
@@ -1354,7 +1381,11 @@
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "leaseExpiresAt", "mode": "ASCENDING"}
       ]
-    }
+    },
+    {"collectionGroup": "organizerApplications", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "formId", "mode": "ASCENDING"}]},
+    {"collectionGroup": "organizerFormResponses", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "formId", "mode": "ASCENDING"}]},
+    {"collectionGroup": "organizerContactOrigins", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "sourceKind", "mode": "ASCENDING"}]},
+    {"collectionGroup": "organizerContactEventEdges", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "eventId", "mode": "ASCENDING"}]}
   ],
   "fieldOverrides": [
     {

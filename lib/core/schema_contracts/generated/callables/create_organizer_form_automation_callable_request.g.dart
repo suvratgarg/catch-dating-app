@@ -18,10 +18,12 @@ final class CreateOrganizerFormAutomationCallableRequest {
     required this.trigger,
     required this.condition,
     required this.actions,
+    this.triggerEventId,
+    this.delayMinutes,
   });
 
   final String organizerId;
-  final String formId;
+  final String? formId;
   final String? ruleId;
   final String requestId;
   final int? expectedRevision;
@@ -30,6 +32,8 @@ final class CreateOrganizerFormAutomationCallableRequest {
   final String trigger;
   final Map<String, Object?>? condition;
   final List<Map<String, Object?>> actions;
+  final String? triggerEventId;
+  final int? delayMinutes;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -42,5 +46,7 @@ final class CreateOrganizerFormAutomationCallableRequest {
     'trigger': trigger,
     'condition': condition,
     'actions': actions,
+    'triggerEventId': ?triggerEventId,
+    'delayMinutes': ?delayMinutes,
   };
 }

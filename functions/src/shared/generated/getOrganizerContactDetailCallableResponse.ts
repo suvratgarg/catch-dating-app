@@ -66,7 +66,8 @@ export interface GetOrganizerContactDetailCallableResponse {
       | "hostFormResponse"
       | "providerRecord"
       | "importBatch"
-      | "webRegistration";
+      | "webRegistration"
+      | "hostApplicationResponse";
     formId: string | null;
     formTitle: string | null;
     eventId: string | null;

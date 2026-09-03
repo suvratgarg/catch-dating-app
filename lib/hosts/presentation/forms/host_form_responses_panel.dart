@@ -58,6 +58,23 @@ class _HostFormResponsesPanelState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        CatchSection.fieldRows(
+          children: [
+            CatchField.nav(
+              key: const ValueKey('host-form-responses-review-applications'),
+              title: context.l10n.hostApplicationsReviewQueue,
+              body: context.l10n.hostApplicationsReviewQueueBody,
+              onTap: () => context.pushNamed(
+                Routes.hostApplicationsScreen.name,
+                queryParameters: {
+                  'organizerId': widget.organizerId,
+                  if (widget.formId != null) 'formId': widget.formId!,
+                },
+              ),
+            ),
+          ],
+        ),
+        gapH16,
         Text(
           context.l10n.hostFormResponsesSubtitle,
           style: Theme.of(

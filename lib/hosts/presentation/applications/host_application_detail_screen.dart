@@ -88,6 +88,37 @@ class _HostApplicationDetailScreenState
                     ),
                   ],
                 ),
+                if (application.contactId != null ||
+                    application.sourceResponseId != null) ...[
+                  gapH24,
+                  CatchSection.fieldRows(
+                    children: [
+                      if (application.contactId case final contactId?)
+                        CatchField.nav(
+                          key: const ValueKey('host-application-open-person'),
+                          title: context.l10n.hostApplicationOpenPerson,
+                          onTap: () => context.pushNamed(
+                            Routes.hostCustomerDetailScreen.name,
+                            pathParameters: {'contactId': contactId},
+                            queryParameters: {
+                              'organizerId': widget.organizerId,
+                            },
+                          ),
+                        ),
+                      if (application.sourceResponseId case final responseId?)
+                        CatchField.nav(
+                          title: context.l10n.hostApplicationOpenResponse,
+                          onTap: () => context.pushNamed(
+                            Routes.hostFormResponseDetailScreen.name,
+                            pathParameters: {'responseId': responseId},
+                            queryParameters: {
+                              'organizerId': widget.organizerId,
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
                 gapH24,
                 _HostApplicationOutreachSection(
                   outreach: application.outreach,
@@ -105,7 +136,9 @@ class _HostApplicationDetailScreenState
                   ],
                 ),
                 if (application.reviewStatus !=
-                    HostApplicationReviewStatus.withdrawn) ...[
+                        HostApplicationReviewStatus.withdrawn &&
+                    application.dataAccessState !=
+                        'revokedParticipantGrant') ...[
                   gapH24,
                   CatchSection.divided(
                     title: context.l10n.hostApplicationReviewTitle,

@@ -250,6 +250,8 @@ import {UpsertOrganizerCampaignCallablePayload} from "./upsertOrganizerCampaignC
 import {UpsertOrganizerSavedAudienceCallablePayload} from "./upsertOrganizerSavedAudienceCallablePayload";
 import {ListOrganizerSavedAudiencesCallablePayload} from "./listOrganizerSavedAudiencesCallablePayload";
 import {PreviewOrganizerSavedAudienceCallablePayload} from "./previewOrganizerSavedAudienceCallablePayload";
+import {ResolveOrganizerAudienceMembersCallablePayload} from "./resolveOrganizerAudienceMembersCallablePayload";
+import {ResolveOrganizerAudienceMembersCallableResponse} from "./resolveOrganizerAudienceMembersCallableResponse";
 import {ArchiveOrganizerSavedAudienceCallablePayload} from "./archiveOrganizerSavedAudienceCallablePayload";
 import {OrganizerSavedAudienceCallableResponse} from "./organizerSavedAudienceCallableResponse";
 import {ListOrganizerSavedAudiencesCallableResponse} from "./listOrganizerSavedAudiencesCallableResponse";
@@ -774,6 +776,8 @@ import {
   upsertOrganizerSavedAudienceCallablePayloadSchema,
   listOrganizerSavedAudiencesCallablePayloadSchema,
   previewOrganizerSavedAudienceCallablePayloadSchema,
+  resolveOrganizerAudienceMembersCallablePayloadSchema,
+  resolveOrganizerAudienceMembersCallableResponseSchema,
   archiveOrganizerSavedAudienceCallablePayloadSchema,
   organizerSavedAudienceCallableResponseSchema,
   listOrganizerSavedAudiencesCallableResponseSchema,
@@ -1562,6 +1566,10 @@ export const validateListOrganizerSavedAudiencesCallablePayload =
   lazyValidator<ListOrganizerSavedAudiencesCallablePayload>(listOrganizerSavedAudiencesCallablePayloadSchema);
 export const validatePreviewOrganizerSavedAudienceCallablePayload =
   lazyValidator<PreviewOrganizerSavedAudienceCallablePayload>(previewOrganizerSavedAudienceCallablePayloadSchema);
+export const validateResolveOrganizerAudienceMembersCallablePayload =
+  lazyValidator<ResolveOrganizerAudienceMembersCallablePayload>(resolveOrganizerAudienceMembersCallablePayloadSchema);
+export const validateResolveOrganizerAudienceMembersCallableResponse =
+  lazyValidator<ResolveOrganizerAudienceMembersCallableResponse>(resolveOrganizerAudienceMembersCallableResponseSchema);
 export const validateArchiveOrganizerSavedAudienceCallablePayload =
   lazyValidator<ArchiveOrganizerSavedAudienceCallablePayload>(archiveOrganizerSavedAudienceCallablePayloadSchema);
 export const validateOrganizerSavedAudienceCallableResponse =

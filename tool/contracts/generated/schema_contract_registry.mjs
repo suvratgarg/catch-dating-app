@@ -13661,7 +13661,8 @@ export const organizerContactOriginDocumentSchema = {
         "hostFormResponse",
         "providerRecord",
         "importBatch",
-        "webRegistration"
+        "webRegistration",
+        "hostApplicationResponse"
       ]
     },
     "sourceEntityId": {
@@ -14213,6 +14214,156 @@ export const organizerSavedAudienceDocumentSchema = {
                     "const": "organizerWhatsappCampaign"
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "formId",
+                  "reviewStatus"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "applicationStatus"
+                  },
+                  "formId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "reviewStatus": {
+                    "type": "string",
+                    "enum": [
+                      "submitted",
+                      "inReview",
+                      "approved",
+                      "waitlisted",
+                      "declined"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "formId",
+                  "versionId",
+                  "questionId",
+                  "value"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "formAnswer"
+                  },
+                  "formId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "versionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "questionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "value": {
+                    "type": [
+                      "string",
+                      "boolean"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 160
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "eventId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendedEvent"
+                  },
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "currency",
+                  "amountMinor",
+                  "withinDays"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "spend"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "amountMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000000000
+                  },
+                  "withinDays": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "contactIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "staticMembers"
+                  },
+                  "contactIds": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 2500,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
+                  }
+                }
               }
             ]
           }
@@ -14545,6 +14696,156 @@ export const organizerSavedAudienceDocumentSchema = {
                     "const": "organizerWhatsappCampaign"
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "formId",
+                  "reviewStatus"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "applicationStatus"
+                  },
+                  "formId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "reviewStatus": {
+                    "type": "string",
+                    "enum": [
+                      "submitted",
+                      "inReview",
+                      "approved",
+                      "waitlisted",
+                      "declined"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "formId",
+                  "versionId",
+                  "questionId",
+                  "value"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "formAnswer"
+                  },
+                  "formId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "versionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "questionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "value": {
+                    "type": [
+                      "string",
+                      "boolean"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 160
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "eventId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendedEvent"
+                  },
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "currency",
+                  "amountMinor",
+                  "withinDays"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "spend"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "amountMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000000000
+                  },
+                  "withinDays": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "contactIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "staticMembers"
+                  },
+                  "contactIds": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 2500,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
+                  }
+                }
               }
             ]
           }
@@ -14659,6 +14960,156 @@ export const organizerSavedAudienceDocumentSchema = {
               "const": "organizerWhatsappCampaign"
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "formId",
+            "reviewStatus"
+          ],
+          "properties": {
+            "kind": {
+              "const": "applicationStatus"
+            },
+            "formId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "reviewStatus": {
+              "type": "string",
+              "enum": [
+                "submitted",
+                "inReview",
+                "approved",
+                "waitlisted",
+                "declined"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "formId",
+            "versionId",
+            "questionId",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "formAnswer"
+            },
+            "formId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "versionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "questionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "value": {
+              "type": [
+                "string",
+                "boolean"
+              ],
+              "minLength": 1,
+              "maxLength": 160
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "attendedEvent"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "operator",
+            "currency",
+            "amountMinor",
+            "withinDays"
+          ],
+          "properties": {
+            "kind": {
+              "const": "spend"
+            },
+            "operator": {
+              "type": "string",
+              "enum": [
+                "atLeast",
+                "atMost"
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "amountMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000000
+            },
+            "withinDays": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 3650
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "contactIds"
+          ],
+          "properties": {
+            "kind": {
+              "const": "staticMembers"
+            },
+            "contactIds": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 2500,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              }
+            }
+          }
         }
       ]
     },
@@ -14766,6 +15217,156 @@ export const organizerSavedAudienceDocumentSchema = {
         },
         "intent": {
           "const": "organizerWhatsappCampaign"
+        }
+      }
+    },
+    "applicationStatusPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "formId",
+        "reviewStatus"
+      ],
+      "properties": {
+        "kind": {
+          "const": "applicationStatus"
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "reviewStatus": {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "inReview",
+            "approved",
+            "waitlisted",
+            "declined"
+          ]
+        }
+      }
+    },
+    "formAnswerPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "formId",
+        "versionId",
+        "questionId",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "const": "formAnswer"
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "versionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "questionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "value": {
+          "type": [
+            "string",
+            "boolean"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    },
+    "attendedEventPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "eventId"
+      ],
+      "properties": {
+        "kind": {
+          "const": "attendedEvent"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    "spendPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "operator",
+        "currency",
+        "amountMinor",
+        "withinDays"
+      ],
+      "properties": {
+        "kind": {
+          "const": "spend"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "atLeast",
+            "atMost"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000000
+        },
+        "withinDays": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 3650
+        }
+      }
+    },
+    "staticMembersPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "contactIds"
+      ],
+      "properties": {
+        "kind": {
+          "const": "staticMembers"
+        },
+        "contactIds": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 2500,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
         }
       }
     }
@@ -21556,9 +22157,16 @@ export const organizerFormAutomationRuleDocumentSchema = {
       "maxLength": 180
     },
     "formId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "name": {
       "type": "string",
@@ -21578,7 +22186,9 @@ export const organizerFormAutomationRuleDocumentSchema = {
       "enum": [
         "responseSubmitted",
         "responseWithdrawn",
-        "answerMatches"
+        "answerMatches",
+        "applicationAccepted",
+        "eventAttended"
       ]
     },
     "condition": {
@@ -21707,6 +22317,26 @@ export const organizerFormAutomationRuleDocumentSchema = {
               "whatsapp",
               "email"
             ]
+          },
+          "campaignId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "campaignRevision": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         }
       }
@@ -21760,6 +22390,35 @@ export const organizerFormAutomationRuleDocumentSchema = {
           "maximum": 999999999
         }
       }
+    },
+    "triggerEventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "delayMinutes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10080
+    },
+    "conditionVersionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "x-firestore-collection": "organizerFormAutomationRules",
@@ -21798,9 +22457,16 @@ export const organizerFormAutomationRunDocumentSchema = {
       "maxLength": 180
     },
     "formId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "ruleId": {
       "type": "string",
@@ -21813,15 +22479,24 @@ export const organizerFormAutomationRunDocumentSchema = {
       "maximum": 9007199254740991
     },
     "responseId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "eventKind": {
       "type": "string",
       "enum": [
         "submitted",
-        "withdrawn"
+        "withdrawn",
+        "applicationAccepted",
+        "eventAttended"
       ]
     },
     "status": {
@@ -21951,6 +22626,92 @@ export const organizerFormAutomationRunDocumentSchema = {
       }
     },
     "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceOccurredAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "dueAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "leaseOwner": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "leaseExpiresAt": {
       "anyOf": [
         {
           "type": "object",
@@ -25140,6 +25901,54 @@ export const organizerCampaignDocumentSchema = {
           "type": "null"
         }
       ]
+    },
+    "automationOrigin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ruleId",
+        "ruleRevision",
+        "actionId",
+        "sourceId",
+        "eventKind",
+        "contactId"
+      ],
+      "properties": {
+        "ruleId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "ruleRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "actionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventKind": {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "withdrawn",
+            "applicationAccepted",
+            "eventAttended"
+          ]
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
     }
   },
   "definitions": {
@@ -60653,6 +61462,156 @@ export const upsertOrganizerSavedAudienceCallablePayloadSchema = {
                     "const": "organizerWhatsappCampaign"
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "formId",
+                  "reviewStatus"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "applicationStatus"
+                  },
+                  "formId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "reviewStatus": {
+                    "type": "string",
+                    "enum": [
+                      "submitted",
+                      "inReview",
+                      "approved",
+                      "waitlisted",
+                      "declined"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "formId",
+                  "versionId",
+                  "questionId",
+                  "value"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "formAnswer"
+                  },
+                  "formId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "versionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "questionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "value": {
+                    "type": [
+                      "string",
+                      "boolean"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 160
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "eventId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendedEvent"
+                  },
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "currency",
+                  "amountMinor",
+                  "withinDays"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "spend"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "amountMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000000000
+                  },
+                  "withinDays": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "contactIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "staticMembers"
+                  },
+                  "contactIds": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 2500,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
+                  }
+                }
               }
             ]
           }
@@ -60700,6 +61659,9 @@ export const listOrganizerSavedAudiencesCallablePayloadSchema = {
         "null"
       ],
       "maxLength": 1000
+    },
+    "includeFilterOptions": {
+      "type": "boolean"
     }
   }
 };
@@ -60742,6 +61704,97 @@ export const previewOrganizerSavedAudienceCallablePayloadSchema = {
       "minimum": 0,
       "maximum": 25,
       "default": 10
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    }
+  }
+};
+
+export const resolveOrganizerAudienceMembersCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/resolve_organizer_audience_members_payload.schema.json",
+  "title": "ResolveOrganizerAudienceMembersCallablePayload",
+  "description": "Resolves the explicitly selected organizer contact ids for a static audience editor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactIds"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactIds": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 2500,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    }
+  }
+};
+
+export const resolveOrganizerAudienceMembersCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/resolve_organizer_audience_members_response.schema.json",
+  "title": "ResolveOrganizerAudienceMembersCallableResponse",
+  "description": "Bounded static selection labels and canonical contact links; unavailable contacts expose no identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "members"
+  ],
+  "properties": {
+    "members": {
+      "type": "array",
+      "maxItems": 2500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "selectedContactId",
+          "contactId",
+          "displayName",
+          "available"
+        ],
+        "properties": {
+          "selectedContactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "contactId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "available": {
+            "type": "boolean"
+          }
+        }
+      }
     }
   }
 };
@@ -60954,6 +62007,156 @@ export const organizerSavedAudienceCallableResponseSchema = {
                   },
                   "intent": {
                     "const": "organizerWhatsappCampaign"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "formId",
+                  "reviewStatus"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "applicationStatus"
+                  },
+                  "formId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "reviewStatus": {
+                    "type": "string",
+                    "enum": [
+                      "submitted",
+                      "inReview",
+                      "approved",
+                      "waitlisted",
+                      "declined"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "formId",
+                  "versionId",
+                  "questionId",
+                  "value"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "formAnswer"
+                  },
+                  "formId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "versionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "questionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "value": {
+                    "type": [
+                      "string",
+                      "boolean"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 160
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "eventId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "attendedEvent"
+                  },
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "currency",
+                  "amountMinor",
+                  "withinDays"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "spend"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "amountMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000000000
+                  },
+                  "withinDays": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "contactIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "staticMembers"
+                  },
+                  "contactIds": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 2500,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
                   }
                 }
               }
@@ -61236,6 +62439,156 @@ export const listOrganizerSavedAudiencesCallableResponseSchema = {
                           "const": "organizerWhatsappCampaign"
                         }
                       }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "formId",
+                        "reviewStatus"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "applicationStatus"
+                        },
+                        "formId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "reviewStatus": {
+                          "type": "string",
+                          "enum": [
+                            "submitted",
+                            "inReview",
+                            "approved",
+                            "waitlisted",
+                            "declined"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "formId",
+                        "versionId",
+                        "questionId",
+                        "value"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "formAnswer"
+                        },
+                        "formId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "versionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "value": {
+                          "type": [
+                            "string",
+                            "boolean"
+                          ],
+                          "minLength": 1,
+                          "maxLength": 160
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "eventId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "attendedEvent"
+                        },
+                        "eventId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "operator",
+                        "currency",
+                        "amountMinor",
+                        "withinDays"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "spend"
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "atLeast",
+                            "atMost"
+                          ]
+                        },
+                        "currency": {
+                          "type": "string",
+                          "pattern": "^[A-Z]{3}$"
+                        },
+                        "amountMinor": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 10000000000
+                        },
+                        "withinDays": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 3650
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "contactIds"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "staticMembers"
+                        },
+                        "contactIds": {
+                          "type": "array",
+                          "minItems": 0,
+                          "maxItems": 2500,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          }
+                        }
+                      }
                     }
                   ]
                 }
@@ -61327,6 +62680,177 @@ export const listOrganizerSavedAudiencesCallableResponseSchema = {
         "null"
       ],
       "maxLength": 1000
+    },
+    "filterOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "forms",
+        "questions",
+        "events",
+        "tags"
+      ],
+      "properties": {
+        "forms": {
+          "type": "array",
+          "maxItems": 400,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "formId",
+              "title"
+            ],
+            "properties": {
+              "formId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            }
+          }
+        },
+        "questions": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "formId",
+              "versionId",
+              "version",
+              "formTitle",
+              "questionId",
+              "label",
+              "kind",
+              "options"
+            ],
+            "properties": {
+              "formId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "versionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "formTitle": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "questionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "singleChoice",
+                  "multiChoice",
+                  "boolean"
+                ]
+              },
+              "options": {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "value"
+                  ],
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "value": {
+                      "type": [
+                        "string",
+                        "boolean"
+                      ],
+                      "minLength": 1,
+                      "maxLength": 160
+                    }
+                  }
+                }
+              },
+              "activeVersion": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "events": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "eventId",
+              "title"
+            ],
+            "properties": {
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            }
+          }
+        },
+        "tags": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tagId",
+              "label"
+            ],
+            "properties": {
+              "tagId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            }
+          }
+        }
+      }
     }
   }
 };
@@ -61521,6 +63045,156 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
                         "const": "organizerWhatsappCampaign"
                       }
                     }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "formId",
+                      "reviewStatus"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "applicationStatus"
+                      },
+                      "formId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "reviewStatus": {
+                        "type": "string",
+                        "enum": [
+                          "submitted",
+                          "inReview",
+                          "approved",
+                          "waitlisted",
+                          "declined"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "formId",
+                      "versionId",
+                      "questionId",
+                      "value"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "formAnswer"
+                      },
+                      "formId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "versionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "questionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "value": {
+                        "type": [
+                          "string",
+                          "boolean"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 160
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "eventId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "attendedEvent"
+                      },
+                      "eventId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "operator",
+                      "currency",
+                      "amountMinor",
+                      "withinDays"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "spend"
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": [
+                          "atLeast",
+                          "atMost"
+                        ]
+                      },
+                      "currency": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{3}$"
+                      },
+                      "amountMinor": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000000000
+                      },
+                      "withinDays": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 3650
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "contactIds"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "staticMembers"
+                      },
+                      "contactIds": {
+                        "type": "array",
+                        "minItems": 0,
+                        "maxItems": 2500,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        }
+                      }
+                    }
                   }
                 ]
               }
@@ -61672,6 +63346,13 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
     "evaluatedAtMillis": {
       "type": "integer",
       "minimum": 0
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
     }
   }
 };
@@ -81094,6 +82775,22 @@ export const getOrganizerFormResponseDetailCallableResponseSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 604800000
+    },
+    "applicationId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -81559,9 +83256,16 @@ export const createOrganizerFormAutomationCallablePayloadSchema = {
       "maxLength": 180
     },
     "formId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "ruleId": {
       "anyOf": [
@@ -81601,7 +83305,9 @@ export const createOrganizerFormAutomationCallablePayloadSchema = {
       "enum": [
         "responseSubmitted",
         "responseWithdrawn",
-        "answerMatches"
+        "answerMatches",
+        "applicationAccepted",
+        "eventAttended"
       ]
     },
     "condition": {
@@ -81730,9 +83436,46 @@ export const createOrganizerFormAutomationCallablePayloadSchema = {
               "whatsapp",
               "email"
             ]
+          },
+          "campaignId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "campaignRevision": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         }
       }
+    },
+    "triggerEventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "delayMinutes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10080
     }
   }
 };
@@ -81770,9 +83513,16 @@ export const createOrganizerFormAutomationCallableResponseSchema = {
           "maxLength": 180
         },
         "formId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "name": {
           "type": "string",
@@ -81792,7 +83542,9 @@ export const createOrganizerFormAutomationCallableResponseSchema = {
           "enum": [
             "responseSubmitted",
             "responseWithdrawn",
-            "answerMatches"
+            "answerMatches",
+            "applicationAccepted",
+            "eventAttended"
           ]
         },
         "condition": {
@@ -81916,6 +83668,26 @@ export const createOrganizerFormAutomationCallableResponseSchema = {
                   "whatsapp",
                   "email"
                 ]
+              },
+              "campaignId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "campaignRevision": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 9007199254740991
               }
             }
           }
@@ -81924,6 +83696,23 @@ export const createOrganizerFormAutomationCallableResponseSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "triggerEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delayMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10080
         }
       }
     }
@@ -81998,9 +83787,16 @@ export const setOrganizerFormAutomationStateCallableResponseSchema = {
           "maxLength": 180
         },
         "formId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "name": {
           "type": "string",
@@ -82020,7 +83816,9 @@ export const setOrganizerFormAutomationStateCallableResponseSchema = {
           "enum": [
             "responseSubmitted",
             "responseWithdrawn",
-            "answerMatches"
+            "answerMatches",
+            "applicationAccepted",
+            "eventAttended"
           ]
         },
         "condition": {
@@ -82144,6 +83942,26 @@ export const setOrganizerFormAutomationStateCallableResponseSchema = {
                   "whatsapp",
                   "email"
                 ]
+              },
+              "campaignId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "campaignRevision": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 9007199254740991
               }
             }
           }
@@ -82152,6 +83970,23 @@ export const setOrganizerFormAutomationStateCallableResponseSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "triggerEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delayMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10080
         }
       }
     }
@@ -82179,9 +84014,16 @@ export const listOrganizerFormAutomationRunsCallablePayloadSchema = {
       "maxLength": 180
     },
     "formId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "ruleId": {
       "anyOf": [
@@ -82253,9 +84095,16 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema = {
             "maxLength": 180
           },
           "formId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "name": {
             "type": "string",
@@ -82275,7 +84124,9 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema = {
             "enum": [
               "responseSubmitted",
               "responseWithdrawn",
-              "answerMatches"
+              "answerMatches",
+              "applicationAccepted",
+              "eventAttended"
             ]
           },
           "condition": {
@@ -82399,6 +84250,26 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema = {
                     "whatsapp",
                     "email"
                   ]
+                },
+                "campaignId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "campaignRevision": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 9007199254740991
                 }
               }
             }
@@ -82407,6 +84278,23 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema = {
             "type": "integer",
             "minimum": 0,
             "maximum": 9007199254740991
+          },
+          "triggerEventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "delayMinutes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10080
           }
         }
       }
@@ -82447,15 +84335,24 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema = {
             "maximum": 9007199254740991
           },
           "responseId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "eventKind": {
             "type": "string",
             "enum": [
               "submitted",
-              "withdrawn"
+              "withdrawn",
+              "applicationAccepted",
+              "eventAttended"
             ]
           },
           "status": {
@@ -82494,6 +84391,26 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema = {
             "maximum": 9007199254740991
           },
           "completedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "sourceId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dueAtMillis": {
             "type": [
               "integer",
               "null"
@@ -85275,7 +87192,8 @@ export const listOrganizerApplicationsCallableResponseSchema = {
             "enum": [
               "organizerImported",
               "activeParticipantGrant",
-              "revokedParticipantGrant"
+              "revokedParticipantGrant",
+              "submittedFormResponse"
             ]
           },
           "sourceKind": {
@@ -85302,6 +87220,22 @@ export const listOrganizerApplicationsCallableResponseSchema = {
             "type": "integer",
             "minimum": 1,
             "maximum": 9007199254740991
+          },
+          "contactId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "sourceResponseId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
           }
         }
       }
@@ -85385,7 +87319,8 @@ export const listOrganizerApplicationsCallableResponseSchema = {
           "enum": [
             "organizerImported",
             "activeParticipantGrant",
-            "revokedParticipantGrant"
+            "revokedParticipantGrant",
+            "submittedFormResponse"
           ]
         },
         "sourceKind": {
@@ -85412,6 +87347,22 @@ export const listOrganizerApplicationsCallableResponseSchema = {
           "type": "integer",
           "minimum": 1,
           "maximum": 9007199254740991
+        },
+        "contactId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "sourceResponseId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
         }
       }
     }
@@ -85917,7 +87868,8 @@ export const getOrganizerApplicationDetailCallableResponseSchema = {
       "enum": [
         "organizerImported",
         "activeParticipantGrant",
-        "revokedParticipantGrant"
+        "revokedParticipantGrant",
+        "submittedFormResponse"
       ]
     },
     "answers": {
@@ -86172,6 +88124,22 @@ export const getOrganizerApplicationDetailCallableResponseSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "contactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceResponseId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     }
   },
   "definitions": {
@@ -86312,6 +88280,14 @@ export const reviewOrganizerApplicationCallableResponseSchema = {
       "type": "integer",
       "minimum": 2,
       "maximum": 9007199254740991
+    },
+    "contactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -87100,7 +89076,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
               "hostFormResponse",
               "providerRecord",
               "importBatch",
-              "webRegistration"
+              "webRegistration",
+              "hostApplicationResponse"
             ]
           },
           "formId": {
@@ -88313,7 +90290,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "hostFormResponse",
             "providerRecord",
             "importBatch",
-            "webRegistration"
+            "webRegistration",
+            "hostApplicationResponse"
           ]
         },
         "formId": {

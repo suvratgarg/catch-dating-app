@@ -33,7 +33,6 @@ import {
   OrganizerApplicationImportReceiptDocument,
   OrganizerApplicationResponseDocument,
   OrganizerContactDocument,
-  ParticipantOrganizerDataGrantDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   validateGetOrganizerApplicationDetailCallablePayload,
@@ -45,16 +44,19 @@ import {
 } from "../shared/generated/schemaValidators";
 import {personFieldCatalog} from "../shared/generated/schemaRegistry";
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptionsWithLimits} from
+import {appCheckCallableOptionsWithLimits,
+  appCheckCallableOptionsWithSecrets} from
   "../shared/callableOptions";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {
-  hostVisibleApplicationAnswers,
-  participantOrganizerGrantId,
-} from "./participantOrganizerApplications";
+import {organizerApplicationAccess, organizerApplicationContactId} from
+  "./organizerApplicationAccess";
+import {applicationAdmissionContactId} from "./organizerApplicationAdmission";
+import {createOrganizerContactInTransaction} from "./organizerContacts";
+import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
+import {resolveOrganizerAudienceCoverage} from "./organizerAudienceCoverage";
 
 type Question = OrganizerApplicationFormVersionDocument["questions"][number];
 type Answer = OrganizerApplicationResponseDocument["answers"][number];
@@ -73,6 +75,7 @@ interface OrganizerApplicationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
   timestamp: () => FirebaseFirestore.Timestamp;
+  identitySecret?: () => string;
 }
 
 const defaultDeps: OrganizerApplicationDeps = {
@@ -512,24 +515,18 @@ export async function listOrganizerApplicationsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listOrganizerApplications");
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  let scopedQuery = db.collection("organizerApplications")
-    .where("organizerId", "==", data.organizerId);
+  let customerAccountUid: string | null = null;
   if (data.contactId) {
     const contact = (await db.collection("organizerContacts")
       .doc(data.contactId).get()).data() as
       OrganizerContactDocument | undefined;
-    const linkedUid = customerApplicationAccountUid(contact, data.organizerId);
-    const relation = admin.firestore.Filter.where(
-      "contactId", "==", data.contactId
-    );
-    scopedQuery = scopedQuery.where(
-      linkedUid ?
-        admin.firestore.Filter.or(relation, admin.firestore.Filter.where(
-          "linkedUid", "==", linkedUid
-        )) : relation
-    );
+    customerAccountUid = customerApplicationAccountUid(contact, data.organizerId);
   }
-  const baseQuery = scopedQuery.orderBy(admin.firestore.FieldPath.documentId());
+  // Resolve source origins before filtering: merges may move a submission to
+  // another contact without rewriting its immutable application projection.
+  const baseQuery = db.collection("organizerApplications")
+    .where("organizerId", "==", data.organizerId)
+    .orderBy(admin.firestore.FieldPath.documentId());
   const snapshot = await baseQuery.limit(maxListScan).get();
   if (snapshot.size === maxListScan) {
     const overflow = await baseQuery
@@ -543,35 +540,31 @@ export async function listOrganizerApplicationsHandler(
       );
     }
   }
-  const grants = await participantGrantsByApplicationId(
-    db,
-    snapshot.docs.map((doc) => ({
-      id: doc.id,
-      data: doc.data() as OrganizerApplicationDocument,
-    }))
-  );
   const query = normalizeSearch(data.query ?? "");
-  const rows = snapshot.docs.map((doc) => ({
-    id: doc.id,
-    data: doc.data() as OrganizerApplicationDocument,
-  })).map((row) => {
-    const accessState = applicationDataAccessState(
-      row.id,
-      row.data,
-      grants.get(row.id)
-    );
+  const resolvedRows = await Promise.all(snapshot.docs.map(async (doc) => {
+    const row = {id: doc.id, data: doc.data() as OrganizerApplicationDocument};
+    const access = await organizerApplicationAccess({
+      db, applicationId: row.id, application: row.data,
+    });
+    const accessState = access.accessState;
     const visibleName = accessState === "revokedParticipantGrant" ?
       "Withdrawn applicant" : row.data.applicantDisplayName;
     return {
       ...row,
       data: {
         ...row.data,
+        contactId: await organizerApplicationContactId({
+          db, applicationId: row.id, application: row.data}),
         applicantDisplayName: visibleName,
         applicantDisplayNameNormalized: normalizeSearch(visibleName),
       },
-      accessState,
+      accessState, sourceResponseId: access.sourceResponseId,
     };
-  }).filter((row) => {
+  }));
+  const rows = resolvedRows.filter((row) => {
+    if (data.contactId && !customerApplicationMatches(
+      row.data, data.contactId, customerAccountUid
+    )) return false;
     if (data.formId && row.data.formId !== data.formId) return false;
     if (data.targetId && row.data.targetId !== data.targetId) return false;
     if (data.reviewStatus &&
@@ -579,9 +572,14 @@ export async function listOrganizerApplicationsHandler(
     return !query || row.data.applicantDisplayNameNormalized.includes(query);
   });
   rows.sort(applicationComparator(data.sort ?? "newest"));
-  const cursorScope = data.contactId ?
-    `${data.organizerId}|${data.contactId}` : data.organizerId;
-  const offset = decodeCursor(data.cursor ?? null, cursorScope);
+  const fingerprint = sha256(JSON.stringify([
+    data.organizerId, data.contactId ?? null, data.formId ?? null,
+    data.targetId ?? null, data.reviewStatus ?? null, query,
+    data.sort ?? "newest",
+    rows.map((row) => [row.id, row.data.revision, row.accessState,
+      row.data.contactId]),
+  ]));
+  const offset = decodeCursor(data.cursor ?? null, fingerprint);
   const limit = data.limit ?? defaultPageSize;
   const page = rows.slice(offset, offset + limit);
   const nextOffset = offset + page.length;
@@ -589,6 +587,8 @@ export async function listOrganizerApplicationsHandler(
     organizerId: data.organizerId,
     applications: page.map((row) => ({
       applicationId: row.id,
+      contactId: row.data.contactId,
+      sourceResponseId: row.sourceResponseId,
       formId: row.data.formId,
       formVersionId: row.data.formVersionId,
       targetKind: row.data.targetKind,
@@ -602,8 +602,18 @@ export async function listOrganizerApplicationsHandler(
       revision: row.data.revision,
     })),
     nextCursor: nextOffset < rows.length ?
-      encodeCursor(cursorScope, nextOffset) : null,
+      encodeCursor(fingerprint, nextOffset) : null,
   };
+}
+
+/** Matches an already-resolved source contact or a verified account identity. */
+export function customerApplicationMatches(
+  application: Pick<OrganizerApplicationDocument, "contactId" | "linkedUid">,
+  contactId: string,
+  verifiedAccountUid: string | null
+): boolean {
+  return application.contactId === contactId ||
+    (verifiedAccountUid !== null && application.linkedUid === verifiedAccountUid);
 }
 
 /** Identity may locate an application; its grant still controls its answers. */
@@ -653,34 +663,15 @@ export async function getOrganizerApplicationDetailHandler(
   if (application.organizerId !== data.organizerId) {
     throw new HttpsError("not-found", "Application not found.");
   }
-  const responseSnap = await db.collection("organizerApplicationResponses")
-    .doc(application.latestResponseId).get();
-  if (!responseSnap.exists) {
-    throw new HttpsError(
-      "failed-precondition",
-      "The application response is unavailable."
-    );
-  }
-  const response = requireDoc<OrganizerApplicationResponseDocument>(
-    responseSnap,
-    "OrganizerApplicationResponseDocument"
-  );
-  if (response.applicationId !== data.applicationId ||
-      response.organizerId !== data.organizerId) {
-    throw new HttpsError("internal", "Application response scope mismatch.");
-  }
-  const grant = response.source.kind === "native" && response.grantId ?
-    (await db.collection("participantOrganizerDataGrants")
-      .doc(response.grantId).get()).data() as
-        ParticipantOrganizerDataGrantDocument | undefined : undefined;
-  const visible = hostVisibleApplicationAnswers({
-    response,
-    responseId: application.latestResponseId,
-    grant,
+  const visible = await organizerApplicationAccess({
+    db, applicationId: data.applicationId, application,
   });
   return {
     organizerId: data.organizerId,
     applicationId: data.applicationId,
+    contactId: await organizerApplicationContactId({
+      db, applicationId: data.applicationId, application}),
+    sourceResponseId: visible.sourceResponseId,
     formId: application.formId,
     formVersionId: application.formVersionId,
     targetKind: application.targetKind,
@@ -718,65 +709,78 @@ export async function reviewOrganizerApplicationHandler(
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const ref = db.collection("organizerApplications").doc(data.applicationId);
   const now = deps.timestamp();
-  const revision = await db.runTransaction(async (tx) => {
+  const initialSourceCoverage = data.reviewStatus === "approved" ?
+    await resolveOrganizerAudienceCoverage({
+      db, organizerId: data.organizerId, storedCoverage: null,
+    }) : "partial";
+  const result = await db.runTransaction(async (tx) => {
     const snapshot = await tx.get(ref);
     if (!snapshot.exists) {
-      throw new HttpsError("not-found", "Application not found.");
+      throw new HttpsError("not-found",
+        "Application not found.");
     }
     const application = requireDoc<OrganizerApplicationDocument>(
-      snapshot,
-      "OrganizerApplicationDocument"
-    );
+      snapshot, "OrganizerApplicationDocument");
     if (application.organizerId !== data.organizerId) {
       throw new HttpsError("not-found", "Application not found.");
     }
-    if (application.revision !== data.expectedRevision) {
-      throw new HttpsError(
-        "aborted",
-        "This application changed since it was opened. Reload and try again."
-      );
-    }
-    if (application.reviewStatus === "withdrawn") {
-      throw new HttpsError(
-        "failed-precondition",
-        "A withdrawn application cannot be reviewed."
-      );
-    }
-    if (application.source.kind === "native") {
-      const grantSnap = await tx.get(
-        db.collection("participantOrganizerDataGrants")
-          .doc(participantOrganizerGrantId(data.applicationId))
-      );
-      const grant = grantSnap.data() as
-        ParticipantOrganizerDataGrantDocument | undefined;
-      if (!grant || grant.revokedAt !== null ||
-          grant.participantUid !== application.linkedUid ||
-          grant.organizerId !== data.organizerId ||
-          grant.purpose !== "organizerApplicationReview") {
-        throw new HttpsError(
-          "failed-precondition",
-          "The participant has revoked access to this application."
-        );
-      }
-    }
-    const nextRevision = application.revision + 1;
-    tx.update(ref, {
-      reviewStatus: data.reviewStatus,
-      reviewNote: data.reviewNote,
-      assignedReviewerUid: actorUid,
-      revision: nextRevision,
-      updatedAt: now,
-      reviewedAt: now,
+    const access = await organizerApplicationAccess({
+      db, applicationId: data.applicationId, application, transaction: tx,
     });
-    return nextRevision;
+    if (application.reviewStatus === "withdrawn" ||
+        access.accessState === "revokedParticipantGrant") {
+      throw new HttpsError("failed-precondition",
+        "This application was withdrawn or its response is unavailable.");
+    }
+    const replay = application.reviewStatus === data.reviewStatus &&
+      application.reviewNote === data.reviewNote &&
+      application.revision === data.expectedRevision + 1 &&
+      (data.reviewStatus !== "approved" || application.contactId !== null);
+    if (replay) {
+      return {revision: application.revision,
+        contactId: application.contactId,
+        reviewedAtMillis: application.reviewedAt!.toMillis()};
+    }
+    if (application.revision !== data.expectedRevision) {
+      throw new HttpsError("aborted",
+        "This application changed. Reload before reviewing it.");
+    }
+    let contactId = application.contactId;
+    if (data.reviewStatus === "approved") {
+      const outreach = applicationOutreach(access.answers);
+      outreach.phoneE164 ??= access.identity?.phoneE164 ?? null;
+      outreach.email ??= access.identity?.email?.toLowerCase() ?? null;
+      contactId = await applicationAdmissionContactId({
+        db, transaction: tx, applicationId: data.applicationId,
+        application, access, phoneE164: outreach.phoneE164,
+        email: outreach.email,
+      });
+      await createOrganizerContactInTransaction({
+        db, transaction: tx, initialSourceCoverage, contactId,
+        organizerId: data.organizerId, actorUid,
+        displayName: application.applicantDisplayName.slice(0, 120),
+        phoneE164: outreach.phoneE164, email: outreach.email,
+        initialNote: null,
+        identitySecret: (deps.identitySecret ??
+          (() => organizerContactIdentityKey.value()))(),
+        origin: {
+          kind: access.sourceResponseId ?
+            "hostFormResponse" : "hostApplicationResponse",
+          formId: application.formId, responseId: application.latestResponseId,
+          observedAt: application.submittedAt,
+        }, now,
+      });
+    }
+    const revision = application.revision + 1;
+    tx.update(ref, {
+      reviewStatus: data.reviewStatus, reviewNote: data.reviewNote,
+      assignedReviewerUid: actorUid, contactId, revision,
+      updatedAt: now, reviewedAt: now,
+    });
+    return {revision, contactId, reviewedAtMillis: now.toMillis()};
   });
-  return {
-    organizerId: data.organizerId,
-    applicationId: data.applicationId,
-    reviewStatus: data.reviewStatus,
-    reviewedAtMillis: now.toMillis(),
-    revision,
-  };
+  return {organizerId: data.organizerId, applicationId: data.applicationId,
+    reviewStatus: data.reviewStatus, ...result};
 }
 
 async function requireFormVersion(params: {
@@ -1267,59 +1271,21 @@ function applicationComparator(
   ) || a.id.localeCompare(b.id);
 }
 
-async function participantGrantsByApplicationId(
-  db: FirebaseFirestore.Firestore,
-  rows: Array<{id: string; data: OrganizerApplicationDocument}>
-): Promise<Map<string, ParticipantOrganizerDataGrantDocument>> {
-  const nativeRows = rows.filter((row) => row.data.source.kind === "native");
-  if (nativeRows.length === 0) return new Map();
-  const result = new Map<string, ParticipantOrganizerDataGrantDocument>();
-  for (let start = 0; start < nativeRows.length; start += 250) {
-    const chunk = nativeRows.slice(start, start + 250);
-    const snapshots = await db.getAll(...chunk.map((row) =>
-      db.collection("participantOrganizerDataGrants")
-        .doc(participantOrganizerGrantId(row.id))
-    ));
-    for (let index = 0; index < snapshots.length; index += 1) {
-      if (snapshots[index].exists) {
-        result.set(chunk[index].id, snapshots[index].data() as
-          ParticipantOrganizerDataGrantDocument);
-      }
-    }
-  }
-  return result;
-}
-
-function applicationDataAccessState(
-  applicationId: string,
-  application: OrganizerApplicationDocument,
-  grant: ParticipantOrganizerDataGrantDocument | undefined
-): "organizerImported" | "activeParticipantGrant" |
-  "revokedParticipantGrant" {
-  if (application.source.kind !== "native") return "organizerImported";
-  return grant && grant.revokedAt === null &&
-    grant.applicationId === applicationId &&
-    grant.organizerId === application.organizerId &&
-    grant.participantUid === application.linkedUid &&
-    grant.purpose === "organizerApplicationReview" ?
-    "activeParticipantGrant" : "revokedParticipantGrant";
-}
-
-function encodeCursor(organizerId: string, offset: number): string {
-  return Buffer.from(JSON.stringify({version: 1, organizerId, offset}), "utf8")
+function encodeCursor(fingerprint: string, offset: number): string {
+  return Buffer.from(JSON.stringify({version: 2, fingerprint, offset}), "utf8")
     .toString("base64url");
 }
 
-function decodeCursor(cursor: string | null, organizerId: string): number {
+function decodeCursor(cursor: string | null, fingerprint: string): number {
   if (!cursor) return 0;
   try {
     const json = Buffer.from(cursor, "base64url").toString("utf8");
     const decoded = JSON.parse(json) as {
       version?: unknown;
-      organizerId?: unknown;
+      fingerprint?: unknown;
       offset?: unknown;
     };
-    if (decoded.version !== 1 || decoded.organizerId !== organizerId ||
+    if (decoded.version !== 2 || decoded.fingerprint !== fingerprint ||
         !Number.isInteger(decoded.offset) || (decoded.offset as number) < 0 ||
         (decoded.offset as number) > maxListScan) {
       throw new Error("invalid cursor");
@@ -1483,6 +1449,7 @@ export const getOrganizerApplicationDetail = onCall(
 );
 
 export const reviewOrganizerApplication = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
+  appCheckCallableOptionsWithSecrets([organizerContactIdentityKey],
+    {timeoutSeconds: 60, maxInstances: 20}),
   (request) => reviewOrganizerApplicationHandler(request)
 );

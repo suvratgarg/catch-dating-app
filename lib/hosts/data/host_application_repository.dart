@@ -39,6 +39,7 @@ class HostApplicationListRequest {
     required this.organizerId,
     this.contactId,
     this.formId,
+    this.contactId,
     this.targetId,
     this.reviewStatus,
     this.query,
@@ -49,6 +50,7 @@ class HostApplicationListRequest {
   final String organizerId;
   final String? contactId;
   final String? formId;
+  final String? contactId;
   final String? targetId;
   final HostApplicationReviewStatus? reviewStatus;
   final String? query;
@@ -60,6 +62,7 @@ class HostApplicationListRequest {
         organizerId: organizerId,
         contactId: contactId,
         formId: formId,
+        contactId: contactId,
         targetId: targetId,
         reviewStatus: reviewStatus,
         query: query,
@@ -73,6 +76,7 @@ class HostApplicationListRequest {
       other.organizerId == organizerId &&
       other.contactId == contactId &&
       other.formId == formId &&
+      other.contactId == contactId &&
       other.targetId == targetId &&
       other.reviewStatus == reviewStatus &&
       other.query == query &&
@@ -84,6 +88,7 @@ class HostApplicationListRequest {
     organizerId,
     contactId,
     formId,
+    contactId,
     targetId,
     reviewStatus,
     query,
@@ -273,6 +278,9 @@ class HostApplicationDetail {
     required this.submittedAt,
     required this.reviewedAt,
     required this.revision,
+    this.contactId,
+    this.sourceResponseId,
+    this.dataAccessState,
   });
 
   factory HostApplicationDetail.fromCallableData(Object? data) {
@@ -302,6 +310,9 @@ class HostApplicationDetail {
       submittedAt: _requiredDateTimeFromMillis(map, 'submittedAtMillis'),
       reviewedAt: _dateTimeFromMillis(map['reviewedAtMillis']),
       revision: _requiredInt(map, 'revision'),
+      contactId: _nullableString(map['contactId']),
+      sourceResponseId: _nullableString(map['sourceResponseId']),
+      dataAccessState: _nullableString(map['dataAccessState']),
     );
   }
 
@@ -320,6 +331,9 @@ class HostApplicationDetail {
   final DateTime submittedAt;
   final DateTime? reviewedAt;
   final int revision;
+  final String? contactId;
+  final String? sourceResponseId;
+  final String? dataAccessState;
 }
 
 class HostApplicationReviewResult {
@@ -329,6 +343,7 @@ class HostApplicationReviewResult {
     required this.reviewStatus,
     required this.reviewedAt,
     required this.revision,
+    this.contactId,
   });
 
   factory HostApplicationReviewResult.fromCallableData(Object? data) {
@@ -343,6 +358,7 @@ class HostApplicationReviewResult {
       ),
       reviewedAt: _requiredDateTimeFromMillis(map, 'reviewedAtMillis'),
       revision: _requiredInt(map, 'revision'),
+      contactId: _nullableString(map['contactId']),
     );
   }
 
@@ -351,6 +367,7 @@ class HostApplicationReviewResult {
   final HostApplicationReviewStatus reviewStatus;
   final DateTime reviewedAt;
   final int revision;
+  final String? contactId;
 }
 
 class HostPublishedApplicationForm {
@@ -510,6 +527,7 @@ class HostApplicationRepository {
       organizerId: request.organizerId,
       contactId: request.contactId,
       formId: request.formId,
+      contactId: request.contactId,
       targetId: request.targetId,
       reviewStatus: request.reviewStatus?.name,
       query: request.query?.trim().isEmpty ?? true

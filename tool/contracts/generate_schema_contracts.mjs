@@ -1506,6 +1506,16 @@ const schemaSpecs = [
       "previewOrganizerSavedAudienceCallablePayload.ts",
   },
   {
+    name: "ResolveOrganizerAudienceMembersCallablePayload",
+    source: "callables/resolve_organizer_audience_members_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/resolveOrganizerAudienceMembersCallablePayload.ts",
+  },
+  {
+    name: "ResolveOrganizerAudienceMembersCallableResponse",
+    source: "callable_responses/resolve_organizer_audience_members_response.schema.json",
+    typeOutput: "functions/src/shared/generated/resolveOrganizerAudienceMembersCallableResponse.ts",
+  },
+  {
     name: "ArchiveOrganizerSavedAudienceCallablePayload",
     source:
       "callables/archive_organizer_saved_audience_payload.schema.json",

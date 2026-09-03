@@ -8,7 +8,7 @@
   "required": ["organizerId", "formId", "ruleId", "requestId", "expectedRevision", "name", "enabled", "trigger", "condition", "actions"],
   "properties": {
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
     "ruleId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
     "requestId": {"type": "string", "minLength": 8, "maxLength": 128},
     "expectedRevision": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
@@ -16,6 +16,21 @@
     "enabled": {"type": "boolean"},
     "trigger": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/automationTrigger"},
     "condition": {"anyOf": [{"$ref": "../shared/organizer_form_common.schema.json#/definitions/logicCondition"}, {"type": "null"}]},
-    "actions": {"type": "array", "minItems": 1, "maxItems": 10, "items": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/automationAction"}}
+    "actions": {"type": "array", "minItems": 1, "maxItems": 10, "items": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/automationAction"}},
+    "triggerEventId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "delayMinutes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10080
+    }
   }
 }

@@ -37,9 +37,16 @@ const schemaCreateOrganizerFormAutomationCallableResponseSchema = <String, Objec
           'maxLength': 180,
         },
         'formId': <String, Object?>{
-          'type': 'string',
-          'minLength': 1,
-          'maxLength': 180,
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
         },
         'name': <String, Object?>{
           'type': 'string',
@@ -60,6 +67,8 @@ const schemaCreateOrganizerFormAutomationCallableResponseSchema = <String, Objec
             'responseSubmitted',
             'responseWithdrawn',
             'answerMatches',
+            'applicationAccepted',
+            'eventAttended',
           ],
         },
         'condition': <String, Object?>{
@@ -184,6 +193,26 @@ const schemaCreateOrganizerFormAutomationCallableResponseSchema = <String, Objec
                   'email',
                 ],
               },
+              'campaignId': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+              'campaignRevision': <String, Object?>{
+                'type': <Object?>[
+                  'integer',
+                  'null',
+                ],
+                'minimum': 1,
+                'maximum': 9007199254740991,
+              },
             },
           },
         },
@@ -191,6 +220,23 @@ const schemaCreateOrganizerFormAutomationCallableResponseSchema = <String, Objec
           'type': 'integer',
           'minimum': 0,
           'maximum': 9007199254740991,
+        },
+        'triggerEventId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'delayMinutes': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 10080,
         },
       },
     },

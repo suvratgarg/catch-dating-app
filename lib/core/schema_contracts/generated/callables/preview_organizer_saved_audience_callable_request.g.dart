@@ -12,17 +12,20 @@ final class PreviewOrganizerSavedAudienceCallableRequest {
     required this.audienceId,
     this.expectedRevision,
     this.sampleLimit,
+    this.cursor,
   });
 
   final String organizerId;
   final String audienceId;
   final int? expectedRevision;
   final int? sampleLimit;
+  final String? cursor;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
     'audienceId': audienceId,
     'expectedRevision': ?expectedRevision,
     'sampleLimit': ?sampleLimit,
+    'cursor': ?cursor,
   };
 }

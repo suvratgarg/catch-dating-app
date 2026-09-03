@@ -36,9 +36,16 @@ import 'package:intl/intl.dart';
 part 'host_application_detail_screen.dart';
 
 class HostApplicationsScreen extends ConsumerStatefulWidget {
-  const HostApplicationsScreen({super.key, required this.organizerId});
+  const HostApplicationsScreen({
+    super.key,
+    required this.organizerId,
+    this.formId,
+    this.contactId,
+  });
 
   final String organizerId;
+  final String? formId;
+  final String? contactId;
 
   @override
   ConsumerState<HostApplicationsScreen> createState() =>
@@ -56,6 +63,8 @@ class _HostApplicationsScreenState
   Widget build(BuildContext context) {
     final request = HostApplicationListRequest(
       organizerId: widget.organizerId,
+      formId: widget.formId,
+      contactId: widget.contactId,
       reviewStatus: _status,
       query: _query,
       sort: _sort,
@@ -192,7 +201,8 @@ class _HostApplicationsScreenState
                           queryParameters: {'organizerId': widget.organizerId},
                         ),
                       ),
-                      if (state.nextCursor != null) ...[
+                      if (state.nextCursor != null &&
+                          state.loadMoreError == null) ...[
                         gapH16,
                         CatchButton(
                           label: context.l10n.hostApplicationsLoadMore,
@@ -216,13 +226,11 @@ class _HostApplicationsScreenState
                           state.loadMoreError!,
                           context: AppErrorContext.applications,
                           mode: CatchErrorStateMode.compact,
-                          onRetry: () => ref
-                              .read(
-                                hostApplicationsDirectoryControllerProvider(
-                                  request,
-                                ).notifier,
-                              )
-                              .loadMore(),
+                          onRetry: () => ref.invalidate(
+                            hostApplicationsDirectoryControllerProvider(
+                              request,
+                            ),
+                          ),
                         ),
                       ],
                     ],

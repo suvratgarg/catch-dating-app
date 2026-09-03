@@ -23246,7 +23246,7 @@ abstract class AppLocalizations {
   /// Application approval action.
   ///
   /// In en, this message translates to:
-  /// **'Approve'**
+  /// **'Accept and add to People'**
   String get hostApplicationApprove;
 
   /// Application waitlist action.
@@ -25149,12 +25149,6 @@ abstract class AppLocalizations {
   /// **'Automations'**
   String get hostFormAutomationsTitle;
 
-  /// Explains form automations.
-  ///
-  /// In en, this message translates to:
-  /// **'Run explicit, observable actions after a response changes. You can disable any rule instantly.'**
-  String get hostFormAutomationsSubtitle;
-
   /// Form automation rules section title.
   ///
   /// In en, this message translates to:
@@ -25176,7 +25170,7 @@ abstract class AppLocalizations {
   /// Empty automation rules guidance.
   ///
   /// In en, this message translates to:
-  /// **'Start with a safe preset. Every run is recorded and can be disabled.'**
+  /// **'Create a rule for future activity. Review its actions, enable it when ready, and follow each run here.'**
   String get hostFormAutomationsEmptyBody;
 
   /// Creates a team notification response automation.
@@ -27189,6 +27183,534 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'More source records exist. Only the loaded records are shown.'**
   String get hostCustomersSourcesTruncated;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review applications'**
+  String get hostApplicationsReviewQueue;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submissions, accept people, or keep them on your waitlist.'**
+  String get hostApplicationsReviewQueueBody;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Open person in People'**
+  String get hostApplicationOpenPerson;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Open original response'**
+  String get hostApplicationOpenResponse;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'View this person’s applications and review decisions.'**
+  String get hostCustomerApplicationsBody;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit audience'**
+  String get hostSavedAudienceEditRules;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'Last evaluated'**
+  String get hostSavedAudienceEvaluated;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'Message this audience'**
+  String get hostSavedAudienceMessage;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'People in this audience'**
+  String get hostSavedAudienceMembers;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'No people in this audience'**
+  String get hostSavedAudienceNoMembers;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Application status'**
+  String get hostAudienceRuleApplication;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Form answer'**
+  String get hostAudienceRuleFormAnswer;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Attended event'**
+  String get hostAudienceRuleNamedEvent;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a form'**
+  String get hostAudienceChooseForm;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event'**
+  String get hostAudienceChooseEvent;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a published question'**
+  String get hostAudienceChooseQuestion;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer contains or equals'**
+  String get hostAudienceChooseAnswer;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Source unavailable'**
+  String get hostAudienceSourceUnavailable;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Only choice and yes/no questions marked filterable appear here. Each rule uses the selected published version.'**
+  String get hostAudienceFilterableQuestionsHelp;
+
+  /// Saved audience SelectedCount control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 selected person} other{{count} selected people}}'**
+  String hostAudienceSelectedCount({required int count});
+
+  /// Saved audience StaticHelp control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose up to 2,500 people. Membership stays as selected until you edit it. Messaging permission is checked separately.'**
+  String get hostAudienceStaticHelp;
+
+  /// Saved audience UnavailablePerson control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable person'**
+  String get hostAudienceUnavailablePerson;
+
+  /// Saved audience RemoveSelected control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from this audience'**
+  String get hostAudienceRemoveSelected;
+
+  /// Saved audience PreviousPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous people'**
+  String get hostAudiencePreviousPeople;
+
+  /// Saved audience NextPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Next people'**
+  String get hostAudienceNextPeople;
+
+  /// Saved audience ChoosePeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose people'**
+  String get hostAudienceChoosePeople;
+
+  /// Saved audience SearchPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get hostAudienceSearchPeople;
+
+  /// Saved audience AvailablePeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'People you can select'**
+  String get hostAudienceAvailablePeople;
+
+  /// Saved audience NoPeopleFound control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'No people found'**
+  String get hostAudienceNoPeopleFound;
+
+  /// Saved audience NoSelectedPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'No people selected yet'**
+  String get hostAudienceNoSelectedPeople;
+
+  /// Saved audience SelectionLimit control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'You have selected the maximum of 2,500 people.'**
+  String get hostAudienceSelectionLimit;
+
+  /// Saved audience MembershipMode control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience membership'**
+  String get hostAudienceMembershipMode;
+
+  /// Saved audience RuleMembership control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Match conditions automatically'**
+  String get hostAudienceRuleMembership;
+
+  /// Saved audience StaticMembership control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose people manually'**
+  String get hostAudienceStaticMembership;
+
+  /// Saved audience Spend control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch spend'**
+  String get hostAudienceSpend;
+
+  /// Saved audience SpendHelp control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses completed Catch payments for your events, excluding refunds. Only uniquely verified Catch accounts are included. Currencies are counted separately; changing currency resets the amount.'**
+  String get hostAudienceSpendHelp;
+
+  /// Saved audience SpendCurrency control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get hostAudienceSpendCurrency;
+
+  /// Saved audience SpendAmount control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get hostAudienceSpendAmount;
+
+  /// Saved audience SpendAmountInvalid control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid amount within 10 billion minor currency units.'**
+  String get hostAudienceSpendAmountInvalid;
+
+  /// Saved audience SpendDays control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Past number of days'**
+  String get hostAudienceSpendDays;
+
+  /// Saved audience SpendDaysHelp control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave blank to include all recorded Catch payments.'**
+  String get hostAudienceSpendDaysHelp;
+
+  /// Saved audience SpendDaysInvalid control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number from 1 to 3,650, or leave blank.'**
+  String get hostAudienceSpendDaysInvalid;
+
+  /// Saved audience SpendLifetime control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'All recorded payments'**
+  String get hostAudienceSpendLifetime;
+
+  /// Saved audience SpendWindow control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Past {days} days'**
+  String hostAudienceSpendWindow({required int days});
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'New automation'**
+  String get hostAutomationNew;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit automation'**
+  String get hostAutomationEdit;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Automation name'**
+  String get hostAutomationName;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get hostAutomationTrigger;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'When an application is accepted'**
+  String get hostAutomationAccepted;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'After a person attends an event'**
+  String get hostAutomationAttended;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Any application form'**
+  String get hostAutomationAnyForm;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Any event'**
+  String get hostAutomationAnyEvent;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Form'**
+  String get hostAutomationForm;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get hostAutomationEvent;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay in minutes'**
+  String get hostAutomationDelay;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'0 runs as soon as eligible. Attendance follow-ups wait until the event ends, then apply this delay. Maximum: 10,080 minutes (7 days).'**
+  String get hostAutomationDelayHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number from 0 to 10,080.'**
+  String get hostAutomationDelayInvalid;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer includes'**
+  String get hostAutomationAnswer;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Published question'**
+  String get hostAutomationQuestion;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a filterable choice or yes/no question from the current published form. Publishing a new version requires reviewing the condition again.'**
+  String get hostAutomationQuestionHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get hostAutomationAction;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add action'**
+  String get hostAutomationAddAction;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove action'**
+  String get hostAutomationRemoveAction;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add organizer tag'**
+  String get hostAutomationTag;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to application review'**
+  String get hostAutomationQueue;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose event attendee'**
+  String get hostAutomationAttendee;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Send signed webhook'**
+  String get hostAutomationWebhook;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Send WhatsApp message'**
+  String get hostAutomationMessage;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Webhook URL'**
+  String get hostAutomationWebhookUrl;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing secret'**
+  String get hostAutomationWebhookSecret;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Send event identifiers to your HTTPS endpoint. Verify the HMAC SHA-256 signature and deduplicate X-Catch-Delivery-Id. Answers and contact details are excluded.'**
+  String get hostAutomationWebhookHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 32–256 characters. An existing secret stays unchanged when left blank and the URL stays the same.'**
+  String get hostAutomationSecretHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a signing secret of 32–256 characters.'**
+  String get hostAutomationSecretInvalid;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a public HTTPS URL using port 443.'**
+  String get hostAutomationUrlInvalid;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message draft'**
+  String get hostAutomationDraft;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an unscheduled WhatsApp draft in Messaging, with a saved audience. Only the triggering person is targeted, if they match that audience and can receive the message. Select the draft again after editing it.'**
+  String get hostAutomationDraftHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more message drafts'**
+  String get hostAutomationDraftsMore;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No message drafts on this page. Create a draft in Messaging or load more.'**
+  String get hostAutomationDraftsEmpty;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get hostAutomationEnabled;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabling approves these actions for future matching events. Pausing stops queued actions at their next check; completed actions remain in history.'**
+  String get hostAutomationEnableHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save automation'**
+  String get hostAutomationSave;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the trigger, condition and action settings.'**
+  String get hostAutomationRequired;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome accepted applicants, follow up after attendance, and connect form activity to your team and tools.'**
+  String get hostAutomationOverview;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'A successful message action means the send was queued. Check its delivery in Messaging. Temporary failures retry up to five times; successful actions are retained.'**
+  String get hostAutomationRunHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Next check'**
+  String get hostAutomationDue;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected draft'**
+  String get hostAutomationCurrentDraft;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No published form is available for this trigger.'**
+  String get hostAutomationNoForm;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured'**
+  String get hostAutomationConfigured;
 }
 
 class _AppLocalizationsDelegate

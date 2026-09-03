@@ -14965,7 +14965,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationMarkInReview => 'Mark in review';
 
   @override
-  String get hostApplicationApprove => 'Approve';
+  String get hostApplicationApprove => 'Accept and add to People';
 
   @override
   String get hostApplicationWaitlist => 'Waitlist';
@@ -16020,10 +16020,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormAutomationsTitle => 'Automations';
 
   @override
-  String get hostFormAutomationsSubtitle =>
-      'Run explicit, observable actions after a response changes. You can disable any rule instantly.';
-
-  @override
   String get hostFormAutomationsRules => 'Rules';
 
   @override
@@ -16034,7 +16030,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormAutomationsEmptyBody =>
-      'Start with a safe preset. Every run is recorded and can be disabled.';
+      'Create a rule for future activity. Review its actions, enable it when ready, and follow each run here.';
 
   @override
   String get hostFormAutomationNotifyPreset => 'Notify my team';
@@ -17279,4 +17275,301 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostCustomersSourcesTruncated =>
       'More source records exist. Only the loaded records are shown.';
+
+  @override
+  String get hostApplicationsReviewQueue => 'Review applications';
+
+  @override
+  String get hostApplicationsReviewQueueBody =>
+      'Review submissions, accept people, or keep them on your waitlist.';
+
+  @override
+  String get hostApplicationOpenPerson => 'Open person in People';
+
+  @override
+  String get hostApplicationOpenResponse => 'Open original response';
+
+  @override
+  String get hostCustomerApplicationsBody =>
+      'View this person’s applications and review decisions.';
+
+  @override
+  String get hostSavedAudienceEditRules => 'Edit audience';
+
+  @override
+  String get hostSavedAudienceEvaluated => 'Last evaluated';
+
+  @override
+  String get hostSavedAudienceMessage => 'Message this audience';
+
+  @override
+  String get hostSavedAudienceMembers => 'People in this audience';
+
+  @override
+  String get hostSavedAudienceNoMembers => 'No people in this audience';
+
+  @override
+  String get hostAudienceRuleApplication => 'Application status';
+
+  @override
+  String get hostAudienceRuleFormAnswer => 'Form answer';
+
+  @override
+  String get hostAudienceRuleNamedEvent => 'Attended event';
+
+  @override
+  String get hostAudienceChooseForm => 'Choose a form';
+
+  @override
+  String get hostAudienceChooseEvent => 'Choose an event';
+
+  @override
+  String get hostAudienceChooseQuestion => 'Choose a published question';
+
+  @override
+  String get hostAudienceChooseAnswer => 'Answer contains or equals';
+
+  @override
+  String get hostAudienceSourceUnavailable => 'Source unavailable';
+
+  @override
+  String get hostAudienceFilterableQuestionsHelp =>
+      'Only choice and yes/no questions marked filterable appear here. Each rule uses the selected published version.';
+
+  @override
+  String hostAudienceSelectedCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count selected people',
+      one: '1 selected person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostAudienceStaticHelp =>
+      'Choose up to 2,500 people. Membership stays as selected until you edit it. Messaging permission is checked separately.';
+
+  @override
+  String get hostAudienceUnavailablePerson => 'Unavailable person';
+
+  @override
+  String get hostAudienceRemoveSelected => 'Remove from this audience';
+
+  @override
+  String get hostAudiencePreviousPeople => 'Previous people';
+
+  @override
+  String get hostAudienceNextPeople => 'Next people';
+
+  @override
+  String get hostAudienceChoosePeople => 'Choose people';
+
+  @override
+  String get hostAudienceSearchPeople => 'Search by name';
+
+  @override
+  String get hostAudienceAvailablePeople => 'People you can select';
+
+  @override
+  String get hostAudienceNoPeopleFound => 'No people found';
+
+  @override
+  String get hostAudienceNoSelectedPeople => 'No people selected yet';
+
+  @override
+  String get hostAudienceSelectionLimit =>
+      'You have selected the maximum of 2,500 people.';
+
+  @override
+  String get hostAudienceMembershipMode => 'Audience membership';
+
+  @override
+  String get hostAudienceRuleMembership => 'Match conditions automatically';
+
+  @override
+  String get hostAudienceStaticMembership => 'Choose people manually';
+
+  @override
+  String get hostAudienceSpend => 'Catch spend';
+
+  @override
+  String get hostAudienceSpendHelp =>
+      'Uses completed Catch payments for your events, excluding refunds. Only uniquely verified Catch accounts are included. Currencies are counted separately; changing currency resets the amount.';
+
+  @override
+  String get hostAudienceSpendCurrency => 'Currency';
+
+  @override
+  String get hostAudienceSpendAmount => 'Amount';
+
+  @override
+  String get hostAudienceSpendAmountInvalid =>
+      'Enter a valid amount within 10 billion minor currency units.';
+
+  @override
+  String get hostAudienceSpendDays => 'Past number of days';
+
+  @override
+  String get hostAudienceSpendDaysHelp =>
+      'Leave blank to include all recorded Catch payments.';
+
+  @override
+  String get hostAudienceSpendDaysInvalid =>
+      'Enter a whole number from 1 to 3,650, or leave blank.';
+
+  @override
+  String get hostAudienceSpendLifetime => 'All recorded payments';
+
+  @override
+  String hostAudienceSpendWindow({required int days}) {
+    return 'Past $days days';
+  }
+
+  @override
+  String get hostAutomationNew => 'New automation';
+
+  @override
+  String get hostAutomationEdit => 'Edit automation';
+
+  @override
+  String get hostAutomationName => 'Automation name';
+
+  @override
+  String get hostAutomationTrigger => 'When';
+
+  @override
+  String get hostAutomationAccepted => 'When an application is accepted';
+
+  @override
+  String get hostAutomationAttended => 'After a person attends an event';
+
+  @override
+  String get hostAutomationAnyForm => 'Any application form';
+
+  @override
+  String get hostAutomationAnyEvent => 'Any event';
+
+  @override
+  String get hostAutomationForm => 'Form';
+
+  @override
+  String get hostAutomationEvent => 'Event';
+
+  @override
+  String get hostAutomationDelay => 'Delay in minutes';
+
+  @override
+  String get hostAutomationDelayHelp =>
+      '0 runs as soon as eligible. Attendance follow-ups wait until the event ends, then apply this delay. Maximum: 10,080 minutes (7 days).';
+
+  @override
+  String get hostAutomationDelayInvalid =>
+      'Enter a whole number from 0 to 10,080.';
+
+  @override
+  String get hostAutomationAnswer => 'Answer includes';
+
+  @override
+  String get hostAutomationQuestion => 'Published question';
+
+  @override
+  String get hostAutomationQuestionHelp =>
+      'Choose a filterable choice or yes/no question from the current published form. Publishing a new version requires reviewing the condition again.';
+
+  @override
+  String get hostAutomationAction => 'Action';
+
+  @override
+  String get hostAutomationAddAction => 'Add action';
+
+  @override
+  String get hostAutomationRemoveAction => 'Remove action';
+
+  @override
+  String get hostAutomationTag => 'Add organizer tag';
+
+  @override
+  String get hostAutomationQueue => 'Add to application review';
+
+  @override
+  String get hostAutomationAttendee => 'Propose event attendee';
+
+  @override
+  String get hostAutomationWebhook => 'Send signed webhook';
+
+  @override
+  String get hostAutomationMessage => 'Send WhatsApp message';
+
+  @override
+  String get hostAutomationWebhookUrl => 'Webhook URL';
+
+  @override
+  String get hostAutomationWebhookSecret => 'Signing secret';
+
+  @override
+  String get hostAutomationWebhookHelp =>
+      'Send event identifiers to your HTTPS endpoint. Verify the HMAC SHA-256 signature and deduplicate X-Catch-Delivery-Id. Answers and contact details are excluded.';
+
+  @override
+  String get hostAutomationSecretHelp =>
+      'Use 32–256 characters. An existing secret stays unchanged when left blank and the URL stays the same.';
+
+  @override
+  String get hostAutomationSecretInvalid =>
+      'Enter a signing secret of 32–256 characters.';
+
+  @override
+  String get hostAutomationUrlInvalid =>
+      'Enter a public HTTPS URL using port 443.';
+
+  @override
+  String get hostAutomationDraft => 'Message draft';
+
+  @override
+  String get hostAutomationDraftHelp =>
+      'Create an unscheduled WhatsApp draft in Messaging, with a saved audience. Only the triggering person is targeted, if they match that audience and can receive the message. Select the draft again after editing it.';
+
+  @override
+  String get hostAutomationDraftsMore => 'Load more message drafts';
+
+  @override
+  String get hostAutomationDraftsEmpty =>
+      'No message drafts on this page. Create a draft in Messaging or load more.';
+
+  @override
+  String get hostAutomationEnabled => 'Enabled';
+
+  @override
+  String get hostAutomationEnableHelp =>
+      'Enabling approves these actions for future matching events. Pausing stops queued actions at their next check; completed actions remain in history.';
+
+  @override
+  String get hostAutomationSave => 'Save automation';
+
+  @override
+  String get hostAutomationRequired =>
+      'Complete the trigger, condition and action settings.';
+
+  @override
+  String get hostAutomationOverview =>
+      'Welcome accepted applicants, follow up after attendance, and connect form activity to your team and tools.';
+
+  @override
+  String get hostAutomationRunHelp =>
+      'A successful message action means the send was queued. Check its delivery in Messaging. Temporary failures retry up to five times; successful actions are retained.';
+
+  @override
+  String get hostAutomationDue => 'Next check';
+
+  @override
+  String get hostAutomationCurrentDraft => 'Selected draft';
+
+  @override
+  String get hostAutomationNoForm =>
+      'No published form is available for this trigger.';
+
+  @override
+  String get hostAutomationConfigured => 'Configured';
 }

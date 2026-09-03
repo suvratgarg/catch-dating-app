@@ -1808,7 +1808,8 @@ export interface OrganizerContactOriginDocument {
     | "hostFormResponse"
     | "providerRecord"
     | "importBatch"
-    | "webRegistration";
+    | "webRegistration"
+    | "hostApplicationResponse";
   sourceEntityId: string;
   eventId: string | null;
   formId: string | null;
@@ -1900,6 +1901,42 @@ export interface OrganizerSavedAudienceDocument {
       | {
           kind: "reachableForIntent";
           intent: "organizerWhatsappCampaign";
+        }
+      | {
+          kind: "applicationStatus";
+          formId: string;
+          reviewStatus:
+            | "submitted"
+            | "inReview"
+            | "approved"
+            | "waitlisted"
+            | "declined";
+        }
+      | {
+          kind: "formAnswer";
+          formId: string;
+          versionId: string;
+          questionId: string;
+          value: string | boolean;
+        }
+      | {
+          kind: "attendedEvent";
+          eventId: string;
+        }
+      | {
+          kind: "spend";
+          operator: "atLeast" | "atMost";
+          currency: string;
+          amountMinor: number;
+          withinDays: number | null;
+        }
+      | {
+          kind: "staticMembers";
+          /**
+           * @minItems 0
+           * @maxItems 2500
+           */
+          contactIds: string[];
         }
     )[];
   };
@@ -3130,11 +3167,16 @@ export interface OrganizerFormExportDocument {
  */
 export interface OrganizerFormAutomationRuleDocument {
   organizerId: string;
-  formId: string;
+  formId: string | null;
   name: string;
   enabled: boolean;
   revision: number;
-  trigger: "responseSubmitted" | "responseWithdrawn" | "answerMatches";
+  trigger:
+    | "responseSubmitted"
+    | "responseWithdrawn"
+    | "answerMatches"
+    | "applicationAccepted"
+    | "eventAttended";
   condition: {
     questionId: string;
     operator:
@@ -3170,11 +3212,16 @@ export interface OrganizerFormAutomationRuleDocument {
     webhookUrl: string | null;
     webhookSecret: string | null;
     channel: null | "whatsapp" | "email";
+    campaignId?: string | null;
+    campaignRevision?: number | null;
   }[];
   createdByUid: string;
   updatedByUid: string;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+  triggerEventId?: string | null;
+  delayMinutes?: number;
+  conditionVersionId?: string | null;
 }
 
 /**
@@ -3182,11 +3229,15 @@ export interface OrganizerFormAutomationRuleDocument {
  */
 export interface OrganizerFormAutomationRunDocument {
   organizerId: string;
-  formId: string;
+  formId: string | null;
   ruleId: string;
   ruleRevision: number;
-  responseId: string;
-  eventKind: "submitted" | "withdrawn";
+  responseId: string | null;
+  eventKind:
+    | "submitted"
+    | "withdrawn"
+    | "applicationAccepted"
+    | "eventAttended";
   status:
     | "pending"
     | "running"
@@ -3217,6 +3268,11 @@ export interface OrganizerFormAutomationRunDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   completedAt: FirebaseFirestore.Timestamp | null;
+  sourceId?: string;
+  sourceOccurredAt?: FirebaseFirestore.Timestamp;
+  dueAt?: FirebaseFirestore.Timestamp | null;
+  leaseOwner?: string | null;
+  leaseExpiresAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -3813,6 +3869,18 @@ export interface OrganizerCampaignDocument {
   dispatchedAt: FirebaseFirestore.Timestamp | null;
   completedAt: FirebaseFirestore.Timestamp | null;
   cancelledAt: FirebaseFirestore.Timestamp | null;
+  automationOrigin?: {
+    ruleId: string;
+    ruleRevision: number;
+    actionId: string;
+    sourceId: string;
+    eventKind:
+      | "submitted"
+      | "withdrawn"
+      | "applicationAccepted"
+      | "eventAttended";
+    contactId: string;
+  };
 }
 
 /**

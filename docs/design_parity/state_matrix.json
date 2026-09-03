@@ -5086,6 +5086,7 @@
             "hostFormShareScreen",
             "hostFormAnalyticsScreen",
             "hostFormAutomationsScreen",
+            "hostAudienceAutomationsScreen",
             "hostCustomerDetailScreen"
           ],
           "implementationPaths": [

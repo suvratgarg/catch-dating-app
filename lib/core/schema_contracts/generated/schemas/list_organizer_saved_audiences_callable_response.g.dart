@@ -200,6 +200,156 @@ const schemaListOrganizerSavedAudiencesCallableResponseSchema = <String, Object?
                         },
                       },
                     },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                        'formId',
+                        'reviewStatus',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'const': 'applicationStatus',
+                        },
+                        'formId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 180,
+                        },
+                        'reviewStatus': <String, Object?>{
+                          'type': 'string',
+                          'enum': <Object?>[
+                            'submitted',
+                            'inReview',
+                            'approved',
+                            'waitlisted',
+                            'declined',
+                          ],
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                        'formId',
+                        'versionId',
+                        'questionId',
+                        'value',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'const': 'formAnswer',
+                        },
+                        'formId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 180,
+                        },
+                        'versionId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 180,
+                        },
+                        'questionId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 180,
+                        },
+                        'value': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'boolean',
+                          ],
+                          'minLength': 1,
+                          'maxLength': 160,
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                        'eventId',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'const': 'attendedEvent',
+                        },
+                        'eventId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 180,
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                        'operator',
+                        'currency',
+                        'amountMinor',
+                        'withinDays',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'const': 'spend',
+                        },
+                        'operator': <String, Object?>{
+                          'type': 'string',
+                          'enum': <Object?>[
+                            'atLeast',
+                            'atMost',
+                          ],
+                        },
+                        'currency': <String, Object?>{
+                          'type': 'string',
+                          'pattern': '^[A-Z]{3}\$',
+                        },
+                        'amountMinor': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 0,
+                          'maximum': 10000000000,
+                        },
+                        'withinDays': <String, Object?>{
+                          'type': <Object?>[
+                            'integer',
+                            'null',
+                          ],
+                          'minimum': 1,
+                          'maximum': 3650,
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                        'contactIds',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'const': 'staticMembers',
+                        },
+                        'contactIds': <String, Object?>{
+                          'type': 'array',
+                          'minItems': 0,
+                          'maxItems': 2500,
+                          'uniqueItems': true,
+                          'items': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 180,
+                          },
+                        },
+                      },
+                    },
                   ],
                 },
               },
@@ -290,6 +440,177 @@ const schemaListOrganizerSavedAudiencesCallableResponseSchema = <String, Object?
         'null',
       ],
       'maxLength': 1000,
+    },
+    'filterOptions': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'forms',
+        'questions',
+        'events',
+        'tags',
+      ],
+      'properties': <String, Object?>{
+        'forms': <String, Object?>{
+          'type': 'array',
+          'maxItems': 400,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'formId',
+              'title',
+            ],
+            'properties': <String, Object?>{
+              'formId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'title': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+            },
+          },
+        },
+        'questions': <String, Object?>{
+          'type': 'array',
+          'maxItems': 100,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'formId',
+              'versionId',
+              'version',
+              'formTitle',
+              'questionId',
+              'label',
+              'kind',
+              'options',
+            ],
+            'properties': <String, Object?>{
+              'formId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'versionId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'version': <String, Object?>{
+                'type': 'integer',
+                'minimum': 1,
+              },
+              'formTitle': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+              'questionId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'label': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+              'kind': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'singleChoice',
+                  'multiChoice',
+                  'boolean',
+                ],
+              },
+              'options': <String, Object?>{
+                'type': 'array',
+                'maxItems': 100,
+                'items': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'label',
+                    'value',
+                  ],
+                  'properties': <String, Object?>{
+                    'label': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 240,
+                    },
+                    'value': <String, Object?>{
+                      'type': <Object?>[
+                        'string',
+                        'boolean',
+                      ],
+                      'minLength': 1,
+                      'maxLength': 160,
+                    },
+                  },
+                },
+              },
+              'activeVersion': <String, Object?>{
+                'type': 'boolean',
+              },
+            },
+          },
+        },
+        'events': <String, Object?>{
+          'type': 'array',
+          'maxItems': 200,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'eventId',
+              'title',
+            ],
+            'properties': <String, Object?>{
+              'eventId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'title': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+            },
+          },
+        },
+        'tags': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'tagId',
+              'label',
+            ],
+            'properties': <String, Object?>{
+              'tagId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'label': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+            },
+          },
+        },
+      },
     },
   },
 };

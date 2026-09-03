@@ -111,6 +111,21 @@ class _SavedAudienceEditorTestCallable extends Fake implements HttpsCallable {
   Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
     final payload = parameters as Map<Object?, Object?>;
     switch (name) {
+      case 'listOrganizerSavedAudiences':
+        return _SavedAudienceEditorCallableResult<T>(
+          {
+                'organizerId': 'organizer-1',
+                'audiences': [],
+                'nextCursor': null,
+                'filterOptions': {
+                  'forms': [],
+                  'questions': [],
+                  'events': [],
+                  'tags': [],
+                },
+              }
+              as T,
+        );
       case 'upsertOrganizerSavedAudience':
         owner.upsertCalls.add(payload);
         if (owner.failFirstUpsert && owner.upsertCalls.length == 1) {

@@ -187,6 +187,156 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
                   },
                 },
               },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'formId',
+                  'reviewStatus',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'applicationStatus',
+                  },
+                  'formId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'reviewStatus': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'submitted',
+                      'inReview',
+                      'approved',
+                      'waitlisted',
+                      'declined',
+                    ],
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'formId',
+                  'versionId',
+                  'questionId',
+                  'value',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'formAnswer',
+                  },
+                  'formId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'versionId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'questionId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'value': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'boolean',
+                    ],
+                    'minLength': 1,
+                    'maxLength': 160,
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'eventId',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'attendedEvent',
+                  },
+                  'eventId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'operator',
+                  'currency',
+                  'amountMinor',
+                  'withinDays',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'spend',
+                  },
+                  'operator': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'atLeast',
+                      'atMost',
+                    ],
+                  },
+                  'currency': <String, Object?>{
+                    'type': 'string',
+                    'pattern': '^[A-Z]{3}\$',
+                  },
+                  'amountMinor': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 10000000000,
+                  },
+                  'withinDays': <String, Object?>{
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
+                    'minimum': 1,
+                    'maximum': 3650,
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'contactIds',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'staticMembers',
+                  },
+                  'contactIds': <String, Object?>{
+                    'type': 'array',
+                    'minItems': 0,
+                    'maxItems': 2500,
+                    'uniqueItems': true,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                  },
+                },
+              },
             ],
           },
         },
@@ -519,6 +669,156 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
                   },
                 },
               },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'formId',
+                  'reviewStatus',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'applicationStatus',
+                  },
+                  'formId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'reviewStatus': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'submitted',
+                      'inReview',
+                      'approved',
+                      'waitlisted',
+                      'declined',
+                    ],
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'formId',
+                  'versionId',
+                  'questionId',
+                  'value',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'formAnswer',
+                  },
+                  'formId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'versionId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'questionId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'value': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'boolean',
+                    ],
+                    'minLength': 1,
+                    'maxLength': 160,
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'eventId',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'attendedEvent',
+                  },
+                  'eventId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'operator',
+                  'currency',
+                  'amountMinor',
+                  'withinDays',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'spend',
+                  },
+                  'operator': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'atLeast',
+                      'atMost',
+                    ],
+                  },
+                  'currency': <String, Object?>{
+                    'type': 'string',
+                    'pattern': '^[A-Z]{3}\$',
+                  },
+                  'amountMinor': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 10000000000,
+                  },
+                  'withinDays': <String, Object?>{
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
+                    'minimum': 1,
+                    'maximum': 3650,
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'contactIds',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'staticMembers',
+                  },
+                  'contactIds': <String, Object?>{
+                    'type': 'array',
+                    'minItems': 0,
+                    'maxItems': 2500,
+                    'uniqueItems': true,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                  },
+                },
+              },
             ],
           },
         },
@@ -633,6 +933,156 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
             },
           },
         },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'formId',
+            'reviewStatus',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'applicationStatus',
+            },
+            'formId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'reviewStatus': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'submitted',
+                'inReview',
+                'approved',
+                'waitlisted',
+                'declined',
+              ],
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'formId',
+            'versionId',
+            'questionId',
+            'value',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'formAnswer',
+            },
+            'formId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'versionId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'questionId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'value': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'boolean',
+              ],
+              'minLength': 1,
+              'maxLength': 160,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'eventId',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'attendedEvent',
+            },
+            'eventId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'operator',
+            'currency',
+            'amountMinor',
+            'withinDays',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'spend',
+            },
+            'operator': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'atLeast',
+                'atMost',
+              ],
+            },
+            'currency': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[A-Z]{3}\$',
+            },
+            'amountMinor': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 10000000000,
+            },
+            'withinDays': <String, Object?>{
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
+              'minimum': 1,
+              'maximum': 3650,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'contactIds',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'staticMembers',
+            },
+            'contactIds': <String, Object?>{
+              'type': 'array',
+              'minItems': 0,
+              'maxItems': 2500,
+              'uniqueItems': true,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+            },
+          },
+        },
       ],
     },
     'computedSegmentPredicate': <String, Object?>{
@@ -739,6 +1189,156 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
         },
         'intent': <String, Object?>{
           'const': 'organizerWhatsappCampaign',
+        },
+      },
+    },
+    'applicationStatusPredicate': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'formId',
+        'reviewStatus',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'applicationStatus',
+        },
+        'formId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'reviewStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'submitted',
+            'inReview',
+            'approved',
+            'waitlisted',
+            'declined',
+          ],
+        },
+      },
+    },
+    'formAnswerPredicate': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'formId',
+        'versionId',
+        'questionId',
+        'value',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'formAnswer',
+        },
+        'formId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'versionId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'questionId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'value': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'boolean',
+          ],
+          'minLength': 1,
+          'maxLength': 160,
+        },
+      },
+    },
+    'attendedEventPredicate': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'eventId',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'attendedEvent',
+        },
+        'eventId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+      },
+    },
+    'spendPredicate': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'operator',
+        'currency',
+        'amountMinor',
+        'withinDays',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'spend',
+        },
+        'operator': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'atLeast',
+            'atMost',
+          ],
+        },
+        'currency': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[A-Z]{3}\$',
+        },
+        'amountMinor': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 10000000000,
+        },
+        'withinDays': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 1,
+          'maximum': 3650,
+        },
+      },
+    },
+    'staticMembersPredicate': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'contactIds',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'staticMembers',
+        },
+        'contactIds': <String, Object?>{
+          'type': 'array',
+          'minItems': 0,
+          'maxItems': 2500,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
         },
       },
     },
