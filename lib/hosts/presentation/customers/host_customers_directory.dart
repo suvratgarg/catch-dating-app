@@ -18,149 +18,94 @@ class HostCustomerDirectoryControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
-    if (shrinkWrap && !usesLargeText) {
-      return _HostCustomerDirectoryInlineControls(
-        sort: sort,
-        compactCopy: condensed,
-        onSortChanged: onSortChanged,
-        onOpenFilters: onOpenFilters,
-      );
-    }
-    return ComponentResponsiveBuilder(
-      breakpoint:
-          ComponentBreakpoints.hostCustomerDirectoryControlsCompactBreakpoint,
-      compact: (context) => _HostCustomerDirectoryWrappingControls(
-        sort: sort,
-        compactCopy: true,
-        onSortChanged: onSortChanged,
-        onOpenFilters: onOpenFilters,
-      ),
-      expanded: (context) => _HostCustomerDirectoryWrappingControls(
-        sort: sort,
-        compactCopy: false,
-        onSortChanged: onSortChanged,
-        onOpenFilters: onOpenFilters,
+    return LayoutBuilder(
+      builder: (context, constraints) => Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: CatchSpacing.s4,
+        children: [
+          CatchAdaptiveSelectionMenu<HostCustomerSort>(
+            title: context.l10n.hostCustomersSort,
+            subtitle: context.l10n.hostCustomersSortSheetSubtitle,
+            value: sort,
+            items: [
+              for (final option in HostCustomerSort.values)
+                CatchSelectionMenuItem(
+                  value: option,
+                  label: _customerSortLabel(context, option),
+                ),
+            ],
+            onSelected: onSortChanged,
+            builder: (context, selected, open, toggle) =>
+                _HostCustomerDirectoryCommand(
+                  key: const ValueKey('host-customers-sort'),
+                  label: context.l10n.hostCustomersSortControl(
+                    label: selected.label,
+                  ),
+                  icon: CatchIcons.expandMoreRounded,
+                  maxWidth: constraints.maxWidth,
+                  trailingIcon: true,
+                  onTap: toggle,
+                ),
+          ),
+          _HostCustomerDirectoryCommand(
+            key: const ValueKey('host-customers-filters'),
+            label: context.l10n.hostCustomersFilters,
+            icon: CatchIcons.tuneRounded,
+            maxWidth: constraints.maxWidth,
+            onTap: onOpenFilters,
+          ),
+        ],
       ),
     );
   }
 }
 
-class _HostCustomerDirectoryInlineControls extends StatelessWidget {
-  const _HostCustomerDirectoryInlineControls({
-    required this.sort,
-    required this.compactCopy,
-    required this.onSortChanged,
-    required this.onOpenFilters,
+class _HostCustomerDirectoryCommand extends StatelessWidget {
+  const _HostCustomerDirectoryCommand({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.maxWidth,
+    required this.onTap,
+    this.trailingIcon = false,
   });
 
-  final HostCustomerSort sort;
-  final bool compactCopy;
-  final ValueChanged<HostCustomerSort> onSortChanged;
-  final VoidCallback? onOpenFilters;
+  final String label;
+  final IconData icon;
+  final double maxWidth;
+  final VoidCallback? onTap;
+  final bool trailingIcon;
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      _HostCustomerDirectoryFilterButton(
-        compactCopy: compactCopy,
-        onOpenFilters: onOpenFilters,
+  Widget build(BuildContext context) => CatchRowPressSurface(
+    onTap: onTap,
+    expandToMaxWidth: false,
+    child: ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: maxWidth,
+        minHeight: Theme.of(context).platform == TargetPlatform.iOS
+            ? CatchSpacing.s11
+            : CatchSpacing.s12,
       ),
-      gapW8,
-      _HostCustomerDirectorySortControl(
-        sort: sort,
-        compactCopy: compactCopy,
-        onSortChanged: onSortChanged,
-      ),
-    ],
-  );
-}
-
-class _HostCustomerDirectoryWrappingControls extends StatelessWidget {
-  const _HostCustomerDirectoryWrappingControls({
-    required this.sort,
-    required this.compactCopy,
-    required this.onSortChanged,
-    required this.onOpenFilters,
-  });
-
-  final HostCustomerSort sort;
-  final bool compactCopy;
-  final ValueChanged<HostCustomerSort> onSortChanged;
-  final VoidCallback? onOpenFilters;
-
-  @override
-  Widget build(BuildContext context) => Wrap(
-    alignment: WrapAlignment.end,
-    crossAxisAlignment: WrapCrossAlignment.center,
-    spacing: CatchSpacing.s2,
-    runSpacing: CatchSpacing.s2,
-    children: [
-      _HostCustomerDirectoryFilterButton(
-        compactCopy: compactCopy,
-        onOpenFilters: onOpenFilters,
-      ),
-      _HostCustomerDirectorySortControl(
-        sort: sort,
-        compactCopy: compactCopy,
-        onSortChanged: onSortChanged,
-      ),
-    ],
-  );
-}
-
-class _HostCustomerDirectoryFilterButton extends StatelessWidget {
-  const _HostCustomerDirectoryFilterButton({
-    required this.compactCopy,
-    required this.onOpenFilters,
-  });
-
-  final bool compactCopy;
-  final VoidCallback? onOpenFilters;
-
-  @override
-  Widget build(BuildContext context) => CatchButton(
-    key: const ValueKey('host-customers-filters'),
-    label: context.l10n.hostCustomersFilters,
-    icon: compactCopy ? null : Icon(CatchIcons.tuneRounded),
-    variant: CatchButtonVariant.secondary,
-    size: CatchButtonSize.sm,
-    onPressed: onOpenFilters,
-  );
-}
-
-class _HostCustomerDirectorySortControl extends StatelessWidget {
-  const _HostCustomerDirectorySortControl({
-    required this.sort,
-    required this.compactCopy,
-    required this.onSortChanged,
-  });
-
-  final HostCustomerSort sort;
-  final bool compactCopy;
-  final ValueChanged<HostCustomerSort> onSortChanged;
-
-  @override
-  Widget build(BuildContext context) =>
-      CatchAdaptiveSelectionControl<HostCustomerSort>(
-        buttonKey: const ValueKey('host-customers-sort'),
-        title: context.l10n.hostCustomersSort,
-        subtitle: context.l10n.hostCustomersSortSheetSubtitle,
-        tooltip: context.l10n.hostCustomersSort,
-        value: sort,
-        items: [
-          for (final option in HostCustomerSort.values)
-            CatchSelectionMenuItem(
-              value: option,
-              label: _customerSortLabel(context, option),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!trailingIcon) ...[Icon(icon, size: CatchIcon.sm), gapW8],
+            Flexible(
+              child: Text(
+                label,
+                style: HostCustomerTypography.control(context),
+              ),
             ),
-        ],
-        triggerLabel: (selected) => compactCopy
-            ? selected.label
-            : context.l10n.hostCustomersSortControl(label: selected.label),
-        onSelected: onSortChanged,
-      );
+            if (trailingIcon) ...[gapW8, Icon(icon, size: CatchIcon.sm)],
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 class HostCustomersNoOrganizer extends StatelessWidget {
@@ -498,7 +443,7 @@ class HostCustomersDirectory extends StatelessWidget {
             layout: CatchEmptyStateLayout.inline,
           )
         else
-          CatchSection.fieldRows(
+          CatchSection.divided(
             key: const ValueKey('host-customers-directory-list'),
             first: true,
             children: [
@@ -540,12 +485,14 @@ class HostCustomersSummary extends StatelessWidget {
     required this.onRetry,
     required this.selectedFilter,
     required this.onFilterSelected,
+    this.newCustomerCount,
   });
 
   final AsyncValue<HostCrmSummary> summary;
   final VoidCallback onRetry;
   final HostCustomerFilter? selectedFilter;
   final ValueChanged<HostCustomerFilter> onFilterSelected;
+  final HostCustomerSegmentCount? newCustomerCount;
 
   @override
   Widget build(BuildContext context) => CatchAsyncValueView<HostCrmSummary>(
@@ -560,168 +507,85 @@ class HostCustomersSummary extends StatelessWidget {
       onRetry: onRetry,
     ),
     builder: (context, value) {
-      final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
-      final compactMetrics =
-          ScreenSize.fromWidth(MediaQuery.sizeOf(context).width).isCompact &&
-          !usesLargeText;
       String countLabel(int count) => value.truncated ? '$count+' : '$count';
-      final stats = <({HostCustomerFilter filter, String label, String value})>[
+      final newCount = newCustomerCount;
+      final stats = <({HostCustomerFilter filter, String label, String? value})>[
         (
           filter: HostCustomerFilter.all,
           value: countLabel(value.contactCount),
-          label: context.l10n.hostsHostAudienceContacts,
-        ),
-        (
-          filter: HostCustomerFilter.attended,
-          value: countLabel(value.pastAttendeeCount),
-          label: context.l10n.hostsHostAudienceAttended,
+          label: context.l10n.hostsHostAudienceAll,
         ),
         (
           filter: HostCustomerFilter.repeat,
           value: countLabel(value.repeatAttendeeCount),
-          label: context.l10n.hostsHostAudienceRepeat,
+          label: context.l10n.hostsOperationalRosterInsightReturning,
+        ),
+        (
+          filter: HostCustomerFilter.newToOrganizer,
+          value: newCount == null
+              ? null
+              : '${newCount.count}${newCount.coverage == HostCustomerMatchCountCoverage.atLeast ? '+' : ''}',
+          label: context.l10n.hostsHostEventManageScreenStateLabelNew,
         ),
       ];
-      final statTiles = <Widget>[
-        for (final stat in stats)
-          _HostCustomerSummaryFilterTile(
-            key: ValueKey('host-customers-summary-${stat.filter.name}'),
-            value: stat.value,
-            label: stat.label,
-            selected: selectedFilter == stat.filter,
-            compact: compactMetrics,
-            onTap: () => onFilterSelected(stat.filter),
-          ),
-      ];
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      return Wrap(
+        spacing: CatchSpacing.s2,
+        runSpacing: CatchSpacing.s2,
         children: [
-          if (usesLargeText)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                for (var index = 0; index < statTiles.length; index++) ...[
-                  if (index > 0) gapH8,
-                  statTiles[index],
-                ],
-              ],
-            )
-          else
-            Row(
-              children: [
-                for (var index = 0; index < statTiles.length; index++) ...[
-                  if (index > 0) compactMetrics ? gapW4 : gapW8,
-                  Expanded(child: statTiles[index]),
-                ],
-              ],
+          for (final stat in stats)
+            _HostCustomerSummaryFilterTile(
+              key: ValueKey('host-customers-summary-${stat.filter.name}'),
+              value: stat.value,
+              label: stat.label,
+              selected: selectedFilter == stat.filter,
+              onTap: () => onFilterSelected(stat.filter),
             ),
-          gapH20,
-          CatchMetaRow(
-            icon: CatchIcons.tabChats,
-            label: context.l10n.hostCustomersWhatsappReadyCount(
-              count: value.whatsappOptInCount,
-            ),
-            maxLines: 2,
-          ),
-          gapH8,
-          CatchMetaRow(
-            icon: CatchIcons.infoOutlineRounded,
-            label: context.l10n.hostCustomersSourceSummary(
-              importedCount: value.importedContactCount,
-              linkedCount: value.linkedAccountCount,
-            ),
-            maxLines: 3,
-          ),
         ],
       );
     },
   );
 }
 
-class _HostCustomerSummaryFilterTile extends StatefulWidget {
+class _HostCustomerSummaryFilterTile extends StatelessWidget {
   const _HostCustomerSummaryFilterTile({
     super.key,
     required this.value,
     required this.label,
     required this.selected,
-    required this.compact,
     required this.onTap,
   });
-
-  final String value;
+  final String? value;
   final String label;
   final bool selected;
-  final bool compact;
   final VoidCallback onTap;
-
-  @override
-  State<_HostCustomerSummaryFilterTile> createState() =>
-      _HostCustomerSummaryFilterTileState();
-}
-
-class _HostCustomerSummaryFilterTileState
-    extends State<_HostCustomerSummaryFilterTile> {
-  bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final border = _focused
-        ? CatchBorder.resolve(t, CatchBorderRole.focus)
-        : widget.selected
-        ? CatchBorder.resolve(t, CatchBorderRole.selected)
-        : CatchBorder.interactive(t, CatchInteractiveBorderState.resting);
-    final surface = CatchSurface(
-      tone: CatchSurfaceTone.transparent,
-      backgroundColor: widget.selected
-          ? t.ink.withValues(alpha: CatchOpacity.controlOverlayHover)
-          : null,
-      radius: CatchRadius.md,
-      padding: widget.compact
-          ? CatchInsets.statChipContent
-          : CatchInsets.cardContent,
-      borderSpec: widget.compact && !_focused ? null : border,
-      onTap: widget.onTap,
-      onFocusChange: (focused) {
-        if (_focused != focused) setState(() => _focused = focused);
-      },
-      child: widget.compact
-          ? Center(
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: widget.value,
-                      style: CatchTextStyles.monoLabel(context, color: t.ink),
-                    ),
-                    TextSpan(
-                      text: ' ${widget.label}',
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: widget.selected ? t.ink : t.ink2,
-                      ),
-                    ),
-                  ],
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            )
-          : CatchStatColumn(
-              value: widget.value,
-              label: widget.label,
-              monoValue: true,
-            ),
-    );
+    final text = value == null ? label : '$label  $value';
     return Semantics(
       button: true,
-      selected: widget.selected,
-      label: '${widget.label}, ${widget.value}',
-      onTap: widget.onTap,
+      selected: selected,
+      label: text,
       child: ExcludeSemantics(
-        child: widget.compact
-            ? SizedBox(height: CatchSpacing.s12, child: surface)
-            : surface,
+        child: CatchSurface(
+          tone: CatchSurfaceTone.transparent,
+          backgroundColor: selected
+              ? t.ink
+              : t.ink.withValues(alpha: CatchOpacity.controlOverlayHover),
+          radius: CatchRadius.pill,
+          padding: EdgeInsets.symmetric(
+            horizontal: CatchSpacing.s4,
+            vertical: Theme.of(context).platform == TargetPlatform.iOS
+                ? CatchSpacing.s3
+                : CatchSpacing.micro14,
+          ),
+          onTap: onTap,
+          child: Text(
+            text,
+            style: HostCustomerTypography.group(context, selected: selected),
+          ),
+        ),
       ),
     );
   }

@@ -7,8 +7,6 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -28,6 +26,7 @@ import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
@@ -41,6 +40,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_typography.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
@@ -385,6 +385,17 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                   children: [
                     HostCustomersSummary(
                       summary: summary,
+                      newCustomerCount: ref
+                          .watch(
+                            hostCustomerSegmentCountProvider(
+                              HostCustomerSegmentCountRequest(
+                                organizerId: selectedClub.id,
+                                filter: HostCustomerFilter.newToOrganizer,
+                              ),
+                            ),
+                          )
+                          .asData
+                          ?.value,
                       onRetry: () => ref.invalidate(
                         hostCrmSummaryProvider(selectedClub.id),
                       ),
@@ -392,8 +403,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                           _manualTag == null &&
                               const {
                                 HostCustomerFilter.all,
-                                HostCustomerFilter.attended,
                                 HostCustomerFilter.repeat,
+                                HostCustomerFilter.newToOrganizer,
                               }.contains(effectiveFilter)
                           ? effectiveFilter
                           : null,
@@ -408,13 +419,12 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                     ),
                     gapH16,
                     const CatchDivider.section(),
-                    gapH12,
-                    if (directoryState == null)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: directoryControls,
-                      )
-                    else
+                    directoryControls,
+                    const CatchDivider.section(),
+                    if (directoryState != null &&
+                        (effectiveFilter != HostCustomerFilter.all ||
+                            _manualTag != null ||
+                            _search != null))
                       HostCustomerFilterSummary(
                         filter: effectiveFilter,
                         manualTag: _manualTag,
@@ -446,9 +456,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                                 _filter = HostCustomerFilter.all;
                                 _manualTag = null;
                               }),
-                        trailing: directoryControls,
                       ),
-                    gapH12,
                     CatchAsyncValueView<HostCustomersDirectoryState>(
                       value: directory,
                       onRetry: () => ref.invalidate(
