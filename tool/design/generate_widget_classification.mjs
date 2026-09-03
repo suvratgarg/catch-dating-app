@@ -4,6 +4,18 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {collisionKeyFor} from "./component_concepts.mjs";
+import {
+  buildLineStarts,
+  collectClassDeclarations,
+  collectWidgetClasses,
+  collectWidgetStateClasses,
+  resolveWidgetTypeNames,
+} from "./lib/new_widget_inventory_declarations.mjs";
+import {
+  isGeneratedProductionWidgetDartPath,
+  productionWidgetGlobs,
+  productionWidgetRoots,
+} from "./lib/production_widget_roots.mjs";
 
 const DEFAULT_OUTPUT = "build/reports/widget_classification.json";
 
@@ -16,21 +28,11 @@ export function buildWidgetClassification({
   const contracts = readJson(contractsPath).components ?? [];
   const contractsBySymbol = buildContractSymbolMap(contracts);
   const widgetbookNames = readWidgetbookNames(widgetbookPath);
-  const widgets = [];
-
-  for (const filePath of listDartFiles(path.join(repoRoot, "lib"))) {
-    const relativeFile = path.relative(repoRoot, filePath).split(path.sep).join("/");
-    const source = fs.readFileSync(filePath, "utf8");
-    const imports = collectImports(source);
-    for (const declaration of collectWidgetDeclarations(source)) {
-      widgets.push(classifyDeclaration({
-        ...declaration,
-        file: relativeFile,
-        imports,
-        source,
-      }, {contractsBySymbol, widgetbookNames}));
-    }
-  }
+  const widgets = collectProductionWidgetClassificationDeclarations({repoRoot})
+    .map((declaration) => classifyDeclaration(
+      declaration,
+      {contractsBySymbol, widgetbookNames},
+    ));
 
   widgets.sort((a, b) => a.file.localeCompare(b.file) || a.name.localeCompare(b.name));
   return {
@@ -38,7 +40,7 @@ export function buildWidgetClassification({
     updated,
     sourceOfTruth: {
       scope:
-        "On-demand inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
+        `On-demand inventory for production Flutter widget and widget-state classes under ${productionWidgetGlobs.join(", ")}. Widgetbook/test scaffolds are intentionally out of scope.`,
       canonicalContracts:
         "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
       catalog:
@@ -52,11 +54,59 @@ export function buildWidgetClassification({
   };
 }
 
+export function collectProductionWidgetClassificationDeclarations({
+  repoRoot = fromRepo("."),
+} = {}) {
+  const sources = [];
+  for (const root of productionWidgetRoots) {
+    for (const filePath of listDartFiles(path.join(repoRoot, root))) {
+      const file = path.relative(repoRoot, filePath).split(path.sep).join("/");
+      if (isGeneratedProductionWidgetDartPath(file)) continue;
+      const source = fs.readFileSync(filePath, "utf8");
+      sources.push({file, source, imports: collectImports(source)});
+    }
+  }
+  return collectWidgetClassificationDeclarations(sources);
+}
+
+export function collectWidgetClassificationDeclarations(sources) {
+  const prepared = sources.map((entry) => ({
+    ...entry,
+    imports: entry.imports ?? collectImports(entry.source),
+    lineStarts: buildLineStarts(entry.source),
+  }));
+  const widgetTypeNames = resolveWidgetTypeNames(
+    prepared.flatMap(({source, lineStarts}) =>
+      collectClassDeclarations(source, lineStarts),
+    ),
+  );
+
+  return prepared.flatMap(({file, source, imports, lineStarts}) => [
+    ...collectWidgetClasses(source, lineStarts, widgetTypeNames).map(
+      (declaration) => ({
+        ...declaration,
+        file,
+        imports,
+        source,
+        classKind: "widget",
+      }),
+    ),
+    ...collectWidgetStateClasses(source, lineStarts).map((declaration) => ({
+      ...declaration,
+      file,
+      imports,
+      source,
+      classKind: "widget-state",
+    })),
+  ]);
+}
+
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
 function listDartFiles(root) {
+  if (!fs.existsSync(root)) return [];
   const results = [];
   for (const entry of fs.readdirSync(root, {withFileTypes: true})) {
     const fullPath = path.join(root, entry.name);
@@ -112,21 +162,6 @@ function collectImports(source) {
   return [...source.matchAll(/^import\s+['"]([^'"]+)['"]/gmu)].map(
     (match) => match[1],
   );
-}
-
-function collectWidgetDeclarations(source) {
-  const declarations = [];
-  const regex =
-    /class\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>{}]+>)?\s+extends\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?((?:StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)|(?:State|ConsumerState)<[^>{}]+>)/gu;
-  for (const match of source.matchAll(regex)) {
-    const baseClass = match[2];
-    declarations.push({
-      name: match[1],
-      baseClass,
-      classKind: baseClass.includes("<") ? "widget-state" : "widget",
-    });
-  }
-  return declarations;
 }
 
 function classifyDeclaration(entry, {contractsBySymbol, widgetbookNames}) {

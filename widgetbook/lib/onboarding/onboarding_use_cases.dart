@@ -26,6 +26,7 @@ import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart'
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
@@ -307,6 +308,15 @@ Widget welcomePageStates(BuildContext context) {
       ),
     ],
   );
+}
+
+@widgetbook.UseCase(
+  name: 'Route surface',
+  type: StartWelcomeRouteScreen,
+  path: '[P1 product surfaces]/Onboarding/Pages',
+)
+Widget startWelcomeRouteScreen(BuildContext context) {
+  return const _DeviceFrame(child: StartWelcomeRouteScreen(playIntro: false));
 }
 
 @widgetbook.UseCase(

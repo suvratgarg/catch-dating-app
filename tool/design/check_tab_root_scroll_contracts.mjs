@@ -58,7 +58,7 @@ export function checkTabRootScrollContracts({
     findings.push({
       code: "unregistered-branch",
       path: routerPath,
-      message: `Stateful shell branch ${branchKey} has no terminal-clearance contract.`,
+      message: `Stateful shell branch ${branchKey} has no screen-composition contract.`,
     });
   }
   for (const branchKey of expectedBranchKeys) {
@@ -187,7 +187,7 @@ function checkOwner({root, owner, findings, ownerKind}) {
       code: "forbidden-text",
       path: relativePath,
       message:
-        `Forbidden terminal-clearance pattern ${JSON.stringify(forbidden.text)} ` +
+        `Forbidden screen-composition pattern ${JSON.stringify(forbidden.text)} ` +
         `appears ${actualOccurrences} time(s).`,
     });
   }
@@ -293,9 +293,9 @@ function runCli() {
   if (args.includes("--help") || args.includes("-h")) {
     console.log(`Usage: node tool/design/check_tab_root_scroll_contracts.mjs [--check|--json]
 
-Checks every StatefulShellBranch against the versioned root-scroll owner
-manifest, verifies semantic terminal clearance, and rejects raw empty/error
-SliverFillRemaining composition in presentation code.`);
+Checks every StatefulShellBranch against the versioned screen-composition
+manifest, verifies semantic body and terminal ownership, and rejects raw
+empty/error SliverFillRemaining composition in presentation code.`);
     return;
   }
 

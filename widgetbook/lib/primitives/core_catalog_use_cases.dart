@@ -3581,10 +3581,7 @@ Widget catchCelebrationScreenCatalogStates(BuildContext context) {
         label: 'paper confirmation',
         child: _PhoneFrame(
           height: WidgetbookPreviewLayout.paperCelebrationViewportHeight,
-          child: CatchCelebrationScreen(
-            kind: CelebrationMomentKind.eventCreated,
-            playEffects: false,
-            appearance: CatchCelebrationAppearance.paper,
+          child: PaperCelebrationScaffold(
             showCloseButton: false,
             icon: CatchIcons.verifiedRounded,
             eyebrow: 'Event created',
@@ -3645,27 +3642,22 @@ Widget paperCelebrationScaffoldCatalogStates(BuildContext context) {
         child: _PhoneFrame(
           height: WidgetbookPreviewLayout.paperScaffoldViewportHeight,
           child: PaperCelebrationScaffold(
-            screen: CatchCelebrationScreen(
-              kind: CelebrationMomentKind.eventCreated,
-              playEffects: false,
-              appearance: CatchCelebrationAppearance.paper,
-              showCloseButton: false,
-              icon: CatchIcons.verifiedRounded,
-              eyebrow: 'Event created',
-              title: 'Your event is live.',
-              message:
-                  'Sundowner 5K, Bandra seafront is now listed on Sunday sea-face crew.',
-              details: _celebrationDetails,
-              note:
-                  'Bookings, waitlist, and attendance are tracked from Manage event.',
-              primaryAction: CelebrationAction(
-                label: 'Manage event',
-                onPressed: _noop,
-              ),
-              secondaryAction: CelebrationAction(
-                label: 'Back to club',
-                onPressed: _noop,
-              ),
+            showCloseButton: false,
+            icon: CatchIcons.verifiedRounded,
+            eyebrow: 'Event created',
+            title: 'Your event is live.',
+            message:
+                'Sundowner 5K, Bandra seafront is now listed on Sunday sea-face crew.',
+            details: _celebrationDetails,
+            note:
+                'Bookings, waitlist, and attendance are tracked from Manage event.',
+            primaryAction: CelebrationAction(
+              label: 'Manage event',
+              onPressed: _noop,
+            ),
+            secondaryAction: CelebrationAction(
+              label: 'Back to club',
+              onPressed: _noop,
             ),
           ),
         ),

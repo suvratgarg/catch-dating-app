@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -311,17 +312,15 @@ class CatchErrorScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CatchScreenScaffold.standalone(
       backgroundColor: backgroundColor ?? CatchTokens.of(context).bg,
-      body: SafeArea(
-        child: CatchErrorBody(
-          title: title,
-          message: message,
-          icon: icon,
-          onRetry: onRetry,
-          retryLabel: retryLabel,
-          secondaryAction: secondaryAction,
-        ),
+      body: CatchErrorBody(
+        title: title,
+        message: message,
+        icon: icon,
+        onRetry: onRetry,
+        retryLabel: retryLabel,
+        secondaryAction: secondaryAction,
       ),
     );
   }
@@ -356,17 +355,15 @@ class _LocalizedCatchErrorScaffold extends CatchErrorScaffold {
       icon: iconOverride,
       secondaryAction: secondaryActionOverride,
     );
-    return Scaffold(
+    return CatchScreenScaffold.standalone(
       backgroundColor: CatchTokens.of(context).bg,
-      body: SafeArea(
-        child: CatchErrorBody(
-          title: spec.title,
-          message: spec.message,
-          icon: spec.icon,
-          onRetry: spec.onRetry,
-          retryLabel: spec.retryLabel,
-          secondaryAction: spec.secondaryAction,
-        ),
+      body: CatchErrorBody(
+        title: spec.title,
+        message: spec.message,
+        icon: spec.icon,
+        onRetry: spec.onRetry,
+        retryLabel: spec.retryLabel,
+        secondaryAction: spec.secondaryAction,
       ),
     );
   }

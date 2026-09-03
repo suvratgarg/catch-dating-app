@@ -10052,12 +10052,6 @@ abstract class AppLocalizations {
   /// **'Cancellation policy'**
   String get hostsHostClubProfileTitleCancellationPolicy;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (kicker).
-  ///
-  /// In en, this message translates to:
-  /// **'HOST ORGANIZERS'**
-  String get hostsHostClubsScaffoldKickerHostClubs;
-
   /// Accessibility label for the Host Clubs tabbed workspace.
   ///
   /// In en, this message translates to:
@@ -10105,12 +10099,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create organizer'**
   String get hostsHostClubsScaffoldLabelCreateClub;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Organizers'**
-  String get hostsHostClubsScreenTitleClubs;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
   ///
@@ -10245,12 +10233,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create organizer'**
   String get hostsHostEventsScaffoldLabelCreateClub;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_operations_home_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Host events'**
-  String get hostsHostOperationsHomeScreenTitleHostEvents;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (label).
   ///

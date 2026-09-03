@@ -8,6 +8,7 @@ import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 const routerPath = fromRepo("lib/routing/go_router.dart");
 const routeContractPath = fromRepo("lib/routing/route_contract.dart");
 const inventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
+const productionDartRoots = ["lib", "apps/consumer/lib", "apps/host/lib"];
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
 const isCliEntrypoint =
@@ -90,9 +91,10 @@ function buildInventory() {
   const runtimeRoutesById = new Map(
     runtimeRoutes.map((route) => [route.id, route])
   );
+  const imperativePageRoutes = extractImperativePageRouteInventory();
 
   return {
-    version: 1,
+    version: 4,
     generatedBy: "tool/ui_capture/check_route_inventory.mjs",
     source: {
       path: "lib/routing/route_contract.dart",
@@ -108,6 +110,10 @@ function buildInventory() {
       runtimeRouteCount: runtimeRoutes.length,
       routeHelperCount: routeGraph.routeHelperNames.length,
       routeHelpers: routeGraph.routeHelperNames,
+      imperativePageRouteCount: imperativePageRoutes.length,
+      imperativePageTargetCount: new Set(
+        imperativePageRoutes.map((route) => route.presentationTarget),
+      ).size,
     },
     routes: routes.map((route) => {
       const runtimeRoute = runtimeRoutesById.get(route.id) ?? null;
@@ -116,20 +122,147 @@ function buildInventory() {
         runtimePath: runtimeRoute?.runtimePath ?? null,
         runtimeParentId: runtimeRoute?.parentId ?? null,
         runtimePathExpression: runtimeRoute?.pathExpression ?? null,
+        renderKind: runtimeRoute?.renderKind ?? null,
+        presentationExpression:
+          runtimeRoute?.presentationExpression ?? null,
+        presentationTarget: runtimeRoute?.presentationTarget ?? null,
         runtimePathMatchesEnum: runtimeRoute?.runtimePath === route.path,
         referencedByGoRouter: routeReferenceIds.has(route.id),
       };
     }),
+    imperativePageRoutes,
     goRouterRouteReferences: routeReferences,
   };
 }
 
-function extractRuntimeRouteGraph(source, goRouterBlock) {
+function extractImperativePageRouteInventory() {
+  const entries = [];
+  for (const root of productionDartRoots) {
+    const absoluteRoot = fromRepo(root);
+    if (!fs.existsSync(absoluteRoot)) continue;
+    for (const absolutePath of dartFilesUnder(absoluteRoot)) {
+      const relativePath = relativeToRepo(absolutePath);
+      const source = fs.readFileSync(absolutePath, "utf8");
+      validateRouteSourceForInventory(source, relativePath);
+      const routes = extractImperativePageRoutesFromSource(source, relativePath);
+      entries.push(...routes);
+    }
+  }
+  return entries.sort((a, b) =>
+    a.sourcePath.localeCompare(b.sourcePath) || a.ordinal - b.ordinal
+  );
+}
+
+export function extractImperativePageRoutesFromSource(source, sourcePath) {
+  for (const unsupportedType of ["CupertinoPageRoute", "PageRouteBuilder"]) {
+    const constructions = extractCallBlocks(source, unsupportedType);
+    if (constructions.length > 0) {
+      throw new Error(
+        `${sourcePath}:${lineNumberAt(source, constructions[0].labelIndex)} ${unsupportedType} is a full-screen PageRoute that the generated imperative route inventory does not support. Use MaterialPageRoute or extend the inventory contract first.`,
+      );
+    }
+  }
+  return extractCallBlocks(source, "MaterialPageRoute").map((block, index) => {
+    const builderExpression = extractTopLevelNamedArgumentExpression(
+      block.body,
+      "builder",
+    );
+    const presentationExpression = normalizePresentationExpression(
+      builderExpression,
+    );
+    const presentationTarget = imperativePagePresentationTarget(
+      builderExpression,
+    );
+    if (!presentationExpression || !presentationTarget) {
+      throw new Error(
+        `${sourcePath}:${lineNumberAt(source, block.labelIndex)} MaterialPageRoute must expose one deterministic full-screen builder target named *Screen, *Dialog, or *Page.`,
+      );
+    }
+    const ordinal = index + 1;
+    return {
+      siteId: `material-page:${sourcePath}:${ordinal}`,
+      sourcePath,
+      line: lineNumberAt(source, block.labelIndex),
+      ordinal,
+      presentationExpression,
+      presentationTarget,
+      fullscreenDialogExpression: normalizePresentationExpression(
+        extractTopLevelNamedArgumentExpression(block.body, "fullscreenDialog"),
+      ) || null,
+    };
+  });
+}
+
+export function validateRouteSourceForInventory(source, sourcePath) {
+  const routeAlias = source.match(
+    /\btypedef\s+[A-Za-z_$][A-Za-z0-9_$]*(?:\s*<[^;=>]+>)?\s*=\s*(?:(?:[A-Za-z_$][A-Za-z0-9_$]*)\.)?(GoRoute|MaterialPageRoute|CupertinoPageRoute|PageRouteBuilder)\b/u,
+  );
+  if (routeAlias) {
+    throw new Error(
+      `${sourcePath}:${lineNumberAt(source, routeAlias.index ?? 0)} route constructor typedefs are not inventory-safe (${routeAlias[1]}). Use the canonical constructor name so the generated route inventory cannot omit the site.`,
+    );
+  }
+
+  if (sourcePath !== "lib/routing/go_router.dart") {
+    const goRoutes = extractCallBlocks(source, "GoRoute");
+    if (goRoutes.length > 0) {
+      throw new Error(
+        `${sourcePath}:${lineNumberAt(source, goRoutes[0].labelIndex)} GoRoute construction is outside lib/routing/go_router.dart. Route definitions must remain in the canonical route graph so inventory generation cannot omit imported routes.`,
+      );
+    }
+  }
+}
+
+export function imperativePagePresentationTarget(expression) {
+  const directTarget = routePresentationTarget(expression);
+  if (/^(?:[A-Za-z_$][A-Za-z0-9_$]*\.)*[A-Za-z0-9_$]*(?:Screen|Dialog|Page)$/u.test(
+    directTarget ?? "",
+  )) {
+    return directTarget;
+  }
+  const candidates = [
+    ...new Set(
+      [...(expression ?? "").matchAll(
+        /\b([A-Za-z_$][A-Za-z0-9_$]*(?:Screen|Dialog|Page))\s*(?:<[^>{}()]*>)?\s*\(/gu,
+      )].map((match) => match[1]),
+    ),
+  ];
+  return candidates.length === 1 ? candidates[0] : null;
+}
+
+function dartFilesUnder(root) {
+  const files = [];
+  const queue = [root];
+  while (queue.length > 0) {
+    const directory = queue.pop();
+    for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+      const absolutePath = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        queue.push(absolutePath);
+      } else if (
+        entry.isFile() &&
+        entry.name.endsWith(".dart") &&
+        !entry.name.endsWith(".g.dart") &&
+        !entry.name.endsWith(".freezed.dart")
+      ) {
+        files.push(absolutePath);
+      }
+    }
+  }
+  return files.sort();
+}
+
+function lineNumberAt(source, offset) {
+  return source.slice(0, offset).split("\n").length;
+}
+
+export function extractRuntimeRouteGraph(source, goRouterBlock) {
   const routeListBlock = extractTopLevelNamedList(goRouterBlock.body, "routes");
   const routeHelperNames = [];
   const routeHelperBlocks = [];
   const routeFactoryBlocksByName = new Map();
   const routeFactoryMisses = new Set();
+  const spreadReferences = extractRouteSpreadReferences(routeListBlock.text);
   const queue = extractRouteHelperCalls(routeListBlock.text);
 
   for (let index = 0; index < queue.length; index += 1) {
@@ -163,10 +296,113 @@ function extractRuntimeRouteGraph(source, goRouterBlock) {
     }
   }
 
+  for (const [helperName, helperBlock] of routeFactoryBlocksByName) {
+    const callsResolvedHelper = extractRouteHelperCalls(helperBlock.text).some(
+      (nestedHelperName) =>
+        nestedHelperName !== helperName &&
+        routeFactoryBlocksByName.has(nestedHelperName),
+    );
+    if (!containsRouteConstructor(helperBlock.text) && !callsResolvedHelper) {
+      throw new Error(
+        `Typed route helper \`${helperName}\` does not construct a supported route or delegate to another locally resolved route helper. Imported/prebuilt route values are not inventory-safe.`,
+      );
+    }
+  }
+
+  for (const reference of spreadReferences) {
+    if (!reference.isCall) {
+      throw new Error(
+        `GoRouter routes contains an imported or prebuilt spread collection \`${reference.name}\`. Compose routes through a locally declared, typed route helper so inventory generation can inspect it.`,
+      );
+    }
+    if (routeFactoryMisses.has(reference.name)) {
+      throw new Error(
+        `GoRouter routes calls spread helper \`${reference.name}\`, but no locally declared typed route factory could be resolved. Imported route helpers are not inventory-safe.`,
+      );
+    }
+  }
+
   return {
     text: [routeListBlock.text, ...routeHelperBlocks].join("\n"),
     routeHelperNames,
   };
+}
+
+function containsRouteConstructor(source) {
+  return /\b(?:GoRoute|ShellRoute|StatefulShellRoute|StatefulShellBranch)\s*(?:\.\s*[A-Za-z_$][A-Za-z0-9_$]*)?\s*(?:<[^>(){}]+>)?\s*\(/u.test(
+    source,
+  );
+}
+
+function extractRouteSpreadReferences(source) {
+  const references = [];
+  let braceDepth = 0;
+  let quote = null;
+  let escaped = false;
+  let lineComment = false;
+  let blockComment = false;
+
+  for (let index = 0; index < source.length; index += 1) {
+    const char = source[index];
+    const next = source[index + 1] ?? "";
+    if (lineComment) {
+      if (char === "\n") lineComment = false;
+      continue;
+    }
+    if (blockComment) {
+      if (char === "*" && next === "/") {
+        blockComment = false;
+        index += 1;
+      }
+      continue;
+    }
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === quote) {
+        quote = null;
+      }
+      continue;
+    }
+    if (char === "/" && next === "/") {
+      lineComment = true;
+      index += 1;
+      continue;
+    }
+    if (char === "/" && next === "*") {
+      blockComment = true;
+      index += 1;
+      continue;
+    }
+    if (char === "'" || char === '"') {
+      quote = char;
+      continue;
+    }
+    if (char === "{") {
+      braceDepth += 1;
+      continue;
+    }
+    if (char === "}") {
+      braceDepth -= 1;
+      continue;
+    }
+    if (braceDepth !== 0 || !source.startsWith("...", index)) continue;
+
+    let cursor = firstNonWhitespaceIndex(source, index + 3);
+    const match = source.slice(cursor).match(
+      /^([A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*)/u,
+    );
+    if (!match) continue;
+    const name = match[1];
+    cursor = firstNonWhitespaceIndex(source, cursor + name.length);
+    references.push({
+      name: name.split(".").at(-1),
+      isCall: source[cursor] === "(",
+    });
+  }
+  return references;
 }
 
 function extractTopLevelNamedList(source, name) {
@@ -252,6 +488,13 @@ function extractRouteFactoryBlock(source, functionName) {
     match.signatureStart
   );
   const bodyStart = firstNonWhitespaceIndex(source, signature.closeIndex + 1);
+  if (source.startsWith("=>", bodyStart)) {
+    return extractArrowRouteFactoryExpression(
+      source,
+      functionName,
+      bodyStart + 2,
+    );
+  }
   if (source[bodyStart] !== "{") return null;
 
   return extractBalancedBlock(
@@ -261,6 +504,64 @@ function extractRouteFactoryBlock(source, functionName) {
     "}",
     match.signatureStart
   );
+}
+
+function extractArrowRouteFactoryExpression(source, functionName, startIndex) {
+  const expressionStart = firstNonWhitespaceIndex(source, startIndex);
+  const opening = source[expressionStart];
+  if (opening === "[") {
+    return extractBalancedBlock(
+      source,
+      functionName,
+      "[",
+      "]",
+      expressionStart,
+    );
+  }
+
+  let parenDepth = 0;
+  let bracketDepth = 0;
+  let braceDepth = 0;
+  let quote = null;
+  let escaped = false;
+  for (let index = expressionStart; index < source.length; index += 1) {
+    const char = source[index];
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === quote) {
+        quote = null;
+      }
+      continue;
+    }
+    if (char === "'" || char === '"') {
+      quote = char;
+      continue;
+    }
+    if (char === "(") parenDepth += 1;
+    if (char === ")") parenDepth -= 1;
+    if (char === "[") bracketDepth += 1;
+    if (char === "]") bracketDepth -= 1;
+    if (char === "{") braceDepth += 1;
+    if (char === "}") braceDepth -= 1;
+    if (
+      char === ";" &&
+      parenDepth === 0 &&
+      bracketDepth === 0 &&
+      braceDepth === 0
+    ) {
+      return {
+        labelIndex: expressionStart,
+        openIndex: expressionStart,
+        closeIndex: index,
+        body: source.slice(expressionStart, index),
+        text: source.slice(expressionStart, index),
+      };
+    }
+  }
+  throw new Error(`Could not parse arrow-bodied route factory ${functionName}.`);
 }
 
 function findFunctionDefinition(source, functionName) {
@@ -285,7 +586,7 @@ function isRouteFactoryReturnType(returnType) {
   );
 }
 
-function extractRuntimeRouteEntries(routeGraphText, enumRoutes) {
+export function extractRuntimeRouteEntries(routeGraphText, enumRoutes) {
   const enumRoutesById = new Map(enumRoutes.map((route) => [route.id, route]));
   const blocks = extractCallBlocks(routeGraphText, "GoRoute");
   const nodes = blocks.map((block) => {
@@ -309,6 +610,20 @@ function extractRuntimeRouteEntries(routeGraphText, enumRoutes) {
       block.body,
       "pageBuilder"
     );
+    const renderKind = routeRenderKind({
+      redirectExpression,
+      builderExpression,
+      pageBuilderExpression,
+    });
+    const rawPresentationExpression = switchRenderExpression({
+      renderKind,
+      redirectExpression,
+      builderExpression,
+      pageBuilderExpression,
+    });
+    const presentationExpression = normalizePresentationExpression(
+      rawPresentationExpression,
+    );
     const id = normalizeExpression(nameExpression)
       ? parseRouteNameExpression(nameExpression)
       : null;
@@ -328,6 +643,9 @@ function extractRuntimeRouteEntries(routeGraphText, enumRoutes) {
       path,
       pathExpression: normalizeExpression(pathExpression),
       nameExpression: normalizeExpression(nameExpression),
+      renderKind,
+      presentationExpression,
+      presentationTarget: routePresentationTarget(rawPresentationExpression),
       parentId: null,
       runtimePath: null,
     };
@@ -348,7 +666,116 @@ function extractRuntimeRouteEntries(routeGraphText, enumRoutes) {
       parentId: node.parentId,
       pathExpression: node.pathExpression,
       nameExpression: node.nameExpression,
+      renderKind: node.renderKind,
+      presentationExpression: node.presentationExpression,
+      presentationTarget: node.presentationTarget,
     }));
+}
+
+export function routePresentationExpression({
+  renderKind,
+  redirectExpression,
+  builderExpression,
+  pageBuilderExpression,
+}) {
+  return normalizePresentationExpression(switchRenderExpression({
+    renderKind,
+    redirectExpression,
+    builderExpression,
+    pageBuilderExpression,
+  }));
+}
+
+export function normalizePresentationExpression(value) {
+  const source = value ?? "";
+  let result = "";
+  let quote = null;
+  let escaped = false;
+  for (let index = 0; index < source.length; index += 1) {
+    const char = source[index];
+    if (quote) {
+      result += char;
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === quote) {
+        quote = null;
+      }
+      continue;
+    }
+    if (char === "'" || char === '"') {
+      quote = char;
+      result += char;
+      continue;
+    }
+    if (/\s/u.test(char)) {
+      let nextIndex = index + 1;
+      while (nextIndex < source.length && /\s/u.test(source[nextIndex])) {
+        nextIndex += 1;
+      }
+      const previous = result[result.length - 1] ?? "";
+      const next = source[nextIndex] ?? "";
+      if (/[A-Za-z0-9_$]/u.test(previous) && /[A-Za-z0-9_$]/u.test(next)) {
+        result += " ";
+      }
+      index = nextIndex - 1;
+      continue;
+    }
+    if (char === ",") {
+      let nextIndex = index + 1;
+      while (nextIndex < source.length && /\s/u.test(source[nextIndex])) {
+        nextIndex += 1;
+      }
+      if (")]}".includes(source[nextIndex] ?? "")) {
+        continue;
+      }
+    }
+    result += char;
+  }
+  return result;
+}
+
+function switchRenderExpression({
+  renderKind,
+  redirectExpression,
+  builderExpression,
+  pageBuilderExpression,
+}) {
+  if (renderKind === "builder") return builderExpression;
+  if (renderKind === "pageBuilder") return pageBuilderExpression;
+  if (renderKind === "redirect") return redirectExpression;
+  return null;
+}
+
+export function routePresentationTarget(expression) {
+  let normalized = normalizeExpression(expression);
+  if (!normalized) return null;
+
+  const arrowMatch = normalized.match(/^\([^)]*\)\s*=>\s*/u);
+  if (arrowMatch) {
+    normalized = normalized.slice(arrowMatch[0].length).trim();
+  } else if (/^\([^)]*\)\s*\{/u.test(normalized)) {
+    const returnMatch = normalized.match(/\breturn\s+(.+?);?(?:\s*\}|$)/u);
+    if (returnMatch) normalized = returnMatch[1].trim();
+  }
+
+  normalized = normalized.replace(/^(?:const|new)\s+/u, "");
+  const callable = normalized.match(
+    /^([A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*)\s*(?:<[^>{}()]*>)?\s*(?:\(|$)/u,
+  );
+  return callable?.[1] ?? null;
+}
+
+export function routeRenderKind({
+  redirectExpression,
+  builderExpression,
+  pageBuilderExpression,
+}) {
+  if (normalizeExpression(builderExpression)) return "builder";
+  if (normalizeExpression(pageBuilderExpression)) return "pageBuilder";
+  if (normalizeExpression(redirectExpression)) return "redirect";
+  return "missing";
 }
 
 export function isUnnamedRedirectOnly({
@@ -369,8 +796,22 @@ function extractCallBlocks(source, functionName) {
     if (matchIndex === -1) break;
 
     const before = source[matchIndex - 1] ?? "";
-    const after = source[matchIndex + functionName.length] ?? "";
-    if (isIdentifierChar(before) || after !== "(") {
+    let callIndex = matchIndex + functionName.length;
+    if (source[callIndex] === "<") {
+      let angleDepth = 0;
+      for (; callIndex < source.length; callIndex += 1) {
+        if (source[callIndex] === "<") angleDepth += 1;
+        if (source[callIndex] === ">") {
+          angleDepth -= 1;
+          if (angleDepth === 0) {
+            callIndex += 1;
+            break;
+          }
+        }
+      }
+    }
+    callIndex = firstNonWhitespaceIndex(source, callIndex);
+    if (isIdentifierChar(before) || source[callIndex] !== "(") {
       searchIndex = matchIndex + functionName.length;
       continue;
     }
@@ -525,6 +966,21 @@ function validateRuntimeRoutes(enumRoutes, runtimeRoutes) {
     if (runtimeRoute.runtimePath !== enumRoute.path) {
       errors.push(
         `Routes.${runtimeRoute.id} enum path is ${enumRoute.path}, but the composed runtime path is ${runtimeRoute.runtimePath}.`
+      );
+    }
+    if (runtimeRoute.renderKind === "missing") {
+      errors.push(
+        `Routes.${runtimeRoute.id} has no builder, pageBuilder, or redirect presentation.`,
+      );
+    }
+    if (!runtimeRoute.presentationExpression) {
+      errors.push(
+        `Routes.${runtimeRoute.id} has no normalized presentation expression.`,
+      );
+    }
+    if (!runtimeRoute.presentationTarget) {
+      errors.push(
+        `Routes.${runtimeRoute.id} presentation does not expose a deterministic presentation target.`,
       );
     }
   }

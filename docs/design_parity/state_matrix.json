@@ -4769,7 +4769,7 @@
               "id": "uid_missing",
               "kind": "permission",
               "status": "captured",
-              "notes": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry. Signed-out/access capture is registered.",
+              "notes": "Null uid renders the signed-out Host Home route state with Sign in required copy and an auth route retry. Signed-out/access capture is registered.",
               "previewIds": [
                 "hostHomeRouteStates"
               ],
@@ -5791,7 +5791,7 @@
               "id": "uid_missing",
               "kind": "permission",
               "status": "captured",
-              "notes": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry. Host Clubs now has a deterministic signed-out/access capture.",
+              "notes": "Null uid renders CatchSliverErrorState inside HostOrganizerStateScaffold with Sign in required copy and auth route retry, preserving the canonical Organizer title, pinned peer rail, body rhythm, and terminal clearance.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5803,7 +5803,7 @@
               "id": "host_clubs_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "_hostClubsForUserProvider loading renders _HostLoadingScreen with HostRouteLoadingBody, preserving host shell and tab-rail skeleton chrome. Keep loading capture synced with future HostRouteLoadingBody visual edits.",
+              "notes": "Authentication or organizer loading renders HostRouteLoadingBody inside CatchSliverStateViewport while HostOrganizerStateScaffold preserves the canonical Organizer title, pinned peer rail, body rhythm, and terminal clearance.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5815,7 +5815,7 @@
               "id": "host_clubs_error",
               "kind": "error",
               "status": "captured",
-              "notes": "Hosted or owned club stream errors become CatchErrorScaffold.fromError with AppErrorContext.club and retry invalidation. Generic and offline load-error captures are now registered.",
+              "notes": "Authentication and organizer stream errors become CatchSliverErrorState inside HostOrganizerStateScaffold with typed error context and retry owned by CatchAsyncValueView. Generic and offline load-error captures are registered.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5828,7 +5828,7 @@
               "id": "no_host_clubs",
               "kind": "empty",
               "status": "captured",
-              "notes": "No hosted or owned clubs renders HostEmptyActionCard with No host clubs yet copy. Decide whether this route should expose create-club directly or defer to host setup routes.",
+              "notes": "No hosted or owned clubs renders CatchSliverEmptyState inside HostOrganizerStateScaffold with the direct create-organizer action and the same canonical tabbed route geometry.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],

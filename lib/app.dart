@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
@@ -217,49 +218,47 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
     final diagnostic = forceUpdateDevelopmentDiagnostic(error);
     final l10n = context.l10n;
 
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(CatchSpacing.s6),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Icon(CatchIcons.cloudOffOutlined, size: 48),
-                  gapH24,
-                  Text(
-                    l10n.sharedForceUpdateCheckErrorTitle,
-                    style: textTheme.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
+    return CatchScreenScaffold.standalone(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(CatchSpacing.s6),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Icon(CatchIcons.cloudOffOutlined, size: 48),
+                gapH24,
+                Text(
+                  l10n.sharedForceUpdateCheckErrorTitle,
+                  style: textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
+                gapH12,
+                Text(
+                  l10n.sharedForceUpdateCheckErrorBody,
+                  style: textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+                if (diagnostic != null) ...[
                   gapH12,
                   Text(
-                    l10n.sharedForceUpdateCheckErrorBody,
-                    style: textTheme.bodyMedium,
+                    diagnostic,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                     textAlign: TextAlign.center,
                   ),
-                  if (diagnostic != null) ...[
-                    gapH12,
-                    Text(
-                      diagnostic,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                  gapH24,
-                  CatchButton(
-                    label: l10n.sharedActionTryAgain,
-                    onPressed: onRetry,
-                    icon: Icon(CatchIcons.refresh),
-                    fullWidth: true,
-                  ),
                 ],
-              ),
+                gapH24,
+                CatchButton(
+                  label: l10n.sharedActionTryAgain,
+                  onPressed: onRetry,
+                  icon: Icon(CatchIcons.refresh),
+                  fullWidth: true,
+                ),
+              ],
             ),
           ),
         ),

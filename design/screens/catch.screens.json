@@ -1,13 +1,336 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-08-31",
+  "updated": "2026-09-02",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
     "components": "Reusable primitive and compound contracts remain in design/components/catch.components.json.",
     "runtime": "Flutter source owns app behavior; this registry owns the target screen composition map and drift checks.",
     "workflow": "Add a screen here before migrating it into state-owned section composition."
+  },
+  "layoutContracts": {
+    "screen.event.detail": {
+      "owners": [
+        {"routes": ["eventDetailScreen", "calendarEventDetailScreen", "savedEventDetailScreen", "dashboardEventDetailScreen", "hostAppEventDetailScreen"], "file": "lib/events/presentation/event_detail_screen.dart", "symbol": "_EventDetailScreenState", "family": "media-hero", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"},
+        {"routes": ["eventDetailScreen", "calendarEventDetailScreen", "savedEventDetailScreen", "dashboardEventDetailScreen", "hostAppEventDetailScreen"], "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart", "symbol": "EventDetailLoadingScreen", "family": "media-hero", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+      ],
+      "reason": "Every Event Detail route and loading state uses the registered media-hero workspace owner."
+    },
+    "screen.club.detail": {
+      "owners": [
+        {"routes": ["clubDetailScreen"], "file": "lib/clubs/presentation/detail/club_detail_screen.dart", "symbol": "ClubDetailScreen", "family": "media-hero", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"}
+      ],
+      "reason": "Club Detail owns a collapsing media hero and mixed edge-to-edge content."
+    },
+    "screen.cross_paths.invitation": {
+      "owners": [
+        {"routes": ["crossPathsInvitationScreen"], "file": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart", "symbol": "CrossPathsInvitationScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Cross Paths is a conventional pushed route with canonical route chrome."
+    },
+    "screen.explore.discovery": {
+      "owners": [
+        {"routes": ["exploreScreen"], "file": "lib/explore/presentation/explore_screen.dart", "symbol": "_ExploreScreenState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "full-bleed", "topEdge": "header-owned"},
+        {"routes": ["exploreMapScreen"], "file": "lib/explore/presentation/explore_map_screen.dart", "symbol": "_ExploreMapScreenState", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+      ],
+      "reason": "Explore declares separate canonical list-root and immersive-map owners."
+    },
+    "screen.dashboard.home": {
+      "owners": [
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_home_screen.dart", "symbol": "DashboardHomeScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_loading_screen.dart", "symbol": "DashboardLoadingScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_error_screen.dart", "symbol": "DashboardErrorScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_empty_home_screen.dart", "symbol": "DashboardEmptyHomeScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "full-bleed", "topEdge": "safe-area"}
+      ],
+      "reason": "Dashboard state variants share the root-screen family while declaring their body geometry."
+    },
+    "screen.event_success.companion": {
+      "owners": [
+        {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/event_success_companion_screen.dart", "symbol": "CompanionScaffold", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "route-chrome"},
+        {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart", "symbol": "CompanionStageScaffold", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
+        {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart", "symbol": "CompanionPaperScaffold", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"}
+      ],
+      "reason": "Companion success deliberately switches among registered immersive stage and paper compositions."
+    },
+    "screen.catches.hub": {
+      "redirectTo": "dashboardScreen",
+      "reason": "The historical Catches hub contract is retained for design evidence, while its runtime route redirects to Dashboard and renders no screen."
+    },
+    "screen.catches.event": {
+      "owners": [
+        {"routes": ["swipeEventScreen"], "file": "lib/swipes/presentation/swipe_screen.dart", "symbol": "_SwipeScreenState", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+      ],
+      "reason": "The event deck is an intentional full-bleed immersive route."
+    },
+    "screen.matches.list": {
+      "owners": [
+        {"routes": ["matchesListScreen"], "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart", "symbol": "_ChatsListScreenState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "full-bleed", "topEdge": "safe-area"}
+      ],
+      "reason": "Consumer Chats is a root list using the universal 20-point horizontal gutter."
+    },
+    "screen.matches.chat": {
+      "owners": [
+        {"routes": ["chatScreen"], "file": "lib/chats/presentation/chat_screen.dart", "symbol": "_ChatScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "mixed", "topEdge": "route-chrome"}
+      ],
+      "reason": "A consumer conversation is a pushed route with mixed message-list and composer geometry."
+    },
+    "screen.profile.self": {
+      "owners": [
+        {"routes": ["profileScreen"], "file": "lib/user_profile/presentation/profile_screen.dart", "symbol": "_ProfileScreenState", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "mixed", "topEdge": "safe-area"}
+      ],
+      "reason": "Self Profile is a tabbed root whose page owners declare standard or full-bleed bodies."
+    },
+    "screen.profile.public": {
+      "owners": [
+        {"routes": ["publicProfileScreen"], "file": "lib/public_profile/presentation/public_profile_screen.dart", "symbol": "PublicProfileScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "mixed", "topEdge": "route-chrome"}
+      ],
+      "reason": "Public Profile is a pushed route with canonical chrome and mixed profile sections."
+    },
+    "screen.host.home": {
+      "owners": [
+        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/host_today_screen.dart", "symbol": "_HostTodayScreenState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/host_today_screen.dart", "symbol": "HostTodayOrganizerEmptyState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/widgets/host_today_body.dart", "symbol": "HostTodayBody", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "HostEventsScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "_HostEventsRouteScaffoldState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/widgets/host_events_list.dart", "symbol": "HostEventsClubSection", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"}
+      ],
+      "reason": "Host Today and Events use the same root composition in loading, error, empty, and populated states."
+    },
+    "screen.host.clubs": {
+      "owners": [
+        {"routes": ["hostOrganizerScreen"], "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "HostOrganizerStateScaffold", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostOrganizerScreen"], "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "_HostClubsScaffoldState", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "mixed", "topEdge": "safe-area"},
+        {"routes": ["hostClubEventDefaultsScreen", "hostClubLiveGuideScreen", "hostClubPaymentsScreen"], "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart", "symbol": "HostClubSpokeScaffold", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostClubTeamScreen"], "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "_HostClubTeamScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostClubEventDefaultsScreen", "hostClubLiveGuideScreen", "hostClubPaymentsScreen", "hostClubTeamScreen"], "file": "lib/hosts/presentation/host_operations/host_loading_screen.dart", "symbol": "HostLoadingScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Organizer roots use the tabbed family; club spokes use the pushed-route family."
+    },
+    "screen.host.club.detail": {
+      "owners": [
+        {"routes": ["hostClubDetailScreen"], "file": "lib/clubs/presentation/detail/club_detail_screen.dart", "symbol": "ClubDetailScreen", "family": "media-hero", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"}
+      ],
+      "reason": "The Host club-detail alias reuses the governed Club Detail media-hero owner."
+    },
+    "screen.host.event.create": {
+      "owners": [
+        {"routes": ["hostCreateEventScreen"], "file": "lib/hosts/presentation/event_management/create/create_event_screen.dart", "symbol": "_CreateEventScreenState", "family": "step-flow", "expression": "CatchScreenScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "safe-area"},
+        {"routes": ["hostCreateEventScreen"], "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart", "symbol": "HostCreateEventRouteLoadingScreen", "family": "step-flow", "expression": "CatchScreenScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "safe-area"},
+        {"routes": ["hostCreateEventScreen"], "file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "PaperCelebrationScaffold", "family": "step-flow", "expression": "CatchScreenScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "body-owned"}
+      ],
+      "reason": "Event creation and its loading state share the explicit step-flow owner."
+    },
+    "screen.host.event.manage": {
+      "owners": [
+        {"routes": ["hostAppEventManageScreen", "hostAppAttendanceSheet", "hostAppEventSuccessScreen"], "file": "lib/hosts/presentation/host_event_manage_route_screen.dart", "symbol": "HostEventManageRouteScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostAppEventManageScreen", "hostAppAttendanceSheet", "hostAppEventSuccessScreen"], "file": "lib/hosts/presentation/host_event_manage_screen.dart", "symbol": "_HostEventManageScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "mixed", "topEdge": "route-chrome"},
+        {"routes": ["hostOperatorEventScreen"], "file": "lib/hosts/presentation/host_event_operator_screen.dart", "symbol": "HostEventOperatorScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Host management and operator routes are governed pushed routes across route-state and loaded owners."
+    },
+    "screen.host.customers": {
+      "owners": [
+        {"routes": ["hostAudienceScreen"], "file": "lib/hosts/presentation/host_audience_view.dart", "symbol": "HostAudienceStateScaffold", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostAudienceScreen"], "file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "_HostCustomersScreenState", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostAudienceScreen"], "file": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostAddCustomerScreen"], "file": "lib/hosts/presentation/customers/host_customer_editor.dart", "symbol": "_HostAddCustomerScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostCreateSavedAudienceScreen", "hostSavedAudienceDetailScreen"], "file": "lib/hosts/presentation/customers/host_saved_audience_editor.dart", "symbol": "_HostSavedAudienceEditorFormState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostFormTemplatesScreen"], "file": "lib/hosts/presentation/forms/host_form_templates_screen.dart", "symbol": "_HostFormTemplatesScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostFormResponseDetailScreen"], "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart", "symbol": "_HostFormResponseDetailScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostFormBuilderScreen"], "file": "lib/hosts/presentation/forms/host_form_builder_screen.dart", "symbol": "_HostFormBuilderScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "mixed", "topEdge": "route-chrome"},
+        {"routes": ["hostFormPreviewScreen"], "file": "lib/hosts/presentation/forms/host_form_preview_screen.dart", "symbol": "HostFormPreviewScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostFormShareScreen"], "file": "lib/hosts/presentation/forms/host_form_share_screen.dart", "symbol": "_HostFormShareScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostFormAnalyticsScreen"], "file": "lib/hosts/presentation/forms/host_form_analytics_screen.dart", "symbol": "_HostFormAnalyticsScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostFormAutomationsScreen"], "file": "lib/hosts/presentation/forms/host_form_automations_screen.dart", "symbol": "HostFormAutomationsScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostCustomerDetailScreen"], "file": "lib/hosts/presentation/customers/host_customer_detail_screen.dart", "symbol": "_HostCustomerDetailScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostSavedAudienceDetailScreen"], "file": "lib/hosts/presentation/host_operations/host_loading_screen.dart", "symbol": "HostLoadingScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Audience owns one tabbed root and a complete set of canonical pushed editor, form, and customer routes."
+    },
+    "screen.host.inbox": {
+      "owners": [
+        {"routes": ["hostInboxScreen"], "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart", "symbol": "_HostInboxScreenState", "family": "adaptive-workspace", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
+        {"routes": ["hostInboxScreen"], "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart", "symbol": "_HostInboxScreenState", "family": "adaptive-workspace", "expression": "CatchRootScreenScrollView", "bodyGeometry": "full-bleed", "topEdge": "safe-area"},
+        {"routes": ["hostOrganizerMessagingScreen"], "file": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart", "symbol": "HostMessagingSetupScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Host Inbox declares its compact root-scroll and expanded workspace variants; setup remains a pushed route."
+    },
+    "screen.host.chat": {
+      "owners": [
+        {"routes": ["hostChatScreen"], "file": "lib/chats/presentation/chat_screen.dart", "symbol": "_ChatScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "mixed", "topEdge": "route-chrome"}
+      ],
+      "reason": "Host one-to-one chat reuses the canonical pushed conversation owner."
+    },
+    "screen.start.welcome": {
+      "owners": [
+        {"routes": ["startScreen"], "file": "lib/onboarding/presentation/start_welcome_route_screen.dart", "symbol": "StartWelcomeRouteScreen", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "body-owned"}
+      ],
+      "reason": "A deterministic route adapter gives the intentionally embeddable WelcomePage an explicit standalone surface owner."
+    },
+    "screen.auth.phone_entry": {
+      "owners": [
+        {"routes": ["authScreen"], "file": "lib/auth/presentation/auth_screen.dart", "symbol": "AuthScreen", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "safe-area"},
+        {"routes": ["authScreen"], "file": "lib/auth/presentation/auth_screen.dart", "symbol": "HostAuthFlowFrame", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "safe-area"}
+      ],
+      "reason": "Consumer and Host auth frames share the explicit standalone family."
+    },
+    "screen.onboarding.flow": {
+      "owners": [
+        {"routes": ["onboardingScreen"], "file": "lib/onboarding/presentation/onboarding_screen.dart", "symbol": "_OnboardingScreenState", "family": "step-flow", "expression": "CatchScreenScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "body-owned"}
+      ],
+      "reason": "Onboarding is a route-level multi-step flow with its own step chrome."
+    },
+    "screen.calendar.home": {
+      "owners": [
+        {"routes": ["calendarScreen"], "file": "lib/events/presentation/calendar/calendar_screen.dart", "symbol": "_CalendarScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "mixed", "topEdge": "route-chrome"}
+      ],
+      "reason": "Calendar is a pushed agenda route with canonical chrome and mixed sliver geometry."
+    },
+    "screen.saved_events.list": {
+      "owners": [
+        {"routes": ["savedEventsScreen"], "file": "lib/events/presentation/saved_events_screen.dart", "symbol": "SavedEventsScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Saved Events is a conventional pushed list route."
+    },
+    "screen.filters.preferences": {
+      "owners": [
+        {"routes": ["filtersScreen"], "file": "lib/swipes/presentation/filters_screen.dart", "symbol": "_FiltersScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Catches filters are a conventional pushed settings route."
+    },
+    "screen.event.recap": {
+      "owners": [
+        {"routes": ["eventRecapScreen"], "file": "lib/swipes/presentation/event_recap_screen.dart", "symbol": "_EventRecapScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Event Recap is a pushed route with canonical route chrome."
+    },
+    "screen.host.club.create": {
+      "owners": [
+        {"routes": ["hostCreateClubScreen"], "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart", "symbol": "_CreateClubScreenState", "family": "step-flow", "expression": "CatchScreenScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "safe-area"}
+      ],
+      "reason": "Club creation and loading share the explicit step-flow family."
+    },
+    "screen.host.event.edit": {
+      "owners": [
+        {"routes": ["hostAppEditEventScreen"], "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart", "symbol": "EditHostedEventRouteScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostAppEditEventScreen"], "file": "lib/hosts/presentation/edit_hosted_event_screen.dart", "symbol": "_EditHostedEventScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Edit Event keeps route-state and loaded editing on canonical pushed-route owners."
+    },
+    "screen.event.location_map": {
+      "owners": [
+        {"routes": ["eventLocationMapScreen"], "file": "lib/events/presentation/event_location_map_screen.dart", "symbol": "ChromelessMapScaffold", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+      ],
+      "reason": "The exact-location map is an intentional chromeless immersive surface."
+    },
+    "screen.notifications.list": {
+      "owners": [
+        {"routes": ["notificationsScreen"], "file": "lib/dashboard/presentation/activity_screen.dart", "symbol": "_ActivityScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Activity is a canonical pushed route rather than a root-shell exception."
+    },
+    "screen.reviews.history": {
+      "owners": [
+        {"routes": ["reviewsHistoryScreen"], "file": "lib/reviews/presentation/reviews_history_screen.dart", "symbol": "ReviewsHistoryScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Review History is a conventional pushed list route."
+    },
+    "screen.settings.account": {
+      "owners": [
+        {"routes": ["settingsScreen"], "file": "lib/safety/presentation/settings_screen.dart", "symbol": "_SettingsScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Account Settings is a conventional pushed settings route."
+    },
+    "screen.launch_access.application": {
+      "owners": [
+        {"routes": ["launchAccessScreen"], "file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "LaunchAccessApplicationScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Launch Access is a canonical pushed application route."
+    },
+    "screen.payments.history": {
+      "owners": [
+        {"routes": ["paymentHistoryScreen"], "file": "lib/payments/presentation/payment_history_screen.dart", "symbol": "PaymentHistoryScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Payment History is a canonical pushed list route."
+    },
+    "screen.host.applications": {
+      "owners": [
+        {"routes": ["hostApplicationsScreen"], "file": "lib/hosts/presentation/applications/host_applications_screen.dart", "symbol": "_HostApplicationsScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostApplicationDetailScreen"], "file": "lib/hosts/presentation/applications/host_application_detail_screen.dart", "symbol": "_HostApplicationDetailScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Host application list and detail are independent canonical pushed routes."
+    },
+    "screen.host.event.rehearsal": {
+      "owners": [
+        {"routes": ["hostEventRehearsalStartScreen"], "file": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart", "symbol": "_HostEventRehearsalStartScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostEventRehearsalScreen"], "file": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart", "symbol": "_HostEventRehearsalScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "mixed", "topEdge": "route-chrome"}
+      ],
+      "reason": "Rehearsal setup and live rehearsal are canonical pushed routes with shared title treatment."
+    }
+  },
+  "layoutOnlyRoutes": {
+    "loadingScreen": {
+      "owners": [
+        {"routes": ["loadingScreen"], "file": "lib/routing/go_router.dart", "symbol": "_RouteLoadingScreen", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "standard", "topEdge": "safe-area"}
+      ],
+      "reason": "The transient startup route is excluded from design parity but still has typed layout ownership."
+    },
+    "paymentConfirmationScreen": {
+      "owners": [
+        {"routes": ["paymentConfirmationScreen"], "file": "lib/core/widgets/catch_error_state.dart", "symbol": "CatchErrorScaffold", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "body-owned"},
+        {"routes": ["paymentConfirmationScreen"], "file": "lib/core/widgets/catch_error_state.dart", "symbol": "_LocalizedCatchErrorScaffold", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "body-owned"},
+        {"routes": ["paymentConfirmationScreen"], "file": "lib/payments/presentation/payment_confirmation_loading_screen.dart", "symbol": "PaymentConfirmationLoadingScreen", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["paymentConfirmationScreen"], "file": "lib/payments/presentation/payment_confirmation_screen.dart", "symbol": "PaymentPendingCheckoutBody", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
+        {"routes": ["paymentConfirmationScreen"], "file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+      ],
+      "reason": "Payment confirmation is a route coordinator whose loading, localized error, pending checkout, and completed celebration terminals each have deterministic standalone ownership."
+    }
+  },
+  "imperativePageContracts": {
+    "MatchCelebrationDialog": {
+      "owners": [
+        {"file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+      ],
+      "reason": "The root-navigator match celebration delegates to the canonical standalone celebration surface."
+    },
+    "EventJoinedCelebrationScreen": {
+      "owners": [
+        {"file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+      ],
+      "reason": "The no-payment join completion pushes the canonical standalone celebration surface."
+    },
+    "EventCheckInCelebrationScreen": {
+      "owners": [
+        {"file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+      ],
+      "reason": "The check-in fallback pushes the canonical standalone celebration surface."
+    },
+    "ProfilePhotoEditorScreen": {
+      "owners": [
+        {"file": "lib/image_uploads/shared/profile_photo_editor_screen.dart", "symbol": "_ProfilePhotoEditorScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "The profile-photo editor is an imperative pushed utility route with canonical compact chrome."
+    },
+    "OrderedPhotoManagerScreen": {
+      "owners": [
+        {"file": "lib/core/widgets/ordered_photo_picker.dart", "symbol": "_OrderedPhotoManagerScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
+      ],
+      "reason": "Both profile and Host media launch sites share one canonical pushed photo-manager surface."
+    },
+    "LocationPickerScreen": {
+      "owners": [
+        {"file": "lib/events/presentation/location_picker_screen.dart", "symbol": "_LocationPickerScreenState", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+      ],
+      "reason": "Every create/edit location launch site shares the full-bleed map workspace owner."
+    },
+    "RoutePathBuilderScreen": {
+      "owners": [
+        {"file": "lib/hosts/presentation/event_management/widgets/route_path_builder_screen.dart", "symbol": "_RoutePathBuilderScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "mixed", "topEdge": "route-chrome"}
+      ],
+      "reason": "The route-path map editor is a pushed route with canonical compact chrome and a full-bleed map body."
+    }
   },
   "screens": [
     {
@@ -4637,7 +4960,7 @@
         {
           "id": "swipeHubScreen",
           "path": "/catches",
-          "role": "primary"
+          "role": "alias"
         }
       ],
       "source": {
@@ -4918,10 +5241,10 @@
             ],
             "flutter": {
               "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-              "symbol": "CatchesHubHeader"
+              "symbol": "SwipeHubScreen"
             },
-            "currentOwner": "SwipeHubScreen",
-            "targetOwner": "provider-free Catches hub header section",
+            "currentOwner": "CatchScreenHeaderTitle.block",
+            "targetOwner": "CatchScreenHeaderTitle.block",
             "dependencies": [
               "catch.surface"
             ],
@@ -4930,9 +5253,9 @@
               "text_scale_2",
               "light_dark"
             ],
-            "migration": "CatchesHubHeader is now a public provider-free section with Widgetbook coverage for default header chrome; future passes can add long-title, text-scale, and theme captures once canonical references are exported.",
+            "migration": "The retained historical screen source delegates root title typography and geometry to CatchScreenHeaderTitle.block; runtime /catches redirects to Dashboard.",
             "previewIds": [
-              "CatchesHubHeader/Header states"
+              "SwipeHubScreen/Screen states"
             ]
           },
           {
@@ -7205,11 +7528,11 @@
           "nestedScaffoldAllowed": false,
           "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
         },
-        "topBar": {
-          "role": "inline",
-          "expression": "CatchScreenHeaderTitle",
-          "owner": "CatchScreenHeaderTitle",
-          "reason": "The route uses canonical inline screen identity below shell chrome."
+      "topBar": {
+        "role": "screen",
+        "expression": "CatchTabbedScreenScaffold",
+        "owner": "CatchTabbedScreenScaffold",
+        "reason": "The tabbed root owns the canonical profile title and peer-tab chrome."
         },
         "statePolicy": {
           "requiredStates": [
@@ -7419,7 +7742,7 @@
           "id": "profile_unavailable",
           "kind": "empty",
           "status": "captured",
-          "source": "AsyncData(null) renders the SelfProfileTabBody unavailable branch with CatchEmptyState and onboarding/sign-in recovery copy.",
+          "source": "AsyncData(null) renders ProfileScreen's typed unavailable tab-page branch with CatchEmptyState and onboarding/sign-in recovery copy.",
           "previewIds": [
             "ProfileScreen/Self route states"
           ],
@@ -7883,7 +8206,7 @@
             ],
             "flutter": {
               "file": "lib/user_profile/presentation/profile_screen.dart",
-              "symbol": "SelfProfileTabBody"
+              "symbol": "ProfileScreen"
             },
             "currentOwner": "ProfileScreen",
             "targetOwner": "provider-free empty/access section",
@@ -8732,7 +9055,7 @@
           "id": "uid_missing",
           "kind": "permission",
           "status": "captured",
-          "source": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry.",
+          "source": "Null uid renders the signed-out Host Home route state with Sign in required copy and an auth route retry.",
           "nextAction": "Keep signed-out/access capture synced with host auth copy.",
           "previewIds": [
             "hostHomeRouteStates"
@@ -9719,8 +10042,8 @@
           "id": "uid_missing",
           "kind": "permission",
           "status": "captured",
-          "source": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry.",
-          "nextAction": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry. Host Clubs now has a deterministic signed-out/access capture.",
+          "source": "Null uid renders CatchSliverErrorState inside the canonical Organizer tabbed state scaffold with Sign in required copy and auth route retry.",
+          "nextAction": "Keep the deterministic signed-out/access capture synced with the canonical Organizer title and pinned peer rail.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -9732,8 +10055,8 @@
           "id": "host_clubs_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "_hostClubsForUserProvider loading renders _HostLoadingScreen with HostRouteLoadingBody, preserving host shell and tab-rail skeleton chrome.",
-          "nextAction": "Keep loading capture synced with any future HostRouteLoadingBody visual edits.",
+          "source": "Authentication or organizer loading renders HostRouteLoadingBody inside CatchSliverStateViewport while HostOrganizerStateScaffold preserves the canonical Organizer title, pinned peer rail, body rhythm, and terminal clearance.",
+          "nextAction": "Keep loading capture synced with HostRouteLoadingBody and Organizer tabbed-state geometry.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -9745,8 +10068,8 @@
           "id": "host_clubs_error",
           "kind": "error",
           "status": "captured",
-          "source": "Hosted or owned club stream errors become CatchErrorScaffold.fromError with AppErrorContext.club and retry invalidation.",
-          "nextAction": "Keep generic and offline load-error captures synced with AppErrorMessage copy.",
+          "source": "Authentication and organizer stream errors become CatchSliverErrorState inside HostOrganizerStateScaffold with typed error context and retry invalidation.",
+          "nextAction": "Keep generic and offline load-error captures synced with AppErrorMessage copy and Organizer tabbed-state geometry.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -9759,8 +10082,8 @@
           "id": "no_host_clubs",
           "kind": "empty",
           "status": "captured",
-          "source": "No hosted or owned clubs renders HostEmptyActionCard with No host clubs yet copy.",
-          "nextAction": "Decide whether this route should expose create-club directly or defer to host setup routes.",
+          "source": "No hosted or owned clubs renders CatchSliverEmptyState inside HostOrganizerStateScaffold with the direct create-organizer action.",
+          "nextAction": "Keep the empty capture synced with the canonical Organizer title, pinned peer rail, and create-organizer action.",
           "previewIds": [
             "HostClubsScreen/Route states"
           ],
@@ -10099,7 +10422,7 @@
           "id": "preview_tab",
           "kind": "populated",
           "status": "captured",
-          "source": "_HostClubPreviewPane renders club description and receives a typed public-preview route callback from _HostClubsScaffold.",
+          "source": "HostClubsScaffold composes ClubDetailReadOnlyPreviewSliver, the same read-only public-profile projection used by the club-detail surface.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -10421,7 +10744,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostClubsScreen resolves auth and host club streams, _HostClubsScaffold owns selected-club and tab state, HostClubEditTab composes Media, Identity, Contact, and Club settings, and four top-level spoke screens own Event defaults, Live event guide, Host team, and owner-only Payments. HostClubDefaultsSaver serializes optimistic defaults mutations.",
+        "currentLayout": "HostClubsScreen resolves auth and host club streams, HostClubsScaffold owns selected-club and tab state, HostClubEditTab composes Media, Identity, Contact, and Club settings, and four top-level spoke screens own Event defaults, Live event guide, Host team, and owner-only Payments. HostClubDefaultsSaver serializes optimistic defaults mutations.",
         "targetLayout": "Keep Host Clubs as a thin route adapter over provider-free tab and spoke sections, with repository writes owned by controllers and one canonical CatchSection/CatchField composition per concern.",
         "sections": [
           {
@@ -10451,7 +10774,7 @@
               "owner_role",
               "cohost_role"
             ],
-            "migration": "HostClubsScreenState now owns selected-club, tab, and owner/co-host role capability display state; HostClubInsightsState owns analytics query state; _HostClubsScaffold owns public-preview route callbacks. Continue extracting retry intents, inline edit patches, and mutation state into testable adapters.",
+            "migration": "HostClubsScreenState owns selected-club, tab, and owner/co-host role capability display state; HostClubInsightsState owns analytics query state; HostClubsScaffold owns the embedded public-preview composition. Continue extracting retry intents, inline edit patches, and mutation state into testable adapters.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -10507,7 +10830,9 @@
               "long_club_name",
               "owner",
               "host_team",
-              "hidden_in_organizer_mode"
+              "loading",
+              "error",
+              "empty"
             ],
             "migration": "HostClubsScreenState owns the selected club and picker visibility while HostClubsScaffold composes the shared CatchTabbedScreenScaffold with settings and club-switcher actions.",
             "previewIds": [
@@ -10526,20 +10851,19 @@
               "file": "lib/core/widgets/catch_tab_rail.dart",
               "symbol": "CatchTabRail"
             },
-            "currentOwner": "_HostClubsScaffold",
+            "currentOwner": "HostClubsScaffold",
             "targetOwner": "shared CatchTabRail",
             "dependencies": [
               "catch.tab_rail"
             ],
             "states": [
-              "organizer",
               "edit",
               "insights",
               "preview",
               "long_labels",
               "text_scale"
             ],
-            "migration": "Keep tab selection as screen state and route visual review through HostClubsScreen states plus the shared CatchTabRail primitive. The Organizer tab is the default route state and does not render the AppBar tab rail until the host switches into another tab.",
+            "migration": "Keep Edit as the default route tab and selection as screen state. Loaded and route-level loading, auth, error, and empty branches retain the same pinned Edit, Insights, and Preview rail through CatchTabbedScreenScaffold and the shared CatchTabRail primitive.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -10557,7 +10881,7 @@
               "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
               "symbol": "HostClubEditTab"
             },
-            "currentOwner": "_HostClubsScaffold",
+            "currentOwner": "HostClubsScaffold",
             "targetOwner": "HostClubEditTab",
             "dependencies": [
               "catch.badge",
@@ -10729,7 +11053,7 @@
               "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
               "symbol": "HostClubInsightsPane"
             },
-            "currentOwner": "_HostClubsScaffold",
+            "currentOwner": "HostClubsScaffold",
             "targetOwner": "provider-free analytics section plus HostAnalytics controller adapter",
             "dependencies": [
               "catch.badge",
@@ -10793,14 +11117,14 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostEmptyActionCard"
+              "CatchSliverEmptyState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_empty_action_card.dart",
-              "symbol": "HostEmptyActionCard"
+              "file": "lib/core/widgets/catch_empty_state.dart",
+              "symbol": "CatchSliverEmptyState"
             },
-            "currentOwner": "_HostClubsScaffold + HostEmptyActionCard",
-            "targetOwner": "shared host empty action card",
+            "currentOwner": "HostOrganizerStateScaffold + CatchSliverEmptyState",
+            "targetOwner": "canonical Organizer state shell plus shared sliver empty state",
             "dependencies": [
               "catch.button",
               "catch.surface"
@@ -10809,7 +11133,7 @@
               "no_host_clubs",
               "access_required"
             ],
-            "migration": "Keep no-clubs copy/action availability in the route call site while sharing HostEmptyActionCard for the visual shell.",
+            "migration": "Keep no-organizer copy and create action at the route call site while HostOrganizerStateScaffold preserves the same title, tab rail, standard body rhythm, and terminal clearance as loaded Organizer content.",
             "previewIds": [
               "HostClubsScreen/Route states",
               "CatchEmptyState/Action card states"
@@ -10821,16 +11145,16 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostAccessState",
-              "HostLoadingState",
-              "HostErrorState"
+              "HostOrganizerStateScaffold",
+              "CatchSliverStateViewport",
+              "CatchSliverErrorState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
-              "symbol": "HostAuthRequiredScreen"
+              "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
+              "symbol": "HostClubsScreen"
             },
-            "currentOwner": "HostClubsScreen",
-            "targetOwner": "provider-free host route state sections",
+            "currentOwner": "HostClubsScreen + HostOrganizerStateScaffold",
+            "targetOwner": "canonical tabbed route state composition",
             "dependencies": [
               "catch.surface"
             ],
@@ -10840,7 +11164,7 @@
               "error",
               "offline"
             ],
-            "migration": "Keep retry/navigation intents in the adapter and add deterministic access/loading/error/offline captures for Host Clubs.",
+            "migration": "Retry and sign-in navigation intents stay in HostClubsScreen while HostOrganizerStateScaffold owns the provider-free title, pinned rail, body rhythm, and terminal clearance shared by access, loading, error, and offline branches.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -13138,6 +13462,21 @@
           "id": "hostAppEventManageScreen",
           "path": "/host/organizers/:clubId/events/:eventId/manage",
           "role": "primary"
+        },
+        {
+          "id": "hostOperatorEventScreen",
+          "path": "/host/operator/:eventId",
+          "role": "host"
+        },
+        {
+          "id": "hostAppAttendanceSheet",
+          "path": "/host/organizers/:clubId/events/:eventId/attendance",
+          "role": "host"
+        },
+        {
+          "id": "hostAppEventSuccessScreen",
+          "path": "/host/organizers/:clubId/events/:eventId/success",
+          "role": "host"
         }
       ],
       "source": {
@@ -18951,11 +19290,11 @@
           "nestedScaffoldAllowed": false,
           "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
         },
-        "topBar": {
-          "role": "screen",
-          "expression": "CatchScreenTopBar",
-          "owner": "CatchScreenTopBar",
-          "reason": "The source owns canonical screen-level top-bar chrome."
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchTopBar",
+        "reason": "The pushed calendar route owns canonical compact route chrome."
         },
         "statePolicy": {
           "requiredStates": [
@@ -22500,11 +22839,11 @@
           "nestedScaffoldAllowed": false,
           "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
         },
-        "topBar": {
-          "role": "screen",
-          "expression": "CatchScreenTopBar",
-          "owner": "CatchScreenTopBar",
-          "reason": "The source owns canonical screen-level top-bar chrome."
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchTopBar",
+        "reason": "The pushed Activity route owns canonical compact route chrome."
         },
         "statePolicy": {
           "requiredStates": [

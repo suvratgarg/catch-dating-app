@@ -42,6 +42,17 @@ export function checkComponentEnforcementCoverage({
 
     enforcementCount += 1;
     const enforcement = component.enforcement;
+    const primaryImplementation = enforcement.vehicle === "plugin"
+      ? pluginCodes
+      : enforcement.vehicle === "checker"
+        ? checkerCodes
+        : null;
+    if (primaryImplementation != null &&
+        !primaryImplementation.has(enforcement.code)) {
+      failures.push(
+        `${component.id}: primary code ${enforcement.code} is not implemented by declared ${enforcement.vehicle} vehicle`,
+      );
+    }
     const codes = new Set([enforcement.code, ...(enforcement.codes ?? [])]);
     for (const code of codes) {
       if (!/^catch_[a-z0-9_]+$/u.test(code ?? "")) {

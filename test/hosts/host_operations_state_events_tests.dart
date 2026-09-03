@@ -1,6 +1,13 @@
 part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsStateEventsTests() {
+  test('HostRouteLoadingBody delegates page geometry to its parent', () {
+    expect(
+      const HostRouteLoadingBody(padding: EdgeInsets.zero).padding,
+      EdgeInsets.zero,
+    );
+  });
+
   test(
     'HostTeamWorkspaceState uses club fallback while profile is loading',
     () {
@@ -202,20 +209,47 @@ void _registerHostOperationsStateEventsTests() {
     expect(loadedState.organizers, [club]);
   });
 
-  testWidgets('Host clubs shows loading while uid resolves', (tester) async {
+  testWidgets('Host clubs keeps tabbed root chrome while uid resolves', (
+    tester,
+  ) async {
     await _pumpHostScreen(
       tester,
-      const HostClubsScreen(),
+      const HostClubsScreen(
+        initialTab: HostClubTab.insights,
+        initialExpandedEditField: HostClubEditFieldKeys.description,
+      ),
       overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
       settle: false,
     );
 
-    expect(find.byType(HostLoadingScreen), findsOneWidget);
-    expect(find.text('Organizers'), findsOneWidget);
+    expect(find.byType(HostLoadingScreen), findsNothing);
+    expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.text('Organizer'), findsOneWidget);
+    expect(find.text('Edit'), findsOneWidget);
+    expect(find.text('Insights'), findsOneWidget);
+    expect(find.text('Preview'), findsOneWidget);
+    expect(
+      tester
+          .widget<CatchOptionGroup<HostClubTab>>(
+            find.byKey(const ValueKey('host-club-tab-rail')),
+          )
+          .selected,
+      HostClubTab.edit,
+    );
     expect(find.text('Sign in required'), findsNothing);
     expect(
       tester.widget<CatchSectionStack>(find.byType(CatchSectionStack)).padding,
-      CatchInsets.pageBody,
+      EdgeInsets.zero,
+    );
+    expect(
+      tester
+          .widget<CatchTabbedPageScrollView>(
+            find.byType(CatchTabbedPageScrollView),
+          )
+          .bodyLayout,
+      CatchScreenBodyLayout.standard,
     );
   });
 

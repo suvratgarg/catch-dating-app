@@ -38,32 +38,31 @@ class _HostApplicationDetailScreenState
         title:
             detailState.value?.applicantDisplayName ??
             context.l10n.hostApplicationsTitle,
+        titleRole: detailState.value == null
+            ? CatchTopBarTitleRole.route
+            : CatchTopBarTitleRole.identity,
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
+      body: CatchRouteBody.standard(
+        constrainToContentWidth: true,
         child: CatchAsyncValueView<HostApplicationDetail>(
           value: detail,
           onRetry: _invalidateDetail,
           initialLoadTimeout: null,
-          loadingBuilder: (_) =>
-              const CatchPageBody(child: CatchSkeletonRows(count: 6)),
-          errorBuilder: (_, error, _) => CatchPageBody(
-            child: CatchErrorState.fromError(
-              error,
-              context: AppErrorContext.applications,
-              onRetry: _invalidateDetail,
-            ),
+          loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
+          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.applications,
+            onRetry: _invalidateDetail,
           ),
           builder: (context, application) {
             if (_loadedRevision != application.revision) {
               _loadedRevision = application.revision;
               _reviewNoteController.text = application.reviewNote ?? '';
             }
-            return ListView(
-              padding: CatchInsets.pageBody.copyWith(bottom: 0),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Row(
                   children: [
@@ -189,7 +188,6 @@ class _HostApplicationDetailScreenState
                     ),
                   ),
                 ],
-                const CatchScrollTerminalPadding(),
               ],
             );
           },

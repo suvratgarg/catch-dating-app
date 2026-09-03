@@ -132,6 +132,15 @@ void _registerHostOperationsTeamFailuresTests() {
       ),
       findsOneWidget,
     );
+    final cohostMediaSection = find.byWidgetPredicate(
+      (widget) => widget is CatchSection && widget.title == 'Media',
+    );
+    final organizerTabRail = find.byKey(const ValueKey('host-club-tab-rail'));
+    expect(
+      tester.getRect(cohostMediaSection).top -
+          tester.getRect(organizerTabRail).bottom,
+      closeTo(CatchInsets.pageBody.top, 0.5),
+    );
     expect(find.text('Save media'), findsNothing);
     expect(find.text('Advanced event defaults'), findsNothing);
     expect(find.text('Save defaults'), findsNothing);

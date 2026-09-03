@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
@@ -13,28 +14,26 @@ class HostCreateEventRouteLoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Scaffold(
+    return CatchScreenScaffold.stepFlow(
       backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            CreateEventStepHeader(
-              title: context
-                  .l10n
-                  .hostsHostCreateEventRouteLoadingScreenTitleEventBasics,
-              clubName: context
-                  .l10n
-                  .hostsHostCreateEventRouteLoadingScreenBodyLoadingClub,
-              currentStep: 0,
-              totalSteps: 5,
-              onClose: () => Navigator.of(context).maybePop(),
-            ),
-            gapH4,
-            const Expanded(child: CreateEventLoadingBody()),
-            const CreateEventLoadingFooter(),
-          ],
-        ),
+      safeArea: CatchScreenSafeArea.top,
+      body: Column(
+        children: [
+          CreateEventStepHeader(
+            title: context
+                .l10n
+                .hostsHostCreateEventRouteLoadingScreenTitleEventBasics,
+            clubName: context
+                .l10n
+                .hostsHostCreateEventRouteLoadingScreenBodyLoadingClub,
+            currentStep: 0,
+            totalSteps: 5,
+            onClose: () => Navigator.of(context).maybePop(),
+          ),
+          gapH4,
+          const Expanded(child: CreateEventLoadingBody()),
+          const CreateEventLoadingFooter(),
+        ],
       ),
     );
   }

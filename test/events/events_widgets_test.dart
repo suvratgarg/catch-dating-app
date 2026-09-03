@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
@@ -404,6 +405,7 @@ void main() {
           ],
         );
 
+        expect(find.byType(CatchScreenScaffold), findsOneWidget);
         expect(find.byType(EventLocationMapLoadingBody), findsOneWidget);
         expect(find.byType(CatchSkeleton), findsWidgets);
         expect(find.byType(CircularProgressIndicator), findsNothing);

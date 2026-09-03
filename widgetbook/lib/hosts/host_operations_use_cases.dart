@@ -364,14 +364,19 @@ Widget hostSavedAudiencesStates(BuildContext context) {
       child: CatchTabbedScreenScaffold(
         title: 'Customers',
         tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: SizedBox(height: 1),
+          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
+          child: SizedBox(height: CatchLayout.tabRailHeight),
         ),
-        body: HostSavedAudiencesWorkspace(
-          organizerId: organizerId,
-          query: null,
-          onCreate: () {},
-          onOpen: (_) {},
+        body: CatchTabbedScreenBody.single(
+          page: CatchTabbedPageSpec.scroll(
+            bodyLayout: CatchScreenBodyLayout.standard,
+            page: HostSavedAudiencesWorkspace(
+              organizerId: organizerId,
+              query: null,
+              onCreate: () {},
+              onOpen: (_) {},
+            ),
+          ),
         ),
       ),
     ),
@@ -442,11 +447,6 @@ Widget hostSavedAudiencesStates(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
   type: CatchEmptyState,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
-  type: HostAuthRequiredScreen,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -1431,6 +1431,15 @@ Widget hostClubsRouteStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Loading, auth, error, and empty',
+  type: HostOrganizerStateScaffold,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostOrganizerStateScaffoldStates(BuildContext context) {
+  return hostClubsRouteStates(context);
+}
+
+@widgetbook.UseCase(
   name: 'Insights scorecard states',
   type: HostClubInsightsPane,
   path: '[P1 product surfaces]/Host operations',
@@ -1697,7 +1706,12 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
       _StateCard(
         label: 'route loading body',
         child: _DeviceFrame(
-          child: Scaffold(body: HostRouteLoadingBody(showTabRail: true)),
+          child: Scaffold(
+            body: HostRouteLoadingBody(
+              showTabRail: true,
+              padding: EdgeInsets.zero,
+            ),
+          ),
         ),
       ),
       _StateCard(
@@ -5394,14 +5408,6 @@ Widget hostStrictHostAnalyticsTrendPanelCatalogStates(BuildContext context) =>
 )
 Widget hostStrictHostAnalyticsDualBarCatalogStates(BuildContext context) =>
     _hostAnalyticsExactCatalog(context, 'HostAnalyticsDualBar');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostAuthRequiredScreen,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAuthRequiredScreenCatalogStates(BuildContext context) =>
-    hostHomeRouteStates(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

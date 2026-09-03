@@ -9,7 +9,7 @@ Provide the durable event inventory and lifecycle workspace entry: upcoming sche
 - Primary route: `hostEventsScreen` (`/host/events`)
 - Target root: `lib/hosts/events`
 - Migration status: implemented as a destination-owned vertical slice
-- Responsibility contract updated: 2026-09-01
+- Responsibility contract updated: 2026-09-02
 
 Current implementation roots:
 

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
@@ -126,6 +127,7 @@ void main() {
         club: club,
       );
 
+      expect(find.byType(CatchScreenScaffold), findsOneWidget);
       expect(find.text('Checkout is waiting'), findsOneWidget);
       expect(find.textContaining('Finish payment in Stripe'), findsOneWidget);
       expect(find.text('Pending'), findsOneWidget);
@@ -202,6 +204,7 @@ void main() {
       );
       await tester.pump();
 
+      expect(find.byType(CatchScreenScaffold), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);
     });
 
@@ -221,6 +224,7 @@ void main() {
       );
       await tester.pump();
 
+      expect(find.byType(CatchScreenScaffold), findsOneWidget);
       expect(find.text('Event not found'), findsOneWidget);
       expect(find.text('This event is no longer available.'), findsOneWidget);
     });

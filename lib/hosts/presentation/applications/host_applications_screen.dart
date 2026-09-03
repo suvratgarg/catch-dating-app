@@ -95,146 +95,143 @@ class _HostApplicationsScreenState
           ),
         ],
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: Padding(
-          padding: CatchInsets.pageBody.copyWith(bottom: 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                context.l10n.hostApplicationsSubtitle,
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: CatchTokens.of(context).ink2,
-                ),
+      body: CatchRouteBody.standard(
+        scrollable: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              context.l10n.hostApplicationsSubtitle,
+              style: CatchTextStyles.supporting(
+                context,
+                color: CatchTokens.of(context).ink2,
               ),
-              gapH16,
-              CatchSearchField.expanded(
-                key: const ValueKey('host-applications-search'),
-                value: _query ?? '',
-                contract: CatchContractConstraints
-                    .listOrganizerApplicationsCallablePayloadQuery,
-                placeholder: context.l10n.hostApplicationsSearch,
-                semanticLabel: context.l10n.hostApplicationsSearch,
-                textInputAction: TextInputAction.search,
-                onChanged: (value) => setState(
-                  () => _query = value.trim().isEmpty ? null : value.trim(),
-                ),
-                onSubmitted: (value) => setState(
-                  () => _query = value.trim().isEmpty ? null : value.trim(),
-                ),
+            ),
+            gapH16,
+            CatchSearchField.expanded(
+              key: const ValueKey('host-applications-search'),
+              value: _query ?? '',
+              contract: CatchContractConstraints
+                  .listOrganizerApplicationsCallablePayloadQuery,
+              placeholder: context.l10n.hostApplicationsSearch,
+              semanticLabel: context.l10n.hostApplicationsSearch,
+              textInputAction: TextInputAction.search,
+              onChanged: (value) => setState(
+                () => _query = value.trim().isEmpty ? null : value.trim(),
               ),
-              gapH12,
-              CatchAdaptiveSelectionControl<HostApplicationReviewStatus?>(
-                key: const ValueKey('host-applications-review-status'),
-                title: context.l10n.hostApplicationsReviewStatusFilter,
-                tooltip: context.l10n.hostApplicationsReviewStatusFilter,
-                items: [
+              onSubmitted: (value) => setState(
+                () => _query = value.trim().isEmpty ? null : value.trim(),
+              ),
+            ),
+            gapH12,
+            CatchAdaptiveSelectionControl<HostApplicationReviewStatus?>(
+              key: const ValueKey('host-applications-review-status'),
+              title: context.l10n.hostApplicationsReviewStatusFilter,
+              tooltip: context.l10n.hostApplicationsReviewStatusFilter,
+              items: [
+                CatchSelectionMenuItem(
+                  value: null,
+                  label: context.l10n.hostApplicationsFilterAll,
+                ),
+                for (final status in const [
+                  HostApplicationReviewStatus.submitted,
+                  HostApplicationReviewStatus.inReview,
+                  HostApplicationReviewStatus.approved,
+                  HostApplicationReviewStatus.waitlisted,
+                  HostApplicationReviewStatus.declined,
+                ])
                   CatchSelectionMenuItem(
-                    value: null,
-                    label: context.l10n.hostApplicationsFilterAll,
+                    value: status,
+                    label: hostApplicationStatusLabel(context, status),
                   ),
-                  for (final status in const [
-                    HostApplicationReviewStatus.submitted,
-                    HostApplicationReviewStatus.inReview,
-                    HostApplicationReviewStatus.approved,
-                    HostApplicationReviewStatus.waitlisted,
-                    HostApplicationReviewStatus.declined,
-                  ])
-                    CatchSelectionMenuItem(
-                      value: status,
-                      label: hostApplicationStatusLabel(context, status),
-                    ),
-                ],
-                value: _status,
-                triggerLabel: (selected) =>
-                    context.l10n.hostApplicationsReviewStatusFilterValue(
-                      status: selected.label,
-                    ),
-                icon: CatchIcons.tune,
-                onSelected: (status) => setState(() => _status = status),
-              ),
-              gapH16,
-              Expanded(
-                child: CatchAsyncValueView<HostApplicationsDirectoryState>(
-                  value: directory,
+              ],
+              value: _status,
+              triggerLabel: (selected) =>
+                  context.l10n.hostApplicationsReviewStatusFilterValue(
+                    status: selected.label,
+                  ),
+              icon: CatchIcons.tune,
+              onSelected: (status) => setState(() => _status = status),
+            ),
+            gapH16,
+            Expanded(
+              child: CatchAsyncValueView<HostApplicationsDirectoryState>(
+                value: directory,
+                onRetry: () => ref.invalidate(
+                  hostApplicationsDirectoryControllerProvider(request),
+                ),
+                initialLoadTimeout: null,
+                loadingBuilder: (_) => ListView(
+                  padding: EdgeInsets.zero,
+                  children: const [CatchSkeletonRows(count: 6)],
+                ),
+                errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                  error,
+                  context: AppErrorContext.applications,
                   onRetry: () => ref.invalidate(
                     hostApplicationsDirectoryControllerProvider(request),
                   ),
-                  initialLoadTimeout: null,
-                  loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
-                  errorBuilder: (_, error, _) => CatchErrorState.fromError(
-                    error,
-                    context: AppErrorContext.applications,
-                    onRetry: () => ref.invalidate(
-                      hostApplicationsDirectoryControllerProvider(request),
-                    ),
-                  ),
-                  builder: (context, state) {
-                    if (state.applications.isEmpty) {
-                      return CatchEmptyState(
-                        icon: CatchIcons.factCheckOutlined,
-                        title: context.l10n.hostApplicationsEmptyTitle,
-                        message: context.l10n.hostApplicationsEmptyBody,
-                      );
-                    }
-                    return ListView(
-                      padding: CatchInsets.scrollEnd,
-                      children: [
-                        _HostApplicationListFrame(
-                          applications: state.applications,
-                          onOpen: (application) => context.pushNamed(
-                            Routes.hostApplicationDetailScreen.name,
-                            pathParameters: {
-                              'applicationId': application.applicationId,
-                            },
-                            queryParameters: {
-                              'organizerId': widget.organizerId,
-                            },
-                          ),
-                        ),
-                        if (state.nextCursor != null) ...[
-                          gapH16,
-                          CatchButton(
-                            label: context.l10n.hostApplicationsLoadMore,
-                            variant: CatchButtonVariant.secondary,
-                            isLoading: state.loadingMore,
-                            fullWidth: true,
-                            onPressed: state.loadingMore
-                                ? null
-                                : () => ref
-                                      .read(
-                                        hostApplicationsDirectoryControllerProvider(
-                                          request,
-                                        ).notifier,
-                                      )
-                                      .loadMore(),
-                          ),
-                        ],
-                        if (state.loadMoreError != null) ...[
-                          gapH12,
-                          CatchErrorState.fromError(
-                            state.loadMoreError!,
-                            context: AppErrorContext.applications,
-                            mode: CatchErrorStateMode.compact,
-                            onRetry: () => ref
-                                .read(
-                                  hostApplicationsDirectoryControllerProvider(
-                                    request,
-                                  ).notifier,
-                                )
-                                .loadMore(),
-                          ),
-                        ],
-                      ],
-                    );
-                  },
                 ),
+                builder: (context, state) {
+                  if (state.applications.isEmpty) {
+                    return CatchEmptyState(
+                      icon: CatchIcons.factCheckOutlined,
+                      title: context.l10n.hostApplicationsEmptyTitle,
+                      message: context.l10n.hostApplicationsEmptyBody,
+                    );
+                  }
+                  return ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      _HostApplicationListFrame(
+                        applications: state.applications,
+                        onOpen: (application) => context.pushNamed(
+                          Routes.hostApplicationDetailScreen.name,
+                          pathParameters: {
+                            'applicationId': application.applicationId,
+                          },
+                          queryParameters: {'organizerId': widget.organizerId},
+                        ),
+                      ),
+                      if (state.nextCursor != null) ...[
+                        gapH16,
+                        CatchButton(
+                          label: context.l10n.hostApplicationsLoadMore,
+                          variant: CatchButtonVariant.secondary,
+                          isLoading: state.loadingMore,
+                          fullWidth: true,
+                          onPressed: state.loadingMore
+                              ? null
+                              : () => ref
+                                    .read(
+                                      hostApplicationsDirectoryControllerProvider(
+                                        request,
+                                      ).notifier,
+                                    )
+                                    .loadMore(),
+                        ),
+                      ],
+                      if (state.loadMoreError != null) ...[
+                        gapH12,
+                        CatchErrorState.fromError(
+                          state.loadMoreError!,
+                          context: AppErrorContext.applications,
+                          mode: CatchErrorStateMode.compact,
+                          onRetry: () => ref
+                              .read(
+                                hostApplicationsDirectoryControllerProvider(
+                                  request,
+                                ).notifier,
+                              )
+                              .loadMore(),
+                        ),
+                      ],
+                    ],
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

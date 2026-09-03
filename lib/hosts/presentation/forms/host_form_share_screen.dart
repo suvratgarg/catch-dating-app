@@ -57,9 +57,8 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
+      body: CatchRouteBody.standard(
+        constrainToContentWidth: true,
         child: CatchAsyncValueView<HostFormShareAssets>(
           value: assets,
           onRetry: () => ref.invalidate(
@@ -69,62 +68,46 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
             ),
           ),
           initialLoadTimeout: null,
-          loadingBuilder: (_) =>
-              const CatchPageBody(child: CatchSkeletonRows(count: 7)),
-          errorBuilder: (_, error, _) => CatchPageBody(
-            child: CatchErrorState.fromError(
-              error,
-              context: AppErrorContext.forms,
-              onRetry: () => ref.invalidate(
-                hostFormShareAssetsControllerProvider(
-                  organizerId: widget.organizerId,
-                  formId: widget.formId,
-                ),
+          loadingBuilder: (_) => const CatchSkeletonRows(count: 7),
+          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.forms,
+            onRetry: () => ref.invalidate(
+              hostFormShareAssetsControllerProvider(
+                organizerId: widget.organizerId,
+                formId: widget.formId,
               ),
             ),
           ),
-          builder: (context, value) => CatchScreenBody(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: CatchLayout.maxContentWidth,
-                ),
-                child: CatchSectionList(
-                  emptyStateOmitted: true,
-                  children: [
-                    _CanonicalLinkCard(
-                      assets: value,
-                      onCopy: () => _copy(
-                        value.canonicalUrl,
+          builder: (context, value) => CatchSectionList(
+            emptyStateOmitted: true,
+            children: [
+              _CanonicalLinkCard(
+                assets: value,
+                onCopy: () =>
+                    _copy(value.canonicalUrl, context.l10n.hostFormLinkCopied),
+                onShare: () => _share(context, value.canonicalUrl),
+              ),
+              _TrackedLinkCard(
+                link: _trackedLink,
+                creating: _creatingLink,
+                onCreate: _createTrackedLink,
+                onCopy: _trackedLink == null
+                    ? null
+                    : () => _copy(
+                        _trackedLink!.url,
                         context.l10n.hostFormLinkCopied,
                       ),
-                      onShare: () => _share(context, value.canonicalUrl),
-                    ),
-                    _TrackedLinkCard(
-                      link: _trackedLink,
-                      creating: _creatingLink,
-                      onCreate: _createTrackedLink,
-                      onCopy: _trackedLink == null
-                          ? null
-                          : () => _copy(
-                              _trackedLink!.url,
-                              context.l10n.hostFormLinkCopied,
-                            ),
-                      onShare: _trackedLink == null
-                          ? null
-                          : () => _share(context, _trackedLink!.url),
-                    ),
-                    _EmbedCard(
-                      assets: value,
-                      onCopy: () => _copy(
-                        value.embedSnippet,
-                        context.l10n.hostFormEmbedCopied,
-                      ),
-                    ),
-                  ],
-                ),
+                onShare: _trackedLink == null
+                    ? null
+                    : () => _share(context, _trackedLink!.url),
               ),
-            ),
+              _EmbedCard(
+                assets: value,
+                onCopy: () =>
+                    _copy(value.embedSnippet, context.l10n.hostFormEmbedCopied),
+              ),
+            ],
           ),
         ),
       ),

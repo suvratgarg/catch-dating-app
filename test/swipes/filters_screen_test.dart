@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
@@ -74,6 +75,7 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.text('Filters'), findsOneWidget);
     expect(find.byType(FiltersContentSkeleton), findsOneWidget);
     expect(find.byType(CatchSkeleton), findsWidgets);

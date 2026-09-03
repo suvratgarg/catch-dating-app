@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
@@ -53,6 +54,19 @@ void main() {
     expect(find.text('Continue to publish'), findsNothing);
     expect(find.text('Form title'), findsNothing);
     final topBar = find.byType(CatchTopBar);
+    expect(tester.widget<CatchTopBar>(topBar).titleWidget, isNull);
+    final titleFinder = find.descendant(
+      of: topBar,
+      matching: find.text('Saturday Social application'),
+    );
+    final titleContext = tester.element(titleFinder);
+    expect(
+      tester.widget<Text>(titleFinder).style,
+      CatchTextStyles.routeTitle(
+        titleContext,
+        color: CatchTokens.of(titleContext).ink,
+      ),
+    );
     final topBarButtons = find.descendant(
       of: topBar,
       matching: find.byType(CatchIconButton),

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/responsive/breakpoints.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -39,8 +40,8 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
           ScreenSize.expanded => expandedSideNavigation ?? mediumSideNavigation,
         };
         if (sideNavigation != null) {
-          return Scaffold(
-            key: AppShellKeys.scaffold,
+          return CatchScreenScaffold.workspace(
+            scaffoldKey: AppShellKeys.scaffold,
             body: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -76,8 +77,8 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
           child: body,
         );
 
-        return Scaffold(
-          key: AppShellKeys.scaffold,
+        return CatchScreenScaffold.workspace(
+          scaffoldKey: AppShellKeys.scaffold,
           extendBody: tabBarFloats,
           body: candidateTabBarFloats
               ? Stack(

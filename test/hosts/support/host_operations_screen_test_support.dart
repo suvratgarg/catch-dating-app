@@ -40,7 +40,7 @@ void registerHostEventEntryTests() {
       find.byType(CatchScreenHeaderTitle),
     );
     expect(header.eyebrow, 'Monday, June 15, 2026');
-    expect(header.subtitle, club.name);
+    expect(header.subtitle, isNull);
     expect(header.actions, isEmpty);
     expect(
       find.byKey(const ValueKey<String>('host-today-create-event')),

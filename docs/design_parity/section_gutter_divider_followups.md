@@ -131,7 +131,7 @@ Never spell a page gutter as `CatchSpacing.s5` or raw `screenPx` inside
 - `lib/swipes/presentation/filters_screen.dart:197, 247, 275, 292` — each is
   `EdgeInsets.fromLTRB(s5, s2|s3, s5, s5)`. Map to the `CatchInsets` role
   with the same values if one exists (check `pageBodyTight`,
-  `pageBodyCompact`, etc.); otherwise use
+  `pageBodyUnderHeader`, etc.); otherwise use
   `CatchInsets.pageBody.copyWith(top: CatchSpacing.<x>, bottom:
   CatchSpacing.<y>)`. If the same LTRB tuple recurs 3+ times across the
   file, define ONE local `const` derived from the role via `copyWith` (a

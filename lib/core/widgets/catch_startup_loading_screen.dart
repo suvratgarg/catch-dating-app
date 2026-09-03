@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -101,59 +102,57 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
     final t = CatchTokens.of(context);
     final isHost = AppConfig.appRole == AppRole.host;
 
-    return Scaffold(
+    return CatchScreenScaffold.standalone(
       backgroundColor: t.bg,
-      body: SafeArea(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            if (isHost)
-              const Align(
-                alignment: Alignment.topCenter,
-                child: CatchStartupBrandStage(appRole: AppRole.host),
-              )
-            else
-              Center(
-                child: Image.asset(
-                  CatchStartupLoadingScreen.iconAssetForBrightness(
-                    Theme.of(context).brightness,
-                  ),
-                  key: CatchStartupBrandStage.markKey,
-                  width: CatchLayout.startupLogoExtent,
-                  height: CatchLayout.startupLogoExtent,
-                  semanticLabel: context
-                      .l10n
-                      .coreCatchStartupLoadingScreenSemanticlabelCatch,
-                ),
-              ),
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          if (isHost)
+            const Align(
+              alignment: Alignment.topCenter,
+              child: CatchStartupBrandStage(appRole: AppRole.host),
+            )
+          else
             Center(
-              child: Transform.translate(
-                offset: const Offset(0, CatchLayout.startupIndicatorOffsetY),
-                child: AnimatedSwitcher(
-                  duration: CatchMotion.fast,
-                  switchInCurve: CatchMotion.standardCurve,
-                  child: _showIndicator
-                      ? SizedBox.square(
-                          key: ValueKey<String>(
-                            context
-                                .l10n
-                                .coreCatchStartupLoadingScreenBodyStartupLoadingIndicator,
-                          ),
-                          dimension: CatchLayout.startupIndicatorExtent,
-                          child: CatchLoadingIndicator(color: t.ink),
-                        )
-                      : SizedBox.shrink(
-                          key: ValueKey<String>(
-                            context
-                                .l10n
-                                .coreCatchStartupLoadingScreenBodyStartupLoadingDelay,
-                          ),
-                        ),
+              child: Image.asset(
+                CatchStartupLoadingScreen.iconAssetForBrightness(
+                  Theme.of(context).brightness,
                 ),
+                key: CatchStartupBrandStage.markKey,
+                width: CatchLayout.startupLogoExtent,
+                height: CatchLayout.startupLogoExtent,
+                semanticLabel: context
+                    .l10n
+                    .coreCatchStartupLoadingScreenSemanticlabelCatch,
               ),
             ),
-          ],
-        ),
+          Center(
+            child: Transform.translate(
+              offset: const Offset(0, CatchLayout.startupIndicatorOffsetY),
+              child: AnimatedSwitcher(
+                duration: CatchMotion.fast,
+                switchInCurve: CatchMotion.standardCurve,
+                child: _showIndicator
+                    ? SizedBox.square(
+                        key: ValueKey<String>(
+                          context
+                              .l10n
+                              .coreCatchStartupLoadingScreenBodyStartupLoadingIndicator,
+                        ),
+                        dimension: CatchLayout.startupIndicatorExtent,
+                        child: CatchLoadingIndicator(color: t.ink),
+                      )
+                    : SizedBox.shrink(
+                        key: ValueKey<String>(
+                          context
+                              .l10n
+                              .coreCatchStartupLoadingScreenBodyStartupLoadingDelay,
+                        ),
+                      ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

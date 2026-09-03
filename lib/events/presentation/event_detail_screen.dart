@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_controller.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
@@ -127,10 +128,14 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
 
     if (vm != null) {
       if (vm.event.clubId != widget.clubId) {
-        return CatchErrorScaffold(
-          title: context.l10n.eventsEventDetailScreenTitleEventNotFound,
-          message: context.l10n.eventsEventDetailScreenMessageThisEventIsNo,
-          secondaryAction: const CatchErrorBackAction(),
+        return CatchScreenScaffold.workspace(
+          body: SafeArea(
+            child: CatchErrorState(
+              title: context.l10n.eventsEventDetailScreenTitleEventNotFound,
+              message: context.l10n.eventsEventDetailScreenMessageThisEventIsNo,
+              secondaryAction: const CatchErrorBackAction(),
+            ),
+          ),
         );
       }
       final now = DateTime.now();
@@ -285,7 +290,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         child: CatchMutationErrorListener(
           mutation: CrossPathsEventConsentController.setConsentMutation,
           errorContext: AppErrorContext.event,
-          child: Scaffold(
+          child: CatchScreenScaffold.workspace(
             backgroundColor: style.pageBackground,
             body: EventDetailBody(
               event: vm.event,
@@ -450,7 +455,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         l10n: context.l10n,
       );
 
-      return Scaffold(
+      return CatchScreenScaffold.workspace(
         backgroundColor: style.pageBackground,
         body: EventDetailBody(
           event: event,
@@ -556,18 +561,26 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     }
 
     if (vmAsync.hasError) {
-      return CatchErrorScaffold.fromError(
-        vmAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () =>
-            ref.invalidate(eventDetailViewModelProvider(widget.eventId)),
+      return CatchScreenScaffold.workspace(
+        body: SafeArea(
+          child: CatchErrorState.fromError(
+            vmAsync.error!,
+            context: AppErrorContext.event,
+            onRetry: () =>
+                ref.invalidate(eventDetailViewModelProvider(widget.eventId)),
+          ),
+        ),
       );
     }
 
-    return CatchErrorScaffold(
-      title: context.l10n.eventsEventDetailScreenTitleEventNotFound,
-      message: context.l10n.eventsEventDetailScreenMessageThisEventIsNo,
-      secondaryAction: const CatchErrorBackAction(),
+    return CatchScreenScaffold.workspace(
+      body: SafeArea(
+        child: CatchErrorState(
+          title: context.l10n.eventsEventDetailScreenTitleEventNotFound,
+          message: context.l10n.eventsEventDetailScreenMessageThisEventIsNo,
+          secondaryAction: const CatchErrorBackAction(),
+        ),
+      ),
     );
   }
 

@@ -17,7 +17,9 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -517,6 +519,10 @@ void main() {
 
     await pumpFeatureUi(tester);
 
+    final rootScaffold = tester.widget<CatchRootScreenScaffold>(
+      find.byType(CatchRootScreenScaffold),
+    );
+    expect(rootScaffold.bodyLayout, CatchScreenBodyLayout.fullBleed);
     expect(find.text('No catches yet'), findsOneWidget);
     expect(find.byType(TextField), findsNothing);
     expect(
@@ -811,10 +817,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
-    expect(
-      find.text('One-to-one conversations and replies.'),
-      findsOneWidget,
-    );
+    expect(find.text('One-to-one conversations and replies.'), findsOneWidget);
     expect(find.text('All'), findsOneWidget);
     expect(find.text('Unread · 1'), findsOneWidget);
     expect(find.text('Message 2 attendees'), findsNothing);

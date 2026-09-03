@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
@@ -29,6 +30,8 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.byType(CatchRouteScaffold), findsOneWidget);
+    expect(find.byTooltip('Back'), findsOneWidget);
     expect(find.byType(CatchSkeleton), findsWidgets);
     expect(find.text('Join the next city drop'), findsNothing);
   });

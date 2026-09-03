@@ -54,6 +54,9 @@ function validateCoverage({coverage, routeInventory, screenContracts, captureCov
   const errors = [];
   const inventoryRoutes = routeInventory.routes ?? [];
   const routeIds = new Set(inventoryRoutes.map((route) => route.id));
+  const renderKindByRoute = new Map(
+    inventoryRoutes.map((route) => [route.id, route.renderKind]),
+  );
   const captureCoverageRouteIds = new Set((captureCoverage.routes ?? []).map((route) => route.routeId));
   const screenIds = new Set();
   const screenRouteBindings = new Map();
@@ -124,6 +127,17 @@ function validateCoverage({coverage, routeInventory, screenContracts, captureCov
   for (const [routeId, binding] of screenRouteBindings.entries()) {
     const entry = coverageByRoute.get(routeId);
     if (!entry) continue;
+    if (renderKindByRoute.get(routeId) === "redirect") {
+      if (entry.status !== "alias") {
+        errors.push(
+          `${routeId}: route is redirect-only; mark screen coverage status as alias.`,
+        );
+      }
+      if (entry.screenId !== undefined && entry.screenId !== binding.screenId) {
+        errors.push(`${routeId}: optional alias screenId must be ${binding.screenId}.`);
+      }
+      continue;
+    }
     if (entry.status !== "contracted") {
       errors.push(`${routeId}: route is listed in ${binding.screenId}; mark screen coverage status as contracted.`);
     }

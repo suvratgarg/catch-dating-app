@@ -4,9 +4,11 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
@@ -160,6 +162,7 @@ void main() {
     );
     final label = tester.widget<Text>(find.text('Start catching'));
 
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
     expect(button.variant, CatchButtonVariant.light);
     expect(button.isInteractive, isFalse);
     expect(label.style?.color, CatchTokens.editorialLight.ink);
@@ -188,10 +191,16 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: CatchesHubContent(
-            state: CatchesHubReady(uid: 'runner-1', rows: rows),
-            onOpenCatch: (_) {},
-            onOpenRecap: (_) {},
+          body: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: CatchesHubContent(
+                  state: CatchesHubReady(uid: 'runner-1', rows: rows),
+                  onOpenCatch: (_) {},
+                  onOpenRecap: (_) {},
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -216,15 +225,29 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
+    final now = DateTime(2026, 6, 22, 12);
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(body: CatchesHubEmptyState(onFindEvent: () {})),
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchAttendedEventsProvider(
+            'runner-1',
+          ).overrideWith((ref) => Stream.value(const <Event>[])),
+        ],
+        child: AppShellActiveTab(
+          index: appShellHomeTabIndex,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: SwipeHubScreen(now: now),
+          ),
+        ),
       ),
     );
     await tester.pump();
+    await tester.pump();
 
-    final headerRect = tester.getRect(find.byType(CatchesHubHeader));
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+    final headerRect = tester.getRect(find.byType(CatchScreenHeaderTitle));
     final emptyRect = tester.getRect(find.byType(CatchEmptyState));
     final noteRect = tester.getRect(find.byType(CatchSurface));
     final emptyBodyRect = emptyRect.expandToInclude(noteRect);

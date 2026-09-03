@@ -1272,30 +1272,6 @@ Widget catchesHubContentStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Header states',
-  type: CatchesHubHeader,
-  path: '[P1 product surfaces]/Catches/Sections',
-)
-Widget catchesHubHeaderStates(BuildContext context) {
-  return const _CatchesCatalog(
-    title: 'CatchesHubHeader',
-    contractId: 'screen.catches.hub.header',
-    children: [
-      _StateCard(
-        label: 'default',
-        child: _SectionFrame(
-          height: WidgetbookPreviewLayout.catchesSummaryPreviewHeight,
-          child: Padding(
-            padding: CatchInsets.content,
-            child: CatchesHubHeader(),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Intro card states',
   type: CatchesIntroCard,
   path: '[P1 product surfaces]/Catches/Sections',

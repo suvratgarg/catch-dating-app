@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
@@ -50,22 +49,30 @@ class _HostEventRehearsalStartScreenState
           showBackButton: true,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          child: ListView(
-            padding: CatchInsets.pageBody,
-            children: [
-              CatchSurface.message(
-                title: context.l10n.hostEventRehearsalTitle,
-                message: context.l10n.hostEventRehearsalPracticeBanner,
-                messageIcon: CatchIcons.scienceOutlined,
+        body: CatchRouteBody.standardSections(
+          sections: [
+            CatchResponsiveSectionItem(
+              child: CatchSection.plain(
+                padding: EdgeInsets.zero,
+                child: CatchSurface.message(
+                  title: context.l10n.hostEventRehearsalTitle,
+                  message: context.l10n.hostEventRehearsalPracticeBanner,
+                  messageIcon: CatchIcons.scienceOutlined,
+                ),
               ),
-              gapH20,
-              Text(
-                context.l10n.hostEventRehearsalStartSubtitle,
-                style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            CatchResponsiveSectionItem(
+              child: CatchSection.plain(
+                padding: EdgeInsets.zero,
+                child: Text(
+                  context.l10n.hostEventRehearsalStartSubtitle,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
               ),
-              gapH20,
-              CatchSection.fieldRows(
+            ),
+            CatchResponsiveSectionItem(
+              child: CatchSection.fieldRows(
+                first: true,
                 children: [
                   CatchField.read(
                     title: widget.sourceEventId == null
@@ -152,16 +159,20 @@ class _HostEventRehearsalStartScreenState
                   ),
                 ],
               ),
-              gapH24,
-              CatchButton(
-                label: context.l10n.hostEventRehearsalCreate,
-                fullWidth: true,
-                isLoading: mutation.isPending,
-                icon: Icon(CatchIcons.playArrowRounded),
-                onPressed: mutation.isPending ? null : _create,
+            ),
+            CatchResponsiveSectionItem(
+              child: CatchSection.plain(
+                padding: EdgeInsets.zero,
+                child: CatchButton(
+                  label: context.l10n.hostEventRehearsalCreate,
+                  fullWidth: true,
+                  isLoading: mutation.isPending,
+                  icon: Icon(CatchIcons.playArrowRounded),
+                  onPressed: mutation.isPending ? null : _create,
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

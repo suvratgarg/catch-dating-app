@@ -128,7 +128,9 @@ void runHostCreateEventLifecycleTests() {
     expect(find.text('Event recap'), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, hostManageEventTitle(event));
-    expect(topBar.subtitle, 'Event recap');
+    expect(topBar.eyebrow, 'Event recap');
+    expect(topBar.subtitle, isNull);
+    expect(topBar.titleWidget, isNull);
     expect(topBar.height, CatchLayout.browseHeaderHeight);
     expect(find.text('SETUP'), findsNothing);
     expect(find.text('GUESTS'), findsNothing);

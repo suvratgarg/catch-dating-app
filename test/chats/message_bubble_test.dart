@@ -3,6 +3,7 @@ import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.da
 import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_timestamped_message_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,6 +22,8 @@ void main() {
         ),
       ),
     );
+
+    expect(find.byType(CatchTimestampedMessageText), findsOneWidget);
 
     expect(find.text('Morning event?'), findsOneWidget);
     expect(find.text('9:05 AM'), findsOneWidget);

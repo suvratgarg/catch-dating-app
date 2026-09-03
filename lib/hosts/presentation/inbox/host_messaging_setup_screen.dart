@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -25,10 +24,9 @@ class HostMessagingSetupScreen extends ConsumerWidget {
         divider: scrolledUnder,
         leadingType: CatchTopBarLeading.back,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: CatchPageBody(
-            padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s4),
+      body: CatchRouteBody.standardSections(
+        sections: [
+          CatchResponsiveSectionItem(
             child: club.when(
               loading: () => const CatchSkeletonRows(),
               error: (error, _) => CatchErrorState.fromError(
@@ -45,7 +43,7 @@ class HostMessagingSetupScreen extends ConsumerWidget {
                   : HostWhatsappSetupPane(club: value),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

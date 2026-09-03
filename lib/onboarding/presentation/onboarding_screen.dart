@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -100,28 +101,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               .goToStep(previousStep);
         }
       },
-      child: Scaffold(
+      child: CatchScreenScaffold.stepFlow(
+        safeArea: flowState.showsWelcome
+            ? CatchScreenSafeArea.none
+            : CatchScreenSafeArea.all,
         body: flowState.showsWelcome
             ? currentStep
-            : SafeArea(
-                child: Column(
-                  children: [
-                    if (flowState.topBar case final topBarState?) ...[
-                      OnboardingTopBar(
-                        state: topBarState,
-                        onBack:
-                            flowState.operationPending ||
-                                flowState.previousStep == null
-                            ? null
-                            : () => ref
-                                  .read(onboardingControllerProvider.notifier)
-                                  .goToStep(flowState.previousStep!),
-                      ),
-                      gapH8,
-                    ],
-                    Expanded(child: currentStep),
+            : Column(
+                children: [
+                  if (flowState.topBar case final topBarState?) ...[
+                    OnboardingTopBar(
+                      state: topBarState,
+                      onBack:
+                          flowState.operationPending ||
+                              flowState.previousStep == null
+                          ? null
+                          : () => ref
+                                .read(onboardingControllerProvider.notifier)
+                                .goToStep(flowState.previousStep!),
+                    ),
+                    gapH8,
                   ],
-                ),
+                  Expanded(child: currentStep),
+                ],
               ),
       ),
     );

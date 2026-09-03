@@ -15,7 +15,13 @@ class HostLoadingScreen extends StatelessWidget {
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) =>
           CatchTopBar(title: title, divider: scrolledUnder),
-      body: SafeArea(child: HostRouteLoadingBody(showTabRail: showTabRail)),
+      body: CatchRouteBody.standard(
+        scrollable: false,
+        child: HostRouteLoadingBody(
+          showTabRail: showTabRail,
+          padding: EdgeInsets.zero,
+        ),
+      ),
     );
   }
 }

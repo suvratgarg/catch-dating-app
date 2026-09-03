@@ -740,7 +740,7 @@
             {
               "id": "swipeHubScreen",
               "path": "/catches",
-              "role": "primary"
+              "role": "alias"
             }
           ]
         },

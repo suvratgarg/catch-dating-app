@@ -1,6 +1,136 @@
 part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsClubWorkspaceTests() {
+  testWidgets(
+    'Host clubs keeps tabbed root composition for auth and data errors',
+    (tester) async {
+      void expectStateChrome() {
+        expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
+        expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
+        expect(find.byType(NestedScrollView), findsOneWidget);
+        expect(
+          find.byKey(const ValueKey('host-club-tab-rail')),
+          findsOneWidget,
+        );
+        expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+        expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+        expect(find.byType(CatchErrorScaffold), findsNothing);
+        expect(find.byType(HostLoadingScreen), findsNothing);
+        expect(find.byType(CatchRouteScaffold), findsNothing);
+        expect(
+          tester
+              .widget<CatchTabbedPageScrollView>(
+                find.byType(CatchTabbedPageScrollView),
+              )
+              .bodyLayout,
+          CatchScreenBodyLayout.standard,
+        );
+      }
+
+      await _pumpHostScreen(
+        tester,
+        const HostClubsScreen(),
+        overrides: [
+          uidProvider.overrideWithValue(
+            AsyncError<String?>(StateError('auth failed'), StackTrace.current),
+          ),
+        ],
+        resetProviderScope: true,
+      );
+
+      expectStateChrome();
+      expect(find.text('Organizer'), findsOneWidget);
+
+      await _pumpHostScreen(
+        tester,
+        const HostClubsScreen(),
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>(null)),
+        ],
+        resetProviderScope: true,
+      );
+
+      expectStateChrome();
+      expect(find.text('Sign in required'), findsOneWidget);
+
+      await _pumpHostScreen(
+        tester,
+        const HostClubsScreen(),
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>(_hostUid)),
+          watchClubsHostedByProvider(
+            _hostUid,
+          ).overrideWithValue(const AsyncData<List<Club>>([])),
+          watchClubsOwnedByProvider(_hostUid).overrideWithValue(
+            AsyncError<List<Club>>(
+              StateError('clubs failed'),
+              StackTrace.current,
+            ),
+          ),
+        ],
+        resetProviderScope: true,
+      );
+
+      expectStateChrome();
+      expect(find.text('Organizer'), findsOneWidget);
+    },
+  );
+
+  testWidgets('Host clubs keeps tabbed root composition without an organizer', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      const HostClubsScreen(),
+      overrides: _hostClubOverrides(),
+    );
+
+    expect(find.byType(HostClubsScaffold), findsOneWidget);
+    expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
+    expect(find.byType(CatchSliverEmptyState), findsOneWidget);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchRootScreenScaffold), findsNothing);
+    expect(find.byKey(const ValueKey('host-club-tab-rail')), findsOneWidget);
+    expect(find.text('Organizer'), findsOneWidget);
+    expect(find.text('No hosted organizers yet'), findsOneWidget);
+  });
+
+  testWidgets('Host Today keeps root composition for auth and route errors', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        uidProvider.overrideWithValue(const AsyncData<String?>(null)),
+      ],
+    );
+
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+    expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchErrorScaffold), findsNothing);
+    expect(find.text('Today'), findsOneWidget);
+    expect(find.text('Sign in required'), findsOneWidget);
+
+    await _pumpHostScreen(
+      tester,
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        uidProvider.overrideWithValue(
+          AsyncError<String?>(StateError('auth failed'), StackTrace.current),
+        ),
+      ],
+    );
+
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+    expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchErrorScaffold), findsNothing);
+    expect(find.text('Today'), findsOneWidget);
+  });
+
   testWidgets('Host Today uses real countdown and routes cross-event tasks', (
     tester,
   ) async {
@@ -89,6 +219,46 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Manage live-event'), findsOneWidget);
     expect(find.text('Section live'), findsOneWidget);
   });
+
+  testWidgets(
+    'Host Today error stays in the root state viewport without a club subtitle',
+    (tester) async {
+      final club = buildClub(
+        id: 'today-error-club',
+        name: 'Saket Run Club',
+        ownerUserId: _hostUid,
+      );
+
+      await _pumpHostScreen(
+        tester,
+        HostTodayBody(
+          organizer: club,
+          state: HostTodayState(
+            status: HostTodayStatus.error,
+            error: StateError('Event not found'),
+          ),
+          now: DateTime(2026, 6, 15, 12),
+          onRetry: () {},
+          onOpenEvent: (_) {},
+          onOpenAttention: (_) {},
+          onViewEvents: () {},
+          onStartRehearsal: () {},
+        ),
+      );
+
+      expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+      expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.text('Saket Run Club'), findsNothing);
+      expect(
+        find.ancestor(
+          of: find.byType(CatchErrorBody),
+          matching: find.byType(Center),
+        ),
+        findsNothing,
+      );
+    },
+  );
 
   testWidgets('Host Today spotlight reflows at 200 percent text', (
     tester,
@@ -196,6 +366,41 @@ void _registerHostOperationsClubWorkspaceTests() {
 
   registerHostEventEntryTests();
 
+  testWidgets('Host Events keeps root composition for auth and route errors', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      HostEventsScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        uidProvider.overrideWithValue(const AsyncData<String?>(null)),
+      ],
+    );
+
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+    expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchErrorScaffold), findsNothing);
+    expect(find.text('Events'), findsOneWidget);
+    expect(find.text('Sign in required'), findsOneWidget);
+
+    await _pumpHostScreen(
+      tester,
+      HostEventsScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        uidProvider.overrideWithValue(
+          AsyncError<String?>(StateError('auth failed'), StackTrace.current),
+        ),
+      ],
+    );
+
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+    expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchErrorScaffold), findsNothing);
+    expect(find.text('Events'), findsOneWidget);
+  });
+
   testWidgets('Host events centers its canonical empty-state primitive', (
     tester,
   ) async {
@@ -231,6 +436,43 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(
       tester.getCenter(content).dy,
       closeTo(tester.getCenter(emptyState).dy, 0.5),
+    );
+  });
+
+  testWidgets('Host events past-only history starts at standard body rhythm', (
+    tester,
+  ) async {
+    final now = DateTime(2026, 6, 15, 12);
+    final club = buildClub(id: 'history-only-club', ownerUserId: _hostUid);
+    final past = buildEvent(
+      id: 'history-only-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 5, 27, 9),
+      endTime: DateTime(2026, 5, 27, 10),
+    );
+
+    await _pumpHostScreen(
+      tester,
+      HostEventsScreen(now: now),
+      overrides: [
+        ..._hostClubOverrides(
+          owned: [club],
+          timelineEventsByOrganizer: {
+            club.id: [past],
+          },
+        ),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(AsyncData<List<Event>>([past])),
+      ],
+    );
+
+    expect(find.text('SCHEDULE'), findsNothing);
+    final headerRect = tester.getRect(find.byType(CatchScreenHeaderTitle));
+    final historyRect = tester.getRect(find.text('HISTORY'));
+    expect(
+      historyRect.top - headerRect.bottom,
+      closeTo(CatchInsets.pageBody.top, 0.5),
     );
   });
 

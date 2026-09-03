@@ -1,8 +1,154 @@
+// ignore_for_file: prefer_initializing_formals
+
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart'
+    show CatchFieldVisibilityScope;
+import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_pager_focus_boundary.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
+
+export 'package:catch_dating_app/core/widgets/catch_section_layout.dart'
+    show CatchScreenBodyLayout, CatchSliverContentWidth;
+
+enum _CatchTabbedPageKind { scroll, surface, masterDetail }
+
+/// Marker for an analyzer-verified semantic tab page owner.
+///
+/// Canonical pages use [CatchTabbedPageScrollView] directly. Feature owners
+/// may implement this interface only when their build terminal delegates to
+/// that scroll owner; the resolved composition checker enforces that boundary.
+abstract interface class CatchTabbedPageOwner implements Widget {
+  CatchScreenBodyLayout get bodyLayout;
+}
+
+/// Typed page entry accepted by [CatchTabbedScreenBody].
+///
+/// Every variant retains [CatchTabbedPageScrollView] as the tab's scroll and
+/// geometry owner. Surface decoration and expanded master-detail composition
+/// remain explicit adapters rather than arbitrary tab children.
+final class CatchTabbedPageSpec {
+  const CatchTabbedPageSpec.scroll({
+    required CatchScreenBodyLayout bodyLayout,
+    required CatchTabbedPageOwner page,
+  }) : _kind = _CatchTabbedPageKind.scroll,
+       _bodyLayout = bodyLayout,
+       _page = page,
+       _backgroundColor = null,
+       _expanded = false,
+       _detail = null;
+
+  const CatchTabbedPageSpec.surface({
+    required CatchScreenBodyLayout bodyLayout,
+    required CatchTabbedPageOwner page,
+    required Color backgroundColor,
+  }) : _kind = _CatchTabbedPageKind.surface,
+       _bodyLayout = bodyLayout,
+       _page = page,
+       _backgroundColor = backgroundColor,
+       _expanded = false,
+       _detail = null;
+
+  const CatchTabbedPageSpec.masterDetail({
+    required CatchScreenBodyLayout bodyLayout,
+    required bool expanded,
+    required CatchTabbedPageOwner master,
+    required Widget detail,
+  }) : _kind = _CatchTabbedPageKind.masterDetail,
+       _bodyLayout = bodyLayout,
+       _page = master,
+       _backgroundColor = null,
+       _expanded = expanded,
+       _detail = detail;
+
+  final _CatchTabbedPageKind _kind;
+  final CatchScreenBodyLayout _bodyLayout;
+  final CatchTabbedPageOwner _page;
+  final Color? _backgroundColor;
+  final bool _expanded;
+  final Widget? _detail;
+
+  Widget _build() {
+    if (_page.bodyLayout != _bodyLayout) {
+      throw FlutterError.fromParts([
+        ErrorSummary(
+          'CatchTabbedPageSpec and its page owner disagree on body geometry.',
+        ),
+        ErrorDescription(
+          '${_page.runtimeType} declares ${_page.bodyLayout}, while the page '
+          'spec declares $_bodyLayout.',
+        ),
+        ErrorHint(
+          'Use the same explicit CatchScreenBodyLayout on the page spec and '
+          'its CatchTabbedPageOwner. Semantic wrappers must forward that role '
+          'to CatchTabbedPageScrollView.',
+        ),
+      ]);
+    }
+    return switch (_kind) {
+      _CatchTabbedPageKind.scroll => _page as Widget,
+      _CatchTabbedPageKind.surface => ColoredBox(
+        color: _backgroundColor!,
+        child: _page as Widget,
+      ),
+      _CatchTabbedPageKind.masterDetail => CatchMasterDetailLayout(
+        expanded: _expanded,
+        master: _page as Widget,
+        detail: _detail!,
+      ),
+    };
+  }
+}
+
+enum _CatchTabbedScreenBodyKind { single, paged }
+
+/// Closed body specification for [CatchTabbedScreenScaffold].
+///
+/// This prevents a feature from supplying a raw `TabBarView` or unrelated
+/// widget. Every visible page is a typed [CatchTabbedPageSpec] whose primary
+/// scroll owner is [CatchTabbedPageScrollView].
+final class CatchTabbedScreenBody {
+  const CatchTabbedScreenBody.single({required CatchTabbedPageSpec page})
+    : _kind = _CatchTabbedScreenBodyKind.single,
+      _page = page,
+      _pages = null,
+      _controller = null,
+      _physics = null;
+
+  const CatchTabbedScreenBody.paged({
+    required TabController controller,
+    required List<CatchTabbedPageSpec> pages,
+    ScrollPhysics? physics,
+  }) : _kind = _CatchTabbedScreenBodyKind.paged,
+       _page = null,
+       _pages = pages,
+       _controller = controller,
+       _physics = physics;
+
+  final _CatchTabbedScreenBodyKind _kind;
+  final CatchTabbedPageSpec? _page;
+  final List<CatchTabbedPageSpec>? _pages;
+  final TabController? _controller;
+  final ScrollPhysics? _physics;
+
+  Widget _build() {
+    assert(
+      _kind != _CatchTabbedScreenBodyKind.paged || _pages!.isNotEmpty,
+      'CatchTabbedScreenBody.paged requires at least one page.',
+    );
+    return switch (_kind) {
+      _CatchTabbedScreenBodyKind.single => _page!._build(),
+      _CatchTabbedScreenBodyKind.paged => TabBarView(
+        controller: _controller,
+        physics: _physics,
+        children: [for (final page in _pages!) page._build()],
+      ),
+    };
+  }
+}
 
 /// Canonical root shell for a scroll-away screen title, pinned tab rail, and
 /// native horizontally paged tab bodies.
@@ -32,14 +178,22 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
   final CatchTopBarSearch? search;
   final int titleMaxLines;
   final CrossAxisAlignment rowCrossAxisAlignment;
+
+  /// Typed tab content for the pinned rail slot.
+  ///
+  /// The supplied widget may adapt `CatchTabRail` for feature-specific labels
+  /// or controller wiring, but it must declare the canonical rail height. This
+  /// scaffold validates that contract at runtime and owns the actual pinned
+  /// extent so route code cannot introduce local tab geometry.
   final PreferredSizeWidget tabRail;
-  final Widget body;
+  final CatchTabbedScreenBody body;
   final ScrollController? outerScrollController;
   final String? semanticsLabel;
   final String? semanticsHint;
 
   @override
   Widget build(BuildContext context) {
+    _validateTabRailGeometry();
     final t = CatchTokens.of(context);
     Widget scrollView = NestedScrollView(
       controller: outerScrollController,
@@ -53,23 +207,22 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
                 actions: actions,
                 titleMaxLines: titleMaxLines,
                 rowCrossAxisAlignment: rowCrossAxisAlignment,
+                padding: CatchInsets.tabbedScreenTitleBlock,
               )
-            : CatchScreenTopBar(
+            : CatchScreenTopBar.tabbed(
                 context: context,
                 eyebrow: eyebrow,
                 title: title,
                 subtitle: subtitle,
                 leading: leading,
-                leadingType: CatchTopBarLeading.none,
                 actions: actions,
                 titleMaxLines: titleMaxLines,
                 rowCrossAxisAlignment: rowCrossAxisAlignment,
-                applySafeArea: false,
                 search: search,
               );
         final headerSlivers = CatchSliverHeader(
           title: headerTitle,
-          bottomHeight: tabRail.preferredSize.height,
+          bottomHeight: CatchLayout.tabRailHeight,
           bottom: tabRail,
         ).buildSlivers(context);
         final collapsibleSlivers = headerSlivers.take(headerSlivers.length - 1);
@@ -83,7 +236,7 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
           ),
         ];
       },
-      body: body,
+      body: body._build(),
     );
 
     if (semanticsLabel != null || semanticsHint != null) {
@@ -94,10 +247,31 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
       );
     }
 
-    return Scaffold(
+    return CatchScreenScaffold.workspace(
       backgroundColor: t.bg,
       body: SafeArea(bottom: false, child: scrollView),
     );
+  }
+
+  void _validateTabRailGeometry() {
+    final declaredHeight = tabRail.preferredSize.height;
+    if (declaredHeight == CatchLayout.tabRailHeight) return;
+
+    throw FlutterError.fromParts([
+      ErrorSummary(
+        'CatchTabbedScreenScaffold requires a '
+        '${CatchLayout.tabRailHeight}-point tab rail.',
+      ),
+      ErrorDescription(
+        '${tabRail.runtimeType} declared a preferred height of '
+        '$declaredHeight points.',
+      ),
+      ErrorHint(
+        'Use CatchTabRail or CatchTabControllerRail, or make the '
+        'feature adapter report CatchLayout.tabRailHeight. The scaffold owns '
+        'the pinned extent; screens must not define local tab-rail geometry.',
+      ),
+    ]);
   }
 }
 
@@ -107,10 +281,12 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
 /// requests from the horizontal pager, owns shell-aware terminal padding, and
 /// can center box-content slivers at the canonical readable width without
 /// converting sliver-native pages into box layouts.
-class CatchTabbedPageScrollView extends StatefulWidget {
+class CatchTabbedPageScrollView extends StatefulWidget
+    implements CatchTabbedPageOwner {
   const CatchTabbedPageScrollView({
     super.key,
     required this.scrollKey,
+    required this.bodyLayout,
     required this.slivers,
     this.includeTerminalPadding = true,
     this.constrainToContentWidth = false,
@@ -122,6 +298,8 @@ class CatchTabbedPageScrollView extends StatefulWidget {
   });
 
   final PageStorageKey<String> scrollKey;
+  @override
+  final CatchScreenBodyLayout bodyLayout;
   final List<Widget> slivers;
   final bool includeTerminalPadding;
 
@@ -252,68 +430,30 @@ class _CatchTabbedPageScrollViewState extends State<CatchTabbedPageScrollView>
                   context,
                 ),
               ),
-              for (final sliver in widget.slivers)
-                if (widget.constrainToContentWidth)
-                  CatchSliverContentWidth(
-                    maxExtent:
-                        widget.maxContentExtent ??
-                        CatchLayout.tabbedPageMaxExtent,
-                    sliver: sliver,
-                  )
-                else
-                  sliver,
+              CatchSliverScreenBody(
+                layout: widget.bodyLayout,
+                constrainToContentWidth: widget.constrainToContentWidth,
+                maxContentExtent:
+                    widget.maxContentExtent ?? CatchLayout.tabbedPageMaxExtent,
+                slivers: widget.slivers,
+              ),
               if (widget.includeTerminalPadding)
                 const CatchSliverTerminalPadding(),
             ],
           );
           final onRefresh = widget.onRefresh;
-          return onRefresh == null
+          final refreshed = onRefresh == null
               ? scrollView
               : RefreshIndicator.adaptive(
                   onRefresh: onRefresh,
                   child: scrollView,
                 );
+          return CatchFieldVisibilityScope(
+            bottomObstruction: AppShellActiveTab.bottomOverlayInsetOf(context),
+            child: refreshed,
+          );
         },
       ),
-    );
-  }
-}
-
-/// Centers one sliver around the canonical readable content lane on wide
-/// viewports while leaving phone layouts direct and full width.
-///
-/// [CatchTabbedPageScrollView] applies this contract when
-/// `constrainToContentWidth` is true. It remains public so sliver-native route
-/// shells can reuse and test the same width policy without private helpers.
-class CatchSliverContentWidth extends StatelessWidget {
-  const CatchSliverContentWidth({
-    super.key,
-    required this.sliver,
-    this.maxExtent = CatchLayout.tabbedPageMaxExtent,
-  });
-
-  final Widget sliver;
-  final double maxExtent;
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverLayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.crossAxisExtent <= maxExtent) return sliver;
-        return SliverCrossAxisGroup(
-          slivers: [
-            const SliverCrossAxisExpanded(
-              flex: 1,
-              sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
-            ),
-            SliverConstrainedCrossAxis(maxExtent: maxExtent, sliver: sliver),
-            const SliverCrossAxisExpanded(
-              flex: 1,
-              sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
-            ),
-          ],
-        );
-      },
     );
   }
 }

@@ -17,6 +17,13 @@ typedef CatchAsyncValueDataBuilder<T> =
 typedef CatchAsyncValueLoadingBuilder = Widget Function(BuildContext context);
 typedef CatchAsyncValueErrorBuilder =
     Widget Function(BuildContext context, Object error, StackTrace stackTrace);
+typedef CatchAsyncValueErrorBuilderWithRetry =
+    Widget Function(
+      BuildContext context,
+      Object error,
+      StackTrace stackTrace,
+      VoidCallback? onRetry,
+    );
 
 /// Generic widget that exhaustively resolves the overlapping loading, retry,
 /// refresh, error, and data states of an [AsyncValue].
@@ -35,13 +42,14 @@ class CatchAsyncValueView<T> extends StatefulWidget {
     required this.builder,
     this.loadingBuilder,
     this.errorBuilder,
+    this.errorBuilderWithRetry,
     this.errorContext = AppErrorContext.generic,
     this.onRetry,
     this.skipLoadingOnReload = false,
     this.skipLoadingOnRefresh = true,
     this.skipError = false,
     this.initialLoadTimeout = InitialLoadPolicy.standard,
-  });
+  }) : assert(errorBuilder == null || errorBuilderWithRetry == null);
 
   final AsyncValue<T> value;
   final CatchAsyncValueDataBuilder<T> builder;
@@ -51,6 +59,11 @@ class CatchAsyncValueView<T> extends StatefulWidget {
 
   /// Optional custom error widget. Defaults to [CatchErrorState].
   final CatchAsyncValueErrorBuilder? errorBuilder;
+
+  /// Optional custom error widget that receives the retry callback owned by
+  /// this async boundary. Use this when custom error chrome must recover from
+  /// both provider failures and the initial-load timeout.
+  final CatchAsyncValueErrorBuilderWithRetry? errorBuilderWithRetry;
   final AppErrorContext errorContext;
   final VoidCallback? onRetry;
   final bool skipLoadingOnReload;
@@ -112,11 +125,22 @@ class _CatchAsyncValueViewState<T> extends State<CatchAsyncValueView<T>> {
   Widget build(BuildContext context) {
     final value = widget.value;
     if (_timedOut) {
-      return CatchErrorState.fromError(
-        _initialLoadTimeoutException,
-        context: widget.errorContext,
-        onRetry: widget.onRetry == null ? null : _retry,
-      );
+      return widget.errorBuilderWithRetry?.call(
+            context,
+            _initialLoadTimeoutException,
+            StackTrace.current,
+            widget.onRetry == null ? null : _retry,
+          ) ??
+          widget.errorBuilder?.call(
+            context,
+            _initialLoadTimeoutException,
+            StackTrace.current,
+          ) ??
+          CatchErrorState.fromError(
+            _initialLoadTimeoutException,
+            context: widget.errorContext,
+            onRetry: widget.onRetry == null ? null : _retry,
+          );
     }
     return switch (catchAsyncRenderBranchFromAsyncValue(
       value,
@@ -131,7 +155,13 @@ class _CatchAsyncValueViewState<T> extends State<CatchAsyncValueView<T>> {
       CatchAsyncRenderBranch.loading =>
         widget.loadingBuilder?.call(context) ?? const CatchLoadingIndicator(),
       CatchAsyncRenderBranch.error =>
-        widget.errorBuilder?.call(
+        widget.errorBuilderWithRetry?.call(
+              context,
+              value.error!,
+              value.stackTrace ?? StackTrace.current,
+              widget.onRetry == null ? null : _retry,
+            ) ??
+            widget.errorBuilder?.call(
               context,
               value.error!,
               value.stackTrace ?? StackTrace.current,
@@ -155,6 +185,8 @@ class CatchAsyncValueSliver<T> extends StatefulWidget {
     this.sliverLoadingBuilder,
     this.errorBuilder,
     this.sliverErrorBuilder,
+    this.errorBuilderWithRetry,
+    this.sliverErrorBuilderWithRetry,
     this.errorContext = AppErrorContext.generic,
     this.onRetry,
     this.fillErrorRemaining = true,
@@ -162,7 +194,10 @@ class CatchAsyncValueSliver<T> extends StatefulWidget {
     this.skipLoadingOnRefresh = true,
     this.skipError = false,
     this.initialLoadTimeout = InitialLoadPolicy.standard,
-  });
+  }) : assert(errorBuilder == null || errorBuilderWithRetry == null),
+       assert(
+         sliverErrorBuilder == null || sliverErrorBuilderWithRetry == null,
+       );
 
   final AsyncValue<T> value;
   final CatchAsyncValueDataBuilder<T> builder;
@@ -170,6 +205,8 @@ class CatchAsyncValueSliver<T> extends StatefulWidget {
   final WidgetBuilder? sliverLoadingBuilder;
   final CatchAsyncValueErrorBuilder? errorBuilder;
   final CatchAsyncValueErrorBuilder? sliverErrorBuilder;
+  final CatchAsyncValueErrorBuilderWithRetry? errorBuilderWithRetry;
+  final CatchAsyncValueErrorBuilderWithRetry? sliverErrorBuilderWithRetry;
   final AppErrorContext errorContext;
   final VoidCallback? onRetry;
   final bool fillErrorRemaining;
@@ -230,9 +267,19 @@ class _CatchAsyncValueSliverState<T> extends State<CatchAsyncValueSliver<T>> {
   }
 
   Widget _errorSliver(BuildContext context, Object error, StackTrace stack) {
-    final customSliver = widget.sliverErrorBuilder?.call(context, error, stack);
+    final retry = widget.onRetry == null ? null : _retry;
+    final customSliver =
+        widget.sliverErrorBuilderWithRetry?.call(
+          context,
+          error,
+          stack,
+          retry,
+        ) ??
+        widget.sliverErrorBuilder?.call(context, error, stack);
     if (customSliver != null) return customSliver;
-    final customBuilder = widget.errorBuilder?.call(context, error, stack);
+    final customBuilder =
+        widget.errorBuilderWithRetry?.call(context, error, stack, retry) ??
+        widget.errorBuilder?.call(context, error, stack);
     if (customBuilder != null) return SliverToBoxAdapter(child: customBuilder);
     return CatchSliverErrorState.fromError(
       error,

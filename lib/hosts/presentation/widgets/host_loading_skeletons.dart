@@ -7,9 +7,14 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 class HostRouteLoadingBody extends StatelessWidget {
-  const HostRouteLoadingBody({super.key, this.showTabRail = false});
+  const HostRouteLoadingBody({
+    super.key,
+    required this.padding,
+    this.showTabRail = false,
+  });
 
   final bool showTabRail;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +24,7 @@ class HostRouteLoadingBody extends StatelessWidget {
           maxWidth: CatchLayout.maxContentWidth,
         ),
         child: CatchSectionStack(
+          padding: padding,
           gap: CatchSpacing.micro18,
           children: [
             if (showTabRail) const HostTabRailSkeleton(),

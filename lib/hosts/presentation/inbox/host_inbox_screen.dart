@@ -23,8 +23,8 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -183,34 +183,28 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
                     _selectWorkspace(HostMessagingWorkspace.inbox),
               ),
             );
-      return SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: ChatsBrowseHeader(
-                presentation: ChatsBrowsePresentation.host,
-                showSearchAction: showSearch,
-                searchValue: isInbox ? query : '',
-                onSearchChanged: isInbox
-                    ? ref.read(chatSearchQueryProvider.notifier).setQuery
-                    : null,
-                hostFilter: null,
-                hostUnreadCount: 0,
-                onHostFilterChanged: null,
-                subtitle: isInbox
-                    ? context.l10n.hostInboxSubtitle
-                    : context.l10n.hostSendsSubtitle,
-              ),
-            ),
-            HostMessagingWorkspaceRail(
-              selected: _workspace,
-              onChanged: _campaignBusy ? null : _selectWorkspace,
-            ),
-            workspaceSliver,
-            const CatchSliverTerminalPadding(),
-          ],
+      return CatchRootScreenScrollView(
+        header: ChatsBrowseHeader(
+          presentation: ChatsBrowsePresentation.host,
+          showSearchAction: showSearch,
+          searchValue: isInbox ? query : '',
+          onSearchChanged: isInbox
+              ? ref.read(chatSearchQueryProvider.notifier).setQuery
+              : null,
+          hostFilter: null,
+          hostUnreadCount: 0,
+          onHostFilterChanged: null,
+          showHostSubtitle: !isInbox,
+          subtitle: isInbox ? null : context.l10n.hostSendsSubtitle,
         ),
+        bodyLayout: CatchScreenBodyLayout.fullBleed,
+        slivers: [
+          HostMessagingWorkspaceRail(
+            selected: _workspace,
+            onChanged: _campaignBusy ? null : _selectWorkspace,
+          ),
+          workspaceSliver,
+        ],
       );
     }
 
@@ -229,7 +223,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             embedded: true,
           );
 
-    return Scaffold(
+    return CatchScreenScaffold.workspace(
       backgroundColor: t.bg,
       body: isInbox
           ? CatchAdaptiveMasterDetailLayout(

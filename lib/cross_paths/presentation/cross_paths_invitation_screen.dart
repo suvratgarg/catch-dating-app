@@ -13,6 +13,8 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
@@ -41,26 +43,31 @@ class CrossPathsInvitationScreen extends ConsumerWidget {
     final invitationAsync = ref.watch(
       watchCrossPathsInvitationProvider(invitationId),
     );
-    return Scaffold(
-      appBar: CatchTopBar(
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.crossPathsInvitationScreenTitle,
         leadingType: CatchTopBarLeading.back,
+        divider: scrolledUnder,
       ),
-      body: invitationAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => CatchErrorState.fromError(
-          error,
-          context: AppErrorContext.explore,
-          onRetry: () =>
-              ref.invalidate(watchCrossPathsInvitationProvider(invitationId)),
+      body: CatchRouteBody.standard(
+        child: invitationAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.explore,
+            onRetry: () =>
+                ref.invalidate(watchCrossPathsInvitationProvider(invitationId)),
+          ),
+          data: (invitation) => invitation == null
+              ? CatchErrorState(
+                  title:
+                      context.l10n.crossPathsInvitationScreenUnavailableTitle,
+                  message:
+                      context.l10n.crossPathsInvitationScreenUnavailableBody,
+                  secondaryAction: const CatchErrorBackAction(),
+                )
+              : _InvitationDetail(invitation: invitation),
         ),
-        data: (invitation) => invitation == null
-            ? CatchErrorState(
-                title: context.l10n.crossPathsInvitationScreenUnavailableTitle,
-                message: context.l10n.crossPathsInvitationScreenUnavailableBody,
-                secondaryAction: const CatchErrorBackAction(),
-              )
-            : _InvitationDetail(invitation: invitation),
       ),
     );
   }
@@ -156,56 +163,64 @@ class _InvitationDetailBody extends ConsumerWidget {
     );
     final analytics = ref.read(appAnalyticsProvider);
     final photo = profile.primaryPhotoThumbnailUrl;
-    return ListView(
-      padding: CatchInsets.pageBody,
-      children: [
-        CatchPersonPolaroid(
-          media: photo == null
-              ? CatchNetworkImageFallback(icon: CatchIcons.personOutlined)
-              : CatchNetworkImage(photo),
-          kicker: context.l10n.crossPathsExploreCardLabelCrossPaths,
-          name: '${profile.name}, ${profile.age}',
-          meta: _statusCopy(context),
-          showArrow: true,
-          onTap: () => context.pushNamed(
-            Routes.publicProfileScreen.name,
-            pathParameters: {'uid': profile.uid},
-            extra: profile,
+    return CatchResponsiveSectionLayout(
+      sectionGap: CatchSpacing.s4,
+      sections: [
+        CatchResponsiveSectionItem(
+          child: CatchPersonPolaroid(
+            media: photo == null
+                ? CatchNetworkImageFallback(icon: CatchIcons.personOutlined)
+                : CatchNetworkImage(photo),
+            kicker: context.l10n.crossPathsExploreCardLabelCrossPaths,
+            name: '${profile.name}, ${profile.age}',
+            meta: _statusCopy(context),
+            showArrow: true,
+            onTap: () => context.pushNamed(
+              Routes.publicProfileScreen.name,
+              pathParameters: {'uid': profile.uid},
+              extra: profile,
+            ),
           ),
         ),
-        gapH16,
-        CatchSurface.card(
-          padding: CatchInsets.content,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(event.title, style: CatchTextStyles.sectionTitle(context)),
-              gapH4,
-              Text(
-                '${EventFormatters.shortDate(event.startTime)} · '
-                '${EventFormatters.time(event.startTime)} · '
-                '${event.meetingPoint}',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ],
+        CatchResponsiveSectionItem(
+          child: CatchSurface.card(
+            padding: CatchInsets.content,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(event.title, style: CatchTextStyles.sectionTitle(context)),
+                gapH4,
+                Text(
+                  '${EventFormatters.shortDate(event.startTime)} · '
+                  '${EventFormatters.time(event.startTime)} · '
+                  '${event.meetingPoint}',
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+              ],
+            ),
           ),
         ),
-        gapH16,
-        if (pairHold != null) ...[
-          _PairHoldPanel(hold: pairHold!, event: event, currentUid: currentUid),
-          gapH16,
-        ],
-        _InvitationActions(
-          invitation: invitation,
-          isRecipient: isRecipient,
-          loading: mutation.isLoading,
-          onRespond: (accept) => _respond(
-            context,
-            invitationController,
-            analytics,
-            accept: accept,
+        if (pairHold != null)
+          CatchResponsiveSectionItem(
+            child: _PairHoldPanel(
+              hold: pairHold!,
+              event: event,
+              currentUid: currentUid,
+            ),
           ),
-          onCancel: () => _cancel(context, invitationController, analytics),
+        CatchResponsiveSectionItem(
+          child: _InvitationActions(
+            invitation: invitation,
+            isRecipient: isRecipient,
+            loading: mutation.isLoading,
+            onRespond: (accept) => _respond(
+              context,
+              invitationController,
+              analytics,
+              accept: accept,
+            ),
+            onCancel: () => _cancel(context, invitationController, analytics),
+          ),
         ),
       ],
     );

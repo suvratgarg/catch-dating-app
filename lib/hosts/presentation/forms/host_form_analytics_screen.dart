@@ -55,24 +55,20 @@ class _HostFormAnalyticsScreenState
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
+      body: CatchRouteBody.standard(
+        constrainToContentWidth: true,
         child: CatchAsyncValueView<HostFormAnalytics>(
           value: analytics,
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
-          loadingBuilder: (_) =>
-              const CatchPageBody(child: CatchSkeletonRows(count: 8)),
-          errorBuilder: (_, error, _) => CatchPageBody(
-            child: CatchErrorState.fromError(
-              error,
-              context: AppErrorContext.forms,
-              onRetry: () => ref.invalidate(provider),
-            ),
+          loadingBuilder: (_) => const CatchSkeletonRows(count: 8),
+          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.forms,
+            onRetry: () => ref.invalidate(provider),
           ),
-          builder: (context, value) => ListView(
-            padding: CatchInsets.pageBody.copyWith(bottom: 0),
+          builder: (context, value) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
                 context.l10n.hostFormAnalyticsFunnel,
@@ -183,7 +179,6 @@ class _HostFormAnalyticsScreenState
                   ],
                 ),
               ],
-              const CatchScrollTerminalPadding(),
             ],
           ),
         ),

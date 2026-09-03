@@ -399,6 +399,11 @@ void _registerExploreErrorsAndCreationTests() {
     );
     await tester.pump();
 
+    final rootScaffold = tester.widget<CatchRootScreenScaffold>(
+      find.byType(CatchRootScreenScaffold),
+    );
+    expect(rootScaffold.bodyLayout, CatchScreenBodyLayout.fullBleed);
+    expect(rootScaffold.topEdge, CatchRootScreenTopEdge.headerOwned);
     expect(find.text('Explore unavailable'), findsOneWidget);
     expect(
       find.text(

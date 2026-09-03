@@ -558,6 +558,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           ),
         CatchSection.fieldRows(
           title: context.l10n.hostsHostClubProfileTitleMedia,
+          first: !widget.isOwner,
           count: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
             count: mediaAssetCount,
           ),

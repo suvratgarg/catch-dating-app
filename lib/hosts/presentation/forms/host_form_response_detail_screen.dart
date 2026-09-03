@@ -69,24 +69,20 @@ class _HostFormResponseDetailScreenState
               onConvert: (kind) => _reviewConversion(loadedDetail, kind),
             )
           : null,
-      body: SafeArea(
-        top: false,
-        bottom: false,
+      body: CatchRouteBody.standard(
+        constrainToContentWidth: true,
         child: CatchAsyncValueView<HostFormResponseDetail>(
           value: detail,
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
-          loadingBuilder: (_) =>
-              const CatchPageBody(child: CatchSkeletonRows(count: 8)),
-          errorBuilder: (_, error, _) => CatchPageBody(
-            child: CatchErrorState.fromError(
-              error,
-              context: AppErrorContext.formResponses,
-              onRetry: () => ref.invalidate(provider),
-            ),
+          loadingBuilder: (_) => const CatchSkeletonRows(count: 8),
+          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.formResponses,
+            onRetry: () => ref.invalidate(provider),
           ),
-          builder: (context, value) => ListView(
-            padding: CatchInsets.pageBody.copyWith(bottom: 0),
+          builder: (context, value) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _ResponseIdentityHeader(detail: value),
               gapH8,
@@ -133,7 +129,6 @@ class _HostFormResponseDetailScreenState
               ),
               gapH24,
               _ResponseTechnicalDetails(detail: value),
-              const CatchScrollTerminalPadding(),
             ],
           ),
         ),

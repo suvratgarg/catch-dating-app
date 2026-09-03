@@ -8,14 +8,13 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _celebrationInk = CatchCelebrationColors.ink;
 const _celebrationCream = CatchCelebrationColors.cream;
 const _celebrationActionInk = CatchCelebrationColors.actionInk;
-
-enum CatchCelebrationAppearance { immersive, paper }
 
 class CelebrationDetail {
   const CelebrationDetail({
@@ -62,7 +61,6 @@ class CatchCelebrationScreen extends ConsumerStatefulWidget {
     this.onClose,
     this.showCloseButton,
     this.playEffects = true,
-    this.appearance = CatchCelebrationAppearance.immersive,
   });
 
   final CelebrationMomentKind kind;
@@ -79,7 +77,6 @@ class CatchCelebrationScreen extends ConsumerStatefulWidget {
   final VoidCallback? onClose;
   final bool? showCloseButton;
   final bool playEffects;
-  final CatchCelebrationAppearance appearance;
 
   IconData get icon => _icon ?? CatchIcons.checkRounded;
 
@@ -105,275 +102,292 @@ class _CatchCelebrationScreenState
 
   @override
   Widget build(BuildContext context) {
-    if (widget.appearance == CatchCelebrationAppearance.paper) {
-      return PaperCelebrationScaffold(screen: widget);
-    }
-
     final t = CatchTokens.of(context);
     final details = widget.details;
     final secondaryAction = widget.secondaryAction;
     final showCloseButton = widget.showCloseButton ?? widget.onClose != null;
 
-    return Scaffold(
-      extendBody: true,
-      body: DecoratedBox(
-        decoration: BoxDecoration(gradient: t.heroGrad),
-        child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                physics: const ClampingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  CatchSpacing.s4,
-                  CatchSpacing.s5,
-                  CatchSpacing.s5,
-                ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight:
-                        constraints.maxHeight -
-                        CatchLayout.celebrationViewportVerticalPadding,
-                  ),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: !showCloseButton || widget.onClose == null
-                              ? gapH44
-                              : CatchIconButton(
-                                  background: _celebrationCream.withValues(
-                                    alpha: 0.22,
-                                  ),
-                                  onTap: widget.onClose,
-                                  child: Icon(
-                                    CatchIcons.closeRounded,
-                                    color: _celebrationInk,
-                                  ),
-                                ),
-                        ),
-                        gapH36,
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child:
-                              widget.visual ??
-                              CelebrationIcon(icon: widget.icon),
-                        ),
-                        gapH24,
-                        if (widget.eyebrow != null) ...[
-                          Text(
-                            widget.eyebrow!.toUpperCase(),
-                            style: CatchTextStyles.labelM(
-                              context,
-                              color: _celebrationCream.withValues(alpha: 0.9),
-                            ).copyWith(fontWeight: FontWeight.w800),
-                          ),
-                          gapH8,
-                        ],
-                        Text(
-                          widget.title,
-                          style: CatchTextStyles.display(
-                            context,
-                            color: _celebrationCream,
-                          ),
-                        ),
-                        gapH14,
-                        Text(
-                          widget.message,
-                          style: CatchTextStyles.bodyL(
-                            context,
-                            color: _celebrationCream.withValues(alpha: 0.92),
-                          ),
-                        ),
-                        if (details.isNotEmpty) ...[
-                          gapH28,
-                          CelebrationDetailsCard(details: details),
-                        ],
-                        if (widget.note != null) ...[
-                          gapH16,
-                          CelebrationNote(note: widget.note!),
-                        ],
-                        for (final child in widget.supplementalChildren) ...[
-                          gapH16,
-                          child,
-                        ],
-                        const Spacer(),
-                        gapH32,
-                        CatchButton(
-                          key: widget.primaryAction.key,
-                          label: widget.primaryAction.label,
-                          onPressed: widget.primaryAction.onPressed,
-                          icon: widget.primaryAction.icon,
-                          variant: CatchButtonVariant.light,
-                          fullWidth: true,
-                          backgroundColor: _celebrationCream,
-                          foregroundColor: _celebrationActionInk,
-                        ),
-                        if (secondaryAction != null) ...[
-                          gapH12,
-                          CatchButton(
-                            key: secondaryAction.key,
-                            label: secondaryAction.label,
-                            onPressed: secondaryAction.onPressed,
-                            icon: secondaryAction.icon,
-                            variant: secondaryAction.variant,
-                            fullWidth: true,
-                            backgroundColor: _celebrationCream.withValues(
-                              alpha: 0.58,
-                            ),
-                            foregroundColor: _celebrationActionInk,
-                            borderColor: _celebrationActionInk.withValues(
-                              alpha: 0.16,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class PaperCelebrationScaffold extends StatelessWidget {
-  const PaperCelebrationScaffold({super.key, required this.screen});
-
-  final CatchCelebrationScreen screen;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final secondaryAction = screen.secondaryAction;
-    final showCloseButton = screen.showCloseButton ?? screen.onClose != null;
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
+    final body = DecoratedBox(
+      decoration: BoxDecoration(gradient: t.heroGrad),
+      child: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
               physics: const ClampingScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(
                 CatchSpacing.s5,
-                CatchLayout.celebrationPaperTopPadding,
+                CatchSpacing.s4,
                 CatchSpacing.s5,
-                CatchLayout.celebrationPaperBottomPadding,
+                CatchSpacing.s5,
               ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight:
                       constraints.maxHeight -
-                      CatchLayout.celebrationPaperViewportVerticalPadding,
+                      CatchLayout.celebrationViewportVerticalPadding,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (showCloseButton && screen.onClose != null) ...[
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
                       Align(
                         alignment: Alignment.centerRight,
-                        child: CatchIconButton(
-                          background: t.primarySoft,
-                          onTap: screen.onClose,
-                          child: Icon(
-                            CatchIcons.closeRounded,
-                            color: t.primary,
+                        child: !showCloseButton || widget.onClose == null
+                            ? gapH44
+                            : CatchIconButton(
+                                background: _celebrationCream.withValues(
+                                  alpha: 0.22,
+                                ),
+                                onTap: widget.onClose,
+                                child: Icon(
+                                  CatchIcons.closeRounded,
+                                  color: _celebrationInk,
+                                ),
+                              ),
+                      ),
+                      gapH36,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child:
+                            widget.visual ?? CelebrationIcon(icon: widget.icon),
+                      ),
+                      gapH24,
+                      if (widget.eyebrow != null) ...[
+                        Text(
+                          widget.eyebrow!.toUpperCase(),
+                          style: CatchTextStyles.labelM(
+                            context,
+                            color: _celebrationCream.withValues(alpha: 0.9),
+                          ).copyWith(fontWeight: FontWeight.w800),
+                        ),
+                        gapH8,
+                      ],
+                      Text(
+                        widget.title,
+                        style: CatchTextStyles.display(
+                          context,
+                          color: _celebrationCream,
+                        ),
+                      ),
+                      gapH14,
+                      Text(
+                        widget.message,
+                        style: CatchTextStyles.bodyL(
+                          context,
+                          color: _celebrationCream.withValues(alpha: 0.92),
+                        ),
+                      ),
+                      if (details.isNotEmpty) ...[
+                        gapH28,
+                        CelebrationDetailsCard(details: details),
+                      ],
+                      if (widget.note != null) ...[
+                        gapH16,
+                        CelebrationNote(note: widget.note!),
+                      ],
+                      for (final child in widget.supplementalChildren) ...[
+                        gapH16,
+                        child,
+                      ],
+                      const Spacer(),
+                      gapH32,
+                      CatchButton(
+                        key: widget.primaryAction.key,
+                        label: widget.primaryAction.label,
+                        onPressed: widget.primaryAction.onPressed,
+                        icon: widget.primaryAction.icon,
+                        variant: CatchButtonVariant.light,
+                        fullWidth: true,
+                        backgroundColor: _celebrationCream,
+                        foregroundColor: _celebrationActionInk,
+                      ),
+                      if (secondaryAction != null) ...[
+                        gapH12,
+                        CatchButton(
+                          key: secondaryAction.key,
+                          label: secondaryAction.label,
+                          onPressed: secondaryAction.onPressed,
+                          icon: secondaryAction.icon,
+                          variant: secondaryAction.variant,
+                          fullWidth: true,
+                          backgroundColor: _celebrationCream.withValues(
+                            alpha: 0.58,
+                          ),
+                          foregroundColor: _celebrationActionInk,
+                          borderColor: _celebrationActionInk.withValues(
+                            alpha: 0.16,
                           ),
                         ),
-                      ),
-                      gapH20,
+                      ],
                     ],
-                    Align(
-                      child:
-                          screen.visual ??
-                          PaperCelebrationIcon(icon: screen.icon),
-                    ),
-                    if (screen.eyebrow != null) ...[
-                      gapH16,
-                      Text(
-                        screen.eyebrow!.toUpperCase(),
-                        textAlign: TextAlign.center,
-                        style: CatchTextStyles.labelM(
-                          context,
-                          color: t.primary,
-                        ).copyWith(fontWeight: FontWeight.w800),
-                      ),
-                    ],
-                    gapH8,
-                    Text(
-                      screen.title,
-                      textAlign: TextAlign.center,
-                      style: CatchTextStyles.display(context, color: t.ink),
-                    ),
-                    gapH10,
-                    Align(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 340),
-                        child: Text(
-                          screen.message,
-                          textAlign: TextAlign.center,
-                          style: CatchTextStyles.proseM(context, color: t.ink2),
-                        ),
-                      ),
-                    ),
-                    if (screen.details.isNotEmpty) ...[
-                      gapH24,
-                      PaperCelebrationDetailsCard(details: screen.details),
-                    ],
-                    if (screen.note != null) ...[
-                      gapH12,
-                      Text(
-                        screen.note!,
-                        textAlign: TextAlign.center,
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink3,
-                        ),
-                      ),
-                    ],
-                    for (final child in screen.supplementalChildren) ...[
-                      gapH18,
-                      child,
-                    ],
-                    const SizedBox(
-                      height: CatchLayout.celebrationPaperActionTopGap,
-                    ),
-                    CatchButton(
-                      key: screen.primaryAction.key,
-                      label: screen.primaryAction.label,
-                      onPressed: screen.primaryAction.onPressed,
-                      icon: screen.primaryAction.icon,
-                      fullWidth: true,
-                      backgroundColor: t.primary,
-                      foregroundColor: t.primaryInk,
-                    ),
-                    if (secondaryAction != null) ...[
-                      gapH10,
-                      CatchButton(
-                        key: secondaryAction.key,
-                        label: secondaryAction.label,
-                        onPressed: secondaryAction.onPressed,
-                        icon: secondaryAction.icon,
-                        variant: secondaryAction.variant,
-                        fullWidth: true,
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: t.ink,
-                        borderColor: t.line2,
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
               ),
             );
           },
         ),
       ),
+    );
+    return CatchScreenScaffold.standalone(
+      safeArea: CatchScreenSafeArea.none,
+      extendBody: true,
+      body: body,
+    );
+  }
+}
+
+class PaperCelebrationScaffold extends StatelessWidget {
+  const PaperCelebrationScaffold({
+    super.key,
+    required this.title,
+    required this.message,
+    required this.primaryAction,
+    this.eyebrow,
+    this.icon,
+    this.visual,
+    this.details = const [],
+    this.note,
+    this.supplementalChildren = const [],
+    this.secondaryAction,
+    this.onClose,
+    this.showCloseButton,
+  });
+
+  final String? eyebrow;
+  final String title;
+  final String message;
+  final IconData? icon;
+  final Widget? visual;
+  final List<CelebrationDetail> details;
+  final String? note;
+  final List<Widget> supplementalChildren;
+  final CelebrationAction primaryAction;
+  final CelebrationAction? secondaryAction;
+  final VoidCallback? onClose;
+  final bool? showCloseButton;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final secondaryAction = this.secondaryAction;
+    final showCloseButton = this.showCloseButton ?? onClose != null;
+
+    final body = SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s5,
+              CatchLayout.celebrationPaperTopPadding,
+              CatchSpacing.s5,
+              CatchLayout.celebrationPaperBottomPadding,
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight:
+                    constraints.maxHeight -
+                    CatchLayout.celebrationPaperViewportVerticalPadding,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (showCloseButton && onClose != null) ...[
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: CatchIconButton(
+                        background: t.primarySoft,
+                        onTap: onClose,
+                        child: Icon(CatchIcons.closeRounded, color: t.primary),
+                      ),
+                    ),
+                    gapH20,
+                  ],
+                  Align(
+                    child:
+                        visual ??
+                        PaperCelebrationIcon(
+                          icon: icon ?? CatchIcons.checkRounded,
+                        ),
+                  ),
+                  if (eyebrow != null) ...[
+                    gapH16,
+                    Text(
+                      eyebrow!.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: CatchTextStyles.labelM(
+                        context,
+                        color: t.primary,
+                      ).copyWith(fontWeight: FontWeight.w800),
+                    ),
+                  ],
+                  gapH8,
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: CatchTextStyles.display(context, color: t.ink),
+                  ),
+                  gapH10,
+                  Align(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 340),
+                      child: Text(
+                        message,
+                        textAlign: TextAlign.center,
+                        style: CatchTextStyles.proseM(context, color: t.ink2),
+                      ),
+                    ),
+                  ),
+                  if (details.isNotEmpty) ...[
+                    gapH24,
+                    PaperCelebrationDetailsCard(details: details),
+                  ],
+                  if (note != null) ...[
+                    gapH12,
+                    Text(
+                      note!,
+                      textAlign: TextAlign.center,
+                      style: CatchTextStyles.supporting(context, color: t.ink3),
+                    ),
+                  ],
+                  for (final child in supplementalChildren) ...[gapH18, child],
+                  const SizedBox(
+                    height: CatchLayout.celebrationPaperActionTopGap,
+                  ),
+                  CatchButton(
+                    key: primaryAction.key,
+                    label: primaryAction.label,
+                    onPressed: primaryAction.onPressed,
+                    icon: primaryAction.icon,
+                    fullWidth: true,
+                    backgroundColor: t.primary,
+                    foregroundColor: t.primaryInk,
+                  ),
+                  if (secondaryAction != null) ...[
+                    gapH10,
+                    CatchButton(
+                      key: secondaryAction.key,
+                      label: secondaryAction.label,
+                      onPressed: secondaryAction.onPressed,
+                      icon: secondaryAction.icon,
+                      variant: secondaryAction.variant,
+                      fullWidth: true,
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: t.ink,
+                      borderColor: t.line2,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+    return CatchScreenScaffold.stepFlow(
+      safeArea: CatchScreenSafeArea.none,
+      backgroundColor: t.bg,
+      body: body,
     );
   }
 }

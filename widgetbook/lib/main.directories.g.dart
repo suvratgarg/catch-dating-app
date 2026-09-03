@@ -3073,6 +3073,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchScreenScaffold',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchScreenScaffoldContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4910,16 +4921,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Empty states',
                     builder: _widgetbook_workspace_catches_catches_use_cases
                         .catchesHubEmptyStateStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchesHubHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Header states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .catchesHubHeaderStates,
                   ),
                 ],
               ),
@@ -7774,6 +7775,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerStateScaffold',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loading, auth, error, and empty',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostOrganizerStateScaffoldStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostOrganizerSwitcherSheet',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8368,17 +8380,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAuthRequiredScreen',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAuthRequiredScreenCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostChartSkeleton',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8921,6 +8922,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Primitives',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'CatchTimestampedMessageText',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Timestamped message text',
+                    builder:
+                        _widgetbook_workspace_matches_matches_chat_use_cases
+                            .timestampedMessageTextState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ChatEventContextHeader',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8983,17 +8995,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_matches_matches_chat_use_cases
                             .suvbotResetActionRowPrimitiveStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'TimestampedMessageText',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Timestamped message text',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .timestampedMessageTextState,
                   ),
                 ],
               ),
@@ -9166,6 +9167,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_onboarding_onboarding_use_cases
                             .runningPrefsPageStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'StartWelcomeRouteScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Route surface',
+                    builder:
+                        _widgetbook_workspace_onboarding_onboarding_use_cases
+                            .startWelcomeRouteScreen,
                   ),
                 ],
               ),
@@ -9548,6 +9560,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Self tab body states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileScreenSelfTabBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileSettingsButton',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9624,16 +9646,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Route body states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .publicProfileScreenBodyStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'SelfProfileTabBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Self tab body states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileScreenSelfTabBodyStates,
                   ),
                 ],
               ),

@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-08-31",
+  "updated": "2026-09-02",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -6406,7 +6406,7 @@
       "name": "CatchTopBar",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical app-bar primitive for compact/large title chrome, back/close leading, trailing actions, and expanding search.",
+      "summary": "Canonical app-bar primitive for semantic compact/large title chrome, back/close leading, trailing actions, and expanding search.",
       "dart": {
         "symbol": "CatchTopBar",
         "file": "lib/core/widgets/catch_top_bar.dart",
@@ -6445,10 +6445,33 @@
             "dartType": "String?"
           },
           {
+            "name": "eyebrow",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
             "name": "kicker",
             "type": "string",
             "required": false,
             "dartType": "String?"
+          },
+          {
+            "name": "titleRole",
+            "type": "enum",
+            "required": false,
+            "default": "route",
+            "dartType": "CatchTopBarTitleRole",
+            "values": [
+              "route",
+              "identity"
+            ]
+          },
+          {
+            "name": "titleMaxLines",
+            "type": "number",
+            "required": false,
+            "dartType": "int?"
           },
           {
             "name": "identityName",
@@ -6553,6 +6576,7 @@
           }
         ],
         "tokens": [
+          "font.family.voice",
           "space.s0",
           "space.micro3",
           "space.micro6",
@@ -6572,6 +6596,8 @@
           "CatchKicker",
           "CatchPersonAvatar",
           "CatchTextStyles.headline",
+          "CatchTextStyles.monoLabel",
+          "CatchTextStyles.routeTitle",
           "CatchTextStyles.titleL",
           "CatchTextStyles.appBarSubtitle",
           "CatchCollapsedSliverTitle",
@@ -6756,6 +6782,9 @@
         "notes": [
           "Use this primitive for route chrome before creating local AppBar variants.",
           "Use CatchScreenHeaderTitle or CatchScreenTopBar for root screen headers that need the main tab Archivo title voice.",
+          "Generic compact and workspace route labels use CatchTextStyles.routeTitle; pass title, eyebrow or kicker, subtitle, and titleMaxLines instead of a local titleWidget or style.",
+          "Title-case eyebrow copy uses the untracked CatchTextStyles.monoLabel role; uppercase kicker copy uses CatchKicker. Workspace bars pin large: false so the route-title family cannot drift.",
+          "Use CatchTopBarTitleRole.identity only for a registered user-authored name; controls and identity names remain in the platform function family.",
           "Use CatchTopBarPrimaryAction when a root-screen primary action must compact from a labelled button to the canonical icon target; never pass CatchButton directly to an actions slot.",
           "Large mode is implied by a non-empty kicker unless explicitly overridden.",
           "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",
@@ -7031,7 +7060,10 @@
             "catch_no_legacy_spacing_token",
             "catch_screen_gutter_uses_semantic_insets",
             "catch_no_shell_local_measurement",
-            "catch_screen_registry_conformance"
+            "catch_screen_registry_conformance",
+            "catch_screen_layout_family_conformance",
+            "catch_screen_route_owner_binding",
+            "catch_screen_scaffold_ownership"
           ],
           "vehicle": "plugin",
           "probeSeed": "Padding(padding: EdgeInsets.all(CatchSpacing.s4), child: const SizedBox())"
@@ -7039,7 +7071,7 @@
       "name": "CatchScreenBody",
       "status": "active",
       "kind": "pattern",
-      "summary": "Standard non-sliver screen body wrapper that owns page gutters, vertical padding, and optional scrolling.",
+      "summary": "Screen-composition family that owns root and tab body roles, page gutters, vertical rhythm, scrolling, responsive width, and shell clearance.",
       "dart": {
         "symbol": "CatchScreenBody",
         "file": "lib/core/widgets/catch_section_layout.dart",
@@ -7132,11 +7164,72 @@
           "CatchSpacing.screenPb",
           "CatchPageBody",
           "CatchSliverPageBody",
+          "CatchSliverScreenBody",
+          "CatchScreenScaffold",
+          "CatchRootScreenScaffold",
+          "CatchRootScreenScrollView",
+          "CatchTabbedPageScrollView",
           "CatchFormStepBody",
           "CatchResponsiveSectionPage"
         ],
         "goldens": [],
         "members": [
+          {
+            "id": "catch.screen_body.screen_scaffold",
+            "symbol": "CatchScreenScaffold",
+            "summary": "Canonical full-screen surface owner with lintable standalone, step-flow, and workspace constructors plus explicit safe-area and keyboard-resize policy.",
+            "states": [
+              "standalone-safe-area",
+              "step-flow-safe-area",
+              "workspace-owned-insets",
+              "keyboard-resize"
+            ],
+            "file": "lib/core/widgets/catch_screen_scaffold.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.root_screen_scaffold",
+            "symbol": "CatchRootScreenScaffold",
+            "summary": "Root-title screen owner for surface, safe area, one sliver scroll view, semantic body geometry, refresh, field obstruction, responsive width, and terminal shell clearance.",
+            "states": [
+              "standard",
+              "full-bleed",
+              "responsive-width",
+              "floating-bottom-navigation",
+              "side-navigation"
+            ],
+            "file": "lib/core/widgets/catch_screen_scaffold.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.sliver_screen_body",
+            "symbol": "CatchSliverScreenBody",
+            "summary": "Semantic sliver body used by root and nested-tab scroll owners; resolves the required standard or explicitly edge-owned full-bleed role and optional content-width lane.",
+            "states": [
+              "standard",
+              "full-bleed",
+              "responsive-width"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
           {
             "id": "catch.screen_body.form_step_body",
             "symbol": "CatchFormStepBody",
@@ -7229,7 +7322,8 @@
         ],
         "notes": [
           "Use for regular non-sliver route bodies before composing ad hoc page padding.",
-          "Screens may override top/bottom rhythm but should not hand-roll the horizontal gutter.",
+          "Every full-screen composition terminates in standalone, step-flow, or workspace surface ownership through CatchScreenScaffold. Root title destinations use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry; pinned peer-tab destinations declare the same role through CatchTabbedPageScrollView.",
+          "Regular root and tab bodies may not override the 24-point standard start; specialized full-bleed or intrinsic families and named semantic primitives own any alternate rhythm.",
           "Use CatchResponsiveSectionPage when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
           "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding."
         ]
@@ -13106,10 +13200,9 @@
         "enforcement": {
           "code": "catch_shell_owns_tab_scaffold",
           "codes": [
-            "catch_no_raw_breakpoint",
-            "catch_screen_nested_scaffold"
+            "catch_no_raw_breakpoint"
           ],
-          "vehicle": "checker",
+          "vehicle": "plugin",
           "states": [
             "loading",
             "error",
@@ -13154,9 +13247,10 @@
           },
           {
             "name": "body",
-            "type": "widget",
+            "type": "object",
             "required": true,
-            "dartType": "Widget"
+            "dartType": "CatchTabbedScreenBody",
+            "notes": "Closed single-page or paged body specification. Each entry is a CatchTabbedPageSpec whose primary page implements CatchTabbedPageOwner."
           },
           {
             "name": "eyebrow",
@@ -13230,14 +13324,23 @@
           },
           {
             "name": "body",
-            "kind": "horizontal-tab-pager",
-            "notes": "The route supplies a TabBarView bound to the same controller as the rail."
+            "kind": "typed-screen-body",
+            "notes": "The route supplies CatchTabbedScreenBody.single or CatchTabbedScreenBody.paged. The paged variant owns the TabBarView internally and binds it to the supplied controller."
           }
         ],
         "tokens": [
-          "theme.light.color.bg"
+          "theme.light.color.bg",
+          "space.s1",
+          "space.s5",
+          "space.s6"
         ],
         "dartRoles": [
+          "CatchInsets.tabbedScreenTitleBlock",
+          "CatchLayout.tabRailHeight",
+          "CatchScreenBodyLayout",
+          "CatchTabbedScreenBody",
+          "CatchTabbedPageSpec",
+          "CatchTabbedPageOwner",
           "CatchScreenHeaderTitle.block",
           "CatchSliverHeader",
           "NestedScrollView",
@@ -13306,7 +13409,8 @@
           "catch.tab_rail"
         ],
         "notes": [
-          "The route owns the typed TabController and TabBarView; the shell owns title, pinned rail, overlap, and safe-area composition.",
+          "The route owns the typed TabController and supplies CatchTabbedScreenBody.single or CatchTabbedScreenBody.paged with CatchTabbedPageSpec entries; the closed body builds any TabBarView internally, while the shell owns title, pinned rail, overlap, and safe-area composition.",
+          "The shell enforces a 4-point title-to-rail handoff, a 44-point pinned rail, and the standard 24-point rail-to-body content start; feature routes do not restate these values.",
           "Every page uses CatchTabbedPageScrollView with a stable PageStorageKey. Never switch tab children inside one shared vertical ListView.",
           "Feature code retains async state, data policy, route actions, and specialized inner-scroll bridges."
         ]

@@ -28,22 +28,44 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
       initialLoadTimeout: null,
       loadingBuilder: (_) =>
           HostLoadingScreen(title: context.l10n.hostSavedAudiencesManage),
-      errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.customers,
-        onRetry: () =>
-            ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+      errorBuilder: (_, error, _) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+          context: context,
+          title: context.l10n.hostSavedAudiencesManage,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
+        body: CatchRouteBody.standard(
+          scrollable: false,
+          child: CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.customers,
+            onRetry: () =>
+                ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+          ),
+        ),
       ),
       builder: (context, page) {
         final audience = page.audiences
             .where((item) => item.audienceId == audienceId)
             .firstOrNull;
         if (audience == null) {
-          return CatchErrorScaffold.fromError(
-            StateError(context.l10n.hostSavedAudienceNotFound),
-            context: AppErrorContext.customers,
-            onRetry: () =>
-                ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+          return CatchRouteScaffold(
+            topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+              context: context,
+              title: context.l10n.hostSavedAudiencesManage,
+              leadingType: CatchTopBarLeading.back,
+              divider: scrolledUnder,
+            ),
+            body: CatchRouteBody.standard(
+              scrollable: false,
+              child: CatchErrorState.fromError(
+                StateError(context.l10n.hostSavedAudienceNotFound),
+                context: AppErrorContext.customers,
+                onRetry: () =>
+                    ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+              ),
+            ),
           );
         }
         return _HostSavedAudienceEditorForm(
@@ -129,12 +151,10 @@ class _HostSavedAudienceEditorFormState
           isLoading: _busy,
           onPressed: _busy ? null : _save,
         ),
-        body: SafeArea(
-          top: false,
-          bottom: false,
+        body: CatchRouteBody.standard(
           child: Form(
             key: _formKey,
-            child: CatchResponsiveSectionPage(
+            child: CatchResponsiveSectionLayout(
               sections: [
                 CatchResponsiveSectionItem(
                   child: CatchSection.plain(

@@ -33,7 +33,7 @@
       "branchKey": "keys.profile",
       "routeName": "Routes.profileScreen.name",
       "surfaces": [
-        {"path": "lib/user_profile/presentation/profile_screen.dart", "symbol": "_ProfileScreenState", "owner": "CatchScreenHeaderTitle.block"}
+        {"path": "lib/user_profile/presentation/profile_screen.dart", "symbol": "_ProfileScreenState", "owner": "CatchTabbedScreenScaffold"}
       ]
     },
     {
@@ -55,10 +55,9 @@
       "branchKey": "keys.hostAudience",
       "routeName": "Routes.hostAudienceScreen.name",
       "surfaces": [
+        {"path": "lib/hosts/presentation/host_audience_view.dart", "symbol": "HostAudienceStateScaffold", "owner": "CatchTabbedScreenScaffold"},
         {"path": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "_HostCustomersScreenState", "owner": "CatchTabbedScreenScaffold"},
-        {"path": "lib/hosts/presentation/customers/host_customers_directory.dart", "symbol": "HostCustomersNoOrganizer", "owner": "CatchScreenHeaderTitle.block"},
-        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "owner": "CatchTabbedScreenScaffold"},
-        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "HostFormsNoOrganizer", "owner": "CatchScreenHeaderTitle.block"}
+        {"path": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "owner": "CatchTabbedScreenScaffold"}
       ]
     },
     {
@@ -72,8 +71,8 @@
       "branchKey": "keys.hostOrganizer",
       "routeName": "Routes.hostOrganizerScreen.name",
       "surfaces": [
-        {"path": "lib/core/widgets/catch_tabbed_screen.dart", "symbol": "CatchTabbedScreenScaffold", "owner": "CatchScreenHeaderTitle.block"},
-        {"path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "_HostClubsScaffoldState", "owner": "CatchScreenTopBar"}
+        {"path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "HostOrganizerStateScaffold", "owner": "CatchTabbedScreenScaffold"},
+        {"path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "_HostClubsScaffoldState", "owner": "CatchTabbedScreenScaffold"}
       ]
     }
   ],
@@ -101,9 +100,11 @@
     },
     {
       "path": "lib/dashboard/presentation/activity_screen.dart",
-      "role": "screen",
-      "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar"
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
     },
     {
       "path": "lib/event_success/presentation/event_success_companion_screen.dart",
@@ -130,9 +131,11 @@
     },
     {
       "path": "lib/events/presentation/calendar/calendar_screen.dart",
-      "role": "screen",
-      "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar"
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
     },
     {
       "path": "lib/events/presentation/saved_events_screen.dart",
@@ -143,18 +146,12 @@
       "leading": "back"
     },
     {
-      "path": "lib/hosts/events/presentation/host_events_screen.dart",
-      "role": "screen",
-      "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar",
-      "surface": "CatchRouteScaffold"
-    },
-    {
       "path": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
-      "surface": "CatchRouteScaffold"
+      "surface": "CatchRouteScaffold",
+      "occurrences": 4
     },
     {
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
@@ -168,7 +165,8 @@
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
-      "surface": "CatchRouteScaffold"
+      "surface": "CatchRouteScaffold",
+      "occurrences": 4
     },
     {
       "path": "lib/hosts/presentation/host_event_manage_screen.dart",
@@ -185,7 +183,7 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
-      "occurrences": 2
+      "occurrences": 4
     },
     {
       "path": "lib/hosts/presentation/event_management/widgets/route_path_builder_screen.dart",
@@ -255,7 +253,8 @@
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "back"
+      "leading": "back",
+      "titlePolicy": "routeOrIdentity"
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
@@ -263,7 +262,8 @@
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "back"
+      "leading": "back",
+      "occurrences": 5
     },
     {
       "path": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
@@ -271,7 +271,8 @@
       "expression": "CatchScreenTopBar",
       "owner": "CatchScreenTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "back"
+      "leading": "back",
+      "occurrences": 3
     },
     {
       "path": "lib/hosts/presentation/customers/host_customer_editor.dart",
@@ -306,29 +307,16 @@
       "leading": "back"
     },
     {
-      "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-      "role": "screen",
-      "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar",
-      "reason": "Host Clubs uses the canonical screen title bar directly for the empty branch and delegates populated workspace chrome to CatchTabbedScreenScaffold."
-    },
-    {
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "back"
+      "leading": "back",
+      "occurrences": 5
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
-      "owner": "CatchTopBar",
-      "surface": "CatchRouteScaffold"
-    },
-    {
-      "path": "lib/hosts/today/presentation/host_today_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
@@ -358,7 +346,8 @@
       "path": "lib/public_profile/presentation/public_profile_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
+      "owner": "CatchTopBar",
+      "titlePolicy": "routeOrIdentity"
     },
     {
       "path": "lib/reviews/presentation/reviews_history_screen.dart",
@@ -460,13 +449,6 @@
       "role": "step-flow",
       "owner": "CatchStepHeader",
       "reason": "Onboarding delegates progress and navigation chrome to the canonical step header."
-    },
-    {
-      "path": "lib/swipes/presentation/swipe_hub_screen.dart",
-      "symbol": "CatchesHubHeader",
-      "role": "legacy",
-      "owner": "CatchTextStyles.headline",
-      "reason": "Catches Hub still styles a root title directly; migrate it to CatchScreenHeaderTitle in a reviewed Catches pass."
     }
   ]
 }
