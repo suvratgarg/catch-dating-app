@@ -14489,6 +14489,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersMemory => 'Memory';
 
   @override
+  String get hostCustomersOverview => 'Overview';
+
+  @override
+  String get hostCustomersRecentEvents => 'Recent events attended';
+
+  @override
   String get hostCustomersMemoryHelp =>
       'Notes and your tags are private to this organizer’s management team.';
 

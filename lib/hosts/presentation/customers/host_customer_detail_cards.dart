@@ -13,12 +13,14 @@ class HostCustomerIdentityCard extends StatefulWidget {
     required this.customer,
     required this.onSave,
     this.initiallyEditing = false,
+    this.showName = true,
     this.primaryAction,
   });
 
   final HostAudienceContactDetail customer;
   final HostCustomerDetailsSaveCallback onSave;
   final bool initiallyEditing;
+  final bool showName;
   final Widget? primaryAction;
 
   @override
@@ -150,23 +152,6 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
             )
           : CatchSection.plain(
               key: const ValueKey('host-customer-contact-details'),
-              title: context.l10n.hostCustomersContactDetails,
-              trailing: Wrap(
-                alignment: WrapAlignment.end,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                children: [
-                  ?widget.primaryAction,
-                  CatchButton(
-                    key: const ValueKey('host-customer-edit-details'),
-                    label: context.l10n.hostCustomersEditDetails,
-                    variant: CatchButtonVariant.ghost,
-                    size: CatchButtonSize.sm,
-                    onPressed: _beginEditing,
-                  ),
-                ],
-              ),
               child: _HostCustomerIdentitySummary(
                 customer: widget.customer,
                 displayName: _displayName,
@@ -174,6 +159,9 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
                 phonePlaceholder: phonePlaceholder,
                 email: _email,
                 emailPlaceholder: emailPlaceholder,
+                onEdit: _beginEditing,
+                primaryAction: widget.primaryAction,
+                showName: widget.showName,
               ),
             ),
     );
@@ -278,6 +266,9 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
     required this.phonePlaceholder,
     required this.email,
     required this.emailPlaceholder,
+    required this.onEdit,
+    required this.showName,
+    this.primaryAction,
   });
 
   final HostAudienceContactDetail customer;
@@ -286,53 +277,84 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
   final String phonePlaceholder;
   final String? email;
   final String emailPlaceholder;
+  final VoidCallback onEdit;
+  final bool showName;
+  final Widget? primaryAction;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
-    final segmentLabel = _hostCustomerPrimarySegmentLabel(
-      context,
-      customer.traits.segments,
-    );
+    final segment = _hostCustomerPrimarySegment(customer.traits.segments);
+    final segmentLabel = segment == null
+        ? null
+        : segment == HostAudienceSegment.regular
+        ? context.l10n.hostsOperationalRosterInsightRegular
+        : _customerFilterLabel(
+            context,
+            hostCustomerFilterForAudienceSegment(segment),
+          );
+    final segmentColor = switch (segment) {
+      HostAudienceSegment.lapsedRegular => HostCustomerPalette.atRisk(context),
+      HostAudienceSegment.regular => HostCustomerPalette.regular(context),
+      HostAudienceSegment.newToOrganizer => HostCustomerPalette.newCustomer(
+        context,
+      ),
+      _ => CatchTokens.of(context).ink2,
+    };
     final details = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          displayName,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.sectionTitle(context, color: t.ink),
-        ),
-        gapH6,
-        if (segmentLabel != null) ...[
-          Text(
-            segmentLabel,
-            style: CatchTextStyles.badgeCaps(context, color: t.ink2),
-          ),
-          gapH8,
+        if (showName) ...[
+          Text(displayName, style: HostCustomerTypography.name(context)),
+          gapH4,
         ],
-        CatchMetaRow(
-          key: const ValueKey('host-customer-phone-summary'),
-          icon: CatchIcons.phoneOutlined,
-          label: phoneE164 ?? phonePlaceholder,
-          color: t.ink3,
-          labelColor: t.ink,
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: CatchSpacing.s2,
+          children: [
+            if (segmentLabel != null)
+              Align(
+                widthFactor: 1,
+                alignment: AlignmentDirectional.centerStart,
+                child: CatchSurface(
+                  radius: CatchRadius.sm,
+                  backgroundColor: segmentColor.withValues(
+                    alpha: CatchOpacity.subtleFill,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CatchSpacing.s2,
+                    vertical: CatchSpacing.s1,
+                  ),
+                  child: Text(
+                    segmentLabel,
+                    style: HostCustomerTypography.status(
+                      context,
+                      color: segmentColor,
+                    ),
+                  ),
+                ),
+              ),
+            CatchButton(
+              key: const ValueKey('host-customer-edit-details'),
+              label: context.l10n.hostCustomersEditDetails,
+              variant: CatchButtonVariant.ghost,
+              size: CatchButtonSize.sm,
+              onPressed: onEdit,
+            ),
+            ?primaryAction,
+          ],
         ),
-        gapH8,
-        CatchMetaRow(
-          key: const ValueKey('host-customer-email-summary'),
-          icon: CatchIcons.emailOutlined,
-          label: email ?? emailPlaceholder,
-          color: t.ink3,
-          labelColor: t.ink,
-        ),
-        gapH12,
+        gapH4,
         Text(
-          customer.contactDetailsEditable
-              ? context.l10n.hostCustomersUnverifiedContactDetails
-              : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+          phoneE164 ?? phonePlaceholder,
+          key: const ValueKey('host-customer-phone-summary'),
+          style: HostCustomerTypography.body(context),
+        ),
+        gapH4,
+        Text(
+          email ?? emailPlaceholder,
+          key: const ValueKey('host-customer-email-summary'),
+          style: HostCustomerTypography.body(context),
         ),
       ],
     );
@@ -357,8 +379,7 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
   }
 }
 
-String? _hostCustomerPrimarySegmentLabel(
-  BuildContext context,
+HostAudienceSegment? _hostCustomerPrimarySegment(
   Set<HostAudienceSegment> segments,
 ) {
   const priority = [
@@ -375,10 +396,7 @@ String? _hostCustomerPrimarySegmentLabel(
   ];
   for (final segment in priority) {
     if (segments.contains(segment)) {
-      return _customerFilterLabel(
-        context,
-        hostCustomerFilterForAudienceSegment(segment),
-      );
+      return segment;
     }
   }
   return null;
@@ -395,33 +413,137 @@ class HostCustomerAttendanceCard extends StatelessWidget {
     final attendanceRate = traits.attendanceRate == null
         ? '—'
         : '${(traits.attendanceRate! * 100).round()}%';
-    return CatchSection.plain(
-      title: context.l10n.hostCustomersDetailAttendance,
-      child: Row(
-        children: [
-          Expanded(
-            child: CatchStatColumn(
-              value: '${traits.attendedEventCount}',
-              label: context.l10n.hostsHostAudienceAttended,
-              monoValue: true,
-            ),
-          ),
-          Expanded(
-            child: CatchStatColumn(
-              value: '${traits.expectedEventCount}',
-              label: context.l10n.hostCustomersExpected,
-              monoValue: true,
-            ),
-          ),
-          Expanded(
-            child: CatchStatColumn(
-              value: attendanceRate,
-              label: context.l10n.hostCustomersAttendanceRate,
-              monoValue: true,
-            ),
-          ),
-        ],
+    final metrics = [
+      (
+        value: '${traits.attendedEventCount}',
+        label: context.l10n.hostsHostAudienceAttended,
       ),
+      (
+        value: '${traits.expectedEventCount}',
+        label: context.l10n.hostCustomersExpected,
+      ),
+      (value: attendanceRate, label: context.l10n.hostCustomersAttendanceRate),
+    ];
+    Widget metric(({String value, String label}) item) => Column(
+      children: [
+        Text(item.value, style: HostCustomerTypography.metric(context)),
+        gapH4,
+        Text(
+          item.label,
+          style: HostCustomerTypography.secondary(context),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+    return CatchSection.plain(
+      key: const ValueKey('host-customer-activity'),
+      title: context.l10n.hostCustomersDetailAttendance,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+        child: largeText
+            ? Column(
+                children: [
+                  for (final (index, item) in metrics.indexed) ...[
+                    if (index > 0) ...[gapH12, const CatchDivider(), gapH12],
+                    metric(item),
+                  ],
+                ],
+              )
+            : Row(
+                children: [
+                  for (final (index, item) in metrics.indexed) ...[
+                    if (index > 0)
+                      SizedBox(
+                        width: CatchStroke.hairline,
+                        height: CatchSpacing.s10,
+                        child: ColoredBox(color: CatchTokens.of(context).line),
+                      ),
+                    Expanded(child: metric(item)),
+                  ],
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+class HostCustomerRecentEvents extends StatelessWidget {
+  const HostCustomerRecentEvents({
+    super.key,
+    required this.customer,
+    required this.onOpenEvent,
+  });
+
+  final HostAudienceContactDetail customer;
+  final ValueChanged<String> onOpenEvent;
+
+  @override
+  Widget build(BuildContext context) {
+    final events =
+        customer.events
+            .where((event) => event.checkedIn || event.status == 'attended')
+            .toList()
+          ..sort(
+            (a, b) => (b.eventStartAt ?? DateTime(0)).compareTo(
+              a.eventStartAt ?? DateTime(0),
+            ),
+          );
+    if (events.isEmpty) return const SizedBox.shrink();
+    return CatchSection.divided(
+      key: const ValueKey('host-customer-recent-events'),
+      title: context.l10n.hostCustomersRecentEvents,
+      first: true,
+      children: [
+        for (final event in events.take(3))
+          CatchRowPressSurface(
+            key: ValueKey('host-customer-recent-event-${event.eventId}'),
+            onTap: () => onOpenEvent(event.eventId),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CatchSurface(
+                    radius: CatchRadius.pill,
+                    tone: CatchSurfaceTone.raised,
+                    padding: const EdgeInsets.all(CatchSpacing.s2),
+                    child: Icon(CatchIcons.tabEvents, size: CatchIcon.md),
+                  ),
+                  gapW12,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          event.displayName,
+                          style: HostCustomerTypography.name(context),
+                        ),
+                        gapH4,
+                        if (event.eventStartAt != null)
+                          Text(
+                            AppTimeFormatters.dateTime(event.eventStartAt!),
+                            style: HostCustomerTypography.secondary(context),
+                          ),
+                        gapH4,
+                        Text(
+                          context.l10n.hostsHostAudienceAttended,
+                          style: HostCustomerTypography.context(context),
+                        ),
+                      ],
+                    ),
+                  ),
+                  gapW8,
+                  Icon(
+                    CatchIcons.chevronRightRounded,
+                    size: CatchIcon.sm,
+                    color: CatchTokens.of(context).ink3,
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

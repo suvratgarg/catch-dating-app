@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
@@ -9,7 +8,6 @@ import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
@@ -25,6 +23,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tabs.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
@@ -84,12 +83,45 @@ class _HostCustomerDetailScreenState
         (initialDisplayName?.isNotEmpty ?? false ? initialDisplayName : null) ??
         context.l10n.hostNavigationCustomers;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
-        context: context,
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: displayName,
+        titleRole: CatchTopBarTitleRole.identity,
         leadingType: widget.embedded
             ? CatchTopBarLeading.none
             : CatchTopBarLeading.back,
+        actions:
+            detailState.value != null &&
+                communicationPlanState
+                        ?.value
+                        ?.singleRecipient
+                        .recommendedRouteId !=
+                    null
+            ? [
+                if (MediaQuery.textScalerOf(context).scale(1) >= 1.5)
+                  CatchIconAction(
+                    key: const ValueKey('host-customer-message'),
+                    icon: CatchIcons.tabChats,
+                    tooltip: context.l10n.hostCustomersWhatsappMessage,
+                    onPressed: _openingConversation
+                        ? null
+                        : () => _messageCustomer(
+                            detailState.value!,
+                            communicationPlanState?.value,
+                          ),
+                  )
+                else
+                  CatchTopBarTextAction(
+                    key: const ValueKey('host-customer-message'),
+                    label: context.l10n.hostCustomersWhatsappMessage,
+                    onPressed: _openingConversation
+                        ? null
+                        : () => _messageCustomer(
+                            detailState.value!,
+                            communicationPlanState?.value,
+                          ),
+                  ),
+              ]
+            : const [],
         divider: scrolledUnder,
       ),
       body: CatchRouteBody.standard(
@@ -650,79 +682,92 @@ class HostCustomerDetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final headerMessageAction = messageActionInHeader
-        ? CatchButton(
-            key: const ValueKey('host-customer-message'),
-            label: context.l10n.hostCustomersWhatsappMessage,
-            icon: Icon(CatchIcons.tabChats, size: CatchIcon.sm),
-            variant: CatchButtonVariant.secondary,
-            size: CatchButtonSize.sm,
-            isLoading: openingConversation,
-            onPressed: openingConversation ? null : onMessage,
-          )
-        : null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchSectionList(
-          emptyStateOmitted: true,
-          children: [
-            HostCustomerIdentityCard(
-              customer: customer,
-              onSave: onSaveDetails,
-              primaryAction: headerMessageAction,
-            ),
-            HostCustomerDetailOverview(
-              customer: customer,
-              currentUid: currentUid,
-              onEditTags: onEditTags,
-              onAddNote: onAddNote,
-              onEditNote: onEditNote,
-            ),
-            HostCustomerReachSection(
-              customer: customer,
-              communicationPlan: communicationPlan,
-              communicationPlanLoading: communicationPlanLoading,
-              communicationPlanFailed: communicationPlanFailed,
-              messageLoading: openingConversation,
-              onMessage: onMessage,
-              onRetryCommunicationPlan: onRetryCommunicationPlan,
-              messageActionInHeader: messageActionInHeader,
-              onMessagingEnabledChanged: updatingCustomer
-                  ? null
-                  : onMessagingEnabledChanged,
-              onReviewDuplicates: customer.ambiguousCandidateCount > 0
-                  ? onReviewDuplicates
-                  : null,
-            ),
-            HostCustomerRevenueCard(revenue: customer.revenue),
-            HostCustomerTimelineSection(
-              customer: customer,
-              onOpenFormResponse: onOpenFormResponse,
-              onOpenEvent: onOpenEvent,
-              onOpenCatchThread: onOpenCatchThread,
-              onOpenWhatsappThread: onOpenWhatsappThread,
-            ),
-            if (customer.activeMerges.isNotEmpty)
-              HostCustomerActiveMergesSection(
-                merges: customer.activeMerges,
-                onUndo: onUndoMerge,
+        HostCustomerIdentityCard(
+          customer: customer,
+          onSave: onSaveDetails,
+          showName: false,
+        ),
+        gapH12,
+        HostCustomerDetailTabs(
+          overview: CatchSectionList(
+            emptyStateOmitted: true,
+            children: [
+              HostCustomerDetailOverview(
+                customer: customer,
+                currentUid: currentUid,
+                onEditTags: onEditTags,
+                onAddNote: onAddNote,
+                onEditNote: onEditNote,
               ),
-            CatchSection.fieldRows(
-              key: const ValueKey('host-customer-controls'),
-              title: context.l10n.hostCustomersControls,
-              children: [
-                CatchField.action(
-                  key: const ValueKey('host-customer-remove'),
-                  title: context.l10n.hostsHostAudienceRemoveAction,
-                  body: context.l10n.hostsHostAudienceRemoveBody,
-                  icon: CatchIcons.deleteOutline,
-                  tone: CatchFieldTone.danger,
-                  onTap: updatingCustomer ? null : onRemove,
+              HostCustomerRecentEvents(
+                customer: customer,
+                onOpenEvent: onOpenEvent,
+              ),
+              HostCustomerReachSection(
+                customer: customer,
+                communicationPlan: communicationPlan,
+                communicationPlanLoading: communicationPlanLoading,
+                communicationPlanFailed: communicationPlanFailed,
+                messageLoading: openingConversation,
+                onMessage: onMessage,
+                onRetryCommunicationPlan: onRetryCommunicationPlan,
+                messageActionInHeader: messageActionInHeader,
+                onMessagingEnabledChanged: updatingCustomer
+                    ? null
+                    : onMessagingEnabledChanged,
+                onReviewDuplicates: customer.ambiguousCandidateCount > 0
+                    ? onReviewDuplicates
+                    : null,
+              ),
+            ],
+          ),
+          memory: CatchSectionList(
+            emptyStateOmitted: true,
+            children: [
+              HostCustomerMemorySection(
+                customer: customer,
+                currentUid: currentUid,
+                onEditTags: onEditTags,
+                onAddNote: onAddNote,
+                onEditNote: onEditNote,
+              ),
+            ],
+          ),
+          history: CatchSectionList(
+            emptyStateOmitted: true,
+            children: [
+              HostCustomerTimelineSection(
+                customer: customer,
+                onOpenFormResponse: onOpenFormResponse,
+                onOpenEvent: onOpenEvent,
+                onOpenCatchThread: onOpenCatchThread,
+                onOpenWhatsappThread: onOpenWhatsappThread,
+              ),
+              HostCustomerRevenueCard(revenue: customer.revenue),
+              if (customer.activeMerges.isNotEmpty)
+                HostCustomerActiveMergesSection(
+                  merges: customer.activeMerges,
+                  onUndo: onUndoMerge,
                 ),
-              ],
-            ),
-          ],
+              CatchSection.fieldRows(
+                key: const ValueKey('host-customer-controls'),
+                title: context.l10n.hostCustomersControls,
+                children: [
+                  CatchField.action(
+                    key: const ValueKey('host-customer-remove'),
+                    title: context.l10n.hostsHostAudienceRemoveAction,
+                    body: context.l10n.hostsHostAudienceRemoveBody,
+                    icon: CatchIcons.deleteOutline,
+                    tone: CatchFieldTone.danger,
+                    onTap: updatingCustomer ? null : onRemove,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -759,10 +804,7 @@ class HostCustomerDetailOverview extends StatelessWidget {
           onEditNote: onEditNote,
         ),
         gapH24,
-        KeyedSubtree(
-          key: const ValueKey('host-customer-activity'),
-          child: HostCustomerAttendanceCard(customer: customer),
-        ),
+        HostCustomerAttendanceCard(customer: customer),
       ],
     ),
     expanded: (context) => Row(
@@ -781,10 +823,7 @@ class HostCustomerDetailOverview extends StatelessWidget {
         gapW24,
         Expanded(
           flex: 2,
-          child: KeyedSubtree(
-            key: const ValueKey('host-customer-activity'),
-            child: HostCustomerAttendanceCard(customer: customer),
-          ),
+          child: HostCustomerAttendanceCard(customer: customer),
         ),
       ],
     ),

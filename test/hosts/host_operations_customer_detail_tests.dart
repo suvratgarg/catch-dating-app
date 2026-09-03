@@ -32,10 +32,13 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.text('Reload customer'), findsOneWidget);
     expect(find.text('Organizer unavailable'), findsNothing);
     expect(
-      tester.widget<CatchScreenTopBar>(find.byType(CatchScreenTopBar)).title,
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).title,
       'Ananya Rao',
     );
-    expect(find.byType(CatchScreenHeaderTitle), findsOneWidget);
+    expect(
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).titleRole,
+      CatchTopBarTitleRole.identity,
+    );
   });
 
   testWidgets('customer overview groups status and directory controls', (
@@ -466,14 +469,14 @@ void _registerHostOperationsCustomerDetailTests() {
     final manualTagsField = tester.widget<CatchField>(
       find.byKey(const ValueKey('host-customer-edit-tags')),
     );
-    expect(manualTagsField.body, 'Brings friends');
+    expect(manualTagsField.title, 'Brings friends');
     expect(manualTagsField.onTap, isNotNull);
     expect(find.text('Introduced three friends.'), findsOneWidget);
     expect(find.textContaining('You ·'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('host-customer-edit-tags')));
     await tester.tap(find.byKey(const ValueKey('host-customer-add-note')));
-    await tester.tap(find.byTooltip('Edit note'));
+    await tester.tap(find.byKey(const ValueKey('host-customer-note-note-1')));
     expect(tagEdits, 1);
     expect(noteAdds, 1);
     expect(editedNote?.noteId, 'note-1');
@@ -507,11 +510,9 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.byType(HostCustomerMemorySection), findsOneWidget);
     expect(find.byType(HostCustomerAttendanceCard), findsOneWidget);
     expect(find.byType(HostCustomerReachSection), findsOneWidget);
-    expect(find.byType(HostCustomerTimelineSection), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('host-customer-controls')),
-      findsOneWidget,
-    );
+    expect(find.byType(HostCustomerRecentEvents), findsOneWidget);
+    expect(find.byType(HostCustomerTimelineSection), findsNothing);
+    expect(find.byKey(const ValueKey('host-customer-controls')), findsNothing);
   });
 }
 

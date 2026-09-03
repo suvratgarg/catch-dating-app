@@ -12,6 +12,19 @@ import 'package:flutter/material.dart';
 /// https://developer.apple.com/design/human-interface-guidelines/typography
 /// https://m3.material.io/styles/typography/type-scale-tokens
 abstract final class HostCustomerTypography {
+  static TextStyle body(BuildContext context) => CatchFonts.sans(
+    fontSize: 16,
+    height: 24 / 16,
+    color: CatchTokens.of(context).ink,
+  );
+
+  static TextStyle metric(BuildContext context) => CatchFonts.sans(
+    fontSize: 24,
+    height: 30 / 24,
+    fontWeight: FontWeight.w600,
+    color: CatchTokens.of(context).ink,
+  );
+
   static bool _ios(BuildContext context) =>
       Theme.of(context).platform == TargetPlatform.iOS;
 

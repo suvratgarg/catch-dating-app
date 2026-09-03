@@ -22505,6 +22505,18 @@ abstract class AppLocalizations {
   /// **'Memory'**
   String get hostCustomersMemory;
 
+  /// Customer record overview tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get hostCustomersOverview;
+
+  /// Recent attended events on a customer record.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent events attended'**
+  String get hostCustomersRecentEvents;
+
   /// Privacy boundary for organizer-authored contact memory.
   ///
   /// In en, this message translates to:

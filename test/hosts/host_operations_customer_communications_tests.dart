@@ -20,7 +20,7 @@ void _registerHostOperationsCustomerCommunicationsTests() {
     expect(find.text('See you there!'), findsOneWidget);
   });
 
-  testWidgets('customer detail orders identity, memory, activity, controls', (
+  testWidgets('customer detail separates overview, memory and history', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 3600);
@@ -56,13 +56,25 @@ void _registerHostOperationsCustomerCommunicationsTests() {
     final activityY = tester
         .getTopLeft(find.byKey(const ValueKey('host-customer-activity')))
         .dy;
-    final controlsY = tester
-        .getTopLeft(find.byKey(const ValueKey('host-customer-controls')))
-        .dy;
-
     expect(identityY, lessThan(memoryY));
     expect(memoryY, lessThan(activityY));
-    expect(activityY, lessThan(controlsY));
+    expect(find.byKey(const ValueKey('host-customer-controls')), findsNothing);
+    await tester.tap(find.text('Memory'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostCustomerMemorySection), findsOneWidget);
+    expect(find.byKey(const ValueKey('host-customer-activity')), findsNothing);
+    await tester.tap(find.text('History'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostCustomerTimelineSection), findsOneWidget);
+    expect(find.byType(HostCustomerRevenueCard), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-customer-controls')),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Overview'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostCustomerMemorySection), findsOneWidget);
+    expect(find.byType(HostCustomerTimelineSection), findsNothing);
   });
 
   testWidgets('customer detail exposes only the recommended message route', (
@@ -103,7 +115,7 @@ void _registerHostOperationsCustomerCommunicationsTests() {
     expect(
       find.ancestor(
         of: find.byKey(const ValueKey('host-customer-message')),
-        matching: find.byType(HostCustomerIdentityCard),
+        matching: find.byType(CatchTopBar),
       ),
       findsOneWidget,
     );
