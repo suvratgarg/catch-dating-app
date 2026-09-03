@@ -50,7 +50,11 @@ import {organizerContactTraitMatchesSegment} from "./organizerAudienceModel";
 import {resolveOrganizerAudienceCoverage} from
   "./organizerAudienceCoverage";
 
-export const organizerSavedAudienceDefinitionVersion = 1;
+import {assertSavedAudienceSources, savedAudienceSourceMatches,
+  savedAudienceFilterOptions} from "./organizerSavedAudienceSources";
+import {savedAudienceMemberPage} from "./organizerSavedAudienceMembers";
+
+export const organizerSavedAudienceDefinitionVersion = 2;
 export const organizerSavedAudienceEvaluationLimit = 2500;
 const savedAudienceListDefaultLimit = 25;
 const getAllChunkSize = 250;
@@ -64,6 +68,7 @@ export interface SavedAudienceEvaluationRow {
   trait: OrganizerContactTraitDocument;
   preference: OrganizerCommunicationPreferenceDocument | null;
   channelState: OrganizerContactChannelStateDocument | null;
+  sourcePredicateKeys?: Set<string>;
 }
 
 interface SavedAudienceDeps {
@@ -94,6 +99,7 @@ export async function upsertOrganizerSavedAudienceHandler(
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const definition = canonicalSavedAudienceDefinition(data.definition);
   await assertManualTagsExist(db, data.organizerId, definition);
+  await assertSavedAudienceSources(db, data.organizerId, definition);
   const audienceId = data.audienceId ?? savedAudienceId(
     data.organizerId,
     actorUid,
@@ -188,6 +194,8 @@ export async function listOrganizerSavedAudiencesHandler(
   const final = visible.at(-1);
   return {
     organizerId: data.organizerId,
+    ...(data.includeFilterOptions ? {filterOptions:
+      await savedAudienceFilterOptions(db, data.organizerId)} : {}),
     audiences: visible.map((doc) =>
       savedAudienceResponse(doc.data() as OrganizerSavedAudienceDocument),
     ),
@@ -228,10 +236,18 @@ export async function previewOrganizerSavedAudienceHandler(
     now,
   });
   const reachSummary = savedAudienceReachSummary(rows);
-  await ref.update({
-    lastPreviewMatchCount: rows.length,
-    lastPreviewReachSummary: reachSummary,
-    lastPreviewAt: now,
+  const page = savedAudienceMemberPage({
+    organizerId: data.organizerId, audienceId: data.audienceId,
+    revision: audience!.revision, rows, cursor: data.cursor,
+    limit: data.sampleLimit ?? 10,
+  });
+  await db.runTransaction(async (tx) => {
+    const current = (await tx.get(ref)).data() as
+      OrganizerSavedAudienceDocument | undefined;
+    assertActiveAudience(current, data.organizerId);
+    assertAudienceRevision(current!, audience!.revision);
+    tx.update(ref, {lastPreviewMatchCount: rows.length,
+      lastPreviewReachSummary: reachSummary, lastPreviewAt: now});
   });
   const refreshed: OrganizerSavedAudienceDocument = {
     ...audience!,
@@ -244,7 +260,8 @@ export async function previewOrganizerSavedAudienceHandler(
     coverage: "exact",
     matchCount: rows.length,
     reachSummary,
-    sample: rows.slice(0, data.sampleLimit ?? 10).map((row) => ({
+    nextCursor: page.nextCursor,
+    sample: page.rows.map((row) => ({
       contactId: row.contactId,
       displayName: row.contact.displayNameOverride ?? row.contact.displayName,
     })),
@@ -405,12 +422,18 @@ export async function resolveSavedAudienceRows(params: {
       const value = snap.data() as OrganizerContactChannelStateDocument;
       return [value.contactId, value] as const;
     }));
+  const sourceMatches = await savedAudienceSourceMatches(
+    params.db, params.organizerId, params.definition);
   return contacts.flatMap((row): SavedAudienceEvaluationRow[] => {
+    if (row.contact.mergedIntoContactId != null ||
+        row.contact.identityState === "merged") return [];
     const trait = traits.get(row.contactId);
     if (!trait || trait.organizerId !== params.organizerId) return [];
     const candidate: SavedAudienceEvaluationRow = {
       ...row,
       trait,
+      sourcePredicateKeys: new Set([...sourceMatches.entries()]
+        .filter(([, ids]) => ids.has(row.contactId)).map(([key]) => key)),
       preference: row.contact.linkedUid ?
         preferences.get(row.contact.linkedUid) ?? null : null,
       channelState: channels.get(row.contactId) ?? null,
@@ -441,6 +464,10 @@ function savedAudiencePredicateMatches(
   now: FirebaseFirestore.Timestamp,
 ): boolean {
   switch (predicate.kind) {
+  case "applicationStatus":
+  case "formAnswer":
+  case "attendedEvent":
+    return row.sourcePredicateKeys?.has(JSON.stringify(predicate)) ?? false;
   case "computedSegment":
     return organizerContactTraitMatchesSegment(
       row.trait,

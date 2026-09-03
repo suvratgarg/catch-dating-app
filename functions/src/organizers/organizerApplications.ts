@@ -50,7 +50,8 @@ import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {organizerApplicationAccess} from "./organizerApplicationAccess";
+import {organizerApplicationAccess, organizerApplicationContactId} from
+  "./organizerApplicationAccess";
 import {applicationAdmissionContactId} from "./organizerApplicationAdmission";
 import {createOrganizerContactInTransaction} from "./organizerContacts";
 import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
@@ -542,6 +543,8 @@ export async function listOrganizerApplicationsHandler(
       ...row,
       data: {
         ...row.data,
+        contactId: await organizerApplicationContactId({
+          db, applicationId: row.id, application: row.data}),
         applicantDisplayName: visibleName,
         applicantDisplayNameNormalized: normalizeSearch(visibleName),
       },
@@ -557,7 +560,14 @@ export async function listOrganizerApplicationsHandler(
     return !query || row.data.applicantDisplayNameNormalized.includes(query);
   });
   rows.sort(applicationComparator(data.sort ?? "newest"));
-  const offset = decodeCursor(data.cursor ?? null, data.organizerId);
+  const fingerprint = sha256(JSON.stringify([
+    data.organizerId, data.contactId ?? null, data.formId ?? null,
+    data.targetId ?? null, data.reviewStatus ?? null, query,
+    data.sort ?? "newest",
+    rows.map((row) => [row.id, row.data.revision, row.accessState,
+      row.data.contactId]),
+  ]));
+  const offset = decodeCursor(data.cursor ?? null, fingerprint);
   const limit = data.limit ?? defaultPageSize;
   const page = rows.slice(offset, offset + limit);
   const nextOffset = offset + page.length;
@@ -580,7 +590,7 @@ export async function listOrganizerApplicationsHandler(
       revision: row.data.revision,
     })),
     nextCursor: nextOffset < rows.length ?
-      encodeCursor(data.organizerId, nextOffset) : null,
+      encodeCursor(fingerprint, nextOffset) : null,
   };
 }
 
@@ -622,7 +632,8 @@ export async function getOrganizerApplicationDetailHandler(
   return {
     organizerId: data.organizerId,
     applicationId: data.applicationId,
-    contactId: application.contactId,
+    contactId: await organizerApplicationContactId({
+      db, applicationId: data.applicationId, application}),
     sourceResponseId: visible.sourceResponseId,
     formId: application.formId,
     formVersionId: application.formVersionId,
@@ -1223,21 +1234,21 @@ function applicationComparator(
   ) || a.id.localeCompare(b.id);
 }
 
-function encodeCursor(organizerId: string, offset: number): string {
-  return Buffer.from(JSON.stringify({version: 1, organizerId, offset}), "utf8")
+function encodeCursor(fingerprint: string, offset: number): string {
+  return Buffer.from(JSON.stringify({version: 2, fingerprint, offset}), "utf8")
     .toString("base64url");
 }
 
-function decodeCursor(cursor: string | null, organizerId: string): number {
+function decodeCursor(cursor: string | null, fingerprint: string): number {
   if (!cursor) return 0;
   try {
     const json = Buffer.from(cursor, "base64url").toString("utf8");
     const decoded = JSON.parse(json) as {
       version?: unknown;
-      organizerId?: unknown;
+      fingerprint?: unknown;
       offset?: unknown;
     };
-    if (decoded.version !== 1 || decoded.organizerId !== organizerId ||
+    if (decoded.version !== 2 || decoded.fingerprint !== fingerprint ||
         !Number.isInteger(decoded.offset) || (decoded.offset as number) < 0 ||
         (decoded.offset as number) > maxListScan) {
       throw new Error("invalid cursor");

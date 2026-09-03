@@ -2,6 +2,7 @@ import {createHash} from "crypto";
 import {
   OrganizerApplicationDocument,
   OrganizerApplicationResponseDocument,
+  OrganizerContactOriginDocument,
   OrganizerFormResponseDocument,
   OrganizerFormVersionDocument,
   ParticipantOrganizerDataGrantDocument,
@@ -10,10 +11,31 @@ import {
   hostVisibleApplicationAnswers,
   participantOrganizerGrantId,
 } from "./participantOrganizerApplications";
+import {organizerContactOriginId} from "../shared/organizerContactOrigins";
 
 export function genericFormApplicationId(responseId: string): string {
   return "formapplication_" + createHash("sha256")
     .update(responseId).digest("hex").slice(0, 32);
+}
+
+/** Source origins follow merges without rewriting submitted evidence. */
+export async function organizerApplicationContactId(params: {
+  db: FirebaseFirestore.Firestore;
+  applicationId: string;
+  application: OrganizerApplicationDocument;
+}): Promise<string | null> {
+  const {application} = params;
+  const generic = application.source.kind === "native" &&
+    params.applicationId === genericFormApplicationId(
+      application.latestResponseId);
+  const origin = (await params.db.collection("organizerContactOrigins")
+    .doc(organizerContactOriginId({organizerId: application.organizerId,
+      sourceKind: "hostForm", sourceEntityKind: generic ?
+        "hostFormResponse" : "hostApplicationResponse",
+      sourceEntityId: application.latestResponseId,
+    })).get()).data() as OrganizerContactOriginDocument | undefined;
+  return origin?.organizerId === application.organizerId ?
+    origin.currentContactId : application.contactId;
 }
 
 export interface OrganizerApplicationAccess {

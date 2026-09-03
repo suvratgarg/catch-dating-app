@@ -43,6 +43,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_deta
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_saved_audience_members_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -62,6 +63,8 @@ part 'host_customer_editor.dart';
 part 'host_customer_editor_sheets.dart';
 part 'host_customers_directory.dart';
 part 'host_saved_audience_editor.dart';
+part 'host_saved_audience_source_rules.dart';
+part 'host_saved_audience_overview.dart';
 part 'host_saved_audiences_workspace.dart';
 
 enum _HostCustomersHeaderAction { reviewDuplicates, export }

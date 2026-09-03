@@ -114,7 +114,7 @@ HostApplicationDetail _detail(bool accepted, {bool revoked = false}) =>
       ),
       reviewNote: null,
       assignedReviewerUid: null,
-      submittedAt: DateTime(2026, 9, 1),
+      submittedAt: DateTime(2026, 9),
       reviewedAt: null,
       revision: accepted ? 2 : 1,
       contactId: accepted ? 'person-1' : null,

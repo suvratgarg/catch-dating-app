@@ -10,4 +10,5 @@ export interface PreviewOrganizerSavedAudienceCallablePayload {
   audienceId: string;
   expectedRevision?: number | null;
   sampleLimit?: number;
+  cursor?: string | null;
 }

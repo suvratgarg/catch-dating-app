@@ -17257,4 +17257,47 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostCustomerApplicationsBody =>
       'View this person’s applications and review decisions.';
+
+  @override
+  String get hostSavedAudienceEditRules => 'Edit audience rules';
+
+  @override
+  String get hostSavedAudienceEvaluated => 'Last evaluated';
+
+  @override
+  String get hostSavedAudienceMessage => 'Message this audience';
+
+  @override
+  String get hostSavedAudienceMembers => 'People in this audience';
+
+  @override
+  String get hostSavedAudienceNoMembers => 'No people match these rules';
+
+  @override
+  String get hostAudienceRuleApplication => 'Application status';
+
+  @override
+  String get hostAudienceRuleFormAnswer => 'Form answer';
+
+  @override
+  String get hostAudienceRuleNamedEvent => 'Attended event';
+
+  @override
+  String get hostAudienceChooseForm => 'Choose a form';
+
+  @override
+  String get hostAudienceChooseEvent => 'Choose an event';
+
+  @override
+  String get hostAudienceChooseQuestion => 'Choose a published question';
+
+  @override
+  String get hostAudienceChooseAnswer => 'Answer contains or equals';
+
+  @override
+  String get hostAudienceSourceUnavailable => 'Source unavailable';
+
+  @override
+  String get hostAudienceFilterableQuestionsHelp =>
+      'Only choice and yes/no questions marked filterable appear here. Each rule uses the selected published version.';
 }

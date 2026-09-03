@@ -43,5 +43,12 @@ const schemaPreviewOrganizerSavedAudienceCallablePayloadSchema = <String, Object
       'maximum': 25,
       'default': 10,
     },
+    'cursor': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 2048,
+    },
   },
 };

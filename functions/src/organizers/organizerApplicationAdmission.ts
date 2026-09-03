@@ -48,8 +48,15 @@ export async function applicationAdmissionContactId(params: {
     }
     for (const doc of matches.docs) {
       const contact = doc.data() as OrganizerContactDocument;
-      if (contact.deletedAt === null && contact.hiddenAt === null &&
-          contact.mergedIntoContactId === null) candidates.add(doc.id);
+      if (contact.deletedAt !== null || contact.hiddenAt !== null ||
+          contact.mergedIntoContactId !== null) continue;
+      if (contact.linkedUid && application.linkedUid &&
+          contact.linkedUid !== application.linkedUid) {
+        throw new HttpsError("failed-precondition",
+          "The matching customer belongs to another account. " +
+            "Review duplicates.");
+      }
+      candidates.add(doc.id);
     }
   }
   if (candidates.size > 1) {
@@ -57,7 +64,17 @@ export async function applicationAdmissionContactId(params: {
       "The application matches conflicting contacts. Review duplicates first.");
   }
   const existingId = [...candidates][0];
-  if (existingId) return existingId;
+  if (existingId) {
+    const existing = (await tx.get(db.collection("organizerContacts")
+      .doc(existingId))).data() as OrganizerContactDocument | undefined;
+    if (!existing || existing.organizerId !== application.organizerId ||
+        (existing.linkedUid && application.linkedUid &&
+        existing.linkedUid !== application.linkedUid)) {
+      throw new HttpsError("failed-precondition",
+        "The linked customer is unavailable or belongs to another account.");
+    }
+    return existingId;
+  }
   if (!params.phoneE164 && !params.email) {
     throw new HttpsError("failed-precondition",
       "A submitted phone number or email is needed to add this person.");

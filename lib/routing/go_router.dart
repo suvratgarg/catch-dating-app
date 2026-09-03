@@ -123,7 +123,7 @@ HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
             requestedAudienceId.isNotEmpty
         ? requestedAudienceId
         : null,
-    initialOrganizerId: initialOrganizerId,
+    initialOrganizerId: initialOrganizerId ?? uri.queryParameters['organizerId'],
     initialThreadId: uri.queryParameters['threadId'],
   );
 }

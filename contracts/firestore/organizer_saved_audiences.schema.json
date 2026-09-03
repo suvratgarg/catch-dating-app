@@ -61,13 +61,7 @@
       }
     },
     "predicate": {
-      "oneOf": [
-        {"$ref": "#/definitions/computedSegmentPredicate"},
-        {"$ref": "#/definitions/manualTagPredicate"},
-        {"$ref": "#/definitions/attendanceCountPredicate"},
-        {"$ref": "#/definitions/lastSeenWithinDaysPredicate"},
-        {"$ref": "#/definitions/reachableForIntentPredicate"}
-      ]
+      "oneOf": [{"$ref": "#/definitions/computedSegmentPredicate"}, {"$ref": "#/definitions/manualTagPredicate"}, {"$ref": "#/definitions/attendanceCountPredicate"}, {"$ref": "#/definitions/lastSeenWithinDaysPredicate"}, {"$ref": "#/definitions/reachableForIntentPredicate"}, {"$ref": "#/definitions/applicationStatusPredicate"}, {"$ref": "#/definitions/formAnswerPredicate"}, {"$ref": "#/definitions/attendedEventPredicate"}]
     },
     "computedSegmentPredicate": {
       "type": "object",
@@ -113,6 +107,82 @@
       "properties": {
         "kind": {"const": "reachableForIntent"},
         "intent": {"const": "organizerWhatsappCampaign"}
+      }
+    },
+    "applicationStatusPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "formId",
+        "reviewStatus"
+      ],
+      "properties": {
+        "kind": {
+          "const": "applicationStatus"
+        },
+        "formId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "reviewStatus": {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "inReview",
+            "approved",
+            "waitlisted",
+            "declined"
+          ]
+        }
+      }
+    },
+    "formAnswerPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "formId",
+        "versionId",
+        "questionId",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "const": "formAnswer"
+        },
+        "formId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "versionId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "questionId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "value": {
+          "type": [
+            "string",
+            "boolean"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    },
+    "attendedEventPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "eventId"
+      ],
+      "properties": {
+        "kind": {
+          "const": "attendedEvent"
+        },
+        "eventId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
       }
     }
   }

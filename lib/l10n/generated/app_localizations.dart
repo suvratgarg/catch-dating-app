@@ -27126,6 +27126,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View this person’s applications and review decisions.'**
   String get hostCustomerApplicationsBody;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit audience rules'**
+  String get hostSavedAudienceEditRules;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'Last evaluated'**
+  String get hostSavedAudienceEvaluated;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'Message this audience'**
+  String get hostSavedAudienceMessage;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'People in this audience'**
+  String get hostSavedAudienceMembers;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'No people match these rules'**
+  String get hostSavedAudienceNoMembers;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Application status'**
+  String get hostAudienceRuleApplication;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Form answer'**
+  String get hostAudienceRuleFormAnswer;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Attended event'**
+  String get hostAudienceRuleNamedEvent;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a form'**
+  String get hostAudienceChooseForm;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event'**
+  String get hostAudienceChooseEvent;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a published question'**
+  String get hostAudienceChooseQuestion;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer contains or equals'**
+  String get hostAudienceChooseAnswer;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Source unavailable'**
+  String get hostAudienceSourceUnavailable;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Only choice and yes/no questions marked filterable appear here. Each rule uses the selected published version.'**
+  String get hostAudienceFilterableQuestionsHelp;
 }
 
 class _AppLocalizationsDelegate

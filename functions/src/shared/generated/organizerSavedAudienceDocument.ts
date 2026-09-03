@@ -51,6 +51,27 @@ export interface OrganizerSavedAudienceDocument {
           kind: "reachableForIntent";
           intent: "organizerWhatsappCampaign";
         }
+      | {
+          kind: "applicationStatus";
+          formId: string;
+          reviewStatus:
+            | "submitted"
+            | "inReview"
+            | "approved"
+            | "waitlisted"
+            | "declined";
+        }
+      | {
+          kind: "formAnswer";
+          formId: string;
+          versionId: string;
+          questionId: string;
+          value: string | boolean;
+        }
+      | {
+          kind: "attendedEvent";
+          eventId: string;
+        }
     )[];
   };
   definitionHash: string;

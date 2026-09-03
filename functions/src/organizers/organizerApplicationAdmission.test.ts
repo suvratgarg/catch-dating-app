@@ -6,7 +6,8 @@ import {OrganizerApplicationDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {genericFormApplicationId, organizerApplicationAccess} from
   "./organizerApplicationAccess";
-import {getOrganizerApplicationDetailHandler, reviewOrganizerApplicationHandler}
+import {getOrganizerApplicationDetailHandler,
+  listOrganizerApplicationsHandler, reviewOrganizerApplicationHandler}
   from "./organizerApplications";
 import {AudienceTestStore} from "./organizerAudienceTestStore";
 
@@ -186,3 +187,51 @@ test("legacy native applications still need their exact participant grant",
     assert.equal(access.accessState, "revokedParticipantGrant");
     assert.deepEqual(access.answers, []);
   });
+
+
+test("approval rejects a customer linked to a different participant",
+  async () => {
+    const h = harness();
+    h.store.docs["organizerContacts/other-account"] = {
+      organizerId: "org-1", phoneE164: "+919876543210", email: null,
+      linkedUid: "another-user", deletedAt: null, hiddenAt: null,
+      mergedIntoContactId: null,
+    };
+    await assert.rejects(h.approve(), {code: "failed-precondition"});
+    assert.equal(h.store.docs[appPath].reviewStatus, "submitted");
+  });
+
+test("application detail and person queue follow a merged source origin",
+  async () => {
+    const h = harness();
+    const accepted = await h.approve();
+    const origin = Object.values(h.store.docs).find((doc) =>
+      doc.sourceEntityId === "response-1")!;
+    origin.currentContactId = "survivor";
+    const detail = await getOrganizerApplicationDetailHandler(h.request({}),
+      h.deps);
+    assert.equal(detail.contactId, "survivor");
+    const listed = await listOrganizerApplicationsHandler(
+      {auth: {uid: "host-1"}, data: {organizerId: "org-1",
+        contactId: "survivor"}} as CallableRequest<unknown>, h.deps);
+    assert.equal(listed.applications[0].contactId, "survivor");
+    assert.equal(h.store.docs[appPath].contactId, accepted.contactId);
+  });
+
+test("application paging refuses changed filters or review state", async () => {
+  const h = harness();
+  h.store.docs["organizerApplications/second"] = {...h.application};
+  const list = (extra = {}) => listOrganizerApplicationsHandler(
+    {auth: {uid: "host-1"}, data: {organizerId: "org-1", limit: 1,
+      ...extra}} as CallableRequest<unknown>, h.deps);
+  const first = await list();
+  assert.ok(first.nextCursor);
+  const second = await list({cursor: first.nextCursor});
+  assert.notEqual(first.applications[0].applicationId,
+    second.applications[0].applicationId);
+  await assert.rejects(list({cursor: first.nextCursor, formId: "other-form"}),
+    {code: "invalid-argument"});
+  h.store.docs[appPath].revision = 2;
+  await assert.rejects(list({cursor: first.nextCursor}),
+    {code: "invalid-argument"});
+});

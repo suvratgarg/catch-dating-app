@@ -17,14 +17,17 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../clubs/clubs_test_helpers.dart';
 import '../../test_pump_helpers.dart';
@@ -32,6 +35,50 @@ import '../../test_pump_helpers.dart';
 void main() {
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+  testWidgets('Responses opens application review for the selected form', (
+    tester,
+  ) async {
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => const Scaffold(
+            body: SingleChildScrollView(
+              child: HostFormResponsesPanel(
+                organizerId: 'org-1',
+                formId: 'form-1',
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/applications',
+          name: Routes.hostApplicationsScreen.name,
+          builder: (_, state) => Text(
+            '${state.uri.queryParameters['organizerId']}/${state.uri.queryParameters['formId']}',
+          ),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          hostFormResponsesControllerProvider.overrideWith2(
+            (_) => _FixedHostFormResponsesController([]),
+          ),
+        ],
+        child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(
+      find.byKey(const ValueKey('host-form-responses-review-applications')),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.text('org-1/form-1'), findsOneWidget);
+  });
 
   testWidgets('Host Forms keeps Audience composition across route states', (
     tester,

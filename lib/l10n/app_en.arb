@@ -23666,5 +23666,103 @@
   },
   "@hostCustomerApplicationsBody": {
     "description": "Audience intake workflow label."
+  },
+  "hostSavedAudienceEditRules": "Edit audience rules",
+  "@hostSavedAudienceEditRules": {
+    "description": "Saved audience overview label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostSavedAudienceEvaluated": "Last evaluated",
+  "@hostSavedAudienceEvaluated": {
+    "description": "Saved audience overview label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostSavedAudienceMessage": "Message this audience",
+  "@hostSavedAudienceMessage": {
+    "description": "Saved audience overview label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostSavedAudienceMembers": "People in this audience",
+  "@hostSavedAudienceMembers": {
+    "description": "Saved audience overview label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostSavedAudienceNoMembers": "No people match these rules",
+  "@hostSavedAudienceNoMembers": {
+    "description": "Saved audience overview label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceRuleApplication": "Application status",
+  "@hostAudienceRuleApplication": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceRuleFormAnswer": "Form answer",
+  "@hostAudienceRuleFormAnswer": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceRuleNamedEvent": "Attended event",
+  "@hostAudienceRuleNamedEvent": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceChooseForm": "Choose a form",
+  "@hostAudienceChooseForm": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceChooseEvent": "Choose an event",
+  "@hostAudienceChooseEvent": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceChooseQuestion": "Choose a published question",
+  "@hostAudienceChooseQuestion": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceChooseAnswer": "Answer contains or equals",
+  "@hostAudienceChooseAnswer": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSourceUnavailable": "Source unavailable",
+  "@hostAudienceSourceUnavailable": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceFilterableQuestionsHelp": "Only choice and yes/no questions marked filterable appear here. Each rule uses the selected published version.",
+  "@hostAudienceFilterableQuestionsHelp": {
+    "description": "Saved audience filter authoring label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
   }
 }

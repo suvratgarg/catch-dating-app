@@ -15,7 +15,10 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final supplied = initialAudience;
-    if (supplied != null || audienceId == null) {
+    if (supplied != null) {
+      return HostSavedAudienceWorkspace(audience: supplied);
+    }
+    if (audienceId == null) {
       return _HostSavedAudienceEditorForm(
         organizerId: organizerId,
         initialAudience: supplied,
@@ -68,10 +71,7 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
             ),
           );
         }
-        return _HostSavedAudienceEditorForm(
-          organizerId: organizerId,
-          initialAudience: audience,
-        );
+        return HostSavedAudienceWorkspace(audience: audience);
       },
     );
   }
@@ -81,10 +81,12 @@ class _HostSavedAudienceEditorForm extends ConsumerStatefulWidget {
   const _HostSavedAudienceEditorForm({
     required this.organizerId,
     required this.initialAudience,
+    this.onSaved,
   });
 
   final String organizerId;
   final HostSavedAudience? initialAudience;
+  final ValueChanged<HostSavedAudience>? onSaved;
 
   @override
   ConsumerState<_HostSavedAudienceEditorForm> createState() =>
@@ -121,17 +123,15 @@ class _HostSavedAudienceEditorFormState
 
   @override
   Widget build(BuildContext context) {
-    final directory = ref.watch(
-      hostCustomersDirectoryControllerProvider(
-        HostCustomersDirectoryRequest(
-          organizerId: widget.organizerId,
-          sort: HostCustomerSort.name,
-        ),
-      ),
+    final options = ref.watch(
+      hostSavedAudienceFilterOptionsProvider(widget.organizerId),
     );
-    final manualTags =
-        catchAsyncStateFromAsyncValue(directory).value?.manualTagVocabulary ??
-        const <HostCustomerManualTag>[];
+    final filterOptions =
+        catchAsyncStateFromAsyncValue(options).value ??
+        const HostSavedAudienceFilterOptions.empty();
+    final manualTags = filterOptions.tags
+        .map((tag) => HostCustomerManualTag(tagId: tag.tagId, label: tag.label))
+        .toList();
     final editing = _audience != null;
     return PopScope(
       canPop: !_busy,
@@ -156,6 +156,22 @@ class _HostSavedAudienceEditorFormState
             key: _formKey,
             child: CatchResponsiveSectionLayout(
               sections: [
+                if (options.hasError)
+                  CatchResponsiveSectionItem(
+                    child: CatchErrorState.fromError(
+                      options.error!,
+                      context: AppErrorContext.customers,
+                      onRetry: () => ref.invalidate(
+                        hostSavedAudienceFilterOptionsProvider(
+                          widget.organizerId,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (options.isLoading)
+                  const CatchResponsiveSectionItem(
+                    child: CatchSkeletonRows(count: 2),
+                  ),
                 CatchResponsiveSectionItem(
                   child: CatchSection.plain(
                     child: Text(
@@ -210,6 +226,7 @@ class _HostSavedAudienceEditorFormState
                       number: index + 1,
                       draft: _rules[index],
                       manualTags: manualTags,
+                      filterOptions: filterOptions,
                       enabled: !_busy,
                       canRemove: _rules.length > 1,
                       onChanged: (draft) =>
@@ -321,7 +338,13 @@ class _HostSavedAudienceEditorFormState
       );
       ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
       ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
-      if (mounted) context.pop(preview.audience);
+      if (mounted) {
+        if (widget.onSaved case final onSaved?) {
+          onSaved(preview.audience);
+        } else {
+          context.pop(preview.audience);
+        }
+      }
     } on Object catch (error) {
       if (mounted) {
         showCatchErrorSnackBar(
@@ -401,6 +424,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
     required this.number,
     required this.draft,
     required this.manualTags,
+    required this.filterOptions,
     required this.enabled,
     required this.canRemove,
     required this.onChanged,
@@ -410,6 +434,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
   final int number;
   final _AudienceRuleDraft draft;
   final List<HostCustomerManualTag> manualTags;
+  final HostSavedAudienceFilterOptions filterOptions;
   final bool enabled;
   final bool canRemove;
   final ValueChanged<_AudienceRuleDraft> onChanged;
@@ -436,6 +461,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
             ),
       children: [
         CatchField.select<_AudienceRuleKind>(
+          key: ValueKey('host-saved-audience-rule-type-$number'),
           title: context.l10n.hostSavedAudienceRuleType,
           contract: CatchContractConstraints
               .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsKind,
@@ -449,6 +475,24 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           },
         ),
         ...switch (draft.kind) {
+          _AudienceRuleKind.applicationStatus ||
+          _AudienceRuleKind.formAnswer ||
+          _AudienceRuleKind.attendedEvent => [
+            HostAudienceSourceRuleFields(
+              kind: switch (draft.kind) {
+                _AudienceRuleKind.applicationStatus =>
+                  HostAudienceSourceRuleKind.applicationStatus,
+                _AudienceRuleKind.attendedEvent =>
+                  HostAudienceSourceRuleKind.attendedEvent,
+                _ => HostAudienceSourceRuleKind.formAnswer,
+              },
+              predicate: draft.sourcePredicate,
+              options: filterOptions,
+              enabled: enabled,
+              onChanged: (value) =>
+                  onChanged(draft.copyWith(sourcePredicate: value)),
+            ),
+          ],
           _AudienceRuleKind.computedSegment => [
             CatchField.select<HostAudienceSegment>(
               title: context.l10n.hostSavedAudienceSegment,
@@ -552,7 +596,10 @@ enum _AudienceRuleKind {
   manualTag('manualTag'),
   attendanceCount('attendanceCount'),
   lastSeenWithinDays('lastSeenWithinDays'),
-  campaignReachable('reachableForIntent');
+  campaignReachable('reachableForIntent'),
+  applicationStatus('applicationStatus'),
+  formAnswer('formAnswer'),
+  attendedEvent('attendedEvent');
 
   const _AudienceRuleKind(this.wireValue);
   final String wireValue;
@@ -565,6 +612,7 @@ class _AudienceRuleDraft {
     required this.manualTagId,
     required this.operator,
     required this.amount,
+    this.sourcePredicate,
   });
 
   factory _AudienceRuleDraft.defaults() => const _AudienceRuleDraft(
@@ -578,6 +626,19 @@ class _AudienceRuleDraft {
   factory _AudienceRuleDraft.fromPredicate(
     HostSavedAudiencePredicate predicate,
   ) => switch (predicate) {
+    HostSavedAudienceApplicationStatusRule() =>
+      _AudienceRuleDraft.defaults().copyWith(
+        kind: _AudienceRuleKind.applicationStatus,
+        sourcePredicate: predicate,
+      ),
+    HostSavedAudienceFormAnswer() => _AudienceRuleDraft.defaults().copyWith(
+      kind: _AudienceRuleKind.formAnswer,
+      sourcePredicate: predicate,
+    ),
+    HostSavedAudienceAttendedEvent() => _AudienceRuleDraft.defaults().copyWith(
+      kind: _AudienceRuleKind.attendedEvent,
+      sourcePredicate: predicate,
+    ),
     HostSavedAudienceComputedSegment(:final segment) => _AudienceRuleDraft(
       kind: _AudienceRuleKind.computedSegment,
       segment: segment,
@@ -621,6 +682,7 @@ class _AudienceRuleDraft {
   final String? manualTagId;
   final HostSavedAudienceAttendanceOperator operator;
   final int amount;
+  final HostSavedAudiencePredicate? sourcePredicate;
 
   _AudienceRuleDraft withKind(
     _AudienceRuleKind next,
@@ -641,15 +703,27 @@ class _AudienceRuleDraft {
     String? manualTagId,
     HostSavedAudienceAttendanceOperator? operator,
     int? amount,
+    HostSavedAudiencePredicate? sourcePredicate,
   }) => _AudienceRuleDraft(
     kind: kind ?? this.kind,
     segment: segment ?? this.segment,
     manualTagId: manualTagId ?? this.manualTagId,
     operator: operator ?? this.operator,
     amount: amount ?? this.amount,
+    sourcePredicate: sourcePredicate ?? this.sourcePredicate,
   );
 
   HostSavedAudiencePredicate? toPredicate() => switch (kind) {
+    _AudienceRuleKind.applicationStatus =>
+      sourcePredicate is HostSavedAudienceApplicationStatusRule
+          ? sourcePredicate
+          : null,
+    _AudienceRuleKind.formAnswer =>
+      sourcePredicate is HostSavedAudienceFormAnswer ? sourcePredicate : null,
+    _AudienceRuleKind.attendedEvent =>
+      sourcePredicate is HostSavedAudienceAttendedEvent
+          ? sourcePredicate
+          : null,
     _AudienceRuleKind.computedSegment => HostSavedAudienceComputedSegment(
       segment,
     ),
@@ -669,6 +743,11 @@ class _AudienceRuleDraft {
 
 String _audienceRuleKindLabel(BuildContext context, _AudienceRuleKind kind) =>
     switch (kind) {
+      _AudienceRuleKind.applicationStatus =>
+        context.l10n.hostAudienceRuleApplication,
+      _AudienceRuleKind.formAnswer => context.l10n.hostAudienceRuleFormAnswer,
+      _AudienceRuleKind.attendedEvent =>
+        context.l10n.hostAudienceRuleNamedEvent,
       _AudienceRuleKind.computedSegment =>
         context.l10n.hostSavedAudienceRuleSegment,
       _AudienceRuleKind.manualTag => context.l10n.hostSavedAudienceRuleTag,

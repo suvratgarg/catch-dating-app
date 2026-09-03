@@ -187,6 +187,92 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
                   },
                 },
               },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'formId',
+                  'reviewStatus',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'applicationStatus',
+                  },
+                  'formId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'reviewStatus': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'submitted',
+                      'inReview',
+                      'approved',
+                      'waitlisted',
+                      'declined',
+                    ],
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'formId',
+                  'versionId',
+                  'questionId',
+                  'value',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'formAnswer',
+                  },
+                  'formId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'versionId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'questionId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'value': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'boolean',
+                    ],
+                    'minLength': 1,
+                    'maxLength': 160,
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'eventId',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'attendedEvent',
+                  },
+                  'eventId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                },
+              },
             ],
           },
         },
@@ -519,6 +605,92 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
                   },
                 },
               },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'formId',
+                  'reviewStatus',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'applicationStatus',
+                  },
+                  'formId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'reviewStatus': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'submitted',
+                      'inReview',
+                      'approved',
+                      'waitlisted',
+                      'declined',
+                    ],
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'formId',
+                  'versionId',
+                  'questionId',
+                  'value',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'formAnswer',
+                  },
+                  'formId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'versionId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'questionId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'value': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'boolean',
+                    ],
+                    'minLength': 1,
+                    'maxLength': 160,
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'eventId',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'attendedEvent',
+                  },
+                  'eventId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                },
+              },
             ],
           },
         },
@@ -633,6 +805,92 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
             },
           },
         },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'formId',
+            'reviewStatus',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'applicationStatus',
+            },
+            'formId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'reviewStatus': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'submitted',
+                'inReview',
+                'approved',
+                'waitlisted',
+                'declined',
+              ],
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'formId',
+            'versionId',
+            'questionId',
+            'value',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'formAnswer',
+            },
+            'formId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'versionId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'questionId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'value': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'boolean',
+              ],
+              'minLength': 1,
+              'maxLength': 160,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'eventId',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'attendedEvent',
+            },
+            'eventId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+          },
+        },
       ],
     },
     'computedSegmentPredicate': <String, Object?>{
@@ -739,6 +997,92 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
         },
         'intent': <String, Object?>{
           'const': 'organizerWhatsappCampaign',
+        },
+      },
+    },
+    'applicationStatusPredicate': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'formId',
+        'reviewStatus',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'applicationStatus',
+        },
+        'formId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'reviewStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'submitted',
+            'inReview',
+            'approved',
+            'waitlisted',
+            'declined',
+          ],
+        },
+      },
+    },
+    'formAnswerPredicate': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'formId',
+        'versionId',
+        'questionId',
+        'value',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'formAnswer',
+        },
+        'formId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'versionId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'questionId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'value': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'boolean',
+          ],
+          'minLength': 1,
+          'maxLength': 160,
+        },
+      },
+    },
+    'attendedEventPredicate': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'eventId',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'attendedEvent',
+        },
+        'eventId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
         },
       },
     },

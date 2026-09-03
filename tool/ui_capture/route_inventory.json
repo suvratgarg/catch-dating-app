@@ -4,8 +4,8 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "e5ee13cd737be53d75470372e1969af317d98bf8866eea49bcc261c8fc6f73e7",
-    "routeContractSha256": "32b285ddbdf2ee372853a57ee65123f8d9ff6f334760dfd545072b4e234d8412",
+    "normalizedFileSha256": "74d25860e0fff92d290c2ab0b14475c600bf734e8ee4826cd9801cb22217df17",
+    "routeContractSha256": "34ede23743f45cec6547b52c5a4cf68b418e32dd359b713d30b0f73048be40fa",
     "goRouteCount": 85,
     "shellBranchCount": 9,
     "enumRouteCount": 70,
@@ -751,7 +751,7 @@
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'applications'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostApplicationsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationExpression": "(context,state)=>HostApplicationsScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.uri.queryParameters['formId'],contactId:state.uri.queryParameters['contactId'])",
       "presentationTarget": "HostApplicationsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true

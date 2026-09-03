@@ -1073,6 +1073,7 @@ async function contactFormTimeline(params: {
 }> {
   const responseOrigins = params.origins.filter((origin) =>
     origin.data.sourceKind === "hostForm" &&
+    origin.data.sourceEntityKind === "hostFormResponse" &&
     origin.data.formId !== null && origin.data.responseId !== null);
   const responseIds = [...new Set(responseOrigins
     .map((origin) => origin.data.responseId!))];

@@ -202,7 +202,8 @@ class _HostApplicationsScreenState
                           queryParameters: {'organizerId': widget.organizerId},
                         ),
                       ),
-                      if (state.nextCursor != null) ...[
+                      if (state.nextCursor != null &&
+                          state.loadMoreError == null) ...[
                         gapH16,
                         CatchButton(
                           label: context.l10n.hostApplicationsLoadMore,
@@ -226,13 +227,11 @@ class _HostApplicationsScreenState
                           state.loadMoreError!,
                           context: AppErrorContext.applications,
                           mode: CatchErrorStateMode.compact,
-                          onRetry: () => ref
-                              .read(
-                                hostApplicationsDirectoryControllerProvider(
-                                  request,
-                                ).notifier,
-                              )
-                              .loadMore(),
+                          onRetry: () => ref.invalidate(
+                            hostApplicationsDirectoryControllerProvider(
+                              request,
+                            ),
+                          ),
                         ),
                       ],
                     ],

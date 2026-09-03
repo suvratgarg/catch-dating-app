@@ -7,6 +7,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_crm_repository.g.dart';
+part 'host_saved_audience_filters.dart';
 
 enum HostCrmChannelReadiness {
   currentEventOnly,
@@ -2026,6 +2027,23 @@ sealed class HostSavedAudiencePredicate {
 
   factory HostSavedAudiencePredicate.fromMap(Map<Object?, Object?> map) =>
       switch (_requiredString(map, 'kind')) {
+        'applicationStatus' => HostSavedAudienceApplicationStatusRule(
+          formId: _requiredString(map, 'formId'),
+          reviewStatus: _enumByName(
+            HostSavedAudienceApplicationStatus.values,
+            _requiredString(map, 'reviewStatus'),
+            'application status',
+          ),
+        ),
+        'formAnswer' => HostSavedAudienceFormAnswer(
+          formId: _requiredString(map, 'formId'),
+          versionId: _requiredString(map, 'versionId'),
+          questionId: _requiredString(map, 'questionId'),
+          value: _audienceAnswerValue(map['value']),
+        ),
+        'attendedEvent' => HostSavedAudienceAttendedEvent(
+          _requiredString(map, 'eventId'),
+        ),
         'computedSegment' => HostSavedAudienceComputedSegment(
           _requiredAudienceSegment(map, 'segmentId'),
         ),
@@ -2279,6 +2297,7 @@ class HostSavedAudiencePreviewContact {
 class HostSavedAudiencePreview {
   const HostSavedAudiencePreview({
     required this.audience,
+    this.nextCursor,
     required this.matchCount,
     required this.reachSummary,
     required this.sample,
@@ -2291,6 +2310,7 @@ class HostSavedAudiencePreview {
       throw const FormatException('Saved audience preview was not exact.');
     }
     return HostSavedAudiencePreview(
+      nextCursor: _nullableString(map['nextCursor']),
       audience: HostSavedAudience.fromMap(
         _requiredMap(map['audience'], 'saved audience'),
       ),
@@ -2307,6 +2327,7 @@ class HostSavedAudiencePreview {
   }
 
   final HostSavedAudience audience;
+  final String? nextCursor;
   final int matchCount;
   final HostAudienceReachSummary reachSummary;
   final List<HostSavedAudiencePreviewContact> sample;
@@ -3153,6 +3174,19 @@ class HostCrmRepository {
     parse: HostMessagingSetup.fromCallableData,
   );
 
+  Future<HostSavedAudienceFilterOptions> savedAudienceFilterOptions(
+    String organizerId,
+  ) => _call(
+    name: 'listOrganizerSavedAudiences',
+    payload: ListOrganizerSavedAudiencesCallableRequest(
+      organizerId: organizerId,
+      limit: 1,
+      includeFilterOptions: true,
+    ).toJson(),
+    action: 'load audience filter choices',
+    parse: HostSavedAudienceFilterOptions.fromCallableData,
+  );
+
   Future<HostSavedAudiencePage> listSavedAudiences(
     String organizerId, {
     String status = 'active',
@@ -3197,6 +3231,7 @@ class HostCrmRepository {
     required String organizerId,
     required HostSavedAudience audience,
     int sampleLimit = 10,
+    String? cursor,
   }) => _call(
     name: 'previewOrganizerSavedAudience',
     payload: PreviewOrganizerSavedAudienceCallableRequest(
@@ -3204,6 +3239,7 @@ class HostCrmRepository {
       audienceId: audience.audienceId,
       expectedRevision: audience.revision,
       sampleLimit: sampleLimit,
+      cursor: cursor,
     ).toJson(),
     action: 'preview organizer audience',
     parse: HostSavedAudiencePreview.fromCallableData,
@@ -3622,3 +3658,10 @@ HostCrmChannelReadiness _readiness(Object? value) => switch (value) {
     HostCrmChannelReadiness.providerAndDltSetupRequired,
   _ => throw const FormatException('CRM response had invalid readiness.'),
 };
+
+@riverpod
+Future<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptions(
+  Ref ref,
+  String organizerId,
+) =>
+    ref.read(hostCrmRepositoryProvider).savedAudienceFilterOptions(organizerId);

@@ -25,4 +25,5 @@ export interface PreviewOrganizerSavedAudienceCallableResponse {
     displayName: string;
   }[];
   evaluatedAtMillis: number;
+  nextCursor?: string | null;
 }

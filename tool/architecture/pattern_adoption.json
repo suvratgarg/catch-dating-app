@@ -2248,7 +2248,7 @@
       "adopters": [
         {
           "path": "contracts/firestore/organizer_saved_audiences.schema.json",
-          "role": "versioned organizer-CRM definition contract with a closed predicate vocabulary and no event or arbitrary query expression",
+          "role": "versioned organizer-CRM definition contract with closed predicates including attendance at an owned event; no event admission groups or arbitrary queries",
           "status": "aligned"
         },
         {
