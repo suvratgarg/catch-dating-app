@@ -565,11 +565,11 @@ Persistent context uses `CatchStatusStripData`, not queued notices.
 above the navigator for both apps, including pushed routes. A route may add
 local context through its scaffold's typed `statuses` slot (rehearsal before
 offline). The canonical screen owner consumes that scope once and clears it
-for nested content. `CatchTabbedScreenScaffold` pins the rail and strips as
-one intrinsically measured `PinnedHeaderSliver` with a single overlap absorber;
+for nested content. `CatchRootScreenScaffold.withPrimaryRail` pins the rail and
+strips as one intrinsically measured `PinnedHeaderSliver` with a single overlap absorber;
 the title scrolls away without a strip between it and the rail. Root screens
 pin strips after the title; pushed screens place them below the complete app
-bar, including any primary tabs. Standard body spacing remains 24 pt after
+bar, including any primary tabs. Standard body spacing remains 16 pt after
 the final strip. Standalone/step-flow surfaces with owned safe areas place
 context above their body; explicitly edge-owned workspace canvases still
 delegate header composition to their semantic owner.
@@ -1068,7 +1068,7 @@ For `NestedScrollView` plus pinned tab rows:
 - Each tab body starts with the matching `SliverOverlapInjector`.
 - Body padding belongs to the tab body, not to the pinned tab row.
 - Route-owned tab pages use a semantic `CatchRootScreenPageScrollView`
-  constructor. `standard` owns the responsive width clamp, 20 pt gutter, 24 pt
+  constructor. `standard` owns the responsive width clamp, 20 pt gutter, 16 pt
   body start, and terminal clearance. `fullBleed` removes only the outer body
   geometry while retaining terminal clearance. `embeddedViewport` is reserved
   for a fill-remaining child that owns its own scroll and terminal clearance. The

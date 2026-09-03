@@ -333,7 +333,7 @@ square-edged bands with a shared icon, label-over-detail and trailing action
 anatomy. The screen owner places them **below the complete primary tab rail**,
 or below the title when there are no tabs; they never split title from tabs.
 Tabs and strips stay pinned together as the title scrolls away. Regular body
-content begins 24 pt after the last strip. Strips share 20 pt side gutters,
+content begins 16 pt after the last strip. Strips share 20 pt side gutters,
 a 64 pt minimum band height and 44 pt action targets; wrapping content may grow
 the band. At large text or narrow widths, actions reflow below the text.
 These are durable context, not floating `CatchNotice` notifications or local

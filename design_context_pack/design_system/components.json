@@ -2035,7 +2035,7 @@
           "catch.icon_button"
         ],
         "notes": [
-          "Features configure data and actions only; canonical layouts own pinning, overlap and the 24 pt body handoff.",
+          "Features configure data and actions only; canonical layouts own pinning, overlap and the 16 pt body handoff.",
           "MyApp publishes connectivity for Host and Consumer above route navigation. Rehearsal is local route context, rendered before offline.",
           "No fixture sync timestamps, fake global retry, or claimed offline writes. Preserve the real state and supported actions."
         ]
@@ -7609,7 +7609,7 @@
         "notes": [
           "Use for regular non-sliver route bodies before composing ad hoc page padding.",
           "Every full-screen composition terminates in standalone, step-flow, or workspace surface ownership through CatchScreenScaffold. Root title destinations use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry. A root with primary peer navigation uses the same owner through its withPrimaryRail constructor and typed CatchRootScreenBody pages.",
-          "Regular root bodies may not override the 24-point standard start; specialized full-bleed or intrinsic families and named semantic primitives own any alternate rhythm.",
+          "Regular root bodies may not override the 16-point standard start; specialized full-bleed or intrinsic families and named semantic primitives own any alternate rhythm.",
           "Use CatchResponsiveSectionPage when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
           "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding."
         ]
@@ -8972,7 +8972,7 @@
             "name": "selected",
             "type": "object",
             "required": true,
-            "dartType": "T"
+            "dartType": "T?"
           },
           {
             "name": "onChanged",

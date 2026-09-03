@@ -23697,7 +23697,6 @@
   "hostApplicationsReviewQueueBody": "Review submissions, accept people, or keep them on your waitlist.",
   "hostApplicationOpenPerson": "Open person in People",
   "hostApplicationOpenResponse": "Open original response",
-  "hostCustomerApplicationsBody": "View this person’s applications and review decisions.",
   "@hostApplicationsReviewQueue": {
     "description": "Audience intake workflow label.",
     "x-audience": "host",
@@ -23721,12 +23720,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.applications"
-  },
-  "@hostCustomerApplicationsBody": {
-    "description": "Audience intake workflow label.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.customers"
   },
   "hostSavedAudienceEditRules": "Edit audience",
   "@hostSavedAudienceEditRules": {

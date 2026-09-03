@@ -53,7 +53,9 @@ class CatchOptionGroup<T> extends StatefulWidget {
   });
 
   final List<CatchOption<T>> options;
-  final T selected;
+
+  /// Null leaves every option unselected unless null is an explicit option.
+  final T? selected;
   final CatchContractFieldConstraints? contract;
   final String Function(T value)? contractValue;
   final String? contractExemption;
@@ -154,7 +156,8 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
     final t = CatchTokens.of(context);
     final options = _options;
     assert(
-      options.any((option) => option.value == widget.selected),
+      widget.selected == null ||
+          options.any((option) => option.value == widget.selected),
       'CatchOptionGroup selected value must be allowed by its contract.',
     );
     if (widget.variant == CatchOptionGroupVariant.summary) {

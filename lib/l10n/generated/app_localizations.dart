@@ -27220,12 +27220,6 @@ abstract class AppLocalizations {
   /// **'Open original response'**
   String get hostApplicationOpenResponse;
 
-  /// Audience intake workflow label.
-  ///
-  /// In en, this message translates to:
-  /// **'View this person’s applications and review decisions.'**
-  String get hostCustomerApplicationsBody;
-
   /// Saved audience overview label.
   ///
   /// In en, this message translates to:

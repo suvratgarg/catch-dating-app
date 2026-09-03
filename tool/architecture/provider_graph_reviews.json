@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-22",
+  "updated": "2026-09-04",
   "owner": "app_architecture",
   "candidatePolicy": {
     "highFanOutUniqueDependencies": 8,
@@ -62,6 +62,16 @@
       "id": "manual-provider:_hostClubsForUserProvider",
       "status": "accepted-exception",
       "rationale": "This is a private auto-dispose adapter in a part file that narrows a Host route provider result. Moving it only to satisfy code generation would add a public generated symbol and another ownership file without changing the dependency boundary."
+    },
+    {
+      "id": "cross-feature-presentation:appShellFcmInitializationProvider->foregroundNotificationControllerProvider",
+      "status": "accepted",
+      "rationale": "The shared authenticated app shell owns transport-to-presentation composition for both app roles. It connects the FCM service callback to the public foreground notification controller command seam; delivery occurs outside provider construction, the service checks session generations, and the controller validates recipient, role and foreground state. Shell, FCM lifecycle and foreground notification tests cover delivery and account changes."
+    },
+    {
+      "id": "high-fan-out:authSessionControllerProvider",
+      "status": "accepted",
+      "rationale": "These eight dependencies belong to one sign-out boundary: auth repository, auth and onboarding flow controllers, four session-scoped Explore browse roots, and the existing FCM service. Installation removal runs while account authorization is still valid, without initializing an unused service; flow state is cleared centrally. Auth session and FCM lifecycle tests cover cleanup, in-flight sign-out deduplication and bounded unregister failure."
     }
   ]
 }

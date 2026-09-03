@@ -91,14 +91,12 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.byTooltip('More customer actions'), findsOneWidget);
     expect(find.byTooltip('Export this audience'), findsNothing);
 
-    await tester.tap(
-      find.byKey(const ValueKey('host-customers-summary-repeat')),
-    );
+    await tester.tap(_customerSummaryChoice(HostCustomerFilter.repeat));
     await pumpFeatureUi(tester);
     expect(requests.last.filter, HostCustomerFilter.repeat);
     expect(find.textContaining('Repeat attendees'), findsWidgets);
     final attendedSemantics = tester.getSemantics(
-      find.byKey(const ValueKey('host-customers-summary-repeat')),
+      _customerSummaryChoice(HostCustomerFilter.repeat),
     );
     expect(attendedSemantics.label, 'Returning  0');
     expect(attendedSemantics.flagsCollection.isButton, isTrue);
@@ -108,9 +106,7 @@ void _registerHostOperationsCustomerDetailTests() {
       isTrue,
     );
 
-    await tester.tap(
-      find.byKey(const ValueKey('host-customers-summary-repeat')),
-    );
+    await tester.tap(_customerSummaryChoice(HostCustomerFilter.repeat));
     await pumpFeatureUi(tester);
     expect(requests.last.filter, HostCustomerFilter.all);
     expect(find.text('All  0'), findsOneWidget);
@@ -280,10 +276,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
 
-    expect(
-      find.byKey(const ValueKey('host-customers-summary-all')),
-      findsOneWidget,
-    );
+    expect(_customerSummaryChoice(HostCustomerFilter.all), findsOneWidget);
     expect(find.text('Open messaging'), findsNothing);
 
     await tester.tap(find.byKey(const ValueKey('host-customers-filters')));

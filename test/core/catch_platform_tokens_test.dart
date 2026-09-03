@@ -178,14 +178,13 @@ void main() {
                             ),
                             Align(
                               alignment: AlignmentDirectional.centerStart,
-                              child: CatchOptionGroupItem<int>(
-                                option: const CatchOption(
-                                  value: 1,
-                                  label: 'Returning 148',
-                                ),
-                                selected: true,
+                              child: CatchOptionGroup<int>(
+                                options: const [
+                                  CatchOption(value: 1, label: 'Returning 148'),
+                                ],
+                                selected: 1,
                                 variant: CatchOptionGroupVariant.summary,
-                                onTap: () => selected = true,
+                                onChanged: (_) => selected = true,
                               ),
                             ),
                             CatchButton.command(
@@ -246,21 +245,35 @@ void main() {
     }
   }
 
-  testWidgets('summary choice supports keyboard selection', (tester) async {
+  testWidgets('unselected summary scope supports keyboard selection', (
+    tester,
+  ) async {
     var chosen = false;
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: CatchOptionGroupItem<int>(
-            option: const CatchOption(value: 1, label: 'All 214'),
-            selected: false,
+          body: CatchOptionGroup<int>(
+            options: const [
+              CatchOption(value: 1, label: 'All 214'),
+              CatchOption(value: 2, label: 'Returning 148'),
+            ],
+            selected: null,
             variant: CatchOptionGroupVariant.summary,
-            onTap: () => chosen = true,
+            onChanged: (_) => chosen = true,
           ),
         ),
       ),
     );
+    expect(
+      tester
+          .widgetList<CatchOptionGroupItem<int>>(
+            find.byType(CatchOptionGroupItem<int>),
+          )
+          .every((option) => !option.selected),
+      isTrue,
+    );
+    expect(tester.takeException(), isNull);
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     expect(chosen, isTrue);

@@ -40,9 +40,7 @@ void _registerHostOperationsCustomerSummaryFiltersTests() {
       matching: find.byType(CatchOptionGroupItem<HostCustomerFilter>),
     );
     expect(choices, findsNWidgets(3));
-    final contactsTile = find.byKey(
-      const ValueKey('host-customers-summary-all'),
-    );
+    final contactsTile = _customerSummaryChoice(HostCustomerFilter.all);
     final semantics = tester.getSemantics(contactsTile);
     expect(semantics.label, 'All  4+');
     expect(semantics.flagsCollection.isButton, isTrue);
@@ -51,9 +49,7 @@ void _registerHostOperationsCustomerSummaryFiltersTests() {
       semantics.getSemanticsData().hasAction(ui.SemanticsAction.tap),
       isTrue,
     );
-    await tester.tap(
-      find.byKey(const ValueKey('host-customers-summary-repeat')),
-    );
+    await tester.tap(_customerSummaryChoice(HostCustomerFilter.repeat));
     expect(selectedFilter, HostCustomerFilter.repeat);
     final surfaces = tester.widgetList<CatchSurface>(
       find.descendant(of: summary, matching: find.byType(CatchSurface)),
@@ -64,3 +60,10 @@ void _registerHostOperationsCustomerSummaryFiltersTests() {
     );
   });
 }
+
+Finder _customerSummaryChoice(HostCustomerFilter filter) =>
+    find.byWidgetPredicate(
+      (widget) =>
+          widget is CatchOptionGroupItem<HostCustomerFilter> &&
+          widget.option.value == filter,
+    );

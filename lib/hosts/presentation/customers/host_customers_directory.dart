@@ -474,22 +474,18 @@ class HostCustomersSummary extends StatelessWidget {
           label: context.l10n.hostsHostEventManageScreenStateLabelNew,
         ),
       ];
-      return Wrap(
-        spacing: CatchSpacing.s2,
-        runSpacing: CatchSpacing.s2,
-        children: [
+      return CatchOptionGroup<HostCustomerFilter>(
+        selected: selectedFilter,
+        variant: CatchOptionGroupVariant.summary,
+        contractExemption: 'Organizer directory lenses are local view state.',
+        onChanged: onFilterSelected,
+        options: [
           for (final stat in stats)
-            CatchOptionGroupItem<HostCustomerFilter>(
-              key: ValueKey('host-customers-summary-${stat.filter.name}'),
-              option: CatchOption(
-                value: stat.filter,
-                label: stat.value == null
-                    ? stat.label
-                    : '${stat.label}  ${stat.value}',
-              ),
-              variant: CatchOptionGroupVariant.summary,
-              selected: selectedFilter == stat.filter,
-              onTap: () => onFilterSelected(stat.filter),
+            CatchOption(
+              value: stat.filter,
+              label: stat.value == null
+                  ? stat.label
+                  : '${stat.label}  ${stat.value}',
             ),
         ],
       );

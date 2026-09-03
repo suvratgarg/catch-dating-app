@@ -17296,10 +17296,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationOpenResponse => 'Open original response';
 
   @override
-  String get hostCustomerApplicationsBody =>
-      'View this person’s applications and review decisions.';
-
-  @override
   String get hostSavedAudienceEditRules => 'Edit audience';
 
   @override
