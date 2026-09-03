@@ -4,9 +4,11 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -42,6 +44,12 @@ void main() {
           pixelRatio: 2,
           outputDirectory: Directory(_output),
           drive: (tester) async {
+            Finder summaryChoice(String name) => find.byWidgetPredicate(
+              (widget) =>
+                  widget is CatchOptionGroupItem<HostCustomerFilter> &&
+                  widget.option.value.name == name,
+            );
+
             Map<String, double> rect(Finder finder) {
               final bounds = tester.getRect(finder);
               return {
@@ -152,9 +160,7 @@ void main() {
               'tabRail': rect(find.byType(HostAudienceTabRail)),
               'groups': {
                 for (final filter in ['all', 'repeat', 'newToOrganizer'])
-                  filter: rect(
-                    find.byKey(ValueKey('host-customers-summary-$filter')),
-                  ),
+                  filter: rect(summaryChoice(filter)),
               },
               'sort': rect(find.byKey(const ValueKey('host-customers-sort'))),
               'filters': rect(
@@ -164,18 +170,12 @@ void main() {
             });
             for (final filter in ['all', 'repeat', 'newToOrganizer']) {
               expect(
-                tester
-                    .getSize(
-                      find.byKey(ValueKey('host-customers-summary-$filter')),
-                    )
-                    .height,
+                tester.getSize(summaryChoice(filter)).height,
                 greaterThanOrEqualTo(
                   CatchPlatformTokens.minimumInteractiveExtent,
                 ),
               );
-              final node = tester.getSemantics(
-                find.byKey(ValueKey('host-customers-summary-$filter')),
-              );
+              final node = tester.getSemantics(summaryChoice(filter));
               expect(
                 node.getSemanticsData().hasAction(SemanticsAction.tap),
                 isTrue,
