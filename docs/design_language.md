@@ -304,6 +304,13 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   extent, spacing, surface and tint derivation. Do not create separate visual
   match/message widgets merely to change copy, identity or color. A color
   override does not waive contrast review in both themes.
+  `CatchNoticeData.arrival` makes the whole card the open target with no visible
+  Open/Dismiss buttons; swipe up or sideways dismisses it, as do Escape and the
+  accessibility dismiss action. A downward drag does not open.
+  The global host enters from above the physical viewport, rests 12 pt below
+  the top safe area and never shifts route content. Reduced motion skips entry;
+  accessible navigation holds the card, and pointer/hover/focus interaction
+  pauses auto-dismiss. Ordinary inline notices retain their existing controls.
 - Primary screen CTA placement routes through the `CatchBottomAction` family.
   `CatchBottomAction` owns one floating Cupertino or anchored Material action;
   `CatchBottomActionOverlay` owns pinned multi-action form controls over a soft

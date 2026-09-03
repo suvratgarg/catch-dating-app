@@ -8056,6 +8056,14 @@
     "x-owner": "product",
     "x-surface": "core.widgets.catch_form_field_label"
   },
+  "notificationArrivalMatchTitle": "It''s a catch",
+  "@notificationArrivalMatchTitle": {
+    "description": "Fallback title for a foreground match arrival when the server supplies no title."
+  },
+  "notificationArrivalMessageTitle": "New message",
+  "@notificationArrivalMessageTitle": {
+    "description": "Fallback title for a foreground message arrival when the server supplies no title."
+  },
   "coreCatchNoticeTooltipDismiss": "Dismiss",
   "@coreCatchNoticeTooltipDismiss": {
     "description": "Product copy used by lib/core/widgets/catch_notice.dart (tooltip).",

@@ -650,7 +650,42 @@ DART
     echo "$probe_output" >&2
     exit 1
   fi
+  run_analyze_probe "arrival placement $feedback_scope" <<'DART'
+import 'package:catch_dating_app/core/widgets/catch_notice.dart' as ui;
+import 'package:firebase_messaging/firebase_messaging.dart' as fcm;
+import 'package:flutter/widgets.dart';
+typedef NoticeHostAlias = ui.CatchNoticeHost;
+List<Object> forbiddenArrivals() => [
+  const ui.CatchNoticeHost(child: SizedBox()),
+  const NoticeHostAlias(child: SizedBox()),
+  ui.CatchNoticeHost.new,
+  fcm.FirebaseMessaging.onMessage,
+];
+DART
+  expect_code_count "arrival placement $feedback_scope" "catch_notice_host_is_app_owned" 3
+  expect_code_count "arrival delivery $feedback_scope" "catch_notification_delivery_is_service_owned" 1
 done
+
+probe_path="$probe_root/lib/app.dart"
+run_analyze_probe "global arrival host owner" <<'DART'
+import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:flutter/widgets.dart';
+final host = CatchNoticeHost(child: const SizedBox());
+DART
+if (( $(count_code "catch_notice_host_is_app_owned") != 0 )); then
+  echo "App-level notice host must remain permitted." >&2
+  exit 1
+fi
+
+probe_path="$probe_root/lib/core/fcm_service.dart"
+run_analyze_probe "foreground transport owner" <<'DART'
+import 'package:firebase_messaging/firebase_messaging.dart';
+final foreground = FirebaseMessaging.onMessage;
+DART
+if (( $(count_code "catch_notification_delivery_is_service_owned") != 0 )); then
+  echo "FCM service must own foreground delivery." >&2
+  exit 1
+fi
 
 for status_owner in catch_screen_scaffold catch_tabbed_screen catch_route_scaffold; do
   probe_path="$probe_root/lib/core/widgets/$status_owner.dart"

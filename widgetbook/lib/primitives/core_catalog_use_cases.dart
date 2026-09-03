@@ -4,6 +4,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
@@ -84,9 +85,13 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_design
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
+import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';
+import 'package:catch_dating_app/notifications/presentation/foreground_notification_listener.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../preview_layout_contracts.dart';
@@ -1993,6 +1998,101 @@ Widget catchNoticeHostCatalogStates(BuildContext context) {
         ),
       ),
     ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Validated arrival interaction',
+  type: ForegroundNotificationListener,
+  path: '[Core catalog]/Feedback',
+)
+Widget foregroundNotificationListenerPreview(BuildContext context) =>
+    const _ArrivalPreview();
+
+class _ArrivalPreview extends ConsumerStatefulWidget {
+  const _ArrivalPreview();
+  @override
+  ConsumerState<_ArrivalPreview> createState() => _ArrivalPreviewState();
+}
+
+class _ArrivalPreviewState extends ConsumerState<_ArrivalPreview> {
+  late final GoRouter _router = GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => Scaffold(
+          body: SafeArea(
+            child: Column(
+              children: [
+                for (final type in ['match', 'message'])
+                  CatchButton(
+                    label: 'Receive $type',
+                    onPressed: () {
+                      final arrivals = ref.read(
+                        foregroundNotificationControllerProvider.notifier,
+                      );
+                      arrivals.startSession('preview');
+                      arrivals.receive(
+                        'preview',
+                        RemoteMessage(
+                          messageId: 'preview-${_sequence++}',
+                          data: {
+                            'type': type,
+                            'matchId': 'preview',
+                            'recipientUid': 'preview',
+                            'appRole': AppConfig.appRoleName,
+                            'actorName': 'Ananya',
+                          },
+                          notification: RemoteNotification(
+                            title: type == 'match'
+                                ? 'Congratulations'
+                                : 'Ananya',
+                            body: type == 'match'
+                                ? 'You have a new catch.'
+                                : 'See you there!',
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                const Text(
+                  'Tap the arrival to open; swipe up/sideways to dismiss.',
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppConfig.appRole.isHost ? '/host/inbox/:id' : '/chats/:id',
+        builder: (context, state) => Scaffold(
+          body: SafeArea(
+            child: CatchButton(
+              label: 'Conversation opened — back',
+              onPressed: () => _router.go('/'),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+  int _sequence = 0;
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => MaterialApp.router(
+    theme: Theme.of(context),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    routerConfig: _router,
+    builder: (context, child) => CatchNoticeHost(
+      child: ForegroundNotificationListener(router: _router, child: child!),
+    ),
   );
 }
 

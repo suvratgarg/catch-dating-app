@@ -28,6 +28,16 @@ class CatchFeedbackRules extends MultiAnalysisRule {
     'Supply CatchStatusStripData through the screen status slot or CatchStatusStripScope; only canonical screen layouts may place the persistent strip.',
     severity: DiagnosticSeverity.WARNING,
   );
+  static const noticeHostIsAppOwned = LintCode(
+    'catch_notice_host_is_app_owned',
+    'CatchNoticeHost belongs once above the router in app.dart; features publish CatchNoticeData rather than creating a route-local overlay.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+  static const notificationDeliveryIsServiceOwned = LintCode(
+    'catch_notification_delivery_is_service_owned',
+    'FCM foreground delivery belongs to FcmService; features must use the validated session-scoped arrival adapter.',
+    severity: DiagnosticSeverity.WARNING,
+  );
 
   @override
   bool get canUseParsedResult => false;
@@ -36,6 +46,8 @@ class CatchFeedbackRules extends MultiAnalysisRule {
   List<DiagnosticCode> get diagnosticCodes => const [
     useCanonicalFeedback,
     statusStripIsLayoutOwned,
+    noticeHostIsAppOwned,
+    notificationDeliveryIsServiceOwned,
   ];
 
   @override
@@ -68,6 +80,27 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
 
   void _check(AstNode node, Element? element) {
     final uri = element?.library?.uri.toString();
+    if (element is ConstructorElement &&
+        element.enclosingElement.name == 'CatchNoticeHost' &&
+        uri == 'package:catch_dating_app/core/widgets/catch_notice.dart' &&
+        !const {
+          '/lib/app.dart',
+          '/widgetbook/lib/primitives/core_catalog_use_cases.dart',
+        }.any(path.endsWith)) {
+      rule.reportAtNode(
+        node,
+        diagnosticCode: CatchFeedbackRules.noticeHostIsAppOwned,
+      );
+    }
+    if (element?.name == 'onMessage' &&
+        element?.enclosingElement?.name == 'FirebaseMessaging' &&
+        uri == 'package:firebase_messaging/firebase_messaging.dart' &&
+        !path.endsWith('/lib/core/fcm_service.dart')) {
+      rule.reportAtNode(
+        node,
+        diagnosticCode: CatchFeedbackRules.notificationDeliveryIsServiceOwned,
+      );
+    }
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'CatchStatusStrip' &&
         uri ==

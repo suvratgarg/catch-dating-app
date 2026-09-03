@@ -347,7 +347,7 @@ final class HostFormAutomationsControllerProvider
 }
 
 String _$hostFormAutomationsControllerHash() =>
-    r'5d600cce555e166aac03defb975e15362f2ae2dd';
+    r'7c94e1d8b238af528ddf19c83366a1714e66a0d6';
 
 final class HostFormAutomationsControllerFamily extends $Family
     with

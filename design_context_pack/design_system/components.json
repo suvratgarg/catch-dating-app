@@ -1746,12 +1746,16 @@
       "id": "catch.notice",
       "enforcement": {
         "code": "catch_use_canonical_feedback",
+        "codes": [
+          "catch_notice_host_is_app_owned",
+          "catch_notification_delivery_is_service_owned"
+        ],
         "vehicle": "plugin"
       },
       "name": "CatchNotice",
       "status": "active",
       "kind": "composite",
-      "summary": "Ambient app notice family with caller-configurable copy, semantic tone, icon or canonical person avatar, and optional theme-derived accent.",
+      "summary": "Configurable notice family. CatchNoticeData.arrival uses whole-card open and swipe dismissal in one app-level safe-area host; ordinary inline notices retain optional controls. Features own copy, identity, tone and routing; the primitive owns geometry and interaction.",
       "dart": {
         "symbol": "CatchNotice",
         "file": "lib/core/widgets/catch_notice.dart",
@@ -1803,7 +1807,10 @@
           "danger",
           "event",
           "with-action",
-          "dismissible"
+          "dismissible",
+          "arrival-tap-to-open",
+          "arrival-swipe-to-dismiss",
+          "arrival-reduced-motion"
         ],
         "slots": [
           {
@@ -1843,7 +1850,7 @@
             "id": "catch.notice.host",
             "symbol": "CatchNoticeHost",
             "file": "lib/core/widgets/catch_notice.dart",
-            "summary": "Overlay boundary that renders the queued current notice above app content; persistent context is owned by CatchStatusStrip.",
+            "summary": "One MyApp-owned safe-area overlay above the router, enforced by catch_notice_host_is_app_owned. Owns entry motion, gesture/keyboard dismissal and interaction-aware timers; persistent context remains with CatchStatusStrip below tabs.",
             "states": [
               "empty",
               "queued",

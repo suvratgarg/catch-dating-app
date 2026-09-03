@@ -1532,6 +1532,34 @@ fallbacks in their existing contextual owners. Ongoing connectivity/rehearsal
 status and transient arrival notices have different lifetimes; their layout
 integration must not be inferred merely from sharing a visual renderer.
 
+Foreground match/message delivery has three owners shared by Host and Consumer:
+`FcmService` owns SDK subscriptions, app/recipient checks, token rotation and
+authenticated installation cleanup. `ForegroundNotificationController` owns
+session/lifecycle validation and bounded event deduplication;
+`ForegroundNotificationListener` maps validated events to localized
+`CatchNoticeData.arrival` and locally derived conversation destinations. It
+suppresses notices for the conversation already open and removes queued notices
+when that conversation opens. Neither the renderer nor transport owns feature
+navigation policy. Inquiries resolve organizer manager membership on the server:
+customer-to-manager targets Host; manager-to-customer targets Consumer. Personal
+matches/messages target Consumer. Host replies use professional Host identity.
+
+One `CatchNoticeHost` is mounted in `MyApp` above the routed child, inside the
+force-update gate. It owns safe-area overlay placement, arrival motion, bounded
+FIFO/priority queue display, auto-dismiss and tap/swipe/keyboard/accessibility
+interaction. Arrival cards never consume header/body layout space. They sit
+above title, tabs and persistent status strips, including on pushed routes.
+`catch_notice_host_is_app_owned` rejects route-local hosts and
+`catch_notification_delivery_is_service_owned` rejects raw foreground SDK
+subscriptions outside `FcmService`; both rules resolve aliases/tear-offs.
+
+`AuthSessionController` unregisters an already-created push service before auth
+sign-out. Cleanup is bounded and best-effort offline; a persisted revocation
+flag requires successful token rotation before a subsequent session registers.
+Foreground payload validation cannot retract an OS notification already handed
+off before logout. Real-device background/terminated delivery remains a release
+verification step, not something widget tests prove.
+
 ### Logging And Telemetry
 
 Current reporting path:

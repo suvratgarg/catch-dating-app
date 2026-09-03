@@ -1009,6 +1009,16 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ForegroundNotificationListener',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Validated arrival interaction',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .foregroundNotificationListenerPreview,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(

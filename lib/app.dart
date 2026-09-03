@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
@@ -19,6 +20,7 @@ import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/force_update_diagnostics.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/notifications/presentation/foreground_notification_listener.dart';
 import 'package:catch_dating_app/user_profile/data/profile_location_initializer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -78,18 +80,23 @@ class MyApp extends ConsumerWidget {
               ),
             );
           },
-          child: CatchStatusStripScope(
-            statuses: [
-              if (isOffline)
-                CatchStatusStripData(
-                  id: 'connectivity.offline',
-                  label: context.l10n.sharedOfflineTitle,
-                  message: context.l10n.sharedOfflineBody,
-                  icon: CatchIcons.cloudOffRounded,
-                  color: CatchTokens.of(context).warning,
-                ),
-            ],
-            child: child ?? const SizedBox.shrink(),
+          child: CatchNoticeHost(
+            child: ForegroundNotificationListener(
+              router: goRouter,
+              child: CatchStatusStripScope(
+                statuses: [
+                  if (isOffline)
+                    CatchStatusStripData(
+                      id: 'connectivity.offline',
+                      label: context.l10n.sharedOfflineTitle,
+                      message: context.l10n.sharedOfflineBody,
+                      icon: CatchIcons.cloudOffRounded,
+                      color: CatchTokens.of(context).warning,
+                    ),
+                ],
+                child: child ?? const SizedBox.shrink(),
+              ),
+            ),
           ),
         );
 

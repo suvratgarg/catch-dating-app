@@ -143,6 +143,12 @@
     "catch_no_widget_returning_method": [
       "catch.event_detail_sections"
     ],
+    "catch_notice_host_is_app_owned": [
+      "catch.notice"
+    ],
+    "catch_notification_delivery_is_service_owned": [
+      "catch.notice"
+    ],
     "catch_prefer_semantic_insets": [
       "catch.screen_body"
     ],

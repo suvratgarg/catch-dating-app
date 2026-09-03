@@ -18,6 +18,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   group('connectivityResultsAreOffline', () {
     test('treats empty and none-only results as offline', () {
@@ -625,7 +627,7 @@ void main() {
     ProviderScope.containerOf(tester.element(find.byType(CatchNoticeHost)))
         .read(catchNoticeControllerProvider.notifier)
         .show(const CatchNoticeData(id: 'message', title: 'New message'));
-    await tester.pump();
+    await pumpFeatureUi(tester);
 
     final notice = find.byKey(const ValueKey('app_notice.message'));
     expect(notice, findsOneWidget);

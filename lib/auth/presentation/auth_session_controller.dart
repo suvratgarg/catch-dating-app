@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
+import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/explore/explore.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -37,6 +38,11 @@ class AuthSessionController extends _$AuthSessionController {
 
   Future<void> _signOut() async {
     clearLocalFlowState();
+    // Unregister while Firestore still permits this account's installation delete.
+    // Do not initialize Firebase solely to sign out on an unsupported platform.
+    if (ref.exists(fcmServiceProvider)) {
+      await ref.read(fcmServiceProvider).unregisterCurrentInstallation();
+    }
     await ref.read(authRepositoryProvider).signOut();
     clearLocalFlowState();
   }
