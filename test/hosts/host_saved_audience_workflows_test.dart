@@ -1,4 +1,10 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_saved_audience_members_controller.dart';
@@ -65,6 +71,44 @@ void main() {
   );
 
   testWidgets(
+    'filter options retry replaces the error and restores the saved rules',
+    (tester) async {
+      final retryOptions = Completer<void>();
+      final repository = _AudienceRepository(
+        failFirstOptions: true,
+        retryOptions: retryOptions,
+      );
+      await _pump(tester, repository);
+      await tester.tap(find.byKey(const ValueKey('host-saved-audience-edit')));
+      await pumpUntilFound(tester, find.bySubtype<CatchErrorState>());
+      expect(repository.optionsRequests, 1);
+      expect(
+        find.byKey(const ValueKey('host-saved-audience-name')),
+        findsNothing,
+      );
+
+      await tester.tap(
+        find.descendant(
+          of: find.bySubtype<CatchErrorState>(),
+          matching: find.byType(CatchButton),
+        ),
+      );
+      await pumpUntilFound(tester, find.byType(CatchLoadingIndicator));
+      expect(find.bySubtype<CatchErrorState>(), findsNothing);
+      expect(repository.optionsRequests, 2);
+
+      retryOptions.complete();
+      await pumpUntilFound(
+        tester,
+        find.byKey(const ValueKey('host-saved-audience-name')),
+      );
+      expect(find.bySubtype<CatchErrorState>(), findsNothing);
+      expect(find.text('Sunday regulars'), findsWidgets);
+      expect(find.text('Regulars'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
     'form-answer authoring saves the selected published version and choice',
     (tester) async {
       final repository = _AudienceRepository();
@@ -78,19 +122,31 @@ void main() {
         find.byKey(const ValueKey('host-saved-audience-rule-type-1')),
       );
       await pumpFeatureUi(tester);
-      await tester.tap(find.text('Form answer').last);
+      await tester.tap(_menuChoice('Form answer'));
       await pumpFeatureUi(tester);
-      await tester.ensureVisible(find.text('Choose a published question').last);
-      await tester.tap(find.text('Choose a published question').last);
+      final questionField = find.descendant(
+        of: find.byKey(const ValueKey('host-saved-audience-rule-0')),
+        matching: find.byKey(
+          const ValueKey('host-saved-audience-source-question'),
+        ),
+      );
+      await tester.ensureVisible(questionField);
+      await tester.tap(questionField);
       await pumpFeatureUi(tester);
       await tester.tap(
-        find.text('Published application · v1 · Favorite drink').last,
+        _menuChoice('Published application · v1 · Favorite drink'),
       );
       await pumpFeatureUi(tester);
-      await tester.ensureVisible(find.text('Tea').last);
-      await tester.tap(find.text('Tea').last);
+      final answerField = find.descendant(
+        of: find.byKey(const ValueKey('host-saved-audience-rule-0')),
+        matching: find.byKey(
+          const ValueKey('host-saved-audience-source-answer'),
+        ),
+      );
+      await tester.ensureVisible(answerField);
+      await tester.tap(answerField);
       await pumpFeatureUi(tester);
-      await tester.tap(find.text('Coffee').last);
+      await tester.tap(_menuChoice('Coffee'));
       await pumpFeatureUi(tester);
       await tester.tap(find.byKey(const ValueKey('host-saved-audience-save')));
       await pumpFeatureUi(tester);
@@ -111,6 +167,11 @@ void main() {
     },
   );
 }
+
+Finder _menuChoice(String label) => find.descendant(
+  of: find.byType(CatchMenu<Object?>),
+  matching: find.text(label),
+);
 
 Future<void> _pump(WidgetTester tester, _AudienceRepository repository) async {
   await tester.binding.setSurfaceSize(const Size(1000, 1100));
@@ -145,6 +206,7 @@ Future<void> _pump(WidgetTester tester, _AudienceRepository repository) async {
   addTearDown(router.dispose);
   await tester.pumpWidget(
     ProviderScope(
+      retry: (_, _) => null,
       overrides: [hostCrmRepositoryProvider.overrideWithValue(repository)],
       child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     ),
@@ -155,7 +217,11 @@ Future<void> _pump(WidgetTester tester, _AudienceRepository repository) async {
 class _UnusedFunctions extends Fake implements FirebaseFunctions {}
 
 class _AudienceRepository extends HostCrmRepository {
-  _AudienceRepository() : super(_UnusedFunctions());
+  _AudienceRepository({this.failFirstOptions = false, this.retryOptions})
+    : super(_UnusedFunctions());
+  final bool failFirstOptions;
+  final Completer<void>? retryOptions;
+  int optionsRequests = 0;
   final cursors = <String?>[];
   HostSavedAudienceDefinition? saved;
   HostSavedAudience get audience => _audience(
@@ -171,27 +237,37 @@ class _AudienceRepository extends HostCrmRepository {
   @override
   Future<HostSavedAudienceFilterOptions> savedAudienceFilterOptions(
     String organizerId,
-  ) async => const HostSavedAudienceFilterOptions(
-    forms: [
-      HostAudienceSourceOption(id: 'form-1', title: 'Published application'),
-    ],
-    questions: [
-      HostAudienceQuestionOption(
-        formId: 'form-1',
-        versionId: 'version-1',
-        version: 1,
-        formTitle: 'Published application',
-        questionId: 'drink',
-        label: 'Favorite drink',
-        options: [
-          HostAudienceAnswerOption(label: 'Tea', value: 'tea'),
-          HostAudienceAnswerOption(label: 'Coffee', value: 'coffee'),
-        ],
-      ),
-    ],
-    events: [HostAudienceSourceOption(id: 'event-1', title: 'Sunday social')],
-    tags: [],
-  );
+  ) async {
+    optionsRequests++;
+    if (failFirstOptions && optionsRequests == 1) {
+      throw FirebaseFunctionsException(
+        code: 'unavailable',
+        message: 'Filter options are temporarily unavailable.',
+      );
+    }
+    if (retryOptions != null) await retryOptions!.future;
+    return const HostSavedAudienceFilterOptions(
+      forms: [
+        HostAudienceSourceOption(id: 'form-1', title: 'Published application'),
+      ],
+      questions: [
+        HostAudienceQuestionOption(
+          formId: 'form-1',
+          versionId: 'version-1',
+          version: 1,
+          formTitle: 'Published application',
+          questionId: 'drink',
+          label: 'Favorite drink',
+          options: [
+            HostAudienceAnswerOption(label: 'Tea', value: 'tea'),
+            HostAudienceAnswerOption(label: 'Coffee', value: 'coffee'),
+          ],
+        ),
+      ],
+      events: [HostAudienceSourceOption(id: 'event-1', title: 'Sunday social')],
+      tags: [],
+    );
+  }
 
   @override
   Future<HostSavedAudiencePreview> previewSavedAudience({

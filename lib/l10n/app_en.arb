@@ -23653,19 +23653,34 @@
   "hostApplicationOpenResponse": "Open original response",
   "hostCustomerApplicationsBody": "View this person’s applications and review decisions.",
   "@hostApplicationsReviewQueue": {
-    "description": "Audience intake workflow label."
+    "description": "Audience intake workflow label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
   },
   "@hostApplicationsReviewQueueBody": {
-    "description": "Audience intake workflow label."
+    "description": "Audience intake workflow label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
   },
   "@hostApplicationOpenPerson": {
-    "description": "Audience intake workflow label."
+    "description": "Audience intake workflow label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.applications"
   },
   "@hostApplicationOpenResponse": {
-    "description": "Audience intake workflow label."
+    "description": "Audience intake workflow label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.applications"
   },
   "@hostCustomerApplicationsBody": {
-    "description": "Audience intake workflow label."
+    "description": "Audience intake workflow label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
   },
   "hostSavedAudienceEditRules": "Edit audience rules",
   "@hostSavedAudienceEditRules": {

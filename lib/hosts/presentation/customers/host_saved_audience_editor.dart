@@ -126,12 +126,6 @@ class _HostSavedAudienceEditorFormState
     final options = ref.watch(
       hostSavedAudienceFilterOptionsProvider(widget.organizerId),
     );
-    final filterOptions =
-        catchAsyncStateFromAsyncValue(options).value ??
-        const HostSavedAudienceFilterOptions.empty();
-    final manualTags = filterOptions.tags
-        .map((tag) => HostCustomerManualTag(tagId: tag.tagId, label: tag.label))
-        .toList();
     final editing = _audience != null;
     return PopScope(
       canPop: !_busy,
@@ -152,145 +146,155 @@ class _HostSavedAudienceEditorFormState
           onPressed: _busy ? null : _save,
         ),
         body: CatchRouteBody.standard(
-          child: Form(
-            key: _formKey,
-            child: CatchResponsiveSectionLayout(
-              sections: [
-                if (options.hasError)
-                  CatchResponsiveSectionItem(
-                    child: CatchErrorState.fromError(
-                      options.error!,
-                      context: AppErrorContext.customers,
-                      onRetry: () => ref.invalidate(
-                        hostSavedAudienceFilterOptionsProvider(
-                          widget.organizerId,
-                        ),
-                      ),
-                    ),
-                  ),
-                if (options.isLoading)
-                  const CatchResponsiveSectionItem(
-                    child: CatchSkeletonRows(count: 2),
-                  ),
-                CatchResponsiveSectionItem(
-                  child: CatchSection.plain(
-                    child: Text(
-                      context.l10n.hostSavedAudienceEditorBody,
-                      style: CatchTextStyles.proseM(context),
-                    ),
-                  ),
-                ),
-                CatchResponsiveSectionItem(
-                  child: CatchSection.containedFieldRows(
-                    title: context.l10n.hostSavedAudienceDetails,
-                    children: [
-                      CatchField.input(
-                        key: const ValueKey('host-saved-audience-name'),
-                        title: context.l10n.hostSavedAudienceName,
-                        contract: CatchContractConstraints
-                            .upsertOrganizerSavedAudienceCallablePayloadName,
-                        controller: _nameController,
-                        textCapitalization: TextCapitalization.sentences,
-                        textInputAction: TextInputAction.next,
-                        enabled: !_busy,
-                        validator: (value) => (value ?? '').trim().isEmpty
-                            ? context.l10n.hostSavedAudienceNameRequired
-                            : null,
-                      ),
-                      CatchField.select<HostSavedAudienceJoin>(
-                        key: const ValueKey('host-saved-audience-join'),
-                        title: context.l10n.hostSavedAudienceMatch,
-                        contract: CatchContractConstraints
-                            .upsertOrganizerSavedAudienceCallablePayloadDefinitionJoin,
-                        contractValue: (value) => value.name,
-                        values: HostSavedAudienceJoin.values,
-                        itemLabel: (value) => switch (value) {
-                          HostSavedAudienceJoin.all =>
-                            context.l10n.hostSavedAudienceMatchAll,
-                          HostSavedAudienceJoin.any =>
-                            context.l10n.hostSavedAudienceMatchAny,
-                        },
-                        value: _join,
-                        enabled: !_busy,
-                        onChanged: (value) {
-                          if (value != null) setState(() => _join = value);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                for (var index = 0; index < _rules.length; index++)
-                  CatchResponsiveSectionItem(
-                    child: _HostSavedAudienceRuleSection(
-                      key: ValueKey('host-saved-audience-rule-$index'),
-                      number: index + 1,
-                      draft: _rules[index],
-                      manualTags: manualTags,
-                      filterOptions: filterOptions,
-                      enabled: !_busy,
-                      canRemove: _rules.length > 1,
-                      onChanged: (draft) =>
-                          setState(() => _rules[index] = draft),
-                      onRemove: () => setState(() => _rules.removeAt(index)),
-                    ),
-                  ),
-                if (_rules.length < 8)
-                  CatchResponsiveSectionItem(
-                    child: CatchSection.fieldRows(
-                      children: [
-                        CatchField.add(
-                          key: const ValueKey('host-saved-audience-add-rule'),
-                          title: context.l10n.hostSavedAudienceAddRule,
-                          icon: CatchIcons.add,
-                          onTap: _busy
-                              ? null
-                              : () => setState(
-                                  () =>
-                                      _rules.add(_AudienceRuleDraft.defaults()),
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
-                if (_audience case final audience?)
-                  CatchResponsiveSectionItem(
-                    child: CatchSection.fieldRows(
-                      title: context.l10n.hostSavedAudienceCurrentPreview,
-                      footer: Text(
-                        context.l10n.hostSavedAudiencePreviewDisclosure,
-                        style: CatchTextStyles.supporting(context),
-                      ),
-                      children: [
-                        CatchField.read(
-                          title: context.l10n.hostSavedAudiencePeople,
-                          body: _savedAudienceDirectoryBody(context, audience),
-                        ),
-                        CatchField.action(
-                          key: const ValueKey(
-                            'host-saved-audience-refresh-preview',
-                          ),
-                          title: context.l10n.hostSavedAudiencePreview,
-                          onTap: _busy ? null : _refreshPreview,
-                        ),
-                      ],
-                    ),
-                  ),
-                if (_audience != null)
-                  CatchResponsiveSectionItem(
-                    child: CatchSection.fieldRows(
-                      children: [
-                        CatchField.action(
-                          key: const ValueKey('host-saved-audience-archive'),
-                          title: context.l10n.hostSavedAudienceArchive,
-                          body: context.l10n.hostSavedAudienceArchiveBody,
-                          tone: CatchFieldTone.danger,
-                          onTap: _busy ? null : _archive,
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
+          child: CatchAsyncValueView<HostSavedAudienceFilterOptions>(
+            value: options,
+            errorContext: AppErrorContext.customers,
+            onRetry: () => ref.invalidate(
+              hostSavedAudienceFilterOptionsProvider(widget.organizerId),
             ),
+            builder: (context, filterOptions) {
+              final manualTags = filterOptions.tags
+                  .map(
+                    (tag) => HostCustomerManualTag(
+                      tagId: tag.tagId,
+                      label: tag.label,
+                    ),
+                  )
+                  .toList();
+              return Form(
+                key: _formKey,
+                child: CatchResponsiveSectionLayout(
+                  sections: [
+                    CatchResponsiveSectionItem(
+                      child: CatchSection.plain(
+                        child: Text(
+                          context.l10n.hostSavedAudienceEditorBody,
+                          style: CatchTextStyles.proseM(context),
+                        ),
+                      ),
+                    ),
+                    CatchResponsiveSectionItem(
+                      child: CatchSection.containedFieldRows(
+                        title: context.l10n.hostSavedAudienceDetails,
+                        children: [
+                          CatchField.input(
+                            key: const ValueKey('host-saved-audience-name'),
+                            title: context.l10n.hostSavedAudienceName,
+                            contract: CatchContractConstraints
+                                .upsertOrganizerSavedAudienceCallablePayloadName,
+                            controller: _nameController,
+                            textCapitalization: TextCapitalization.sentences,
+                            textInputAction: TextInputAction.next,
+                            enabled: !_busy,
+                            validator: (value) => (value ?? '').trim().isEmpty
+                                ? context.l10n.hostSavedAudienceNameRequired
+                                : null,
+                          ),
+                          CatchField.select<HostSavedAudienceJoin>(
+                            key: const ValueKey('host-saved-audience-join'),
+                            title: context.l10n.hostSavedAudienceMatch,
+                            contract: CatchContractConstraints
+                                .upsertOrganizerSavedAudienceCallablePayloadDefinitionJoin,
+                            contractValue: (value) => value.name,
+                            values: HostSavedAudienceJoin.values,
+                            itemLabel: (value) => switch (value) {
+                              HostSavedAudienceJoin.all =>
+                                context.l10n.hostSavedAudienceMatchAll,
+                              HostSavedAudienceJoin.any =>
+                                context.l10n.hostSavedAudienceMatchAny,
+                            },
+                            value: _join,
+                            enabled: !_busy,
+                            onChanged: (value) {
+                              if (value != null) setState(() => _join = value);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    for (var index = 0; index < _rules.length; index++)
+                      CatchResponsiveSectionItem(
+                        child: _HostSavedAudienceRuleSection(
+                          key: ValueKey('host-saved-audience-rule-$index'),
+                          number: index + 1,
+                          draft: _rules[index],
+                          manualTags: manualTags,
+                          filterOptions: filterOptions,
+                          enabled: !_busy,
+                          canRemove: _rules.length > 1,
+                          onChanged: (draft) =>
+                              setState(() => _rules[index] = draft),
+                          onRemove: () =>
+                              setState(() => _rules.removeAt(index)),
+                        ),
+                      ),
+                    if (_rules.length < 8)
+                      CatchResponsiveSectionItem(
+                        child: CatchSection.fieldRows(
+                          children: [
+                            CatchField.add(
+                              key: const ValueKey(
+                                'host-saved-audience-add-rule',
+                              ),
+                              title: context.l10n.hostSavedAudienceAddRule,
+                              icon: CatchIcons.add,
+                              onTap: _busy
+                                  ? null
+                                  : () => setState(
+                                      () => _rules.add(
+                                        _AudienceRuleDraft.defaults(),
+                                      ),
+                                    ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (_audience case final audience?)
+                      CatchResponsiveSectionItem(
+                        child: CatchSection.fieldRows(
+                          title: context.l10n.hostSavedAudienceCurrentPreview,
+                          footer: Text(
+                            context.l10n.hostSavedAudiencePreviewDisclosure,
+                            style: CatchTextStyles.supporting(context),
+                          ),
+                          children: [
+                            CatchField.read(
+                              title: context.l10n.hostSavedAudiencePeople,
+                              body: _savedAudienceDirectoryBody(
+                                context,
+                                audience,
+                              ),
+                            ),
+                            CatchField.action(
+                              key: const ValueKey(
+                                'host-saved-audience-refresh-preview',
+                              ),
+                              title: context.l10n.hostSavedAudiencePreview,
+                              onTap: _busy ? null : _refreshPreview,
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (_audience != null)
+                      CatchResponsiveSectionItem(
+                        child: CatchSection.fieldRows(
+                          children: [
+                            CatchField.action(
+                              key: const ValueKey(
+                                'host-saved-audience-archive',
+                              ),
+                              title: context.l10n.hostSavedAudienceArchive,
+                              body: context.l10n.hostSavedAudienceArchiveBody,
+                              tone: CatchFieldTone.danger,
+                              onTap: _busy ? null : _archive,
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ),

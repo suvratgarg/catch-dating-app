@@ -109,12 +109,10 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
         .firstOrNull;
     return Column(
       children: [
-        CatchField.read(
-          title: context.l10n.hostAudienceFilterableQuestionsHelp,
-        ),
         CatchField.select<HostAudienceQuestionOption>(
+          key: const ValueKey('host-saved-audience-source-question'),
           title: context.l10n.hostAudienceChooseQuestion,
-
+          helperText: context.l10n.hostAudienceFilterableQuestionsHelp,
           contract: CatchContractConstraints
               .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsQuestionId,
           contractValue: (value) => value.questionId,
@@ -140,6 +138,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
         ),
         if (question != null)
           CatchField.select<HostAudienceAnswerOption>(
+            key: const ValueKey('host-saved-audience-source-answer'),
             title: context.l10n.hostAudienceChooseAnswer,
             contractExemption:
                 'Values come from the scoped immutable form version; '
