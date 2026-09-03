@@ -256,6 +256,43 @@ test("verification reads historical exports as data without executing historical
   }), plan);
 });
 
+test("verification accepts a legacy dormant target set but returns the reduced effective plan", (t) => {
+  const work = fixture(["functions"]);
+  t.after(() => fs.rmSync(work.root, {recursive: true, force: true}));
+  fs.writeFileSync(
+    path.join(work.source, "functions/src/index.ts"),
+    'export { alpha, beta, sendEventReminders } from "./fixture";\n',
+  );
+  fs.writeFileSync(
+    path.join(work.functionsLibDir, "index.js"),
+    "exports.alpha = true; exports.beta = true; exports.sendEventReminders = true;\n",
+  );
+  const legacyFunctionTargets = [
+    "functions:alpha",
+    "functions:beta",
+    "functions:sendEventReminders",
+  ];
+  const {plan, provenanceManifestPath} = prepare(work, {
+    functionTargets: legacyFunctionTargets,
+  });
+  assert.match(plan.targets[0], /functions:sendEventReminders/u);
+
+  const effectivePlan = verifyFirebaseDelivery({
+    sourceRoot: work.source,
+    packageDir: work.output,
+    sourceSha,
+    baseSha,
+    sourceCiRunId,
+    sourceCiRunAttempt,
+    provenanceManifestPath,
+  });
+  assert.deepEqual(effectivePlan.targets, ["functions:alpha,functions:beta"]);
+  assert.deepEqual(
+    {...effectivePlan, targets: plan.targets},
+    plan,
+  );
+});
+
 test("combined verification rejects reordered, omitted, or extra provenance stages", (t) => {
   const work = fixture();
   t.after(() => fs.rmSync(work.root, {recursive: true, force: true}));

@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.3.0
+version: 2.3.1
 updated: 2026-09-02
 owner: recursive_audit_loop
 status: active
@@ -109,6 +109,15 @@ corresponding live workload, define its environment scope and monthly budget,
 run its focused Functions tests, deploy dev then staging then production, and
 verify both the Function and Scheduler job after each environment. Do not use a
 bare Firebase CLI deployment to bypass this gate.
+
+Delivery can still encounter an immutable CI package created before a Function
+became dormant. Package verification accepts only one of two exact target sets:
+all exports recorded by that historical source, or the same exports reduced by
+the current dormant policy. It then returns the reduced set for readiness and
+the current executor strips only the named dormant targets before batching.
+Every other missing, added, or unknown exact Function target remains a hard
+failure. This lets the queue drain without rebuilding an old artifact or
+recreating recurring infrastructure.
 
 ## Firebase Rules Deployment Drift
 

@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 import {fileURLToPath} from "node:url";
-import {listFirebaseFunctionTargets} from "./list_firebase_function_targets.mjs";
+import {
+  dormantFirebaseFunctionTargets,
+  listFirebaseFunctionTargets,
+} from "./list_firebase_function_targets.mjs";
 
 const safeOrder = [
   "firestore:indexes",
@@ -54,8 +57,9 @@ function rejectUnsafeTarget(target) {
 
 export function planFirebaseDeployTargets(
   targetsCsv,
-  {functionTargets = []} = {},
+  {filterDormantExactTargets = false, functionTargets = []} = {},
 ) {
+  const dormantFunctionTargets = new Set(dormantFirebaseFunctionTargets);
   const enabledFunctionTargets = new Set(functionTargets);
   const selected = new Set();
   const exactFunctions = new Set();
@@ -75,6 +79,9 @@ export function planFirebaseDeployTargets(
         rejectUnsafeTarget(target);
       }
       if (!enabledFunctionTargets.has(target)) {
+        if (filterDormantExactTargets && dormantFunctionTargets.has(target)) {
+          continue;
+        }
         throw new Error(
           `Firebase Function deploy target is not enabled by source policy: ${target}`,
         );
@@ -136,6 +143,7 @@ function currentFunctionTargets() {
 
 function main() {
   const args = process.argv.slice(2);
+  const filterDormantExactTargets = args.includes("--filter-dormant-exact-targets");
   const format = args.includes("--function-batches") ?
     "function-batches" : args.includes("--json") ? "json" : "tsv";
   const groupsIndex = args.indexOf("--groups");
@@ -155,7 +163,10 @@ function main() {
       "Usage: node plan_firebase_deploy_targets.mjs <targets> [--json|--tsv] OR --groups <groups> [--json|--tsv]",
     );
   }
-  const options = {functionTargets: currentFunctionTargets()};
+  const options = {
+    filterDormantExactTargets,
+    functionTargets: currentFunctionTargets(),
+  };
   const plans = groupsCsv
     ? planFirebaseDeployGroups(groupsCsv.split(",").filter(Boolean), options)
     : planFirebaseDeployTargets(targetsCsv, options);
