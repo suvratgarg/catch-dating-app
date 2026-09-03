@@ -22436,11 +22436,8 @@ abstract class AppLocalizations {
   /// Form-submission timeline summary with ICU answer count.
   ///
   /// In en, this message translates to:
-  /// **'Submitted · {answerCount, plural, =0{no recorded answers} =1{1 answer} other{{answerCount} answers}} · {date}'**
-  String hostCustomersTimelineFormSubmitted({
-    required int answerCount,
-    required String date,
-  });
+  /// **'Submitted · {answerCount, plural, =0{no recorded answers} =1{1 answer} other{{answerCount} answers}}'**
+  String hostCustomersTimelineFormSubmitted({required int answerCount});
 
   /// Form-withdrawal timeline summary.
   ///
@@ -22451,7 +22448,7 @@ abstract class AppLocalizations {
   /// Event participation state in the customer timeline.
   ///
   /// In en, this message translates to:
-  /// **'{status, select, invited{Invited} registered{Registered} waitlisted{Waitlisted} checkedIn{Checked in} cancelled{Cancelled} other{Event activity}}'**
+  /// **'{status, select, invited{Invited} registered{Registered} waitlisted{Waitlisted} checkedIn{Checked in} attended{Attended} noShow{Did not attend} cancelled{Cancelled} other{Event activity}}'**
   String hostCustomersTimelineEventStatus({required String status});
 
   /// Manual-send task title in the customer timeline.
@@ -22478,14 +22475,11 @@ abstract class AppLocalizations {
   /// **'Managed WhatsApp message'**
   String get hostCustomersTimelineManagedWhatsapp;
 
-  /// Direction and date for one observed conversation message.
+  /// Activity title for one observed conversation message.
   ///
   /// In en, this message translates to:
-  /// **'{direction, select, inbound{From customer} outbound{From your team} other{Message}} · {date}'**
-  String hostCustomersTimelineDirection({
-    required String direction,
-    required String date,
-  });
+  /// **'{direction, select, inbound{Message received} outbound{Message sent} other{Message}}'**
+  String hostCustomersTimelineDirection({required String direction});
 
   /// Organizer-authored manual-tag group, visually separate from computed audience segments.
   ///
@@ -22654,12 +22648,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The customer details are available. Try reloading to restore note history.'**
   String get hostCustomersNotesUnavailableBody;
-
-  /// Customer messaging, consent, and removal controls heading.
-  ///
-  /// In en, this message translates to:
-  /// **'Controls'**
-  String get hostCustomersControls;
 
   /// Customers directory sort menu group label.
   ///

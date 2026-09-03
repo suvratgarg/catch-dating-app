@@ -1,12 +1,15 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_history_item.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_typography.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -341,7 +344,6 @@ class HostCustomerTimelineSection extends StatelessWidget {
             HostCustomerTimelineCoverageValue.unavailable;
     return CatchSection.plain(
       key: const ValueKey('host-customer-timeline'),
-      title: context.l10n.hostCustomersTimeline,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -372,7 +374,7 @@ class HostCustomerTimelineSection extends StatelessWidget {
           gapH12,
           Text(
             context.l10n.hostCustomersTimelineReplyBoundary,
-            style: CatchTextStyles.supporting(context),
+            style: HostCustomerTypography.context(context),
           ),
         ],
       ),
@@ -397,90 +399,89 @@ class _HostCustomerTimelineRows extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
-    return CatchFieldLanes.divided(
+    final ordered = [...entries]
+      ..sort((a, b) {
+        final time = b.occurredAt.compareTo(a.occurredAt);
+        return time != 0 ? time : a.timelineId.compareTo(b.timelineId);
+      });
+    final days = <DateTime, List<HostCustomerTimelineEntry>>{};
+    for (final entry in ordered) {
+      final local = entry.occurredAt.toLocal();
+      final day = DateTime(local.year, local.month, local.day);
+      days.putIfAbsent(day, () => []).add(entry);
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final entry in entries)
-          switch (entry) {
-            HostCustomerFormTimelineEntry() => CatchField.nav(
-              key: ValueKey('host-customer-timeline-${entry.timelineId}'),
-              titleMaxLines: largeText ? 4 : 2,
-              bodyMaxLines: largeText ? 8 : 4,
-              title:
-                  entry.formTitle ??
-                  context.l10n.hostCustomersTimelineFormFallback,
-              body: entry.action == HostCustomerFormTimelineAction.submitted
-                  ? context.l10n.hostCustomersTimelineFormSubmitted(
-                      answerCount: entry.answeredQuestionCount,
-                      date: AppTimeFormatters.shortDate(entry.occurredAt),
-                    )
-                  : context.l10n.hostCustomersTimelineFormWithdrawn(
-                      date: AppTimeFormatters.shortDate(entry.occurredAt),
-                    ),
-              icon: CatchIcons.tabForms,
-              onTap: () => onOpenFormResponse(entry.responseId),
+        for (final day in days.entries) ...[
+          if (day.key != days.keys.first) gapH24,
+          Semantics(
+            header: true,
+            child: Text(
+              MaterialLocalizations.of(context).formatFullDate(day.key),
+              style: HostCustomerTypography.metadataStrong(context),
             ),
-            HostCustomerEventTimelineEntry() => CatchField.nav(
-              key: ValueKey('host-customer-timeline-${entry.timelineId}'),
-              titleMaxLines: largeText ? 4 : 2,
-              bodyMaxLines: largeText ? 8 : 4,
-              title: entry.eventName,
-              body: [
-                context.l10n.hostCustomersTimelineEventStatus(
-                  status: entry.status,
-                ),
-                AppTimeFormatters.shortDate(entry.occurredAt),
-              ].join(' · '),
-              icon: CatchIcons.tabEvents,
-              onTap: () => onOpenEvent(entry.eventId),
-            ),
-            HostCustomerSendTimelineEntry() => CatchField.read(
-              key: ValueKey('host-customer-timeline-${entry.timelineId}'),
-              titleMaxLines: largeText ? 4 : 2,
-              bodyMaxLines: largeText ? 8 : 4,
-              title:
-                  entry.sendKind == HostCustomerTimelineSendKind.manualHandoff
-                  ? context.l10n.hostCustomersTimelineManualHandoff
-                  : entry.name,
-              body: [
-                context.l10n.hostCustomersTimelineSendStatus(
-                  status: entry.status,
-                ),
-                AppTimeFormatters.shortDate(entry.occurredAt),
-              ].join(' · '),
-              icon: CatchIcons.sendRounded,
-            ),
-            HostCustomerReplyTimelineEntry() => CatchField.nav(
-              key: ValueKey('host-customer-timeline-${entry.timelineId}'),
-              titleMaxLines: largeText ? 4 : 2,
-              bodyMaxLines: largeText ? 8 : 4,
-              title: entry.transport == HostCustomerReplyTransport.catchChat
-                  ? context.l10n.hostCustomersTimelineCatchMessage
-                  : context.l10n.hostCustomersTimelineManagedWhatsapp,
-              body: largeText
-                  ? [
-                      entry.bodyPreview,
-                      context.l10n.hostCustomersTimelineDirection(
-                        direction: entry.direction.name,
-                        date: AppTimeFormatters.shortDate(entry.occurredAt),
-                      ),
-                    ].join('\n')
-                  : entry.bodyPreview,
-              valueText: largeText
-                  ? null
-                  : context.l10n.hostCustomersTimelineDirection(
-                      direction: entry.direction.name,
-                      date: AppTimeFormatters.shortDate(entry.occurredAt),
-                    ),
-              valueMaxLines: 2,
-              icon: CatchIcons.tabChats,
-              onTap: () =>
-                  entry.transport == HostCustomerReplyTransport.catchChat
-                  ? onOpenCatchThread(entry.threadId)
-                  : onOpenWhatsappThread(entry.threadId),
-            ),
-          },
+          ),
+          gapH8,
+          for (final entry in day.value) _item(context, entry),
+        ],
       ],
     );
+  }
+
+  Widget _item(BuildContext context, HostCustomerTimelineEntry entry) {
+    final t = CatchTokens.of(context);
+    final key = ValueKey('host-customer-timeline-${entry.timelineId}');
+    return switch (entry) {
+      HostCustomerFormTimelineEntry() => HostCustomerHistoryItem(
+        key: key,
+        title:
+            entry.formTitle ?? context.l10n.hostCustomersTimelineFormFallback,
+        metadata: entry.action == HostCustomerFormTimelineAction.submitted
+            ? context.l10n.hostCustomersTimelineFormSubmitted(
+                answerCount: entry.answeredQuestionCount,
+              )
+            : context.l10n.hostFormResponsesWithdrawn,
+        icon: CatchIcons.tabForms,
+        color: t.primary,
+        onTap: () => onOpenFormResponse(entry.responseId),
+      ),
+      HostCustomerEventTimelineEntry() => HostCustomerHistoryItem(
+        key: key,
+        title: entry.eventName,
+        metadata: context.l10n.hostCustomersTimelineEventStatus(
+          status: entry.checkedIn ? 'checkedIn' : entry.status,
+        ),
+        icon: CatchIcons.eventAvailable,
+        color: entry.checkedIn ? t.success : t.ink2,
+        onTap: () => onOpenEvent(entry.eventId),
+      ),
+      HostCustomerSendTimelineEntry() => HostCustomerHistoryItem(
+        key: key,
+        title: entry.sendKind == HostCustomerTimelineSendKind.manualHandoff
+            ? context.l10n.hostCustomersTimelineManualHandoff
+            : entry.name,
+        metadata: context.l10n.hostCustomersTimelineSendStatus(
+          status: entry.status,
+        ),
+        icon: CatchIcons.sendRounded,
+        color: entry.status == 'failed' ? t.danger : t.ink2,
+      ),
+      HostCustomerReplyTimelineEntry() => HostCustomerHistoryItem(
+        key: key,
+        title: context.l10n.hostCustomersTimelineDirection(
+          direction: entry.direction.name,
+        ),
+        metadata: entry.transport == HostCustomerReplyTransport.catchChat
+            ? context.l10n.hostCustomersTimelineCatchMessage
+            : context.l10n.hostCustomersTimelineManagedWhatsapp,
+        excerpt: entry.bodyPreview,
+        icon: CatchIcons.tabChats,
+        color: t.primary,
+        onTap: () => entry.transport == HostCustomerReplyTransport.catchChat
+            ? onOpenCatchThread(entry.threadId)
+            : onOpenWhatsappThread(entry.threadId),
+      ),
+    };
   }
 }

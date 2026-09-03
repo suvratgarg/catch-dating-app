@@ -2,22 +2,31 @@ part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsCustomerCommunicationsTests() {
   testWidgets('customer timeline joins form and reply history', (tester) async {
+    final opened = <String>[];
     await _pumpHostScreen(
       tester,
       Scaffold(
         body: HostCustomerTimelineSection(
           customer: _customerDetail(),
-          onOpenFormResponse: (_) {},
-          onOpenEvent: (_) {},
-          onOpenCatchThread: (_) {},
+          onOpenFormResponse: (id) => opened.add('form:$id'),
+          onOpenEvent: (id) => opened.add('event:$id'),
+          onOpenCatchThread: (id) => opened.add('chat:$id'),
           onOpenWhatsappThread: (_) {},
         ),
       ),
     );
 
-    expect(find.text('HISTORY'), findsOneWidget);
+    expect(find.text('Message received'), findsOneWidget);
     expect(find.text('Sunday Run sign-up'), findsOneWidget);
     expect(find.text('See you there!'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('See you there!')).dy,
+      lessThan(tester.getTopLeft(find.text('Sunday Run Club')).dy),
+    );
+    await tester.tap(find.text('See you there!'));
+    await tester.tap(find.text('Sunday Run Club'));
+    await tester.tap(find.text('Sunday Run sign-up'));
+    expect(opened, ['chat:match-1', 'event:event-1', 'form:response-1']);
   });
 
   testWidgets(
@@ -79,8 +88,22 @@ void _registerHostOperationsCustomerCommunicationsTests() {
       expect(find.byType(HostCustomerRevenueCard), findsNothing);
       expect(
         find.byKey(const ValueKey('host-customer-controls')),
-        findsOneWidget,
+        findsNothing,
       );
+      final copy = AppLocalizationsEn();
+      expect(find.text(copy.hostsHostAudienceRemoveAction), findsNothing);
+      await tester.tap(
+        find.byKey(const ValueKey('host-customer-record-actions')),
+      );
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text(copy.hostsHostAudienceRemoveAction));
+      await pumpFeatureUi(tester);
+      expect(find.text(copy.hostsHostAudienceRemoveTitle), findsOneWidget);
+      expect(find.text(copy.hostsHostAudienceRemoveBody), findsOneWidget);
+      await tester.tap(
+        find.text(copy.coreCatchAdaptiveDialogVisiblecopyCancel),
+      );
+      await pumpFeatureUi(tester);
       await tester.ensureVisible(find.text('Overview'));
       await tester.tap(find.text('Overview'));
       await pumpFeatureUi(tester);

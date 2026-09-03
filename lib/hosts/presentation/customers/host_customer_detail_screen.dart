@@ -15,6 +15,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -38,6 +39,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 part 'host_customer_detail_body.dart';
+
+enum _HostCustomerRecordAction { message, remove }
 
 class HostCustomerDetailScreen extends ConsumerStatefulWidget {
   const HostCustomerDetailScreen({
@@ -92,39 +95,59 @@ class _HostCustomerDetailScreenState
         leadingType: widget.embedded
             ? CatchTopBarLeading.none
             : CatchTopBarLeading.back,
-        actions:
-            detailState.value != null &&
-                communicationPlanState
-                        ?.value
-                        ?.singleRecipient
-                        .recommendedRouteId !=
-                    null
-            ? [
-                if (MediaQuery.textScalerOf(context).scale(1) >= 1.5)
-                  CatchIconAction(
-                    key: const ValueKey('host-customer-message'),
-                    icon: CatchIcons.tabChats,
-                    tooltip: context.l10n.hostCustomersWhatsappMessage,
-                    onPressed: _openingConversation
-                        ? null
-                        : () => _messageCustomer(
-                            detailState.value!,
-                            communicationPlanState?.value,
-                          ),
-                  )
-                else
-                  CatchTopBarTextAction(
-                    key: const ValueKey('host-customer-message'),
+        actions: [
+          if (detailState.value != null &&
+              communicationPlanState
+                      ?.value
+                      ?.singleRecipient
+                      .recommendedRouteId !=
+                  null) ...[
+            if (MediaQuery.textScalerOf(context).scale(1) < 1.5)
+              CatchTopBarTextAction(
+                key: const ValueKey('host-customer-message'),
+                label: context.l10n.hostCustomersWhatsappMessage,
+                onPressed: _openingConversation
+                    ? null
+                    : () => _messageCustomer(
+                        detailState.value!,
+                        communicationPlanState?.value,
+                      ),
+              ),
+          ],
+          if (detailState.value case final customer?)
+            CatchTopBarMenuAction<_HostCustomerRecordAction>(
+              key: const ValueKey('host-customer-record-actions'),
+              tooltip: context.l10n.hostCustomersMoreActions,
+              variant: CatchIconButtonVariant.plain,
+              enabled: !_updatingCustomer && !_openingConversation,
+              items: [
+                if (MediaQuery.textScalerOf(context).scale(1) >= 1.5 &&
+                    communicationPlanState
+                            ?.value
+                            ?.singleRecipient
+                            .recommendedRouteId !=
+                        null)
+                  CatchActionMenuItem(
+                    value: _HostCustomerRecordAction.message,
                     label: context.l10n.hostCustomersWhatsappMessage,
-                    onPressed: _openingConversation
-                        ? null
-                        : () => _messageCustomer(
-                            detailState.value!,
-                            communicationPlanState?.value,
-                          ),
+                    icon: CatchIcons.tabChats,
                   ),
-              ]
-            : const [],
+                CatchActionMenuItem(
+                  value: _HostCustomerRecordAction.remove,
+                  label: context.l10n.hostsHostAudienceRemoveAction,
+                  icon: CatchIcons.deleteOutline,
+                  isDestructive: true,
+                ),
+              ],
+              onSelected: (action) => unawaited(switch (action) {
+                _HostCustomerRecordAction.message => _messageCustomer(
+                  customer,
+                  communicationPlanState?.value,
+                ),
+                _HostCustomerRecordAction.remove => _removeCustomer(customer),
+              }),
+            ),
+        ],
         divider: scrolledUnder,
       ),
       body: CatchRouteBody.standard(
@@ -169,7 +192,6 @@ class _HostCustomerDetailScreenState
               onOpenEvent: (_) {},
               onOpenCatchThread: (_) {},
               onOpenWhatsappThread: (_) {},
-              onRemove: _noop,
               onUndoMerge: (_) {},
             ),
           ),
@@ -230,7 +252,6 @@ class _HostCustomerDetailScreenState
             onOpenEvent: _openEvent,
             onOpenCatchThread: _openCatchThread,
             onOpenWhatsappThread: _openWhatsappThread,
-            onRemove: () => _removeCustomer(customer),
             onUndoMerge: _undoMerge,
           ),
         ),

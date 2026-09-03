@@ -28,7 +28,6 @@ class HostCustomerDetailBody extends StatelessWidget {
     required this.onOpenEvent,
     required this.onOpenCatchThread,
     required this.onOpenWhatsappThread,
-    required this.onRemove,
     required this.onUndoMerge,
   });
 
@@ -57,7 +56,6 @@ class HostCustomerDetailBody extends StatelessWidget {
   final ValueChanged<String> onOpenEvent;
   final ValueChanged<String> onOpenCatchThread;
   final ValueChanged<String> onOpenWhatsappThread;
-  final VoidCallback onRemove;
   final ValueChanged<HostActiveContactMerge> onUndoMerge;
 
   @override
@@ -153,20 +151,6 @@ class HostCustomerDetailBody extends StatelessWidget {
                   merges: customer.activeMerges,
                   onUndo: onUndoMerge,
                 ),
-              CatchSection.fieldRows(
-                key: const ValueKey('host-customer-controls'),
-                title: context.l10n.hostCustomersControls,
-                children: [
-                  CatchField.action(
-                    key: const ValueKey('host-customer-remove'),
-                    title: context.l10n.hostsHostAudienceRemoveAction,
-                    body: context.l10n.hostsHostAudienceRemoveBody,
-                    icon: CatchIcons.deleteOutline,
-                    tone: CatchFieldTone.danger,
-                    onTap: updatingCustomer ? null : onRemove,
-                  ),
-                ],
-              ),
             ],
           ),
         ),

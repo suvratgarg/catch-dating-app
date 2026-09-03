@@ -14398,10 +14398,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersTimelineFormFallback => 'Form response';
 
   @override
-  String hostCustomersTimelineFormSubmitted({
-    required int answerCount,
-    required String date,
-  }) {
+  String hostCustomersTimelineFormSubmitted({required int answerCount}) {
     String _temp0 = intl.Intl.pluralLogic(
       answerCount,
       locale: localeName,
@@ -14409,7 +14406,7 @@ class AppLocalizationsEn extends AppLocalizations {
       one: '1 answer',
       zero: 'no recorded answers',
     );
-    return 'Submitted · $_temp0 · $date';
+    return 'Submitted · $_temp0';
   }
 
   @override
@@ -14424,6 +14421,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'registered': 'Registered',
       'waitlisted': 'Waitlisted',
       'checkedIn': 'Checked in',
+      'attended': 'Attended',
+      'noShow': 'Did not attend',
       'cancelled': 'Cancelled',
       'other': 'Event activity',
     });
@@ -14466,16 +14465,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersTimelineManagedWhatsapp => 'Managed WhatsApp message';
 
   @override
-  String hostCustomersTimelineDirection({
-    required String direction,
-    required String date,
-  }) {
+  String hostCustomersTimelineDirection({required String direction}) {
     String _temp0 = intl.Intl.selectLogic(direction, {
-      'inbound': 'From customer',
-      'outbound': 'From your team',
+      'inbound': 'Message received',
+      'outbound': 'Message sent',
       'other': 'Message',
     });
-    return '$_temp0 · $date';
+    return '$_temp0';
   }
 
   @override
@@ -14572,9 +14568,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostCustomersNotesUnavailableBody =>
       'The customer details are available. Try reloading to restore note history.';
-
-  @override
-  String get hostCustomersControls => 'Controls';
 
   @override
   String get hostCustomersSort => 'Sort customers';

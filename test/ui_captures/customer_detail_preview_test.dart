@@ -35,6 +35,8 @@ void main() {
         'events',
         'edit',
         'spend',
+        'record_actions',
+        'remove_confirmation',
       ]) {
         final artifacts = await captureCatchWidget(
           tester,
@@ -62,7 +64,10 @@ void main() {
             ).overrideWithValue(AsyncData(_application(organizerId))),
           ],
           device: CaptureDevice.iphone17Pro,
-          includeOverlays: view == 'spend',
+          includeOverlays:
+              view == 'spend' ||
+              view == 'record_actions' ||
+              view == 'remove_confirmation',
           pixelRatio: 2,
           textScale: double.parse(
             const String.fromEnvironment(
@@ -113,6 +118,18 @@ void main() {
                 await pumpFeatureUi(tester);
                 expect(find.text('ananya.rao'), findsOneWidget);
                 expect(find.text('Vegetarian'), findsOneWidget);
+              }
+            } else if (view == 'record_actions' ||
+                view == 'remove_confirmation') {
+              await tester.tap(
+                find.byKey(const ValueKey('host-customer-record-actions')),
+              );
+              await pumpFeatureUi(tester);
+              expect(find.text('Remove customer'), findsOneWidget);
+              if (view == 'remove_confirmation') {
+                await tester.tap(find.text('Remove customer'));
+                await pumpFeatureUi(tester);
+                expect(find.text('Cancel'), findsOneWidget);
               }
             } else if (view == 'spend') {
               final breakdown = find.byKey(
