@@ -11,6 +11,9 @@ import '../support/catch_test_fonts.dart';
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
-  await loadCatchTestFonts();
+  const nativeIosFont = String.fromEnvironment('CAPTURE_SF_FONT');
+  await loadCatchTestFonts(
+    nativeIosFontPath: nativeIosFont.isEmpty ? null : nativeIosFont,
+  );
   await testMain();
 }

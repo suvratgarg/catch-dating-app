@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 /// Flutter widget tests do not automatically register bundled icon fonts, so
 /// [Icon] falls back to missing-glyph boxes unless we load Material Icons and
 /// package icon fonts explicitly.
-Future<void> loadCatchTestFonts() async {
+Future<void> loadCatchTestFonts({String? nativeIosFontPath}) async {
   final platformFunctionFonts = _platformFunctionFontFiles();
   final loaders = <FontLoader>[
     FontLoader('Archivo')..addFont(_bytes('assets/fonts/Archivo-Roman-VF.ttf')),
@@ -18,10 +18,13 @@ Future<void> loadCatchTestFonts() async {
       ..addFont(_bytes('assets/fonts/IBMPlexMono-SemiBold.ttf'))
       ..addFont(_bytes('assets/fonts/IBMPlexMono-Bold.ttf')),
     for (final family in _platformFunctionFamilies)
-      FontLoader(family)
-        ..addFont(_fileBytes(platformFunctionFonts.regular))
-        ..addFont(_fileBytes(platformFunctionFonts.medium))
-        ..addFont(_fileBytes(platformFunctionFonts.bold)),
+      if (nativeIosFontPath != null && family.startsWith('CupertinoSystem'))
+        FontLoader(family)..addFont(_fileBytes(File(nativeIosFontPath)))
+      else
+        FontLoader(family)
+          ..addFont(_fileBytes(platformFunctionFonts.regular))
+          ..addFont(_fileBytes(platformFunctionFonts.medium))
+          ..addFont(_fileBytes(platformFunctionFonts.bold)),
     FontLoader('MaterialIcons')..addFont(_fileBytes(_materialIconsFont())),
   ];
 
