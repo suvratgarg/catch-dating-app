@@ -544,6 +544,29 @@ the rail. The semantic-layout and tabbed-scaffold tests pin those numeric
 mappings. The composition checker validates semantic roles rather than the
 literal numbers.
 
+Persistent context uses `CatchStatusStripData`, not queued notices.
+`MyApp` publishes honest connectivity context through `CatchStatusStripScope`
+above the navigator for both apps, including pushed routes. A route may add
+local context through its scaffold's typed `statuses` slot (rehearsal before
+offline). The canonical screen owner consumes that scope once and clears it
+for nested content. `CatchTabbedScreenScaffold` pins the rail and strips as
+one intrinsically measured `PinnedHeaderSliver` with a single overlap absorber;
+the title scrolls away without a strip between it and the rail. Root screens
+pin strips after the title; pushed screens place them below the complete app
+bar, including any primary tabs. Standard body spacing remains 24 pt after
+the final strip. Standalone/step-flow surfaces with owned safe areas place
+context above their body; explicitly edge-owned workspace canvases still
+delegate header composition to their semantic owner.
+
+`CatchStatusStrip` owns full-width paint, common icon/label/detail/action
+lanes, wrapping and touch targets. It does not read providers, position an
+overlay, dismiss itself or infer retry/sync behavior. The resolved
+`catch_status_strip_is_layout_owned` lint prohibits feature construction
+(including aliases and constructor tear-offs); features supply data instead.
+Runtime tests cover dynamic overlap, pinning, text scaling and tab switches.
+Transient notifications, field/section errors and mutation feedback remain
+separate owners.
+
 All registered layout-bearing declarations reachable for one route, including
 state-specific and responsive alternatives, must remain in the same layout
 family. Each owner separately declares any intentional geometry and top-edge

@@ -15,8 +15,6 @@ part 'catch_notice.g.dart';
 
 enum CatchNoticeTone { status, success, warning, danger, event }
 
-enum _AppNoticeFallbackIcon { status, offline }
-
 class CatchNoticeData {
   const CatchNoticeData({
     required this.id,
@@ -35,28 +33,7 @@ class CatchNoticeData {
     // Keep the public argument `icon`; an initializing formal would expose
     // the private backing field instead of the caller-configurable input.
     // ignore: prefer_initializing_formals
-  }) : _icon = icon,
-       _fallbackIcon = _AppNoticeFallbackIcon.status;
-
-  const CatchNoticeData._offline({required this.title, this.message})
-    : id = 'connectivity.offline',
-      _icon = null,
-      _fallbackIcon = _AppNoticeFallbackIcon.offline,
-      person = null,
-      accentColor = null,
-      tone = CatchNoticeTone.warning,
-      actionLabel = null,
-      onAction = null,
-      duration = null,
-      dedupeKey = 'connectivity.offline',
-      priority = 100,
-      dismissible = false;
-
-  factory CatchNoticeData.offline(AppLocalizations l10n) =>
-      CatchNoticeData._offline(
-        title: l10n.sharedOfflineTitle,
-        message: l10n.sharedOfflineBody,
-      );
+  }) : _icon = icon;
 
   final String id;
   final String title;
@@ -65,7 +42,6 @@ class CatchNoticeData {
   /// Feature adapters own copy, identity and semantic color. The renderer owns
   /// geometry, text roles, palette derivation and image-failure fallback.
   final IconData? _icon;
-  final _AppNoticeFallbackIcon _fallbackIcon;
   final CatchPersonAvatarItem? person;
   final Color? accentColor;
   final CatchNoticeTone tone;
@@ -76,12 +52,7 @@ class CatchNoticeData {
   final int priority;
   final bool dismissible;
 
-  IconData get icon =>
-      _icon ??
-      switch (_fallbackIcon) {
-        _AppNoticeFallbackIcon.status => CatchIcons.infoOutlineRounded,
-        _AppNoticeFallbackIcon.offline => CatchIcons.cloudOffRounded,
-      };
+  IconData get icon => _icon ?? CatchIcons.infoOutlineRounded;
 
   bool get isPersistent => duration == null;
 }
@@ -125,14 +96,9 @@ class CatchNoticeController extends _$CatchNoticeController {
 }
 
 class CatchNoticeHost extends ConsumerStatefulWidget {
-  const CatchNoticeHost({
-    super.key,
-    required this.child,
-    this.persistentNotices = const <CatchNoticeData>[],
-  });
+  const CatchNoticeHost({super.key, required this.child});
 
   final Widget child;
-  final List<CatchNoticeData> persistentNotices;
 
   @override
   ConsumerState<CatchNoticeHost> createState() => _CatchNoticeHostState();
@@ -158,10 +124,7 @@ class _CatchNoticeHostState extends ConsumerState<CatchNoticeHost> {
     final eventNotice = ref.watch(
       catchNoticeControllerProvider.select((queue) => queue.current),
     );
-    final notices = <CatchNoticeData>[
-      ...widget.persistentNotices,
-      ?eventNotice,
-    ];
+    final notices = <CatchNoticeData>[?eventNotice];
 
     return Stack(
       children: [

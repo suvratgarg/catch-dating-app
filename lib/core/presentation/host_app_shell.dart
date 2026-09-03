@@ -4,7 +4,6 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
-import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
@@ -57,13 +56,6 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
     final unreadCount = isAuthenticated
         ? ref.watch(totalUnreadCountProvider(uid))
         : 0;
-    final connectivityResults = ref
-        .watch(appConnectivityProvider)
-        .asData
-        ?.value;
-    final isOffline =
-        connectivityResults != null &&
-        connectivityResultsAreOffline(connectivityResults);
     final errorLogger = ref.read(errorLoggerProvider);
     final analytics = ref.read(appAnalyticsProvider);
     final clubsAsync = isAuthenticated
@@ -180,12 +172,7 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
       navigationBar: bottomNavigation,
       mediumSideNavigation: railNavigation,
       expandedSideNavigation: sidebarNavigation,
-      body: CatchNoticeHost(
-        persistentNotices: [
-          if (isOffline) CatchNoticeData.offline(context.l10n),
-        ],
-        child: widget.navigationShell,
-      ),
+      body: CatchNoticeHost(child: widget.navigationShell),
     );
   }
 

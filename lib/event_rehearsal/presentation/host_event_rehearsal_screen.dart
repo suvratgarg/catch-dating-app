@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
@@ -107,6 +108,31 @@ class _HostEventRehearsalScreenState
       ],
       errorContext: AppErrorContext.event,
       child: CatchRouteScaffold(
+        statuses: [
+          if (rehearsalAsync.asData?.value case final rehearsal?)
+            CatchStatusStripData(
+              id: 'rehearsal.${rehearsal.session.id}',
+              label: context.l10n.hostEventRehearsalBadge,
+              message: context.l10n.hostEventRehearsalSyntheticGuests,
+              icon: CatchIcons.groupsOutlined,
+              color: CatchTokens.of(context).danger,
+              actions: [
+                CatchStatusStripAction(
+                  label: context.l10n.hostEventRehearsalClockPill(
+                    time: DateFormat.jm(
+                      Localizations.localeOf(context).toLanguageTag(),
+                    ).format(rehearsal.session.virtualNow),
+                  ),
+                  onPressed: () => _showRunControls(rehearsal, busy),
+                ),
+                CatchStatusStripAction(
+                  label: context.l10n.hostEventRehearsalPracticeTools,
+                  icon: CatchIcons.more,
+                  onPressed: () => _showPracticeTools(rehearsal, busy),
+                ),
+              ],
+            ),
+        ],
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           large: false,
           height: CatchTopBar.workspaceHeightFor(
@@ -161,11 +187,6 @@ class _HostEventRehearsalScreenState
                 _syncCoachTask(coachTask);
                 return Column(
                   children: [
-                    _RehearsalBand(
-                      session: rehearsal.session,
-                      onOpenClock: () => _showRunControls(rehearsal, busy),
-                      onOpenTools: () => _showPracticeTools(rehearsal, busy),
-                    ),
                     Expanded(
                       child: EventSuccessHostPanel(
                         key: ValueKey(
@@ -636,106 +657,6 @@ class _HostEventRehearsalScreenState
     } on Object {
       // The mutation listener owns user-visible action failure.
     }
-  }
-}
-
-class _RehearsalBand extends StatelessWidget {
-  const _RehearsalBand({
-    required this.session,
-    required this.onOpenClock,
-    required this.onOpenTools,
-  });
-
-  final EventRehearsalSession session;
-  final VoidCallback onOpenClock;
-  final VoidCallback onOpenTools;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final formatter = DateFormat.jm(
-      Localizations.localeOf(context).toLanguageTag(),
-    );
-    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
-    final clock = CatchButton(
-      label: context.l10n.hostEventRehearsalClockPill(
-        time: formatter.format(session.virtualNow),
-      ),
-      size: CatchButtonSize.sm,
-      accentColor: t.danger,
-      fullWidth: largeText,
-      onPressed: onOpenClock,
-    );
-    final tools = CatchIconButton.icon(
-      icon: CatchIcons.more,
-      variant: CatchIconButtonVariant.plain,
-      size: CatchIconButton.navSize,
-      tooltip: context.l10n.hostEventRehearsalPracticeTools,
-      onTap: onOpenTools,
-    );
-    final identity = Row(
-      children: [
-        Icon(CatchIcons.groupsOutlined, size: CatchIcon.md, color: t.danger),
-        gapW8,
-        Expanded(
-          child: Text(
-            context.l10n.hostEventRehearsalBadge.toUpperCase(),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.kicker(context, color: t.danger),
-          ),
-        ),
-      ],
-    );
-    final descriptor = Text(
-      context.l10n.hostEventRehearsalSyntheticGuests,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: CatchTextStyles.labelS(context, color: t.ink2),
-    );
-    final bandContent = largeText
-        ? Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Expanded(child: identity),
-                  tools,
-                ],
-              ),
-              gapH4,
-              descriptor,
-              gapH8,
-              clock,
-            ],
-          )
-        : Row(
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [identity, gapH2, descriptor],
-                ),
-              ),
-              gapW8,
-              clock,
-              gapW4,
-              tools,
-            ],
-          );
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.danger.withValues(alpha: CatchOpacity.tabBarPillFill),
-        border: Border.symmetric(
-          horizontal: BorderSide(
-            color: t.danger.withValues(alpha: CatchOpacity.lightOverlayBorder),
-          ),
-        ),
-      ),
-      child: Padding(padding: CatchInsets.controlContent, child: bandContent),
-    );
   }
 }
 

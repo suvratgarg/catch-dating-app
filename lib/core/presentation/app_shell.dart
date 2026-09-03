@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
-import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
@@ -64,13 +63,6 @@ class AppShell extends ConsumerWidget {
     final unreadCount = isAuthenticated
         ? ref.watch(totalUnreadCountProvider(uid))
         : 0;
-    final connectivityResults = ref
-        .watch(appConnectivityProvider)
-        .asData
-        ?.value;
-    final isOffline =
-        connectivityResults != null &&
-        connectivityResultsAreOffline(connectivityResults);
     final errorLogger = ref.read(errorLoggerProvider);
     final analytics = ref.read(appAnalyticsProvider);
 
@@ -146,12 +138,7 @@ class AppShell extends ConsumerWidget {
       activeIndex: navigationShell.currentIndex,
       navigationBar: authenticatedNavigationBar,
       anchoredFallback: showGuestAuthCta ? const GuestAuthCtaBar() : null,
-      body: CatchNoticeHost(
-        persistentNotices: [
-          if (isOffline) CatchNoticeData.offline(context.l10n),
-        ],
-        child: navigationShell,
-      ),
+      body: CatchNoticeHost(child: navigationShell),
     );
   }
 }

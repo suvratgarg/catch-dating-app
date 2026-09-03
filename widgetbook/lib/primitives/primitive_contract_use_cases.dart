@@ -51,6 +51,7 @@ import 'package:catch_dating_app/core/widgets/catch_mini_bar_chart.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
@@ -1438,7 +1439,6 @@ Widget catchNoticeContractStates(BuildContext context) {
       'danger',
       'event',
       'with-action',
-      'persistent-offline',
       'dismissible',
     ],
     children: [
@@ -1462,9 +1462,15 @@ Widget catchNoticeContractStates(BuildContext context) {
           ),
         ),
       ),
-      _StateCard(
+      const _StateCard(
         label: 'warning',
-        child: CatchNotice(notice: CatchNoticeData.offline(context.l10n)),
+        child: CatchNotice(
+          notice: CatchNoticeData(
+            id: 'warning',
+            title: 'Update paused',
+            tone: CatchNoticeTone.warning,
+          ),
+        ),
       ),
       const _StateCard(
         label: 'danger',
@@ -1501,10 +1507,6 @@ Widget catchNoticeContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'persistent-offline',
-        child: CatchNotice(notice: CatchNoticeData.offline(context.l10n)),
-      ),
-      _StateCard(
         label: 'dismissible',
         child: CatchNotice(
           notice: const CatchNoticeData(
@@ -1514,6 +1516,63 @@ Widget catchNoticeContractStates(BuildContext context) {
           ),
           onDismiss: _noop,
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchStatusStrip,
+  path: '[Core primitives]/Feedback',
+)
+Widget catchStatusStripContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  final offline = CatchStatusStripData(
+    id: 'offline',
+    label: context.l10n.sharedOfflineTitle,
+    message: context.l10n.sharedOfflineBody,
+    icon: CatchIcons.cloudOffRounded,
+    color: t.warning,
+  );
+  final rehearsal = CatchStatusStripData(
+    id: 'rehearsal',
+    label: context.l10n.hostEventRehearsalBadge,
+    message: context.l10n.hostEventRehearsalSyntheticGuests,
+    icon: CatchIcons.groupsOutlined,
+    color: t.danger,
+    actions: [
+      CatchStatusStripAction(
+        label: context.l10n.hostEventRehearsalClockPill(time: '5:00 PM'),
+        onPressed: _noop,
+      ),
+      CatchStatusStripAction(
+        label: context.l10n.hostEventRehearsalPracticeTools,
+        icon: CatchIcons.more,
+        onPressed: _noop,
+      ),
+    ],
+  );
+  return _ContractScreen(
+    title: 'CatchStatusStrip',
+    contractId: 'catch.status_strip',
+    states: const ['offline', 'rehearsal', 'stacked', 'empty'],
+    children: [
+      _StateCard(
+        label: 'offline',
+        child: CatchStatusStrip(statuses: [offline]),
+      ),
+      _StateCard(
+        label: 'rehearsal',
+        child: CatchStatusStrip(statuses: [rehearsal]),
+      ),
+      _StateCard(
+        label: 'stacked',
+        child: CatchStatusStrip(statuses: [rehearsal, offline]),
+      ),
+      const _StateCard(
+        label: 'empty',
+        child: CatchStatusStrip(statuses: []),
       ),
     ],
   );

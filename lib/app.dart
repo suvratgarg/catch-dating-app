@@ -2,14 +2,17 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_context.dart';
+import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/startup/catch_native_splash.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
@@ -47,6 +50,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouter = ref.watch(routerProvider);
     final forceUpdate = ref.watch(forceUpdateRequiredProvider);
+    final isOffline = ref.watch(isObviouslyOfflineProvider);
     ref.watch(profileLocationInitializerProvider);
 
     return MaterialApp.router(
@@ -74,7 +78,19 @@ class MyApp extends ConsumerWidget {
               ),
             );
           },
-          child: child ?? const SizedBox.shrink(),
+          child: CatchStatusStripScope(
+            statuses: [
+              if (isOffline)
+                CatchStatusStripData(
+                  id: 'connectivity.offline',
+                  label: context.l10n.sharedOfflineTitle,
+                  message: context.l10n.sharedOfflineBody,
+                  icon: CatchIcons.cloudOffRounded,
+                  color: CatchTokens.of(context).warning,
+                ),
+            ],
+            child: child ?? const SizedBox.shrink(),
+          ),
         );
 
         if (!AppConfig.shouldShowEnvironmentBanner) {

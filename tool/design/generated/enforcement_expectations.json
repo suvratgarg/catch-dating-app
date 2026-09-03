@@ -170,6 +170,9 @@
     "catch_shell_owns_tab_scaffold": [
       "catch.tabbed_screen"
     ],
+    "catch_status_strip_is_layout_owned": [
+      "catch.status_strip"
+    ],
     "catch_text_requires_style": [
       "catch.typography"
     ],

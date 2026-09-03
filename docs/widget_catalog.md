@@ -35,6 +35,15 @@ inventory edits do not increment this document contract version.
 
 ## Canonical Usage Decisions
 
+`CatchStatusStrip` (`lib/core/widgets/catch_status_strip.dart`) owns durable
+offline/rehearsal header anatomy, wrapping and 44 pt actions.
+`CatchStatusStripScope` publishes context without rendering it; canonical
+screen owners consume it once below the complete title/tab header, preserve
+the 24 pt standard body start and clear it for nested content. Features pass
+`CatchStatusStripData` and `CatchStatusStripAction`, not a renderer or padding.
+`CatchNoticeHost` now renders only the queued transient notice, never the
+persistent context stack.
+
 | Family | Use | Do not use |
 |---|---|---|
 | Screen composition | Every full-screen composition terminates in `CatchScreenScaffold.standalone`, `.stepFlow`, or `.workspace`; only that primitive constructs Material `Scaffold`. Root title destinations use `CatchRootScreenScaffold` or `CatchRootScreenScrollView`; pinned peer-tab destinations use `CatchTabbedScreenScaffold` plus `CatchTabbedPageScrollView`; pushed routes use `CatchRouteScaffold`, and those higher-level owners delegate to the canonical surface. Root and tab bodies choose standard (20 pt phone gutter, 24 pt body start) or explicitly edge-owned full-bleed geometry. The composition gate verifies declared owner/family expressions, selected explicit geometry arguments, and branch-universal analyzer proof across every statically reachable widget-producing terminal. It globally discovers every full-screen `PageRoute` form; only direct `MaterialPageRoute` construction is inventory-supported, so aliases, wrappers, tear-offs, alternative builders, and subclasses fail closed. Focused tests remain responsible for executing runtime predicates and redirect results. | Do not compose a feature-local `Scaffold` + `SafeArea` + `CustomScrollView` + title padding + terminal spacer, add another compact body role, or copy numeric body gaps between screens. |
@@ -309,7 +318,9 @@ Widgetbook callers.
 | `CatchMutationErrorBanner` | `lib/core/widgets/catch_error_banner.dart:79` | Riverpod `MutationState` adapter for persistent inline mutation failures. Renders nothing while idle/pending/successful and delegates errors to `CatchErrorBanner.fromError`. |
 | `showCatchSnackBar` / `showCatchErrorSnackBar` | `lib/core/widgets/catch_error_snackbar.dart:5` | Canonical publication boundary for transient action feedback. The resolved `catch_use_canonical_feedback` lint forbids raw framework SnackBar/MaterialBanner construction and publication elsewhere, including aliases and tear-offs. Error normalization and optional retry remain in the error helper; transport is still ScaffoldMessenger. |
 | `CatchMutationErrorListener` / `CatchMutationErrorListeners` | `lib/core/widgets/catch_mutation_error_listener.dart:15` | Snackbar boundary for Riverpod mutation failures. Use the singular wrapper for one mutation and the plural wrapper when a screen has several independent mutations that should share one transient error channel. |
-| `CatchNoticeHost` | `lib/core/widgets/catch_notice.dart:84` | App-wide overlay host for ambient notices. Renders persistent notices such as offline state below the safe area and queues ephemeral event notices through `appNoticeControllerProvider`. |
+| `CatchNoticeHost` | `lib/core/widgets/catch_notice.dart` | Overlay host for the current queued transient notice from `catchNoticeControllerProvider`. Persistent offline/rehearsal context belongs to `CatchStatusStrip` in the canonical screen layout. |
+| `CatchStatusStrip` | `lib/core/widgets/catch_status_strip.dart` | Durable offline/rehearsal bands. Owns common icon, wrapping label/detail, semantic color and responsive action lanes; only screen layouts construct it. |
+| `CatchStatusStripScope` | `lib/core/widgets/catch_status_strip.dart` | Inherited context publication, consumed once below complete title/tab chrome and cleared by the canonical screen owner. |
 | `CatchNotice` | `lib/core/widgets/catch_notice.dart` | Reusable floating notice primitive configured through `CatchNoticeData`: title/message, public icon, optional canonical circular person avatar, semantic tone or theme-derived accent, optional action and dismiss control. Person identity takes precedence over the icon. Feature adapters own copy/identity; the renderer owns geometry and typography. Use for ambient app status/events, not inline form errors. |
 | `CatchSectionHeader` | `lib/core/widgets/catch_section_header.dart:4` | Lightweight section header with sentence-case styling by default, optional heavy weight, and opt-in uppercase for intentional metadata/eyebrow labels. Prefer `CatchSection` for carded content sections. |
 | `CatchStatColumn` | `lib/core/widgets/catch_stat_column.dart:5` | Vertical stat display: value on top, label below. Used by local host/stat surfaces that need their own chrome; shared metric rails and profile running identity should use `CatchMetricStrip`. |

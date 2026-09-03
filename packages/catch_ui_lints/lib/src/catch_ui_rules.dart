@@ -23,12 +23,20 @@ class CatchFeedbackRules extends MultiAnalysisRule {
     'Use showCatchSnackBar/showCatchErrorSnackBar for transient feedback or a Catch contextual error primitive; raw framework feedback belongs only to the canonical feedback owner.',
     severity: DiagnosticSeverity.WARNING,
   );
+  static const statusStripIsLayoutOwned = LintCode(
+    'catch_status_strip_is_layout_owned',
+    'Supply CatchStatusStripData through the screen status slot or CatchStatusStripScope; only canonical screen layouts may place the persistent strip.',
+    severity: DiagnosticSeverity.WARNING,
+  );
 
   @override
   bool get canUseParsedResult => false;
 
   @override
-  List<DiagnosticCode> get diagnosticCodes => const [useCanonicalFeedback];
+  List<DiagnosticCode> get diagnosticCodes => const [
+    useCanonicalFeedback,
+    statusStripIsLayoutOwned,
+  ];
 
   @override
   void registerNodeProcessors(
@@ -40,11 +48,10 @@ class CatchFeedbackRules extends MultiAnalysisRule {
         path.contains('/test/') ||
         path.contains('/integration_test/') ||
         path.endsWith('.g.dart') ||
-        path.endsWith('.freezed.dart') ||
-        path.endsWith('/lib/core/widgets/catch_error_snackbar.dart')) {
+        path.endsWith('.freezed.dart')) {
       return;
     }
-    final visitor = _CatchFeedbackVisitor(this);
+    final visitor = _CatchFeedbackVisitor(this, path);
     registry.addInstanceCreationExpression(this, visitor);
     registry.addConstructorReference(this, visitor);
     registry.addMethodInvocation(this, visitor);
@@ -54,12 +61,28 @@ class CatchFeedbackRules extends MultiAnalysisRule {
 }
 
 class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
-  _CatchFeedbackVisitor(this.rule);
+  _CatchFeedbackVisitor(this.rule, this.path);
 
   final CatchFeedbackRules rule;
+  final String path;
 
   void _check(AstNode node, Element? element) {
     final uri = element?.library?.uri.toString();
+    if (element is ConstructorElement &&
+        element.enclosingElement.name == 'CatchStatusStrip' &&
+        uri ==
+            'package:catch_dating_app/core/widgets/catch_status_strip.dart' &&
+        !const {
+          '/lib/core/widgets/catch_screen_scaffold.dart',
+          '/lib/core/widgets/catch_tabbed_screen.dart',
+          '/lib/core/widgets/catch_route_scaffold.dart',
+          '/widgetbook/lib/primitives/primitive_contract_use_cases.dart',
+        }.any(path.endsWith)) {
+      rule.reportAtNode(
+        node,
+        diagnosticCode: CatchFeedbackRules.statusStripIsLayoutOwned,
+      );
+    }
     final constructor =
         element is ConstructorElement &&
         ((element.enclosingElement.name == 'SnackBar' &&
@@ -71,7 +94,8 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
         element.enclosingElement?.name == 'ScaffoldMessengerState' &&
         uri == 'package:flutter/src/material/scaffold.dart' &&
         const {'showSnackBar', 'showMaterialBanner'}.contains(element.name);
-    if (constructor || publisher) {
+    if ((constructor || publisher) &&
+        !path.endsWith('/lib/core/widgets/catch_error_snackbar.dart')) {
       rule.reportAtNode(
         node,
         diagnosticCode: CatchFeedbackRules.useCanonicalFeedback,

@@ -10,7 +10,6 @@ import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -603,9 +602,7 @@ void main() {
     expect(notices.single.title, 'Second match');
   });
 
-  testWidgets('persistent app notices render below the safe area', (
-    tester,
-  ) async {
+  testWidgets('queued app notices render below the safe area', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
@@ -616,11 +613,8 @@ void main() {
               padding: EdgeInsets.only(top: 59),
             ),
             child: Builder(
-              builder: (context) => Scaffold(
-                body: CatchNoticeHost(
-                  persistentNotices: [CatchNoticeData.offline(context.l10n)],
-                  child: const SizedBox.expand(),
-                ),
+              builder: (context) => const Scaffold(
+                body: CatchNoticeHost(child: SizedBox.expand()),
               ),
             ),
           ),
@@ -628,12 +622,16 @@ void main() {
       ),
     );
 
-    final notice = find.byKey(
-      const ValueKey('app_notice.connectivity.offline'),
-    );
+    ProviderScope.containerOf(tester.element(find.byType(CatchNoticeHost)))
+        .read(catchNoticeControllerProvider.notifier)
+        .show(const CatchNoticeData(id: 'message', title: 'New message'));
+    await tester.pump();
+
+    final notice = find.byKey(const ValueKey('app_notice.message'));
     expect(notice, findsOneWidget);
     expect(find.byType(MaterialBanner), findsNothing);
     expect(tester.getTopLeft(notice).dy, greaterThanOrEqualTo(59 + 12));
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 
   testWidgets('ephemeral app notices dismiss after their duration', (

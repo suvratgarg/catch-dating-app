@@ -635,11 +635,42 @@ DART
     echo "$probe_output" >&2
     exit 1
   fi
+  run_analyze_probe "status placement $feedback_scope" <<'DART'
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart' as ui;
+typedef StripAlias = ui.CatchStatusStrip;
+List<Object> forbiddenPlacement() => [
+  const ui.CatchStatusStrip(statuses: []),
+  const StripAlias(statuses: []),
+  ui.CatchStatusStrip.new,
+];
+DART
+  expect_code_count "status placement $feedback_scope" "catch_status_strip_is_layout_owned" 3
+  if (( $(count_code "catch_status_strip_is_layout_owned") != 3 )); then
+    echo "Status placement probe must report exactly three violations." >&2
+    echo "$probe_output" >&2
+    exit 1
+  fi
+done
+
+for status_owner in catch_screen_scaffold catch_tabbed_screen catch_route_scaffold; do
+  probe_path="$probe_root/lib/core/widgets/$status_owner.dart"
+  run_analyze_probe "status owner $status_owner" <<'DART'
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
+final status = CatchStatusStrip(statuses: const []);
+DART
+  if (( $(count_code "catch_status_strip_is_layout_owned") != 0 )); then
+    echo "Canonical status layout owner must be permitted." >&2
+    echo "$probe_output" >&2
+    exit 1
+  fi
 done
 
 probe_path="$probe_root/lib/core/widgets/catch_error_snackbar.dart"
 run_analyze_probe "canonical feedback owner" <<'DART'
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
+
+final misplaced = CatchStatusStrip(statuses: const []);
 
 void owner(BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -652,14 +683,17 @@ if (( $(count_code "catch_use_canonical_feedback") != 0 )); then
   echo "$probe_output" >&2
   exit 1
 fi
+expect_code_count "feedback owner is not a status layout" "catch_status_strip_is_layout_owned" 1
 
 probe_path="$probe_root/lib/consumer/presentation/feedback_probe.dart"
 run_analyze_probe "canonical API and same-name non-framework symbols" <<'DART'
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:flutter/material.dart' as material;
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart' as ui;
 
 class SnackBar {}
 class MaterialBanner {}
+class CatchStatusStrip {}
 class ScaffoldMessengerState {
   void showSnackBar(Object notice) {}
   void showMaterialBanner(Object notice) {}
@@ -671,11 +705,20 @@ List<Object> allowedFeedback(material.BuildContext context) {
   final messenger = ScaffoldMessengerState();
   messenger.showSnackBar(SnackBar());
   messenger.showMaterialBanner(MaterialBanner());
-  return [SnackBar.new, MaterialBanner.new, messenger.showSnackBar];
+  return [
+    SnackBar.new, MaterialBanner.new, messenger.showSnackBar,
+    CatchStatusStrip(), CatchStatusStrip.new,
+    const ui.CatchStatusStripScope(statuses: [], child: material.SizedBox()),
+  ];
 }
 DART
 if (( $(count_code "catch_use_canonical_feedback") != 0 )); then
   echo "Feedback lint must not flag canonical APIs or unrelated same-name symbols." >&2
+  echo "$probe_output" >&2
+  exit 1
+fi
+if (( $(count_code "catch_status_strip_is_layout_owned") != 0 )); then
+  echo "Status lint must permit typed context publication and unrelated same-name symbols." >&2
   echo "$probe_output" >&2
   exit 1
 fi

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_pager_focus_boundary.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -158,6 +159,7 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
     required this.title,
     required this.tabRail,
     required this.body,
+    this.statuses = const [],
     this.eyebrow,
     this.subtitle,
     this.leading,
@@ -187,6 +189,7 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
   /// extent so route code cannot introduce local tab geometry.
   final PreferredSizeWidget tabRail;
   final CatchTabbedScreenBody body;
+  final List<CatchStatusStripData> statuses;
   final ScrollController? outerScrollController;
   final String? semanticsLabel;
   final String? semanticsHint;
@@ -195,6 +198,7 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     _validateTabRailGeometry();
     final t = CatchTokens.of(context);
+    final visibleStatuses = [...statuses, ...CatchStatusStripScope.of(context)];
     Widget scrollView = NestedScrollView(
       controller: outerScrollController,
       headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -220,19 +224,24 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
                 rowCrossAxisAlignment: rowCrossAxisAlignment,
                 search: search,
               );
-        final headerSlivers = CatchSliverHeader(
-          title: headerTitle,
-          bottomHeight: CatchLayout.tabRailHeight,
-          bottom: tabRail,
-        ).buildSlivers(context);
-        final collapsibleSlivers = headerSlivers.take(headerSlivers.length - 1);
-        final pinnedSliver = headerSlivers.last;
-
         return [
-          ...collapsibleSlivers,
+          SliverToBoxAdapter(child: headerTitle),
           SliverOverlapAbsorber(
             handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-            sliver: pinnedSliver,
+            // One intrinsically sized pinned unit: status follows the tabs,
+            // and inner pages account for the complete rail/status stack.
+            sliver: PinnedHeaderSliver(
+              child: ColoredBox(
+                color: t.bg,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: CatchLayout.tabRailHeight, child: tabRail),
+                    CatchStatusStrip(statuses: visibleStatuses),
+                  ],
+                ),
+              ),
+            ),
           ),
         ];
       },
@@ -247,9 +256,12 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
       );
     }
 
-    return CatchScreenScaffold.workspace(
-      backgroundColor: t.bg,
-      body: SafeArea(bottom: false, child: scrollView),
+    return CatchStatusStripScope(
+      statuses: const [],
+      child: CatchScreenScaffold.workspace(
+        backgroundColor: t.bg,
+        body: SafeArea(bottom: false, child: scrollView),
+      ),
     );
   }
 

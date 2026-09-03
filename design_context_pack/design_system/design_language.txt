@@ -279,6 +279,18 @@ still uses named `CatchStroke` roles instead of feature-local literals.
 
 ### 7.2 Geometry is owned by the primitive
 
+Persistent offline/rehearsal context uses `CatchStatusStrip`: full-width,
+square-edged bands with a shared icon, label-over-detail and trailing action
+anatomy. The screen owner places them **below the complete primary tab rail**,
+or below the title when there are no tabs; they never split title from tabs.
+Tabs and strips stay pinned together as the title scrolls away. Regular body
+content begins 24 pt after the last strip. Strips share 20 pt side gutters,
+a 64 pt minimum band height and 44 pt action targets; wrapping content may grow
+the band. At large text or narrow widths, actions reflow below the text.
+These are durable context, not floating `CatchNotice` notifications or local
+mutation errors. Existing semantic palettes and localized copy remain in use;
+neither fixture sync timestamps nor unimplemented global Retry actions ship.
+
 When a component family has shared placement geometry, the canonical primitive
 owns that geometry along with safe-area, platform, focus, and disabled/loading
 behavior. Callers provide semantic state, content slots, and callbacks; they do

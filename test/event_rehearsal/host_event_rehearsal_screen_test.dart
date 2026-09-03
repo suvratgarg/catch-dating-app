@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
@@ -104,6 +105,15 @@ void main() {
       ),
     );
     expect(find.text('Synthetic guests'), findsOneWidget);
+    final strip = tester.widget<CatchStatusStrip>(
+      find.byType(CatchStatusStrip),
+    );
+    expect(strip.statuses.single.id, 'rehearsal.session-1');
+    expect(strip.statuses.single.actions, hasLength(2));
+    expect(
+      tester.getTopLeft(find.byType(CatchStatusStrip)).dy,
+      tester.getBottomLeft(find.byType(CatchTopBar)).dy,
+    );
     expect(find.text('Setup'), findsNothing);
     expect(find.text('Report'), findsNothing);
     expect(find.text('Live guest phone'), findsNothing);

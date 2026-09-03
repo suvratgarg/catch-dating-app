@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldVisibilityScope;
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:flutter/material.dart';
 
 typedef CatchRouteTopBarBuilder =
@@ -268,6 +269,7 @@ class CatchRouteScaffold extends StatefulWidget {
     super.key,
     required this.topBarBuilder,
     required this.body,
+    this.statuses = const [],
     this.bottomNavigationBar,
     this.backgroundColor,
     this.resizeToAvoidBottomInset,
@@ -275,6 +277,7 @@ class CatchRouteScaffold extends StatefulWidget {
 
   final CatchRouteTopBarBuilder topBarBuilder;
   final CatchRouteBody body;
+  final List<CatchStatusStripData> statuses;
   final Widget? bottomNavigationBar;
   final Color? backgroundColor;
   final bool? resizeToAvoidBottomInset;
@@ -300,14 +303,23 @@ class _CatchRouteScaffoldState extends State<CatchRouteScaffold> {
   @override
   Widget build(BuildContext context) {
     final background = widget.backgroundColor ?? CatchTokens.of(context).bg;
-    return CatchScreenScaffold.workspace(
-      backgroundColor: background,
-      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-      appBar: widget.topBarBuilder(context, _scrolledUnder),
-      bottomNavigationBar: widget.bottomNavigationBar,
-      body: NotificationListener<ScrollNotification>(
-        onNotification: _handleScroll,
-        child: widget.body._build(context),
+    final statuses = [...widget.statuses, ...CatchStatusStripScope.of(context)];
+    return CatchStatusStripScope(
+      statuses: const [],
+      child: CatchScreenScaffold.workspace(
+        backgroundColor: background,
+        resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+        appBar: widget.topBarBuilder(context, _scrolledUnder),
+        bottomNavigationBar: widget.bottomNavigationBar,
+        body: NotificationListener<ScrollNotification>(
+          onNotification: _handleScroll,
+          child: Column(
+            children: [
+              CatchStatusStrip(statuses: statuses),
+              Expanded(child: widget.body._build(context)),
+            ],
+          ),
+        ),
       ),
     );
   }

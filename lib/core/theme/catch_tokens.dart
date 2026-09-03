@@ -2613,6 +2613,8 @@ abstract final class CatchLayout {
   static const double menuItemHeight = CatchSpacing.s12;
   static const double noticeMaxWidth = 520.0;
   static const double noticeIconExtent = CatchSpacing.s9;
+  /// Available strip width (after page gutters) needed for inline actions.
+  static const double statusStripInlineMinWidth = 320;
   static const double otpDigitHeight = CatchSpacing.s16;
   static const double otpDigitGap = CatchSpacing.micro10;
   static const double otpCaretWidth = 2.0;
