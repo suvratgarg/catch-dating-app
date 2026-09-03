@@ -12,7 +12,7 @@ class CatchRootScreenScaffold {
 }
 
 class CatchRootScreenScrollView {
-  CatchRootScreenScrollView.standard();
+  CatchRootScreenScrollView.standard() : this._();
   CatchRootScreenScrollView.fullBleed();
   CatchRootScreenScrollView.withPrimaryRail();
   CatchRootScreenScrollView._();
