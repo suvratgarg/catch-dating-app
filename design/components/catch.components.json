@@ -11289,6 +11289,135 @@
       }
     },
     {
+      "id": "catch.record_row",
+      "name": "CatchRecordRow",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Natural-height read-only record with heading, evidence metadata, prose, semantic marker and optional navigation.",
+      "dart": {
+        "symbol": "CatchRecordRow",
+        "file": "lib/core/widgets/catch_record_row.dart",
+        "constructors": [
+          "CatchRecordRow"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/RecordRow",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "RecordRow",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": true,
+            "dartType": "IconData"
+          },
+          {
+            "name": "color",
+            "type": "color",
+            "required": false,
+            "dartType": "Color"
+          },
+          {
+            "name": "metadata",
+            "type": "string",
+            "required": false,
+            "dartType": "String"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "required": false,
+            "dartType": "String"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback"
+          }
+        ],
+        "states": [
+          "read-only",
+          "navigable",
+          "multiline"
+        ],
+        "slots": [
+          "title",
+          "metadata",
+          "description"
+        ],
+        "tokens": [],
+        "dartRoles": [
+          "CatchTextStyles.recordTitle",
+          "CatchTextStyles.recordContext",
+          "CatchTextStyles.recordBody"
+        ],
+        "goldens": [],
+        "members": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use for records, source receipts and activity summaries. Do not use to edit fields or place independent controls in a tappable row.",
+          "The parent owns chronology, group labels and dividers; only a supplied destination enables navigation."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.record_row",
+        "publicApi": true,
+        "stateOwnership": "none",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.record_row"
+      },
+      "surfaces": {
+        "flutter": "CatchRecordRow"
+      },
+      "waiver": {
+        "reason": "A read-only record composition has no distinct raw widget equivalent to ban. Contract and behavior tests own its reading and navigation semantics.",
+        "owner": "design_system",
+        "expires": "2026-10-04"
+      }
+    },
+    {
       "id": "catch.row_press_surface",
         "enforcement": {
           "code": "catch_no_positional_widget_finder",

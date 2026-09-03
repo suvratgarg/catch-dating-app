@@ -734,7 +734,7 @@ extension _CatchFieldEdit on _CatchFieldState {
 
   Color _supportColor(CatchTokens t) {
     return switch (widget.helperTone) {
-      CatchFieldSupportTone.neutral => t.ink3,
+      CatchFieldSupportTone.neutral => t.ink2,
       CatchFieldSupportTone.brand => t.primary,
       CatchFieldSupportTone.success => t.success,
     };

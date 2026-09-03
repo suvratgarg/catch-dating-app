@@ -27,6 +27,7 @@ void main() {
       final opened = <Uri>[];
       for (final view in [
         'overview',
+        'reach',
         'details',
         'submitted',
         'memory',
@@ -38,6 +39,8 @@ void main() {
         'record_actions',
         'remove_confirmation',
       ]) {
+        const requestedView = String.fromEnvironment('CAPTURE_VIEW');
+        if (requestedView.isNotEmpty && view != requestedView) continue;
         final artifacts = await captureCatchWidget(
           tester,
           id: view,
@@ -92,7 +95,14 @@ void main() {
                 reason: 'Customer detail tab labels must remain readable',
               );
             }
-            if (view == 'details' || view == 'submitted') {
+            if (view == 'reach') {
+              await tester.ensureVisible(
+                find.byKey(
+                  const ValueKey('host-customer-reach-and-provenance'),
+                ),
+              );
+              await pumpFeatureUi(tester);
+            } else if (view == 'details' || view == 'submitted') {
               await tester.ensureVisible(find.text('Details'));
               await tester.tap(find.text('Details'));
               await pumpFeatureUi(tester);

@@ -1862,6 +1862,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Content',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRecordRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchRecordRowContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Data display',
         children: [
           _widgetbook.WidgetbookComponent(

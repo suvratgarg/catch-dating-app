@@ -62,6 +62,7 @@ import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
@@ -1887,6 +1888,46 @@ Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchRecordRow,
+  path: '[Core primitives]/Content',
+)
+Widget catchRecordRowContractStates(BuildContext context) => _ContractScreen(
+  title: 'CatchRecordRow',
+  contractId: 'catch.record_row',
+  states: const ['read-only', 'navigable', 'multiline'],
+  children: [
+    _StateCard(
+      label: 'read-only',
+      child: CatchRecordRow(
+        title: 'WhatsApp permission',
+        description: 'No participant permission is recorded.',
+        icon: CatchIcons.verifiedUserOutlined,
+      ),
+    ),
+    _StateCard(
+      label: 'navigable',
+      child: CatchRecordRow(
+        title: 'Sunday Run sign-up',
+        metadata: 'Form response · 20 May 2026',
+        icon: CatchIcons.descriptionOutlined,
+        onTap: _noop,
+      ),
+    ),
+    _StateCard(
+      label: 'multiline',
+      child: CatchRecordRow(
+        title: 'Message received',
+        metadata: 'Catch · 18 June 2026',
+        description:
+            'I’ll bring two friends next week. We would prefer the smaller weekend event, if there is space.',
+        icon: CatchIcons.tabChats,
+      ),
+    ),
+  ],
+);
 
 @widgetbook.UseCase(
   name: 'Contract states',

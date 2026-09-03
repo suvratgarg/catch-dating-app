@@ -14286,9 +14286,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Resolve this customer’s identity before starting a conversation.';
 
   @override
-  String get hostCustomersReachAndProvenance => 'Reach and provenance';
-
-  @override
   String hostCustomersMessagePerson({required String name}) {
     return 'Message $name';
   }
@@ -14306,6 +14303,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostCustomersWhatsappPermissionUnknown =>
       'No participant permission is recorded.';
+
+  @override
+  String get hostCustomersWhatsappPermissionGrantedUndated =>
+      'Participant granted permission.';
+
+  @override
+  String get hostCustomersWhatsappPermissionRevokedUndated =>
+      'Participant withdrew permission.';
 
   @override
   String hostCustomersWhatsappPermissionGrantedByForm({
@@ -14374,7 +14379,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersPauseWhatsappHandoffsBody =>
-      'This is your team’s suppression. It does not change the participant’s permission record.';
+      'Stops your team from starting personal WhatsApp messages to this customer. Their permission stays unchanged.';
 
   @override
   String get hostCustomersTimeline => 'History';
@@ -17261,4 +17266,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostCustomersSubmittedAnswersUnavailable =>
       'Submitted answers are unavailable. Open the application to review its status.';
+
+  @override
+  String get hostCustomersMessaging => 'Messaging';
+
+  @override
+  String get hostCustomersCheckMessaging => 'Check again';
+
+  @override
+  String get hostCustomersSourceUnavailable => 'Source not recorded';
+
+  @override
+  String get hostCustomersSourcesTruncated =>
+      'More source records exist. Only the loaded records are shown.';
 }

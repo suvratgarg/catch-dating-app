@@ -22259,12 +22259,6 @@ abstract class AppLocalizations {
   /// **'Resolve this customer’s identity before starting a conversation.'**
   String get hostCustomersConversationAmbiguous;
 
-  /// Above-fold customer communication and provenance section.
-  ///
-  /// In en, this message translates to:
-  /// **'Reach and provenance'**
-  String get hostCustomersReachAndProvenance;
-
   /// Single person-scoped messaging action whose route is server-derived.
   ///
   /// In en, this message translates to:
@@ -22294,6 +22288,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No participant permission is recorded.'**
   String get hostCustomersWhatsappPermissionUnknown;
+
+  /// Recorded participant permission without a displayable decision date.
+  ///
+  /// In en, this message translates to:
+  /// **'Participant granted permission.'**
+  String get hostCustomersWhatsappPermissionGrantedUndated;
+
+  /// Recorded participant withdrawal without a displayable decision date.
+  ///
+  /// In en, this message translates to:
+  /// **'Participant withdrew permission.'**
+  String get hostCustomersWhatsappPermissionRevokedUndated;
 
   /// Form-backed participant WhatsApp permission provenance.
   ///
@@ -22394,7 +22400,7 @@ abstract class AppLocalizations {
   /// Legal distinction between organizer suppression and participant consent.
   ///
   /// In en, this message translates to:
-  /// **'This is your team’s suppression. It does not change the participant’s permission record.'**
+  /// **'Stops your team from starting personal WhatsApp messages to this customer. Their permission stays unchanged.'**
   String get hostCustomersPauseWhatsappHandoffsBody;
 
   /// Newest-first cross-surface customer timeline heading.
@@ -27159,6 +27165,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submitted answers are unavailable. Open the application to review its status.'**
   String get hostCustomersSubmittedAnswersUnavailable;
+
+  /// Section grouping current messaging availability, participant permission and team suppression.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging'**
+  String get hostCustomersMessaging;
+
+  /// Retry fetching customer messaging availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get hostCustomersCheckMessaging;
+
+  /// Title for a customer with no available origin receipts.
+  ///
+  /// In en, this message translates to:
+  /// **'Source not recorded'**
+  String get hostCustomersSourceUnavailable;
+
+  /// Explicit boundary when the backend returns a truncated set of customer origin receipts.
+  ///
+  /// In en, this message translates to:
+  /// **'More source records exist. Only the loaded records are shown.'**
+  String get hostCustomersSourcesTruncated;
 }
 
 class _AppLocalizationsDelegate

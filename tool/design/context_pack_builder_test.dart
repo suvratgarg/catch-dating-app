@@ -830,6 +830,10 @@ class _ResolvedStyleEntry {
 }
 
 final _styleRegistry = <_StyleEntry>[
+  _StyleEntry.single('tabLabel', 'function', CatchTextStyles.tabLabel),
+  _StyleEntry.single('recordTitle', 'function', CatchTextStyles.recordTitle),
+  _StyleEntry.single('recordContext', 'function', CatchTextStyles.recordContext),
+  _StyleEntry.single('recordBody', 'function', CatchTextStyles.recordBody),
   _StyleEntry.single('display', 'voice', CatchTextStyles.display),
   _StyleEntry.single('headline', 'voice', CatchTextStyles.headline),
   _StyleEntry.single('headlineS', 'voice', CatchTextStyles.headlineS),

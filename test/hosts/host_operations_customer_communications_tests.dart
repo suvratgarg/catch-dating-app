@@ -145,7 +145,7 @@ void _registerHostOperationsCustomerCommunicationsTests() {
 
     expect(find.text('Message'), findsOneWidget);
     expect(find.text('Message Ananya Rao'), findsNothing);
-    expect(find.text('Opens the Catch conversation.'), findsNothing);
+    expect(find.text('Opens the Catch conversation.'), findsOneWidget);
     expect(find.byKey(const ValueKey('host-customer-message')), findsOneWidget);
     expect(
       find.ancestor(

@@ -66,6 +66,10 @@ HostAudienceContactDetail _customerDetail({
   HostAudienceIdentityState identityState = HostAudienceIdentityState.verified,
   String identityConfidence = 'verified_account',
   String? phoneE164,
+  HostCustomerWhatsappPermission? whatsappPermission,
+  List<HostCustomerOrigin>? origins,
+  bool originsTruncated = false,
+  bool whatsappAdminSuppressed = false,
 }) => HostAudienceContactDetail(
   organizerId: 'organizer-1',
   contactId: 'contact-1',
@@ -79,30 +83,34 @@ HostAudienceContactDetail _customerDetail({
   identityConfidence: identityConfidence,
   contactDetailsEditable: contactDetailsEditable,
   ambiguousCandidateCount: 0,
-  whatsappAdminSuppressed: false,
-  whatsappPermission: HostCustomerWhatsappPermission(
-    status: HostAudiencePermissionStatus.optedIn,
-    evidenceStatus: HostCustomerPermissionEvidenceStatus.complete,
-    receiptId: 'receipt-1',
-    source: 'hostFormResponse',
-    sourceFormId: 'form-1',
-    sourceFormTitle: 'Sunday Run sign-up',
-    decisionAt: DateTime(2026, 7, 20),
-    identityStrength: 'phoneVerified',
-  ),
-  origins: [
-    HostCustomerOrigin(
-      originId: 'origin-1',
-      sourceKind: HostCustomerOriginSourceKind.hostForm,
-      sourceEntityKind: 'hostFormResponse',
-      formId: 'form-1',
-      formTitle: 'Sunday Run sign-up',
-      eventId: 'event-1',
-      eventTitle: 'Sunday Run Club',
-      observedAt: DateTime(2026, 7, 20),
-    ),
-  ],
-  originsTruncated: false,
+  whatsappAdminSuppressed: whatsappAdminSuppressed,
+  whatsappPermission:
+      whatsappPermission ??
+      HostCustomerWhatsappPermission(
+        status: HostAudiencePermissionStatus.optedIn,
+        evidenceStatus: HostCustomerPermissionEvidenceStatus.complete,
+        receiptId: 'receipt-1',
+        source: 'hostFormResponse',
+        sourceFormId: 'form-1',
+        sourceFormTitle: 'Sunday Run sign-up',
+        decisionAt: DateTime(2026, 7, 20),
+        identityStrength: 'phoneVerified',
+      ),
+  origins:
+      origins ??
+      [
+        HostCustomerOrigin(
+          originId: 'origin-1',
+          sourceKind: HostCustomerOriginSourceKind.hostForm,
+          sourceEntityKind: 'hostFormResponse',
+          formId: 'form-1',
+          formTitle: 'Sunday Run sign-up',
+          eventId: 'event-1',
+          eventTitle: 'Sunday Run Club',
+          observedAt: DateTime(2026, 7, 20),
+        ),
+      ],
+  originsTruncated: originsTruncated,
   traits: const HostCustomerTraits(
     expectedEventCount: 1,
     attendedEventCount: 1,

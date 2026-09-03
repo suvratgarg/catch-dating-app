@@ -178,6 +178,35 @@ abstract final class CatchTextStyles {
 
   // ===========================================================================
   // FUNCTION — platform system font (UI titles, body, labels, controls)
+  static TextStyle recordTitle(BuildContext context, {Color? color}) => _sans(
+    context,
+    size: 16,
+    height: Theme.of(context).platform == TargetPlatform.iOS
+        ? 20 / 16
+        : 24 / 16,
+    weight: Theme.of(context).platform == TargetPlatform.iOS
+        ? FontWeight.w600
+        : FontWeight.w500,
+    color: color,
+  );
+
+  static TextStyle recordContext(BuildContext context, {Color? color}) => _sans(
+    context,
+    weight: FontWeight.w400,
+    size: Theme.of(context).platform == TargetPlatform.iOS ? 13 : 12,
+    height: Theme.of(context).platform == TargetPlatform.iOS
+        ? 18 / 13
+        : 16 / 12,
+    color: color ?? CatchTokens.of(context).ink2,
+  );
+
+  static TextStyle recordBody(BuildContext context, {Color? color}) => _sans(
+    context,
+    weight: FontWeight.w400,
+    size: 16,
+    height: 24 / 16,
+    color: color,
+  );
   // ===========================================================================
 
   /// Large UI title for sections, cards, and sheet headings.

@@ -581,8 +581,8 @@ class CatchFieldSupportRow extends StatelessWidget {
 
     final label = Text(
       normalizedText ?? '',
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
+      // Helpers and errors explain the consequence of a setting or how to
+      // recover. They must remain readable at narrow widths and large text.
       style: CatchTextStyles.supporting(context, color: color).copyWith(
         fontSize: CatchFieldTokens.captionFontSize,
         fontWeight: FontWeight.w500,
