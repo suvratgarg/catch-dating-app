@@ -4,9 +4,158 @@ import 'package:analyzer/analysis_rule/rule_visitor_registry.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
 
 import 'catch_ui_rules_tables.g.dart';
+
+/// Feedback publication needs resolved symbols, unlike the syntax-only layout
+/// rules below: prefixes, typedefs and tear-offs must not bypass the boundary.
+class CatchFeedbackRules extends MultiAnalysisRule {
+  CatchFeedbackRules()
+    : super(
+        name: 'catch_feedback_rules',
+        description: 'Routes framework feedback through its canonical owner.',
+      );
+
+  static const useCanonicalFeedback = LintCode(
+    'catch_use_canonical_feedback',
+    'Use showCatchSnackBar/showCatchErrorSnackBar for transient feedback or a Catch contextual error primitive; raw framework feedback belongs only to the canonical feedback owner.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+  static const statusStripIsLayoutOwned = LintCode(
+    'catch_status_strip_is_layout_owned',
+    'Supply CatchStatusStripData through the screen status slot or CatchStatusStripScope; only canonical screen layouts may place the persistent strip.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+  static const noticeHostIsAppOwned = LintCode(
+    'catch_notice_host_is_app_owned',
+    'CatchNoticeHost belongs once above the router in app.dart; features publish CatchNoticeData rather than creating a route-local overlay.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+  static const notificationDeliveryIsServiceOwned = LintCode(
+    'catch_notification_delivery_is_service_owned',
+    'FCM foreground delivery belongs to FcmService; features must use the validated session-scoped arrival adapter.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  @override
+  bool get canUseParsedResult => false;
+
+  @override
+  List<DiagnosticCode> get diagnosticCodes => const [
+    useCanonicalFeedback,
+    statusStripIsLayoutOwned,
+    noticeHostIsAppOwned,
+    notificationDeliveryIsServiceOwned,
+  ];
+
+  @override
+  void registerNodeProcessors(
+    RuleVisitorRegistry registry,
+    RuleContext context,
+  ) {
+    final path = context.definingUnit.file.path.replaceAll(r'\', '/');
+    if (!path.contains('/lib/') ||
+        path.contains('/test/') ||
+        path.contains('/integration_test/') ||
+        path.endsWith('.g.dart') ||
+        path.endsWith('.freezed.dart')) {
+      return;
+    }
+    final visitor = _CatchFeedbackVisitor(this, path);
+    registry.addInstanceCreationExpression(this, visitor);
+    registry.addConstructorReference(this, visitor);
+    registry.addMethodInvocation(this, visitor);
+    registry.addPrefixedIdentifier(this, visitor);
+    registry.addPropertyAccess(this, visitor);
+  }
+}
+
+class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
+  _CatchFeedbackVisitor(this.rule, this.path);
+
+  final CatchFeedbackRules rule;
+  final String path;
+
+  void _check(AstNode node, Element? element) {
+    final uri = element?.library?.uri.toString();
+    if (element is ConstructorElement &&
+        element.enclosingElement.name == 'CatchNoticeHost' &&
+        uri == 'package:catch_dating_app/core/widgets/catch_notice.dart' &&
+        !const {
+          '/lib/app.dart',
+          '/widgetbook/lib/primitives/core_catalog_use_cases.dart',
+        }.any(path.endsWith)) {
+      rule.reportAtNode(
+        node,
+        diagnosticCode: CatchFeedbackRules.noticeHostIsAppOwned,
+      );
+    }
+    if (element?.name == 'onMessage' &&
+        element?.enclosingElement?.name == 'FirebaseMessaging' &&
+        uri == 'package:firebase_messaging/firebase_messaging.dart' &&
+        !path.endsWith('/lib/core/fcm_service.dart')) {
+      rule.reportAtNode(
+        node,
+        diagnosticCode: CatchFeedbackRules.notificationDeliveryIsServiceOwned,
+      );
+    }
+    if (element is ConstructorElement &&
+        element.enclosingElement.name == 'CatchStatusStrip' &&
+        uri ==
+            'package:catch_dating_app/core/widgets/catch_status_strip.dart' &&
+        !const {
+          '/lib/core/widgets/catch_screen_scaffold.dart',
+          '/lib/core/widgets/catch_tabbed_screen.dart',
+          '/lib/core/widgets/catch_route_scaffold.dart',
+          '/widgetbook/lib/primitives/primitive_contract_use_cases.dart',
+        }.any(path.endsWith)) {
+      rule.reportAtNode(
+        node,
+        diagnosticCode: CatchFeedbackRules.statusStripIsLayoutOwned,
+      );
+    }
+    final constructor =
+        element is ConstructorElement &&
+        ((element.enclosingElement.name == 'SnackBar' &&
+                uri == 'package:flutter/src/material/snack_bar.dart') ||
+            (element.enclosingElement.name == 'MaterialBanner' &&
+                uri == 'package:flutter/src/material/banner.dart'));
+    final publisher =
+        element is MethodElement &&
+        element.enclosingElement?.name == 'ScaffoldMessengerState' &&
+        uri == 'package:flutter/src/material/scaffold.dart' &&
+        const {'showSnackBar', 'showMaterialBanner'}.contains(element.name);
+    if ((constructor || publisher) &&
+        !path.endsWith('/lib/core/widgets/catch_error_snackbar.dart')) {
+      rule.reportAtNode(
+        node,
+        diagnosticCode: CatchFeedbackRules.useCanonicalFeedback,
+      );
+    }
+  }
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) =>
+      _check(node, node.constructorName.element);
+
+  @override
+  void visitConstructorReference(ConstructorReference node) =>
+      _check(node, node.constructorName.element);
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) =>
+      _check(node.methodName, node.methodName.element);
+
+  @override
+  void visitPrefixedIdentifier(PrefixedIdentifier node) =>
+      _check(node, node.element);
+
+  @override
+  void visitPropertyAccess(PropertyAccess node) =>
+      _check(node, node.propertyName.element);
+}
 
 const _eventDetailPathFragments = <String>[
   '/lib/events/presentation/widgets/event_detail_',

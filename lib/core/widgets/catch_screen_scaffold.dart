@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart'
 import 'package:catch_dating_app/core/widgets/catch_root_screen_body.dart';
 import 'package:catch_dating_app/core/widgets/catch_scaled_preferred_size.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
@@ -73,10 +74,24 @@ class CatchScreenScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final statuses = CatchStatusStripScope.of(context);
+    // Keep this ancestry stable when connectivity changes: inserting a new
+    // wrapper only while offline would recreate focused editors and state.
+    final content = safeArea == CatchScreenSafeArea.none
+        ? body
+        : CatchStatusStripScope(
+            statuses: const [],
+            child: Column(
+              children: [
+                CatchStatusStrip(statuses: statuses),
+                Expanded(child: body),
+              ],
+            ),
+          );
     final child = switch (safeArea) {
-      CatchScreenSafeArea.all => SafeArea(child: body),
-      CatchScreenSafeArea.top => SafeArea(bottom: false, child: body),
-      CatchScreenSafeArea.none => body,
+      CatchScreenSafeArea.all => SafeArea(child: content),
+      CatchScreenSafeArea.top => SafeArea(bottom: false, child: content),
+      CatchScreenSafeArea.none => content,
     };
     return Scaffold(
       key: scaffoldKey,
@@ -427,6 +442,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final obstruction = AppShellActiveTab.bottomOverlayInsetOf(context);
+    final statuses = CatchStatusStripScope.of(context);
     Widget scrollView;
     if (primaryRail == null) {
       scrollView = CustomScrollView(
@@ -438,6 +454,8 @@ class CatchRootScreenScrollView extends StatelessWidget {
             : AlwaysScrollableScrollPhysics(parent: physics),
         slivers: [
           SliverToBoxAdapter(child: _header!),
+          if (statuses.isNotEmpty)
+            PinnedHeaderSliver(child: CatchStatusStrip(statuses: statuses)),
           CatchSliverScreenBody(
             layout: bodyLayout!,
             constrainToContentWidth: constrainToContentWidth,
@@ -454,16 +472,27 @@ class CatchRootScreenScrollView extends StatelessWidget {
         controller: controller,
         physics: physics,
         headerSliverBuilder: (context, innerBoxIsScrolled) {
-          final headerSlivers = CatchSliverHeader(
-            title: _primaryRailHeader!._build(context),
-            bottomHeight: CatchTabRail.heightFor(context),
-            bottom: primaryRail,
-          ).buildSlivers(context);
           return [
-            ...headerSlivers.take(headerSlivers.length - 1),
+            SliverToBoxAdapter(child: _primaryRailHeader!._build(context)),
             SliverOverlapAbsorber(
               handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-              sliver: headerSlivers.last,
+              // Keep rail and status in one intrinsic pinned unit so the
+              // inner page absorbs their complete height at every text scale.
+              sliver: PinnedHeaderSliver(
+                child: ColoredBox(
+                  color: CatchTokens.of(context).bg,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: CatchTabRail.heightFor(context),
+                        child: primaryRail,
+                      ),
+                      CatchStatusStrip(statuses: statuses),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ];
         },
@@ -483,12 +512,19 @@ class CatchRootScreenScrollView extends StatelessWidget {
         child: scrollView,
       );
     }
-    return CatchFieldVisibilityScope(
-      bottomObstruction: obstruction,
-      child: SafeArea(
-        top: topEdge == CatchRootScreenTopEdge.safeArea,
-        bottom: false,
-        child: scrollView,
+    return CatchStatusStripScope(
+      statuses: const [],
+      child: CatchFieldVisibilityScope(
+        bottomObstruction: obstruction,
+        child: SafeArea(
+          // While status is pinned, this viewport owns the physical inset.
+          // SafeArea removes it from MediaQuery so an edge-owned hero cannot
+          // apply it twice or let the pinned status move under system chrome.
+          top:
+              topEdge == CatchRootScreenTopEdge.safeArea || statuses.isNotEmpty,
+          bottom: false,
+          child: scrollView,
+        ),
       ),
     );
   }

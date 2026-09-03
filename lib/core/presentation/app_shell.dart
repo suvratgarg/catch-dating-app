@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
-import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
@@ -14,13 +13,13 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
+import 'package:catch_dating_app/notifications/notifications.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -46,7 +45,17 @@ Future<void> appShellFcmInitialization(
   final fcmService = ref.watch(fcmServiceProvider);
   if (!fcmService.isSupportedPlatform) return;
 
-  await fcmService.initialize(uid: uid, router: router);
+  final arrivals = ref.read(foregroundNotificationControllerProvider.notifier);
+  await fcmService.initialize(
+    uid: uid,
+    router: router,
+    // SDK delivery occurs outside provider construction. Do not use a delayed
+    // build-time state mutation to establish the presentation session.
+    onForegroundMessage: (message) {
+      arrivals.startSession(uid);
+      arrivals.receive(uid, message);
+    },
+  );
 }
 
 class AppShell extends ConsumerWidget {
@@ -64,13 +73,6 @@ class AppShell extends ConsumerWidget {
     final unreadCount = isAuthenticated
         ? ref.watch(totalUnreadCountProvider(uid))
         : 0;
-    final connectivityResults = ref
-        .watch(appConnectivityProvider)
-        .asData
-        ?.value;
-    final isOffline =
-        connectivityResults != null &&
-        connectivityResultsAreOffline(connectivityResults);
     final errorLogger = ref.read(errorLoggerProvider);
     final analytics = ref.read(appAnalyticsProvider);
 
@@ -128,6 +130,7 @@ class AppShell extends ConsumerWidget {
         analytics: analytics,
       );
       if (uid != prev?.asData?.value) {
+        ref.read(foregroundNotificationControllerProvider.notifier).reset();
         ref.read(eventSuccessCompanionLaunchRegistryProvider).reset();
       }
       if (uid == null && prev?.asData?.value != null) {
@@ -146,12 +149,7 @@ class AppShell extends ConsumerWidget {
       activeIndex: navigationShell.currentIndex,
       navigationBar: authenticatedNavigationBar,
       anchoredFallback: showGuestAuthCta ? const GuestAuthCtaBar() : null,
-      body: CatchNoticeHost(
-        persistentNotices: [
-          if (isOffline) CatchNoticeData.offline(context.l10n),
-        ],
-        child: navigationShell,
-      ),
+      body: navigationShell,
     );
   }
 }

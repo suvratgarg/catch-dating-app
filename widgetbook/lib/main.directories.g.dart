@@ -1001,6 +1001,26 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchStatusStripScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchStatusStripScopeCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ForegroundNotificationListener',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Validated arrival interaction',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .foregroundNotificationListenerPreview,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
@@ -2059,6 +2079,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchNoticeContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchStatusStrip',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchStatusStripContractStates,
               ),
             ],
           ),

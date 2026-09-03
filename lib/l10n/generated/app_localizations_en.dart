@@ -4175,6 +4175,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notificationArrivalMatchTitle => 'It\'s a catch';
+
+  @override
+  String get notificationArrivalMessageTitle => 'New message';
+
+  @override
   String get coreCatchNoticeTooltipDismiss => 'Dismiss';
 
   @override

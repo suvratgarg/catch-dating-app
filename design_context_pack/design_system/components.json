@@ -1772,7 +1772,7 @@
       "name": "CatchNotice",
       "status": "active",
       "kind": "composite",
-      "summary": "Ambient app notice family for queued/persistent top-of-screen status, success, warning, danger, and event notices.",
+      "summary": "Configurable notice family. CatchNoticeData.arrival uses whole-card open and swipe dismissal in one app-level safe-area host; ordinary inline notices retain optional controls. Features own copy, identity, tone and routing; the primitive owns geometry and interaction.",
       "dart": {
         "symbol": "CatchNotice",
         "file": "lib/core/widgets/catch_notice.dart",
@@ -1811,12 +1811,6 @@
             "dartType": "VoidCallback?"
           },
           {
-            "name": "persistentNotices",
-            "type": "list",
-            "required": false,
-            "dartType": "List<CatchNoticeData>"
-          },
-          {
             "name": "child",
             "type": "widget",
             "required": false,
@@ -1830,8 +1824,10 @@
           "danger",
           "event",
           "with-action",
-          "persistent-offline",
-          "dismissible"
+          "dismissible",
+          "arrival-tap-to-open",
+          "arrival-swipe-to-dismiss",
+          "arrival-reduced-motion"
         ],
         "slots": [
           {
@@ -1858,6 +1854,8 @@
           "CatchNoticeQueue",
           "CatchNoticeController",
           "CatchNoticeHost",
+          "CatchPersonAvatar",
+          "CatchPersonAvatarItem",
           "CatchSurface",
           "CatchButton",
           "CatchTextStyles.labelL",
@@ -1869,10 +1867,9 @@
             "id": "catch.notice.host",
             "symbol": "CatchNoticeHost",
             "file": "lib/core/widgets/catch_notice.dart",
-            "summary": "Overlay boundary that renders persistent notices plus the queued current notice above app content.",
+            "summary": "One MyApp-owned safe-area overlay above the router, enforced by catch_notice_host_is_app_owned. Owns entry motion, gesture/keyboard dismissal and interaction-aware timers; persistent context remains with CatchStatusStrip below tabs.",
             "states": [
               "empty",
-              "persistent",
               "queued",
               "multiple"
             ],
@@ -1902,10 +1899,14 @@
       "handoff": {
         "allowedChildren": [
           "catch.surface",
-          "catch.button"
+          "catch.button",
+          "catch.person_avatar"
         ],
         "notes": [
           "Use for ambient app-level notices that float above existing content.",
+          "Persistent offline and rehearsal context uses CatchStatusStrip in the canonical screen header, never this overlay host.",
+          "CatchNoticeData owns caller-supplied title, message, icon, person, and accentColor; a supplied person takes precedence over the icon and uses CatchPersonAvatar's circular image/initials fallback.",
+          "Keep match/message copy and identity in feature adapters. Do not fork the renderer for different strings, icons or colors. Accent overrides must be theme-derived and reviewed for contrast; geometry and typography remain renderer-owned.",
           "Use CatchErrorBanner for inline persistent form/section failures and CatchErrorState for blocking data-load failures."
         ]
       },
@@ -1924,6 +1925,133 @@
       },
       "surfaces": {
         "flutter": "CatchNotice"
+      }
+    },
+    {
+      "id": "catch.status_strip",
+      "enforcement": {
+        "code": "catch_status_strip_is_layout_owned",
+        "vehicle": "plugin"
+      },
+      "name": "CatchStatusStrip",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Durable header context, placed below the complete primary tab rail by canonical screen owners; distinct from transient notices and local errors.",
+      "dart": {
+        "symbol": "CatchStatusStrip",
+        "file": "lib/core/widgets/catch_status_strip.dart",
+        "constructors": [
+          "CatchStatusStrip"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/StatusStrip",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "StatusStrip",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "statuses",
+            "type": "list",
+            "required": true,
+            "dartType": "List<CatchStatusStripData>"
+          }
+        ],
+        "states": [
+          "offline",
+          "rehearsal",
+          "stacked",
+          "empty"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "space.s5",
+          "space.s11",
+          "space.s12",
+          "theme.light.color.warning",
+          "theme.light.color.danger"
+        ],
+        "dartRoles": [
+          "CatchStatusStripData",
+          "CatchStatusStripAction",
+          "CatchStatusStripScope",
+          "CatchTextButton",
+          "CatchIconButton"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.status_strip.scope",
+            "symbol": "CatchStatusStripScope",
+            "file": "lib/core/widgets/catch_status_strip.dart",
+            "summary": "Inherited publication scope, consumed once by canonical screen owners and cleared for nested body content.",
+            "states": [
+              "empty",
+              "published"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.status_strip",
+              "parentConceptId": "catch.status_strip",
+              "qualifier": "adapter",
+              "decisionRef": "pattern-family:persistent-header-context"
+            }
+          }
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Wrap label and detail; reflow actions below on narrow screens or large text; measure the real pinned extent."
+          },
+          "reducedMotion": {
+            "policy": "Persistent context has no arrival animation or automatic dismissal."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.button",
+          "catch.icon_button"
+        ],
+        "notes": [
+          "Features configure data and actions only; canonical layouts own pinning, overlap and the 24 pt body handoff.",
+          "MyApp publishes connectivity for Host and Consumer above route navigation. Rehearsal is local route context, rendered before offline.",
+          "No fixture sync timestamps, fake global retry, or claimed offline writes. Preserve the real state and supported actions."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.status_strip",
+        "publicApi": true,
+        "stateOwnership": "screen-owned",
+        "asyncOwnership": "display-state-only",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.status_strip",
+        "decisionRef": "pattern-family:persistent-header-context"
+      },
+      "surfaces": {
+        "flutter": "CatchStatusStrip"
       }
     },
     {

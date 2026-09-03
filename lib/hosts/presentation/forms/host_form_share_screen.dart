@@ -117,9 +117,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
     try {
       await ref.read(clipboardControllerProvider).copyText(value);
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(confirmation)));
+      showCatchSnackBar(context, confirmation);
     } on Object catch (error) {
       if (mounted) showCatchErrorSnackBar(context, error);
     }
@@ -158,9 +156,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
         _trackedLink = link;
         _creatingLink = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.hostFormTrackedLinkReady)),
-      );
+      showCatchSnackBar(context, context.l10n.hostFormTrackedLinkReady);
     } on Object catch (error) {
       if (!mounted) return;
       setState(() => _creatingLink = false);

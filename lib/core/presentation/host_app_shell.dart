@@ -4,18 +4,17 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
-import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/hosts.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
+import 'package:catch_dating_app/notifications/notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -57,13 +56,6 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
     final unreadCount = isAuthenticated
         ? ref.watch(totalUnreadCountProvider(uid))
         : 0;
-    final connectivityResults = ref
-        .watch(appConnectivityProvider)
-        .asData
-        ?.value;
-    final isOffline =
-        connectivityResults != null &&
-        connectivityResultsAreOffline(connectivityResults);
     final errorLogger = ref.read(errorLoggerProvider);
     final analytics = ref.read(appAnalyticsProvider);
     final clubsAsync = isAuthenticated
@@ -122,6 +114,9 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
       final normalized = nextUid == null || nextUid.isEmpty ? null : nextUid;
       errorLogger.setUserId(normalized);
       analytics.setUserId(normalized);
+      if (nextUid != previous?.asData?.value) {
+        ref.read(foregroundNotificationControllerProvider.notifier).reset();
+      }
       if (nextUid == null && previous?.asData?.value != null) {
         unawaited(ref.read(fcmServiceProvider).reset());
       }
@@ -180,12 +175,7 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
       navigationBar: bottomNavigation,
       mediumSideNavigation: railNavigation,
       expandedSideNavigation: sidebarNavigation,
-      body: CatchNoticeHost(
-        persistentNotices: [
-          if (isOffline) CatchNoticeData.offline(context.l10n),
-        ],
-        child: widget.navigationShell,
-      ),
+      body: widget.navigationShell,
     );
   }
 

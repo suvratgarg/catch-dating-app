@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import {
   EventDocument,
+  PublicProfileDocument,
 } from "./generated/firestoreAdminTypes";
 import {notificationCopy} from "./notificationCopy";
 
@@ -15,6 +16,12 @@ export interface FcmParams {
   organizerId?: string;
   postId?: string;
   invitationId?: string;
+  messageId?: string;
+  notificationId?: string;
+  recipientUid?: string;
+  appRole?: "consumer" | "host";
+  actorName?: string;
+  actorAvatarUrl?: string;
 }
 
 export type ActivityNotificationType =
@@ -107,12 +114,35 @@ export function allowsPushPreference(
 }
 
 /**
+ * Uses only a public approved (or legacy unmoderated) photo for push identity.
+ * @param {PublicProfileDocument | undefined} profile Public profile projection.
+ * @return {string | undefined} Optional image URL.
+ */
+export function notificationProfileAvatar(
+  profile: PublicProfileDocument | undefined
+): string | undefined {
+  const photo = profile?.profilePhotos?.find((candidate) =>
+    candidate.moderation == null || candidate.moderation.status === "approved"
+  );
+  return photo?.thumbnailUrl || photo?.url || undefined;
+}
+
+/**
  * Sends a single FCM notification with the shared APNs / Android sound config.
  * @param {FcmParams} params The notification parameters.
  * @return {Promise<void>}
  */
 export async function sendFcmNotification(params: FcmParams): Promise<void> {
-  await admin.messaging().send({
+  await admin.messaging().send(buildFcmMessage(params));
+}
+
+/**
+ * Canonical wire encoder; injectable delivery tests inspect the actual payload.
+ * @param {FcmParams} params Caller-owned identity, copy and destination data.
+ * @return {admin.messaging.Message} FCM message.
+ */
+export function buildFcmMessage(params: FcmParams): admin.messaging.Message {
+  return {
     token: params.token,
     notification: {title: params.title, body: params.body},
     data: compactStringMap({
@@ -123,10 +153,16 @@ export async function sendFcmNotification(params: FcmParams): Promise<void> {
       organizerId: params.organizerId,
       postId: params.postId,
       invitationId: params.invitationId,
+      messageId: params.messageId,
+      notificationId: params.notificationId,
+      recipientUid: params.recipientUid,
+      appRole: params.appRole,
+      actorName: params.actorName,
+      actorAvatarUrl: params.actorAvatarUrl,
     }),
     apns: {payload: {aps: {sound: "default"}}},
     android: {notification: {sound: "default"}},
-  });
+  };
 }
 
 /**

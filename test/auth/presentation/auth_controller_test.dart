@@ -7,6 +7,7 @@ import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -449,6 +450,27 @@ void main() {
   });
 
   group('AuthSessionController', () {
+    test('unregisters an existing push service before auth sign-out', () async {
+      final repository = _SignOutAuthRepository();
+      final push = _SignOutFcmService();
+      final container = _authControllerContainer(repository, push: push);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      container.read(fcmServiceProvider);
+      final subscription = container.listen(
+        authSessionControllerProvider,
+        (_, _) {},
+      );
+      addTearDown(subscription.close);
+      final signOut = container
+          .read(authSessionControllerProvider.notifier)
+          .signOut();
+      expect(push.unregisterCalls, 1);
+      expect(repository.signOutCallCount, 0);
+      push.unregistered.complete();
+      await signOut;
+      expect(repository.signOutCallCount, 1);
+    });
     test(
       'signOut delegates to the repository and clears auth flow state',
       () async {
@@ -533,13 +555,25 @@ void main() {
 ProviderContainer _authControllerContainer(
   FakeAuthRepository repository, {
   String defaultCountryCode = '+91',
+  FcmService? push,
 }) {
   return ProviderContainer(
     overrides: [
       authRepositoryProvider.overrideWithValue(repository),
       authInitialCountryDialCodeProvider.overrideWithValue(defaultCountryCode),
+      if (push != null) fcmServiceProvider.overrideWithValue(push),
     ],
   );
+}
+
+class _SignOutFcmService extends Fake implements FcmService {
+  final unregistered = Completer<void>();
+  int unregisterCalls = 0;
+  @override
+  Future<void> unregisterCurrentInstallation() {
+    unregisterCalls++;
+    return unregistered.future;
+  }
 }
 
 class _SignOutAuthRepository extends FakeAuthRepository {

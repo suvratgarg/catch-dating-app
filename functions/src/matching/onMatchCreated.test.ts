@@ -120,6 +120,13 @@ function harness() {
       sendNotification: async (notification: Notification) => {
         notifications.push(notification);
       },
+      resolvePushTokens: async (
+        _db: FirebaseFirestore.Firestore, uid: string, role: string
+      ) => {
+        assert.equal(role, "consumer");
+        const token = firestore.get(`users/${uid}`)?.fcmToken;
+        return typeof token === "string" ? [token] : [];
+      },
     },
   };
 }
@@ -168,6 +175,11 @@ test(
         body: "You and Runner Two matched. Say hi!",
         type: "match",
         matchId: "match-1",
+        notificationId: "match_match-1",
+        recipientUid: "runner-1",
+        appRole: "consumer",
+        actorName: "Runner Two",
+        actorAvatarUrl: undefined,
       },
       {
         token: "token-2",
@@ -175,6 +187,11 @@ test(
         body: "You and Runner One matched. Say hi!",
         type: "match",
         matchId: "match-1",
+        notificationId: "match_match-1",
+        recipientUid: "runner-2",
+        appRole: "consumer",
+        actorName: "Runner One",
+        actorAvatarUrl: undefined,
       },
     ]);
   }

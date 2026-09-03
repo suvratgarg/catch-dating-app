@@ -328,11 +328,38 @@ still uses named `CatchStroke` roles instead of feature-local literals.
 
 ### 7.2 Geometry is owned by the primitive
 
+Persistent offline/rehearsal context uses `CatchStatusStrip`: full-width,
+square-edged bands with a shared icon, label-over-detail and trailing action
+anatomy. The screen owner places them **below the complete primary tab rail**,
+or below the title when there are no tabs; they never split title from tabs.
+Tabs and strips stay pinned together as the title scrolls away. Regular body
+content begins 24 pt after the last strip. Strips share 20 pt side gutters,
+a 64 pt minimum band height and 44 pt action targets; wrapping content may grow
+the band. At large text or narrow widths, actions reflow below the text.
+These are durable context, not floating `CatchNotice` notifications or local
+mutation errors. Existing semantic palettes and localized copy remain in use;
+neither fixture sync timestamps nor unimplemented global Retry actions ship.
+
 When a component family has shared placement geometry, the canonical primitive
 owns that geometry along with safe-area, platform, focus, and disabled/loading
 behavior. Callers provide semantic state, content slots, and callbacks; they do
 not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
 
+- Notice identity is supplied by its feature adapter through `CatchNoticeData`:
+  localized title/message, semantic tone, optional icon, optional
+  `CatchPersonAvatarItem`, and an optional theme-derived `accentColor`. A person
+  replaces the status glyph and reuses `CatchPersonAvatar` for circular photos
+  and initials fallback. The shared notice still owns typography, icon/avatar
+  extent, spacing, surface and tint derivation. Do not create separate visual
+  match/message widgets merely to change copy, identity or color. A color
+  override does not waive contrast review in both themes.
+  `CatchNoticeData.arrival` makes the whole card the open target with no visible
+  Open/Dismiss buttons; swipe up or sideways dismisses it, as do Escape and the
+  accessibility dismiss action. A downward drag does not open.
+  The global host enters from above the physical viewport, rests 12 pt below
+  the top safe area and never shifts route content. Reduced motion skips entry;
+  accessible navigation holds the card, and pointer/hover/focus interaction
+  pauses auto-dismiss. Ordinary inline notices retain their existing controls.
 - Primary screen CTA placement routes through the `CatchBottomAction` family.
   `CatchBottomAction` owns one floating Cupertino or anchored Material action;
   `CatchBottomActionOverlay` owns pinned multi-action form controls over a soft

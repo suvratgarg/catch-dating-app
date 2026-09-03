@@ -378,6 +378,13 @@
         ]
       },
       {
+        "key": "catch.status_strip",
+        "symbols": [
+          "CatchStatusStrip",
+          "CatchStatusStripScope"
+        ]
+      },
+      {
         "key": "catch.step_header",
         "symbols": [
           "CatchStepHeader",
@@ -732,7 +739,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 1,
-      "figmaExpectedPropertyDigest": "e2d2ca5ae44c9517bf4bdea75c8eadcac59b37d9a7fdf60b0fd010fba7713a2c",
+      "figmaExpectedPropertyDigest": "0f5b6a781ac84877aceb8f4dda0883da749c51219842e586d95a2ac876149e05",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -740,7 +747,39 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Notice",
       "claudeAllowed": true,
-      "contractDigest": "289aebe012d674b12a7757bcc542f2f023c50c7c9dfe2d41c9500b0769ce6f68"
+      "contractDigest": "da2438c23d49aace7f6b52a96611be1139661ad7273298a7ee2fe60cee34b601"
+    },
+    {
+      "contractId": "catch.status_strip",
+      "conceptRole": "concept",
+      "conceptId": "catch.status_strip",
+      "dartSymbol": "CatchStatusStrip",
+      "dartFile": "lib/core/widgets/catch_status_strip.dart",
+      "figmaName": "Catch/StatusStrip",
+      "figmaPropertyProjectionMode": "inferred",
+      "figmaReviewStatePolicy": "variant",
+      "figmaPropertySources": {},
+      "figmaDeclaredStatus": "unmapped",
+      "figmaDeclaredUrl": null,
+      "figmaStatus": "missing",
+      "figmaUrl": null,
+      "figmaNodeId": null,
+      "figmaComponentKey": null,
+      "figmaPublishStatus": null,
+      "figmaSnapshotCaptureMethod": "figma-mcp",
+      "figmaVariableBindingCount": 0,
+      "figmaVariableBindingDigest": null,
+      "figmaReviewSnapshot": null,
+      "figmaExpectedPropertyCount": 1,
+      "figmaExpectedPropertyDigest": "300b567115eb5d50047fee65c78bfc6b97e40462302b5b01302b9ae68f9cc5d5",
+      "figmaActualPropertyCount": 0,
+      "figmaActualPropertyDigest": null,
+      "figmaDrift": [],
+      "codeConnectStatus": "planned",
+      "codeConnectTemplate": null,
+      "claudeHandoffName": "StatusStrip",
+      "claudeAllowed": true,
+      "contractDigest": "196f55de7a6f72af37d0f824c1c0bc55f6fe1e57c7803d88243c764a5c75c3de"
     },
     {
       "contractId": "catch.field",

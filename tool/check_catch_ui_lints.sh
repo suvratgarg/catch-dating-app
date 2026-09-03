@@ -651,3 +651,162 @@ expect_code_count \
   "test reliability seeded violations" \
   "catch_no_async_flush_hack" \
   1
+
+# The feedback rule must resolve framework identities across every app root,
+# including core widgets (no broad primitive exemption), aliases and tear-offs.
+for feedback_scope in \
+  "lib/hosts/presentation/feedback_probe.dart" \
+  "apps/consumer/lib/feedback_probe.dart" \
+  "apps/host/lib/feedback_probe.dart" \
+  "lib/core/widgets/feedback_probe.dart"; do
+  probe_path="$probe_root/$feedback_scope"
+  run_analyze_probe "resolved feedback $feedback_scope" <<'DART'
+import 'package:flutter/material.dart' as material;
+
+typedef SnackAlias = material.SnackBar;
+
+List<Object> rawFeedback(material.BuildContext context) {
+  final snack = material.SnackBar(content: const material.SizedBox.shrink());
+  final alias = SnackAlias(content: const material.SizedBox.shrink());
+  final banner = material.MaterialBanner(
+    content: const material.SizedBox.shrink(),
+    actions: const [material.SizedBox.shrink()],
+  );
+  final makeSnack = material.SnackBar.new;
+  final makeBanner = material.MaterialBanner.new;
+  final messenger = material.ScaffoldMessenger.of(context);
+  messenger.showSnackBar(snack);
+  messenger.showMaterialBanner(banner);
+  final publishSnack = messenger.showSnackBar;
+  final publishBanner = material.ScaffoldMessenger.of(context).showMaterialBanner;
+  return [alias, makeSnack, makeBanner, publishSnack, publishBanner];
+}
+DART
+  expect_code_count "resolved feedback $feedback_scope" "catch_use_canonical_feedback" 9
+  if (( $(count_code "catch_use_canonical_feedback") != 9 )); then
+    echo "Feedback probe must report exactly its nine distinct violations." >&2
+    echo "$probe_output" >&2
+    exit 1
+  fi
+  run_analyze_probe "status placement $feedback_scope" <<'DART'
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart' as ui;
+typedef StripAlias = ui.CatchStatusStrip;
+List<Object> forbiddenPlacement() => [
+  const ui.CatchStatusStrip(statuses: []),
+  const StripAlias(statuses: []),
+  ui.CatchStatusStrip.new,
+];
+DART
+  expect_code_count "status placement $feedback_scope" "catch_status_strip_is_layout_owned" 3
+  if (( $(count_code "catch_status_strip_is_layout_owned") != 3 )); then
+    echo "Status placement probe must report exactly three violations." >&2
+    echo "$probe_output" >&2
+    exit 1
+  fi
+  run_analyze_probe "arrival placement $feedback_scope" <<'DART'
+import 'package:catch_dating_app/core/widgets/catch_notice.dart' as ui;
+import 'package:firebase_messaging/firebase_messaging.dart' as fcm;
+import 'package:flutter/widgets.dart';
+typedef NoticeHostAlias = ui.CatchNoticeHost;
+List<Object> forbiddenArrivals() => [
+  const ui.CatchNoticeHost(child: SizedBox()),
+  const NoticeHostAlias(child: SizedBox()),
+  ui.CatchNoticeHost.new,
+  fcm.FirebaseMessaging.onMessage,
+];
+DART
+  expect_code_count "arrival placement $feedback_scope" "catch_notice_host_is_app_owned" 3
+  expect_code_count "arrival delivery $feedback_scope" "catch_notification_delivery_is_service_owned" 1
+done
+
+probe_path="$probe_root/lib/app.dart"
+run_analyze_probe "global arrival host owner" <<'DART'
+import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:flutter/widgets.dart';
+final host = CatchNoticeHost(child: const SizedBox());
+DART
+if (( $(count_code "catch_notice_host_is_app_owned") != 0 )); then
+  echo "App-level notice host must remain permitted." >&2
+  exit 1
+fi
+
+probe_path="$probe_root/lib/core/fcm_service.dart"
+run_analyze_probe "foreground transport owner" <<'DART'
+import 'package:firebase_messaging/firebase_messaging.dart';
+final foreground = FirebaseMessaging.onMessage;
+DART
+if (( $(count_code "catch_notification_delivery_is_service_owned") != 0 )); then
+  echo "FCM service must own foreground delivery." >&2
+  exit 1
+fi
+
+for status_owner in catch_screen_scaffold catch_tabbed_screen catch_route_scaffold; do
+  probe_path="$probe_root/lib/core/widgets/$status_owner.dart"
+  run_analyze_probe "status owner $status_owner" <<'DART'
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
+final status = CatchStatusStrip(statuses: const []);
+DART
+  if (( $(count_code "catch_status_strip_is_layout_owned") != 0 )); then
+    echo "Canonical status layout owner must be permitted." >&2
+    echo "$probe_output" >&2
+    exit 1
+  fi
+done
+
+probe_path="$probe_root/lib/core/widgets/catch_error_snackbar.dart"
+run_analyze_probe "canonical feedback owner" <<'DART'
+import 'package:flutter/material.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
+
+final misplaced = CatchStatusStrip(statuses: const []);
+
+void owner(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: SizedBox.shrink()),
+  );
+}
+DART
+if (( $(count_code "catch_use_canonical_feedback") != 0 )); then
+  echo "The canonical feedback owner must remain permitted." >&2
+  echo "$probe_output" >&2
+  exit 1
+fi
+expect_code_count "feedback owner is not a status layout" "catch_status_strip_is_layout_owned" 1
+
+probe_path="$probe_root/lib/consumer/presentation/feedback_probe.dart"
+run_analyze_probe "canonical API and same-name non-framework symbols" <<'DART'
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:flutter/material.dart' as material;
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart' as ui;
+
+class SnackBar {}
+class MaterialBanner {}
+class CatchStatusStrip {}
+class ScaffoldMessengerState {
+  void showSnackBar(Object notice) {}
+  void showMaterialBanner(Object notice) {}
+}
+
+List<Object> allowedFeedback(material.BuildContext context) {
+  showCatchSnackBar(context, 'Saved');
+  showCatchErrorSnackBar(context, StateError('example'));
+  final messenger = ScaffoldMessengerState();
+  messenger.showSnackBar(SnackBar());
+  messenger.showMaterialBanner(MaterialBanner());
+  return [
+    SnackBar.new, MaterialBanner.new, messenger.showSnackBar,
+    CatchStatusStrip(), CatchStatusStrip.new,
+    const ui.CatchStatusStripScope(statuses: [], child: material.SizedBox()),
+  ];
+}
+DART
+if (( $(count_code "catch_use_canonical_feedback") != 0 )); then
+  echo "Feedback lint must not flag canonical APIs or unrelated same-name symbols." >&2
+  echo "$probe_output" >&2
+  exit 1
+fi
+if (( $(count_code "catch_status_strip_is_layout_owned") != 0 )); then
+  echo "Status lint must permit typed context publication and unrelated same-name symbols." >&2
+  echo "$probe_output" >&2
+  exit 1
+fi

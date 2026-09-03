@@ -6989,6 +6989,18 @@ abstract class AppLocalizations {
   /// **'{label}, optional'**
   String coreCatchFormFieldLabelLabelLabelOptional({required Object label});
 
+  /// Fallback title for a foreground match arrival when the server supplies no title.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'\'s a catch'**
+  String get notificationArrivalMatchTitle;
+
+  /// Fallback title for a foreground message arrival when the server supplies no title.
+  ///
+  /// In en, this message translates to:
+  /// **'New message'**
+  String get notificationArrivalMessageTitle;
+
   /// Product copy used by lib/core/widgets/catch_notice.dart (tooltip).
   ///
   /// In en, this message translates to:
