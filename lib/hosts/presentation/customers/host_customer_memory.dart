@@ -22,6 +22,36 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+class HostCustomerMemoryPreview extends StatelessWidget {
+  const HostCustomerMemoryPreview({
+    super.key,
+    required this.customer,
+    required this.onOpenMemory,
+  });
+
+  final HostAudienceContactDetail customer;
+  final VoidCallback onOpenMemory;
+
+  @override
+  Widget build(BuildContext context) => CatchSection.fieldRows(
+    key: const ValueKey('host-customer-memory-preview'),
+    title: context.l10n.hostCustomersMemory,
+    children: [
+      CatchField.content(
+        title: customer.manualTags.isEmpty
+            ? context.l10n.hostCustomersNotes
+            : customer.manualTags.map((tag) => tag.label).join(' · '),
+        body:
+            customer.notes.firstOrNull?.body ??
+            context.l10n.hostCustomersNoNotes,
+        titleMaxLines: 3,
+        icon: CatchIcons.editNoteOutlined,
+        onTap: onOpenMemory,
+      ),
+    ],
+  );
+}
+
 class HostCustomerMemorySection extends StatelessWidget {
   const HostCustomerMemorySection({
     super.key,

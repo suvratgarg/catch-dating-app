@@ -30239,6 +30239,13 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const listOrganizerApplicationsCallablePayloadContactId = CatchContractFieldConstraints(
+    path: 'listOrganizerApplicationsCallablePayload.contactId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const listOrganizerApplicationsCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'listOrganizerApplicationsCallablePayload.cursor',
     maxLength: 1000,
@@ -66060,6 +66067,7 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
     'joinWaitlistHTTPResponse.error': joinWaitlistHTTPResponseError,
     'joinWaitlistHTTPResponse.ok': joinWaitlistHTTPResponseOk,
+    'listOrganizerApplicationsCallablePayload.contactId': listOrganizerApplicationsCallablePayloadContactId,
     'listOrganizerApplicationsCallablePayload.cursor': listOrganizerApplicationsCallablePayloadCursor,
     'listOrganizerApplicationsCallablePayload.formId': listOrganizerApplicationsCallablePayloadFormId,
     'listOrganizerApplicationsCallablePayload.limit': listOrganizerApplicationsCallablePayloadLimit,

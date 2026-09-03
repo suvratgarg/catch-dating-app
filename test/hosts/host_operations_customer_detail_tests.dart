@@ -507,7 +507,7 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.byType(CatchSkeletonized), findsOneWidget);
     expect(find.byType(CatchSkeletonRows), findsNothing);
     expect(find.byType(HostCustomerIdentityCard), findsOneWidget);
-    expect(find.byType(HostCustomerMemorySection), findsOneWidget);
+    expect(find.byType(HostCustomerMemoryPreview), findsOneWidget);
     expect(find.byType(HostCustomerAttendanceCard), findsOneWidget);
     expect(find.byType(HostCustomerReachSection), findsOneWidget);
     expect(find.byType(HostCustomerRecentEvents), findsOneWidget);

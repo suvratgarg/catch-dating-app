@@ -22091,7 +22091,7 @@ abstract class AppLocalizations {
   /// Unified customer revenue heading with explicit provenance.
   ///
   /// In en, this message translates to:
-  /// **'Revenue'**
+  /// **'Recorded spend'**
   String get hostCustomersDetailRevenue;
 
   /// Zero unified customer revenue state.
@@ -22115,7 +22115,7 @@ abstract class AppLocalizations {
   /// Number of payment, imported, provider, or estimated facts for one currency.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 revenue fact} other{{count} revenue facts}}'**
+  /// **'{count, plural, =1{1 spend record} other{{count} spend records}}'**
   String hostCustomersDetailRevenueFacts({required int count});
 
   /// Catch-completed payment provenance label.
@@ -27075,6 +27075,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Needs attention'**
   String get eventSuccessRoomWorkspaceNeedsAttention;
+
+  /// Customer record details tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get hostCustomersDetails;
+
+  /// Customer contact methods section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact methods'**
+  String get hostCustomersContactMethods;
+
+  /// Customer submitted information section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Form responses'**
+  String get hostCustomersSubmittedInformation;
+
+  /// Empty customer submitted information state.
+  ///
+  /// In en, this message translates to:
+  /// **'No form responses appear in the loaded history.'**
+  String get hostCustomersNoSubmittedInformation;
+
+  /// Action summary for opening a linked form response.
+  ///
+  /// In en, this message translates to:
+  /// **'View {count, plural, =1{1 answer} other{{count} answers}}'**
+  String hostCustomersViewAnswers({required int count});
+
+  /// Customer-specific application list empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No applications are linked to this customer.'**
+  String get hostCustomersNoApplications;
+
+  /// Heading for a dated application answer preview on customer details.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest submitted details'**
+  String get hostCustomersLatestSubmittedDetails;
+
+  /// Source attribution for customer submitted details.
+  ///
+  /// In en, this message translates to:
+  /// **'From the application submitted {date}. Open the application for all answers and their context.'**
+  String hostCustomersSubmittedOn({required String date});
+
+  /// Unfiltered customer history selection.
+  ///
+  /// In en, this message translates to:
+  /// **'All activity'**
+  String get hostCustomersAllActivity;
+
+  /// Customer communication history filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get hostCustomersMessageHistory;
+
+  /// Open customer recorded spend breakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'View breakdown'**
+  String get hostCustomersViewBreakdown;
+
+  /// Customer spending grouped by event.
+  ///
+  /// In en, this message translates to:
+  /// **'By event'**
+  String get hostCustomersSpendByEvent;
+
+  /// Revenue allocated to a shared order rather than one attendee.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared order'**
+  String get hostCustomersSharedOrder;
+
+  /// Event-level spending evidence is unavailable despite a recorded aggregate.
+  ///
+  /// In en, this message translates to:
+  /// **'No event breakdown is available for these recorded totals.'**
+  String get hostCustomersSpendBreakdownUnavailable;
+
+  /// Navigate from customer details to the complete application and review.
+  ///
+  /// In en, this message translates to:
+  /// **'Open application'**
+  String get hostCustomersOpenApplication;
+
+  /// Explains an application snapshot with no accessible answers.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted answers are unavailable. Open the application to review its status.'**
+  String get hostCustomersSubmittedAnswersUnavailable;
 }
 
 class _AppLocalizationsDelegate

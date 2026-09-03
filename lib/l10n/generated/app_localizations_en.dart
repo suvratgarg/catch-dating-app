@@ -14172,7 +14172,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersAttendanceRate => 'Attendance rate';
 
   @override
-  String get hostCustomersDetailRevenue => 'Revenue';
+  String get hostCustomersDetailRevenue => 'Recorded spend';
 
   @override
   String get hostCustomersDetailNoRevenue =>
@@ -14191,8 +14191,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count revenue facts',
-      one: '1 revenue fact',
+      other: '$count spend records',
+      one: '1 spend record',
     );
     return '$_temp0';
   }
@@ -17206,4 +17206,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessRoomWorkspaceNeedsAttention => 'Needs attention';
+
+  @override
+  String get hostCustomersDetails => 'Details';
+
+  @override
+  String get hostCustomersContactMethods => 'Contact methods';
+
+  @override
+  String get hostCustomersSubmittedInformation => 'Form responses';
+
+  @override
+  String get hostCustomersNoSubmittedInformation =>
+      'No form responses appear in the loaded history.';
+
+  @override
+  String hostCustomersViewAnswers({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count answers',
+      one: '1 answer',
+    );
+    return 'View $_temp0';
+  }
+
+  @override
+  String get hostCustomersNoApplications =>
+      'No applications are linked to this customer.';
+
+  @override
+  String get hostCustomersLatestSubmittedDetails => 'Latest submitted details';
+
+  @override
+  String hostCustomersSubmittedOn({required String date}) {
+    return 'From the application submitted $date. Open the application for all answers and their context.';
+  }
+
+  @override
+  String get hostCustomersAllActivity => 'All activity';
+
+  @override
+  String get hostCustomersMessageHistory => 'Messages';
+
+  @override
+  String get hostCustomersViewBreakdown => 'View breakdown';
+
+  @override
+  String get hostCustomersSpendByEvent => 'By event';
+
+  @override
+  String get hostCustomersSharedOrder => 'Shared order';
+
+  @override
+  String get hostCustomersSpendBreakdownUnavailable =>
+      'No event breakdown is available for these recorded totals.';
+
+  @override
+  String get hostCustomersOpenApplication => 'Open application';
+
+  @override
+  String get hostCustomersSubmittedAnswersUnavailable =>
+      'Submitted answers are unavailable. Open the application to review its status.';
 }

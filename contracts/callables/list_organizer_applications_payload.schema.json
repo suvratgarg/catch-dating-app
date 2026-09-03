@@ -8,6 +8,7 @@
   "required": ["organizerId"],
   "properties": {
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "contactId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180, "description": "Restrict to this organizer customer through an explicit contact link or verified account identity. Never matches raw phone or email."},
     "formId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
     "targetId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
     "reviewStatus": {"type": ["string", "null"], "enum": [null, "submitted", "inReview", "approved", "waitlisted", "declined", "withdrawn"]},

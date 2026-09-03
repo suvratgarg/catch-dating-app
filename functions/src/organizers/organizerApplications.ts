@@ -32,6 +32,7 @@ import {
   OrganizerApplicationFormVersionDocument,
   OrganizerApplicationImportReceiptDocument,
   OrganizerApplicationResponseDocument,
+  OrganizerContactDocument,
   ParticipantOrganizerDataGrantDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
@@ -511,9 +512,24 @@ export async function listOrganizerApplicationsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listOrganizerApplications");
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  const baseQuery = db.collection("organizerApplications")
-    .where("organizerId", "==", data.organizerId)
-    .orderBy(admin.firestore.FieldPath.documentId());
+  let scopedQuery = db.collection("organizerApplications")
+    .where("organizerId", "==", data.organizerId);
+  if (data.contactId) {
+    const contact = (await db.collection("organizerContacts")
+      .doc(data.contactId).get()).data() as
+      OrganizerContactDocument | undefined;
+    const linkedUid = customerApplicationAccountUid(contact, data.organizerId);
+    const relation = admin.firestore.Filter.where(
+      "contactId", "==", data.contactId
+    );
+    scopedQuery = scopedQuery.where(
+      linkedUid ?
+        admin.firestore.Filter.or(relation, admin.firestore.Filter.where(
+          "linkedUid", "==", linkedUid
+        )) : relation
+    );
+  }
+  const baseQuery = scopedQuery.orderBy(admin.firestore.FieldPath.documentId());
   const snapshot = await baseQuery.limit(maxListScan).get();
   if (snapshot.size === maxListScan) {
     const overflow = await baseQuery
@@ -563,7 +579,9 @@ export async function listOrganizerApplicationsHandler(
     return !query || row.data.applicantDisplayNameNormalized.includes(query);
   });
   rows.sort(applicationComparator(data.sort ?? "newest"));
-  const offset = decodeCursor(data.cursor ?? null, data.organizerId);
+  const cursorScope = data.contactId ?
+    `${data.organizerId}|${data.contactId}` : data.organizerId;
+  const offset = decodeCursor(data.cursor ?? null, cursorScope);
   const limit = data.limit ?? defaultPageSize;
   const page = rows.slice(offset, offset + limit);
   const nextOffset = offset + page.length;
@@ -584,8 +602,23 @@ export async function listOrganizerApplicationsHandler(
       revision: row.data.revision,
     })),
     nextCursor: nextOffset < rows.length ?
-      encodeCursor(data.organizerId, nextOffset) : null,
+      encodeCursor(cursorScope, nextOffset) : null,
   };
+}
+
+/** Identity may locate an application; its grant still controls its answers. */
+export function customerApplicationAccountUid(
+  contact: Pick<OrganizerContactDocument,
+    "organizerId" | "deletedAt" | "hiddenAt" | "identityState" |
+    "linkedUid"> | undefined,
+  organizerId: string
+): string | null {
+  if (!contact || contact.organizerId !== organizerId ||
+      contact.deletedAt !== null || contact.hiddenAt != null ||
+      contact.identityState === "merged") {
+    throw new HttpsError("not-found", "Customer not found.");
+  }
+  return contact.identityState === "verified" ? contact.linkedUid : null;
 }
 
 /** Gets one manager-visible application answer snapshot. */
@@ -1383,6 +1416,7 @@ function normalizeListPayload(value: unknown): unknown {
   return {
     ...value,
     organizerId: normalizedString(value.organizerId),
+    contactId: normalizedNullableString(value.contactId),
     formId: normalizedNullableString(value.formId),
     targetId: normalizedNullableString(value.targetId),
     query: normalizedNullableString(value.query),

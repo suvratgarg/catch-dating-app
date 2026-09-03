@@ -7,6 +7,10 @@
  */
 export interface ListOrganizerApplicationsCallablePayload {
   organizerId: string;
+  /**
+   * Restrict to this organizer customer through an explicit contact link or verified account identity. Never matches raw phone or email.
+   */
+  contactId?: string | null;
   formId?: string | null;
   targetId?: string | null;
   reviewStatus?:

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -239,6 +240,61 @@ String _originLabel(BuildContext context, HostCustomerOrigin origin) =>
         ),
     };
 
+enum HostCustomerHistoryKind { all, forms, events, messages }
+
+class HostCustomerHistoryFilters extends StatefulWidget {
+  const HostCustomerHistoryFilters({super.key, required this.builder});
+
+  final Widget Function(HostCustomerHistoryKind filter) builder;
+
+  @override
+  State<HostCustomerHistoryFilters> createState() =>
+      _HostCustomerHistoryFiltersState();
+}
+
+class _HostCustomerHistoryFiltersState
+    extends State<HostCustomerHistoryFilters> {
+  HostCustomerHistoryKind selected = HostCustomerHistoryKind.all;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: CatchAdaptiveSelectionControl<HostCustomerHistoryKind>(
+          title: context.l10n.hostCustomersTimeline,
+          tooltip: context.l10n.hostCustomersTimeline,
+          buttonKey: const ValueKey('host-customer-history-filter'),
+          value: selected,
+          triggerLabel: (item) => item.label,
+          onSelected: (value) => setState(() => selected = value),
+          items: [
+            CatchSelectionMenuItem(
+              value: HostCustomerHistoryKind.all,
+              label: context.l10n.hostCustomersAllActivity,
+            ),
+            CatchSelectionMenuItem(
+              value: HostCustomerHistoryKind.forms,
+              label: context.l10n.hostFormsViewForms,
+            ),
+            CatchSelectionMenuItem(
+              value: HostCustomerHistoryKind.events,
+              label: context.l10n.hostNavigationEvents,
+            ),
+            CatchSelectionMenuItem(
+              value: HostCustomerHistoryKind.messages,
+              label: context.l10n.hostCustomersMessageHistory,
+            ),
+          ],
+        ),
+      ),
+      gapH16,
+      widget.builder(selected),
+    ],
+  );
+}
+
 class HostCustomerTimelineSection extends StatelessWidget {
   const HostCustomerTimelineSection({
     super.key,
@@ -247,6 +303,7 @@ class HostCustomerTimelineSection extends StatelessWidget {
     required this.onOpenEvent,
     required this.onOpenCatchThread,
     required this.onOpenWhatsappThread,
+    this.filter = HostCustomerHistoryKind.all,
   });
 
   final HostAudienceContactDetail customer;
@@ -254,10 +311,24 @@ class HostCustomerTimelineSection extends StatelessWidget {
   final ValueChanged<String> onOpenEvent;
   final ValueChanged<String> onOpenCatchThread;
   final ValueChanged<String> onOpenWhatsappThread;
+  final HostCustomerHistoryKind filter;
 
   @override
   Widget build(BuildContext context) {
-    final entries = customer.timeline;
+    final entries = customer.timeline
+        .where(
+          (entry) => switch (filter) {
+            HostCustomerHistoryKind.all => true,
+            HostCustomerHistoryKind.forms =>
+              entry is HostCustomerFormTimelineEntry,
+            HostCustomerHistoryKind.events =>
+              entry is HostCustomerEventTimelineEntry,
+            HostCustomerHistoryKind.messages =>
+              entry is HostCustomerSendTimelineEntry ||
+                  entry is HostCustomerReplyTimelineEntry,
+          },
+        )
+        .toList(growable: false);
     final hasGap =
         customer.timelineTruncated ||
         customer.timelineCoverage.forms !=

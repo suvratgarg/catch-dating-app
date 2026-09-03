@@ -1197,6 +1197,16 @@ messaging permission: WhatsApp/SMS opt-in remains
 exclusively in `organizerCommunicationPreferences`, and an application grant
 cannot create or broaden it.
 
+Customer Details can pass `contactId` to `listOrganizerApplications`. The
+callable validates the contact's organizer and availability, then selects
+explicit application/contact links plus account links only when the customer
+identity is verified. It never matches names or raw phone/email values. The
+customer scope is included in its pagination cursor. Listing an application
+does not bypass its existing grant checks: the customer page reads the same
+permission-filtered detail projection and presents answers as a dated
+submission, without copying them into editable CRM fields. Approval still
+changes review state only; it does not implicitly create a customer.
+
 The provider-neutral import runtime accepts locally decoded CSV/XLSX tables, requires an
 explicit mapping for every source column, imports at most 200 rows atomically,
 and records a hash-bound idempotent receipt in

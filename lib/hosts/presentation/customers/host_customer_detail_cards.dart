@@ -14,6 +14,7 @@ class HostCustomerIdentityCard extends StatefulWidget {
     required this.onSave,
     this.initiallyEditing = false,
     this.showName = true,
+    this.showContacts = true,
     this.primaryAction,
   });
 
@@ -21,6 +22,7 @@ class HostCustomerIdentityCard extends StatefulWidget {
   final HostCustomerDetailsSaveCallback onSave;
   final bool initiallyEditing;
   final bool showName;
+  final bool showContacts;
   final Widget? primaryAction;
 
   @override
@@ -162,6 +164,7 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
                 onEdit: _beginEditing,
                 primaryAction: widget.primaryAction,
                 showName: widget.showName,
+                showContacts: widget.showContacts,
               ),
             ),
     );
@@ -268,6 +271,7 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
     required this.emailPlaceholder,
     required this.onEdit,
     required this.showName,
+    required this.showContacts,
     this.primaryAction,
   });
 
@@ -279,6 +283,7 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
   final String emailPlaceholder;
   final VoidCallback onEdit;
   final bool showName;
+  final bool showContacts;
   final Widget? primaryAction;
 
   @override
@@ -344,18 +349,20 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
             ?primaryAction,
           ],
         ),
-        gapH4,
-        Text(
-          phoneE164 ?? phonePlaceholder,
-          key: const ValueKey('host-customer-phone-summary'),
-          style: HostCustomerTypography.body(context),
-        ),
-        gapH4,
-        Text(
-          email ?? emailPlaceholder,
-          key: const ValueKey('host-customer-email-summary'),
-          style: HostCustomerTypography.body(context),
-        ),
+        if (showContacts) ...[
+          gapH4,
+          Text(
+            phoneE164 ?? phonePlaceholder,
+            key: const ValueKey('host-customer-phone-summary'),
+            style: HostCustomerTypography.body(context),
+          ),
+          gapH4,
+          Text(
+            email ?? emailPlaceholder,
+            key: const ValueKey('host-customer-email-summary'),
+            style: HostCustomerTypography.body(context),
+          ),
+        ],
       ],
     );
     if (usesLargeText) {
@@ -468,6 +475,117 @@ class HostCustomerAttendanceCard extends StatelessWidget {
   }
 }
 
+class HostCustomerDetailsSection extends StatelessWidget {
+  const HostCustomerDetailsSection({
+    super.key,
+    required this.customer,
+    required this.onCall,
+    required this.onEmail,
+    required this.onOpenFormResponse,
+  });
+
+  final HostAudienceContactDetail customer;
+  final VoidCallback? onCall;
+  final VoidCallback? onEmail;
+  final ValueChanged<String> onOpenFormResponse;
+
+  @override
+  Widget build(BuildContext context) {
+    final forms = <String, HostCustomerFormTimelineEntry>{};
+    for (final entry
+        in customer.timeline.whereType<HostCustomerFormTimelineEntry>()) {
+      final prior = forms[entry.responseId];
+      if (prior == null || entry.occurredAt.isAfter(prior.occurredAt)) {
+        forms[entry.responseId] = entry;
+      }
+    }
+    final formRows = forms.values.toList()
+      ..sort((a, b) => b.occurredAt.compareTo(a.occurredAt));
+    final endpointContext = customer.contactDetailsEditable
+        ? context.l10n.hostCustomersUnverifiedContactDetails
+        : context.l10n.hostCustomersVerifiedDetailsManagedByCatch;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CatchSection.fieldRows(
+          key: const ValueKey('host-customer-contact-methods'),
+          title: context.l10n.hostCustomersContactMethods,
+          footer: Text(
+            endpointContext,
+            style: HostCustomerTypography.context(context),
+          ),
+          children: [
+            if (customer.phoneE164 case final phone?)
+              CatchField.action(
+                key: const ValueKey('host-customer-call'),
+                title: context.l10n.hostCustomersPhone,
+                body: phone,
+                icon: CatchIcons.phoneOutlined,
+                onTap: onCall,
+              ),
+            if (customer.email case final email?)
+              CatchField.action(
+                key: const ValueKey('host-customer-email'),
+                title: context.l10n.hostCustomersEmail,
+                body: email,
+                icon: CatchIcons.emailOutlined,
+                onTap: onEmail,
+              ),
+          ],
+        ),
+        gapH24,
+        CatchSection.fieldRows(
+          key: const ValueKey('host-customer-submitted-information'),
+          title: context.l10n.hostCustomersSubmittedInformation,
+          footer:
+              customer.timelineCoverage.forms !=
+                      HostCustomerTimelineCoverageValue.exact ||
+                  customer.timelineTruncated
+              ? Text(
+                  context.l10n.hostCustomersTimelinePartialBody,
+                  style: HostCustomerTypography.context(context),
+                )
+              : null,
+          children: formRows.isEmpty
+              ? [
+                  CatchField.read(
+                    body: context.l10n.hostCustomersNoSubmittedInformation,
+                    icon: CatchIcons.tabForms,
+                  ),
+                ]
+              : [
+                  for (final entry in formRows)
+                    CatchField.content(
+                      key: ValueKey(
+                        'host-customer-submission-${entry.responseId}',
+                      ),
+                      title:
+                          entry.formTitle ??
+                          context.l10n.hostCustomersTimelineFormFallback,
+                      body:
+                          entry.action ==
+                              HostCustomerFormTimelineAction.withdrawn
+                          ? context.l10n.hostCustomersTimelineFormWithdrawn(
+                              date: AppTimeFormatters.shortDate(
+                                entry.occurredAt,
+                              ),
+                            )
+                          : [
+                              context.l10n.hostCustomersViewAnswers(
+                                count: entry.answeredQuestionCount,
+                              ),
+                              AppTimeFormatters.shortDate(entry.occurredAt),
+                            ].join(' · '),
+                      icon: CatchIcons.tabForms,
+                      onTap: () => onOpenFormResponse(entry.responseId),
+                    ),
+                ],
+        ),
+      ],
+    );
+  }
+}
+
 class HostCustomerRecentEvents extends StatelessWidget {
   const HostCustomerRecentEvents({
     super.key,
@@ -549,9 +667,14 @@ class HostCustomerRecentEvents extends StatelessWidget {
 }
 
 class HostCustomerRevenueCard extends StatelessWidget {
-  const HostCustomerRevenueCard({super.key, required this.revenue});
+  const HostCustomerRevenueCard({
+    super.key,
+    required this.revenue,
+    this.onOpen,
+  });
 
   final HostCustomerRevenue revenue;
+  final VoidCallback? onOpen;
 
   @override
   Widget build(BuildContext context) => CatchSection.plain(
@@ -570,28 +693,50 @@ class HostCustomerRevenueCard extends StatelessWidget {
             style: CatchTextStyles.supporting(context),
           )
         else
-          CatchFieldLanes.divided(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               for (final amount in revenue.amounts)
-                CatchField.read(
-                  title: NumberFormat.simpleCurrency(
-                    name: amount.currency,
-                  ).format(amount.amountMinor / 100),
-                  body: [
-                    context.l10n.hostCustomersDetailRevenueFacts(
-                      count: amount.factCount,
-                    ),
-                    ...amount.sources.map(
-                      (source) => _customerRevenueSourceSummary(
-                        context,
-                        source,
-                        amount.currency,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        NumberFormat.simpleCurrency(
+                          name: amount.currency,
+                        ).format(amount.amountMinor / 100),
+                        style: HostCustomerTypography.metric(context),
                       ),
-                    ),
-                  ].join(' · '),
-                  valueText: amount.currency,
+                      gapH4,
+                      Text(
+                        '${amount.currency} · ${context.l10n.hostCustomersDetailRevenueFacts(count: amount.factCount)}',
+                        style: HostCustomerTypography.secondary(context),
+                      ),
+                      for (final source in amount.sources) ...[
+                        gapH4,
+                        Text(
+                          _customerRevenueSourceSummary(
+                            context,
+                            source,
+                            amount.currency,
+                          ),
+                          style: HostCustomerTypography.context(context),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
             ],
+          ),
+        if (onOpen != null)
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: CatchTextButton(
+              key: const ValueKey('host-customer-revenue-breakdown'),
+              label: context.l10n.hostCustomersViewBreakdown,
+              onPressed: onOpen,
+            ),
           ),
         if (revenue.coverage == HostCustomerRevenueCoverage.partial) ...[
           gapH12,
@@ -604,6 +749,56 @@ class HostCustomerRevenueCard extends StatelessWidget {
             ),
           ),
         ],
+      ],
+    ),
+  );
+}
+
+class HostCustomerRevenueBreakdown extends StatelessWidget {
+  const HostCustomerRevenueBreakdown({
+    super.key,
+    required this.customer,
+    required this.onOpenEvent,
+  });
+
+  final HostAudienceContactDetail customer;
+  final ValueChanged<String> onOpenEvent;
+
+  @override
+  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+    title: context.l10n.hostCustomersDetailRevenue,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        HostCustomerRevenueCard(revenue: customer.revenue),
+        gapH24,
+        CatchSection.fieldRows(
+          title: context.l10n.hostCustomersSpendByEvent,
+          children: [
+            if (!customer.events.any((event) => event.revenues.isNotEmpty))
+              CatchField.read(
+                body: context.l10n.hostCustomersSpendBreakdownUnavailable,
+              ),
+            for (final event in customer.events.where(
+              (event) => event.revenues.isNotEmpty,
+            ))
+              for (final amount in event.revenues)
+                CatchField.nav(
+                  title: event.displayName,
+                  body: [
+                    NumberFormat.simpleCurrency(
+                      name: amount.currency,
+                    ).format(amount.amountMinor / 100),
+                    _customerRevenueSourceLabel(context, amount.source),
+                    if (amount.allocation ==
+                        HostCustomerRevenueAllocation.sharedOrder)
+                      context.l10n.hostCustomersSharedOrder,
+                  ].join(' · '),
+                  bodyMaxLines: 6,
+                  onTap: () => onOpenEvent(event.eventId),
+                ),
+          ],
+        ),
       ],
     ),
   );

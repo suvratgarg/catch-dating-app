@@ -37,6 +37,7 @@ enum HostApplicationSort {
 class HostApplicationListRequest {
   const HostApplicationListRequest({
     required this.organizerId,
+    this.contactId,
     this.formId,
     this.targetId,
     this.reviewStatus,
@@ -46,6 +47,7 @@ class HostApplicationListRequest {
   });
 
   final String organizerId;
+  final String? contactId;
   final String? formId;
   final String? targetId;
   final HostApplicationReviewStatus? reviewStatus;
@@ -56,6 +58,7 @@ class HostApplicationListRequest {
   HostApplicationListRequest copyWith({String? cursor}) =>
       HostApplicationListRequest(
         organizerId: organizerId,
+        contactId: contactId,
         formId: formId,
         targetId: targetId,
         reviewStatus: reviewStatus,
@@ -68,6 +71,7 @@ class HostApplicationListRequest {
   bool operator ==(Object other) =>
       other is HostApplicationListRequest &&
       other.organizerId == organizerId &&
+      other.contactId == contactId &&
       other.formId == formId &&
       other.targetId == targetId &&
       other.reviewStatus == reviewStatus &&
@@ -78,6 +82,7 @@ class HostApplicationListRequest {
   @override
   int get hashCode => Object.hash(
     organizerId,
+    contactId,
     formId,
     targetId,
     reviewStatus,
@@ -503,6 +508,7 @@ class HostApplicationRepository {
     name: 'listOrganizerApplications',
     payload: ListOrganizerApplicationsCallableRequest(
       organizerId: request.organizerId,
+      contactId: request.contactId,
       formId: request.formId,
       targetId: request.targetId,
       reviewStatus: request.reviewStatus?.name,

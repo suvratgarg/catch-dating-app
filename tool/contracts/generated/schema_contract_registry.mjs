@@ -85113,6 +85113,15 @@ export const listOrganizerApplicationsCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 180
     },
+    "contactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Restrict to this organizer customer through an explicit contact link or verified account identity. Never matches raw phone or email."
+    },
     "formId": {
       "type": [
         "string",

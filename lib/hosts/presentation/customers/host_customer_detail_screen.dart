@@ -23,6 +23,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tabs.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
@@ -35,6 +36,8 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+part 'host_customer_detail_body.dart';
 
 class HostCustomerDetailScreen extends ConsumerStatefulWidget {
   const HostCustomerDetailScreen({
@@ -158,6 +161,11 @@ class _HostCustomerDetailScreenState
               onRetryCommunicationPlan: _noop,
               onMessagingEnabledChanged: (_) {},
               onOpenFormResponse: (_) {},
+              onCall: null,
+              onEmail: null,
+              onOpenApplication: (_) {},
+              onOpenContact: (_) {},
+              onOpenRevenue: _noop,
               onOpenEvent: (_) {},
               onOpenCatchThread: (_) {},
               onOpenWhatsappThread: (_) {},
@@ -206,6 +214,19 @@ class _HostCustomerDetailScreenState
             onMessagingEnabledChanged: (enabled) =>
                 _setMessagingEnabled(customer, enabled),
             onOpenFormResponse: _openFormResponse,
+            onOpenApplication: _openApplication,
+            onOpenContact: _openCustomerContact,
+            onOpenRevenue: () => _openRevenue(customer),
+            onCall: customer.phoneE164 == null
+                ? null
+                : () => _openCustomerContact(
+                    Uri(scheme: 'tel', path: customer.phoneE164),
+                  ),
+            onEmail: customer.email == null
+                ? null
+                : () => _openCustomerContact(
+                    Uri(scheme: 'mailto', path: customer.email),
+                  ),
             onOpenEvent: _openEvent,
             onOpenCatchThread: _openCatchThread,
             onOpenWhatsappThread: _openWhatsappThread,
@@ -226,6 +247,18 @@ class _HostCustomerDetailScreenState
     ref.invalidate(hostCustomersDirectoryControllerProvider);
     _refreshDetail();
   }
+
+  Future<void> _openRevenue(HostAudienceContactDetail customer) =>
+      showCatchBottomSheet<void>(
+        context: context,
+        builder: (sheetContext) => HostCustomerRevenueBreakdown(
+          customer: customer,
+          onOpenEvent: (eventId) {
+            Navigator.of(sheetContext).pop();
+            _openEvent(eventId);
+          },
+        ),
+      );
 
   Future<void> _editNote(
     HostAudienceContactDetail customer, {
@@ -416,6 +449,30 @@ class _HostCustomerDetailScreenState
         queryParameters: {'organizerId': widget.organizerId},
       ),
     );
+  }
+
+  void _openApplication(String applicationId) {
+    unawaited(
+      context.pushNamed(
+        Routes.hostApplicationDetailScreen.name,
+        pathParameters: {'applicationId': applicationId},
+        queryParameters: {'organizerId': widget.organizerId},
+      ),
+    );
+  }
+
+  Future<void> _openCustomerContact(Uri uri) async {
+    try {
+      final opened = await ref.read(externalLinkControllerProvider).open(uri);
+      if (!opened && mounted) {
+        showCatchErrorSnackBar(
+          context,
+          StateError('Customer contact method could not be opened.'),
+        );
+      }
+    } on Object catch (error) {
+      if (mounted) showCatchErrorSnackBar(context, error);
+    }
   }
 
   void _openEvent(String eventId) {
@@ -629,206 +686,6 @@ Future<void> _noopSaveCustomerDetails({
   String? phoneE164,
   String? email,
 }) async {}
-
-class HostCustomerDetailBody extends StatelessWidget {
-  const HostCustomerDetailBody({
-    super.key,
-    required this.customer,
-    required this.currentUid,
-    required this.communicationPlan,
-    required this.communicationPlanLoading,
-    required this.communicationPlanFailed,
-    this.messageActionInHeader = false,
-    required this.openingConversation,
-    required this.updatingCustomer,
-    required this.onSaveDetails,
-    required this.onEditTags,
-    required this.onAddNote,
-    required this.onEditNote,
-    required this.onReviewDuplicates,
-    required this.onMessage,
-    required this.onRetryCommunicationPlan,
-    required this.onMessagingEnabledChanged,
-    required this.onOpenFormResponse,
-    required this.onOpenEvent,
-    required this.onOpenCatchThread,
-    required this.onOpenWhatsappThread,
-    required this.onRemove,
-    required this.onUndoMerge,
-  });
-
-  final HostAudienceContactDetail customer;
-  final String? currentUid;
-  final HostCommunicationPlan? communicationPlan;
-  final bool communicationPlanLoading;
-  final bool communicationPlanFailed;
-  final bool messageActionInHeader;
-  final bool openingConversation;
-  final bool updatingCustomer;
-  final HostCustomerDetailsSaveCallback onSaveDetails;
-  final VoidCallback onEditTags;
-  final VoidCallback onAddNote;
-  final ValueChanged<HostCustomerNote> onEditNote;
-  final VoidCallback onReviewDuplicates;
-  final VoidCallback onMessage;
-  final VoidCallback onRetryCommunicationPlan;
-  final ValueChanged<bool> onMessagingEnabledChanged;
-  final ValueChanged<String> onOpenFormResponse;
-  final ValueChanged<String> onOpenEvent;
-  final ValueChanged<String> onOpenCatchThread;
-  final ValueChanged<String> onOpenWhatsappThread;
-  final VoidCallback onRemove;
-  final ValueChanged<HostActiveContactMerge> onUndoMerge;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        HostCustomerIdentityCard(
-          customer: customer,
-          onSave: onSaveDetails,
-          showName: false,
-        ),
-        gapH12,
-        HostCustomerDetailTabs(
-          overview: CatchSectionList(
-            emptyStateOmitted: true,
-            children: [
-              HostCustomerDetailOverview(
-                customer: customer,
-                currentUid: currentUid,
-                onEditTags: onEditTags,
-                onAddNote: onAddNote,
-                onEditNote: onEditNote,
-              ),
-              HostCustomerRecentEvents(
-                customer: customer,
-                onOpenEvent: onOpenEvent,
-              ),
-              HostCustomerReachSection(
-                customer: customer,
-                communicationPlan: communicationPlan,
-                communicationPlanLoading: communicationPlanLoading,
-                communicationPlanFailed: communicationPlanFailed,
-                messageLoading: openingConversation,
-                onMessage: onMessage,
-                onRetryCommunicationPlan: onRetryCommunicationPlan,
-                messageActionInHeader: messageActionInHeader,
-                onMessagingEnabledChanged: updatingCustomer
-                    ? null
-                    : onMessagingEnabledChanged,
-                onReviewDuplicates: customer.ambiguousCandidateCount > 0
-                    ? onReviewDuplicates
-                    : null,
-              ),
-            ],
-          ),
-          memory: CatchSectionList(
-            emptyStateOmitted: true,
-            children: [
-              HostCustomerMemorySection(
-                customer: customer,
-                currentUid: currentUid,
-                onEditTags: onEditTags,
-                onAddNote: onAddNote,
-                onEditNote: onEditNote,
-              ),
-            ],
-          ),
-          history: CatchSectionList(
-            emptyStateOmitted: true,
-            children: [
-              HostCustomerTimelineSection(
-                customer: customer,
-                onOpenFormResponse: onOpenFormResponse,
-                onOpenEvent: onOpenEvent,
-                onOpenCatchThread: onOpenCatchThread,
-                onOpenWhatsappThread: onOpenWhatsappThread,
-              ),
-              HostCustomerRevenueCard(revenue: customer.revenue),
-              if (customer.activeMerges.isNotEmpty)
-                HostCustomerActiveMergesSection(
-                  merges: customer.activeMerges,
-                  onUndo: onUndoMerge,
-                ),
-              CatchSection.fieldRows(
-                key: const ValueKey('host-customer-controls'),
-                title: context.l10n.hostCustomersControls,
-                children: [
-                  CatchField.action(
-                    key: const ValueKey('host-customer-remove'),
-                    title: context.l10n.hostsHostAudienceRemoveAction,
-                    body: context.l10n.hostsHostAudienceRemoveBody,
-                    icon: CatchIcons.deleteOutline,
-                    tone: CatchFieldTone.danger,
-                    onTap: updatingCustomer ? null : onRemove,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class HostCustomerDetailOverview extends StatelessWidget {
-  const HostCustomerDetailOverview({
-    super.key,
-    required this.customer,
-    required this.currentUid,
-    required this.onEditTags,
-    required this.onAddNote,
-    required this.onEditNote,
-  });
-
-  final HostAudienceContactDetail customer;
-  final String? currentUid;
-  final VoidCallback onEditTags;
-  final VoidCallback onAddNote;
-  final ValueChanged<HostCustomerNote> onEditNote;
-
-  @override
-  Widget build(BuildContext context) => ComponentResponsiveBuilder(
-    breakpoint: ComponentBreakpoints.sectionPageTwoColumnBreakpoint,
-    compact: (context) => Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        HostCustomerMemorySection(
-          customer: customer,
-          currentUid: currentUid,
-          onEditTags: onEditTags,
-          onAddNote: onAddNote,
-          onEditNote: onEditNote,
-        ),
-        gapH24,
-        HostCustomerAttendanceCard(customer: customer),
-      ],
-    ),
-    expanded: (context) => Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 3,
-          child: HostCustomerMemorySection(
-            customer: customer,
-            currentUid: currentUid,
-            onEditTags: onEditTags,
-            onAddNote: onAddNote,
-            onEditNote: onEditNote,
-          ),
-        ),
-        gapW24,
-        Expanded(
-          flex: 2,
-          child: HostCustomerAttendanceCard(customer: customer),
-        ),
-      ],
-    ),
-  );
-}
 
 HostAudienceContactDetail _hostCustomerSkeletonDetail({
   required String organizerId,

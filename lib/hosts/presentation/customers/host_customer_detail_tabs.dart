@@ -4,17 +4,19 @@ import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
-enum _HostCustomerDetailView { overview, memory, history }
+enum _HostCustomerDetailView { overview, details, memory, history }
 
 class HostCustomerDetailTabs extends StatefulWidget {
   const HostCustomerDetailTabs({
     super.key,
-    required this.overview,
+    required this.overviewBuilder,
+    required this.details,
     required this.memory,
     required this.history,
   });
 
-  final Widget overview;
+  final Widget Function(VoidCallback openMemory) overviewBuilder;
+  final Widget details;
   final Widget memory;
   final Widget history;
 
@@ -31,13 +33,17 @@ class _HostCustomerDetailTabsState extends State<HostCustomerDetailTabs> {
     children: [
       CatchTabRail<_HostCustomerDetailView>(
         groupKey: const ValueKey('host-customer-detail-tabs'),
-        scrollable: MediaQuery.textScalerOf(context).scale(1) >= 1.5,
+        scrollable: true,
         selected: selected,
         onChanged: (value) => setState(() => selected = value),
         options: [
           CatchOption(
             value: _HostCustomerDetailView.overview,
             label: context.l10n.hostCustomersOverview,
+          ),
+          CatchOption(
+            value: _HostCustomerDetailView.details,
+            label: context.l10n.hostCustomersDetails,
           ),
           CatchOption(
             value: _HostCustomerDetailView.memory,
@@ -52,7 +58,10 @@ class _HostCustomerDetailTabsState extends State<HostCustomerDetailTabs> {
       ),
       gapH20,
       switch (selected) {
-        _HostCustomerDetailView.overview => widget.overview,
+        _HostCustomerDetailView.overview => widget.overviewBuilder(
+          () => setState(() => selected = _HostCustomerDetailView.memory),
+        ),
+        _HostCustomerDetailView.details => widget.details,
         _HostCustomerDetailView.memory => widget.memory,
         _HostCustomerDetailView.history => widget.history,
       },

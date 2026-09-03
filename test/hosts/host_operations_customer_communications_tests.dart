@@ -20,62 +20,74 @@ void _registerHostOperationsCustomerCommunicationsTests() {
     expect(find.text('See you there!'), findsOneWidget);
   });
 
-  testWidgets('customer detail separates overview, memory and history', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(390, 3600);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    final detail = _customerDetail();
-    await _pumpHostScreen(
-      tester,
-      const HostCustomerDetailScreen(
-        organizerId: 'organizer-1',
-        contactId: 'contact-1',
-      ),
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        hostAudienceContactDetailProvider(
-          'organizer-1',
-          'contact-1',
-        ).overrideWithValue(AsyncData(detail)),
-        hostCommunicationPlanProvider(
-          'organizer-1',
-          'contact-1',
-        ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
-      ],
-    );
+  testWidgets(
+    'customer detail separates overview, details, memory and history',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 3600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final detail = _customerDetail();
+      await _pumpHostScreen(
+        tester,
+        const HostCustomerDetailScreen(
+          organizerId: 'organizer-1',
+          contactId: 'contact-1',
+        ),
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+          hostAudienceContactDetailProvider(
+            'organizer-1',
+            'contact-1',
+          ).overrideWithValue(AsyncData(detail)),
+          hostCommunicationPlanProvider(
+            'organizer-1',
+            'contact-1',
+          ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
+        ],
+      );
 
-    final identityY = tester
-        .getTopLeft(find.byType(HostCustomerIdentityCard))
-        .dy;
-    final memoryY = tester
-        .getTopLeft(find.byType(HostCustomerMemorySection))
-        .dy;
-    final activityY = tester
-        .getTopLeft(find.byKey(const ValueKey('host-customer-activity')))
-        .dy;
-    expect(identityY, lessThan(memoryY));
-    expect(memoryY, lessThan(activityY));
-    expect(find.byKey(const ValueKey('host-customer-controls')), findsNothing);
-    await tester.tap(find.text('Memory'));
-    await pumpFeatureUi(tester);
-    expect(find.byType(HostCustomerMemorySection), findsOneWidget);
-    expect(find.byKey(const ValueKey('host-customer-activity')), findsNothing);
-    await tester.tap(find.text('History'));
-    await pumpFeatureUi(tester);
-    expect(find.byType(HostCustomerTimelineSection), findsOneWidget);
-    expect(find.byType(HostCustomerRevenueCard), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('host-customer-controls')),
-      findsOneWidget,
-    );
-    await tester.tap(find.text('Overview'));
-    await pumpFeatureUi(tester);
-    expect(find.byType(HostCustomerMemorySection), findsOneWidget);
-    expect(find.byType(HostCustomerTimelineSection), findsNothing);
-  });
+      final identityY = tester
+          .getTopLeft(find.byType(HostCustomerIdentityCard))
+          .dy;
+      final memoryY = tester
+          .getTopLeft(find.byType(HostCustomerMemoryPreview))
+          .dy;
+      final activityY = tester
+          .getTopLeft(find.byKey(const ValueKey('host-customer-activity')))
+          .dy;
+      expect(identityY, lessThan(memoryY));
+      expect(activityY, lessThan(memoryY));
+      expect(find.byType(HostCustomerRevenueCard), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('host-customer-controls')),
+        findsNothing,
+      );
+      await tester.tap(
+        find.byKey(const ValueKey('host-customer-memory-preview')),
+      );
+      await pumpFeatureUi(tester);
+      expect(find.byType(HostCustomerMemorySection), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('host-customer-activity')),
+        findsNothing,
+      );
+      await tester.ensureVisible(find.text('History'));
+      await tester.tap(find.text('History'));
+      await pumpFeatureUi(tester);
+      expect(find.byType(HostCustomerTimelineSection), findsOneWidget);
+      expect(find.byType(HostCustomerRevenueCard), findsNothing);
+      expect(
+        find.byKey(const ValueKey('host-customer-controls')),
+        findsOneWidget,
+      );
+      await tester.ensureVisible(find.text('Overview'));
+      await tester.tap(find.text('Overview'));
+      await pumpFeatureUi(tester);
+      expect(find.byType(HostCustomerMemoryPreview), findsOneWidget);
+      expect(find.byType(HostCustomerTimelineSection), findsNothing);
+    },
+  );
 
   testWidgets('customer detail exposes only the recommended message route', (
     tester,
@@ -122,7 +134,7 @@ void _registerHostOperationsCustomerCommunicationsTests() {
     expect(find.text('You press send'), findsNothing);
   });
 
-  testWidgets('wide customer detail aligns memory with attendance', (
+  testWidgets('wide customer detail aligns attendance with recorded spend', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(1000, 1200);
@@ -149,20 +161,18 @@ void _registerHostOperationsCustomerCommunicationsTests() {
       ],
     );
 
-    final memoryTop = tester
-        .getTopLeft(find.byType(HostCustomerMemorySection))
+    final revenueTop = tester
+        .getTopLeft(find.byType(HostCustomerRevenueCard))
         .dy;
     final attendanceTop = tester
         .getTopLeft(find.byKey(const ValueKey('host-customer-activity')))
         .dy;
-    expect(memoryTop, closeTo(attendanceTop, 0.5));
+    expect(revenueTop, closeTo(attendanceTop, 0.5));
     expect(
-      tester.getRect(find.byType(HostCustomerMemorySection)).right,
-      lessThan(
-        tester
-            .getRect(find.byKey(const ValueKey('host-customer-activity')))
-            .left,
-      ),
+      tester
+          .getRect(find.byKey(const ValueKey('host-customer-activity')))
+          .right,
+      lessThan(tester.getRect(find.byType(HostCustomerRevenueCard)).left),
     );
   });
 

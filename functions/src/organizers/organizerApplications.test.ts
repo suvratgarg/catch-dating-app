@@ -5,6 +5,7 @@ import {OrganizerApplicationFormVersionDocument} from
 import {
   applicationOutreach,
   canonicalFieldForNormalizedHeader,
+  customerApplicationAccountUid,
   normalizeHeader,
   normalizeTabularPayload,
   prepareApplicationRows,
@@ -51,6 +52,39 @@ const questions: OrganizerApplicationFormVersionDocument["questions"] = [
     hostPresentation: "filterable",
   },
 ];
+
+describe("customer-scoped application access", () => {
+  const contact = {
+    organizerId: "club-1", deletedAt: null, hiddenAt: null,
+    identityState: "verified" as const, linkedUid: "participant-1",
+  };
+
+  it("uses an account link only for a verified customer identity", () => {
+    assert.equal(customerApplicationAccountUid(contact, "club-1"),
+      "participant-1");
+    for (const identityState of ["unlinked", "ambiguous"] as const) {
+      assert.equal(customerApplicationAccountUid({
+        ...contact, identityState,
+      }, "club-1"), null);
+    }
+  });
+
+  it("rejects missing, foreign, merged and unavailable customers", () => {
+    const timestamp = {toMillis: () => 1} as
+      NonNullable<Parameters<typeof customerApplicationAccountUid>[0]>[
+        "deletedAt"];
+    for (const unavailable of [
+      undefined,
+      {...contact, organizerId: "another-club"},
+      {...contact, identityState: "merged" as const},
+      {...contact, deletedAt: timestamp},
+      {...contact, hiddenAt: timestamp},
+    ]) {
+      assert.throws(() => customerApplicationAccountUid(unavailable, "club-1"),
+        {code: "not-found"});
+    }
+  });
+});
 
 const mappings: Parameters<typeof prepareApplicationRows>[0]["mappings"] = [
   {
