@@ -567,6 +567,7 @@ class _HostCustomerSummaryFilterTile extends StatelessWidget {
       button: true,
       selected: selected,
       label: text,
+      onTap: onTap,
       child: ExcludeSemantics(
         child: CatchSurface(
           tone: CatchSurfaceTone.transparent,

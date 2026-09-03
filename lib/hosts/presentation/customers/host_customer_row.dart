@@ -25,12 +25,12 @@ class HostCustomerRow extends StatelessWidget {
     final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
     final lifecycleLabel = contact.hasAmbiguousIdentity
         ? context.l10n.hostCustomersNeedsReview
-        : contact.tags.contains(HostCustomerTag.newToOrganizer)
-        ? context.l10n.hostsHostEventManageScreenStateLabelNew
-        : contact.tags.contains(HostCustomerTag.regular)
-        ? context.l10n.hostsOperationalRosterInsightRegular
         : contact.tags.contains(HostCustomerTag.atRisk)
         ? context.l10n.hostCustomersFilterAtRisk
+        : contact.tags.contains(HostCustomerTag.regular)
+        ? context.l10n.hostsOperationalRosterInsightRegular
+        : contact.tags.contains(HostCustomerTag.newToOrganizer)
+        ? context.l10n.hostsHostEventManageScreenStateLabelNew
         : null;
     final status = lifecycleLabel == null
         ? null
