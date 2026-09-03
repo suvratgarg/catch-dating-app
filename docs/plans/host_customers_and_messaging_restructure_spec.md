@@ -37,12 +37,40 @@ The earlier phases below remain historical implementation context.
    event. Resolve current organizer-scoped source facts on the server; do not
    copy private Consumer attributes or execute arbitrary queries.
 
+### Extended functional scope (owner-approved 2026-09-03)
+
+Complete these three additions before the visual pass, in independently
+verifiable commits:
+
+1. Spend targeting: currency-specific minimum/maximum verified Catch spend,
+   with an optional trailing-day window. Read canonical successful payment
+   facts, exclude failed bookings and refunded charges, use completion time,
+   and validate organizer event ownership. Never mix currencies, infer private
+   identity, or treat imported estimates as verified spend. Exact evaluation
+   fails explicitly when source bounds are exceeded.
+2. Static audiences: explicitly selected organizer contacts with search,
+   pagination, add/remove, save/edit, exact member inspection and the existing
+   Messaging action. Membership changes only through host edits or canonical
+   contact merge/deletion resolution; static membership does not grant messaging
+   permission. Prevent accidental mixing with dynamic predicates.
+3. Automation delivery: extend the existing rule/run authority with application
+   acceptance and event-attendance triggers, complete signed HTTPS webhooks and
+   campaign follow-up actions, and expose editing, enable/pause and run history.
+   Activation explicitly approves the selected message configuration. Execution
+   rechecks manager authority, source validity, recipient permission and sender/
+   template availability. Stable event/action identities, exclusive execution,
+   bounded retries and visible failures prevent silent loss or duplicate sends.
+   Existing form submission/withdrawal rules retain their behavior and share
+   the same delivery implementation. Webhooks carry a minimal organizer-scoped
+   event envelope with a stable delivery id and signature, never raw answers or
+   private profile/payment data.
+
 ### Exclusions
 
-The owner deferred visual redesign and render matching. Use existing Catch
-components for functional additions. This scope does not add spend targeting,
-arbitrary nested expressions, static lists, broad CRM data migration, automatic
-outreach, webhooks, new automation triggers or production deployment.
+Visual redesign and render matching remain deferred. Use existing Catch
+components. This scope does not add arbitrary nested expressions, a visual
+workflow canvas, imported-spend reconciliation, additional messaging providers,
+bulk historical automation replay, or production deployment/activation.
 
 ### Checks and acceptance
 
@@ -50,7 +78,11 @@ outreach, webhooks, new automation triggers or production deployment.
   denial, optimistic conflict, repeat approval, unique existing contact reuse,
   ambiguous endpoints and atomic approval/contact creation.
 - Audience tests cover each new predicate, mixed all/any rules, source
-  withdrawal, foreign source rejection and stable member pagination.
+  withdrawal, foreign source rejection and stable member pagination. Spend
+  tests cover time/currency/refund boundaries; static-list tests cover edits,
+  contact merges and cross-organizer denial. Automation tests cover duplicate
+  events, execution leases, permission revocation, source changes, public-HTTPS
+  validation, signatures, retry exhaustion and campaign dispatch handoff.
 - Flutter tests cover queue discovery, approval/customer navigation, audience
   member inspection/edit/compose and filter authoring with server vocabulary.
 - Regenerate schema DTOs, validators, localization and affected feature/screen
