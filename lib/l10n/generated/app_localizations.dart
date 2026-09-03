@@ -19585,23 +19585,11 @@ abstract class AppLocalizations {
   /// **'Disable website sign-up'**
   String get hostsHostPublicRegistrationActionDisable;
 
-  /// Contact count label.
-  ///
-  /// In en, this message translates to:
-  /// **'Contacts'**
-  String get hostsHostAudienceContacts;
-
   /// Past attendee count label.
   ///
   /// In en, this message translates to:
   /// **'Attended'**
   String get hostsHostAudienceAttended;
-
-  /// Repeat attendee count label.
-  ///
-  /// In en, this message translates to:
-  /// **'Repeat'**
-  String get hostsHostAudienceRepeat;
 
   /// Audience search field.
   ///
@@ -20003,23 +19991,17 @@ abstract class AppLocalizations {
   /// **'Reconnect required'**
   String get hostsHostAudienceSenderNeedsAttention;
 
-  /// Contact attended event count.
+  /// Compact attended event count in a customer directory row.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0{No check-ins yet} =1{1 event attended} other{{count} events attended}}'**
-  String hostsHostAudienceEventsAttended({required int count});
+  /// **'{count, plural, =0{No events} =1{1 event} other{{count} events}}'**
+  String hostCustomersCompactEventCount({required int count});
 
   /// Contact last attended date.
   ///
   /// In en, this message translates to:
   /// **'Last seen {date}'**
   String hostsHostAudienceLastSeen({required String date});
-
-  /// Contact WhatsApp permission state.
-  ///
-  /// In en, this message translates to:
-  /// **'WhatsApp opted in'**
-  String get hostsHostAudienceWhatsappOptedIn;
 
   /// Confirms the native-to-web WhatsApp Embedded Signup handoff.
   ///
@@ -22708,21 +22690,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'More customer actions'**
   String get hostCustomersMoreActions;
-
-  /// Number of organizer contacts currently reachable on WhatsApp.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 WhatsApp-ready contact} other{{count} WhatsApp-ready contacts}}'**
-  String hostCustomersWhatsappReadyCount({required int count});
-
-  /// Concise customer source and linked-account summary shown on the page.
-  ///
-  /// In en, this message translates to:
-  /// **'{importedCount, plural, =1{1 imported or added by your team} other{{importedCount} imported or added by your team}} · {linkedCount, plural, =1{1 linked Catch account} other{{linkedCount} linked Catch accounts}}'**
-  String hostCustomersSourceSummary({
-    required int importedCount,
-    required int linkedCount,
-  });
 
   /// Host accountability sweep heading.
   ///

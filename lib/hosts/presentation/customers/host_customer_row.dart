@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_palette.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_typography.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -23,20 +24,29 @@ class HostCustomerRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
-    final lifecycleLabel = contact.hasAmbiguousIdentity
-        ? context.l10n.hostCustomersNeedsReview
+    final lifecycle = contact.hasAmbiguousIdentity
+        ? (label: context.l10n.hostCustomersNeedsReview, color: t.danger)
         : contact.tags.contains(HostCustomerTag.atRisk)
-        ? context.l10n.hostCustomersFilterAtRisk
+        ? (
+            label: context.l10n.hostCustomersFilterAtRisk,
+            color: HostCustomerPalette.atRisk(context),
+          )
         : contact.tags.contains(HostCustomerTag.regular)
-        ? context.l10n.hostsOperationalRosterInsightRegular
+        ? (
+            label: context.l10n.hostsOperationalRosterInsightRegular,
+            color: HostCustomerPalette.regular(context),
+          )
         : contact.tags.contains(HostCustomerTag.newToOrganizer)
-        ? context.l10n.hostsHostEventManageScreenStateLabelNew
+        ? (
+            label: context.l10n.hostsHostEventManageScreenStateLabelNew,
+            color: HostCustomerPalette.newCustomer(context),
+          )
         : null;
-    final status = lifecycleLabel == null
+    final status = lifecycle == null
         ? null
         : DecoratedBox(
             decoration: BoxDecoration(
-              color: t.ink.withValues(alpha: CatchOpacity.controlOverlayHover),
+              color: lifecycle.color.withValues(alpha: CatchOpacity.subtleFill),
               borderRadius: BorderRadius.circular(CatchRadius.sm),
             ),
             child: Padding(
@@ -45,20 +55,23 @@ class HostCustomerRow extends StatelessWidget {
                 vertical: CatchSpacing.micro2,
               ),
               child: Text(
-                lifecycleLabel,
-                style: HostCustomerTypography.status(context),
+                lifecycle.label,
+                style: HostCustomerTypography.status(
+                  context,
+                  color: lifecycle.color,
+                ),
               ),
             ),
           );
     return CatchRowPressSurface(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+        padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: CatchSpacing.micro3),
+              padding: const EdgeInsets.only(top: CatchSpacing.micro2),
               child: ExcludeSemantics(
                 child: MediaQuery.withClampedTextScaling(
                   maxScaleFactor: 1,
@@ -86,20 +99,57 @@ class HostCustomerRow extends StatelessWidget {
                     ],
                   ),
                   gapH4,
-                  Text(
-                    context.l10n.hostsHostAudienceEventsAttended(
-                      count: contact.attendedEventCount,
-                    ),
-                    style: HostCustomerTypography.secondary(context),
-                  ),
-                  if (contact.lastAttendedAt != null) ...[
-                    Text(
-                      context.l10n.hostsHostAudienceLastSeen(
-                        date: AppTimeFormatters.shortDate(
-                          contact.lastAttendedAt!,
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: context.l10n.hostCustomersCompactEventCount(
+                            count: contact.attendedEventCount,
+                          ),
+                          style: HostCustomerTypography.metadataStrong(context),
                         ),
-                      ),
-                      style: HostCustomerTypography.tertiary(context),
+                        if (contact.lastAttendedAt != null)
+                          TextSpan(
+                            text:
+                                '  ·  ${context.l10n.hostsHostAudienceLastSeen(date: AppTimeFormatters.shortDate(contact.lastAttendedAt!))}',
+                            style: HostCustomerTypography.metadata(context),
+                          ),
+                      ],
+                    ),
+                    key: ValueKey(
+                      'host-customer-activity-${contact.contactId}',
+                    ),
+                    maxLines: usesLargeText ? 4 : 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (contact.tags.contains(HostCustomerTag.newToOrganizer) ||
+                      contact.tags.contains(HostCustomerTag.repeat)) ...[
+                    gapH4,
+                    Row(
+                      children: [
+                        Icon(
+                          contact.tags.contains(HostCustomerTag.newToOrganizer)
+                              ? CatchIcons.sparkle
+                              : CatchIcons.eventRepeatOutlined,
+                          size: CatchIcon.sm,
+                          color: t.ink2,
+                        ),
+                        gapW6,
+                        Expanded(
+                          child: Text(
+                            contact.tags.contains(
+                                  HostCustomerTag.newToOrganizer,
+                                )
+                                ? context.l10n.hostsHostAudienceSegmentNew
+                                : context
+                                      .l10n
+                                      .hostsOperationalRosterInsightReturning,
+                            maxLines: usesLargeText ? 3 : 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: HostCustomerTypography.context(context),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                   if (status != null && usesLargeText) ...[gapH8, status],
@@ -115,7 +165,7 @@ class HostCustomerRow extends StatelessWidget {
             ),
             gapW8,
             Padding(
-              padding: const EdgeInsets.only(top: CatchSpacing.s4),
+              padding: const EdgeInsets.only(top: CatchSpacing.micro3),
               child: Icon(
                 CatchIcons.chevronRightRounded,
                 size: CatchIcon.sm,

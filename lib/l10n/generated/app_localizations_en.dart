@@ -12543,13 +12543,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Disable website sign-up';
 
   @override
-  String get hostsHostAudienceContacts => 'Contacts';
-
-  @override
   String get hostsHostAudienceAttended => 'Attended';
-
-  @override
-  String get hostsHostAudienceRepeat => 'Repeat';
 
   @override
   String get hostsHostAudienceSearch => 'Search by name';
@@ -12796,13 +12790,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceSenderNeedsAttention => 'Reconnect required';
 
   @override
-  String hostsHostAudienceEventsAttended({required int count}) {
+  String hostCustomersCompactEventCount({required int count}) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count events attended',
-      one: '1 event attended',
-      zero: 'No check-ins yet',
+      other: '$count events',
+      one: '1 event',
+      zero: 'No events',
     );
     return '$_temp0';
   }
@@ -12811,9 +12805,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostsHostAudienceLastSeen({required String date}) {
     return 'Last seen $date';
   }
-
-  @override
-  String get hostsHostAudienceWhatsappOptedIn => 'WhatsApp opted in';
 
   @override
   String get hostsHostAudienceWebSignupOpened =>
@@ -14602,37 +14593,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersMoreActions => 'More customer actions';
-
-  @override
-  String hostCustomersWhatsappReadyCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count WhatsApp-ready contacts',
-      one: '1 WhatsApp-ready contact',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String hostCustomersSourceSummary({
-    required int importedCount,
-    required int linkedCount,
-  }) {
-    String _temp0 = intl.Intl.pluralLogic(
-      importedCount,
-      locale: localeName,
-      other: '$importedCount imported or added by your team',
-      one: '1 imported or added by your team',
-    );
-    String _temp1 = intl.Intl.pluralLogic(
-      linkedCount,
-      locale: localeName,
-      other: '$linkedCount linked Catch accounts',
-      one: '1 linked Catch account',
-    );
-    return '$_temp0 · $_temp1';
-  }
 
   @override
   String get eventSuccessAccountabilityTitle => 'Return sweep';

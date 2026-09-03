@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui' show SemanticsAction;
+import 'dart:math' as math;
 
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_palette.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'catalog/screen_capture_catalog.dart';
@@ -48,16 +51,49 @@ void main() {
               };
             }
 
+            final rowContext = tester.element(
+              find.byType(HostCustomerRow).first,
+            );
+            final tokens = CatchTokens.of(rowContext);
+            for (final foreground in [
+              HostCustomerPalette.regular(rowContext),
+              HostCustomerPalette.newCustomer(rowContext),
+              HostCustomerPalette.atRisk(rowContext),
+            ]) {
+              final background = Color.alphaBlend(
+                foreground.withValues(alpha: CatchOpacity.subtleFill),
+                tokens.bg,
+              );
+              final a = foreground.computeLuminance();
+              final b = background.computeLuminance();
+              final contrast = (math.max(a, b) + .05) / (math.min(a, b) + .05);
+              expect(
+                contrast,
+                greaterThanOrEqualTo(4.5),
+                reason: 'Small status labels require readable contrast',
+              );
+            }
+
             final rowMetrics = <Map<String, Object>>[];
             for (final element in find.byType(HostCustomerRow).evaluate()) {
               final finder = find.byWidget(element.widget);
               final row = element.widget as HostCustomerRow;
               final bounds = tester.getRect(finder);
+              final paragraph = tester.renderObject<RenderParagraph>(
+                find.byKey(
+                  ValueKey('host-customer-activity-${row.contact.contactId}'),
+                ),
+              );
+              expect(
+                paragraph.didExceedMaxLines,
+                isFalse,
+                reason: 'Activity/date metadata must remain readable',
+              );
               if (textScale == 1) {
                 expect(
                   bounds.height,
-                  closeTo(88, 0.1),
-                  reason: 'Badges must not change the standard customer rhythm',
+                  closeTo(82, 0.1),
+                  reason: 'Badges must not change the fourth-option row rhythm',
                 );
               }
               rowMetrics.add({

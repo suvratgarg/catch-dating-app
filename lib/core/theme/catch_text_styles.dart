@@ -67,9 +67,9 @@ abstract final class CatchTextStyles {
   /// Pending cross-screen review before promotion from the Audience preview.
   static TextStyle headline(BuildContext context, {Color? color}) =>
       CatchFonts.sans(
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: FontWeight.w600,
-        height: 34 / 28,
+        height: 30 / 24,
         color: color ?? CatchTokens.of(context).ink,
       );
 
