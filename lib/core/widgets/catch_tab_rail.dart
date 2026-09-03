@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,20 @@ import 'package:flutter/material.dart';
 /// Segmented tab rail for app-bar bottoms: a [CatchOptionGroup] in the
 /// standard rail shell.
 class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
+  /// The pinned slot and its content use the same scaled line-box geometry.
+  /// The unscaled preferredSize remains the canonical minimum contract.
+  static double heightFor(BuildContext context) {
+    final style = CatchTextStyles.tabLabel(context);
+    final lineHeight =
+        MediaQuery.textScalerOf(context).scale(style.fontSize!) * style.height!;
+    final contentHeight = lineHeight + CatchSpacing.s4 + CatchSpacing.micro2;
+    final gridHeight =
+        (contentHeight / CatchSpacing.s1).ceil() * CatchSpacing.s1;
+    return gridHeight < CatchLayout.tabRailHeight
+        ? CatchLayout.tabRailHeight
+        : gridHeight;
+  }
+
   const CatchTabRail({
     super.key,
     required this.selected,
@@ -47,7 +62,7 @@ class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
             ? const EdgeInsets.symmetric(horizontal: CatchSpacing.s4)
             : EdgeInsets.zero,
         child: SizedBox(
-          height: preferredSize.height,
+          height: heightFor(context),
           child: DecoratedBox(
             decoration: operational
                 ? BoxDecoration(

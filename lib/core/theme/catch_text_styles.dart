@@ -33,6 +33,18 @@ enum CatchDisplayStep {
 /// Prefer the named styles over ad hoc [TextStyle]; use `copyWith` only for local
 /// state (unread/disabled).
 abstract final class CatchTextStyles {
+  /// Preview navigation label, measured by the shared tab-rail owner.
+  static TextStyle tabLabel(
+    BuildContext context, {
+    bool selected = false,
+    Color? color,
+  }) => CatchFonts.sans(
+    fontSize: 15,
+    height: 20 / 15,
+    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+    color: color ?? CatchTokens.of(context).ink,
+  );
+
   static const double _kickerTracking = 1.76; // 0.16em at 11px.
   static const double _kickerLargeTracking = 2.16; // 0.18em at 12px.
   static const double _monoCapsTracking = 1.43; // 0.13em at 11px.
@@ -51,14 +63,15 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
-  /// Brand headline / section hero.
-  static TextStyle headline(BuildContext context, {Color? color}) => _voice(
-    context,
-    size: 32,
-    weight: FontWeight.w600,
-    height: 1.04,
-    color: color,
-  );
+  /// Preview: system title scale for functional screen headings.
+  /// Pending cross-screen review before promotion from the Audience preview.
+  static TextStyle headline(BuildContext context, {Color? color}) =>
+      CatchFonts.sans(
+        fontSize: 28,
+        fontWeight: FontWeight.w600,
+        height: 34 / 28,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
   /// Smaller brand headline — a step under [headline].
   static TextStyle headlineS(BuildContext context, {Color? color}) => _voice(
@@ -364,12 +377,11 @@ abstract final class CatchTextStyles {
     BuildContext context, {
     required double size,
     Color? color,
-  }) => _mono(
-    context,
-    size: size,
-    weight: FontWeight.w700,
+  }) => CatchFonts.sans(
+    fontSize: size,
+    fontWeight: FontWeight.w600,
     height: 1,
-    color: color,
+    color: color ?? CatchTokens.of(context).ink,
   );
 
   /// Simulated phone-frame status-bar time.

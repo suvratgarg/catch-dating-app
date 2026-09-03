@@ -22,6 +22,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
@@ -307,6 +308,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                 onPressed: () => _addCustomer(selectedClub, request),
               ),
               CatchTopBarMenuAction<_HostCustomersHeaderAction>(
+                variant: CatchIconButtonVariant.plain,
                 tooltip: context.l10n.hostCustomersMoreActions,
                 items: _hostCustomersHeaderActions(
                   context,
@@ -328,6 +330,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
             ]
           : const [],
       search: CatchTopBarSearch(
+        backgroundColor: Colors.transparent,
+        borderColor: Colors.transparent,
         fieldKey: ValueKey(
           peopleView ? 'host-customers-search' : 'host-audiences-search',
         ),
@@ -417,7 +421,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                         _manualTag = null;
                       }),
                     ),
-                    gapH16,
+                    gapH8,
                     const CatchDivider.section(),
                     directoryControls,
                     const CatchDivider.section(),

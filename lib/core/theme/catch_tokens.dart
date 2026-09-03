@@ -367,7 +367,7 @@ abstract final class CatchInsets {
   /// Default scroll/body padding for app pages with top chrome.
   static const EdgeInsets pageBody = EdgeInsets.fromLTRB(
     CatchSpacing.screenPx,
-    CatchSpacing.screenPt,
+    CatchSpacing.s4,
     CatchSpacing.screenPx,
     CatchSpacing.screenPb,
   );
@@ -543,7 +543,7 @@ abstract final class CatchInsets {
     CatchSpacing.s5,
     CatchSpacing.s0,
     CatchSpacing.s5,
-    CatchSpacing.s1,
+    CatchSpacing.s2,
   );
 
   /// (1) Title block padding for tab screens whose header is a compact
@@ -2604,7 +2604,7 @@ abstract final class CatchLayout {
   static const double errorIconExtent = CatchSpacing.s16;
   static const double errorIconSize = 30.0;
   static const double iconButtonSize = CatchSpacing.s11;
-  static const double iconButtonNavSize = CatchSpacing.s10;
+  static const double iconButtonNavSize = CatchSpacing.s11;
   static const double iconButtonGlyphScale = 0.44;
   static const double iosPickerHeight = 216.0;
   static const double iosPickerToolbarHeight = 52.0;

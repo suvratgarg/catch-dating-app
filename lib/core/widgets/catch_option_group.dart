@@ -249,7 +249,7 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
             width: indicatorRect.width,
             child: DecoratedBox(
               decoration: BoxDecoration(color: selectedRule),
-              child: const SizedBox(height: CatchSpacing.micro3),
+              child: const SizedBox(height: CatchSpacing.micro2),
             ),
           ),
       ],
@@ -305,11 +305,12 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
         ? t.ink3.withValues(alpha: CatchOpacity.disabledControl)
         : selected
         ? t.ink
-        : t.ink3;
+        : t.ink2;
     final selectedRuleColor = selectedRule ?? t.ink;
     final style = switch (variant) {
-      CatchOptionGroupVariant.label => CatchTextStyles.labelL(
+      CatchOptionGroupVariant.label => CatchTextStyles.tabLabel(
         context,
+        selected: selected,
         color: foreground,
       ),
       CatchOptionGroupVariant.mono => CatchTextStyles.monoLabel(
@@ -365,7 +366,7 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
                         color: showIndicator && selected
                             ? selectedRuleColor
                             : Colors.transparent,
-                        width: CatchSpacing.micro3,
+                        width: CatchSpacing.micro2,
                       ),
                     ),
                   ),

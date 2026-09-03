@@ -42,7 +42,7 @@ class HostCustomerRow extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: CatchSpacing.s2,
-                vertical: CatchSpacing.s1,
+                vertical: CatchSpacing.micro2,
               ),
               child: Text(
                 lifecycleLabel,
@@ -55,12 +55,21 @@ class HostCustomerRow extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchPersonAvatar(
-              size: CatchSpacing.s10,
-              name: contact.displayName,
+            Padding(
+              padding: const EdgeInsets.only(top: CatchSpacing.micro3),
+              child: ExcludeSemantics(
+                child: MediaQuery.withClampedTextScaling(
+                  maxScaleFactor: 1,
+                  child: CatchPersonAvatar(
+                    size: CatchSpacing.s10,
+                    name: contact.displayName,
+                  ),
+                ),
+              ),
             ),
-            gapW16,
+            gapW12,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,14 +93,13 @@ class HostCustomerRow extends StatelessWidget {
                     style: HostCustomerTypography.secondary(context),
                   ),
                   if (contact.lastAttendedAt != null) ...[
-                    gapH2,
                     Text(
                       context.l10n.hostsHostAudienceLastSeen(
                         date: AppTimeFormatters.shortDate(
                           contact.lastAttendedAt!,
                         ),
                       ),
-                      style: HostCustomerTypography.secondary(context),
+                      style: HostCustomerTypography.tertiary(context),
                     ),
                   ],
                   if (status != null && usesLargeText) ...[gapH8, status],
@@ -106,10 +114,13 @@ class HostCustomerRow extends StatelessWidget {
               ),
             ),
             gapW8,
-            Icon(
-              CatchIcons.chevronRightRounded,
-              size: CatchIcon.sm,
-              color: t.ink3,
+            Padding(
+              padding: const EdgeInsets.only(top: CatchSpacing.s4),
+              child: Icon(
+                CatchIcons.chevronRightRounded,
+                size: CatchIcon.sm,
+                color: t.ink3,
+              ),
             ),
           ],
         ),

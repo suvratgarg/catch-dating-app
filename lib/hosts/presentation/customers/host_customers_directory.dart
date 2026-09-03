@@ -569,22 +569,33 @@ class _HostCustomerSummaryFilterTile extends StatelessWidget {
       label: text,
       onTap: onTap,
       child: ExcludeSemantics(
-        child: CatchSurface(
-          tone: CatchSurfaceTone.transparent,
-          backgroundColor: selected
-              ? t.ink
-              : t.ink.withValues(alpha: CatchOpacity.controlOverlayHover),
-          radius: CatchRadius.pill,
-          padding: EdgeInsets.symmetric(
-            horizontal: CatchSpacing.s4,
-            vertical: Theme.of(context).platform == TargetPlatform.iOS
-                ? CatchSpacing.s3
-                : CatchSpacing.micro14,
-          ),
+        child: CatchRowPressSurface(
+          expandToMaxWidth: false,
           onTap: onTap,
-          child: Text(
-            text,
-            style: HostCustomerTypography.group(context, selected: selected),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: Theme.of(context).platform == TargetPlatform.iOS
+                  ? CatchSpacing.micro6
+                  : CatchSpacing.s2,
+            ),
+            child: CatchSurface(
+              tone: CatchSurfaceTone.transparent,
+              backgroundColor: selected
+                  ? t.ink
+                  : t.ink.withValues(alpha: CatchOpacity.controlOverlayHover),
+              radius: CatchRadius.pill,
+              padding: const EdgeInsets.symmetric(
+                horizontal: CatchSpacing.s3,
+                vertical: CatchSpacing.micro6,
+              ),
+              child: Text(
+                text,
+                style: HostCustomerTypography.group(
+                  context,
+                  selected: selected,
+                ),
+              ),
+            ),
           ),
         ),
       ),

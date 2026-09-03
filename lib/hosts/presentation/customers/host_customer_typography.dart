@@ -29,8 +29,8 @@ abstract final class HostCustomerTypography {
 
   static TextStyle control(BuildContext context, {bool selected = false}) =>
       CatchFonts.sans(
-        fontSize: _ios(context) ? 17 : 14,
-        height: _ios(context) ? 22 / 17 : 20 / 14,
+        fontSize: _ios(context) ? 15 : 14,
+        height: _ios(context) ? 20 / 15 : 20 / 14,
         fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
         color: CatchTokens.of(context).ink,
       );
@@ -51,4 +51,7 @@ abstract final class HostCustomerTypography {
     fontWeight: FontWeight.w500,
     color: CatchTokens.of(context).ink2,
   );
+
+  static TextStyle tertiary(BuildContext context) =>
+      status(context).copyWith(fontWeight: FontWeight.w400);
 }

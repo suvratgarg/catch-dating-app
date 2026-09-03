@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_pager_focus_boundary.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -222,7 +223,7 @@ class CatchTabbedScreenScaffold extends StatelessWidget {
               );
         final headerSlivers = CatchSliverHeader(
           title: headerTitle,
-          bottomHeight: CatchLayout.tabRailHeight,
+          bottomHeight: CatchTabRail.heightFor(context),
           bottom: tabRail,
         ).buildSlivers(context);
         final collapsibleSlivers = headerSlivers.take(headerSlivers.length - 1);
