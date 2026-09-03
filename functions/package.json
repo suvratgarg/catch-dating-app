@@ -32,13 +32,13 @@
     "firebase-functions": "^7.3.2",
     "google-auth-library": "^10.9.1",
     "razorpay": "^2.9.8",
-    "sharp": "^0.35.3"
+    "sharp": "^0.35.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.6",
     "@eslint/js": "^9.39.5",
-    "@firebase/rules-unit-testing": "^5.0.1",
-    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.69.0",
     "@typescript-eslint/parser": "^8.61.0",
     "eslint": "^9.39.5",
     "eslint-config-google": "^0.14.0",
