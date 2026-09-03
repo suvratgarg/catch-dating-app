@@ -32975,6 +32975,39 @@ abstract final class CatchContractConstraints {
     maxItems: 8,
   );
 
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000000,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsContactIds = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.contactIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 0,
+    maxItems: 2500,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsContactIdsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.contactIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsCurrency = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
   static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsDays = CatchContractFieldConstraints(
     path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.days',
     required: true,
@@ -33067,6 +33100,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsWithinDays = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.withinDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3650,
   );
 
   static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionHash = CatchContractFieldConstraints(
@@ -48065,6 +48105,39 @@ abstract final class CatchContractConstraints {
     maxItems: 8,
   );
 
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000000,
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsContactIds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.contactIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 0,
+    maxItems: 2500,
+    uniqueItems: true,
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsContactIdsItems = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.contactIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsCurrency = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
   static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsDays = CatchContractFieldConstraints(
     path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.days',
     required: true,
@@ -48157,6 +48230,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsWithinDays = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.withinDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3650,
   );
 
   static const organizerSavedAudienceCallableResponseDefinitionHash = CatchContractFieldConstraints(
@@ -48322,6 +48402,39 @@ abstract final class CatchContractConstraints {
     maxItems: 8,
   );
 
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000000,
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsContactIds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.contactIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 0,
+    maxItems: 2500,
+    uniqueItems: true,
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsContactIdsItems = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.contactIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsCurrency = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
   static const organizerSavedAudienceDocumentDefinitionPredicatesItemsDays = CatchContractFieldConstraints(
     path: 'organizerSavedAudienceDocument.definition.predicates.items.days',
     required: true,
@@ -48414,6 +48527,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsWithinDays = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.withinDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3650,
   );
 
   static const organizerSavedAudienceDocumentDefinitionHash = CatchContractFieldConstraints(
@@ -50543,6 +50663,39 @@ abstract final class CatchContractConstraints {
     maxItems: 8,
   );
 
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000000,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsContactIds = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.contactIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 0,
+    maxItems: 2500,
+    uniqueItems: true,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsContactIdsItems = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.contactIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsCurrency = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
   static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsDays = CatchContractFieldConstraints(
     path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.days',
     required: true,
@@ -50635,6 +50788,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsWithinDays = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.withinDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3650,
   );
 
   static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionHash = CatchContractFieldConstraints(
@@ -53189,6 +53349,67 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 100,
+  );
+
+  static const resolveOrganizerAudienceMembersCallablePayloadContactIds = CatchContractFieldConstraints(
+    path: 'resolveOrganizerAudienceMembersCallablePayload.contactIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 0,
+    maxItems: 2500,
+    uniqueItems: true,
+  );
+
+  static const resolveOrganizerAudienceMembersCallablePayloadContactIdsItems = CatchContractFieldConstraints(
+    path: 'resolveOrganizerAudienceMembersCallablePayload.contactIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerAudienceMembersCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerAudienceMembersCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerAudienceMembersCallableResponseMembers = CatchContractFieldConstraints(
+    path: 'resolveOrganizerAudienceMembersCallableResponse.members',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2500,
+  );
+
+  static const resolveOrganizerAudienceMembersCallableResponseMembersItemsAvailable = CatchContractFieldConstraints(
+    path: 'resolveOrganizerAudienceMembersCallableResponse.members.items.available',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const resolveOrganizerAudienceMembersCallableResponseMembersItemsContactId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerAudienceMembersCallableResponse.members.items.contactId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerAudienceMembersCallableResponseMembersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'resolveOrganizerAudienceMembersCallableResponse.members.items.displayName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveOrganizerAudienceMembersCallableResponseMembersItemsSelectedContactId = CatchContractFieldConstraints(
+    path: 'resolveOrganizerAudienceMembersCallableResponse.members.items.selectedContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const resolveOrganizerCommunicationPlanCallablePayloadIntent = CatchContractFieldConstraints(
@@ -59481,6 +59702,39 @@ abstract final class CatchContractConstraints {
     maxItems: 8,
   );
 
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsAmountMinor = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000000,
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsContactIds = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.contactIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 0,
+    maxItems: 2500,
+    uniqueItems: true,
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsContactIdsItems = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.contactIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsCurrency = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
   static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsDays = CatchContractFieldConstraints(
     path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.days',
     required: true,
@@ -59573,6 +59827,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsWithinDays = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.withinDays',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3650,
   );
 
   static const upsertOrganizerSavedAudienceCallablePayloadExpectedRevision = CatchContractFieldConstraints(
@@ -66898,6 +67159,10 @@ abstract final class CatchContractConstraints {
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.createdAtMillis': listOrganizerSavedAudiencesCallableResponseAudiencesItemsCreatedAtMillis,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.join': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionJoin,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicates,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.amountMinor': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsAmountMinor,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.contactIds': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsContactIds,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.contactIds.items': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsContactIdsItems,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.currency': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsCurrency,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.days': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsDays,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.eventCount': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsEventCount,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.eventId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsEventId,
@@ -66911,6 +67176,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsSegmentId,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.value': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsValue,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.versionId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsVersionId,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.withinDays': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsWithinDays,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definitionHash': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionHash,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definitionVersion': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionVersion,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.lastPreviewAtMillis': listOrganizerSavedAudiencesCallableResponseAudiencesItemsLastPreviewAtMillis,
@@ -68996,6 +69262,10 @@ abstract final class CatchContractConstraints {
     'organizerSavedAudienceCallableResponse.createdAtMillis': organizerSavedAudienceCallableResponseCreatedAtMillis,
     'organizerSavedAudienceCallableResponse.definition.join': organizerSavedAudienceCallableResponseDefinitionJoin,
     'organizerSavedAudienceCallableResponse.definition.predicates': organizerSavedAudienceCallableResponseDefinitionPredicates,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.amountMinor': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsAmountMinor,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.contactIds': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsContactIds,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.contactIds.items': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsContactIdsItems,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.currency': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsCurrency,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.days': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsDays,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.eventCount': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsEventCount,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.eventId': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsEventId,
@@ -69009,6 +69279,7 @@ abstract final class CatchContractConstraints {
     'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentId': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsSegmentId,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.value': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsValue,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.versionId': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsVersionId,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.withinDays': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsWithinDays,
     'organizerSavedAudienceCallableResponse.definitionHash': organizerSavedAudienceCallableResponseDefinitionHash,
     'organizerSavedAudienceCallableResponse.definitionVersion': organizerSavedAudienceCallableResponseDefinitionVersion,
     'organizerSavedAudienceCallableResponse.lastPreviewAtMillis': organizerSavedAudienceCallableResponseLastPreviewAtMillis,
@@ -69031,6 +69302,10 @@ abstract final class CatchContractConstraints {
     'organizerSavedAudienceDocument.createdByUid': organizerSavedAudienceDocumentCreatedByUid,
     'organizerSavedAudienceDocument.definition.join': organizerSavedAudienceDocumentDefinitionJoin,
     'organizerSavedAudienceDocument.definition.predicates': organizerSavedAudienceDocumentDefinitionPredicates,
+    'organizerSavedAudienceDocument.definition.predicates.items.amountMinor': organizerSavedAudienceDocumentDefinitionPredicatesItemsAmountMinor,
+    'organizerSavedAudienceDocument.definition.predicates.items.contactIds': organizerSavedAudienceDocumentDefinitionPredicatesItemsContactIds,
+    'organizerSavedAudienceDocument.definition.predicates.items.contactIds.items': organizerSavedAudienceDocumentDefinitionPredicatesItemsContactIdsItems,
+    'organizerSavedAudienceDocument.definition.predicates.items.currency': organizerSavedAudienceDocumentDefinitionPredicatesItemsCurrency,
     'organizerSavedAudienceDocument.definition.predicates.items.days': organizerSavedAudienceDocumentDefinitionPredicatesItemsDays,
     'organizerSavedAudienceDocument.definition.predicates.items.eventCount': organizerSavedAudienceDocumentDefinitionPredicatesItemsEventCount,
     'organizerSavedAudienceDocument.definition.predicates.items.eventId': organizerSavedAudienceDocumentDefinitionPredicatesItemsEventId,
@@ -69044,6 +69319,7 @@ abstract final class CatchContractConstraints {
     'organizerSavedAudienceDocument.definition.predicates.items.segmentId': organizerSavedAudienceDocumentDefinitionPredicatesItemsSegmentId,
     'organizerSavedAudienceDocument.definition.predicates.items.value': organizerSavedAudienceDocumentDefinitionPredicatesItemsValue,
     'organizerSavedAudienceDocument.definition.predicates.items.versionId': organizerSavedAudienceDocumentDefinitionPredicatesItemsVersionId,
+    'organizerSavedAudienceDocument.definition.predicates.items.withinDays': organizerSavedAudienceDocumentDefinitionPredicatesItemsWithinDays,
     'organizerSavedAudienceDocument.definitionHash': organizerSavedAudienceDocumentDefinitionHash,
     'organizerSavedAudienceDocument.definitionVersion': organizerSavedAudienceDocumentDefinitionVersion,
     'organizerSavedAudienceDocument.lastPreviewAt._nanoseconds': organizerSavedAudienceDocumentLastPreviewAtNanoseconds,
@@ -69334,6 +69610,10 @@ abstract final class CatchContractConstraints {
     'previewOrganizerSavedAudienceCallableResponse.audience.createdAtMillis': previewOrganizerSavedAudienceCallableResponseAudienceCreatedAtMillis,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.join': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionJoin,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicates,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.amountMinor': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsAmountMinor,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.contactIds': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsContactIds,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.contactIds.items': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsContactIdsItems,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.currency': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsCurrency,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.days': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsDays,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.eventCount': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsEventCount,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.eventId': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsEventId,
@@ -69347,6 +69627,7 @@ abstract final class CatchContractConstraints {
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentId': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsSegmentId,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.value': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsValue,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.versionId': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsVersionId,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.withinDays': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsWithinDays,
     'previewOrganizerSavedAudienceCallableResponse.audience.definitionHash': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionHash,
     'previewOrganizerSavedAudienceCallableResponse.audience.definitionVersion': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionVersion,
     'previewOrganizerSavedAudienceCallableResponse.audience.lastPreviewAtMillis': previewOrganizerSavedAudienceCallableResponseAudienceLastPreviewAtMillis,
@@ -69693,6 +69974,14 @@ abstract final class CatchContractConstraints {
     'resolveEventSuccessLateArrivalCallableResponse.revision': resolveEventSuccessLateArrivalCallableResponseRevision,
     'resolveEventSuccessLateArrivalCallableResponse.status': resolveEventSuccessLateArrivalCallableResponseStatus,
     'resolveEventSuccessLateArrivalCallableResponse.targetRoundIndex': resolveEventSuccessLateArrivalCallableResponseTargetRoundIndex,
+    'resolveOrganizerAudienceMembersCallablePayload.contactIds': resolveOrganizerAudienceMembersCallablePayloadContactIds,
+    'resolveOrganizerAudienceMembersCallablePayload.contactIds.items': resolveOrganizerAudienceMembersCallablePayloadContactIdsItems,
+    'resolveOrganizerAudienceMembersCallablePayload.organizerId': resolveOrganizerAudienceMembersCallablePayloadOrganizerId,
+    'resolveOrganizerAudienceMembersCallableResponse.members': resolveOrganizerAudienceMembersCallableResponseMembers,
+    'resolveOrganizerAudienceMembersCallableResponse.members.items.available': resolveOrganizerAudienceMembersCallableResponseMembersItemsAvailable,
+    'resolveOrganizerAudienceMembersCallableResponse.members.items.contactId': resolveOrganizerAudienceMembersCallableResponseMembersItemsContactId,
+    'resolveOrganizerAudienceMembersCallableResponse.members.items.displayName': resolveOrganizerAudienceMembersCallableResponseMembersItemsDisplayName,
+    'resolveOrganizerAudienceMembersCallableResponse.members.items.selectedContactId': resolveOrganizerAudienceMembersCallableResponseMembersItemsSelectedContactId,
     'resolveOrganizerCommunicationPlanCallablePayload.intent': resolveOrganizerCommunicationPlanCallablePayloadIntent,
     'resolveOrganizerCommunicationPlanCallablePayload.organizerId': resolveOrganizerCommunicationPlanCallablePayloadOrganizerId,
     'resolveOrganizerCommunicationPlanCallablePayload.target.contactId': resolveOrganizerCommunicationPlanCallablePayloadTargetContactId,
@@ -70560,6 +70849,10 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerSavedAudienceCallablePayload.audienceId': upsertOrganizerSavedAudienceCallablePayloadAudienceId,
     'upsertOrganizerSavedAudienceCallablePayload.definition.join': upsertOrganizerSavedAudienceCallablePayloadDefinitionJoin,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicates,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.amountMinor': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsAmountMinor,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.contactIds': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsContactIds,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.contactIds.items': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsContactIdsItems,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.currency': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsCurrency,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.days': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsDays,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.eventCount': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsEventCount,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.eventId': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsEventId,
@@ -70573,6 +70866,7 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentId': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentId,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.value': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsValue,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.versionId': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsVersionId,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.withinDays': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsWithinDays,
     'upsertOrganizerSavedAudienceCallablePayload.expectedRevision': upsertOrganizerSavedAudienceCallablePayloadExpectedRevision,
     'upsertOrganizerSavedAudienceCallablePayload.name': upsertOrganizerSavedAudienceCallablePayloadName,
     'upsertOrganizerSavedAudienceCallablePayload.organizerId': upsertOrganizerSavedAudienceCallablePayloadOrganizerId,

@@ -77,7 +77,9 @@ class HostSavedAudienceOverview extends ConsumerWidget {
               ],
             ),
             CatchSection.fieldRows(
-              title: audience.definition.join == HostSavedAudienceJoin.all
+              title: audience.definition.isStatic
+                  ? context.l10n.hostAudienceStaticMembership
+                  : audience.definition.join == HostSavedAudienceJoin.all
                   ? context.l10n.hostSavedAudienceMatchAll
                   : context.l10n.hostSavedAudienceMatchAny,
               children: [
@@ -202,6 +204,18 @@ String _savedAudienceRuleSummary(
   HostSavedAudiencePredicate predicate,
   HostSavedAudienceFilterOptions options,
 ) => switch (predicate) {
+  HostSavedAudienceStaticMembers(:final contactIds) =>
+    context.l10n.hostAudienceSelectedCount(count: contactIds.length),
+  HostSavedAudienceSpend(
+    :final operator,
+    :final currency,
+    :final amountMinor,
+    :final withinDays,
+  ) =>
+    '${operator == HostSavedAudienceAttendanceOperator.atLeast ? context.l10n.hostSavedAudienceAtLeast : context.l10n.hostSavedAudienceAtMost} '
+        '${formatMinorCurrency(amountMinor, currencyCode: currency)} $currency · '
+        '${withinDays == null ? context.l10n.hostAudienceSpendLifetime : context.l10n.hostAudienceSpendWindow(days: withinDays)}',
+
   HostSavedAudienceApplicationStatusRule(:final formId, :final reviewStatus) =>
     '${options.forms.where((f) => f.id == formId).firstOrNull?.title ?? context.l10n.hostAudienceSourceUnavailable} · '
         '${_audienceApplicationStatusLabel(context, reviewStatus)}',

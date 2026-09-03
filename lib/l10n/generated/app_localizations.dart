@@ -27130,7 +27130,7 @@ abstract class AppLocalizations {
   /// Saved audience overview label.
   ///
   /// In en, this message translates to:
-  /// **'Edit audience rules'**
+  /// **'Edit audience'**
   String get hostSavedAudienceEditRules;
 
   /// Saved audience overview label.
@@ -27154,7 +27154,7 @@ abstract class AppLocalizations {
   /// Saved audience overview label.
   ///
   /// In en, this message translates to:
-  /// **'No people match these rules'**
+  /// **'No people in this audience'**
   String get hostSavedAudienceNoMembers;
 
   /// Saved audience filter authoring label.
@@ -27210,6 +27210,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only choice and yes/no questions marked filterable appear here. Each rule uses the selected published version.'**
   String get hostAudienceFilterableQuestionsHelp;
+
+  /// Saved audience SelectedCount control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 selected person} other{{count} selected people}}'**
+  String hostAudienceSelectedCount({required int count});
+
+  /// Saved audience StaticHelp control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose up to 2,500 people. Membership stays as selected until you edit it. Messaging permission is checked separately.'**
+  String get hostAudienceStaticHelp;
+
+  /// Saved audience UnavailablePerson control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable person'**
+  String get hostAudienceUnavailablePerson;
+
+  /// Saved audience RemoveSelected control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from this audience'**
+  String get hostAudienceRemoveSelected;
+
+  /// Saved audience PreviousPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous people'**
+  String get hostAudiencePreviousPeople;
+
+  /// Saved audience NextPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Next people'**
+  String get hostAudienceNextPeople;
+
+  /// Saved audience ChoosePeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose people'**
+  String get hostAudienceChoosePeople;
+
+  /// Saved audience SearchPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get hostAudienceSearchPeople;
+
+  /// Saved audience AvailablePeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'People you can select'**
+  String get hostAudienceAvailablePeople;
+
+  /// Saved audience NoPeopleFound control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'No people found'**
+  String get hostAudienceNoPeopleFound;
+
+  /// Saved audience NoSelectedPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'No people selected yet'**
+  String get hostAudienceNoSelectedPeople;
+
+  /// Saved audience SelectionLimit control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'You have selected the maximum of 2,500 people.'**
+  String get hostAudienceSelectionLimit;
+
+  /// Saved audience MembershipMode control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience membership'**
+  String get hostAudienceMembershipMode;
+
+  /// Saved audience RuleMembership control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Match conditions automatically'**
+  String get hostAudienceRuleMembership;
+
+  /// Saved audience StaticMembership control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose people manually'**
+  String get hostAudienceStaticMembership;
+
+  /// Saved audience Spend control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch spend'**
+  String get hostAudienceSpend;
+
+  /// Saved audience SpendHelp control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses completed Catch payments for your events, excluding refunds. Only uniquely verified Catch accounts are included. Currencies are counted separately; changing currency resets the amount.'**
+  String get hostAudienceSpendHelp;
+
+  /// Saved audience SpendCurrency control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get hostAudienceSpendCurrency;
+
+  /// Saved audience SpendAmount control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get hostAudienceSpendAmount;
+
+  /// Saved audience SpendAmountInvalid control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid amount within 10 billion minor currency units.'**
+  String get hostAudienceSpendAmountInvalid;
+
+  /// Saved audience SpendDays control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Past number of days'**
+  String get hostAudienceSpendDays;
+
+  /// Saved audience SpendDaysHelp control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave blank to include all recorded Catch payments.'**
+  String get hostAudienceSpendDaysHelp;
+
+  /// Saved audience SpendDaysInvalid control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number from 1 to 3,650, or leave blank.'**
+  String get hostAudienceSpendDaysInvalid;
+
+  /// Saved audience SpendLifetime control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'All recorded payments'**
+  String get hostAudienceSpendLifetime;
+
+  /// Saved audience SpendWindow control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Past {days} days'**
+  String hostAudienceSpendWindow({required int days});
 }
 
 class _AppLocalizationsDelegate

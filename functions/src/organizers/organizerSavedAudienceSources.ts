@@ -8,6 +8,8 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 import {ListOrganizerSavedAudiencesCallableResponse} from
   "../shared/generated/listOrganizerSavedAudiencesCallableResponse";
+import {savedAudienceSpendMatches, staticAudienceMembers} from
+  "./organizerSavedAudienceMembership";
 import {organizerApplicationAccess} from "./organizerApplicationAccess";
 
 type Definition = OrganizerSavedAudienceDocument["definition"];
@@ -58,9 +60,13 @@ async function requireFilterQuestion(db: FirebaseFirestore.Firestore,
  */
 export async function assertSavedAudienceSources(
   db: FirebaseFirestore.Firestore,
-  organizerId: string, definition: Definition): Promise<void> {
+  organizerId: string, definition: Definition, validateMembers = true
+): Promise<void> {
   for (const predicate of definition.predicates) {
-    if (predicate.kind === "formAnswer") {
+    if (predicate.kind === "staticMembers" && validateMembers) {
+      await staticAudienceMembers(db, organizerId,
+        predicate.contactIds, true);
+    } else if (predicate.kind === "formAnswer") {
       await requireFilterQuestion(db, organizerId, predicate);
     } else if (predicate.kind === "applicationStatus") {
       const snapshots = await Promise.all([
@@ -86,12 +92,20 @@ export async function assertSavedAudienceSources(
  */
 export async function savedAudienceSourceMatches(
   db: FirebaseFirestore.Firestore,
-  organizerId: string, definition: Definition):
+  organizerId: string, definition: Definition, nowMillis = Date.now()):
   Promise<Map<string, Set<string>>> {
-  await assertSavedAudienceSources(db, organizerId, definition);
+  await assertSavedAudienceSources(db, organizerId, definition, false);
   const sources = definition.predicates.filter((p) =>
     ["applicationStatus", "formAnswer", "attendedEvent"].includes(p.kind));
-  const matches = new Map<string, Set<string>>();
+  const matches = await savedAudienceSpendMatches({db, organizerId, nowMillis,
+    predicates: definition.predicates.filter((p): p is Extract<Predicate,
+      {kind: "spend"}> => p.kind === "spend")});
+  for (const predicate of definition.predicates) {
+    if (predicate.kind === "staticMembers") {
+      matches.set(JSON.stringify(predicate), await staticAudienceMembers(
+        db, organizerId, predicate.contactIds, false));
+    }
+  }
   if (sources.length === 0) return matches;
   const origins = sources.some((p) => p.kind !== "attendedEvent") ?
     await bounded(db.collection("organizerContactOrigins")

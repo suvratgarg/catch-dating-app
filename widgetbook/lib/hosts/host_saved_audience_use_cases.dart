@@ -111,6 +111,12 @@ Widget hostAudienceSourceRuleStates(BuildContext context) => SizedBox(
             options: _options,
             enabled: true,
             predicate: switch (kind) {
+              HostAudienceSourceRuleKind.spend => const HostSavedAudienceSpend(
+                operator: HostSavedAudienceAttendanceOperator.atLeast,
+                currency: 'INR',
+                amountMinor: 100000,
+                withinDays: 90,
+              ),
               HostAudienceSourceRuleKind.attendedEvent =>
                 const HostSavedAudienceAttendedEvent('sunday-social'),
               HostAudienceSourceRuleKind.applicationStatus =>
@@ -140,3 +146,58 @@ Widget hostAudienceSourceRuleStates(BuildContext context) => SizedBox(
 )
 Widget hostSavedAudienceOverviewOnlyState(BuildContext context) =>
     hostSavedAudienceOverviewState(context);
+
+@widgetbook.UseCase(
+  name: 'Selected and unavailable people',
+  type: HostStaticAudienceMembersEditor,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostStaticAudienceMembersState(BuildContext context) => ProviderScope(
+  overrides: [
+    hostStaticAudienceMembersProvider(
+      'preview-organizer',
+      '["ada","deleted"]',
+    ).overrideWith(
+      (_) async => const [
+        HostStaticAudienceMember(
+          selectedContactId: 'ada',
+          contactId: 'ada',
+          displayName: 'Ada',
+          available: true,
+        ),
+        HostStaticAudienceMember(
+          selectedContactId: 'deleted',
+          contactId: null,
+          displayName: null,
+          available: false,
+        ),
+      ],
+    ),
+    hostAudienceProvider(
+      'preview-organizer',
+      const HostAudienceQuery(sort: HostAudienceSort.name),
+    ).overrideWith(
+      (_) async => const HostAudiencePage(
+        organizerId: 'preview-organizer',
+        contacts: [],
+        nextCursor: null,
+        matchCount: 0,
+        matchCountCoverage: HostAudienceMatchCountCoverage.exact,
+        sourceCoverage: HostAudienceSourceCoverage.exact,
+        projectionVersion: 1,
+      ),
+    ),
+  ],
+  child: SizedBox(
+    width: 420,
+    height: 820,
+    child: SingleChildScrollView(
+      child: HostStaticAudienceMembersEditor(
+        organizerId: 'preview-organizer',
+        selectedIds: const {'ada', 'deleted'},
+        enabled: true,
+        onChanged: (_) {},
+      ),
+    ),
+  ),
+);

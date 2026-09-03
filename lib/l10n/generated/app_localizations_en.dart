@@ -17259,7 +17259,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'View this person’s applications and review decisions.';
 
   @override
-  String get hostSavedAudienceEditRules => 'Edit audience rules';
+  String get hostSavedAudienceEditRules => 'Edit audience';
 
   @override
   String get hostSavedAudienceEvaluated => 'Last evaluated';
@@ -17271,7 +17271,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSavedAudienceMembers => 'People in this audience';
 
   @override
-  String get hostSavedAudienceNoMembers => 'No people match these rules';
+  String get hostSavedAudienceNoMembers => 'No people in this audience';
 
   @override
   String get hostAudienceRuleApplication => 'Application status';
@@ -17300,4 +17300,95 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostAudienceFilterableQuestionsHelp =>
       'Only choice and yes/no questions marked filterable appear here. Each rule uses the selected published version.';
+
+  @override
+  String hostAudienceSelectedCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count selected people',
+      one: '1 selected person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostAudienceStaticHelp =>
+      'Choose up to 2,500 people. Membership stays as selected until you edit it. Messaging permission is checked separately.';
+
+  @override
+  String get hostAudienceUnavailablePerson => 'Unavailable person';
+
+  @override
+  String get hostAudienceRemoveSelected => 'Remove from this audience';
+
+  @override
+  String get hostAudiencePreviousPeople => 'Previous people';
+
+  @override
+  String get hostAudienceNextPeople => 'Next people';
+
+  @override
+  String get hostAudienceChoosePeople => 'Choose people';
+
+  @override
+  String get hostAudienceSearchPeople => 'Search by name';
+
+  @override
+  String get hostAudienceAvailablePeople => 'People you can select';
+
+  @override
+  String get hostAudienceNoPeopleFound => 'No people found';
+
+  @override
+  String get hostAudienceNoSelectedPeople => 'No people selected yet';
+
+  @override
+  String get hostAudienceSelectionLimit =>
+      'You have selected the maximum of 2,500 people.';
+
+  @override
+  String get hostAudienceMembershipMode => 'Audience membership';
+
+  @override
+  String get hostAudienceRuleMembership => 'Match conditions automatically';
+
+  @override
+  String get hostAudienceStaticMembership => 'Choose people manually';
+
+  @override
+  String get hostAudienceSpend => 'Catch spend';
+
+  @override
+  String get hostAudienceSpendHelp =>
+      'Uses completed Catch payments for your events, excluding refunds. Only uniquely verified Catch accounts are included. Currencies are counted separately; changing currency resets the amount.';
+
+  @override
+  String get hostAudienceSpendCurrency => 'Currency';
+
+  @override
+  String get hostAudienceSpendAmount => 'Amount';
+
+  @override
+  String get hostAudienceSpendAmountInvalid =>
+      'Enter a valid amount within 10 billion minor currency units.';
+
+  @override
+  String get hostAudienceSpendDays => 'Past number of days';
+
+  @override
+  String get hostAudienceSpendDaysHelp =>
+      'Leave blank to include all recorded Catch payments.';
+
+  @override
+  String get hostAudienceSpendDaysInvalid =>
+      'Enter a whole number from 1 to 3,650, or leave blank.';
+
+  @override
+  String get hostAudienceSpendLifetime => 'All recorded payments';
+
+  @override
+  String hostAudienceSpendWindow({required int days}) {
+    return 'Past $days days';
+  }
 }

@@ -102,14 +102,19 @@ class _HostSavedAudienceEditorFormState
   HostSavedAudience? _audience;
   String? _pendingCreateRequestId;
   bool _busy = false;
+  late bool _static;
+  late Set<String> _selectedIds;
 
   @override
   void initState() {
     super.initState();
     _audience = widget.initialAudience;
+    _static = _audience?.definition.isStatic ?? false;
+    _selectedIds = {...?_audience?.definition.selectedContactIds};
     _nameController = TextEditingController(text: _audience?.name ?? '');
     _join = _audience?.definition.join ?? HostSavedAudienceJoin.all;
     _rules = (_audience?.definition.predicates ?? const [])
+        .where((predicate) => predicate is! HostSavedAudienceStaticMembers)
         .map(_AudienceRuleDraft.fromPredicate)
         .toList(growable: true);
     if (_rules.isEmpty) _rules.add(_AudienceRuleDraft.defaults());
@@ -190,45 +195,84 @@ class _HostSavedAudienceEditorFormState
                                 ? context.l10n.hostSavedAudienceNameRequired
                                 : null,
                           ),
-                          CatchField.select<HostSavedAudienceJoin>(
-                            key: const ValueKey('host-saved-audience-join'),
-                            title: context.l10n.hostSavedAudienceMatch,
-                            contract: CatchContractConstraints
-                                .upsertOrganizerSavedAudienceCallablePayloadDefinitionJoin,
-                            contractValue: (value) => value.name,
-                            values: HostSavedAudienceJoin.values,
-                            itemLabel: (value) => switch (value) {
-                              HostSavedAudienceJoin.all =>
-                                context.l10n.hostSavedAudienceMatchAll,
-                              HostSavedAudienceJoin.any =>
-                                context.l10n.hostSavedAudienceMatchAny,
-                            },
-                            value: _join,
+                          CatchField.select<HostSavedAudienceMembershipMode>(
+                            key: const ValueKey('host-saved-audience-mode'),
+                            title: context.l10n.hostAudienceMembershipMode,
+                            contractExemption:
+                                'Chooses the staticMembers-only definition or the dynamic predicate vocabulary, validated by the saved-audience callable.',
+                            values: HostSavedAudienceMembershipMode.values,
+                            itemLabel: (value) =>
+                                value == HostSavedAudienceMembershipMode.rules
+                                ? context.l10n.hostAudienceRuleMembership
+                                : context.l10n.hostAudienceStaticMembership,
+                            value: _static
+                                ? HostSavedAudienceMembershipMode.selectedPeople
+                                : HostSavedAudienceMembershipMode.rules,
                             enabled: !_busy,
                             onChanged: (value) {
-                              if (value != null) setState(() => _join = value);
+                              if (value != null) {
+                                setState(
+                                  () => _static =
+                                      value ==
+                                      HostSavedAudienceMembershipMode
+                                          .selectedPeople,
+                                );
+                              }
                             },
                           ),
+                          if (!_static)
+                            CatchField.select<HostSavedAudienceJoin>(
+                              key: const ValueKey('host-saved-audience-join'),
+                              title: context.l10n.hostSavedAudienceMatch,
+                              contract: CatchContractConstraints
+                                  .upsertOrganizerSavedAudienceCallablePayloadDefinitionJoin,
+                              contractValue: (value) => value.name,
+                              values: HostSavedAudienceJoin.values,
+                              itemLabel: (value) => switch (value) {
+                                HostSavedAudienceJoin.all =>
+                                  context.l10n.hostSavedAudienceMatchAll,
+                                HostSavedAudienceJoin.any =>
+                                  context.l10n.hostSavedAudienceMatchAny,
+                              },
+                              value: _join,
+                              enabled: !_busy,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() => _join = value);
+                                }
+                              },
+                            ),
                         ],
                       ),
                     ),
-                    for (var index = 0; index < _rules.length; index++)
+                    if (_static)
                       CatchResponsiveSectionItem(
-                        child: _HostSavedAudienceRuleSection(
-                          key: ValueKey('host-saved-audience-rule-$index'),
-                          number: index + 1,
-                          draft: _rules[index],
-                          manualTags: manualTags,
-                          filterOptions: filterOptions,
+                        child: HostStaticAudienceMembersEditor(
+                          organizerId: widget.organizerId,
+                          selectedIds: _selectedIds,
                           enabled: !_busy,
-                          canRemove: _rules.length > 1,
-                          onChanged: (draft) =>
-                              setState(() => _rules[index] = draft),
-                          onRemove: () =>
-                              setState(() => _rules.removeAt(index)),
+                          onChanged: (ids) =>
+                              setState(() => _selectedIds = ids),
                         ),
                       ),
-                    if (_rules.length < 8)
+                    if (!_static)
+                      for (var index = 0; index < _rules.length; index++)
+                        CatchResponsiveSectionItem(
+                          child: _HostSavedAudienceRuleSection(
+                            key: ValueKey('host-saved-audience-rule-$index'),
+                            number: index + 1,
+                            draft: _rules[index],
+                            manualTags: manualTags,
+                            filterOptions: filterOptions,
+                            enabled: !_busy,
+                            canRemove: _rules.length > 1,
+                            onChanged: (draft) =>
+                                setState(() => _rules[index] = draft),
+                            onRemove: () =>
+                                setState(() => _rules.removeAt(index)),
+                          ),
+                        ),
+                    if (!_static && _rules.length < 8)
                       CatchResponsiveSectionItem(
                         child: CatchSection.fieldRows(
                           children: [
@@ -303,7 +347,11 @@ class _HostSavedAudienceEditorFormState
 
   Future<void> _save() async {
     if (_busy || !(_formKey.currentState?.validate() ?? false)) return;
-    final predicates = _rules.map((rule) => rule.toPredicate()).toList();
+    final predicates = _static
+        ? <HostSavedAudiencePredicate?>[
+            HostSavedAudienceStaticMembers(_selectedIds.toList()..sort()),
+          ]
+        : _rules.map((rule) => rule.toPredicate()).toList();
     if (predicates.any((predicate) => predicate == null)) {
       showCatchErrorSnackBar(
         context,
@@ -325,7 +373,7 @@ class _HostSavedAudienceEditorFormState
         requestId: requestId,
         name: _nameController.text.trim(),
         definition: HostSavedAudienceDefinition(
-          join: _join,
+          join: _static ? HostSavedAudienceJoin.all : _join,
           predicates: predicates.cast<HostSavedAudiencePredicate>(),
         ),
       );
@@ -479,11 +527,13 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           },
         ),
         ...switch (draft.kind) {
+          _AudienceRuleKind.spend ||
           _AudienceRuleKind.applicationStatus ||
           _AudienceRuleKind.formAnswer ||
           _AudienceRuleKind.attendedEvent => [
             HostAudienceSourceRuleFields(
               kind: switch (draft.kind) {
+                _AudienceRuleKind.spend => HostAudienceSourceRuleKind.spend,
                 _AudienceRuleKind.applicationStatus =>
                   HostAudienceSourceRuleKind.applicationStatus,
                 _AudienceRuleKind.attendedEvent =>
@@ -601,6 +651,7 @@ enum _AudienceRuleKind {
   attendanceCount('attendanceCount'),
   lastSeenWithinDays('lastSeenWithinDays'),
   campaignReachable('reachableForIntent'),
+  spend('spend'),
   applicationStatus('applicationStatus'),
   formAnswer('formAnswer'),
   attendedEvent('attendedEvent');
@@ -630,6 +681,13 @@ class _AudienceRuleDraft {
   factory _AudienceRuleDraft.fromPredicate(
     HostSavedAudiencePredicate predicate,
   ) => switch (predicate) {
+    HostSavedAudienceStaticMembers() => throw StateError(
+      'Static members do not use the rule editor.',
+    ),
+    HostSavedAudienceSpend() => _AudienceRuleDraft.defaults().copyWith(
+      kind: _AudienceRuleKind.spend,
+      sourcePredicate: predicate,
+    ),
     HostSavedAudienceApplicationStatusRule() =>
       _AudienceRuleDraft.defaults().copyWith(
         kind: _AudienceRuleKind.applicationStatus,
@@ -693,6 +751,15 @@ class _AudienceRuleDraft {
     List<HostCustomerManualTag> manualTags,
   ) => copyWith(
     kind: next,
+    sourcePredicate:
+        next == _AudienceRuleKind.spend &&
+            sourcePredicate is! HostSavedAudienceSpend
+        ? const HostSavedAudienceSpend(
+            operator: HostSavedAudienceAttendanceOperator.atLeast,
+            currency: 'INR',
+            amountMinor: 100000,
+          )
+        : sourcePredicate,
     manualTagId: next == _AudienceRuleKind.manualTag
         ? manualTagId ?? manualTags.firstOrNull?.tagId
         : manualTagId,
@@ -718,6 +785,8 @@ class _AudienceRuleDraft {
   );
 
   HostSavedAudiencePredicate? toPredicate() => switch (kind) {
+    _AudienceRuleKind.spend =>
+      sourcePredicate is HostSavedAudienceSpend ? sourcePredicate : null,
     _AudienceRuleKind.applicationStatus =>
       sourcePredicate is HostSavedAudienceApplicationStatusRule
           ? sourcePredicate
@@ -747,6 +816,7 @@ class _AudienceRuleDraft {
 
 String _audienceRuleKindLabel(BuildContext context, _AudienceRuleKind kind) =>
     switch (kind) {
+      _AudienceRuleKind.spend => context.l10n.hostAudienceSpend,
       _AudienceRuleKind.applicationStatus =>
         context.l10n.hostAudienceRuleApplication,
       _AudienceRuleKind.formAnswer => context.l10n.hostAudienceRuleFormAnswer,

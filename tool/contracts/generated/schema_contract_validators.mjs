@@ -249,6 +249,8 @@ import {
   upsertOrganizerSavedAudienceCallablePayloadSchema,
   listOrganizerSavedAudiencesCallablePayloadSchema,
   previewOrganizerSavedAudienceCallablePayloadSchema,
+  resolveOrganizerAudienceMembersCallablePayloadSchema,
+  resolveOrganizerAudienceMembersCallableResponseSchema,
   archiveOrganizerSavedAudienceCallablePayloadSchema,
   organizerSavedAudienceCallableResponseSchema,
   listOrganizerSavedAudiencesCallableResponseSchema,
@@ -796,6 +798,8 @@ export const validateUpsertOrganizerCampaignCallablePayload = ajv.compile(upsert
 export const validateUpsertOrganizerSavedAudienceCallablePayload = ajv.compile(upsertOrganizerSavedAudienceCallablePayloadSchema);
 export const validateListOrganizerSavedAudiencesCallablePayload = ajv.compile(listOrganizerSavedAudiencesCallablePayloadSchema);
 export const validatePreviewOrganizerSavedAudienceCallablePayload = ajv.compile(previewOrganizerSavedAudienceCallablePayloadSchema);
+export const validateResolveOrganizerAudienceMembersCallablePayload = ajv.compile(resolveOrganizerAudienceMembersCallablePayloadSchema);
+export const validateResolveOrganizerAudienceMembersCallableResponse = ajv.compile(resolveOrganizerAudienceMembersCallableResponseSchema);
 export const validateArchiveOrganizerSavedAudienceCallablePayload = ajv.compile(archiveOrganizerSavedAudienceCallablePayloadSchema);
 export const validateOrganizerSavedAudienceCallableResponse = ajv.compile(organizerSavedAudienceCallableResponseSchema);
 export const validateListOrganizerSavedAudiencesCallableResponse = ajv.compile(listOrganizerSavedAudiencesCallableResponseSchema);

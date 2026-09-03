@@ -61,7 +61,7 @@
       }
     },
     "predicate": {
-      "oneOf": [{"$ref": "#/definitions/computedSegmentPredicate"}, {"$ref": "#/definitions/manualTagPredicate"}, {"$ref": "#/definitions/attendanceCountPredicate"}, {"$ref": "#/definitions/lastSeenWithinDaysPredicate"}, {"$ref": "#/definitions/reachableForIntentPredicate"}, {"$ref": "#/definitions/applicationStatusPredicate"}, {"$ref": "#/definitions/formAnswerPredicate"}, {"$ref": "#/definitions/attendedEventPredicate"}]
+      "oneOf": [{"$ref": "#/definitions/computedSegmentPredicate"}, {"$ref": "#/definitions/manualTagPredicate"}, {"$ref": "#/definitions/attendanceCountPredicate"}, {"$ref": "#/definitions/lastSeenWithinDaysPredicate"}, {"$ref": "#/definitions/reachableForIntentPredicate"}, {"$ref": "#/definitions/applicationStatusPredicate"}, {"$ref": "#/definitions/formAnswerPredicate"}, {"$ref": "#/definitions/attendedEventPredicate"}, {"$ref": "#/definitions/spendPredicate"}, {"$ref": "#/definitions/staticMembersPredicate"}]
     },
     "computedSegmentPredicate": {
       "type": "object",
@@ -182,6 +182,30 @@
         },
         "eventId": {
           "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "spendPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "operator", "currency", "amountMinor", "withinDays"],
+      "properties": {
+        "kind": {"const": "spend"},
+        "operator": {"type": "string", "enum": ["atLeast", "atMost"]},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "amountMinor": {"type": "integer", "minimum": 0, "maximum": 10000000000},
+        "withinDays": {"type": ["integer", "null"], "minimum": 1, "maximum": 3650}
+      }
+    },
+    "staticMembersPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "contactIds"],
+      "properties": {
+        "kind": {"const": "staticMembers"},
+        "contactIds": {
+          "type": "array", "minItems": 0, "maxItems": 2500, "uniqueItems": true,
+          "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
         }
       }
     }

@@ -8144,6 +8144,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                   ),
                 ],
               ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostStaticAudienceMembersEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Selected and unavailable people',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostStaticAudienceMembersState,
+                  ),
+                ],
+              ),
             ],
           ),
           _widgetbook.WidgetbookComponent(

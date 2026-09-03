@@ -73,6 +73,21 @@ export interface UpsertOrganizerSavedAudienceCallablePayload {
           kind: "attendedEvent";
           eventId: string;
         }
+      | {
+          kind: "spend";
+          operator: "atLeast" | "atMost";
+          currency: string;
+          amountMinor: number;
+          withinDays: number | null;
+        }
+      | {
+          kind: "staticMembers";
+          /**
+           * @minItems 0
+           * @maxItems 2500
+           */
+          contactIds: string[];
+        }
     )[];
   };
 }

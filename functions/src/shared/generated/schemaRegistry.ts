@@ -14301,6 +14301,70 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                     "maxLength": 180
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "currency",
+                  "amountMinor",
+                  "withinDays"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "spend"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "amountMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000000000
+                  },
+                  "withinDays": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "contactIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "staticMembers"
+                  },
+                  "contactIds": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 2500,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
+                  }
+                }
               }
             ]
           }
@@ -14719,6 +14783,70 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                     "maxLength": 180
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "currency",
+                  "amountMinor",
+                  "withinDays"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "spend"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "amountMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000000000
+                  },
+                  "withinDays": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "contactIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "staticMembers"
+                  },
+                  "contactIds": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 2500,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
+                  }
+                }
               }
             ]
           }
@@ -14919,6 +15047,70 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
               "maxLength": 180
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "operator",
+            "currency",
+            "amountMinor",
+            "withinDays"
+          ],
+          "properties": {
+            "kind": {
+              "const": "spend"
+            },
+            "operator": {
+              "type": "string",
+              "enum": [
+                "atLeast",
+                "atMost"
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "amountMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000000
+            },
+            "withinDays": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 3650
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "contactIds"
+          ],
+          "properties": {
+            "kind": {
+              "const": "staticMembers"
+            },
+            "contactIds": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 2500,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              }
+            }
+          }
         }
       ]
     },
@@ -15112,6 +15304,70 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
           "type": "string",
           "minLength": 1,
           "maxLength": 180
+        }
+      }
+    },
+    "spendPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "operator",
+        "currency",
+        "amountMinor",
+        "withinDays"
+      ],
+      "properties": {
+        "kind": {
+          "const": "spend"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "atLeast",
+            "atMost"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000000
+        },
+        "withinDays": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 3650
+        }
+      }
+    },
+    "staticMembersPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "contactIds"
+      ],
+      "properties": {
+        "kind": {
+          "const": "staticMembers"
+        },
+        "contactIds": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 2500,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
         }
       }
     }
@@ -61085,6 +61341,70 @@ export const upsertOrganizerSavedAudienceCallablePayloadSchema: Record<string, u
                     "maxLength": 180
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "currency",
+                  "amountMinor",
+                  "withinDays"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "spend"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "amountMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000000000
+                  },
+                  "withinDays": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "contactIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "staticMembers"
+                  },
+                  "contactIds": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 2500,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
+                  }
+                }
               }
             ]
           }
@@ -61184,6 +61504,90 @@ export const previewOrganizerSavedAudienceCallablePayloadSchema: Record<string, 
         "null"
       ],
       "maxLength": 2048
+    }
+  }
+} as const;
+
+export const resolveOrganizerAudienceMembersCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/resolve_organizer_audience_members_payload.schema.json",
+  "title": "ResolveOrganizerAudienceMembersCallablePayload",
+  "description": "Resolves the explicitly selected organizer contact ids for a static audience editor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactIds"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactIds": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 2500,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    }
+  }
+} as const;
+
+export const resolveOrganizerAudienceMembersCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/resolve_organizer_audience_members_response.schema.json",
+  "title": "ResolveOrganizerAudienceMembersCallableResponse",
+  "description": "Bounded static selection labels and canonical contact links; unavailable contacts expose no identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "members"
+  ],
+  "properties": {
+    "members": {
+      "type": "array",
+      "maxItems": 2500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "selectedContactId",
+          "contactId",
+          "displayName",
+          "available"
+        ],
+        "properties": {
+          "selectedContactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "contactId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "available": {
+            "type": "boolean"
+          }
+        }
+      }
     }
   }
 } as const;
@@ -61482,6 +61886,70 @@ export const organizerSavedAudienceCallableResponseSchema: Record<string, unknow
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 180
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "operator",
+                  "currency",
+                  "amountMinor",
+                  "withinDays"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "spend"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "atLeast",
+                      "atMost"
+                    ]
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "amountMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000000000
+                  },
+                  "withinDays": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 3650
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "contactIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "staticMembers"
+                  },
+                  "contactIds": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 2500,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
                   }
                 }
               }
@@ -61848,6 +62316,70 @@ export const listOrganizerSavedAudiencesCallableResponseSchema: Record<string, u
                           "type": "string",
                           "minLength": 1,
                           "maxLength": 180
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "operator",
+                        "currency",
+                        "amountMinor",
+                        "withinDays"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "spend"
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "atLeast",
+                            "atMost"
+                          ]
+                        },
+                        "currency": {
+                          "type": "string",
+                          "pattern": "^[A-Z]{3}$"
+                        },
+                        "amountMinor": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 10000000000
+                        },
+                        "withinDays": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1,
+                          "maximum": 3650
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "contactIds"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "staticMembers"
+                        },
+                        "contactIds": {
+                          "type": "array",
+                          "minItems": 0,
+                          "maxItems": 2500,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          }
                         }
                       }
                     }
@@ -62387,6 +62919,70 @@ export const previewOrganizerSavedAudienceCallableResponseSchema: Record<string,
                         "type": "string",
                         "minLength": 1,
                         "maxLength": 180
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "operator",
+                      "currency",
+                      "amountMinor",
+                      "withinDays"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "spend"
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": [
+                          "atLeast",
+                          "atMost"
+                        ]
+                      },
+                      "currency": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{3}$"
+                      },
+                      "amountMinor": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000000000
+                      },
+                      "withinDays": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 3650
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "contactIds"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "staticMembers"
+                      },
+                      "contactIds": {
+                        "type": "array",
+                        "minItems": 0,
+                        "maxItems": 2500,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        }
                       }
                     }
                   }

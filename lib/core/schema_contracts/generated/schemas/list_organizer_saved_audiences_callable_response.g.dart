@@ -286,6 +286,70 @@ const schemaListOrganizerSavedAudiencesCallableResponseSchema = <String, Object?
                         },
                       },
                     },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                        'operator',
+                        'currency',
+                        'amountMinor',
+                        'withinDays',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'const': 'spend',
+                        },
+                        'operator': <String, Object?>{
+                          'type': 'string',
+                          'enum': <Object?>[
+                            'atLeast',
+                            'atMost',
+                          ],
+                        },
+                        'currency': <String, Object?>{
+                          'type': 'string',
+                          'pattern': '^[A-Z]{3}\$',
+                        },
+                        'amountMinor': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 0,
+                          'maximum': 10000000000,
+                        },
+                        'withinDays': <String, Object?>{
+                          'type': <Object?>[
+                            'integer',
+                            'null',
+                          ],
+                          'minimum': 1,
+                          'maximum': 3650,
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                        'contactIds',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'const': 'staticMembers',
+                        },
+                        'contactIds': <String, Object?>{
+                          'type': 'array',
+                          'minItems': 0,
+                          'maxItems': 2500,
+                          'uniqueItems': true,
+                          'items': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 180,
+                          },
+                        },
+                      },
+                    },
                   ],
                 },
               },

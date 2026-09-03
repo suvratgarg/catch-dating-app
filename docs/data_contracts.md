@@ -961,7 +961,18 @@ feature requires a backfill.
 audiences. A definition contains one to eight predicates joined by `all` or
 `any` over the reviewed computed-segment, organizer-tag, attendance-count,
 last-seen recency, named-intent reach, application status by form, immutable
-filterable choice/boolean answers, and named-event attendance vocabulary.
+filterable choice/boolean answers, named-event attendance, and Catch spend.
+Spend specifies a currency, a minimum/maximum minor-unit amount and an optional
+trailing-day window. Only unique verified Catch identities qualify; totals use
+current completed payments, exclude refunds and failed sign-ups, and check
+canonical event ownership. Exact evaluation stops at 1,000 events and 5,000
+payments. Different currencies are never added or converted.
+A static list instead uses one `staticMembers` predicate with up to 2,500
+explicit contact ids and `join: all`. It cannot mix automatic conditions.
+`resolveOrganizerAudienceMembers` resolves selected labels in bounded batches
+for the manager-only editor. Merges follow the surviving contact; hidden or
+deleted records are excluded during evaluation and must be removed on save.
+Selecting a person never grants communication permission.
 Form-answer predicates carry form, version, question and a validated value;
 only non-sensitive questions marked `filterable` can be selected. Current
 submitted responses join People through deterministic source origins; merges

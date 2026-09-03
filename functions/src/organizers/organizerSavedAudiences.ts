@@ -30,6 +30,7 @@ import {PreviewOrganizerSavedAudienceCallableResponse} from
 import {UpsertOrganizerSavedAudienceCallablePayload} from
   "../shared/generated/upsertOrganizerSavedAudienceCallablePayload";
 import {
+  validateResolveOrganizerAudienceMembersCallablePayload,
   validateArchiveOrganizerSavedAudienceCallablePayload,
   validateListOrganizerSavedAudiencesCallablePayload,
   validatePreviewOrganizerSavedAudienceCallablePayload,
@@ -52,9 +53,15 @@ import {resolveOrganizerAudienceCoverage} from
 
 import {assertSavedAudienceSources, savedAudienceSourceMatches,
   savedAudienceFilterOptions} from "./organizerSavedAudienceSources";
+import {ResolveOrganizerAudienceMembersCallablePayload} from
+  "../shared/generated/resolveOrganizerAudienceMembersCallablePayload";
+import {ResolveOrganizerAudienceMembersCallableResponse} from
+  "../shared/generated/resolveOrganizerAudienceMembersCallableResponse";
+import {resolveStaticAudienceSelection} from
+  "./organizerSavedAudienceMembership";
 import {savedAudienceMemberPage} from "./organizerSavedAudienceMembers";
 
-export const organizerSavedAudienceDefinitionVersion = 2;
+export const organizerSavedAudienceDefinitionVersion = 3;
 export const organizerSavedAudienceEvaluationLimit = 2500;
 const savedAudienceListDefaultLimit = 25;
 const getAllChunkSize = 250;
@@ -82,6 +89,22 @@ const defaultDeps: SavedAudienceDeps = {
   checkRateLimit,
   now: () => admin.firestore.Timestamp.now(),
 };
+
+/** Returns one bounded selected-contact projection without per-row lookups. */
+export async function resolveOrganizerAudienceMembersHandler(
+  request: CallableRequest<unknown>, deps: SavedAudienceDeps = defaultDeps
+): Promise<ResolveOrganizerAudienceMembersCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<
+    ResolveOrganizerAudienceMembersCallablePayload
+  >(
+    request, validateResolveOrganizerAudienceMembersCallablePayload);
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "resolveOrganizerAudienceMembers");
+  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  return {members: await resolveStaticAudienceSelection(db, data.organizerId,
+    data.contactIds, false)};
+}
 
 export async function upsertOrganizerSavedAudienceHandler(
   request: CallableRequest<unknown>,
@@ -423,7 +446,7 @@ export async function resolveSavedAudienceRows(params: {
       return [value.contactId, value] as const;
     }));
   const sourceMatches = await savedAudienceSourceMatches(
-    params.db, params.organizerId, params.definition);
+    params.db, params.organizerId, params.definition, params.now.toMillis());
   return contacts.flatMap((row): SavedAudienceEvaluationRow[] => {
     if (row.contact.mergedIntoContactId != null ||
         row.contact.identityState === "merged") return [];
@@ -464,6 +487,8 @@ function savedAudiencePredicateMatches(
   now: FirebaseFirestore.Timestamp,
 ): boolean {
   switch (predicate.kind) {
+  case "spend":
+  case "staticMembers":
   case "applicationStatus":
   case "formAnswer":
   case "attendedEvent":
@@ -511,8 +536,15 @@ export function isReachableForOrganizerWhatsappCampaign(
 export function canonicalSavedAudienceDefinition(
   definition: AudienceDefinition,
 ): AudienceDefinition {
+  if (definition.predicates.some((p) => p.kind === "staticMembers") &&
+      (definition.predicates.length !== 1 || definition.join !== "all")) {
+    throw new HttpsError("invalid-argument",
+      "Static lists cannot be combined with automatic audience rules.");
+  }
   const predicates = definition.predicates
-    .map((predicate) => ({...predicate}))
+    .map((predicate) => predicate.kind === "staticMembers" ?
+      {...predicate, contactIds: [...new Set(predicate.contactIds)].sort()} :
+      {...predicate})
     .sort((left, right) =>
       JSON.stringify(left).localeCompare(JSON.stringify(right)));
   const keys = predicates.map((predicate) => JSON.stringify(predicate));
@@ -708,4 +740,9 @@ export const previewOrganizerSavedAudience = onCall(
 export const archiveOrganizerSavedAudience = onCall(
   appCheckCallableOptionsWithLimits(savedAudienceCallableLimits),
   (request) => archiveOrganizerSavedAudienceHandler(request),
+);
+
+export const resolveOrganizerAudienceMembers = onCall(
+  appCheckCallableOptionsWithLimits(savedAudienceCallableLimits),
+  (request) => resolveOrganizerAudienceMembersHandler(request),
 );

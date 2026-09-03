@@ -1,6 +1,11 @@
 part of 'host_customers_screen.dart';
 
-enum HostAudienceSourceRuleKind { applicationStatus, formAnswer, attendedEvent }
+enum HostAudienceSourceRuleKind {
+  applicationStatus,
+  formAnswer,
+  attendedEvent,
+  spend,
+}
 
 class HostAudienceSourceRuleFields extends StatelessWidget {
   const HostAudienceSourceRuleFields({
@@ -20,6 +25,106 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (kind == HostAudienceSourceRuleKind.spend) {
+      final rule = predicate as HostSavedAudienceSpend;
+      return CatchFieldLanes.divided(
+        children: [
+          CatchField.read(
+            title: context.l10n.hostAudienceSpend,
+            body: context.l10n.hostAudienceSpendHelp,
+          ),
+          CatchField.select<HostSavedAudienceAttendanceOperator>(
+            title: context.l10n.hostSavedAudienceAttendanceComparison,
+            contract: CatchContractConstraints
+                .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator,
+            contractValue: (value) => value.name,
+            values: HostSavedAudienceAttendanceOperator.values,
+            itemLabel: (value) =>
+                value == HostSavedAudienceAttendanceOperator.atLeast
+                ? context.l10n.hostSavedAudienceAtLeast
+                : context.l10n.hostSavedAudienceAtMost,
+            value: rule.operator,
+            enabled: enabled,
+            onChanged: (value) {
+              if (value != null) onChanged(rule.copyWith(operator: value));
+            },
+          ),
+          CatchField.select<String>(
+            key: const ValueKey('host-audience-spend-currency'),
+            title: context.l10n.hostAudienceSpendCurrency,
+            contract: CatchContractConstraints
+                .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsCurrency,
+            values: {
+              ...supportedCurrencyDefinitions.map((c) => c.code),
+              rule.currency,
+            }.toList(),
+            itemLabel: (value) => value,
+            value: rule.currency,
+            enabled: enabled,
+            onChanged: (value) {
+              if (value != null && value != rule.currency) {
+                onChanged(rule.copyWith(currency: value, amountMinor: 0));
+              }
+            },
+          ),
+          CatchField.input(
+            key: ValueKey('host-audience-spend-amount-${rule.currency}'),
+            title: context.l10n.hostAudienceSpendAmount,
+            contractExemption:
+                'The field edits major currency units. Exact integer parsing validates the stored amountMinor range before saving.',
+            initialValue: minorCurrencyAmountInputText(
+              rule.amountMinor,
+              currencyCode: rule.currency,
+            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            enabled: enabled,
+            validator: (text) {
+              final amount = parseMajorCurrencyAmountToMinorUnits(
+                text ?? '',
+                currencyCode: rule.currency,
+              );
+              return amount == null || amount < 0 || amount > 10000000000
+                  ? context.l10n.hostAudienceSpendAmountInvalid
+                  : null;
+            },
+            onChanged: (text) {
+              final amount = parseMajorCurrencyAmountToMinorUnits(
+                text,
+                currencyCode: rule.currency,
+              );
+              if (amount != null && amount >= 0 && amount <= 10000000000) {
+                onChanged(rule.copyWith(amountMinor: amount));
+              }
+            },
+          ),
+          CatchField.input(
+            key: const ValueKey('host-audience-spend-days'),
+            title: context.l10n.hostAudienceSpendDays,
+            helperText: context.l10n.hostAudienceSpendDaysHelp,
+            contractExemption:
+                'Blank means lifetime (null); an entered value must be an integer from 1 to 3650, matching withinDays.',
+            initialValue: rule.withinDays?.toString() ?? '',
+            keyboardType: TextInputType.number,
+            enabled: enabled,
+            validator: (text) {
+              if ((text ?? '').trim().isEmpty) return null;
+              final days = int.tryParse(text!.trim());
+              return days == null || days < 1 || days > 3650
+                  ? context.l10n.hostAudienceSpendDaysInvalid
+                  : null;
+            },
+            onChanged: (text) {
+              final days = int.tryParse(text.trim());
+              if (text.trim().isEmpty) {
+                onChanged(rule.copyWith(lifetime: true));
+              } else if (days != null && days >= 1 && days <= 3650) {
+                onChanged(rule.copyWith(withinDays: days));
+              }
+            },
+          ),
+        ],
+      );
+    }
     if (kind == HostAudienceSourceRuleKind.attendedEvent) {
       final rule = predicate is HostSavedAudienceAttendedEvent
           ? predicate as HostSavedAudienceAttendedEvent

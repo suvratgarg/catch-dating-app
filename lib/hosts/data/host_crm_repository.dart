@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
@@ -2027,6 +2029,21 @@ sealed class HostSavedAudiencePredicate {
 
   factory HostSavedAudiencePredicate.fromMap(Map<Object?, Object?> map) =>
       switch (_requiredString(map, 'kind')) {
+        'staticMembers' => HostSavedAudienceStaticMembers(
+          _stringList(map['contactIds']),
+        ),
+        'spend' => HostSavedAudienceSpend(
+          operator: _enumByName(
+            HostSavedAudienceAttendanceOperator.values,
+            _requiredString(map, 'operator'),
+            'spend comparison',
+          ),
+          currency: _requiredString(map, 'currency'),
+          amountMinor: _requiredInt(map, 'amountMinor'),
+          withinDays: map['withinDays'] == null
+              ? null
+              : _requiredInt(map, 'withinDays'),
+        ),
         'applicationStatus' => HostSavedAudienceApplicationStatusRule(
           formId: _requiredString(map, 'formId'),
           reviewStatus: _enumByName(
@@ -2162,6 +2179,13 @@ class HostSavedAudienceDefinition {
 
   final HostSavedAudienceJoin join;
   final List<HostSavedAudiencePredicate> predicates;
+
+  bool get isStatic =>
+      predicates.length == 1 &&
+      predicates.single is HostSavedAudienceStaticMembers;
+  List<String> get selectedContactIds => isStatic
+      ? (predicates.single as HostSavedAudienceStaticMembers).contactIds
+      : const [];
 
   Map<String, Object?> toJson() => {
     'join': join.name,
@@ -2823,6 +2847,22 @@ class HostCrmRepository {
         action: 'load event roster customer labels',
         parse: HostEventRosterInsights.fromCallableData,
       );
+
+  Future<List<HostStaticAudienceMember>> resolveAudienceMembers(
+    String organizerId,
+    List<String> contactIds,
+  ) => _call(
+    name: 'resolveOrganizerAudienceMembers',
+    payload: ResolveOrganizerAudienceMembersCallableRequest(
+      organizerId: organizerId,
+      contactIds: contactIds,
+    ).toJson(),
+    action: 'load selected audience people',
+    parse: (data) => _mapList(
+      _requiredMap(data, 'selected audience people')['members'],
+      'selected audience people',
+    ).map(HostStaticAudienceMember.fromMap).toList(growable: false),
+  );
 
   Future<HostAudiencePage> listContacts(
     String organizerId, {
@@ -3570,6 +3610,15 @@ Future<HostWhatsappThreadPage> hostWhatsappThreads(
   Ref ref,
   String organizerId,
 ) => ref.read(hostCrmRepositoryProvider).listWhatsappThreads(organizerId);
+
+@riverpod
+Future<List<HostStaticAudienceMember>> hostStaticAudienceMembers(
+  Ref ref,
+  String organizerId,
+  String selectionKey,
+) => ref
+    .read(hostCrmRepositoryProvider)
+    .resolveAudienceMembers(organizerId, _stringList(jsonDecode(selectionKey)));
 
 Map<Object?, Object?> _requiredMap(Object? value, String label) {
   if (value is Map<Object?, Object?>) return value;

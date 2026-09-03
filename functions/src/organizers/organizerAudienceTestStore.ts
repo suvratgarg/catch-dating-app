@@ -48,9 +48,11 @@ class Query {
       .filter(([path, data]) => path.startsWith(this.path + "/") &&
         path.split("/").length === this.path.split("/").length + 1 &&
         this.filters.every(([field, op, value]) => {
-          assert.equal(op, "==", "Test store only supports equality filters");
-          return field.split(".").reduce<unknown>((v, key) =>
-            (v as Data)?.[key], data) === value;
+          const actual = field.split(".").reduce<unknown>((v, key) =>
+            (v as Data)?.[key], data);
+          if (op === "in") return (value as unknown[]).includes(actual);
+          assert.equal(op, "==", "Unsupported test-store query operator");
+          return actual === value;
         }))
       .sort(([a], [b]) => a.localeCompare(b)).slice(0, this.cap)
       .map(([path]) => this.store.snapshot(new Ref(this.store, path)));

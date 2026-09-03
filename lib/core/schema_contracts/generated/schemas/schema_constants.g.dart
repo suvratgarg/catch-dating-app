@@ -442,6 +442,8 @@ export 'resolve_event_invite_landing_callable_payload.g.dart';
 export 'resolve_event_invite_landing_callable_response.g.dart';
 export 'resolve_event_success_late_arrival_callable_payload.g.dart';
 export 'resolve_event_success_late_arrival_callable_response.g.dart';
+export 'resolve_organizer_audience_members_callable_payload.g.dart';
+export 'resolve_organizer_audience_members_callable_response.g.dart';
 export 'resolve_organizer_communication_plan_callable_payload.g.dart';
 export 'resolve_organizer_communication_plan_callable_response.g.dart';
 export 'respond_cross_paths_invitation_callable_payload.g.dart';

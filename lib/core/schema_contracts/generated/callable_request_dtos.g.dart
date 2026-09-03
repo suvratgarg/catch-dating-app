@@ -176,6 +176,7 @@ export 'callables/request_suvbot_demo_operation_callable_request.g.dart';
 export 'callables/reset_event_rehearsal_callable_request.g.dart';
 export 'callables/resolve_event_invite_landing_callable_request.g.dart';
 export 'callables/resolve_event_success_late_arrival_callable_request.g.dart';
+export 'callables/resolve_organizer_audience_members_callable_request.g.dart';
 export 'callables/resolve_organizer_communication_plan_callable_request.g.dart';
 export 'callables/respond_cross_paths_invitation_callable_request.g.dart';
 export 'callables/review_organizer_application_callable_request.g.dart';

@@ -23682,7 +23682,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.customers"
   },
-  "hostSavedAudienceEditRules": "Edit audience rules",
+  "hostSavedAudienceEditRules": "Edit audience",
   "@hostSavedAudienceEditRules": {
     "description": "Saved audience overview label.",
     "x-audience": "host",
@@ -23710,7 +23710,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.customers"
   },
-  "hostSavedAudienceNoMembers": "No people match these rules",
+  "hostSavedAudienceNoMembers": "No people in this audience",
   "@hostSavedAudienceNoMembers": {
     "description": "Saved audience overview label.",
     "x-audience": "host",
@@ -23779,5 +23779,190 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSelectedCount": "{count, plural, =1{1 selected person} other{{count} selected people}}",
+  "@hostAudienceSelectedCount": {
+    "description": "Saved audience SelectedCount control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hostAudienceStaticHelp": "Choose up to 2,500 people. Membership stays as selected until you edit it. Messaging permission is checked separately.",
+  "@hostAudienceStaticHelp": {
+    "description": "Saved audience StaticHelp control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceUnavailablePerson": "Unavailable person",
+  "@hostAudienceUnavailablePerson": {
+    "description": "Saved audience UnavailablePerson control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceRemoveSelected": "Remove from this audience",
+  "@hostAudienceRemoveSelected": {
+    "description": "Saved audience RemoveSelected control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudiencePreviousPeople": "Previous people",
+  "@hostAudiencePreviousPeople": {
+    "description": "Saved audience PreviousPeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceNextPeople": "Next people",
+  "@hostAudienceNextPeople": {
+    "description": "Saved audience NextPeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceChoosePeople": "Choose people",
+  "@hostAudienceChoosePeople": {
+    "description": "Saved audience ChoosePeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSearchPeople": "Search by name",
+  "@hostAudienceSearchPeople": {
+    "description": "Saved audience SearchPeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceAvailablePeople": "People you can select",
+  "@hostAudienceAvailablePeople": {
+    "description": "Saved audience AvailablePeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceNoPeopleFound": "No people found",
+  "@hostAudienceNoPeopleFound": {
+    "description": "Saved audience NoPeopleFound control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceNoSelectedPeople": "No people selected yet",
+  "@hostAudienceNoSelectedPeople": {
+    "description": "Saved audience NoSelectedPeople control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSelectionLimit": "You have selected the maximum of 2,500 people.",
+  "@hostAudienceSelectionLimit": {
+    "description": "Saved audience SelectionLimit control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceMembershipMode": "Audience membership",
+  "@hostAudienceMembershipMode": {
+    "description": "Saved audience MembershipMode control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceRuleMembership": "Match conditions automatically",
+  "@hostAudienceRuleMembership": {
+    "description": "Saved audience RuleMembership control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceStaticMembership": "Choose people manually",
+  "@hostAudienceStaticMembership": {
+    "description": "Saved audience StaticMembership control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpend": "Catch spend",
+  "@hostAudienceSpend": {
+    "description": "Saved audience Spend control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendHelp": "Uses completed Catch payments for your events, excluding refunds. Only uniquely verified Catch accounts are included. Currencies are counted separately; changing currency resets the amount.",
+  "@hostAudienceSpendHelp": {
+    "description": "Saved audience SpendHelp control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendCurrency": "Currency",
+  "@hostAudienceSpendCurrency": {
+    "description": "Saved audience SpendCurrency control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendAmount": "Amount",
+  "@hostAudienceSpendAmount": {
+    "description": "Saved audience SpendAmount control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendAmountInvalid": "Enter a valid amount within 10 billion minor currency units.",
+  "@hostAudienceSpendAmountInvalid": {
+    "description": "Saved audience SpendAmountInvalid control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendDays": "Past number of days",
+  "@hostAudienceSpendDays": {
+    "description": "Saved audience SpendDays control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendDaysHelp": "Leave blank to include all recorded Catch payments.",
+  "@hostAudienceSpendDaysHelp": {
+    "description": "Saved audience SpendDaysHelp control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendDaysInvalid": "Enter a whole number from 1 to 3,650, or leave blank.",
+  "@hostAudienceSpendDaysInvalid": {
+    "description": "Saved audience SpendDaysInvalid control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendLifetime": "All recorded payments",
+  "@hostAudienceSpendLifetime": {
+    "description": "Saved audience SpendLifetime control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers"
+  },
+  "hostAudienceSpendWindow": "Past {days} days",
+  "@hostAudienceSpendWindow": {
+    "description": "Saved audience SpendWindow control or explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.customers",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   }
 }

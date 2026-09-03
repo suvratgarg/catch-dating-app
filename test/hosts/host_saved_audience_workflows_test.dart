@@ -166,7 +166,98 @@ void main() {
       );
     },
   );
+
+  testWidgets('spend authoring stores exact minor units and a time window', (
+    tester,
+  ) async {
+    final repository = _AudienceRepository();
+    await _pump(tester, repository);
+    await tester.tap(find.byKey(const ValueKey('host-saved-audience-edit')));
+    await pumpFeatureUi(tester);
+    await tester.tap(
+      find.byKey(const ValueKey('host-saved-audience-rule-type-1')),
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(_menuChoice('Catch spend'));
+    await pumpFeatureUi(tester);
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('host-audience-spend-amount-INR')),
+    );
+    await tester.enterText(_input('host-audience-spend-amount-INR'), '1234.56');
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('host-audience-spend-days')),
+    );
+    await tester.enterText(_input('host-audience-spend-days'), '90');
+    await tester.tap(find.byKey(const ValueKey('host-saved-audience-save')));
+    await pumpFeatureUi(tester);
+    final rule = repository.saved!.predicates.single as HostSavedAudienceSpend;
+    expect(rule.currency, 'INR');
+    expect(rule.amountMinor, 123456);
+    expect(rule.withinDays, 90);
+  });
+
+  testWidgets(
+    'static editing removes unavailable aliases and selects from later pages',
+    (tester) async {
+      final repository = _AudienceRepository()
+        ..saved = const HostSavedAudienceDefinition(
+          join: HostSavedAudienceJoin.all,
+          predicates: [
+            HostSavedAudienceStaticMembers(['old-ada', 'deleted']),
+          ],
+        );
+      await _pump(tester, repository);
+      await tester.tap(find.byKey(const ValueKey('host-saved-audience-edit')));
+      await pumpFeatureUi(tester);
+      expect(
+        find.byKey(const ValueKey('host-saved-audience-rule-type-1')),
+        findsNothing,
+      );
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('host-static-remove-deleted')),
+      );
+      await tester.tap(
+        find.byKey(const ValueKey('host-static-remove-deleted')),
+      );
+      await pumpFeatureUi(tester);
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('host-static-person-ada')),
+      );
+      await tester.tap(find.byKey(const ValueKey('host-static-person-ada')));
+      await pumpFeatureUi(tester);
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('host-static-next')),
+      );
+      await tester.tap(find.byKey(const ValueKey('host-static-next')));
+      await pumpFeatureUi(tester);
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('host-static-person-grace')),
+      );
+      await tester.tap(find.byKey(const ValueKey('host-static-person-grace')));
+      await pumpFeatureUi(tester);
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('host-static-search')),
+      );
+      await tester.enterText(_input('host-static-search'), 'Grace');
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await pumpFeatureUi(tester);
+      expect(
+        repository.peopleQueries.map((query) => query.cursor),
+        contains('people-2'),
+      );
+      expect(repository.peopleQueries.last.search, 'Grace');
+      expect(repository.peopleQueries.last.cursor, isNull);
+      await tester.tap(find.byKey(const ValueKey('host-saved-audience-save')));
+      await pumpFeatureUi(tester);
+      expect(repository.saved!.selectedContactIds, ['grace']);
+    },
+  );
 }
+
+Finder _input(String key) => find.descendant(
+  of: find.byKey(ValueKey(key)),
+  matching: find.byType(EditableText),
+);
 
 Finder _menuChoice(String label) => find.descendant(
   of: find.byType(CatchMenu<Object?>),
@@ -233,6 +324,41 @@ class _AudienceRepository extends HostCrmRepository {
           ],
         ),
   );
+
+  final peopleQueries = <HostAudienceQuery>[];
+
+  @override
+  Future<List<HostStaticAudienceMember>> resolveAudienceMembers(
+    String organizerId,
+    List<String> ids,
+  ) async => [
+    for (final id in ids)
+      HostStaticAudienceMember(
+        selectedContactId: id,
+        contactId: id == 'deleted' ? null : 'ada',
+        displayName: id == 'deleted' ? null : 'Ada',
+        available: id != 'deleted',
+      ),
+  ];
+
+  @override
+  Future<HostAudiencePage> listContacts(
+    String organizerId, {
+    HostAudienceQuery query = const HostAudienceQuery(),
+    int limit = 25,
+  }) async {
+    peopleQueries.add(query);
+    final second = query.cursor != null || query.search != null;
+    return HostAudiencePage(
+      organizerId: organizerId,
+      contacts: [_person(second ? 'grace' : 'ada', second ? 'Grace' : 'Ada')],
+      nextCursor: second ? null : 'people-2',
+      matchCount: 2,
+      matchCountCoverage: HostAudienceMatchCountCoverage.exact,
+      sourceCoverage: HostAudienceSourceCoverage.exact,
+      projectionVersion: 1,
+    );
+  }
 
   @override
   Future<HostSavedAudienceFilterOptions> savedAudienceFilterOptions(
@@ -331,3 +457,22 @@ HostSavedAudience _audience(HostSavedAudienceDefinition definition) =>
       createdAt: DateTime(2026, 9),
       updatedAt: DateTime(2026, 9, 3),
     );
+
+HostAudienceContact _person(String id, String name) => HostAudienceContact(
+  contactId: id,
+  displayName: name,
+  phoneE164: null,
+  email: null,
+  identityState: HostAudienceIdentityState.verified,
+  identityConfidence: 'verified',
+  ambiguousCandidateCount: 0,
+  attendedEventCount: 0,
+  expectedEventCount: 0,
+  lastAttendedAt: null,
+  segments: const {},
+  whatsappStatus: HostAudiencePermissionStatus.unknown,
+  whatsappAdminSuppressed: false,
+  smsStatus: HostAudiencePermissionStatus.unknown,
+  sourceCoverage: HostAudienceSourceCoverage.exact,
+  revision: 1,
+);

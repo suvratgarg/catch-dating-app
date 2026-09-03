@@ -210,6 +210,7 @@ export {
   reviewOrganizerContactMergeCandidate,
 } from "./organizers/organizerContactMergeReview";
 export {
+  resolveOrganizerAudienceMembers,
   archiveOrganizerSavedAudience,
   listOrganizerSavedAudiences,
   previewOrganizerSavedAudience,

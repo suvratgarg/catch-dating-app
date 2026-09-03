@@ -156,3 +156,70 @@ Object _audienceAnswerValue(Object? value) => switch (value) {
   String() || bool() => value!,
   _ => throw const FormatException('Expected a choice or boolean answer.'),
 };
+
+enum HostSavedAudienceMembershipMode { rules, selectedPeople }
+
+final class HostSavedAudienceStaticMembers extends HostSavedAudiencePredicate {
+  const HostSavedAudienceStaticMembers(this.contactIds);
+  final List<String> contactIds;
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': 'staticMembers',
+    'contactIds': contactIds,
+  };
+}
+
+final class HostSavedAudienceSpend extends HostSavedAudiencePredicate {
+  const HostSavedAudienceSpend({
+    required this.operator,
+    required this.currency,
+    required this.amountMinor,
+    this.withinDays,
+  });
+  final HostSavedAudienceAttendanceOperator operator;
+  final String currency;
+  final int amountMinor;
+  final int? withinDays;
+
+  HostSavedAudienceSpend copyWith({
+    HostSavedAudienceAttendanceOperator? operator,
+    String? currency,
+    int? amountMinor,
+    int? withinDays,
+    bool lifetime = false,
+  }) => HostSavedAudienceSpend(
+    operator: operator ?? this.operator,
+    currency: currency ?? this.currency,
+    amountMinor: amountMinor ?? this.amountMinor,
+    withinDays: lifetime ? null : withinDays ?? this.withinDays,
+  );
+
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': 'spend',
+    'operator': operator.name,
+    'currency': currency,
+    'amountMinor': amountMinor,
+    'withinDays': withinDays,
+  };
+}
+
+class HostStaticAudienceMember {
+  const HostStaticAudienceMember({
+    required this.selectedContactId,
+    required this.contactId,
+    required this.displayName,
+    required this.available,
+  });
+  factory HostStaticAudienceMember.fromMap(Map<Object?, Object?> map) =>
+      HostStaticAudienceMember(
+        selectedContactId: _requiredString(map, 'selectedContactId'),
+        contactId: _nullableString(map['contactId']),
+        displayName: _nullableString(map['displayName']),
+        available: _requiredBool(map, 'available'),
+      );
+  final String selectedContactId;
+  final String? contactId;
+  final String? displayName;
+  final bool available;
+}
