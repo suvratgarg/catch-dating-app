@@ -581,7 +581,7 @@ class _HostCustomerSummaryFilterTile extends StatelessWidget {
             child: CatchSurface(
               tone: CatchSurfaceTone.transparent,
               backgroundColor: selected ? t.ink : Colors.transparent,
-              radius: CatchRadius.pill,
+              radius: CatchRadius.sm,
               padding: const EdgeInsets.symmetric(
                 horizontal: CatchSpacing.s3,
                 vertical: CatchSpacing.micro6,
