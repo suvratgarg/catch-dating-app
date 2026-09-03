@@ -124,7 +124,7 @@ extension _CatchFieldEdit on _CatchFieldState {
                   ? t.danger
                   : _active
                   ? t.ink
-                  : t.ink3,
+                  : t.ink2,
             ),
             valueWidget: Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -538,7 +538,7 @@ extension _CatchFieldEdit on _CatchFieldState {
                       valueIsPlaceholder: label == null,
                       labelStyle: _fieldCaptionTextStyle(
                         context,
-                        color: hasError ? tokens.danger : tokens.ink3,
+                        color: hasError ? tokens.danger : tokens.ink2,
                       ),
                       valueStyle: _fieldValueTextStyle(
                         context,
@@ -549,11 +549,11 @@ extension _CatchFieldEdit on _CatchFieldState {
                     ),
                     trailing: selectHasLabel
                         ? Padding(
-                            padding: const EdgeInsets.only(
+                            padding: EdgeInsets.only(
                               top: CatchFieldTokens.captionExtent,
                             ),
                             child: ConstrainedBox(
-                              constraints: const BoxConstraints(
+                              constraints: BoxConstraints(
                                 minHeight: CatchFieldTokens.valueLineExtent,
                               ),
                               child: Align(
@@ -746,7 +746,7 @@ extension _CatchFieldEdit on _CatchFieldState {
     Color? inactiveColor,
   }) {
     if (hasError) return t.danger;
-    return _active ? t.ink : inactiveColor ?? t.ink3;
+    return _active ? t.ink : inactiveColor ?? t.ink2;
   }
 
   BoxConstraints? get _iconConstraints {
@@ -875,7 +875,7 @@ Duration _fieldDuration(BuildContext context, Duration duration) {
 TextStyle _fieldValueTextStyle(
   BuildContext context, {
   required Color color,
-  FontWeight fontWeight = FontWeight.w700,
+  FontWeight? fontWeight,
 }) => CatchTextStyles.fieldRowTitle(context, color: color).copyWith(
   fontSize: CatchFieldTokens.valueFontSize,
   fontWeight: fontWeight,

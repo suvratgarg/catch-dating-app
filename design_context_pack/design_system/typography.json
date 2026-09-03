@@ -27,8 +27,8 @@
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 64,
-    "covered": 62,
+    "publicStaticTextStyleMethods": 68,
+    "covered": 66,
     "excluded": 2
   },
   "excluded": {
@@ -36,12 +36,71 @@
     "transparentInput": "Utility style for hidden platform input; excluded from design typography."
   },
   "styles": {
+    "control": {
+      "role": "function",
+      "family": "Roboto",
+      "size": 14.0,
+      "weight": 400,
+      "lineHeight": 1.4285714285714286,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "casePolicy": "mixed"
+    },
+    "selectionLabel": {
+      "role": "function",
+      "family": "Roboto",
+      "size": 14.0,
+      "weight": 500,
+      "lineHeight": 1.4285714285714286,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#544F47",
+        "dark": "#BAB2A7"
+      },
+      "casePolicy": "mixed"
+    },
+    "supportingStrong": {
+      "role": "function",
+      "family": "Roboto",
+      "size": 14.0,
+      "weight": 500,
+      "lineHeight": 1.4285714285714286,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "casePolicy": "mixed"
+    },
+    "metric": {
+      "role": "function",
+      "family": "Roboto",
+      "size": 24.0,
+      "weight": 600,
+      "lineHeight": 1.3333333333333333,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontFeatures": [
+        "FontFeature('tnum', 1)"
+      ],
+      "casePolicy": "mixed"
+    },
     "tabLabel": {
       "role": "function",
       "family": "Roboto",
-      "size": 15.0,
+      "size": 14.0,
       "weight": 500,
-      "lineHeight": 1.3333333333333333,
+      "lineHeight": 1.4285714285714286,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -117,11 +176,11 @@
       "casePolicy": "mixed"
     },
     "headline": {
-      "role": "voice",
+      "role": "function",
       "family": "Roboto",
       "size": 24.0,
       "weight": 600,
-      "lineHeight": 1.25,
+      "lineHeight": 1.3333333333333333,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -230,8 +289,8 @@
       "role": "function",
       "family": "Roboto",
       "size": 20.0,
-      "weight": 700,
-      "lineHeight": 1.16,
+      "weight": 500,
+      "lineHeight": 1.4,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -555,9 +614,9 @@
     "name": {
       "role": "function",
       "family": "Roboto",
-      "size": 15.0,
-      "weight": 700,
-      "lineHeight": 1.2,
+      "size": 16.0,
+      "weight": 500,
+      "lineHeight": 1.5,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -570,8 +629,8 @@
       "role": "function",
       "family": "Roboto",
       "size": 16.0,
-      "weight": 700,
-      "lineHeight": 1.22,
+      "weight": 500,
+      "lineHeight": 1.5,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -614,9 +673,9 @@
     "fieldRowTitle": {
       "role": "function",
       "family": "Roboto",
-      "size": 14.0,
-      "weight": 700,
-      "lineHeight": 1.24,
+      "size": 16.0,
+      "weight": 500,
+      "lineHeight": 1.5,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -659,7 +718,7 @@
       "family": "Roboto",
       "size": 14.0,
       "weight": 400,
-      "lineHeight": 1.5,
+      "lineHeight": 1.4285714285714286,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -671,9 +730,9 @@
     "bodyS": {
       "role": "function",
       "family": "Roboto",
-      "size": 13.0,
+      "size": 12.0,
       "weight": 400,
-      "lineHeight": 1.45,
+      "lineHeight": 1.3333333333333333,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -685,9 +744,9 @@
     "appBarSubtitle": {
       "role": "function",
       "family": "Roboto",
-      "size": 13.0,
+      "size": 12.0,
       "weight": 400,
-      "lineHeight": 1.45,
+      "lineHeight": 1.3333333333333333,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -700,9 +759,9 @@
     "supporting": {
       "role": "function",
       "family": "Roboto",
-      "size": 13.0,
-      "weight": 500,
-      "lineHeight": 1.42,
+      "size": 14.0,
+      "weight": 400,
+      "lineHeight": 1.4285714285714286,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -743,14 +802,14 @@
     "fieldLabel": {
       "role": "function",
       "family": "Roboto",
-      "size": 11.5,
+      "size": 12.0,
       "weight": 500,
-      "lineHeight": 1.2,
+      "lineHeight": 1.3333333333333333,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
-        "light": "#9C958A",
-        "dark": "#7E776D"
+        "light": "#544F47",
+        "dark": "#BAB2A7"
       },
       "casePolicy": "mixed"
     },
@@ -785,9 +844,9 @@
     "statusLabel": {
       "role": "function",
       "family": "Roboto",
-      "size": 10.0,
-      "weight": 800,
-      "lineHeight": 1.1,
+      "size": 12.0,
+      "weight": 600,
+      "lineHeight": 1.3333333333333333,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {

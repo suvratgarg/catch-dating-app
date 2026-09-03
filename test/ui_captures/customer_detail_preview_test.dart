@@ -167,7 +167,11 @@ void main() {
                   find.byKey(const ValueKey('host-customer-history-filter')),
                 );
                 await pumpFeatureUi(tester);
-                await tester.tap(find.text('Events').last);
+                await tester.tap(
+                  find.byKey(
+                    const ValueKey<Object?>(HostCustomerHistoryKind.events),
+                  ),
+                );
                 await pumpFeatureUi(tester);
                 expect(find.text('Sunday Run Club'), findsOneWidget);
                 expect(find.text('Sunday Run sign-up'), findsNothing);
@@ -214,7 +218,11 @@ void main() {
         expect(tester.takeException(), isNull);
       }
     },
-    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+    variant: TargetPlatformVariant.only(
+      const String.fromEnvironment('CAPTURE_PLATFORM') == 'android'
+          ? TargetPlatform.android
+          : TargetPlatform.iOS,
+    ),
   );
 }
 

@@ -62,24 +62,14 @@ void _registerHostOperationsCustomerDetailTests() {
 
     final summary = find.byType(HostCustomersSummary);
     expect(
-      find.descendant(of: summary, matching: find.byType(CatchStatColumn)),
+      find.descendant(
+        of: summary,
+        matching: find.byType(CatchOptionGroupItem<HostCustomerFilter>),
+      ),
       findsNWidgets(3),
     );
-    expect(
-      find.text(
-        'Everyone who has attended, registered, been imported, or been added by your team.',
-      ),
-      findsOneWidget,
-    );
-    expect(find.text('0 WhatsApp-ready contacts'), findsOneWidget);
-    expect(
-      find.text('0 imported or added by your team · 0 linked Catch accounts'),
-      findsOneWidget,
-    );
-    final activeView = find.byType(HostCustomerFilterSummary);
-    expect(find.ancestor(of: activeView, matching: summary), findsNothing);
-    expect(find.text('All · 0 people'), findsOneWidget);
-    expect(find.text('Message these 0'), findsNothing);
+    expect(find.text('All  0'), findsOneWidget);
+    expect(find.text('Returning  0'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-customers-messaging-action')),
       findsNothing,
@@ -102,15 +92,15 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.byTooltip('Export this audience'), findsNothing);
 
     await tester.tap(
-      find.byKey(const ValueKey('host-customers-summary-attended')),
+      find.byKey(const ValueKey('host-customers-summary-repeat')),
     );
     await pumpFeatureUi(tester);
-    expect(requests.last.filter, HostCustomerFilter.attended);
-    expect(find.text('Attended · 0 people'), findsOneWidget);
+    expect(requests.last.filter, HostCustomerFilter.repeat);
+    expect(find.textContaining('Repeat attendees'), findsWidgets);
     final attendedSemantics = tester.getSemantics(
-      find.byKey(const ValueKey('host-customers-summary-attended')),
+      find.byKey(const ValueKey('host-customers-summary-repeat')),
     );
-    expect(attendedSemantics.label, 'Attended, 0');
+    expect(attendedSemantics.label, 'Returning  0');
     expect(attendedSemantics.flagsCollection.isButton, isTrue);
     expect(attendedSemantics.flagsCollection.isSelected, ui.Tristate.isTrue);
     expect(
@@ -119,11 +109,11 @@ void _registerHostOperationsCustomerDetailTests() {
     );
 
     await tester.tap(
-      find.byKey(const ValueKey('host-customers-summary-attended')),
+      find.byKey(const ValueKey('host-customers-summary-repeat')),
     );
     await pumpFeatureUi(tester);
     expect(requests.last.filter, HostCustomerFilter.all);
-    expect(find.text('All · 0 people'), findsOneWidget);
+    expect(find.text('All  0'), findsOneWidget);
 
     await tester.tap(find.text('Filters'));
     await pumpFeatureUi(tester);
@@ -179,20 +169,17 @@ void _registerHostOperationsCustomerDetailTests() {
     final sortRect = tester.getRect(
       find.byKey(const ValueKey('host-customers-sort')),
     );
-    expect(
-      filtersRect.center.dy,
-      closeTo(sortRect.center.dy, 0.5),
-      reason: 'Filters $filtersRect and Sort $sortRect must share one row.',
-    );
-
-    expect(find.text('Last seen'), findsOneWidget);
+    expect(filtersRect.overlaps(sortRect), isFalse);
+    expect(filtersRect.right, lessThanOrEqualTo(390));
+    expect(sortRect.right, lessThanOrEqualTo(390));
+    expect(find.text('Sort: Last seen'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('host-customers-sort')));
     await pumpFeatureUi(tester);
     expect(find.byType(CatchSelectionSheet<HostCustomerSort>), findsOneWidget);
 
     await tester.tap(find.text('Most attended'));
     await pumpFeatureUi(tester);
-    expect(find.text('Most attended'), findsOneWidget);
+    expect(find.text('Sort: Most attended'), findsOneWidget);
     expect(requests.last.sort, HostCustomerSort.mostAttended);
   });
 
@@ -238,29 +225,33 @@ void _registerHostOperationsCustomerDetailTests() {
       isTrue,
     );
 
-    final countRect = tester.getRect(find.text('All · 1 person'));
     final filtersRect = tester.getRect(
       find.byKey(const ValueKey('host-customers-filters')),
     );
     final sortRect = tester.getRect(
       find.byKey(const ValueKey('host-customers-sort')),
     );
-    expect(
-      (countRect.center.dy - filtersRect.center.dy).abs(),
-      lessThanOrEqualTo(CatchSpacing.s10),
-    );
-    expect(filtersRect.center.dy, closeTo(sortRect.center.dy, 0.5));
+    expect(sortRect.top, greaterThanOrEqualTo(summaryRect.bottom));
+    expect(filtersRect.overlaps(sortRect), isFalse);
     expect(
       find.ancestor(
         of: find.byKey(const ValueKey('host-customers-filters')),
-        matching: find.byType(HostCustomerFilterSummary),
+        matching: find.byType(HostCustomerDirectoryControls),
       ),
       findsOneWidget,
     );
 
     final customerRow = find.byType(HostCustomerRow);
-    expect(tester.getTopLeft(customerRow).dy, lessThanOrEqualTo(380));
-    expect(tester.getSize(customerRow).height, greaterThanOrEqualTo(72));
+    expect(
+      tester.getTopLeft(customerRow).dy,
+      greaterThanOrEqualTo(filtersRect.bottom),
+    );
+    expect(
+      tester.getSize(customerRow).height,
+      greaterThanOrEqualTo(
+        CatchRecordTokens.avatarExtent + CatchRecordTokens.verticalPadding * 2,
+      ),
+    );
   });
 
   testWidgets('sender recovery opens dedicated WhatsApp Business setup', (
@@ -289,7 +280,10 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
 
-    expect(find.text('All · 1 person'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-customers-summary-all')),
+      findsOneWidget,
+    );
     expect(find.text('Open messaging'), findsNothing);
 
     await tester.tap(find.byKey(const ValueKey('host-customers-filters')));

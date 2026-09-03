@@ -669,7 +669,6 @@ class _RehearsalBand extends StatelessWidget {
     final tools = CatchIconButton.icon(
       icon: CatchIcons.more,
       variant: CatchIconButtonVariant.plain,
-      size: CatchIconButton.navSize,
       tooltip: context.l10n.hostEventRehearsalPracticeTools,
       onTap: onOpenTools,
     );

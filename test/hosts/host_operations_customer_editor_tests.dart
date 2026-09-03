@@ -28,7 +28,6 @@ void _registerHostOperationsCustomerEditorTests() {
 
     expect(find.text('+919876543210'), findsOneWidget);
     expect(find.text('Add email'), findsOneWidget);
-    expect(find.text('Added by your team · not verified by Catch'), findsOne);
     expect(
       find.descendant(
         of: find.byType(HostCustomerIdentityCard),
@@ -53,11 +52,15 @@ void _registerHostOperationsCustomerEditorTests() {
       find.byType(CatchPersonAvatar),
     );
     expect(avatar.size, CatchSpacing.s16);
-    expect(find.text('Regulars'), findsOneWidget);
+    expect(find.text('Regular'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));
     await tester.pump();
 
+    expect(
+      find.text('Added by your team · not verified by Catch'),
+      findsOneWidget,
+    );
     expect(find.byKey(const ValueKey('host-customer-edit-name')), findsOne);
     expect(find.byKey(const ValueKey('host-customer-edit-phone')), findsOne);
     expect(find.byKey(const ValueKey('host-customer-edit-email')), findsOne);

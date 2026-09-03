@@ -909,7 +909,8 @@ Widget _buildCompactTopBarFrame(
         EdgeInsets.symmetric(
           horizontal: gutter ? CatchSpacing.screenPx : CatchSpacing.s0,
         ),
-    decoration: BoxDecoration(
+    // The scroll divider paints inside the frame without reducing its title lane.
+    foregroundDecoration: BoxDecoration(
       border: showDivider
           ? Border(bottom: BorderSide(color: t.line))
           : const Border(),
@@ -971,7 +972,8 @@ Widget _buildLargeTopBarFrame(
           gutter ? CatchSpacing.screenPx : CatchSpacing.s0,
           CatchSpacing.s0,
         ),
-    decoration: BoxDecoration(
+    // The scroll divider paints inside the frame without reducing its title lane.
+    foregroundDecoration: BoxDecoration(
       border: showDivider
           ? Border(bottom: BorderSide(color: t.line))
           : const Border(),

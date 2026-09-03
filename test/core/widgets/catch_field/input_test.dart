@@ -315,7 +315,7 @@ void main() {
       );
       final spans = (addText.textSpan! as TextSpan).children!;
       expect(spans.first.style?.color, CatchTokens.editorialLight.primary);
-      expect(spans.first.style?.fontSize, 14);
+      expect(spans.first.style?.fontSize, CatchFieldTokens.valueFontSize);
       expect(spans.first.style?.fontWeight, FontWeight.w600);
       expect(spans.last.style?.color, CatchTokens.editorialLight.ink3);
       expect(spans.last.style?.fontWeight, FontWeight.w500);
@@ -503,8 +503,8 @@ void main() {
 
       expect(controller.text, 'Aanya');
       editableText = tester.widget<EditableText>(find.byType(EditableText));
-      expect(editableText.style.fontSize, 14);
-      expect(editableText.style.fontWeight, FontWeight.w700);
+      expect(editableText.style.fontSize, CatchFieldTokens.valueFontSize);
+      expect(editableText.style.fontWeight, FontWeight.w500);
 
       await tester.enterText(find.byType(TextField), '');
       FocusManager.instance.primaryFocus?.unfocus();
@@ -561,9 +561,9 @@ void main() {
     var editable = tester.widget<EditableText>(find.byType(EditableText));
     var field = tester.widget<TextField>(find.byType(TextField));
     expect(editable.style.fontSize, CatchFieldTokens.valueFontSize);
-    expect(editable.style.fontWeight, FontWeight.w700);
+    expect(editable.style.fontWeight, FontWeight.w500);
     expect(editable.style.height, CatchFieldTokens.multilineValueLineHeight);
-    expect(field.decoration?.hintStyle?.fontWeight, FontWeight.w700);
+    expect(field.decoration?.hintStyle?.fontWeight, FontWeight.w500);
     expect(
       field.decoration?.hintStyle?.height,
       CatchFieldTokens.multilineValueLineHeight,
@@ -580,9 +580,9 @@ void main() {
 
     editable = tester.widget<EditableText>(find.byType(EditableText));
     field = tester.widget<TextField>(find.byType(TextField));
-    expect(editable.style.fontWeight, FontWeight.w700);
+    expect(editable.style.fontWeight, FontWeight.w500);
     expect(editable.style.height, CatchFieldTokens.valueLineHeight);
-    expect(field.decoration?.hintStyle?.fontWeight, FontWeight.w700);
+    expect(field.decoration?.hintStyle?.fontWeight, FontWeight.w500);
     expect(
       field.decoration?.hintStyle?.height,
       CatchFieldTokens.valueLineHeight,

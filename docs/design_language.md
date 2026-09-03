@@ -168,11 +168,60 @@ Archivo, sentence/data roles to untracked IBM Plex Mono, explicit caps roles to 
 IBM Plex Mono, and names/controls/prose to the platform system font. App UI calls semantic
 `CatchTextStyles` roles; `CatchFonts` is an internal theme implementation detail.
 
-Route hierarchy is size and composition, not a competing font family. Root-screen
-titles use `CatchTextStyles.headline` (Archivo, 32/600/1.04); compact pushed-route
-labels use `CatchTextStyles.routeTitle` (Archivo, 20/700/1.16). A route whose title
-becomes a user-authored person name selects the semantic identity title role and
-stays in the platform family. Feature screens do not restate these styles.
+Functional root-screen titles use `CatchTextStyles.headline` in the platform system
+family. Compact brand route labels retain `CatchTextStyles.routeTitle` (Archivo,
+20/700/1.16); a user-authored person name uses the semantic identity title role.
+Feature screens do not restate these styles.
+
+### 5.1 Platform function scale and readable records
+
+The Audience review promotes these selected metrics into
+`design/tokens/catch.tokens.json`, generated as immutable iOS/Android profiles.
+Numbers below are size / line height / weight in logical units. They are Catch
+composition choices informed by the 2026-09-03 platform inventory, **not a claim
+that every value is a native default**. iOS Caption 1 informs context; Material
+Title Medium and Body Small inform Android names/context. Compact 16/24 reading
+text and zero tracking are deliberate Catch choices.
+
+| Semantic use | iOS | Android |
+| --- | --- | --- |
+| Functional headline | 24 / 30 / 600 | 24 / 32 / 600 |
+| UI title | 20 / 25 / 600 | 20 / 28 / 500 |
+| Person or record title | 16 / 20 / 600 | 16 / 24 / 500 |
+| Reading body | 16 / 24 / 400 | 16 / 24 / 400 |
+| Secondary metadata | 14 / 20 / 400 | 14 / 20 / 400 |
+| Record context | 13 / 18 / 400 | 12 / 16 / 400 |
+| Command | 15 / 20 / 400 | 14 / 20 / 400 |
+| Sentence-case status | 12 / 16 / 600 | 12 / 16 / 600 |
+| Prominent quantity | 24 / 30 / 600 | 24 / 32 / 600 |
+| Editable field value | 16 / 24 / 500 | 16 / 24 / 500 |
+| Field caption/support | 13 / 18 / 500 | 12 / 16 / 500 |
+| Minimum command/summary hit area | 44 | 48 |
+
+`CatchPlatformTokens` selects the same `defaultTargetPlatform` used by
+`CatchFonts`. Flutter treats that native target as a compiler constant in
+profile/release builds; the profiles themselves are Dart constants. Tests use
+Flutter's debug target override, and web resolves its browser platform at runtime.
+There is no independent Theme-based selector or redundant platform build flag.
+macOS uses Apple metrics; other desktop targets use the Android baseline.
+
+Rows use a 40-unit marker/avatar, a 12-unit leading gap, 8-unit vertical padding,
+a 4-unit heading-to-metadata gap, and an 8-unit prose gap. These belong to
+`CatchRecordTokens`, backed by canonical layout tokens. Sections retain outer
+gutter/divider ownership, and the shell retains floating-navigation obstruction.
+Field caption and value extents derive from typography, so a scale change also
+updates disclosure and save-status alignment.
+
+Use `CatchPersonRow.directory` for identity plus rich metadata/context/status;
+`CatchRecordRow` for historical evidence or provenance; and `CatchField` for an
+editable value or setting. Record text has natural height. Status moves below
+content at enlarged text sizes. `CatchBadge.status` is a passive rounded rectangle
+with readable categorical tones. `CatchOptionGroupVariant.summary` is a tappable
+rounded rectangle with selected semantics; `CatchButton.command` owns the paired
+sort/filter action treatment. Color communicates positive, attention, or affinity
+meaning and does not introduce a brand accent. These recipes supersede the
+feature-local Audience preview typography and palette.
+
 
 ---
 

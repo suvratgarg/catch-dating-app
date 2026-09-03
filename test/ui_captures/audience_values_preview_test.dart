@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_palette.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ const _output = String.fromEnvironment(
 
 void main() {
   testWidgets(
-    'captures Audience using native iOS typography',
+    'captures Audience using selected platform typography',
     (tester) async {
       final semantics = tester.ensureSemantics();
       final measurements = <Map<String, Object>>[];
@@ -52,13 +53,17 @@ void main() {
             }
 
             final rowContext = tester.element(
-              find.byType(HostCustomerRow).first,
+              find.byWidgetPredicate(
+                (widget) =>
+                    widget is HostCustomerRow &&
+                    widget.contact.displayName == 'Ananya Rao',
+              ),
             );
             final tokens = CatchTokens.of(rowContext);
             for (final foreground in [
-              HostCustomerPalette.regular(rowContext),
-              HostCustomerPalette.newCustomer(rowContext),
-              HostCustomerPalette.atRisk(rowContext),
+              tokens.affinityText,
+              tokens.positiveText,
+              tokens.attentionText,
             ]) {
               final background = Color.alphaBlend(
                 foreground.withValues(alpha: CatchOpacity.subtleFill),
@@ -92,7 +97,17 @@ void main() {
               if (textScale == 1) {
                 expect(
                   bounds.height,
-                  closeTo(82, 0.1),
+                  closeTo(
+                    CatchRecordTokens.verticalPadding * 2 +
+                        CatchPlatformTokens.typography.name.fontSize! *
+                            CatchPlatformTokens.typography.name.height! +
+                        CatchRecordTokens.titleGap * 2 +
+                        CatchPlatformTokens.typography.secondary.fontSize! *
+                            CatchPlatformTokens.typography.secondary.height! +
+                        CatchPlatformTokens.typography.context.fontSize! *
+                            CatchPlatformTokens.typography.context.height!,
+                    0.1,
+                  ),
                   reason: 'Badges must not change the fourth-option row rhythm',
                 );
               }
@@ -114,7 +129,12 @@ void main() {
               });
             }
             final rail = tester.getRect(find.byType(HostAudienceTabRail));
-            final tabLabel = tester.getRect(find.text('People').first);
+            final tabLabel = tester.getRect(
+              find.descendant(
+                of: find.byType(HostAudienceTabRail),
+                matching: find.text('People'),
+              ),
+            );
             expect(tabLabel.top, greaterThanOrEqualTo(rail.top));
             expect(
               tabLabel.bottom,
@@ -123,7 +143,12 @@ void main() {
             );
             measurements.add({
               'textScale': textScale,
-              'title': rect(find.text('Audience').first),
+              'title': rect(
+                find.descendant(
+                  of: find.byType(CatchTopBar),
+                  matching: find.text('Audience'),
+                ),
+              ),
               'tabRail': rect(find.byType(HostAudienceTabRail)),
               'groups': {
                 for (final filter in ['all', 'repeat', 'newToOrganizer'])
@@ -144,7 +169,9 @@ void main() {
                       find.byKey(ValueKey('host-customers-summary-$filter')),
                     )
                     .height,
-                greaterThanOrEqualTo(44),
+                greaterThanOrEqualTo(
+                  CatchPlatformTokens.minimumInteractiveExtent,
+                ),
               );
               final node = tester.getSemantics(
                 find.byKey(ValueKey('host-customers-summary-$filter')),
@@ -168,6 +195,10 @@ void main() {
         semantics.dispose();
       }
     },
-    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+    variant: TargetPlatformVariant.only(
+      const String.fromEnvironment('CAPTURE_PLATFORM') == 'android'
+          ? TargetPlatform.android
+          : TargetPlatform.iOS,
+    ),
   );
 }

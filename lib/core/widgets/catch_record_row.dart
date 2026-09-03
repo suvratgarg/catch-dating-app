@@ -35,14 +35,16 @@ class CatchRecordRow extends StatelessWidget {
     return CatchRowPressSurface(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+        padding: const EdgeInsets.symmetric(
+          vertical: CatchRecordTokens.verticalPadding,
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ExcludeSemantics(
               child: CatchSurface(
-                width: CatchSpacing.s10,
-                height: CatchSpacing.s10,
+                width: CatchRecordTokens.avatarExtent,
+                height: CatchRecordTokens.avatarExtent,
                 radius: CatchRadius.pill,
                 backgroundColor: tone.withValues(
                   alpha: CatchOpacity.subtleFill,
@@ -50,18 +52,18 @@ class CatchRecordRow extends StatelessWidget {
                 child: Icon(icon, size: CatchIcon.md, color: tone),
               ),
             ),
-            gapW12,
+            const SizedBox(width: CatchRecordTokens.leadingGap),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: CatchTextStyles.recordTitle(context)),
                   if (metadata case final text? when text.isNotEmpty) ...[
-                    gapH4,
+                    const SizedBox(height: CatchRecordTokens.titleGap),
                     Text(text, style: CatchTextStyles.recordContext(context)),
                   ],
                   if (description case final text? when text.isNotEmpty) ...[
-                    gapH8,
+                    const SizedBox(height: CatchRecordTokens.bodyGap),
                     Text(text, style: CatchTextStyles.recordBody(context)),
                   ],
                 ],

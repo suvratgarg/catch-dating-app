@@ -1279,7 +1279,9 @@ class CatchSection extends StatelessWidget {
     if (!hasTitle && !hasSubtitle && trailing == null) return null;
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: hasSubtitle
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
       children: [
         if (hasTitle || hasSubtitle)
           Expanded(

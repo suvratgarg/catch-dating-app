@@ -1,13 +1,16 @@
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
     show CatchContractConstraints, CatchContractFieldConstraints;
 
-enum CatchOptionGroupVariant { label, mono, operational }
+enum CatchOptionGroupVariant { label, mono, operational, summary }
 
 class CatchOption<T> {
   const CatchOption({
@@ -154,8 +157,31 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
       options.any((option) => option.value == widget.selected),
       'CatchOptionGroup selected value must be allowed by its contract.',
     );
+    if (widget.variant == CatchOptionGroupVariant.summary) {
+      return Padding(
+        padding: widget.contentPadding,
+        child: Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            for (final option in options)
+              CatchOptionGroupItem<T>(
+                option: option,
+                selected: option.value == widget.selected,
+                variant: widget.variant,
+                onTap: widget.onChanged == null || !option.enabled
+                    ? null
+                    : () => widget.onChanged!(option.value),
+              ),
+            ?widget.trailing,
+          ],
+        ),
+      );
+    }
     final selectedRule = widget.accent ?? t.ink;
     final gap = switch (widget.variant) {
+      CatchOptionGroupVariant.summary => CatchSpacing.s2,
       CatchOptionGroupVariant.mono => CatchSpacing.s4,
       CatchOptionGroupVariant.operational => CatchSpacing.s1,
       CatchOptionGroupVariant.label => CatchSpacing.micro18,
@@ -301,6 +327,58 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    if (variant == CatchOptionGroupVariant.summary) {
+      return Semantics(
+        button: true,
+        selected: selected,
+        enabled: option.enabled && onTap != null,
+        label: option.semanticLabel ?? option.label,
+        hint: option.disabledReason,
+        onTap: option.enabled ? onTap : null,
+        child: ExcludeSemantics(
+          child: CatchRowPressSurface(
+            expandToMaxWidth: false,
+            onTap: option.enabled ? onTap : null,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: CatchPlatformTokens.minimumInteractiveExtent,
+                minWidth: CatchPlatformTokens.minimumInteractiveExtent,
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical:
+                      (CatchPlatformTokens.minimumInteractiveExtent -
+                          (CatchPlatformTokens.typography.secondary.fontSize! *
+                                  CatchPlatformTokens
+                                      .typography
+                                      .secondary
+                                      .height! +
+                              CatchRecordTokens.selectionVerticalPadding * 2)) /
+                      2,
+                ),
+                child: CatchSurface(
+                  tone: CatchSurfaceTone.transparent,
+                  backgroundColor: selected ? t.primary : Colors.transparent,
+                  radius: CatchRadius.sm,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CatchRecordTokens.selectionHorizontalPadding,
+                    vertical: CatchRecordTokens.selectionVerticalPadding,
+                  ),
+                  child: Text(
+                    option.label,
+                    key: labelKey,
+                    style: CatchTextStyles.selectionLabel(
+                      context,
+                      selected: selected,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     final foreground = !option.enabled
         ? t.ink3.withValues(alpha: CatchOpacity.disabledControl)
         : selected
@@ -308,6 +386,10 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
         : t.ink2;
     final selectedRuleColor = selectedRule ?? t.ink;
     final style = switch (variant) {
+      CatchOptionGroupVariant.summary => CatchTextStyles.selectionLabel(
+        context,
+        selected: selected,
+      ),
       CatchOptionGroupVariant.label => CatchTextStyles.tabLabel(
         context,
         selected: selected,

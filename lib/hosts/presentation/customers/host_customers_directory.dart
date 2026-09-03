@@ -18,94 +18,40 @@ class HostCustomerDirectoryControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) => Wrap(
-        alignment: WrapAlignment.spaceBetween,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: CatchSpacing.s4,
-        children: [
-          CatchAdaptiveSelectionMenu<HostCustomerSort>(
-            title: context.l10n.hostCustomersSort,
-            subtitle: context.l10n.hostCustomersSortSheetSubtitle,
-            value: sort,
-            items: [
-              for (final option in HostCustomerSort.values)
-                CatchSelectionMenuItem(
-                  value: option,
-                  label: _customerSortLabel(context, option),
-                ),
-            ],
-            onSelected: onSortChanged,
-            builder: (context, selected, open, toggle) =>
-                _HostCustomerDirectoryCommand(
-                  key: const ValueKey('host-customers-sort'),
-                  label: context.l10n.hostCustomersSortControl(
-                    label: selected.label,
-                  ),
-                  icon: CatchIcons.expandMoreRounded,
-                  maxWidth: constraints.maxWidth,
-                  trailingIcon: true,
-                  onTap: toggle,
-                ),
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: CatchSpacing.s4,
+      children: [
+        CatchAdaptiveSelectionMenu<HostCustomerSort>(
+          title: context.l10n.hostCustomersSort,
+          subtitle: context.l10n.hostCustomersSortSheetSubtitle,
+          value: sort,
+          items: [
+            for (final option in HostCustomerSort.values)
+              CatchSelectionMenuItem(
+                value: option,
+                label: _customerSortLabel(context, option),
+              ),
+          ],
+          onSelected: onSortChanged,
+          builder: (context, selected, open, toggle) => CatchButton.command(
+            key: const ValueKey('host-customers-sort'),
+            label: context.l10n.hostCustomersSortControl(label: selected.label),
+            icon: Icon(CatchIcons.expandMoreRounded),
+            iconAtEnd: true,
+            onPressed: toggle,
           ),
-          _HostCustomerDirectoryCommand(
-            key: const ValueKey('host-customers-filters'),
-            label: context.l10n.hostCustomersFilters,
-            icon: CatchIcons.tuneRounded,
-            maxWidth: constraints.maxWidth,
-            onTap: onOpenFilters,
-          ),
-        ],
-      ),
+        ),
+        CatchButton.command(
+          key: const ValueKey('host-customers-filters'),
+          label: context.l10n.hostCustomersFilters,
+          icon: Icon(CatchIcons.tuneRounded),
+          onPressed: onOpenFilters,
+        ),
+      ],
     );
   }
-}
-
-class _HostCustomerDirectoryCommand extends StatelessWidget {
-  const _HostCustomerDirectoryCommand({
-    super.key,
-    required this.label,
-    required this.icon,
-    required this.maxWidth,
-    required this.onTap,
-    this.trailingIcon = false,
-  });
-
-  final String label;
-  final IconData icon;
-  final double maxWidth;
-  final VoidCallback? onTap;
-  final bool trailingIcon;
-
-  @override
-  Widget build(BuildContext context) => CatchRowPressSurface(
-    onTap: onTap,
-    expandToMaxWidth: false,
-    child: ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: maxWidth,
-        minHeight: Theme.of(context).platform == TargetPlatform.iOS
-            ? CatchSpacing.s11
-            : CatchSpacing.s12,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (!trailingIcon) ...[Icon(icon, size: CatchIcon.sm), gapW8],
-            Flexible(
-              child: Text(
-                label,
-                style: HostCustomerTypography.control(context),
-              ),
-            ),
-            if (trailingIcon) ...[gapW8, Icon(icon, size: CatchIcon.sm)],
-          ],
-        ),
-      ),
-    ),
-  );
 }
 
 class HostCustomersNoOrganizer extends StatelessWidget {
@@ -533,10 +479,15 @@ class HostCustomersSummary extends StatelessWidget {
         runSpacing: CatchSpacing.s2,
         children: [
           for (final stat in stats)
-            _HostCustomerSummaryFilterTile(
+            CatchOptionGroupItem<HostCustomerFilter>(
               key: ValueKey('host-customers-summary-${stat.filter.name}'),
-              value: stat.value,
-              label: stat.label,
+              option: CatchOption(
+                value: stat.filter,
+                label: stat.value == null
+                    ? stat.label
+                    : '${stat.label}  ${stat.value}',
+              ),
+              variant: CatchOptionGroupVariant.summary,
               selected: selectedFilter == stat.filter,
               onTap: () => onFilterSelected(stat.filter),
             ),
@@ -544,61 +495,6 @@ class HostCustomersSummary extends StatelessWidget {
       );
     },
   );
-}
-
-class _HostCustomerSummaryFilterTile extends StatelessWidget {
-  const _HostCustomerSummaryFilterTile({
-    super.key,
-    required this.value,
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-  final String? value;
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final text = value == null ? label : '$label  $value';
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: text,
-      onTap: onTap,
-      child: ExcludeSemantics(
-        child: CatchRowPressSurface(
-          expandToMaxWidth: false,
-          onTap: onTap,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: Theme.of(context).platform == TargetPlatform.iOS
-                  ? CatchSpacing.micro6
-                  : CatchSpacing.s2,
-            ),
-            child: CatchSurface(
-              tone: CatchSurfaceTone.transparent,
-              backgroundColor: selected ? t.ink : Colors.transparent,
-              radius: CatchRadius.sm,
-              padding: const EdgeInsets.symmetric(
-                horizontal: CatchSpacing.s3,
-                vertical: CatchSpacing.micro6,
-              ),
-              child: Text(
-                text,
-                style: HostCustomerTypography.group(
-                  context,
-                  selected: selected,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 String _customerFilterLabel(

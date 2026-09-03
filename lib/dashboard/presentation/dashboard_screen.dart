@@ -170,7 +170,6 @@ class NotificationsAction extends ConsumerWidget {
           ? CatchIcons.notificationsRounded
           : CatchIcons.notificationsNoneRounded,
       count: unreadCount,
-      size: CatchIconButton.navSize,
       tooltip: context.l10n.dashboardDashboardScreenTooltipNotifications,
       onTap: () {
         ref

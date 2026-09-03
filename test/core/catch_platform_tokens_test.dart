@@ -1,0 +1,224 @@
+import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/theme/generated/catch_design_tokens.g.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  for (final platform in [TargetPlatform.iOS, TargetPlatform.android]) {
+    testWidgets('native metrics and font family share the $platform target', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = platform;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      final expected = platform == TargetPlatform.iOS
+          ? GeneratedCatchTypographyTokens.ios
+          : GeneratedCatchTypographyTokens.android;
+      expect(identical(CatchPlatformTokens.typography, expected), isTrue);
+      late TextStyle name;
+      late TextStyle field;
+      await tester.pumpWidget(
+        MaterialApp(
+          // A theme override must not accidentally select different metrics from
+          // the font family selected for the binary.
+          theme: AppTheme.light.copyWith(
+            platform: platform == TargetPlatform.iOS
+                ? TargetPlatform.android
+                : TargetPlatform.iOS,
+          ),
+          home: Builder(
+            builder: (context) {
+              name = CatchTextStyles.name(context);
+              field = CatchTextStyles.fieldRowTitle(context);
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
+      expect(
+        name.fontFamily,
+        platform == TargetPlatform.iOS ? 'CupertinoSystemText' : 'Roboto',
+      );
+      expect(name.height, expected.name.height);
+      expect(CatchFieldTokens.valueLineExtent, field.fontSize! * field.height!);
+      expect(
+        CatchFieldTokens.captionExtent,
+        expected.fieldLabel.fontSize! * expected.fieldLabel.height!,
+      );
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets(
+      'identity header preserves its title lane with a divider at 2x $platform',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = platform;
+        addTearDown(() => debugDefaultTargetPlatformOverride = null);
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(2)),
+              child: child!,
+            ),
+            home: Scaffold(
+              appBar: CatchTopBar(
+                title: 'Ananya Rao',
+                titleRole: CatchTopBarTitleRole.identity,
+                divider: true,
+                leadingType: CatchTopBarLeading.none,
+              ),
+              body: const SizedBox.shrink(),
+            ),
+          ),
+        );
+        expect(tester.takeException(), isNull);
+        final header = tester.getRect(find.byType(CatchTopBar));
+        final title = tester.getRect(find.text('Ananya Rao'));
+        expect(title.top, greaterThanOrEqualTo(header.top));
+        expect(title.bottom, lessThanOrEqualTo(header.bottom));
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    for (final direction in TextDirection.values) {
+      testWidgets(
+        'directory and controls stay readable at 2x $platform $direction',
+        (tester) async {
+          debugDefaultTargetPlatformOverride = platform;
+          addTearDown(() => debugDefaultTargetPlatformOverride = null);
+          var selected = false;
+          var commanded = false;
+          var opened = false;
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: AppTheme.light,
+              home: Scaffold(
+                body: MediaQuery(
+                  data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+                  child: Directionality(
+                    textDirection: direction,
+                    child: SingleChildScrollView(
+                      child: SizedBox(
+                        width: 320,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            CatchPersonRow.directory(
+                              data: const CatchPersonRowData(
+                                name: 'Ananya Rao with a longer family name',
+                              ),
+                              onTap: () => opened = true,
+                              metadata: const Text(
+                                '8 events · Last seen 18 June 2026',
+                              ),
+                              contextContent: const Text(
+                                'Returning customer from the weekend event',
+                              ),
+                              status: const CatchBadge.status(
+                                label: 'Needs identity review',
+                                tone: CatchBadgeTone.warning,
+                              ),
+                            ),
+                            Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: CatchOptionGroupItem<int>(
+                                option: const CatchOption(
+                                  value: 1,
+                                  label: 'Returning 148',
+                                ),
+                                selected: true,
+                                variant: CatchOptionGroupVariant.summary,
+                                onTap: () => selected = true,
+                              ),
+                            ),
+                            CatchButton.command(
+                              label: 'Sort: Most recently attended',
+                              onPressed: () => commanded = true,
+                            ),
+                            const CatchFieldSupportRow(
+                              color: Colors.black,
+                              text:
+                                  'A complete explanation including its final sentence must remain visible.',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+          for (final element in find.byType(RichText).evaluate()) {
+            expect(
+              (element.renderObject! as RenderParagraph).didExceedMaxLines,
+              isFalse,
+              reason: (element.widget as RichText).text.toPlainText(),
+            );
+          }
+          expect(
+            tester.getTopLeft(find.text('Needs identity review')).dy,
+            greaterThan(
+              tester
+                  .getBottomLeft(
+                    find.text('Returning customer from the weekend event'),
+                  )
+                  .dy,
+            ),
+          );
+          expect(
+            tester.getSize(find.byType(CatchButton)).height,
+            greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
+          );
+          expect(
+            tester.getSize(find.byType(CatchOptionGroupItem<int>)).height,
+            greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
+          );
+          await tester.tap(find.text('Ananya Rao with a longer family name'));
+          expect(opened, isTrue);
+          await tester.ensureVisible(find.text('Returning 148'));
+          await tester.tap(find.text('Returning 148'));
+          expect(selected, isTrue);
+          await tester.ensureVisible(find.text('Sort: Most recently attended'));
+          await tester.tap(find.text('Sort: Most recently attended'));
+          expect(commanded, isTrue);
+          expect(tester.takeException(), isNull);
+          debugDefaultTargetPlatformOverride = null;
+        },
+      );
+    }
+  }
+
+  testWidgets('summary choice supports keyboard selection', (tester) async {
+    var chosen = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: CatchOptionGroupItem<int>(
+            option: const CatchOption(value: 1, label: 'All 214'),
+            selected: false,
+            variant: CatchOptionGroupVariant.summary,
+            onTap: () => chosen = true,
+          ),
+        ),
+      ),
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    expect(chosen, isTrue);
+  });
+}

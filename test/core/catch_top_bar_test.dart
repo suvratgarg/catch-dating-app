@@ -899,5 +899,5 @@ Border _topBarBorder(WidgetTester tester) {
   final frame = containers.firstWhere(
     (container) => container.constraints?.maxHeight == CatchLayout.topBarHeight,
   );
-  return (frame.decoration! as BoxDecoration).border! as Border;
+  return (frame.foregroundDecoration! as BoxDecoration).border! as Border;
 }

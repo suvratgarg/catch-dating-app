@@ -104,7 +104,9 @@ class _CatchCountPillState extends State<CatchCountPill> {
       borderRole: _focused ? CatchBorderRole.focus : CatchBorderRole.control,
       padding: EdgeInsets.only(
         left: CatchSpacing.s4,
-        right: count > 0 ? CatchSpacing.s5 : CatchSpacing.s4,
+        right: count > 0
+            ? CatchCountBadge.labelWidth(context, count) + CatchSpacing.s1
+            : CatchSpacing.s4,
       ),
       onTap: widget.onPressed,
       onFocusChange: (focused) {

@@ -588,7 +588,7 @@ void main() {
 
       final editable = tester.widget<EditableText>(find.byType(EditableText));
       expect(editable.style.fontSize, CatchFieldTokens.valueFontSize);
-      expect(editable.style.fontWeight, FontWeight.w700);
+      expect(editable.style.fontWeight, FontWeight.w500);
       expect(editable.style.height, CatchFieldTokens.multilineValueLineHeight);
     },
   );

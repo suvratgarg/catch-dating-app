@@ -96,7 +96,7 @@ class CatchPersonRow extends StatelessWidget {
     required this.data,
     this.trailing,
     this.onTap,
-    this.avatarSize = 48,
+    this.avatarSize = CatchSpacing.s12,
     this.padding = const EdgeInsets.symmetric(
       horizontal: CatchSpacing.s5,
       vertical: CatchSpacing.micro10,
@@ -104,7 +104,34 @@ class CatchPersonRow extends StatelessWidget {
     this.divider = false,
     this.dividerInset = CatchLayout.chatListDividerInset,
     this.showFreshBackground = true,
-  });
+  }) : _directory = false,
+       metadata = null,
+       contextContent = null,
+       status = null;
+
+  /// A natural-height directory identity with optional rich metadata, contextual
+  /// content, and a status badge. Parent sections own gutters and separators.
+  const CatchPersonRow.directory({
+    super.key,
+    required this.data,
+    this.onTap,
+    this.metadata,
+    this.contextContent,
+    this.status,
+  }) : _directory = true,
+       trailing = null,
+       avatarSize = CatchRecordTokens.avatarExtent,
+       padding = const EdgeInsets.symmetric(
+         vertical: CatchRecordTokens.verticalPadding,
+       ),
+       divider = false,
+       dividerInset = 0,
+       showFreshBackground = false;
+
+  final bool _directory;
+  final Widget? metadata;
+  final Widget? contextContent;
+  final Widget? status;
 
   final CatchPersonRowData data;
 
@@ -120,6 +147,7 @@ class CatchPersonRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    if (_directory) return _buildDirectory(context);
     final isChatMode = data.lastMessage != null;
 
     final trailingContent =
@@ -183,6 +211,95 @@ class CatchPersonRow extends StatelessWidget {
     );
 
     return CatchRowPressSurface(onTap: onTap, child: row);
+  }
+
+  Widget _buildDirectory(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final stackStatus =
+        MediaQuery.textScalerOf(context).scale(1) >=
+        CatchRecordTokens.largeTextBreakpoint;
+    return CatchRowPressSurface(
+      onTap: onTap,
+      child: Padding(
+        padding: padding,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExcludeSemantics(
+              child: MediaQuery.withClampedTextScaling(
+                maxScaleFactor: 1,
+                child: CatchPersonAvatar(
+                  size: avatarSize,
+                  name: data.name,
+                  imageUrl: data.imageUrl,
+                  shape: data.avatarShape,
+                ),
+              ),
+            ),
+            const SizedBox(width: CatchRecordTokens.leadingGap),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) => Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            data.name,
+                            style: CatchTextStyles.name(context),
+                          ),
+                        ),
+                        if (status != null && !stackStatus) ...[
+                          const SizedBox(width: CatchSpacing.s2),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth:
+                                  constraints.maxWidth *
+                                  CatchRecordTokens.statusMaxWidthFraction,
+                            ),
+                            child: status!,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  if (metadata != null) ...[
+                    const SizedBox(height: CatchRecordTokens.titleGap),
+                    DefaultTextStyle(
+                      style: CatchTextStyles.supporting(context),
+                      child: metadata!,
+                    ),
+                  ],
+                  if (contextContent != null) ...[
+                    const SizedBox(height: CatchRecordTokens.titleGap),
+                    DefaultTextStyle(
+                      style: CatchTextStyles.recordContext(context),
+                      child: contextContent!,
+                    ),
+                  ],
+                  if (status != null && stackStatus) ...[
+                    const SizedBox(height: CatchRecordTokens.bodyGap),
+                    status!,
+                  ],
+                ],
+              ),
+            ),
+            if (onTap != null) ...[
+              const SizedBox(width: CatchSpacing.s2),
+              ExcludeSemantics(
+                child: Icon(
+                  CatchIcons.chevronRightRounded,
+                  size: CatchIcon.sm,
+                  color: t.ink3,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }
 

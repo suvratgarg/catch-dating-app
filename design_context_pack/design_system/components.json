@@ -102,7 +102,7 @@
       "name": "CatchBadge",
       "status": "active",
       "kind": "primitive",
-      "summary": "Small status badge for compact metadata, state, and count-adjacent labels.",
+      "summary": "Passive metadata and status with named compact, editorial, and readable rounded-rectangle recipes.",
       "dart": {
         "symbol": "CatchBadge",
         "file": "lib/core/widgets/catch_badge.dart",
@@ -114,7 +114,8 @@
           "CatchBadge.live",
           "CatchBadge.onDark",
           "CatchBadge.onDarkStatus",
-          "CatchBadge.privacy"
+          "CatchBadge.privacy",
+          "CatchBadge.status"
         ]
       },
       "design": {
@@ -161,7 +162,8 @@
                   "Success",
                   "Warning",
                   "Danger",
-                  "Gold"
+                  "Gold",
+                  "Affinity"
                 ],
                 "sourceProps": [
                   "tone"
@@ -213,7 +215,8 @@
               "success",
               "warning",
               "danger",
-              "gold"
+              "gold",
+              "affinity"
             ]
           },
           {
@@ -243,7 +246,8 @@
           "live",
           "on-dark",
           "privacy",
-          "truncated"
+          "truncated",
+          "readable-status"
         ],
         "slots": [],
         "tokens": [
@@ -254,7 +258,13 @@
           "radius.pill",
           "theme.light.color.primary",
           "theme.light.color.primaryInk",
-          "theme.light.color.line"
+          "theme.light.color.line",
+          "radius.sm",
+          "theme.light.color.positiveText",
+          "theme.light.color.attentionText",
+          "theme.light.color.affinityText",
+          "layout.statusHorizontalPadding",
+          "layout.statusVerticalPadding"
         ],
         "dartRoles": [
           "CatchTextStyles.badgeCaps",
@@ -267,7 +277,8 @@
           "CatchLayout.badgeActionHeight",
           "CatchCountBadge",
           "CatchStatusDot",
-          "CatchInlineStatus"
+          "CatchInlineStatus",
+          "CatchTextStyles.statusLabel"
         ],
         "goldens": [],
         "members": [
@@ -528,7 +539,8 @@
         "symbol": "CatchButton",
         "file": "lib/core/widgets/catch_button.dart",
         "constructors": [
-          "CatchButton"
+          "CatchButton",
+          "CatchButton.command"
         ]
       },
       "design": {
@@ -623,6 +635,13 @@
             "type": "color",
             "required": false,
             "dartType": "Color?"
+          },
+          {
+            "name": "iconAtEnd",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
           }
         ],
         "states": [
@@ -636,7 +655,8 @@
           "with-icon",
           "rounded",
           "large-text",
-          "reduced-motion"
+          "reduced-motion",
+          "command"
         ],
         "slots": [
           {
@@ -657,7 +677,9 @@
           "theme.light.color.primaryInk",
           "theme.light.color.danger",
           "theme.light.color.surface",
-          "theme.light.color.line2"
+          "theme.light.color.line2",
+          "interaction.ios.minimumExtent",
+          "interaction.android.minimumExtent"
         ],
         "dartRoles": [
           "CatchBorder.interactive",
@@ -670,7 +692,9 @@
           "CatchTextStyles.buttonMd",
           "CatchTextStyles.buttonLg",
           "CatchTextButton",
-          "CatchTextButtonTone"
+          "CatchTextButtonTone",
+          "CatchTextStyles.control",
+          "CatchPlatformTokens.minimumInteractiveExtent"
         ],
         "goldens": [],
         "members": [
@@ -4685,7 +4709,7 @@
             "id": "catch.metric_strip.stat_column",
             "symbol": "CatchStatColumn",
             "file": "lib/core/widgets/catch_stat_column.dart",
-            "summary": "Vertical value-over-label metric member for compact stats, highlighted values, optional icons, centered alignment, and surfaced single-stat blocks.",
+            "summary": "Vertical value-over-label metric member using the platform metric role and readable supporting label, with natural-height wrapping, optional icons, centered alignment, and surfaced single-stat blocks.",
             "states": [
               "plain",
               "highlighted",
@@ -8724,7 +8748,7 @@
       "name": "CatchOptionGroup",
       "status": "active",
       "kind": "composite",
-      "summary": "Single-select option group for underline scopes and icon-led operational workspace pickers.",
+      "summary": "Single-select scopes with underline, operational, and wrapping rounded-rectangle summary recipes.",
       "dart": {
         "symbol": "CatchOptionGroup",
         "file": "lib/core/widgets/catch_option_group.dart",
@@ -8777,7 +8801,8 @@
             "values": [
               "label",
               "mono",
-              "operational"
+              "operational",
+              "summary"
             ]
           },
           {
@@ -8801,7 +8826,8 @@
           "disabled",
           "accented",
           "trailing",
-          "overflow"
+          "overflow",
+          "summary"
         ],
         "slots": [
           {
@@ -8824,12 +8850,17 @@
           "theme.light.color.ink2",
           "theme.light.color.ink3",
           "theme.light.color.line",
-          "theme.light.color.surface"
+          "theme.light.color.surface",
+          "radius.sm",
+          "layout.selectionHorizontalPadding",
+          "layout.selectionVerticalPadding"
         ],
         "dartRoles": [
           "CatchTextStyles.labelL",
           "CatchTextStyles.monoLabel",
-          "CatchMotion.fast"
+          "CatchMotion.fast",
+          "CatchTextStyles.selectionLabel",
+          "CatchPlatformTokens.minimumInteractiveExtent"
         ],
         "goldens": [],
         "members": [
@@ -8842,7 +8873,8 @@
               "selected",
               "unselected",
               "mono",
-              "operational"
+              "operational",
+              "summary"
             ],
             "governance": {
               "conceptRole": "member",
@@ -11605,12 +11637,13 @@
       "name": "CatchPersonRow",
       "status": "active",
       "kind": "composite",
-      "summary": "Global people row for roster, safety, and chat-preview surfaces with configurable avatar shape, divider, timestamp, unread badge, and new-match marker.",
+      "summary": "Identity rows for chat, rosters, and natural-height directories with rich metadata and adaptive status.",
       "dart": {
         "symbol": "CatchPersonRow",
         "file": "lib/core/widgets/catch_person_row.dart",
         "constructors": [
-          "CatchPersonRow"
+          "CatchPersonRow",
+          "CatchPersonRow.directory"
         ]
       },
       "design": {
@@ -11648,6 +11681,24 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback"
+          },
+          {
+            "name": "metadata",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "contextContent",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "status",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
           }
         ],
         "states": [
@@ -11658,7 +11709,9 @@
           "chat-preview-unread",
           "chat-preview-square-avatar",
           "divider",
-          "long-copy"
+          "long-copy",
+          "directory",
+          "directory-large-text"
         ],
         "slots": [],
         "tokens": [
@@ -11671,13 +11724,21 @@
           "theme.light.color.ink2",
           "theme.light.color.ink3",
           "theme.light.color.line",
-          "theme.light.color.surface"
+          "theme.light.color.surface",
+          "layout.recordAvatarExtent",
+          "layout.recordLeadingGap",
+          "layout.recordVerticalPadding",
+          "layout.recordTitleGap"
         ],
         "dartRoles": [
           "CatchPersonRowData",
           "CatchPersonAvatar",
           "CatchBadge",
-          "CatchPersonAvatarShape"
+          "CatchPersonAvatarShape",
+          "CatchTextStyles.name",
+          "CatchTextStyles.supporting",
+          "CatchTextStyles.recordContext",
+          "CatchRecordTokens"
         ],
         "goldens": [],
         "members": [

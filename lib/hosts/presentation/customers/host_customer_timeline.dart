@@ -10,7 +10,6 @@ import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_typography.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -454,7 +453,7 @@ class HostCustomerTimelineSection extends StatelessWidget {
           gapH12,
           Text(
             context.l10n.hostCustomersTimelineReplyBoundary,
-            style: HostCustomerTypography.context(context),
+            style: CatchTextStyles.recordContext(context),
           ),
         ],
       ),
@@ -499,17 +498,41 @@ class _HostCustomerTimelineRows extends StatelessWidget {
             header: true,
             child: Text(
               MaterialLocalizations.of(context).formatFullDate(day.key),
-              style: HostCustomerTypography.metadataStrong(context),
+              style: CatchTextStyles.supportingStrong(context),
             ),
           ),
           gapH8,
-          for (final entry in day.value) _item(context, entry),
+          for (final entry in day.value)
+            HostCustomerTimelineRecord(
+              entry: entry,
+              onOpenFormResponse: onOpenFormResponse,
+              onOpenEvent: onOpenEvent,
+              onOpenCatchThread: onOpenCatchThread,
+              onOpenWhatsappThread: onOpenWhatsappThread,
+            ),
         ],
       ],
     );
   }
+}
 
-  Widget _item(BuildContext context, HostCustomerTimelineEntry entry) {
+class HostCustomerTimelineRecord extends StatelessWidget {
+  const HostCustomerTimelineRecord({
+    super.key,
+    required this.entry,
+    required this.onOpenFormResponse,
+    required this.onOpenEvent,
+    required this.onOpenCatchThread,
+    required this.onOpenWhatsappThread,
+  });
+  final HostCustomerTimelineEntry entry;
+  final ValueChanged<String> onOpenFormResponse;
+  final ValueChanged<String> onOpenEvent;
+  final ValueChanged<String> onOpenCatchThread;
+  final ValueChanged<String> onOpenWhatsappThread;
+  @override
+  Widget build(BuildContext context) {
+    final entry = this.entry;
     final t = CatchTokens.of(context);
     final key = ValueKey('host-customer-timeline-${entry.timelineId}');
     return switch (entry) {

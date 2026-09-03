@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
@@ -8,6 +9,7 @@ import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
@@ -102,7 +104,8 @@ class _HostCustomerDetailScreenState
                       ?.singleRecipient
                       .recommendedRouteId !=
                   null) ...[
-            if (MediaQuery.textScalerOf(context).scale(1) < 1.5)
+            if (MediaQuery.textScalerOf(context).scale(1) <
+                CatchRecordTokens.largeTextBreakpoint)
               CatchTopBarTextAction(
                 key: const ValueKey('host-customer-message'),
                 label: context.l10n.hostCustomersWhatsappMessage,
@@ -121,7 +124,8 @@ class _HostCustomerDetailScreenState
               variant: CatchIconButtonVariant.plain,
               enabled: !_updatingCustomer && !_openingConversation,
               items: [
-                if (MediaQuery.textScalerOf(context).scale(1) >= 1.5 &&
+                if (MediaQuery.textScalerOf(context).scale(1) >=
+                        CatchRecordTokens.largeTextBreakpoint &&
                     communicationPlanState
                             ?.value
                             ?.singleRecipient

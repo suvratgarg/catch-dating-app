@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -33,16 +34,49 @@ enum CatchDisplayStep {
 /// Prefer the named styles over ad hoc [TextStyle]; use `copyWith` only for local
 /// state (unread/disabled).
 abstract final class CatchTextStyles {
-  /// Preview navigation label, measured by the shared tab-rail owner.
+  /// Navigation label, measured by the shared tab-rail owner.
   static TextStyle tabLabel(
     BuildContext context, {
     bool selected = false,
     Color? color,
-  }) => CatchFonts.sans(
-    fontSize: 15,
-    height: 20 / 15,
-    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+  }) => control(
+    context,
+    selected: selected,
+    color: color,
+  ).copyWith(fontWeight: selected ? FontWeight.w600 : FontWeight.w500);
+
+  /// Standard command label, with emphasis reserved for active state.
+  static TextStyle control(
+    BuildContext context, {
+    bool selected = false,
+    Color? color,
+  }) => _functionProfile(
+    CatchPlatformTokens.typography.control,
     color: color ?? CatchTokens.of(context).ink,
+  ).copyWith(fontWeight: selected ? FontWeight.w600 : FontWeight.w400);
+
+  static TextStyle selectionLabel(
+    BuildContext context, {
+    required bool selected,
+  }) => supporting(
+    context,
+    color: selected
+        ? CatchTokens.of(context).primaryInk
+        : CatchTokens.of(context).ink2,
+  ).copyWith(fontWeight: selected ? FontWeight.w600 : FontWeight.w500);
+
+  static TextStyle supportingStrong(BuildContext context, {Color? color}) =>
+      supporting(
+        context,
+        color: color ?? CatchTokens.of(context).ink,
+      ).copyWith(fontWeight: FontWeight.w500);
+
+  /// Prominent measured quantity, aligned with tabular figures.
+  static TextStyle metric(BuildContext context, {Color? color}) => _tabular(
+    _functionProfile(
+      CatchPlatformTokens.typography.metric,
+      color: color ?? CatchTokens.of(context).ink,
+    ),
   );
 
   static const double _kickerTracking = 1.76; // 0.16em at 11px.
@@ -63,13 +97,10 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
-  /// Preview: system title scale for functional screen headings.
-  /// Pending cross-screen review before promotion from the Audience preview.
+  /// System title scale for functional root-screen headings.
   static TextStyle headline(BuildContext context, {Color? color}) =>
-      CatchFonts.sans(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        height: 30 / 24,
+      _functionProfile(
+        CatchPlatformTokens.typography.headline,
         color: color ?? CatchTokens.of(context).ink,
       );
 
@@ -178,45 +209,31 @@ abstract final class CatchTextStyles {
 
   // ===========================================================================
   // FUNCTION — platform system font (UI titles, body, labels, controls)
-  static TextStyle recordTitle(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 16,
-    height: Theme.of(context).platform == TargetPlatform.iOS
-        ? 20 / 16
-        : 24 / 16,
-    weight: Theme.of(context).platform == TargetPlatform.iOS
-        ? FontWeight.w600
-        : FontWeight.w500,
-    color: color,
-  );
+  static TextStyle recordTitle(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.name,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
-  static TextStyle recordContext(BuildContext context, {Color? color}) => _sans(
-    context,
-    weight: FontWeight.w400,
-    size: Theme.of(context).platform == TargetPlatform.iOS ? 13 : 12,
-    height: Theme.of(context).platform == TargetPlatform.iOS
-        ? 18 / 13
-        : 16 / 12,
-    color: color ?? CatchTokens.of(context).ink2,
-  );
+  static TextStyle recordContext(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.context,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
 
-  static TextStyle recordBody(BuildContext context, {Color? color}) => _sans(
-    context,
-    weight: FontWeight.w400,
-    size: 16,
-    height: 24 / 16,
-    color: color,
-  );
+  static TextStyle recordBody(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.body,
+        color: color ?? CatchTokens.of(context).ink,
+      );
   // ===========================================================================
 
   /// Large UI title for sections, cards, and sheet headings.
-  static TextStyle titleL(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 20,
-    weight: FontWeight.w700,
-    height: 1.16,
-    color: color,
-  );
+  static TextStyle titleL(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.title,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
   /// Profile prompt answers — user-authored content, not brand voice.
   static TextStyle profileAnswer(BuildContext context, {Color? color}) => _sans(
@@ -246,22 +263,18 @@ abstract final class CatchTextStyles {
   );
 
   /// Host/person row name treatment (`.t-name`).
-  static TextStyle name(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 15,
-    weight: FontWeight.w700,
-    height: 1.2,
-    color: color,
-  );
+  static TextStyle name(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.name,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
   /// Canonical sans section/card title.
-  static TextStyle sectionTitle(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 16,
-    weight: FontWeight.w700,
-    height: 1.22,
-    color: color,
-  );
+  static TextStyle sectionTitle(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.name,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
   /// Small sans title.
   static TextStyle titleS(BuildContext context, {Color? color}) =>
@@ -269,7 +282,10 @@ abstract final class CatchTextStyles {
 
   /// CatchField primary text (`.t-title-s` in the design handoff).
   static TextStyle fieldRowTitle(BuildContext context, {Color? color}) =>
-      _functionStrong14(context, color: color);
+      _functionProfile(
+        CatchPlatformTokens.typography.fieldValue,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
   /// Lead-in supporting copy (slightly heavier than [supporting]).
   static TextStyle bodyLead(BuildContext context, {Color? color}) => _sans(
@@ -280,42 +296,34 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink2,
   );
 
-  static TextStyle bodyL(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 16,
-    weight: FontWeight.w400,
-    height: 1.50,
-    color: color,
-  );
+  static TextStyle bodyL(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.body,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
-  static TextStyle bodyM(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 14,
-    weight: FontWeight.w400,
-    height: 1.50,
-    color: color,
-  );
+  static TextStyle bodyM(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.secondary,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
-  static TextStyle bodyS(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 13,
-    weight: FontWeight.w400,
-    height: 1.45,
-    color: color ?? CatchTokens.of(context).ink2,
-  );
+  static TextStyle bodyS(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.context,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
 
   /// AppBar subtitle (`.t-body-s`) under compact and large screen titles.
   static TextStyle appBarSubtitle(BuildContext context, {Color? color}) =>
       bodyS(context, color: color);
 
   /// The workhorse supporting label — dense meta, secondary copy.
-  static TextStyle supporting(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 13,
-    weight: FontWeight.w500,
-    height: 1.42,
-    color: color ?? CatchTokens.of(context).ink2,
-  );
+  static TextStyle supporting(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.secondary,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
 
   /// Supporting copy inside command and selection menus.
   static TextStyle menuSupporting(BuildContext context, {Color? color}) =>
@@ -330,13 +338,11 @@ abstract final class CatchTextStyles {
   static TextStyle labelL(BuildContext context, {Color? color}) =>
       _functionStrong14(context, color: color);
 
-  static TextStyle fieldLabel(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 11.5,
-    weight: FontWeight.w500,
-    height: 1.2,
-    color: color ?? CatchTokens.of(context).ink3,
-  );
+  static TextStyle fieldLabel(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.fieldLabel,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
 
   static TextStyle labelM(BuildContext context, {Color? color}) => _sans(
     context,
@@ -354,14 +360,12 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink2,
   );
 
-  /// Tiny all-caps status label (sans).
-  static TextStyle statusLabel(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 10,
-    weight: FontWeight.w800,
-    height: 1.10,
-    color: color ?? CatchTokens.of(context).ink2,
-  );
+  /// Readable sentence-case status label (sans).
+  static TextStyle statusLabel(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.status,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
 
   static TextStyle buttonSm(BuildContext context, {Color? color}) => _sans(
     context,
@@ -682,6 +686,17 @@ abstract final class CatchTextStyles {
   // ===========================================================================
   // Private builders — route through CatchFonts (which applies optical sizing).
   // ===========================================================================
+
+  static TextStyle _functionProfile(
+    TextStyle metrics, {
+    required Color color,
+  }) => CatchFonts.sans(
+    fontSize: metrics.fontSize!,
+    height: metrics.height!,
+    fontWeight: metrics.fontWeight!,
+    letterSpacing: metrics.letterSpacing!,
+    color: color,
+  );
 
   static TextStyle _functionStrong14(BuildContext context, {Color? color}) =>
       _sans(

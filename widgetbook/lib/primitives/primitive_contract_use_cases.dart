@@ -222,8 +222,19 @@ Widget catchBadgeContractStates(BuildContext context) {
       'on-dark',
       'privacy',
       'truncated',
+      'readable-status',
     ],
     children: [
+      const _StateCard(
+        label: 'readable-status',
+        child: _InlineWrap(
+          children: [
+            CatchBadge.status(label: 'Regular', tone: CatchBadgeTone.affinity),
+            CatchBadge.status(label: 'New', tone: CatchBadgeTone.success),
+            CatchBadge.status(label: 'At risk', tone: CatchBadgeTone.warning),
+          ],
+        ),
+      ),
       _StateCard(
         label: 'metadata / sentence case',
         child: _InlineWrap(
@@ -1543,8 +1554,18 @@ Widget catchButtonContractStates(BuildContext context) {
       'rounded',
       'large-text',
       'reduced-motion',
+      'command',
     ],
     children: [
+      _StateCard(
+        label: 'command',
+        child: CatchButton.command(
+          label: 'Sort: Last seen',
+          icon: Icon(CatchIcons.expandMoreRounded),
+          iconAtEnd: true,
+          onPressed: () {},
+        ),
+      ),
       _StateCard(
         label: 'default',
         child: _InlineWrap(
@@ -6007,8 +6028,23 @@ Widget catchOptionGroupContractStates(BuildContext context) {
       'accented',
       'trailing',
       'overflow',
+      'summary',
     ],
     children: [
+      _StateCard(
+        label: 'summary',
+        child: CatchOptionGroup<int>(
+          options: const [
+            CatchOption(value: 0, label: 'All 214'),
+            CatchOption(value: 1, label: 'Returning 148'),
+            CatchOption(value: 2, label: 'New 19'),
+          ],
+          selected: 0,
+          variant: CatchOptionGroupVariant.summary,
+          contractExemption: 'Local Widgetbook scope preview.',
+          onChanged: (_) {},
+        ),
+      ),
       _StateCard(
         label: 'label',
         child: _FieldWidth(
@@ -6125,8 +6161,23 @@ Widget catchOptionGroupItemContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchOptionGroupItem',
     contractId: 'catch.option_group.item',
-    states: const ['selected', 'unselected', 'mono', 'operational'],
+    states: const [
+      'selected',
+      'unselected',
+      'mono',
+      'operational',
+      'summary',
+    ],
     children: [
+      _StateCard(
+        label: 'summary',
+        child: CatchOptionGroupItem<int>(
+          option: const CatchOption(value: 1, label: 'Returning 148'),
+          selected: true,
+          variant: CatchOptionGroupVariant.summary,
+          onTap: () {},
+        ),
+      ),
       _StateCard(
         label: 'selected',
         child: CatchOptionGroupItem<String>(
@@ -8574,8 +8625,45 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
       'chat-preview-square-avatar',
       'divider',
       'long-copy',
+      'directory',
+      'directory-large-text',
     ],
     children: [
+      _StateCard(
+        label: 'directory',
+        child: CatchPersonRow.directory(
+          data: const CatchPersonRowData(name: 'Ananya Rao'),
+          metadata: const Text('8 events · Last seen 18 June'),
+          contextContent: const Text('Returning customer'),
+          status: const CatchBadge.status(
+            label: 'Regular',
+            tone: CatchBadgeTone.affinity,
+          ),
+          onTap: () {},
+        ),
+      ),
+      _StateCard(
+        label: 'directory-large-text',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: CatchPersonRow.directory(
+            data: const CatchPersonRowData(
+              name: 'Ananya Rao with a longer family name',
+            ),
+            metadata: const Text('8 events · Last seen 18 June'),
+            contextContent: const Text(
+              'Returning customer with complete contextual information',
+            ),
+            status: const CatchBadge.status(
+              label: 'Needs identity review',
+              tone: CatchBadgeTone.warning,
+            ),
+            onTap: () {},
+          ),
+        ),
+      ),
       _StateCard(
         label: 'roster',
         child: _ChatTileFrame(

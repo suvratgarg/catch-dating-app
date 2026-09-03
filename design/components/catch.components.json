@@ -102,7 +102,7 @@
       "name": "CatchBadge",
       "status": "active",
       "kind": "primitive",
-      "summary": "Small status badge for compact metadata, state, and count-adjacent labels.",
+      "summary": "Passive metadata and status with named compact, editorial, and readable rounded-rectangle recipes.",
       "dart": {
         "symbol": "CatchBadge",
         "file": "lib/core/widgets/catch_badge.dart",
@@ -114,7 +114,8 @@
           "CatchBadge.live",
           "CatchBadge.onDark",
           "CatchBadge.onDarkStatus",
-          "CatchBadge.privacy"
+          "CatchBadge.privacy",
+          "CatchBadge.status"
         ]
       },
       "design": {
@@ -149,7 +150,15 @@
                 "name": "Tone",
                 "type": "VARIANT",
                 "defaultValue": "Neutral",
-                "variantOptions": ["Neutral", "Brand", "Success", "Warning", "Danger", "Gold"],
+                "variantOptions": [
+                  "Neutral",
+                  "Brand",
+                  "Success",
+                  "Warning",
+                  "Danger",
+                  "Gold",
+                  "Affinity"
+                ],
                 "sourceProps": ["tone"]
               },
               {
@@ -192,7 +201,8 @@
               "success",
               "warning",
               "danger",
-              "gold"
+              "gold",
+              "affinity"
             ]
           },
           {
@@ -222,7 +232,8 @@
           "live",
           "on-dark",
           "privacy",
-          "truncated"
+          "truncated",
+          "readable-status"
         ],
         "slots": [],
         "tokens": [
@@ -233,7 +244,13 @@
           "radius.pill",
           "theme.light.color.primary",
           "theme.light.color.primaryInk",
-          "theme.light.color.line"
+          "theme.light.color.line",
+          "radius.sm",
+          "theme.light.color.positiveText",
+          "theme.light.color.attentionText",
+          "theme.light.color.affinityText",
+          "layout.statusHorizontalPadding",
+          "layout.statusVerticalPadding"
         ],
         "dartRoles": [
           "CatchTextStyles.badgeCaps",
@@ -246,7 +263,8 @@
           "CatchLayout.badgeActionHeight",
           "CatchCountBadge",
           "CatchStatusDot",
-          "CatchInlineStatus"
+          "CatchInlineStatus",
+          "CatchTextStyles.statusLabel"
         ],
         "goldens": [],
         "members": [
@@ -507,7 +525,8 @@
         "symbol": "CatchButton",
         "file": "lib/core/widgets/catch_button.dart",
         "constructors": [
-          "CatchButton"
+          "CatchButton",
+          "CatchButton.command"
         ]
       },
       "design": {
@@ -602,6 +621,13 @@
             "type": "color",
             "required": false,
             "dartType": "Color?"
+          },
+          {
+            "name": "iconAtEnd",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
           }
         ],
         "states": [
@@ -615,7 +641,8 @@
           "with-icon",
           "rounded",
           "large-text",
-          "reduced-motion"
+          "reduced-motion",
+          "command"
         ],
         "slots": [
           {
@@ -636,7 +663,9 @@
           "theme.light.color.primaryInk",
           "theme.light.color.danger",
           "theme.light.color.surface",
-          "theme.light.color.line2"
+          "theme.light.color.line2",
+          "interaction.ios.minimumExtent",
+          "interaction.android.minimumExtent"
         ],
         "dartRoles": [
           "CatchBorder.interactive",
@@ -649,7 +678,9 @@
           "CatchTextStyles.buttonMd",
           "CatchTextStyles.buttonLg",
           "CatchTextButton",
-          "CatchTextButtonTone"
+          "CatchTextButtonTone",
+          "CatchTextStyles.control",
+          "CatchPlatformTokens.minimumInteractiveExtent"
         ],
         "goldens": [],
         "members": [
@@ -1967,7 +1998,7 @@
               {
                 "name": "Optional Label",
                 "type": "TEXT",
-                "defaultValue": " · Optional",
+                "defaultValue": " \u00b7 Optional",
                 "sourceProps": ["isOptional"]
               },
               {
@@ -2175,7 +2206,7 @@
             "required": false,
             "default": false,
             "dartType": "bool",
-            "notes": "Presentation and accessibility copy only; renders the inline ' · Optional' suffix and never controls whether a selection may be cleared."
+            "notes": "Presentation and accessibility copy only; renders the inline ' \u00b7 Optional' suffix and never controls whether a selection may be cleared."
           },
           {
             "name": "allowEmptySelection",
@@ -2880,7 +2911,7 @@
           "Press feedback begins on header pointer down; disclosure ownership transfers once on pointer up. The full-row disclosure drawer is a sibling below that header, so nested chips, steppers, and commit buttons cannot trigger header press tint and retain complete hit/focus geometry. Coordinated pressed and active layers use one contextual silhouette: standalone and divided fields paint a rounded tint plus outline, while contained rows paint rectangular internal bands beneath one section-owned group clip. CatchFieldGeometryScope separately publishes content-gutter ownership, interaction bleed, and interaction-shape ownership; divided rows retain their tile overlap, while contained edge rows overlap the section's consumed border inset by exactly one hairline so both primitives paint one shared left/right edge. Explicit-save tap-away cancels on pointer up only when movement remains within touch slop, while drag/scroll leaves the field open and loading blocks Cancel or Escape. Ordinary inputs retain Flutter's shared EditableText tap group for affiliated actions and place the native cursor during the first gesture. A closed explicit-save input transfers native focus when its drawer reveal completes so keyboard viewport relayout cannot compete with disclosure motion; an editor built already open focuses immediately, and a direct input tap during reveal may still focus intentionally. Disclosure content stays mounted behind a clipped height-factor plus opacity reveal, uses CatchMotion.base, and becomes instantaneous when reduced motion is enabled.",
           "CatchField.content always owns title/supporting-copy typography. Its default body emphasis preserves the React handoff's top-aligned leading/trailing slots; callers may opt into title emphasis when a combined content block and trailing action should center together.",
           "Choice chips use a compact full-width wrapping layout, identical visual/hit boxes, and an 8 px visual run gap; explicit-save choices preserve staged selection until Done, while a single choice without a save bar closes after 180 ms. Steppers keep their value centered between bounded 44 px repeat targets; toggle tracks are 44 by 26 px, stay visible but disabled while saving, and vertically center with the leading icon and text lane.",
-          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' · '. An explicit body remains the compatibility override for custom formatting.",
+          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' \u00b7 '. An explicit body remains the compatibility override for custom formatting.",
           "CatchField.optionCards is the single-select explanatory counterpart to choices: the collapsed row derives the selected title, while every expanded option keeps its title and description inside one full-width CatchOptionCard target. Use chips only when labels are terse and do not need per-option explanation.",
           "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
           "Every empty inactive editable row uses one canonical value lane: primary 14/600 'Add {field}' plus an optional inline ink3/500 suffix, with no separate caption. Direct and explicit-save text paths keep the same native editable mounted behind that presentation; focus restores the caption, input-only hint, and input-only units without a second tap or cursor reset. Addable disclosures use the same typography, row height, and icon alignment.",
@@ -4618,7 +4649,7 @@
             "id": "catch.metric_strip.stat_column",
             "symbol": "CatchStatColumn",
             "file": "lib/core/widgets/catch_stat_column.dart",
-            "summary": "Vertical value-over-label metric member for compact stats, highlighted values, optional icons, centered alignment, and surfaced single-stat blocks.",
+            "summary": "Vertical value-over-label metric member using the platform metric role and readable supporting label, with natural-height wrapping, optional icons, centered alignment, and surfaced single-stat blocks.",
             "states": [
               "plain",
               "highlighted",
@@ -8657,7 +8688,7 @@
       "name": "CatchOptionGroup",
       "status": "active",
       "kind": "composite",
-      "summary": "Single-select option group for underline scopes and icon-led operational workspace pickers.",
+      "summary": "Single-select scopes with underline, operational, and wrapping rounded-rectangle summary recipes.",
       "dart": {
         "symbol": "CatchOptionGroup",
         "file": "lib/core/widgets/catch_option_group.dart",
@@ -8710,7 +8741,8 @@
             "values": [
               "label",
               "mono",
-              "operational"
+              "operational",
+              "summary"
             ]
           },
           {
@@ -8734,7 +8766,8 @@
           "disabled",
           "accented",
           "trailing",
-          "overflow"
+          "overflow",
+          "summary"
         ],
         "slots": [
           {
@@ -8757,12 +8790,17 @@
           "theme.light.color.ink2",
           "theme.light.color.ink3",
           "theme.light.color.line",
-          "theme.light.color.surface"
+          "theme.light.color.surface",
+          "radius.sm",
+          "layout.selectionHorizontalPadding",
+          "layout.selectionVerticalPadding"
         ],
         "dartRoles": [
           "CatchTextStyles.labelL",
           "CatchTextStyles.monoLabel",
-          "CatchMotion.fast"
+          "CatchMotion.fast",
+          "CatchTextStyles.selectionLabel",
+          "CatchPlatformTokens.minimumInteractiveExtent"
         ],
         "goldens": [],
         "members": [
@@ -8775,7 +8813,8 @@
               "selected",
               "unselected",
               "mono",
-              "operational"
+              "operational",
+              "summary"
             ],
             "governance": {
               "conceptRole": "member",
@@ -9773,11 +9812,11 @@
     },
     {
       "id": "catch.tab_bar",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
-      },
+        "waiver": {
+          "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+          "owner": "design_system",
+          "expires": "2026-09-30"
+        },
       "name": "CatchTabBar",
       "status": "active",
       "kind": "composite",
@@ -11538,12 +11577,13 @@
       "name": "CatchPersonRow",
       "status": "active",
       "kind": "composite",
-      "summary": "Global people row for roster, safety, and chat-preview surfaces with configurable avatar shape, divider, timestamp, unread badge, and new-match marker.",
+      "summary": "Identity rows for chat, rosters, and natural-height directories with rich metadata and adaptive status.",
       "dart": {
         "symbol": "CatchPersonRow",
         "file": "lib/core/widgets/catch_person_row.dart",
         "constructors": [
-          "CatchPersonRow"
+          "CatchPersonRow",
+          "CatchPersonRow.directory"
         ]
       },
       "design": {
@@ -11581,6 +11621,24 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback"
+          },
+          {
+            "name": "metadata",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "contextContent",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "status",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
           }
         ],
         "states": [
@@ -11591,7 +11649,9 @@
           "chat-preview-unread",
           "chat-preview-square-avatar",
           "divider",
-          "long-copy"
+          "long-copy",
+          "directory",
+          "directory-large-text"
         ],
         "slots": [],
         "tokens": [
@@ -11604,13 +11664,21 @@
           "theme.light.color.ink2",
           "theme.light.color.ink3",
           "theme.light.color.line",
-          "theme.light.color.surface"
+          "theme.light.color.surface",
+          "layout.recordAvatarExtent",
+          "layout.recordLeadingGap",
+          "layout.recordVerticalPadding",
+          "layout.recordTitleGap"
         ],
         "dartRoles": [
           "CatchPersonRowData",
           "CatchPersonAvatar",
           "CatchBadge",
-          "CatchPersonAvatarShape"
+          "CatchPersonAvatarShape",
+          "CatchTextStyles.name",
+          "CatchTextStyles.supporting",
+          "CatchTextStyles.recordContext",
+          "CatchRecordTokens"
         ],
         "goldens": [],
         "members": [
@@ -14786,11 +14854,11 @@
     },
     {
       "id": "catch.club_cover",
-        "waiver": {
-          "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-          "owner": "design_system",
-          "expires": "2026-09-30"
-        },
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchClubCover",
       "status": "active",
       "kind": "primitive",

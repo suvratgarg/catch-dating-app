@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedBy": "tool/design/build_context_pack.mjs",
-  "sourceDigest": "2f49c684946b6d8c45d3742d95b3982272cc96ac14f2b0927dd31c339d7df15e",
+  "sourceDigest": "4133160e13d6de968a251e41dc6bb0448754e645af1bfa9b4b1a933210ffbdf3",
   "contextFiles": {
     "components": "design_system/components.json",
     "tokens": "design_system/tokens.json",
@@ -33,17 +33,24 @@
         "live",
         "on-dark",
         "privacy",
-        "truncated"
+        "truncated",
+        "readable-status"
       ],
-      "supportedStatesDigest": "23170b3ccb832df9d6503c54d778afae1bfb3cb100b45eb150c9a91ca0253e74",
-      "propsDigest": "3273ae1a88fd160d55cfbad9cf534636195352060e600f69685d4e4c20a968da",
+      "supportedStatesDigest": "307015995a74b7d6adbd4da8066dfe03802cd7352fd3bc1e8ae21a796348ca7b",
+      "propsDigest": "6136231d9fe38c2b4aedd9a28686a3b604aefbf0fc5e133fcf96027d47d99796",
       "tokens": [
+        "layout.statusHorizontalPadding",
+        "layout.statusVerticalPadding",
         "radius.pill",
+        "radius.sm",
         "space.micro10",
         "space.micro14",
         "space.micro6",
         "space.s1",
+        "theme.light.color.affinityText",
+        "theme.light.color.attentionText",
         "theme.light.color.line",
+        "theme.light.color.positiveText",
         "theme.light.color.primary",
         "theme.light.color.primaryInk"
       ]

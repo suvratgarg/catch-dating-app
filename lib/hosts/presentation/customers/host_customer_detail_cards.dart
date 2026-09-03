@@ -288,7 +288,9 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+    final usesLargeText =
+        MediaQuery.textScalerOf(context).scale(1) >=
+        CatchRecordTokens.largeTextBreakpoint;
     final segment = _hostCustomerPrimarySegment(customer.traits.segments);
     final segmentLabel = segment == null
         ? null
@@ -298,19 +300,17 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
             context,
             hostCustomerFilterForAudienceSegment(segment),
           );
-    final segmentColor = switch (segment) {
-      HostAudienceSegment.lapsedRegular => HostCustomerPalette.atRisk(context),
-      HostAudienceSegment.regular => HostCustomerPalette.regular(context),
-      HostAudienceSegment.newToOrganizer => HostCustomerPalette.newCustomer(
-        context,
-      ),
-      _ => CatchTokens.of(context).ink2,
+    final segmentTone = switch (segment) {
+      HostAudienceSegment.lapsedRegular => CatchBadgeTone.warning,
+      HostAudienceSegment.regular => CatchBadgeTone.affinity,
+      HostAudienceSegment.newToOrganizer => CatchBadgeTone.success,
+      _ => CatchBadgeTone.neutral,
     };
     final details = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (showName) ...[
-          Text(displayName, style: HostCustomerTypography.name(context)),
+          Text(displayName, style: CatchTextStyles.name(context)),
           gapH4,
         ],
         Wrap(
@@ -321,22 +321,9 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
               Align(
                 widthFactor: 1,
                 alignment: AlignmentDirectional.centerStart,
-                child: CatchSurface(
-                  radius: CatchRadius.sm,
-                  backgroundColor: segmentColor.withValues(
-                    alpha: CatchOpacity.subtleFill,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: CatchSpacing.s2,
-                    vertical: CatchSpacing.s1,
-                  ),
-                  child: Text(
-                    segmentLabel,
-                    style: HostCustomerTypography.status(
-                      context,
-                      color: segmentColor,
-                    ),
-                  ),
+                child: CatchBadge.status(
+                  label: segmentLabel,
+                  tone: segmentTone,
                 ),
               ),
             CatchButton(
@@ -354,13 +341,13 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
           Text(
             phoneE164 ?? phonePlaceholder,
             key: const ValueKey('host-customer-phone-summary'),
-            style: HostCustomerTypography.body(context),
+            style: CatchTextStyles.bodyL(context),
           ),
           gapH4,
           Text(
             email ?? emailPlaceholder,
             key: const ValueKey('host-customer-email-summary'),
-            style: HostCustomerTypography.body(context),
+            style: CatchTextStyles.bodyL(context),
           ),
         ],
       ],
@@ -431,29 +418,24 @@ class HostCustomerAttendanceCard extends StatelessWidget {
       ),
       (value: attendanceRate, label: context.l10n.hostCustomersAttendanceRate),
     ];
-    Widget metric(({String value, String label}) item) => Column(
-      children: [
-        Text(item.value, style: HostCustomerTypography.metric(context)),
-        gapH4,
-        Text(
-          item.label,
-          style: HostCustomerTypography.secondary(context),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+    final largeText =
+        MediaQuery.textScalerOf(context).scale(1) >=
+        CatchRecordTokens.largeTextBreakpoint;
     return CatchSection.plain(
       key: const ValueKey('host-customer-activity'),
       title: context.l10n.hostCustomersDetailAttendance,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+        padding: CatchInsets.contentVerticalCompact,
         child: largeText
             ? Column(
                 children: [
                   for (final (index, item) in metrics.indexed) ...[
                     if (index > 0) ...[gapH12, const CatchDivider(), gapH12],
-                    metric(item),
+                    CatchStatColumn(
+                      value: item.value,
+                      label: item.label,
+                      center: true,
+                    ),
                   ],
                 ],
               )
@@ -466,7 +448,13 @@ class HostCustomerAttendanceCard extends StatelessWidget {
                         height: CatchSpacing.s10,
                         child: ColoredBox(color: CatchTokens.of(context).line),
                       ),
-                    Expanded(child: metric(item)),
+                    Expanded(
+                      child: CatchStatColumn(
+                        value: item.value,
+                        label: item.label,
+                        center: true,
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -512,7 +500,7 @@ class HostCustomerDetailsSection extends StatelessWidget {
           title: context.l10n.hostCustomersContactMethods,
           footer: Text(
             endpointContext,
-            style: HostCustomerTypography.context(context),
+            style: CatchTextStyles.recordContext(context),
           ),
           children: [
             if (customer.phoneE164 case final phone?)
@@ -543,7 +531,7 @@ class HostCustomerDetailsSection extends StatelessWidget {
                   customer.timelineTruncated
               ? Text(
                   context.l10n.hostCustomersTimelinePartialBody,
-                  style: HostCustomerTypography.context(context),
+                  style: CatchTextStyles.recordContext(context),
                 )
               : null,
           children: formRows.isEmpty
@@ -614,52 +602,16 @@ class HostCustomerRecentEvents extends StatelessWidget {
       first: true,
       children: [
         for (final event in events.take(3))
-          CatchRowPressSurface(
+          CatchRecordRow(
             key: ValueKey('host-customer-recent-event-${event.eventId}'),
+            title: event.displayName,
+            metadata: [
+              if (event.eventStartAt case final date?)
+                AppTimeFormatters.dateTime(date),
+              context.l10n.hostsHostAudienceAttended,
+            ].join(' · '),
+            icon: CatchIcons.tabEvents,
             onTap: () => onOpenEvent(event.eventId),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CatchSurface(
-                    radius: CatchRadius.pill,
-                    tone: CatchSurfaceTone.raised,
-                    padding: const EdgeInsets.all(CatchSpacing.s2),
-                    child: Icon(CatchIcons.tabEvents, size: CatchIcon.md),
-                  ),
-                  gapW12,
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          event.displayName,
-                          style: HostCustomerTypography.name(context),
-                        ),
-                        gapH4,
-                        if (event.eventStartAt != null)
-                          Text(
-                            AppTimeFormatters.dateTime(event.eventStartAt!),
-                            style: HostCustomerTypography.secondary(context),
-                          ),
-                        gapH4,
-                        Text(
-                          context.l10n.hostsHostAudienceAttended,
-                          style: HostCustomerTypography.context(context),
-                        ),
-                      ],
-                    ),
-                  ),
-                  gapW8,
-                  Icon(
-                    CatchIcons.chevronRightRounded,
-                    size: CatchIcon.sm,
-                    color: CatchTokens.of(context).ink3,
-                  ),
-                ],
-              ),
-            ),
           ),
       ],
     );
@@ -696,37 +648,36 @@ class HostCustomerRevenueCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              for (final amount in revenue.amounts)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        NumberFormat.simpleCurrency(
-                          name: amount.currency,
-                        ).format(amount.amountMinor / 100),
-                        style: HostCustomerTypography.metric(context),
-                      ),
+              for (final amount in revenue.amounts) ...[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      NumberFormat.simpleCurrency(
+                        name: amount.currency,
+                      ).format(amount.amountMinor / 100),
+                      style: CatchTextStyles.metric(context),
+                    ),
+                    gapH4,
+                    Text(
+                      '${amount.currency} · ${context.l10n.hostCustomersDetailRevenueFacts(count: amount.factCount)}',
+                      style: CatchTextStyles.supporting(context),
+                    ),
+                    for (final source in amount.sources) ...[
                       gapH4,
                       Text(
-                        '${amount.currency} · ${context.l10n.hostCustomersDetailRevenueFacts(count: amount.factCount)}',
-                        style: HostCustomerTypography.secondary(context),
-                      ),
-                      for (final source in amount.sources) ...[
-                        gapH4,
-                        Text(
-                          _customerRevenueSourceSummary(
-                            context,
-                            source,
-                            amount.currency,
-                          ),
-                          style: HostCustomerTypography.context(context),
+                        _customerRevenueSourceSummary(
+                          context,
+                          source,
+                          amount.currency,
                         ),
-                      ],
+                        style: CatchTextStyles.recordContext(context),
+                      ),
                     ],
-                  ),
+                  ],
                 ),
+                gapH8,
+              ],
             ],
           ),
         if (onOpen != null)
