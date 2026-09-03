@@ -1492,6 +1492,23 @@ Use try/catch in controllers only for adding useful context, rollback, convertin
 callback APIs to futures, or intentionally continuing after a logged local
 failure. Do not catch only to show UI from a controller.
 
+Transient publication is a shared boundary in both apps:
+`showCatchSnackBar` / `showCatchErrorSnackBar` remain the only owners of raw
+`SnackBar` construction and `ScaffoldMessengerState.showSnackBar` publication.
+`catch_use_canonical_feedback` resolves framework symbols and rejects raw
+SnackBar/MaterialBanner constructors, typedef aliases, constructor tear-offs,
+publisher calls and publisher tear-offs outside that exact owner. Unlike
+syntax-only geometry rules, it requires resolved analysis and does not exempt
+all core widgets. Seeded probes cover Host, Consumer, shared/core code,
+same-name non-framework classes, and the allowed helper owner.
+
+This enforcement standardizes the entry point; it does **not** claim that
+snackbars have moved to a top notification overlay. Keep field validation,
+section/load failures, persistent inline mutation errors and framework crash
+fallbacks in their existing contextual owners. Ongoing connectivity/rehearsal
+status and transient arrival notices have different lifetimes; their layout
+integration must not be inferred merely from sharing a visual renderer.
+
 ### Logging And Telemetry
 
 Current reporting path:

@@ -1744,15 +1744,14 @@
     },
     {
       "id": "catch.notice",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "enforcement": {
+        "code": "catch_use_canonical_feedback",
+        "vehicle": "plugin"
       },
       "name": "CatchNotice",
       "status": "active",
       "kind": "composite",
-      "summary": "Ambient app notice family for queued/persistent top-of-screen status, success, warning, danger, and event notices.",
+      "summary": "Ambient app notice family with caller-configurable copy, semantic tone, icon or canonical person avatar, and optional theme-derived accent.",
       "dart": {
         "symbol": "CatchNotice",
         "file": "lib/core/widgets/catch_notice.dart",
@@ -1838,6 +1837,8 @@
           "CatchNoticeQueue",
           "CatchNoticeController",
           "CatchNoticeHost",
+          "CatchPersonAvatar",
+          "CatchPersonAvatarItem",
           "CatchSurface",
           "CatchButton",
           "CatchTextStyles.labelL",
@@ -1882,10 +1883,13 @@
       "handoff": {
         "allowedChildren": [
           "catch.surface",
-          "catch.button"
+          "catch.button",
+          "catch.person_avatar"
         ],
         "notes": [
           "Use for ambient app-level notices that float above existing content.",
+          "CatchNoticeData owns caller-supplied title, message, icon, person, and accentColor; a supplied person takes precedence over the icon and uses CatchPersonAvatar's circular image/initials fallback.",
+          "Keep match/message copy and identity in feature adapters. Do not fork the renderer for different strings, icons or colors. Accent overrides must be theme-derived and reviewed for contrast; geometry and typography remain renderer-owned.",
           "Use CatchErrorBanner for inline persistent form/section failures and CatchErrorState for blocking data-load failures."
         ]
       },

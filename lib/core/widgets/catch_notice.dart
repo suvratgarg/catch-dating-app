@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,9 @@ class CatchNoticeData {
     required this.id,
     required this.title,
     this.message,
-    this._icon,
+    IconData? icon,
+    this.person,
+    this.accentColor,
     this.tone = CatchNoticeTone.status,
     this.actionLabel,
     this.onAction,
@@ -29,12 +32,18 @@ class CatchNoticeData {
     this.dedupeKey,
     this.priority = 0,
     this.dismissible = true,
-  }) : _fallbackIcon = _AppNoticeFallbackIcon.status;
+    // Keep the public argument `icon`; an initializing formal would expose
+    // the private backing field instead of the caller-configurable input.
+    // ignore: prefer_initializing_formals
+  }) : _icon = icon,
+       _fallbackIcon = _AppNoticeFallbackIcon.status;
 
   const CatchNoticeData._offline({required this.title, this.message})
     : id = 'connectivity.offline',
       _icon = null,
       _fallbackIcon = _AppNoticeFallbackIcon.offline,
+      person = null,
+      accentColor = null,
       tone = CatchNoticeTone.warning,
       actionLabel = null,
       onAction = null,
@@ -52,8 +61,13 @@ class CatchNoticeData {
   final String id;
   final String title;
   final String? message;
+
+  /// Feature adapters own copy, identity and semantic color. The renderer owns
+  /// geometry, text roles, palette derivation and image-failure fallback.
   final IconData? _icon;
   final _AppNoticeFallbackIcon _fallbackIcon;
+  final CatchPersonAvatarItem? person;
+  final Color? accentColor;
   final CatchNoticeTone tone;
   final String? actionLabel;
   final VoidCallback? onAction;
@@ -221,7 +235,12 @@ class CatchNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = _NoticePalette.from(CatchTokens.of(context), notice.tone);
+    final palette = _NoticePalette.from(
+      CatchTokens.of(context),
+      notice.tone,
+      accentColor: notice.accentColor,
+    );
+    final person = notice.person;
     final actionLabel = notice.actionLabel;
     final onAction = notice.onAction;
 
@@ -242,20 +261,28 @@ class CatchNotice extends StatelessWidget {
         ),
         child: Row(
           children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: palette.iconBackground,
-                borderRadius: BorderRadius.circular(CatchRadius.pill),
-              ),
-              child: SizedBox.square(
-                dimension: CatchLayout.noticeIconExtent,
-                child: Icon(
-                  notice.icon,
-                  color: palette.icon,
-                  size: CatchIcon.control,
+            if (person != null)
+              CatchPersonAvatar(
+                size: CatchLayout.noticeIconExtent,
+                name: person.name,
+                imageUrl: person.imageUrl,
+                initials: person.initials,
+              )
+            else
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: palette.iconBackground,
+                  borderRadius: BorderRadius.circular(CatchRadius.pill),
+                ),
+                child: SizedBox.square(
+                  dimension: CatchLayout.noticeIconExtent,
+                  child: Icon(
+                    notice.icon,
+                    color: palette.icon,
+                    size: CatchIcon.control,
+                  ),
                 ),
               ),
-            ),
             const SizedBox(width: CatchSpacing.s3),
             Expanded(
               child: Column(
@@ -331,14 +358,20 @@ class _NoticePalette {
   final Color iconBackground;
   final Color border;
 
-  factory _NoticePalette.from(CatchTokens t, CatchNoticeTone tone) {
-    final toneColor = switch (tone) {
-      CatchNoticeTone.status => t.accent,
-      CatchNoticeTone.success => t.success,
-      CatchNoticeTone.warning => t.warning,
-      CatchNoticeTone.danger => t.danger,
-      CatchNoticeTone.event => t.primary,
-    };
+  factory _NoticePalette.from(
+    CatchTokens t,
+    CatchNoticeTone tone, {
+    Color? accentColor,
+  }) {
+    final toneColor =
+        accentColor ??
+        switch (tone) {
+          CatchNoticeTone.status => t.accent,
+          CatchNoticeTone.success => t.success,
+          CatchNoticeTone.warning => t.warning,
+          CatchNoticeTone.danger => t.danger,
+          CatchNoticeTone.event => t.primary,
+        };
 
     return _NoticePalette(
       background: Color.lerp(t.surface, toneColor, 0.08)!,

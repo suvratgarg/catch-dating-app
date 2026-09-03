@@ -204,9 +204,7 @@ class _HostFormResponseDetailScreenState
           responseId: widget.responseId,
         ),
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.hostFormConversionComplete)),
-      );
+      showCatchSnackBar(context, context.l10n.hostFormConversionComplete);
     } on Object catch (error) {
       if (mounted) showCatchErrorSnackBar(context, error);
     } finally {

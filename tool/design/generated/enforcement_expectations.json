@@ -176,6 +176,9 @@
     "catch_top_bar_requires_action_group": [
       "catch.top_bar"
     ],
+    "catch_use_canonical_feedback": [
+      "catch.notice"
+    ],
     "catch_use_named_catch_field_constructor": [
       "catch.field"
     ],

@@ -4,9 +4,101 @@ import 'package:analyzer/analysis_rule/rule_visitor_registry.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
 
 import 'catch_ui_rules_tables.g.dart';
+
+/// Feedback publication needs resolved symbols, unlike the syntax-only layout
+/// rules below: prefixes, typedefs and tear-offs must not bypass the boundary.
+class CatchFeedbackRules extends MultiAnalysisRule {
+  CatchFeedbackRules()
+    : super(
+        name: 'catch_feedback_rules',
+        description: 'Routes framework feedback through its canonical owner.',
+      );
+
+  static const useCanonicalFeedback = LintCode(
+    'catch_use_canonical_feedback',
+    'Use showCatchSnackBar/showCatchErrorSnackBar for transient feedback or a Catch contextual error primitive; raw framework feedback belongs only to the canonical feedback owner.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  @override
+  bool get canUseParsedResult => false;
+
+  @override
+  List<DiagnosticCode> get diagnosticCodes => const [useCanonicalFeedback];
+
+  @override
+  void registerNodeProcessors(
+    RuleVisitorRegistry registry,
+    RuleContext context,
+  ) {
+    final path = context.definingUnit.file.path.replaceAll(r'\', '/');
+    if (!path.contains('/lib/') ||
+        path.contains('/test/') ||
+        path.contains('/integration_test/') ||
+        path.endsWith('.g.dart') ||
+        path.endsWith('.freezed.dart') ||
+        path.endsWith('/lib/core/widgets/catch_error_snackbar.dart')) {
+      return;
+    }
+    final visitor = _CatchFeedbackVisitor(this);
+    registry.addInstanceCreationExpression(this, visitor);
+    registry.addConstructorReference(this, visitor);
+    registry.addMethodInvocation(this, visitor);
+    registry.addPrefixedIdentifier(this, visitor);
+    registry.addPropertyAccess(this, visitor);
+  }
+}
+
+class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
+  _CatchFeedbackVisitor(this.rule);
+
+  final CatchFeedbackRules rule;
+
+  void _check(AstNode node, Element? element) {
+    final uri = element?.library?.uri.toString();
+    final constructor =
+        element is ConstructorElement &&
+        ((element.enclosingElement.name == 'SnackBar' &&
+                uri == 'package:flutter/src/material/snack_bar.dart') ||
+            (element.enclosingElement.name == 'MaterialBanner' &&
+                uri == 'package:flutter/src/material/banner.dart'));
+    final publisher =
+        element is MethodElement &&
+        element.enclosingElement?.name == 'ScaffoldMessengerState' &&
+        uri == 'package:flutter/src/material/scaffold.dart' &&
+        const {'showSnackBar', 'showMaterialBanner'}.contains(element.name);
+    if (constructor || publisher) {
+      rule.reportAtNode(
+        node,
+        diagnosticCode: CatchFeedbackRules.useCanonicalFeedback,
+      );
+    }
+  }
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) =>
+      _check(node, node.constructorName.element);
+
+  @override
+  void visitConstructorReference(ConstructorReference node) =>
+      _check(node, node.constructorName.element);
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) =>
+      _check(node.methodName, node.methodName.element);
+
+  @override
+  void visitPrefixedIdentifier(PrefixedIdentifier node) =>
+      _check(node, node.element);
+
+  @override
+  void visitPropertyAccess(PropertyAccess node) =>
+      _check(node, node.propertyName.element);
+}
 
 const _eventDetailPathFragments = <String>[
   '/lib/events/presentation/widgets/event_detail_',

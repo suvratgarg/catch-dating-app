@@ -284,6 +284,14 @@ owns that geometry along with safe-area, platform, focus, and disabled/loading
 behavior. Callers provide semantic state, content slots, and callbacks; they do
 not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
 
+- Notice identity is supplied by its feature adapter through `CatchNoticeData`:
+  localized title/message, semantic tone, optional icon, optional
+  `CatchPersonAvatarItem`, and an optional theme-derived `accentColor`. A person
+  replaces the status glyph and reuses `CatchPersonAvatar` for circular photos
+  and initials fallback. The shared notice still owns typography, icon/avatar
+  extent, spacing, surface and tint derivation. Do not create separate visual
+  match/message widgets merely to change copy, identity or color. A color
+  override does not waive contrast review in both themes.
 - Primary screen CTA placement routes through the `CatchBottomAction` family.
   `CatchBottomAction` owns one floating Cupertino or anchored Material action;
   `CatchBottomActionOverlay` owns pinned multi-action form controls over a soft

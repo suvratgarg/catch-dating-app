@@ -432,9 +432,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final published = await notifier.publish();
     if (!mounted) return;
     if (published) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.hostFormPublished)));
+      showCatchSnackBar(context, context.l10n.hostFormPublished);
     } else if (ref
             .read(
               hostFormEditorControllerProvider(

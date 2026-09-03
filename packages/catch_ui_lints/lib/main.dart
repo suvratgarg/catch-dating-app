@@ -12,5 +12,6 @@ class _CatchUiLintsPlugin extends Plugin {
   @override
   void register(PluginRegistry registry) {
     registry.registerWarningRule(CatchUiLayoutRules());
+    registry.registerWarningRule(CatchFeedbackRules());
   }
 }
