@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.41.0
-updated: 2026-09-01
+version: 1.42.0
+updated: 2026-09-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -1926,3 +1926,14 @@ the canonical `events` and `organizers` collections.
 Detailed phase logs and old proof commands were removed from active Markdown.
 Use Git history when exact historical wording or retired command output
 matters.
+
+### Audience automation ownership
+
+`organizer_form_automation_rules` and `organizer_form_automation_runs` remain
+server-only. The existing create callable edits with an expected revision;
+nullable form scope enables organizer-wide acceptance and attendance rules.
+Published answer conditions carry a server-owned version binding. Runs carry
+source identity, original occurrence time, due time and fenced lease fields.
+Message actions pin a draft campaign revision and generated campaigns carry
+server-only `automationOrigin`; client campaign upserts cannot forge or remove it.
+The backend operation catalog owns execution, retry and signed-webhook semantics.

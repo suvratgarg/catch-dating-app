@@ -522,6 +522,54 @@ const schemaOrganizerCampaignDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'automationOrigin': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'ruleId',
+        'ruleRevision',
+        'actionId',
+        'sourceId',
+        'eventKind',
+        'contactId',
+      ],
+      'properties': <String, Object?>{
+        'ruleId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'ruleRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'actionId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'sourceId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'eventKind': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'submitted',
+            'withdrawn',
+            'applicationAccepted',
+            'eventAttended',
+          ],
+        },
+        'contactId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+      },
+    },
   },
   'definitions': <String, Object?>{
     'count': <String, Object?>{

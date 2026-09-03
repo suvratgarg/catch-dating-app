@@ -7,11 +7,16 @@
  */
 export interface OrganizerFormAutomationRuleDocument {
   organizerId: string;
-  formId: string;
+  formId: string | null;
   name: string;
   enabled: boolean;
   revision: number;
-  trigger: "responseSubmitted" | "responseWithdrawn" | "answerMatches";
+  trigger:
+    | "responseSubmitted"
+    | "responseWithdrawn"
+    | "answerMatches"
+    | "applicationAccepted"
+    | "eventAttended";
   condition: {
     questionId: string;
     operator:
@@ -47,6 +52,8 @@ export interface OrganizerFormAutomationRuleDocument {
     webhookUrl: string | null;
     webhookSecret: string | null;
     channel: null | "whatsapp" | "email";
+    campaignId?: string | null;
+    campaignRevision?: number | null;
   }[];
   createdByUid: string;
   updatedByUid: string;
@@ -64,4 +71,7 @@ export interface OrganizerFormAutomationRuleDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  triggerEventId?: string | null;
+  delayMinutes?: number;
+  conditionVersionId?: string | null;
 }

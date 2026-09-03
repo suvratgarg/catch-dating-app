@@ -47,6 +47,7 @@ Owned routes:
 - `hostFormShareScreen` — `/host/audience/forms/:formId/share`
 - `hostFormAnalyticsScreen` — `/host/audience/forms/:formId/analytics`
 - `hostFormAutomationsScreen` — `/host/audience/forms/:formId/automations`
+- `hostAudienceAutomationsScreen` — `/host/audience/automations`
 - `hostApplicationsScreen` — `/host/audience/applications`
 - `hostApplicationDetailScreen` — `/host/audience/applications/:applicationId`
 - `hostCustomerDetailScreen` — `/host/audience/people/:contactId`

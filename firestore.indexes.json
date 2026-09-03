@@ -288,6 +288,33 @@
       ]
     },
     {
+      "collectionGroup": "organizerFormAutomationRules",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "enabled", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormAutomationRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormAutomationRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "ruleId", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerFormAutomationRuns",
       "queryScope": "COLLECTION",
       "fields": [

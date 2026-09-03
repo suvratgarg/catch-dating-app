@@ -144,7 +144,8 @@
         {"routes": ["hostFormPreviewScreen"], "file": "lib/hosts/presentation/forms/host_form_preview_screen.dart", "symbol": "HostFormPreviewScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostFormShareScreen"], "file": "lib/hosts/presentation/forms/host_form_share_screen.dart", "symbol": "_HostFormShareScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostFormAnalyticsScreen"], "file": "lib/hosts/presentation/forms/host_form_analytics_screen.dart", "symbol": "_HostFormAnalyticsScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
-        {"routes": ["hostFormAutomationsScreen"], "file": "lib/hosts/presentation/forms/host_form_automations_screen.dart", "symbol": "HostFormAutomationsScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostFormAutomationsScreen", "hostAudienceAutomationsScreen"], "file": "lib/hosts/presentation/forms/host_automation_rule_editor.dart", "symbol": "_HostAutomationRuleEditorState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostFormAutomationsScreen", "hostAudienceAutomationsScreen"], "file": "lib/hosts/presentation/forms/host_form_automations_screen.dart", "symbol": "_HostFormAutomationsScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostCustomerDetailScreen"], "file": "lib/hosts/presentation/customers/host_customer_detail_screen.dart", "symbol": "_HostCustomerDetailScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostSavedAudienceDetailScreen"], "file": "lib/hosts/presentation/host_operations/host_loading_screen.dart", "symbol": "HostLoadingScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
       ],
@@ -15334,6 +15335,7 @@
         {"id": "hostFormPreviewScreen", "path": "/host/audience/forms/:formId/preview", "role": "host"},
         {"id": "hostFormShareScreen", "path": "/host/audience/forms/:formId/share", "role": "host"},
         {"id": "hostFormAnalyticsScreen", "path": "/host/audience/forms/:formId/analytics", "role": "host"},
+        {"id": "hostAudienceAutomationsScreen", "path": "/host/audience/automations", "role": "host"},
         {"id": "hostFormAutomationsScreen", "path": "/host/audience/forms/:formId/automations", "role": "host"},
         {"id": "hostCustomerDetailScreen", "path": "/host/audience/people/:contactId", "role": "host"}
       ],

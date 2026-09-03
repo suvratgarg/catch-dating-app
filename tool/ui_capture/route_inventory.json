@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "74d25860e0fff92d290c2ab0b14475c600bf734e8ee4826cd9801cb22217df17",
-    "routeContractSha256": "34ede23743f45cec6547b52c5a4cf68b418e32dd359b713d30b0f73048be40fa",
-    "goRouteCount": 85,
+    "normalizedFileSha256": "e0da56ed0c94967244895c8d3473df04c7872efb26ad2216662f9d2a8a18a930",
+    "routeContractSha256": "20c3b0a3b3246b813c5e2f0bed4deb48d45f4673ba532414c658f56818242987",
+    "goRouteCount": 86,
     "shellBranchCount": 9,
-    "enumRouteCount": 70,
-    "referencedRouteCount": 70,
-    "runtimeRouteCount": 70,
+    "enumRouteCount": 71,
+    "referencedRouteCount": 71,
+    "runtimeRouteCount": 71,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -725,6 +725,21 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostAudienceAutomationsScreen",
+      "path": "/host/audience/automations",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/audience/automations",
+      "runtimeParentId": "hostAudienceScreen",
+      "runtimePathExpression": "'automations'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostFormAutomationsScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "HostFormAutomationsScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostFormAutomationsScreen",
       "path": "/host/audience/forms/:formId/automations",
       "pathParameters": [
@@ -1276,6 +1291,7 @@
     "hostAppEventSuccessScreen",
     "hostApplicationDetailScreen",
     "hostApplicationsScreen",
+    "hostAudienceAutomationsScreen",
     "hostAudienceScreen",
     "hostChatScreen",
     "hostClubDetailScreen",

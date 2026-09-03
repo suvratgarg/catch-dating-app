@@ -62,6 +62,8 @@ import {
   SavedAudienceEvaluationRow,
 } from "./organizerSavedAudiences";
 
+import {requireAutomationCampaignAuthority} from "./organizerAutomationSource";
+
 type CampaignBlocker = OrganizerCampaignCallableResponse["blockers"][number];
 type ExclusionReason = OrganizerCampaignRecipientDocument["exclusionReason"];
 
@@ -151,6 +153,11 @@ export async function upsertOrganizerCampaignHandler(
     if (existing && existing.organizerId !== data.organizerId) {
       throw new HttpsError("already-exists", "Campaign id collision.");
     }
+    if (existing?.automationOrigin) {
+      throw new HttpsError("failed-precondition",
+        "Edit the automation message configuration " +
+          "instead of its generated send.");
+    }
     if (existing && !["draft", "previewed"].includes(existing.status)) {
       throw new HttpsError(
         "failed-precondition",
@@ -225,6 +232,154 @@ export async function upsertOrganizerCampaignHandler(
   );
 }
 
+/** Validates a reusable draft without requiring a future recipient to exist. */
+export async function validateAutomationCampaignRecipe(
+  db: FirebaseFirestore.Firestore,
+  organizerId: string,
+  campaignId: string,
+  expectedRevision: number,
+  now: FirebaseFirestore.Timestamp,
+): Promise<OrganizerCampaignDocument> {
+  const context = await campaignContext(
+    db,
+    organizerId,
+    campaignId,
+    now,
+    false,
+  );
+  const recipe = context.campaign;
+  if (
+    recipe.automationOrigin ||
+    recipe.revision !== expectedRevision ||
+    !recipe.savedAudienceId ||
+    !["draft", "previewed"].includes(recipe.status) ||
+    recipe.scheduledAt
+  ) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Choose the current revision of an unscheduled draft message.",
+    );
+  }
+  const blockers = campaignBlockers(context, now).filter(
+    (value) => value !== "noReachableRecipients",
+  );
+  if (blockers.length) {
+    throw new HttpsError(
+      "failed-precondition",
+      `Automation message needs attention: ${blockers.join(", ")}.`,
+    );
+  }
+  assertOutboundContentAllowed(
+    Object.values(recipe.templateVariables),
+    "A message template value cannot be delivered.",
+  );
+  return recipe;
+}
+
+/** Stable one-person sends still use normal audience preview and approval. */
+export async function prepareAutomatedOrganizerCampaign(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  actorUid: string;
+  recipeId: string;
+  recipeRevision: number;
+  campaignId: string;
+  name: string;
+  origin: NonNullable<OrganizerCampaignDocument["automationOrigin"]>;
+  now: () => FirebaseFirestore.Timestamp;
+}): Promise<string> {
+  const recipe = await validateAutomationCampaignRecipe(
+    params.db,
+    params.organizerId,
+    params.recipeId,
+    params.recipeRevision,
+    params.now(),
+  );
+  const ref = params.db
+    .collection("organizerCampaigns")
+    .doc(params.campaignId);
+  const campaign = await params.db.runTransaction(async (tx) => {
+    const snapshot = await tx.get(ref);
+    const existing = snapshot.data() as OrganizerCampaignDocument | undefined;
+    if (existing) {
+      if (
+        existing.organizerId !== params.organizerId ||
+        hashCanonical(existing.automationOrigin) !==
+          hashCanonical(params.origin)
+      ) {
+        throw new HttpsError(
+          "already-exists",
+          "Automation send identity conflict.",
+        );
+      }
+      return existing;
+    }
+    const now = params.now();
+    const created: OrganizerCampaignDocument = {
+      ...recipe,
+      createdByUid: params.actorUid,
+      name: params.name,
+      status: "draft",
+      revision: 1,
+      automationOrigin: params.origin,
+      recipientSnapshotHash: null,
+      audienceCounts: emptyCampaignAudienceCounts(),
+      deliveryCounts: emptyCampaignDeliveryCounts(),
+      leaseOwner: null,
+      leaseExpiresAt: null,
+      scheduledAt: null,
+      createdAt: now,
+      updatedAt: now,
+      approvedAt: null,
+      dispatchedAt: null,
+      completedAt: null,
+      cancelledAt: null,
+    };
+    tx.create(ref, created);
+    return created;
+  });
+  await requireAutomationCampaignAuthority(
+    params.db, campaign, params.now().toMillis());
+  if (
+    [
+      "approved",
+      "scheduled",
+      "resolving",
+      "sending",
+      "completed",
+      "partiallyFailed",
+    ].includes(campaign.status)
+  ) {
+    return params.campaignId;
+  }
+  if (!["draft", "previewed"].includes(campaign.status)) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Automation send was cancelled.",
+    );
+  }
+  const deps: CampaignDeps = {
+    firestore: () => params.db,
+    checkRateLimit: async () => undefined,
+    now: params.now,
+  };
+  const request = (revision: number) =>
+    ({
+      auth: {uid: params.actorUid},
+      data: {
+        organizerId: params.organizerId,
+        campaignId: params.campaignId,
+        expectedRevision: revision,
+      },
+    }) as CallableRequest<unknown>;
+  const preview = await previewOrganizerCampaignHandler(
+    request(campaign.revision),
+    deps,
+  );
+  await approveOrganizerCampaignHandler(request(preview.revision), deps);
+  return params.campaignId;
+}
+
 export async function previewOrganizerCampaignHandler(
   request: CallableRequest<unknown>,
   deps: CampaignDeps = defaultDeps,
@@ -297,6 +452,8 @@ export async function approveOrganizerCampaignHandler(
     data.campaignId,
     deps.now(),
   );
+  await requireAutomationCampaignAuthority(
+    db, initial.campaign, deps.now().toMillis());
   assertExpectedRevision(initial.campaign, data.expectedRevision ?? null);
   const blockers = campaignBlockers(initial, deps.now());
   if (initial.campaign.status !== "previewed" || blockers.length > 0) {
@@ -662,6 +819,7 @@ async function campaignContext(
         organizerId,
         savedAudience: activeSavedAudience,
         now,
+        contactId: campaign.automationOrigin?.contactId,
       }) : campaign.savedAudienceId ?
         {rows: [], tooLarge: false} :
         await loadLegacyAudienceRows({
@@ -689,7 +847,8 @@ async function campaignContext(
     } : null,
     savedAudience: activeSavedAudience,
     savedAudienceChanged,
-    audienceRows: audience.rows,
+    audienceRows: campaign.automationOrigin ? audience.rows.filter((row) =>
+      row.contactId === campaign.automationOrigin!.contactId) : audience.rows,
     audienceTooLarge: audience.tooLarge,
   };
 }
@@ -699,6 +858,7 @@ async function loadSavedAudienceCampaignRows(params: {
   organizerId: string;
   savedAudience: OrganizerSavedAudienceDocument;
   now: FirebaseFirestore.Timestamp;
+  contactId?: string;
 }): Promise<{ rows: AudienceRow[]; tooLarge: boolean }> {
   const matches = await resolveSavedAudienceRows({
     db: params.db,
@@ -708,13 +868,15 @@ async function loadSavedAudienceCampaignRows(params: {
   });
   return {
     rows: evaluateAudienceRows(
-      matches.map((row: SavedAudienceEvaluationRow) => ({
-        contactId: row.contactId,
-        contact: row.contact,
-        trait: row.trait,
-        preference: row.preference,
-        channelState: row.channelState,
-      })),
+      matches.filter((row) => !params.contactId ||
+        row.contactId === params.contactId)
+        .map((row: SavedAudienceEvaluationRow) => ({
+          contactId: row.contactId,
+          contact: row.contact,
+          trait: row.trait,
+          preference: row.preference,
+          channelState: row.channelState,
+        })),
       params.now,
       null,
     ),

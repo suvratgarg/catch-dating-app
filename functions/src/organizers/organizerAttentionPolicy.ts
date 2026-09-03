@@ -314,7 +314,7 @@ export function deriveOrganizerAttentionItems(params: {
     if (!rule) continue;
     items.push(buildItem({
       kind: "formAutomationFailure",
-      scope: "form",
+      scope: run.formId ? "form" : "organizer",
       sourceOwner: "organizerFormAutomationRuns",
       sourceId: row.id,
       sourceRevision: revisionOf({
@@ -538,7 +538,7 @@ function requestOpenedAtMillis(
 }
 
 function automationRuleKey(
-  formId: string,
+  formId: string | null,
   ruleId: string,
   revision: number
 ): string {

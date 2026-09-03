@@ -556,6 +556,9 @@ const schemaListOrganizerSavedAudiencesCallableResponseSchema = <String, Object?
                   },
                 },
               },
+              'activeVersion': <String, Object?>{
+                'type': 'boolean',
+              },
             },
           },
         },

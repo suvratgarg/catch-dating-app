@@ -194,6 +194,9 @@ export {
   createOrganizerFormAutomation,
   listOrganizerFormAutomationRuns,
   onOrganizerFormResponseAutomated,
+  onOrganizerApplicationAutomated,
+  onOrganizerAttendanceAutomated,
+  retryOrganizerAutomations,
   setOrganizerFormAutomationState,
 } from "./organizers/organizerFormAutomations";
 export {

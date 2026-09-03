@@ -40,6 +40,7 @@ export interface ListOrganizerSavedAudiencesCallableResponse {
         label: string;
         value: string | boolean;
       }[];
+      activeVersion?: boolean;
     }[];
     /**
      * @maxItems 200

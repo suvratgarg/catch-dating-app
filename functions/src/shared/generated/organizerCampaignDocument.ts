@@ -122,4 +122,16 @@ export interface OrganizerCampaignDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  automationOrigin?: {
+    ruleId: string;
+    ruleRevision: number;
+    actionId: string;
+    sourceId: string;
+    eventKind:
+      | "submitted"
+      | "withdrawn"
+      | "applicationAccepted"
+      | "eventAttended";
+    contactId: string;
+  };
 }

@@ -9958,6 +9958,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createOrganizerFormAutomationCallablePayloadActionsItemsCampaignId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.actions.items.campaignId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadActionsItemsCampaignRevision = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.actions.items.campaignRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const createOrganizerFormAutomationCallablePayloadActionsItemsChannel = CatchContractFieldConstraints(
     path: 'createOrganizerFormAutomationCallablePayload.actions.items.channel',
     valueTypes: <String>['string'],
@@ -10027,6 +10041,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createOrganizerFormAutomationCallablePayloadDelayMinutes = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.delayMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10080,
+  );
+
   static const createOrganizerFormAutomationCallablePayloadEnabled = CatchContractFieldConstraints(
     path: 'createOrganizerFormAutomationCallablePayload.enabled',
     required: true,
@@ -10044,7 +10065,6 @@ abstract final class CatchContractConstraints {
     path: 'createOrganizerFormAutomationCallablePayload.formId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -10083,7 +10103,14 @@ abstract final class CatchContractConstraints {
     path: 'createOrganizerFormAutomationCallablePayload.trigger',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['responseSubmitted', 'responseWithdrawn', 'answerMatches'],
+    enumValues: <String>['responseSubmitted', 'responseWithdrawn', 'answerMatches', 'applicationAccepted', 'eventAttended'],
+  );
+
+  static const createOrganizerFormAutomationCallablePayloadTriggerEventId = CatchContractFieldConstraints(
+    path: 'createOrganizerFormAutomationCallablePayload.triggerEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const createOrganizerFormCallablePayloadDefaultTargetId = CatchContractFieldConstraints(
@@ -31780,7 +31807,6 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerFormAutomationRunsCallablePayload.formId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -31836,6 +31862,20 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsCampaignId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.campaignId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsCampaignRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.campaignRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsChannel = CatchContractFieldConstraints(
@@ -31906,6 +31946,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsDelayMinutes = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.delayMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10080,
+  );
+
   static const listOrganizerFormAutomationRunsCallableResponseRulesItemsEnabled = CatchContractFieldConstraints(
     path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.enabled',
     required: true,
@@ -31916,7 +31963,6 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.formId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -31956,7 +32002,14 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.trigger',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['responseSubmitted', 'responseWithdrawn', 'answerMatches'],
+    enumValues: <String>['responseSubmitted', 'responseWithdrawn', 'answerMatches', 'applicationAccepted', 'eventAttended'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRulesItemsTriggerEventId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.rules.items.triggerEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const listOrganizerFormAutomationRunsCallableResponseRulesItemsUpdatedAtMillis = CatchContractFieldConstraints(
@@ -32012,6 +32065,13 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsDueAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.dueAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const listOrganizerFormAutomationRunsCallableResponseRunsItemsErrorMessage = CatchContractFieldConstraints(
     path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.errorMessage',
     maxLength: 500,
@@ -32022,14 +32082,13 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.eventKind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['submitted', 'withdrawn'],
+    enumValues: <String>['submitted', 'withdrawn', 'applicationAccepted', 'eventAttended'],
   );
 
   static const listOrganizerFormAutomationRunsCallableResponseRunsItemsResponseId = CatchContractFieldConstraints(
     path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.responseId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -32054,6 +32113,13 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormAutomationRunsCallableResponseRunsItemsSourceId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormAutomationRunsCallableResponse.runs.items.sourceId',
+    maxLength: 180,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -33266,6 +33332,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 100,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseFilterOptionsQuestionsItemsActiveVersion = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.filterOptions.questions.items.activeVersion',
+    valueTypes: <String>['boolean'],
   );
 
   static const listOrganizerSavedAudiencesCallableResponseFilterOptionsQuestionsItemsFormId = CatchContractFieldConstraints(
@@ -37301,6 +37372,53 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 1000000,
+  );
+
+  static const organizerCampaignDocumentAutomationOriginActionId = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.automationOrigin.actionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentAutomationOriginContactId = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.automationOrigin.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentAutomationOriginEventKind = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.automationOrigin.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn', 'applicationAccepted', 'eventAttended'],
+  );
+
+  static const organizerCampaignDocumentAutomationOriginRuleId = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.automationOrigin.ruleId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentAutomationOriginRuleRevision = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.automationOrigin.ruleRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerCampaignDocumentAutomationOriginSourceId = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.automationOrigin.sourceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const organizerCampaignDocumentCancelledAtNanoseconds = CatchContractFieldConstraints(
@@ -43027,6 +43145,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormAutomationRuleDocumentActionsItemsCampaignId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.actions.items.campaignId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRuleDocumentActionsItemsCampaignRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.actions.items.campaignRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const organizerFormAutomationRuleDocumentActionsItemsChannel = CatchContractFieldConstraints(
     path: 'organizerFormAutomationRuleDocument.actions.items.channel',
     valueTypes: <String>['string'],
@@ -43096,6 +43228,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormAutomationRuleDocumentConditionVersionId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.conditionVersionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerFormAutomationRuleDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'organizerFormAutomationRuleDocument.createdAt._nanoseconds',
     required: true,
@@ -43118,6 +43257,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormAutomationRuleDocumentDelayMinutes = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.delayMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10080,
+  );
+
   static const organizerFormAutomationRuleDocumentEnabled = CatchContractFieldConstraints(
     path: 'organizerFormAutomationRuleDocument.enabled',
     required: true,
@@ -43128,7 +43274,6 @@ abstract final class CatchContractConstraints {
     path: 'organizerFormAutomationRuleDocument.formId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -43160,7 +43305,14 @@ abstract final class CatchContractConstraints {
     path: 'organizerFormAutomationRuleDocument.trigger',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['responseSubmitted', 'responseWithdrawn', 'answerMatches'],
+    enumValues: <String>['responseSubmitted', 'responseWithdrawn', 'answerMatches', 'applicationAccepted', 'eventAttended'],
+  );
+
+  static const organizerFormAutomationRuleDocumentTriggerEventId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRuleDocument.triggerEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const organizerFormAutomationRuleDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
@@ -43263,6 +43415,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerFormAutomationRunDocumentDueAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.dueAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAutomationRunDocumentDueAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.dueAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const organizerFormAutomationRunDocumentErrorCode = CatchContractFieldConstraints(
     path: 'organizerFormAutomationRunDocument.errorCode',
     maxLength: 80,
@@ -43279,14 +43445,33 @@ abstract final class CatchContractConstraints {
     path: 'organizerFormAutomationRunDocument.eventKind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['submitted', 'withdrawn'],
+    enumValues: <String>['submitted', 'withdrawn', 'applicationAccepted', 'eventAttended'],
   );
 
   static const organizerFormAutomationRunDocumentFormId = CatchContractFieldConstraints(
     path: 'organizerFormAutomationRunDocument.formId',
     maxLength: 180,
     minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentLeaseExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.leaseExpiresAt._nanoseconds',
     required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAutomationRunDocumentLeaseExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.leaseExpiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormAutomationRunDocumentLeaseOwner = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.leaseOwner',
+    maxLength: 180,
     valueTypes: <String>['string'],
   );
 
@@ -43302,7 +43487,6 @@ abstract final class CatchContractConstraints {
     path: 'organizerFormAutomationRunDocument.responseId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -43320,6 +43504,28 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const organizerFormAutomationRunDocumentSourceId = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.sourceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAutomationRunDocumentSourceOccurredAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.sourceOccurredAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormAutomationRunDocumentSourceOccurredAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormAutomationRunDocument.sourceOccurredAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const organizerFormAutomationRunDocumentStatus = CatchContractFieldConstraints(
@@ -63995,6 +64201,8 @@ abstract final class CatchContractConstraints {
     'createOrganizerFormAssetIntentCallableResponse.uploadUrl': createOrganizerFormAssetIntentCallableResponseUploadUrl,
     'createOrganizerFormAutomationCallablePayload.actions': createOrganizerFormAutomationCallablePayloadActions,
     'createOrganizerFormAutomationCallablePayload.actions.items.actionId': createOrganizerFormAutomationCallablePayloadActionsItemsActionId,
+    'createOrganizerFormAutomationCallablePayload.actions.items.campaignId': createOrganizerFormAutomationCallablePayloadActionsItemsCampaignId,
+    'createOrganizerFormAutomationCallablePayload.actions.items.campaignRevision': createOrganizerFormAutomationCallablePayloadActionsItemsCampaignRevision,
     'createOrganizerFormAutomationCallablePayload.actions.items.channel': createOrganizerFormAutomationCallablePayloadActionsItemsChannel,
     'createOrganizerFormAutomationCallablePayload.actions.items.eventId': createOrganizerFormAutomationCallablePayloadActionsItemsEventId,
     'createOrganizerFormAutomationCallablePayload.actions.items.kind': createOrganizerFormAutomationCallablePayloadActionsItemsKind,
@@ -64005,6 +64213,7 @@ abstract final class CatchContractConstraints {
     'createOrganizerFormAutomationCallablePayload.condition.expectedValues.items': createOrganizerFormAutomationCallablePayloadConditionExpectedValuesItems,
     'createOrganizerFormAutomationCallablePayload.condition.operator': createOrganizerFormAutomationCallablePayloadConditionOperator,
     'createOrganizerFormAutomationCallablePayload.condition.questionId': createOrganizerFormAutomationCallablePayloadConditionQuestionId,
+    'createOrganizerFormAutomationCallablePayload.delayMinutes': createOrganizerFormAutomationCallablePayloadDelayMinutes,
     'createOrganizerFormAutomationCallablePayload.enabled': createOrganizerFormAutomationCallablePayloadEnabled,
     'createOrganizerFormAutomationCallablePayload.expectedRevision': createOrganizerFormAutomationCallablePayloadExpectedRevision,
     'createOrganizerFormAutomationCallablePayload.formId': createOrganizerFormAutomationCallablePayloadFormId,
@@ -64013,6 +64222,7 @@ abstract final class CatchContractConstraints {
     'createOrganizerFormAutomationCallablePayload.requestId': createOrganizerFormAutomationCallablePayloadRequestId,
     'createOrganizerFormAutomationCallablePayload.ruleId': createOrganizerFormAutomationCallablePayloadRuleId,
     'createOrganizerFormAutomationCallablePayload.trigger': createOrganizerFormAutomationCallablePayloadTrigger,
+    'createOrganizerFormAutomationCallablePayload.triggerEventId': createOrganizerFormAutomationCallablePayloadTriggerEventId,
     'createOrganizerFormCallablePayload.defaultTargetId': createOrganizerFormCallablePayloadDefaultTargetId,
     'createOrganizerFormCallablePayload.defaultTargetKind': createOrganizerFormCallablePayloadDefaultTargetKind,
     'createOrganizerFormCallablePayload.organizerId': createOrganizerFormCallablePayloadOrganizerId,
@@ -67005,6 +67215,8 @@ abstract final class CatchContractConstraints {
     'listOrganizerFormAutomationRunsCallableResponse.rules': listOrganizerFormAutomationRunsCallableResponseRules,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions': listOrganizerFormAutomationRunsCallableResponseRulesItemsActions,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.actionId': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsActionId,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.campaignId': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsCampaignId,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.campaignRevision': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsCampaignRevision,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.channel': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsChannel,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.eventId': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsEventId,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.actions.items.kind': listOrganizerFormAutomationRunsCallableResponseRulesItemsActionsItemsKind,
@@ -67015,6 +67227,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.condition.expectedValues.items': listOrganizerFormAutomationRunsCallableResponseRulesItemsConditionExpectedValuesItems,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.condition.operator': listOrganizerFormAutomationRunsCallableResponseRulesItemsConditionOperator,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.condition.questionId': listOrganizerFormAutomationRunsCallableResponseRulesItemsConditionQuestionId,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.delayMinutes': listOrganizerFormAutomationRunsCallableResponseRulesItemsDelayMinutes,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.enabled': listOrganizerFormAutomationRunsCallableResponseRulesItemsEnabled,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.formId': listOrganizerFormAutomationRunsCallableResponseRulesItemsFormId,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.name': listOrganizerFormAutomationRunsCallableResponseRulesItemsName,
@@ -67022,6 +67235,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.revision': listOrganizerFormAutomationRunsCallableResponseRulesItemsRevision,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.ruleId': listOrganizerFormAutomationRunsCallableResponseRulesItemsRuleId,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.trigger': listOrganizerFormAutomationRunsCallableResponseRulesItemsTrigger,
+    'listOrganizerFormAutomationRunsCallableResponse.rules.items.triggerEventId': listOrganizerFormAutomationRunsCallableResponseRulesItemsTriggerEventId,
     'listOrganizerFormAutomationRunsCallableResponse.rules.items.updatedAtMillis': listOrganizerFormAutomationRunsCallableResponseRulesItemsUpdatedAtMillis,
     'listOrganizerFormAutomationRunsCallableResponse.runs': listOrganizerFormAutomationRunsCallableResponseRuns,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.actionResults': listOrganizerFormAutomationRunsCallableResponseRunsItemsActionResults,
@@ -67029,12 +67243,14 @@ abstract final class CatchContractConstraints {
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.attemptCount': listOrganizerFormAutomationRunsCallableResponseRunsItemsAttemptCount,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.completedAtMillis': listOrganizerFormAutomationRunsCallableResponseRunsItemsCompletedAtMillis,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.createdAtMillis': listOrganizerFormAutomationRunsCallableResponseRunsItemsCreatedAtMillis,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.dueAtMillis': listOrganizerFormAutomationRunsCallableResponseRunsItemsDueAtMillis,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.errorMessage': listOrganizerFormAutomationRunsCallableResponseRunsItemsErrorMessage,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.eventKind': listOrganizerFormAutomationRunsCallableResponseRunsItemsEventKind,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.responseId': listOrganizerFormAutomationRunsCallableResponseRunsItemsResponseId,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.ruleId': listOrganizerFormAutomationRunsCallableResponseRunsItemsRuleId,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.ruleRevision': listOrganizerFormAutomationRunsCallableResponseRunsItemsRuleRevision,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.runId': listOrganizerFormAutomationRunsCallableResponseRunsItemsRunId,
+    'listOrganizerFormAutomationRunsCallableResponse.runs.items.sourceId': listOrganizerFormAutomationRunsCallableResponseRunsItemsSourceId,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.status': listOrganizerFormAutomationRunsCallableResponseRunsItemsStatus,
     'listOrganizerFormResponsesCallablePayload.cursor': listOrganizerFormResponsesCallablePayloadCursor,
     'listOrganizerFormResponsesCallablePayload.formId': listOrganizerFormResponsesCallablePayloadFormId,
@@ -67198,6 +67414,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerSavedAudiencesCallableResponse.filterOptions.forms.items.formId': listOrganizerSavedAudiencesCallableResponseFilterOptionsFormsItemsFormId,
     'listOrganizerSavedAudiencesCallableResponse.filterOptions.forms.items.title': listOrganizerSavedAudiencesCallableResponseFilterOptionsFormsItemsTitle,
     'listOrganizerSavedAudiencesCallableResponse.filterOptions.questions': listOrganizerSavedAudiencesCallableResponseFilterOptionsQuestions,
+    'listOrganizerSavedAudiencesCallableResponse.filterOptions.questions.items.activeVersion': listOrganizerSavedAudiencesCallableResponseFilterOptionsQuestionsItemsActiveVersion,
     'listOrganizerSavedAudiencesCallableResponse.filterOptions.questions.items.formId': listOrganizerSavedAudiencesCallableResponseFilterOptionsQuestionsItemsFormId,
     'listOrganizerSavedAudiencesCallableResponse.filterOptions.questions.items.formTitle': listOrganizerSavedAudiencesCallableResponseFilterOptionsQuestionsItemsFormTitle,
     'listOrganizerSavedAudiencesCallableResponse.filterOptions.questions.items.kind': listOrganizerSavedAudiencesCallableResponseFilterOptionsQuestionsItemsKind,
@@ -67750,6 +67967,12 @@ abstract final class CatchContractConstraints {
     'organizerCampaignDocument.audienceCounts.total': organizerCampaignDocumentAudienceCountsTotal,
     'organizerCampaignDocument.audienceCounts.unknown': organizerCampaignDocumentAudienceCountsUnknown,
     'organizerCampaignDocument.audienceCounts.unsupported': organizerCampaignDocumentAudienceCountsUnsupported,
+    'organizerCampaignDocument.automationOrigin.actionId': organizerCampaignDocumentAutomationOriginActionId,
+    'organizerCampaignDocument.automationOrigin.contactId': organizerCampaignDocumentAutomationOriginContactId,
+    'organizerCampaignDocument.automationOrigin.eventKind': organizerCampaignDocumentAutomationOriginEventKind,
+    'organizerCampaignDocument.automationOrigin.ruleId': organizerCampaignDocumentAutomationOriginRuleId,
+    'organizerCampaignDocument.automationOrigin.ruleRevision': organizerCampaignDocumentAutomationOriginRuleRevision,
+    'organizerCampaignDocument.automationOrigin.sourceId': organizerCampaignDocumentAutomationOriginSourceId,
     'organizerCampaignDocument.cancelledAt._nanoseconds': organizerCampaignDocumentCancelledAtNanoseconds,
     'organizerCampaignDocument.cancelledAt._seconds': organizerCampaignDocumentCancelledAtSeconds,
     'organizerCampaignDocument.channel': organizerCampaignDocumentChannel,
@@ -68543,6 +68766,8 @@ abstract final class CatchContractConstraints {
     'organizerFormAssetDocument.versionId': organizerFormAssetDocumentVersionId,
     'organizerFormAutomationRuleDocument.actions': organizerFormAutomationRuleDocumentActions,
     'organizerFormAutomationRuleDocument.actions.items.actionId': organizerFormAutomationRuleDocumentActionsItemsActionId,
+    'organizerFormAutomationRuleDocument.actions.items.campaignId': organizerFormAutomationRuleDocumentActionsItemsCampaignId,
+    'organizerFormAutomationRuleDocument.actions.items.campaignRevision': organizerFormAutomationRuleDocumentActionsItemsCampaignRevision,
     'organizerFormAutomationRuleDocument.actions.items.channel': organizerFormAutomationRuleDocumentActionsItemsChannel,
     'organizerFormAutomationRuleDocument.actions.items.eventId': organizerFormAutomationRuleDocumentActionsItemsEventId,
     'organizerFormAutomationRuleDocument.actions.items.kind': organizerFormAutomationRuleDocumentActionsItemsKind,
@@ -68553,15 +68778,18 @@ abstract final class CatchContractConstraints {
     'organizerFormAutomationRuleDocument.condition.expectedValues.items': organizerFormAutomationRuleDocumentConditionExpectedValuesItems,
     'organizerFormAutomationRuleDocument.condition.operator': organizerFormAutomationRuleDocumentConditionOperator,
     'organizerFormAutomationRuleDocument.condition.questionId': organizerFormAutomationRuleDocumentConditionQuestionId,
+    'organizerFormAutomationRuleDocument.conditionVersionId': organizerFormAutomationRuleDocumentConditionVersionId,
     'organizerFormAutomationRuleDocument.createdAt._nanoseconds': organizerFormAutomationRuleDocumentCreatedAtNanoseconds,
     'organizerFormAutomationRuleDocument.createdAt._seconds': organizerFormAutomationRuleDocumentCreatedAtSeconds,
     'organizerFormAutomationRuleDocument.createdByUid': organizerFormAutomationRuleDocumentCreatedByUid,
+    'organizerFormAutomationRuleDocument.delayMinutes': organizerFormAutomationRuleDocumentDelayMinutes,
     'organizerFormAutomationRuleDocument.enabled': organizerFormAutomationRuleDocumentEnabled,
     'organizerFormAutomationRuleDocument.formId': organizerFormAutomationRuleDocumentFormId,
     'organizerFormAutomationRuleDocument.name': organizerFormAutomationRuleDocumentName,
     'organizerFormAutomationRuleDocument.organizerId': organizerFormAutomationRuleDocumentOrganizerId,
     'organizerFormAutomationRuleDocument.revision': organizerFormAutomationRuleDocumentRevision,
     'organizerFormAutomationRuleDocument.trigger': organizerFormAutomationRuleDocumentTrigger,
+    'organizerFormAutomationRuleDocument.triggerEventId': organizerFormAutomationRuleDocumentTriggerEventId,
     'organizerFormAutomationRuleDocument.updatedAt._nanoseconds': organizerFormAutomationRuleDocumentUpdatedAtNanoseconds,
     'organizerFormAutomationRuleDocument.updatedAt._seconds': organizerFormAutomationRuleDocumentUpdatedAtSeconds,
     'organizerFormAutomationRuleDocument.updatedByUid': organizerFormAutomationRuleDocumentUpdatedByUid,
@@ -68576,14 +68804,22 @@ abstract final class CatchContractConstraints {
     'organizerFormAutomationRunDocument.completedAt._seconds': organizerFormAutomationRunDocumentCompletedAtSeconds,
     'organizerFormAutomationRunDocument.createdAt._nanoseconds': organizerFormAutomationRunDocumentCreatedAtNanoseconds,
     'organizerFormAutomationRunDocument.createdAt._seconds': organizerFormAutomationRunDocumentCreatedAtSeconds,
+    'organizerFormAutomationRunDocument.dueAt._nanoseconds': organizerFormAutomationRunDocumentDueAtNanoseconds,
+    'organizerFormAutomationRunDocument.dueAt._seconds': organizerFormAutomationRunDocumentDueAtSeconds,
     'organizerFormAutomationRunDocument.errorCode': organizerFormAutomationRunDocumentErrorCode,
     'organizerFormAutomationRunDocument.errorMessage': organizerFormAutomationRunDocumentErrorMessage,
     'organizerFormAutomationRunDocument.eventKind': organizerFormAutomationRunDocumentEventKind,
     'organizerFormAutomationRunDocument.formId': organizerFormAutomationRunDocumentFormId,
+    'organizerFormAutomationRunDocument.leaseExpiresAt._nanoseconds': organizerFormAutomationRunDocumentLeaseExpiresAtNanoseconds,
+    'organizerFormAutomationRunDocument.leaseExpiresAt._seconds': organizerFormAutomationRunDocumentLeaseExpiresAtSeconds,
+    'organizerFormAutomationRunDocument.leaseOwner': organizerFormAutomationRunDocumentLeaseOwner,
     'organizerFormAutomationRunDocument.organizerId': organizerFormAutomationRunDocumentOrganizerId,
     'organizerFormAutomationRunDocument.responseId': organizerFormAutomationRunDocumentResponseId,
     'organizerFormAutomationRunDocument.ruleId': organizerFormAutomationRunDocumentRuleId,
     'organizerFormAutomationRunDocument.ruleRevision': organizerFormAutomationRunDocumentRuleRevision,
+    'organizerFormAutomationRunDocument.sourceId': organizerFormAutomationRunDocumentSourceId,
+    'organizerFormAutomationRunDocument.sourceOccurredAt._nanoseconds': organizerFormAutomationRunDocumentSourceOccurredAtNanoseconds,
+    'organizerFormAutomationRunDocument.sourceOccurredAt._seconds': organizerFormAutomationRunDocumentSourceOccurredAtSeconds,
     'organizerFormAutomationRunDocument.status': organizerFormAutomationRunDocumentStatus,
     'organizerFormAutomationRunDocument.updatedAt._nanoseconds': organizerFormAutomationRunDocumentUpdatedAtNanoseconds,
     'organizerFormAutomationRunDocument.updatedAt._seconds': organizerFormAutomationRunDocumentUpdatedAtSeconds,

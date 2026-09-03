@@ -354,7 +354,7 @@ class HostFormsRepository {
 
   Future<HostFormAutomationRule> saveAutomation({
     required String organizerId,
-    required String formId,
+    required String? formId,
     required String requestId,
     required String name,
     required bool enabled,
@@ -363,6 +363,8 @@ class HostFormsRepository {
     String? ruleId,
     int? expectedRevision,
     Map<String, Object?>? condition,
+    String? triggerEventId,
+    int delayMinutes = 0,
   }) => _call(
     name: 'createOrganizerFormAutomation',
     payload: CreateOrganizerFormAutomationCallableRequest(
@@ -374,6 +376,8 @@ class HostFormsRepository {
       name: name,
       enabled: enabled,
       trigger: trigger.name,
+      triggerEventId: triggerEventId,
+      delayMinutes: delayMinutes,
       condition: condition,
       actions: actions,
     ).toJson(),
@@ -402,7 +406,7 @@ class HostFormsRepository {
 
   Future<HostFormAutomationPage> listAutomations({
     required String organizerId,
-    required String formId,
+    required String? formId,
     String? ruleId,
     String? cursor,
     int limit = ReadLimitPolicy.historyPage,

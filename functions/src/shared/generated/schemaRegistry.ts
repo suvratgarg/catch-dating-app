@@ -22158,9 +22158,16 @@ export const organizerFormAutomationRuleDocumentSchema: Record<string, unknown> 
       "maxLength": 180
     },
     "formId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "name": {
       "type": "string",
@@ -22180,7 +22187,9 @@ export const organizerFormAutomationRuleDocumentSchema: Record<string, unknown> 
       "enum": [
         "responseSubmitted",
         "responseWithdrawn",
-        "answerMatches"
+        "answerMatches",
+        "applicationAccepted",
+        "eventAttended"
       ]
     },
     "condition": {
@@ -22309,6 +22318,26 @@ export const organizerFormAutomationRuleDocumentSchema: Record<string, unknown> 
               "whatsapp",
               "email"
             ]
+          },
+          "campaignId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "campaignRevision": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         }
       }
@@ -22362,6 +22391,35 @@ export const organizerFormAutomationRuleDocumentSchema: Record<string, unknown> 
           "maximum": 999999999
         }
       }
+    },
+    "triggerEventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "delayMinutes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10080
+    },
+    "conditionVersionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "x-firestore-collection": "organizerFormAutomationRules",
@@ -22400,9 +22458,16 @@ export const organizerFormAutomationRunDocumentSchema: Record<string, unknown> =
       "maxLength": 180
     },
     "formId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "ruleId": {
       "type": "string",
@@ -22415,15 +22480,24 @@ export const organizerFormAutomationRunDocumentSchema: Record<string, unknown> =
       "maximum": 9007199254740991
     },
     "responseId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "eventKind": {
       "type": "string",
       "enum": [
         "submitted",
-        "withdrawn"
+        "withdrawn",
+        "applicationAccepted",
+        "eventAttended"
       ]
     },
     "status": {
@@ -22553,6 +22627,92 @@ export const organizerFormAutomationRunDocumentSchema: Record<string, unknown> =
       }
     },
     "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceOccurredAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "dueAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "leaseOwner": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "leaseExpiresAt": {
       "anyOf": [
         {
           "type": "object",
@@ -25742,6 +25902,54 @@ export const organizerCampaignDocumentSchema: Record<string, unknown> = {
           "type": "null"
         }
       ]
+    },
+    "automationOrigin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ruleId",
+        "ruleRevision",
+        "actionId",
+        "sourceId",
+        "eventKind",
+        "contactId"
+      ],
+      "properties": {
+        "ruleId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "ruleRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "actionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventKind": {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "withdrawn",
+            "applicationAccepted",
+            "eventAttended"
+          ]
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
     }
   },
   "definitions": {
@@ -62588,6 +62796,9 @@ export const listOrganizerSavedAudiencesCallableResponseSchema: Record<string, u
                     }
                   }
                 }
+              },
+              "activeVersion": {
+                "type": "boolean"
               }
             }
           }
@@ -83046,9 +83257,16 @@ export const createOrganizerFormAutomationCallablePayloadSchema: Record<string, 
       "maxLength": 180
     },
     "formId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "ruleId": {
       "anyOf": [
@@ -83088,7 +83306,9 @@ export const createOrganizerFormAutomationCallablePayloadSchema: Record<string, 
       "enum": [
         "responseSubmitted",
         "responseWithdrawn",
-        "answerMatches"
+        "answerMatches",
+        "applicationAccepted",
+        "eventAttended"
       ]
     },
     "condition": {
@@ -83217,9 +83437,46 @@ export const createOrganizerFormAutomationCallablePayloadSchema: Record<string, 
               "whatsapp",
               "email"
             ]
+          },
+          "campaignId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "campaignRevision": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         }
       }
+    },
+    "triggerEventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "delayMinutes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10080
     }
   }
 } as const;
@@ -83257,9 +83514,16 @@ export const createOrganizerFormAutomationCallableResponseSchema: Record<string,
           "maxLength": 180
         },
         "formId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "name": {
           "type": "string",
@@ -83279,7 +83543,9 @@ export const createOrganizerFormAutomationCallableResponseSchema: Record<string,
           "enum": [
             "responseSubmitted",
             "responseWithdrawn",
-            "answerMatches"
+            "answerMatches",
+            "applicationAccepted",
+            "eventAttended"
           ]
         },
         "condition": {
@@ -83403,6 +83669,26 @@ export const createOrganizerFormAutomationCallableResponseSchema: Record<string,
                   "whatsapp",
                   "email"
                 ]
+              },
+              "campaignId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "campaignRevision": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 9007199254740991
               }
             }
           }
@@ -83411,6 +83697,23 @@ export const createOrganizerFormAutomationCallableResponseSchema: Record<string,
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "triggerEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delayMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10080
         }
       }
     }
@@ -83485,9 +83788,16 @@ export const setOrganizerFormAutomationStateCallableResponseSchema: Record<strin
           "maxLength": 180
         },
         "formId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "name": {
           "type": "string",
@@ -83507,7 +83817,9 @@ export const setOrganizerFormAutomationStateCallableResponseSchema: Record<strin
           "enum": [
             "responseSubmitted",
             "responseWithdrawn",
-            "answerMatches"
+            "answerMatches",
+            "applicationAccepted",
+            "eventAttended"
           ]
         },
         "condition": {
@@ -83631,6 +83943,26 @@ export const setOrganizerFormAutomationStateCallableResponseSchema: Record<strin
                   "whatsapp",
                   "email"
                 ]
+              },
+              "campaignId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "campaignRevision": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 9007199254740991
               }
             }
           }
@@ -83639,6 +83971,23 @@ export const setOrganizerFormAutomationStateCallableResponseSchema: Record<strin
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "triggerEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delayMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10080
         }
       }
     }
@@ -83666,9 +84015,16 @@ export const listOrganizerFormAutomationRunsCallablePayloadSchema: Record<string
       "maxLength": 180
     },
     "formId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "ruleId": {
       "anyOf": [
@@ -83740,9 +84096,16 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema: Record<strin
             "maxLength": 180
           },
           "formId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "name": {
             "type": "string",
@@ -83762,7 +84125,9 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema: Record<strin
             "enum": [
               "responseSubmitted",
               "responseWithdrawn",
-              "answerMatches"
+              "answerMatches",
+              "applicationAccepted",
+              "eventAttended"
             ]
           },
           "condition": {
@@ -83886,6 +84251,26 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema: Record<strin
                     "whatsapp",
                     "email"
                   ]
+                },
+                "campaignId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "campaignRevision": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 9007199254740991
                 }
               }
             }
@@ -83894,6 +84279,23 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema: Record<strin
             "type": "integer",
             "minimum": 0,
             "maximum": 9007199254740991
+          },
+          "triggerEventId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "delayMinutes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10080
           }
         }
       }
@@ -83934,15 +84336,24 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema: Record<strin
             "maximum": 9007199254740991
           },
           "responseId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "eventKind": {
             "type": "string",
             "enum": [
               "submitted",
-              "withdrawn"
+              "withdrawn",
+              "applicationAccepted",
+              "eventAttended"
             ]
           },
           "status": {
@@ -83981,6 +84392,26 @@ export const listOrganizerFormAutomationRunsCallableResponseSchema: Record<strin
             "maximum": 9007199254740991
           },
           "completedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "sourceId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dueAtMillis": {
             "type": [
               "integer",
               "null"

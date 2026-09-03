@@ -7958,6 +7958,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostAutomationRuleEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Acceptance automation editor',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostAutomationEditorState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerAttendanceCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8108,6 +8119,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostCustomersSummaryStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormAutomationsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Organizer automations empty',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostAutomationsEmptyState,
                   ),
                 ],
               ),

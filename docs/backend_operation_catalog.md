@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.33.0
-updated: 2026-09-01
+version: 1.34.0
+updated: 2026-09-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -422,3 +422,43 @@ Internal demo tooling marks source documents with `demoOps`, `demoOpsId`,
 projections should copy those fields through
 `functions/src/shared/demoMetadata.ts` so cleanup and single-user reset commands
 can remove derived demo activity precisely.
+
+## Audience automations
+
+`organizerFormAutomations.ts` owns manager-approved rules for submitted/withdrawn
+responses, published-answer conditions, application acceptance and checked-in
+attendance. A null form scope is allowed for acceptance and attendance; optional
+attendance event scope and a 0–10,080 minute delay are explicit rule settings.
+Attendance actions run after the current event end plus delay. Enabling or editing
+increments the rule revision and applies to future source events, without replay.
+Answer conditions bind to the reviewed published version; republishing requires
+review. Rule changes update form consequence projections for both old and new
+form scopes.
+
+`onOrganizerFormResponseAutomated`, `onOrganizerApplicationAutomated` and
+`onOrganizerAttendanceAutomated` reload source authority before enqueueing.
+`retryOrganizerAutomations` processes at most 100 due runs per minute with a
+bounded execution window. Run identity binds rule revision, source and event;
+a fenced 330-second lease protects action progress. Transient failures retry up
+to five times. Successful actions retain their result IDs and do not replay.
+Pausing, lost manager authority, revoked source access or invalidated revisions
+stop remaining actions. Per-action receipts record failures without webhook
+secrets, answers or endpoint payloads.
+
+Campaign actions reuse an unscheduled, reviewed WhatsApp draft and its revision.
+A deterministic generated campaign targets only the triggering canonical contact,
+intersected with the saved audience and current communication eligibility. Normal
+campaign preview, approval, snapshot and dispatch own actual delivery. Origin
+metadata is server-only; generated sends cannot be edited through public upsert.
+Rule, draft and source authority are checked again immediately before sending.
+A successful automation receipt means the campaign was queued, not delivered.
+
+Signed webhook delivery requires public HTTPS on port 443, validates and pins DNS,
+disallows redirects and limits DNS/request duration and response size. Its minimal
+JSON envelope carries version, delivery/rule IDs and source identifiers/timing;
+it excludes answers, contact endpoints and financial data. Receivers verify
+`X-Catch-Signature: v1=<hex HMAC-SHA256(secret, timestamp + "." + exactBody)>`
+using `X-Catch-Timestamp` (Unix seconds), enforce their replay window, and deduplicate
+`X-Catch-Delivery-Id` / `Idempotency-Key`. Delivery is at least once across uncertain
+network outcomes; receiver idempotency is required. Signing secrets remain in
+server-only rule documents and are never returned by callable projections.

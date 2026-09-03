@@ -311,7 +311,7 @@ final class HostFormAutomationsControllerProvider
         > {
   HostFormAutomationsControllerProvider._({
     required HostFormAutomationsControllerFamily super.from,
-    required (String, String) super.argument,
+    required (String, String?) super.argument,
   }) : super(
          retry: null,
          name: r'hostFormAutomationsControllerProvider',
@@ -347,7 +347,7 @@ final class HostFormAutomationsControllerProvider
 }
 
 String _$hostFormAutomationsControllerHash() =>
-    r'5d600cce555e166aac03defb975e15362f2ae2dd';
+    r'28fded3017fca77acb4d17acef720ea9aab36c49';
 
 final class HostFormAutomationsControllerFamily extends $Family
     with
@@ -356,7 +356,7 @@ final class HostFormAutomationsControllerFamily extends $Family
           AsyncValue<HostFormAutomationsState>,
           HostFormAutomationsState,
           FutureOr<HostFormAutomationsState>,
-          (String, String)
+          (String, String?)
         > {
   HostFormAutomationsControllerFamily._()
     : super(
@@ -369,7 +369,7 @@ final class HostFormAutomationsControllerFamily extends $Family
 
   HostFormAutomationsControllerProvider call(
     String organizerId,
-    String formId,
+    String? formId,
   ) => HostFormAutomationsControllerProvider._(
     argument: (organizerId, formId),
     from: this,
@@ -381,11 +381,11 @@ final class HostFormAutomationsControllerFamily extends $Family
 
 abstract class _$HostFormAutomationsController
     extends $AsyncNotifier<HostFormAutomationsState> {
-  late final _$args = ref.$arg as (String, String);
+  late final _$args = ref.$arg as (String, String?);
   String get organizerId => _$args.$1;
-  String get formId => _$args.$2;
+  String? get formId => _$args.$2;
 
-  FutureOr<HostFormAutomationsState> build(String organizerId, String formId);
+  FutureOr<HostFormAutomationsState> build(String organizerId, String? formId);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
@@ -407,5 +407,114 @@ abstract class _$HostFormAutomationsController
               Object?
             >;
     return element.handleCreate(ref, () => build(_$args.$1, _$args.$2));
+  }
+}
+
+@ProviderFor(HostAutomationMessagesController)
+final hostAutomationMessagesControllerProvider =
+    HostAutomationMessagesControllerFamily._();
+
+final class HostAutomationMessagesControllerProvider
+    extends
+        $AsyncNotifierProvider<
+          HostAutomationMessagesController,
+          HostAutomationMessagesState
+        > {
+  HostAutomationMessagesControllerProvider._({
+    required HostAutomationMessagesControllerFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostAutomationMessagesControllerProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostAutomationMessagesControllerHash();
+
+  @override
+  String toString() {
+    return r'hostAutomationMessagesControllerProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  HostAutomationMessagesController create() =>
+      HostAutomationMessagesController();
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostAutomationMessagesControllerProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostAutomationMessagesControllerHash() =>
+    r'8286ee1821d50ae1ac21a2f42b32850c7f07c340';
+
+final class HostAutomationMessagesControllerFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          HostAutomationMessagesController,
+          AsyncValue<HostAutomationMessagesState>,
+          HostAutomationMessagesState,
+          FutureOr<HostAutomationMessagesState>,
+          String
+        > {
+  HostAutomationMessagesControllerFamily._()
+    : super(
+        retry: null,
+        name: r'hostAutomationMessagesControllerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostAutomationMessagesControllerProvider call(String organizerId) =>
+      HostAutomationMessagesControllerProvider._(
+        argument: organizerId,
+        from: this,
+      );
+
+  @override
+  String toString() => r'hostAutomationMessagesControllerProvider';
+}
+
+abstract class _$HostAutomationMessagesController
+    extends $AsyncNotifier<HostAutomationMessagesState> {
+  late final _$args = ref.$arg as String;
+  String get organizerId => _$args;
+
+  FutureOr<HostAutomationMessagesState> build(String organizerId);
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<HostAutomationMessagesState>,
+              HostAutomationMessagesState
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<HostAutomationMessagesState>,
+                HostAutomationMessagesState
+              >,
+              AsyncValue<HostAutomationMessagesState>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
   }
 }

@@ -187,6 +187,8 @@ export async function savedAudienceFilterOptions(
     const form = doc.data() as OrganizerFormDocument;
     formRows.set(doc.id, {formId: doc.id, title: form.title});
   }
+  const activeVersions = new Map(forms.map((doc) => [doc.id,
+    (doc.data() as OrganizerFormDocument).activeVersionId]));
   const questions: Options["questions"] = [];
   for (const doc of versions) {
     const version = doc.data() as OrganizerFormVersionDocument;
@@ -195,6 +197,7 @@ export async function savedAudienceFilterOptions(
       s.questions)) {
       if (!filterableAudienceQuestion(question)) continue;
       questions.push({formId: version.formId, versionId: doc.id,
+        activeVersion: activeVersions.get(version.formId) === doc.id,
         version: version.version, formTitle: version.definition.title,
         questionId: question.questionId, label: question.label,
         kind: question.kind as "singleChoice" | "multiChoice" | "boolean",

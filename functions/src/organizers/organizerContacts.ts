@@ -1537,6 +1537,60 @@ export function summarizeContactRevenueFacts(params: {
   };
 }
 
+/** Appends preserve existing tags and never create vocabulary entries. */
+export async function addExistingOrganizerContactTag(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  contactId: string;
+  tagId: string;
+  actorUid: string;
+  now: FirebaseFirestore.Timestamp;
+}): Promise<void> {
+  await requireOrganizerManager(params);
+  const contactRef = params.db
+    .collection("organizerContacts")
+    .doc(params.contactId);
+  const vocabularyRef = params.db
+    .collection("organizerContactTagVocabularies")
+    .doc(params.organizerId);
+  await params.db.runTransaction(async (tx) => {
+    const contact = (await tx.get(contactRef)).data() as
+      | OrganizerContactDocument
+      | undefined;
+    const vocabulary = (await tx.get(vocabularyRef)).data() as
+      | OrganizerContactTagVocabularyDocument
+      | undefined;
+    if (
+      !contact ||
+      contact.organizerId !== params.organizerId ||
+      contact.deletedAt ||
+      contact.hiddenAt ||
+      contact.mergedIntoContactId ||
+      !vocabulary?.tags.some((tag) => tag.tagId === params.tagId)
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Contact or tag is unavailable.",
+      );
+    }
+    const manualTagIds = [
+      ...new Set([...(contact.manualTagIds ?? []), params.tagId]),
+    ];
+    if (manualTagIds.length > 5) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Maximum contact tags reached.",
+      );
+    }
+    if ((contact.manualTagIds ?? []).includes(params.tagId)) return;
+    tx.update(contactRef, {
+      manualTagIds,
+      revision: contact.revision + 1,
+      updatedAt: params.now,
+    });
+  });
+}
+
 /** Corrects an organizer label, suppresses marketing, or hides a CRM row. */
 export async function mutateOrganizerContactHandler(
   request: CallableRequest<unknown>,

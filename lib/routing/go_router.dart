@@ -123,7 +123,8 @@ HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
             requestedAudienceId.isNotEmpty
         ? requestedAudienceId
         : null,
-    initialOrganizerId: initialOrganizerId ?? uri.queryParameters['organizerId'],
+    initialOrganizerId:
+        initialOrganizerId ?? uri.queryParameters['organizerId'],
     initialThreadId: uri.queryParameters['threadId'],
   );
 }
@@ -996,6 +997,14 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostFormAnalyticsScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           formId: state.pathParameters['formId']!,
+        ),
+      ),
+      GoRoute(
+        path: 'automations',
+        name: Routes.hostAudienceAutomationsScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostFormAutomationsScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
       ),
       GoRoute(

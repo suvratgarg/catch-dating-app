@@ -8,7 +8,6 @@ import {
   "../shared/generated/firestoreAdminTypes";
 import {
   formAutomationEventKind,
-  organizerFormCampaignHandoffUnavailableMessage,
   updateConsequenceProjection,
 } from "./organizerFormAutomations";
 import {organizerFormFollowUpUnavailableMessage} from
@@ -45,11 +44,7 @@ describe("organizer form automation lifecycle", () => {
     );
   });
 
-  it("keeps follow-up handoff fail-closed", () => {
-    assert.match(
-      organizerFormCampaignHandoffUnavailableMessage,
-      /approved sender, template, and recipient permission/
-    );
+  it("separates manual conversion from configured automations", () => {
     assert.match(
       organizerFormFollowUpUnavailableMessage,
       /approved messaging template and recipient permission/

@@ -161,6 +161,7 @@
         "hostFormShareScreen",
         "hostFormAnalyticsScreen",
         "hostFormAutomationsScreen",
+        "hostAudienceAutomationsScreen",
         "hostApplicationsScreen",
         "hostApplicationDetailScreen",
         "hostCustomerDetailScreen"

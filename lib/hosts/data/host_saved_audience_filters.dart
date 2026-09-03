@@ -76,7 +76,9 @@ class HostAudienceQuestionOption {
     required this.questionId,
     required this.label,
     required this.options,
+    this.activeVersion = false,
   });
+  final bool activeVersion;
   final String formId;
   final String versionId;
   final int version;
@@ -128,6 +130,7 @@ class HostSavedAudienceFilterOptions {
             (item) => HostAudienceQuestionOption(
               formId: _requiredString(item, 'formId'),
               versionId: _requiredString(item, 'versionId'),
+              activeVersion: item['activeVersion'] == true,
               version: _requiredInt(item, 'version'),
               formTitle: _requiredString(item, 'formTitle'),
               questionId: _requiredString(item, 'questionId'),

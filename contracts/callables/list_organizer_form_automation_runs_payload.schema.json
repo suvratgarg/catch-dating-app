@@ -8,7 +8,7 @@
   "required": ["organizerId", "formId", "ruleId", "cursor", "limit"],
   "properties": {
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
     "ruleId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
     "cursor": {"type": ["string", "null"], "maxLength": 1000},
     "limit": {"type": "integer", "minimum": 1, "maximum": 100}

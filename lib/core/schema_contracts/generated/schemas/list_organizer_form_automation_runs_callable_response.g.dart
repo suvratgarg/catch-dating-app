@@ -47,9 +47,16 @@ const schemaListOrganizerFormAutomationRunsCallableResponseSchema = <String, Obj
             'maxLength': 180,
           },
           'formId': <String, Object?>{
-            'type': 'string',
-            'minLength': 1,
-            'maxLength': 180,
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
           },
           'name': <String, Object?>{
             'type': 'string',
@@ -70,6 +77,8 @@ const schemaListOrganizerFormAutomationRunsCallableResponseSchema = <String, Obj
               'responseSubmitted',
               'responseWithdrawn',
               'answerMatches',
+              'applicationAccepted',
+              'eventAttended',
             ],
           },
           'condition': <String, Object?>{
@@ -194,6 +203,26 @@ const schemaListOrganizerFormAutomationRunsCallableResponseSchema = <String, Obj
                     'email',
                   ],
                 },
+                'campaignId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'campaignRevision': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
               },
             },
           },
@@ -201,6 +230,23 @@ const schemaListOrganizerFormAutomationRunsCallableResponseSchema = <String, Obj
             'type': 'integer',
             'minimum': 0,
             'maximum': 9007199254740991,
+          },
+          'triggerEventId': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'delayMinutes': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 10080,
           },
         },
       },
@@ -241,15 +287,24 @@ const schemaListOrganizerFormAutomationRunsCallableResponseSchema = <String, Obj
             'maximum': 9007199254740991,
           },
           'responseId': <String, Object?>{
-            'type': 'string',
-            'minLength': 1,
-            'maxLength': 180,
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
           },
           'eventKind': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
               'submitted',
               'withdrawn',
+              'applicationAccepted',
+              'eventAttended',
             ],
           },
           'status': <String, Object?>{
@@ -288,6 +343,26 @@ const schemaListOrganizerFormAutomationRunsCallableResponseSchema = <String, Obj
             'maximum': 9007199254740991,
           },
           'completedAtMillis': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 0,
+            'maximum': 9007199254740991,
+          },
+          'sourceId': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'dueAtMillis': <String, Object?>{
             'type': <Object?>[
               'integer',
               'null',

@@ -12,11 +12,16 @@ export interface ListOrganizerFormAutomationRunsCallableResponse {
   rules: {
     ruleId: string;
     organizerId: string;
-    formId: string;
+    formId: string | null;
     name: string;
     enabled: boolean;
     revision: number;
-    trigger: "responseSubmitted" | "responseWithdrawn" | "answerMatches";
+    trigger:
+      | "responseSubmitted"
+      | "responseWithdrawn"
+      | "answerMatches"
+      | "applicationAccepted"
+      | "eventAttended";
     condition: {
       questionId: string;
       operator:
@@ -52,8 +57,12 @@ export interface ListOrganizerFormAutomationRunsCallableResponse {
       webhookUrl: string | null;
       webhookSecretConfigured: boolean;
       channel: null | "whatsapp" | "email";
+      campaignId?: string | null;
+      campaignRevision?: number | null;
     }[];
     updatedAtMillis: number;
+    triggerEventId?: string | null;
+    delayMinutes?: number;
   }[];
   /**
    * @maxItems 100
@@ -62,8 +71,12 @@ export interface ListOrganizerFormAutomationRunsCallableResponse {
     runId: string;
     ruleId: string;
     ruleRevision: number;
-    responseId: string;
-    eventKind: "submitted" | "withdrawn";
+    responseId: string | null;
+    eventKind:
+      | "submitted"
+      | "withdrawn"
+      | "applicationAccepted"
+      | "eventAttended";
     status:
       | "pending"
       | "running"
@@ -81,6 +94,8 @@ export interface ListOrganizerFormAutomationRunsCallableResponse {
     errorMessage: string | null;
     createdAtMillis: number;
     completedAtMillis: number | null;
+    sourceId?: string | null;
+    dueAtMillis?: number | null;
   }[];
   nextCursor: string | null;
 }

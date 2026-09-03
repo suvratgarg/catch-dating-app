@@ -6089,6 +6089,11 @@
               "role": "host"
             },
             {
+              "id": "hostAudienceAutomationsScreen",
+              "path": "/host/audience/automations",
+              "role": "host"
+            },
+            {
               "id": "hostFormAutomationsScreen",
               "path": "/host/audience/forms/:formId/automations",
               "role": "host"

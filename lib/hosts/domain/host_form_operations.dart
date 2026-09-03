@@ -31,6 +31,8 @@ enum HostFormAutomationTrigger {
   responseSubmitted,
   responseWithdrawn,
   answerMatches,
+  applicationAccepted,
+  eventAttended,
 }
 
 enum HostFormAutomationActionKind {
@@ -650,6 +652,8 @@ class HostFormAutomationAction {
     required this.webhookUrl,
     required this.webhookSecretConfigured,
     required this.channel,
+    this.campaignId,
+    this.campaignRevision,
   });
 
   factory HostFormAutomationAction.fromMap(Map<Object?, Object?> map) =>
@@ -664,6 +668,8 @@ class HostFormAutomationAction {
         webhookUrl: _nullableString(map['webhookUrl']),
         webhookSecretConfigured: _requiredBool(map, 'webhookSecretConfigured'),
         channel: _nullableString(map['channel']),
+        campaignId: _nullableString(map['campaignId']),
+        campaignRevision: _nullableInt(map['campaignRevision']),
       );
 
   final String actionId;
@@ -673,6 +679,8 @@ class HostFormAutomationAction {
   final String? webhookUrl;
   final bool webhookSecretConfigured;
   final String? channel;
+  final String? campaignId;
+  final int? campaignRevision;
 }
 
 @immutable
@@ -685,6 +693,8 @@ class HostFormAutomationRule {
     required this.enabled,
     required this.revision,
     required this.trigger,
+    this.triggerEventId,
+    this.delayMinutes = 0,
     required this.condition,
     required this.actions,
     required this.updatedAt,
@@ -694,7 +704,7 @@ class HostFormAutomationRule {
       HostFormAutomationRule(
         ruleId: _requiredString(map, 'ruleId'),
         organizerId: _requiredString(map, 'organizerId'),
-        formId: _requiredString(map, 'formId'),
+        formId: _nullableString(map['formId']),
         name: _requiredString(map, 'name'),
         enabled: _requiredBool(map, 'enabled'),
         revision: _requiredInt(map, 'revision'),
@@ -702,6 +712,8 @@ class HostFormAutomationRule {
           HostFormAutomationTrigger.values,
           _requiredString(map, 'trigger'),
         ),
+        triggerEventId: _nullableString(map['triggerEventId']),
+        delayMinutes: _nullableInt(map['delayMinutes']) ?? 0,
         condition: map['condition'] == null
             ? null
             : _requiredMap(map['condition'], 'automation condition'),
@@ -714,11 +726,13 @@ class HostFormAutomationRule {
 
   final String ruleId;
   final String organizerId;
-  final String formId;
+  final String? formId;
   final String name;
   final bool enabled;
   final int revision;
   final HostFormAutomationTrigger trigger;
+  final String? triggerEventId;
+  final int delayMinutes;
   final Map<Object?, Object?>? condition;
   final List<HostFormAutomationAction> actions;
   final DateTime updatedAt;
@@ -731,6 +745,8 @@ class HostFormAutomationRun {
     required this.ruleId,
     required this.ruleRevision,
     required this.responseId,
+    this.sourceId,
+    this.dueAt,
     required this.eventKind,
     required this.status,
     required this.attemptCount,
@@ -745,7 +761,9 @@ class HostFormAutomationRun {
         runId: _requiredString(map, 'runId'),
         ruleId: _requiredString(map, 'ruleId'),
         ruleRevision: _requiredInt(map, 'ruleRevision'),
-        responseId: _requiredString(map, 'responseId'),
+        responseId: _nullableString(map['responseId']),
+        sourceId: _nullableString(map['sourceId']),
+        dueAt: _nullableDateTime(map['dueAtMillis']),
         eventKind: _requiredString(map, 'eventKind'),
         status: _enumByName(
           HostFormAutomationRunStatus.values,
@@ -764,7 +782,9 @@ class HostFormAutomationRun {
   final String runId;
   final String ruleId;
   final int ruleRevision;
-  final String responseId;
+  final String? responseId;
+  final String? sourceId;
+  final DateTime? dueAt;
   final String eventKind;
   final HostFormAutomationRunStatus status;
   final int attemptCount;

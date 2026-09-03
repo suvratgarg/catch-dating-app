@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:flutter/foundation.dart';
@@ -149,14 +150,11 @@ class HostFormAutomationsController extends _$HostFormAutomationsController {
   @override
   Future<HostFormAutomationsState> build(
     String organizerId,
-    String formId,
+    String? formId,
   ) async {
     final page = await ref
         .read(hostFormsRepositoryProvider)
-        .listAutomations(
-          organizerId: organizerId,
-          formId: formId,
-        );
+        .listAutomations(organizerId: organizerId, formId: formId);
     return _fromPage(page);
   }
 
@@ -234,6 +232,53 @@ class HostFormAutomationsController extends _$HostFormAutomationsController {
     }
   }
 
+  Future<HostFormAutomationRule> saveRule({
+    required String requestId,
+    required String name,
+    required bool enabled,
+    required HostFormAutomationTrigger trigger,
+    required List<Map<String, Object?>> actions,
+    required String? selectedFormId,
+    String? triggerEventId,
+    int delayMinutes = 0,
+    Map<String, Object?>? condition,
+    HostFormAutomationRule? existing,
+  }) async {
+    final saved = await ref
+        .read(hostFormsRepositoryProvider)
+        .saveAutomation(
+          organizerId: organizerId,
+          formId: selectedFormId,
+          requestId: requestId,
+          name: name,
+          enabled: enabled,
+          trigger: trigger,
+          actions: actions,
+          triggerEventId: triggerEventId,
+          delayMinutes: delayMinutes,
+          condition: condition,
+          ruleId: existing?.ruleId,
+          expectedRevision: existing?.revision,
+        );
+    final current = state.asData?.value;
+    if (current != null) {
+      state = AsyncData(
+        current.copyWith(
+          rules: [
+            saved,
+            ...current.rules.where((rule) => rule.ruleId != saved.ruleId),
+          ],
+          clearError: true,
+        ),
+      );
+    }
+    return saved;
+  }
+
+  Future<HostCampaign> inspectMessage(String campaignId) => ref
+      .read(hostCrmRepositoryProvider)
+      .getCampaignReport(organizerId, campaignId);
+
   Future<bool> createPreset({
     required String name,
     required HostFormAutomationTrigger trigger,
@@ -300,3 +345,80 @@ class HostFormAutomationsController extends _$HostFormAutomationsController {
         nextCursor: page.nextCursor,
       );
 }
+
+@immutable
+class HostAutomationMessagesState {
+  const HostAutomationMessagesState({
+    required this.messages,
+    this.nextCursor,
+    this.loadingMore = false,
+    this.error,
+  });
+  final List<HostCampaignSendSummary> messages;
+  final String? nextCursor;
+  final bool loadingMore;
+  final Object? error;
+}
+
+@riverpod
+class HostAutomationMessagesController
+    extends _$HostAutomationMessagesController {
+  @override
+  Future<HostAutomationMessagesState> build(String organizerId) async {
+    final page = await ref
+        .read(hostCrmRepositoryProvider)
+        .listCampaigns(organizerId);
+    return HostAutomationMessagesState(
+      messages: _draftMessages(page),
+      nextCursor: page.nextCursor,
+    );
+  }
+
+  Future<void> loadMore() async {
+    final current = state.asData?.value;
+    if (current == null || current.nextCursor == null || current.loadingMore) {
+      return;
+    }
+    state = AsyncData(
+      HostAutomationMessagesState(
+        messages: current.messages,
+        nextCursor: current.nextCursor,
+        loadingMore: true,
+      ),
+    );
+    try {
+      final page = await ref
+          .read(hostCrmRepositoryProvider)
+          .listCampaigns(organizerId, cursor: current.nextCursor);
+      state = AsyncData(
+        HostAutomationMessagesState(
+          messages: {
+            for (final message in [
+              ...current.messages,
+              ..._draftMessages(page),
+            ])
+              message.campaignId: message,
+          }.values.toList(growable: false),
+          nextCursor: page.nextCursor,
+        ),
+      );
+    } on Object catch (error) {
+      state = AsyncData(
+        HostAutomationMessagesState(
+          messages: current.messages,
+          nextCursor: current.nextCursor,
+          error: error,
+        ),
+      );
+    }
+  }
+}
+
+List<HostCampaignSendSummary> _draftMessages(HostSendsPage page) => page.sends
+    .whereType<HostCampaignSendSummary>()
+    .where(
+      (send) =>
+          (send.status == 'draft' || send.status == 'previewed') &&
+          send.scheduledAt == null,
+    )
+    .toList(growable: false);
