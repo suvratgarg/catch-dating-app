@@ -642,6 +642,17 @@ class HostFormConversionReceipt {
   final String? resultId;
 }
 
+/// Client-side URL shape checks. Delivery still enforces server network policy.
+bool isHostAutomationWebhookUrl(String? value) {
+  final url = Uri.tryParse(value?.trim() ?? '');
+  return url != null &&
+      url.scheme == 'https' &&
+      url.host.isNotEmpty &&
+      url.userInfo.isEmpty &&
+      !url.hasFragment &&
+      url.port == 443;
+}
+
 @immutable
 class HostFormAutomationAction {
   const HostFormAutomationAction({

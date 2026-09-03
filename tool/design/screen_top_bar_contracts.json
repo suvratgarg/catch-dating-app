@@ -200,6 +200,14 @@
       "leading": "back"
     },
     {
+      "path": "lib/hosts/presentation/forms/host_automation_rule_editor.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
       "path": "lib/hosts/presentation/forms/host_form_automations_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",

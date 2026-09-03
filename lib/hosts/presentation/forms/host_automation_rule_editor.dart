@@ -402,17 +402,10 @@ class _HostAutomationRuleEditorState
                               controller: action.url,
                               keyboardType: TextInputType.url,
                               enabled: !_busy,
-                              validator: (text) {
-                                final url = Uri.tryParse(text?.trim() ?? '');
-                                return url == null ||
-                                        url.scheme != 'https' ||
-                                        url.host.isEmpty ||
-                                        url.userInfo.isNotEmpty ||
-                                        url.hasFragment ||
-                                        url.port != 443
-                                    ? l.hostAutomationUrlInvalid
-                                    : null;
-                              },
+                              validator: (text) =>
+                                  isHostAutomationWebhookUrl(text)
+                                  ? null
+                                  : l.hostAutomationUrlInvalid,
                             ),
                             CatchField.input(
                               key: ValueKey('automation-secret-${action.id}'),

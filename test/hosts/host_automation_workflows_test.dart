@@ -17,6 +17,27 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  test(
+    'automation webhook URL shape rejects credentials, fragments and non-HTTPS ports',
+    () {
+      expect(
+        isHostAutomationWebhookUrl('https://example.com/hook?q=1'),
+        isTrue,
+      );
+      for (final value in <String?>[
+        null,
+        '',
+        'http://example.com',
+        'https://',
+        'https://user:secret@example.com',
+        'https://example.com/#fragment',
+        'https://example.com:8443',
+      ]) {
+        expect(isHostAutomationWebhookUrl(value), isFalse, reason: value);
+      }
+    },
+  );
+
   testWidgets(
     'global editor saves an enabled acceptance webhook and retries the same request',
     (tester) async {
