@@ -42,7 +42,7 @@ final class CatchNoticeControllerProvider
 }
 
 String _$catchNoticeControllerHash() =>
-    r'fdc0d27859184ee2e06de20fdaa4d8a308aba4b6';
+    r'3de63d199e7371c27c3dda6002252cb22b41f066';
 
 abstract class _$CatchNoticeController extends $Notifier<CatchNoticeQueue> {
   CatchNoticeQueue build();

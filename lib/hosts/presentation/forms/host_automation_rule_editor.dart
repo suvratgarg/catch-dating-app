@@ -122,7 +122,6 @@ class _HostAutomationRuleEditorState
               : _save,
         ),
         body: CatchRouteBody.standard(
-          constrainToContentWidth: true,
           child: CatchAsyncValueView<HostSavedAudienceFilterOptions>(
             value: options,
             errorContext: AppErrorContext.forms,

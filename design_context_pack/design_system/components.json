@@ -1765,9 +1765,13 @@
     },
     {
       "id": "catch.notice",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      "enforcement": {
+        "code": "catch_use_canonical_feedback",
+        "codes": [
+          "catch_notice_host_is_app_owned",
+          "catch_notification_delivery_is_service_owned"
+        ],
+        "vehicle": "plugin"
       },
       "name": "CatchNotice",
       "status": "active",

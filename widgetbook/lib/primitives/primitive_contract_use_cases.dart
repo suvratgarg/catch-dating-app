@@ -1451,6 +1451,9 @@ Widget catchNoticeContractStates(BuildContext context) {
       'event',
       'with-action',
       'dismissible',
+      'arrival-tap-to-open',
+      'arrival-swipe-to-dismiss',
+      'arrival-reduced-motion',
     ],
     children: [
       const _StateCard(
@@ -1526,6 +1529,45 @@ Widget catchNoticeContractStates(BuildContext context) {
             tone: CatchNoticeTone.success,
           ),
           onDismiss: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'arrival-tap-to-open',
+        child: CatchNotice(
+          notice: CatchNoticeData.arrival(
+            id: 'arrival-open',
+            title: 'Ananya Rao',
+            message: 'I’ll bring two friends next Sunday.',
+            onOpen: _noop,
+          ),
+          onDismiss: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'arrival-swipe-to-dismiss',
+        child: CatchNotice(
+          notice: CatchNoticeData.arrival(
+            id: 'arrival-dismiss',
+            title: 'New message',
+            message: 'Swipe this notice to dismiss it.',
+            onOpen: _noop,
+          ),
+          onDismiss: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'arrival-reduced-motion',
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: CatchNotice(
+            notice: CatchNoticeData.arrival(
+              id: 'arrival-reduced-motion',
+              title: 'New message',
+              message: 'Reduced motion uses the same accessible actions.',
+              onOpen: _noop,
+            ),
+            onDismiss: _noop,
+          ),
         ),
       ),
     ],
@@ -6219,13 +6261,7 @@ Widget catchOptionGroupItemContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchOptionGroupItem',
     contractId: 'catch.option_group.item',
-    states: const [
-      'selected',
-      'unselected',
-      'mono',
-      'operational',
-      'summary',
-    ],
+    states: const ['selected', 'unselected', 'mono', 'operational', 'summary'],
     children: [
       _StateCard(
         label: 'summary',
@@ -6704,6 +6740,7 @@ Widget catchSheetContractStates(BuildContext context) {
       'badge',
       'action',
       'keyboard-safe',
+      'scrollable',
       'without-grabber',
     ],
     children: [
@@ -6761,6 +6798,25 @@ Widget catchSheetContractStates(BuildContext context) {
           title: 'Embedded sheet',
           grabber: false,
           child: Text('Used when a parent already owns the grab handle.'),
+        ),
+      ),
+      _StateCard(
+        label: 'scrollable',
+        child: SizedBox(
+          height: WidgetbookPreviewLayout.stateViewportHeight,
+          child: CatchBottomSheetScaffold(
+            title: 'Review answers',
+            scrollable: true,
+            child: Column(
+              children: [
+                for (var i = 0; i < 12; i++)
+                  CatchField.read(
+                    title: 'Question ${i + 1}',
+                    body: 'Submitted answer',
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     ],

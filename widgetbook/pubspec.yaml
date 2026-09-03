@@ -14,6 +14,7 @@ dependencies:
   catch_dating_app:
     path: ../
   firebase_auth: ^6.5.7
+  firebase_messaging: ^16.6.0
   flutter_riverpod: ^3.4.2
   go_router: ^17.5.0
   image_picker: ^1.2.3

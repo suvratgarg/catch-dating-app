@@ -2118,9 +2118,8 @@ Widget catchStatusStripScopeCatalogStates(BuildContext context) {
               color: CatchTokens.of(context).warning,
             ),
           ],
-          child: CatchRootScreenScaffold(
+          child: CatchRootScreenScaffold.standard(
             header: const CatchScreenHeaderTitle.block(title: 'Today'),
-            bodyLayout: CatchScreenBodyLayout.standard,
             slivers: const [
               SliverToBoxAdapter(child: Text('Content below status')),
             ],

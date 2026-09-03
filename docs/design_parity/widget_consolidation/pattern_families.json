@@ -8,7 +8,7 @@
       "priority": "P0",
       "status": "implemented",
       "targetContract": "catch.status_strip",
-      "qualityReference": "Study 18 aligned persistent status placement A",
+      "qualityReference": "CatchStatusStrip",
       "decisionSource": "user-approved:2026-09-03 below-primary-tab-strip",
       "acceptedVisualDelta": [
         "Full-width square-edged bands below the complete primary tab rail, never between title and tabs; pin rail and statuses together.",

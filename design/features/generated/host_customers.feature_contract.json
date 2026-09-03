@@ -2,9 +2,9 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
-  "generatedFor": "2026-08-31",
-  "sourceDigest": "sha256:0b571987a8c839ee3600498124aa97f227e62f348eb037b8c4b8075255e549bb",
-  "resolvedDigest": "sha256:5af43891537d1b915b2566f9b2ea50a8bb32c2268cbb71d92e587ed7bd40fb24",
+  "generatedFor": "2026-09-03",
+  "sourceDigest": "sha256:207257466d6e33ced3f1f94027ae766f64b6dd857bb8fee74c2c7521720de28d",
+  "resolvedDigest": "sha256:7f1ae29783856ffc98aab8aef9745e802354671203e5229472ef178d0790ac51",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",

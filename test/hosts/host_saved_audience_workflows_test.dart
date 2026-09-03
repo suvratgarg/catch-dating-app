@@ -122,7 +122,7 @@ void main() {
         find.byKey(const ValueKey('host-saved-audience-rule-type-1')),
       );
       await pumpFeatureUi(tester);
-      await tester.tap(_menuChoice('Form answer'));
+      await _selectMenuChoice(tester, 'Form answer');
       await pumpFeatureUi(tester);
       final questionField = find.descendant(
         of: find.byKey(const ValueKey('host-saved-audience-rule-0')),
@@ -133,8 +133,9 @@ void main() {
       await tester.ensureVisible(questionField);
       await tester.tap(questionField);
       await pumpFeatureUi(tester);
-      await tester.tap(
-        _menuChoice('Published application · v1 · Favorite drink'),
+      await _selectMenuChoice(
+        tester,
+        'Published application · v1 · Favorite drink',
       );
       await pumpFeatureUi(tester);
       final answerField = find.descendant(
@@ -146,7 +147,7 @@ void main() {
       await tester.ensureVisible(answerField);
       await tester.tap(answerField);
       await pumpFeatureUi(tester);
-      await tester.tap(_menuChoice('Coffee'));
+      await _selectMenuChoice(tester, 'Coffee');
       await pumpFeatureUi(tester);
       await tester.tap(find.byKey(const ValueKey('host-saved-audience-save')));
       await pumpFeatureUi(tester);
@@ -178,7 +179,7 @@ void main() {
       find.byKey(const ValueKey('host-saved-audience-rule-type-1')),
     );
     await pumpFeatureUi(tester);
-    await tester.tap(_menuChoice('Catch spend'));
+    await _selectMenuChoice(tester, 'Catch spend');
     await pumpFeatureUi(tester);
     await tester.ensureVisible(
       find.byKey(const ValueKey('host-audience-spend-amount-INR')),
@@ -258,6 +259,14 @@ Finder _input(String key) => find.descendant(
   of: find.byKey(ValueKey(key)),
   matching: find.byType(EditableText),
 );
+
+Future<void> _selectMenuChoice(WidgetTester tester, String label) async {
+  final choice = _menuChoice(label);
+  // The canonical menu scrolls when its choices exceed the available side.
+  await tester.ensureVisible(choice);
+  await tester.pump();
+  await tester.tap(choice);
+}
 
 Finder _menuChoice(String label) => find.descendant(
   of: find.byType(CatchMenu<Object?>),

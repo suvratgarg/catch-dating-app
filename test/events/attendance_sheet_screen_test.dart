@@ -279,7 +279,12 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
+      Scaffold(
+        body: SingleChildScrollView(
+          // The panel is embedded in the event workspace's scroll owner.
+          child: HostEventAttendancePanel(eventId: event.id),
+        ),
+      ),
       overrides: [
         watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
         watchEventParticipationsForEventProvider(event.id).overrideWith(

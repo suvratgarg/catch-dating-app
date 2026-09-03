@@ -39,7 +39,6 @@ class HostApplicationListRequest {
     required this.organizerId,
     this.contactId,
     this.formId,
-    this.contactId,
     this.targetId,
     this.reviewStatus,
     this.query,
@@ -50,7 +49,6 @@ class HostApplicationListRequest {
   final String organizerId;
   final String? contactId;
   final String? formId;
-  final String? contactId;
   final String? targetId;
   final HostApplicationReviewStatus? reviewStatus;
   final String? query;
@@ -62,7 +60,6 @@ class HostApplicationListRequest {
         organizerId: organizerId,
         contactId: contactId,
         formId: formId,
-        contactId: contactId,
         targetId: targetId,
         reviewStatus: reviewStatus,
         query: query,
@@ -76,7 +73,6 @@ class HostApplicationListRequest {
       other.organizerId == organizerId &&
       other.contactId == contactId &&
       other.formId == formId &&
-      other.contactId == contactId &&
       other.targetId == targetId &&
       other.reviewStatus == reviewStatus &&
       other.query == query &&
@@ -88,7 +84,6 @@ class HostApplicationListRequest {
     organizerId,
     contactId,
     formId,
-    contactId,
     targetId,
     reviewStatus,
     query,
@@ -527,7 +522,6 @@ class HostApplicationRepository {
       organizerId: request.organizerId,
       contactId: request.contactId,
       formId: request.formId,
-      contactId: request.contactId,
       targetId: request.targetId,
       reviewStatus: request.reviewStatus?.name,
       query: request.query?.trim().isEmpty ?? true

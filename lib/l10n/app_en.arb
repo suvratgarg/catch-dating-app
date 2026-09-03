@@ -8058,11 +8058,17 @@
   },
   "notificationArrivalMatchTitle": "It''s a catch",
   "@notificationArrivalMatchTitle": {
-    "description": "Fallback title for a foreground match arrival when the server supplies no title."
+    "description": "Fallback title for a foreground match arrival when the server supplies no title.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "notifications.foreground_arrival"
   },
   "notificationArrivalMessageTitle": "New message",
   "@notificationArrivalMessageTitle": {
-    "description": "Fallback title for a foreground message arrival when the server supplies no title."
+    "description": "Fallback title for a foreground message arrival when the server supplies no title.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "notifications.foreground_arrival"
   },
   "coreCatchNoticeTooltipDismiss": "Dismiss",
   "@coreCatchNoticeTooltipDismiss": {

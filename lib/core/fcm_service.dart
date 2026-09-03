@@ -229,12 +229,19 @@ class FcmService {
           final user = _db.collection('users').doc(uid);
           await user.collection('pushInstallations').doc(id).delete();
           if (!AppConfig.appRole.isHost && token != null) {
-            await _db.runTransaction((tx) async {
-              final snapshot = await tx.get(user);
-              if (snapshot.data()?['fcmToken'] == token) {
-                tx.update(user, {'fcmToken': FieldValue.delete()});
-              }
-            });
+            await withBackendErrorContext(
+              () => _db.runTransaction((tx) async {
+                final snapshot = await tx.get(user);
+                if (snapshot.data()?['fcmToken'] == token) {
+                  tx.update(user, {'fcmToken': FieldValue.delete()});
+                }
+              }),
+              context: const BackendErrorContext(
+                service: BackendService.firestore,
+                action: 'clear legacy push registration',
+                resource: 'push_installations',
+              ),
+            );
           }
         }, 'push_installations'),
     ]);

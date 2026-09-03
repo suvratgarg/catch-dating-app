@@ -11,8 +11,8 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
@@ -31,15 +31,17 @@ import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart'
     show CatchOption;
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks/modules.dart';
@@ -51,20 +53,23 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
@@ -76,19 +81,19 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_step_header.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tabs.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
@@ -105,34 +110,34 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_success_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_overview.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
-import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
@@ -756,7 +761,10 @@ Widget hostTodayAttentionCardStates(BuildContext context) =>
   type: HostCustomersScreen,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
-Widget hostCustomersStates(BuildContext context) {
+Widget hostCustomersStates(
+  BuildContext context, {
+  Widget Function(HostAudienceContactDetail customer)? detailBuilder,
+}) {
   final organizerId = HostOperationsFixtures.primaryClub.id;
   const contactId = 'design-customer-ananya';
   final contact = HostAudienceContact(
@@ -1030,6 +1038,102 @@ Widget hostCustomersStates(BuildContext context) {
       ),
     ],
   );
+  if (detailBuilder != null) {
+    final application = HostApplicationDetail(
+      organizerId: organizerId,
+      applicationId: 'design-application-1',
+      formId: 'design-form-1',
+      formVersionId: 'design-form-version-1',
+      targetKind: 'organizer',
+      targetId: null,
+      applicantDisplayName: contact.displayName,
+      reviewStatus: HostApplicationReviewStatus.approved,
+      answers: const [
+        HostApplicationAnswer(
+          questionId: 'interests',
+          questionKey: 'interests',
+          questionLabel: 'What would you like to join?',
+          questionKind: 'text',
+          canonicalFieldId: null,
+          privacyClass: 'organizer',
+          hostPresentation: 'text',
+          value: HostApplicationAnswerValue(
+            valueKind: 'text',
+            textValue: 'Smaller weekend events and running groups.',
+            numberValue: null,
+            booleanValue: null,
+            dateValue: null,
+            optionValues: [],
+            assetIds: [],
+          ),
+        ),
+      ],
+      outreach: const HostApplicationOutreach(
+        phoneE164: '+919876543210',
+        email: 'ananya@example.com',
+        instagramUrl: 'https://www.instagram.com/ananya.example/',
+        linkedinUrl: null,
+      ),
+      reviewNote: null,
+      assignedReviewerUid: null,
+      submittedAt: DateTime(2030, 4, 30),
+      reviewedAt: DateTime(2030, 5, 1),
+      revision: 2,
+      contactId: contactId,
+      sourceResponseId: 'design-response-1',
+      dataAccessState: 'submittedFormResponse',
+    );
+    return _HostCatalog(
+      title: 'Customer detail components',
+      contractId: 'screen.host.customer_detail',
+      children: [
+        _StateCard(
+          label: 'populated customer record',
+          child: _DeviceFrame(
+            child: ProviderScope(
+              overrides: [
+                hostApplicationDetailProvider(
+                  organizerId,
+                  application.applicationId,
+                ).overrideWithValue(AsyncData(application)),
+                hostApplicationsDirectoryControllerProvider(
+                  HostApplicationListRequest(
+                    organizerId: organizerId,
+                    contactId: contactId,
+                  ),
+                ).overrideWithBuild(
+                  (ref, notifier) async => HostApplicationsDirectoryState(
+                    applications: [
+                      HostApplicationSummary(
+                        applicationId: application.applicationId,
+                        formId: application.formId,
+                        formVersionId: application.formVersionId,
+                        targetKind: application.targetKind,
+                        targetId: application.targetId,
+                        applicantDisplayName: application.applicantDisplayName,
+                        reviewStatus: application.reviewStatus,
+                        sourceKind: HostApplicationSourceKind.native,
+                        providerId: null,
+                        submittedAt: application.submittedAt,
+                        revision: application.revision,
+                      ),
+                    ],
+                    nextCursor: null,
+                  ),
+                ),
+              ],
+              child: Scaffold(
+                body: SingleChildScrollView(
+                  padding: CatchInsets.pageBody,
+                  child: detailBuilder(detail),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
   return _HostCatalog(
     title: 'Host Customers',
     contractId: 'screen.host.customers',
@@ -1127,6 +1231,173 @@ Widget hostCustomersStates(BuildContext context) {
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerApplicationsPanel,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerApplicationsPanelComponentStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => HostCustomerApplicationsPanel(
+        organizerId: customer.organizerId,
+        contactId: customer.contactId,
+        onOpenApplication: (_) {},
+        onOpenContact: (_) {},
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerApplicationSnapshot,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerApplicationSnapshotComponentStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => HostCustomerApplicationSnapshot(
+        organizerId: customer.organizerId,
+        applicationId: 'design-application-1',
+        onOpen: () {},
+        onOpenContact: (_) {},
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerDetailsSection,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerDetailsSectionComponentStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => HostCustomerDetailsSection(
+        customer: customer,
+        onCall: () {},
+        onEmail: () {},
+        onOpenFormResponse: (_) {},
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerRecentEvents,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerRecentEventsComponentStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) =>
+          HostCustomerRecentEvents(customer: customer, onOpenEvent: (_) {}),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerRevenueBreakdown,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerRevenueBreakdownComponentStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) =>
+          HostCustomerRevenueBreakdown(customer: customer, onOpenEvent: (_) {}),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerMemoryPreview,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerMemoryPreviewComponentStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) =>
+          HostCustomerMemoryPreview(customer: customer, onOpenMemory: () {}),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerHistoryFilters,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerHistoryFiltersComponentStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => HostCustomerHistoryFilters(
+        builder: (filter) => HostCustomerTimelineSection(
+          customer: customer,
+          filter: filter,
+          onOpenFormResponse: (_) {},
+          onOpenEvent: (_) {},
+          onOpenCatchThread: (_) {},
+          onOpenWhatsappThread: (_) {},
+        ),
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerTimelineRecord,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerTimelineRecordComponentStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => Column(
+        children: [
+          for (final entry in customer.timeline)
+            HostCustomerTimelineRecord(
+              entry: entry,
+              onOpenFormResponse: (_) {},
+              onOpenEvent: (_) {},
+              onOpenCatchThread: (_) {},
+              onOpenWhatsappThread: (_) {},
+            ),
+        ],
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerDetailOverview,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerDetailOverviewComponentStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) =>
+          HostCustomerDetailOverview(customer: customer, onOpenRevenue: () {}),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerDetailTabs,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerDetailTabsComponentStates(
+  BuildContext context,
+) => hostCustomersStates(
+  context,
+  detailBuilder: (customer) => HostCustomerDetailTabs(
+    overviewBuilder: (_) =>
+        HostCustomerDetailOverview(customer: customer, onOpenRevenue: () {}),
+    details: HostCustomerDetailsSection(
+      customer: customer,
+      onCall: () {},
+      onEmail: () {},
+      onOpenFormResponse: (_) {},
+    ),
+    memory: HostCustomerMemoryPreview(customer: customer, onOpenMemory: () {}),
+    history: HostCustomerTimelineSection(
+      customer: customer,
+      onOpenFormResponse: (_) {},
+      onOpenEvent: (_) {},
+      onOpenCatchThread: (_) {},
+      onOpenWhatsappThread: (_) {},
+    ),
+  ),
+);
 
 @widgetbook.UseCase(
   name: 'Directory states',

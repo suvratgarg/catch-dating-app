@@ -520,7 +520,9 @@ export async function listOrganizerApplicationsHandler(
     const contact = (await db.collection("organizerContacts")
       .doc(data.contactId).get()).data() as
       OrganizerContactDocument | undefined;
-    customerAccountUid = customerApplicationAccountUid(contact, data.organizerId);
+    customerAccountUid = customerApplicationAccountUid(
+      contact, data.organizerId
+    );
   }
   // Resolve source origins before filtering: merges may move a submission to
   // another contact without rewriting its immutable application projection.
@@ -606,14 +608,15 @@ export async function listOrganizerApplicationsHandler(
   };
 }
 
-/** Matches an already-resolved source contact or a verified account identity. */
+/** Matches a resolved source contact or a verified account identity. */
 export function customerApplicationMatches(
   application: Pick<OrganizerApplicationDocument, "contactId" | "linkedUid">,
   contactId: string,
   verifiedAccountUid: string | null
 ): boolean {
   return application.contactId === contactId ||
-    (verifiedAccountUid !== null && application.linkedUid === verifiedAccountUid);
+    (verifiedAccountUid !== null &&
+      application.linkedUid === verifiedAccountUid);
 }
 
 /** Identity may locate an application; its grant still controls its answers. */

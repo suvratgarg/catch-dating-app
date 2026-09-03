@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
@@ -28,9 +27,8 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (context, state) => CatchRootScreenScaffold(
+            builder: (context, state) => CatchRootScreenScaffold.standard(
               header: const CatchScreenHeaderTitle.block(title: 'Today'),
-              bodyLayout: CatchScreenBodyLayout.standard,
               slivers: const [SliverToBoxAdapter(child: Text('Root content'))],
             ),
           ),
