@@ -298,11 +298,12 @@
     },
     {
       "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
-      "role": "screen",
-      "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "backUnlessEmbedded"
+      "leading": "backUnlessEmbedded",
+      "titlePolicy": "routeOrIdentity"
     },
     {
       "path": "lib/hosts/presentation/applications/host_applications_screen.dart",

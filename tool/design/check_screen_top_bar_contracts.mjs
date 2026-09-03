@@ -304,7 +304,8 @@ function checkCanonicalScreenScaffoldAppBar({root, findings}) {
       message:
         `${canonicalScreenScaffoldSymbol}.build must contain exactly one ` +
         "returned Scaffold whose top-level appBar argument forwards the " +
-        "class appBar field directly. Only that exact infrastructure " +
+        "class appBar field directly or through its canonical scaled-size adapter. " +
+        "Only that exact infrastructure " +
         "declaration is exempt from per-screen chrome registration.",
     });
   }
@@ -347,15 +348,16 @@ function findCanonicalScreenScaffoldAppBarIndex(source) {
     (scaffoldMatch.index ?? 0) +
     scaffoldMatch[0].lastIndexOf("(");
   const scaffoldCall = readBalanced(source, scaffoldOpenParen, "(", ")");
-  if (readNamedArgument(scaffoldCall, "appBar") !== "appBar") return null;
+  const argument = readNamedArgument(scaffoldCall, "appBar");
+  const compactArgument = argument?.replace(/\s+/gu, "");
+  const scaledForwarder =
+    "switch(appBar){finalCatchScaledPreferredSizescaled=>PreferredSize(" +
+    "preferredSize:scaled.preferredSizeFor(context),child:scaled,)," +
+    "finalbar=>bar,}";
+  if (argument !== "appBar" && compactArgument !== scaledForwarder) return null;
 
   const appBarMatches = [...scaffoldCall.matchAll(appBarPattern)];
-  if (
-    appBarMatches.length !== 1 ||
-    appBarMatches[0][1] !== "appBar"
-  ) {
-    return null;
-  }
+  if (appBarMatches.length !== 1) return null;
   return scaffoldOpenParen + (appBarMatches[0].index ?? 0);
 }
 

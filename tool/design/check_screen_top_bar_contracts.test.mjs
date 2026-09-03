@@ -929,6 +929,36 @@ test("fails closed when the canonical app-bar forwarder drifts", () => {
   );
 });
 
+for (const [label, height, child, fallback, valid] of [
+  ["canonical scaled forwarding", "scaled.preferredSizeFor(context)", "scaled", "bar", true],
+  ["replacement child", "scaled.preferredSizeFor(context)", "rogueBar", "bar", false],
+  ["fixed scaled height", "const Size.fromHeight(44)", "scaled", "bar", false],
+  ["replacement fallback", "scaled.preferredSizeFor(context)", "scaled", "rogueBar", false],
+]) {
+  test(`scaled scaffold app-bar boundary: ${label}`, () => {
+    const root = fixtureRoot({
+      source: "Scaffold(appBar: CatchTopBar(title: 'Details'));",
+      contract: compactContract(),
+      includeRootContracts: false,
+      canonicalScaffoldSource: `
+        class CatchScreenScaffold extends StatelessWidget {
+          final PreferredSizeWidget? appBar;
+          Widget build(BuildContext context) {
+            return Scaffold(appBar: switch (appBar) {
+              final CatchScaledPreferredSize scaled => PreferredSize(
+                preferredSize: ${height}, child: ${child},
+              ),
+              final bar => ${fallback},
+            });
+          }
+        }
+      `,
+    });
+    const result = checkScreenTopBarContracts({root});
+    assert.equal(hasFinding(result, "canonical-screen-scaffold-app-bar-drift"), !valid);
+  });
+}
+
 function hasFinding(result, code) {
   return result.findings.some((finding) => finding.code === code);
 }

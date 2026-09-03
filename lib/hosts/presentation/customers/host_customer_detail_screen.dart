@@ -93,7 +93,11 @@ class _HostCustomerDetailScreenState
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: displayName,
-        titleRole: CatchTopBarTitleRole.identity,
+        titleRole:
+            detailState.value != null ||
+                (initialDisplayName?.isNotEmpty ?? false)
+            ? CatchTopBarTitleRole.identity
+            : CatchTopBarTitleRole.route,
         leadingType: widget.embedded
             ? CatchTopBarLeading.none
             : CatchTopBarLeading.back,
