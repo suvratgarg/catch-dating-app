@@ -73,8 +73,7 @@ class ReviewsHistoryScreen extends ConsumerWidget {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: CatchRouteBody.standard(
-        constrainToContentWidth: true,
+      body: CatchRouteBody.standardConstrained(
         child: ReviewsHistoryBody(
           state: state,
           onRetryProfile: onRetryProfile,

@@ -134,7 +134,7 @@
           "catch.skeleton",
           "catch.surface",
           "catch.tab_rail",
-          "catch.tabbed_screen",
+          "catch.screen_body",
           "catch.top_bar"
         ],
         "dataContracts": [

@@ -231,10 +231,9 @@ class _ProfilePhotoEditorScreenState
         title: widget.photo == null
             ? context.l10n.imageUploadsProfilePhotoEditorScreenTitleAddPhoto
             : context.l10n.imageUploadsProfilePhotoEditorScreenTitleEditPhoto,
-        border: scrolledUnder,
+        divider: scrolledUnder,
       ),
-      body: CatchRouteBody.standard(
-        constrainToContentWidth: true,
+      body: CatchRouteBody.standardConstrained(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

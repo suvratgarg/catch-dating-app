@@ -67,8 +67,8 @@ void _registerProfileShellLayoutTests() {
     );
     await tester.pump();
 
-    expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
-    expect(find.byType(CatchTabbedPageScrollView), findsWidgets);
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchRootScreenPageScrollView), findsWidgets);
     expect(find.byType(TabBarView), findsOneWidget);
     expect(find.byType(ProfileTabSkeletonSliverBody), findsOneWidget);
     expect(find.byType(CatchLoadingIndicator), findsNothing);
@@ -300,7 +300,7 @@ void _registerProfileShellLayoutTests() {
     );
   });
 
-  testWidgets('ProfileScreen limits terminal clearance to Edit', (
+  testWidgets('ProfileScreen assigns terminal clearance by page role', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1.0;
@@ -322,7 +322,7 @@ void _registerProfileShellLayoutTests() {
 
     Finder activeTabWrapper(PageStorageKey<String> key) => find.ancestor(
       of: find.byKey(key),
-      matching: find.byType(CatchTabbedPageScrollView),
+      matching: find.byType(CatchRootScreenPageScrollView),
     );
 
     final editWrapper = activeTabWrapper(
@@ -331,7 +331,7 @@ void _registerProfileShellLayoutTests() {
     expect(editWrapper, findsOneWidget);
     expect(
       tester
-          .widget<CatchTabbedPageScrollView>(editWrapper)
+          .widget<CatchRootScreenPageScrollView>(editWrapper)
           .includeTerminalPadding,
       isTrue,
     );
@@ -353,7 +353,7 @@ void _registerProfileShellLayoutTests() {
     expect(previewWrapper, findsOneWidget);
     expect(
       tester
-          .widget<CatchTabbedPageScrollView>(previewWrapper)
+          .widget<CatchRootScreenPageScrollView>(previewWrapper)
           .includeTerminalPadding,
       isFalse,
     );
@@ -377,9 +377,9 @@ void _registerProfileShellLayoutTests() {
     expect(insightsWrapper, findsOneWidget);
     expect(
       tester
-          .widget<CatchTabbedPageScrollView>(insightsWrapper)
+          .widget<CatchRootScreenPageScrollView>(insightsWrapper)
           .includeTerminalPadding,
-      isFalse,
+      isTrue,
     );
     expect(
       tester
@@ -390,7 +390,7 @@ void _registerProfileShellLayoutTests() {
           )
           .slivers
           .whereType<CatchSliverTerminalPadding>(),
-      isEmpty,
+      hasLength(1),
     );
   });
 

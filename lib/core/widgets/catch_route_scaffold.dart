@@ -27,12 +27,58 @@ enum _CatchRouteBodyKind {
 final class CatchRouteBody {
   const CatchRouteBody.standard({
     required Widget child,
-    bool scrollable = true,
-    bool constrainToContentWidth = false,
+    ScrollController? controller,
+    ScrollPhysics? physics,
+    bool? primary,
+  }) : this._standard(
+         child: child,
+         scrollable: true,
+         constrainToContentWidth: false,
+         maxContentExtent: CatchLayout.maxContentWidth,
+         controller: controller,
+         physics: physics,
+         primary: primary,
+       );
+
+  const CatchRouteBody.standardViewport({
+    required Widget child,
+    ScrollController? controller,
+    ScrollPhysics? physics,
+    bool? primary,
+  }) : this._standard(
+         child: child,
+         scrollable: false,
+         constrainToContentWidth: false,
+         maxContentExtent: CatchLayout.maxContentWidth,
+         controller: controller,
+         physics: physics,
+         primary: primary,
+       );
+
+  const CatchRouteBody.standardConstrained({
+    required Widget child,
     double maxContentExtent = CatchLayout.maxContentWidth,
     ScrollController? controller,
     ScrollPhysics? physics,
     bool? primary,
+  }) : this._standard(
+         child: child,
+         scrollable: true,
+         constrainToContentWidth: true,
+         maxContentExtent: maxContentExtent,
+         controller: controller,
+         physics: physics,
+         primary: primary,
+       );
+
+  const CatchRouteBody._standard({
+    required Widget child,
+    required bool scrollable,
+    required bool constrainToContentWidth,
+    required double maxContentExtent,
+    required ScrollController? controller,
+    required ScrollPhysics? physics,
+    required bool? primary,
   }) : assert(maxContentExtent > 0),
        _kind = _CatchRouteBodyKind.standard,
        _child = child,
@@ -54,13 +100,45 @@ final class CatchRouteBody {
 
   const CatchRouteBody.standardSlivers({
     required List<Widget> slivers,
-    bool constrainToContentWidth = false,
-    double maxContentExtent = CatchLayout.tabbedPageMaxExtent,
     ScrollController? controller,
     ScrollPhysics? physics,
     bool? primary,
-    bool includeTerminalPadding = true,
     Future<void> Function()? onRefresh,
+  }) : this._standardSlivers(
+         slivers: slivers,
+         constrainToContentWidth: false,
+         maxContentExtent: CatchLayout.screenPageMaxExtent,
+         controller: controller,
+         physics: physics,
+         primary: primary,
+         onRefresh: onRefresh,
+       );
+
+  const CatchRouteBody.standardConstrainedSlivers({
+    required List<Widget> slivers,
+    double maxContentExtent = CatchLayout.screenPageMaxExtent,
+    ScrollController? controller,
+    ScrollPhysics? physics,
+    bool? primary,
+    Future<void> Function()? onRefresh,
+  }) : this._standardSlivers(
+         slivers: slivers,
+         constrainToContentWidth: true,
+         maxContentExtent: maxContentExtent,
+         controller: controller,
+         physics: physics,
+         primary: primary,
+         onRefresh: onRefresh,
+       );
+
+  const CatchRouteBody._standardSlivers({
+    required List<Widget> slivers,
+    required bool constrainToContentWidth,
+    required double maxContentExtent,
+    required ScrollController? controller,
+    required ScrollPhysics? physics,
+    required bool? primary,
+    required Future<void> Function()? onRefresh,
   }) : assert(maxContentExtent > 0),
        _kind = _CatchRouteBodyKind.standardSlivers,
        _child = null,
@@ -74,7 +152,7 @@ final class CatchRouteBody {
        _controller = controller,
        _physics = physics,
        _primary = primary,
-       _includeTerminalPadding = includeTerminalPadding,
+       _includeTerminalPadding = true,
        _onRefresh = onRefresh,
        _sectionGap = CatchGaps.section,
        _columnGap = CatchGaps.section,
@@ -254,7 +332,10 @@ final class CatchRouteBody {
         child: scrollView,
       );
     }
-    return SafeArea(top: false, bottom: false, child: scrollView);
+    return CatchFieldVisibilityScope(
+      bottomObstruction: AppShellActiveTab.bottomOverlayInsetOf(context),
+      child: SafeArea(top: false, bottom: false, child: scrollView),
+    );
   }
 }
 

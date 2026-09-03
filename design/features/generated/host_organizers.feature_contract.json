@@ -150,7 +150,7 @@
           "catch.skeleton",
           "catch.surface",
           "catch.tab_rail",
-          "catch.tabbed_screen",
+          "catch.screen_body",
           "catch.top_bar"
         ],
         "dataContracts": [
@@ -5317,13 +5317,13 @@
             }
           },
           {
-            "id": "catch.tabbed_screen",
+            "id": "catch.screen_body",
             "kind": "pattern",
             "dart": {
-              "symbol": "CatchTabbedScreenScaffold",
-              "file": "lib/core/widgets/catch_tabbed_screen.dart",
+              "symbol": "CatchScreenBody",
+              "file": "lib/core/widgets/catch_section_layout.dart",
               "constructors": [
-                "CatchTabbedScreenScaffold"
+                "CatchScreenBody"
               ]
             }
           },

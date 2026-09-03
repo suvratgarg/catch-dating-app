@@ -95,8 +95,7 @@ class _HostApplicationsScreenState
           ),
         ],
       ),
-      body: CatchRouteBody.standard(
-        scrollable: false,
+      body: CatchRouteBody.standardViewport(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

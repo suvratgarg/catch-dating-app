@@ -23,15 +23,15 @@ const manualHeaderClassPattern =
 const screenChromeClassPattern =
   /\bclass\s+([_$A-Za-z][\w$]*(?:Screen|Scaffold|Header|TopBar|HeaderContent))\b/gu;
 const manualHeaderOwnerPattern =
-  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchTabbedScreenScaffold|CatchTopBar(?:\.identity)?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
+  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
 const canonicalRootOwners = new Set([
   "CatchScreenHeaderTitle",
   "CatchScreenHeaderTitle.block",
   "CatchScreenTopBar",
-  "CatchTabbedScreenScaffold",
+  "CatchRootScreenHeader.title",
 ]);
 const topBarActionOwnerPattern =
-  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchTabbedScreenScaffold|CatchTopBar(?:\.identity)?)\s*\(/gu;
+  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?)\s*\(/gu;
 const directPillActionPattern = /\bCatchButton\s*\(/u;
 const rootTitleStylePattern = /\bCatchTextStyles\.headline[A-Za-z]*\s*\(/gu;
 const rootTextScaleOverridePattern =
@@ -78,7 +78,7 @@ const manualHeaderRoleOwners = new Map([
       "CatchScreenHeaderTitle",
       "CatchScreenHeaderTitle.block",
       "CatchScreenTopBar",
-      "CatchTabbedScreenScaffold",
+      "CatchRootScreenHeader.title",
     ]),
   ],
   ["step-flow", new Set(["CatchStepHeader"])],
@@ -178,7 +178,7 @@ export function checkScreenTopBarContracts({
     trackedRootHeaderPaths,
     findings,
   });
-  if (manifest.tabRootManifestPath != null) {
+  if (manifest.rootScreenManifestPath != null) {
     checkRootHeaders({root, manifest, rootHeaders, findings});
   }
   if (manifest.screenGeometry != null) {
@@ -946,25 +946,25 @@ function validateManifest(manifest, findings, manifestPath) {
 }
 
 function validateRootHeaderManifest(manifest, findings, manifestPath) {
-  if (manifest.tabRootManifestPath == null && manifest.rootHeaders == null) {
+  if (manifest.rootScreenManifestPath == null && manifest.rootHeaders == null) {
     return;
   }
   if (!Array.isArray(manifest.rootHeaders) || manifest.rootHeaders.length === 0) {
     findings.push({
       code: "missing-root-headers",
       path: manifestPath,
-      message: "rootHeaders must classify every tab-root branch.",
+      message: "rootHeaders must classify every root-screen branch.",
     });
     return;
   }
   if (
-    typeof manifest.tabRootManifestPath !== "string" ||
-    manifest.tabRootManifestPath.length === 0
+    typeof manifest.rootScreenManifestPath !== "string" ||
+    manifest.rootScreenManifestPath.length === 0
   ) {
     findings.push({
-      code: "missing-tab-root-manifest-path",
+      code: "missing-root-screen-manifest-path",
       path: manifestPath,
-      message: "tabRootManifestPath must point at the tab-root branch ledger.",
+      message: "rootScreenManifestPath must point at the root-screen branch ledger.",
     });
   }
 
@@ -1392,24 +1392,24 @@ function checkRawChrome({rawChromeByPath, rawChromeExceptions, findings}) {
 }
 
 function checkRootHeaders({root, manifest, rootHeaders, findings}) {
-  const tabRootManifestPath = manifest.tabRootManifestPath;
-  if (typeof tabRootManifestPath !== "string" || tabRootManifestPath.length === 0) {
+  const rootScreenManifestPath = manifest.rootScreenManifestPath;
+  if (typeof rootScreenManifestPath !== "string" || rootScreenManifestPath.length === 0) {
     return;
   }
-  const absoluteTabRootManifestPath = path.join(root, tabRootManifestPath);
-  if (!fs.existsSync(absoluteTabRootManifestPath)) {
+  const absoluteRootScreenManifestPath = path.join(root, rootScreenManifestPath);
+  if (!fs.existsSync(absoluteRootScreenManifestPath)) {
     findings.push({
-      code: "missing-tab-root-manifest",
-      path: tabRootManifestPath,
+      code: "missing-root-screen-manifest",
+      path: rootScreenManifestPath,
       message: "Tab-root branch ledger does not exist.",
     });
     return;
   }
 
-  const tabRootManifest = JSON.parse(
-    fs.readFileSync(absoluteTabRootManifestPath, "utf8"),
+  const rootScreenManifest = JSON.parse(
+    fs.readFileSync(absoluteRootScreenManifestPath, "utf8"),
   );
-  const branches = tabRootManifest.branches ?? [];
+  const branches = rootScreenManifest.branches ?? [];
   const rootsByBranch = new Map(
     rootHeaders.map((rootHeader) => [rootHeader.branchKey, rootHeader]),
   );
@@ -1419,7 +1419,7 @@ function checkRootHeaders({root, manifest, rootHeaders, findings}) {
     if (rootHeader == null) {
       findings.push({
         code: "unregistered-root-header",
-        path: tabRootManifestPath,
+        path: rootScreenManifestPath,
         message:
           `Tab-root branch ${branch.branchKey} (${branch.routeName}) has no ` +
           "screen-header contract.",
@@ -1429,7 +1429,7 @@ function checkRootHeaders({root, manifest, rootHeaders, findings}) {
     if (rootHeader.routeName !== branch.routeName) {
       findings.push({
         code: "root-header-route-drift",
-        path: tabRootManifestPath,
+        path: rootScreenManifestPath,
         message:
           `Branch ${branch.branchKey} maps to ${branch.routeName}, not ` +
           `${rootHeader.routeName}.`,
@@ -1442,8 +1442,8 @@ function checkRootHeaders({root, manifest, rootHeaders, findings}) {
     if (!branchKeys.has(rootHeader.branchKey)) {
       findings.push({
         code: "unknown-root-header-branch",
-        path: tabRootManifestPath,
-        message: `Screen-header contract ${rootHeader.branchKey} is not a tab-root branch.`,
+        path: rootScreenManifestPath,
+        message: `Screen-header contract ${rootHeader.branchKey} is not a root-screen branch.`,
       });
     }
     for (const surface of rootHeader.surfaces ?? []) {
@@ -1763,7 +1763,7 @@ function runCli() {
 
 Requires every Flutter Scaffold appBar declaration to be classified in the
 screen-chrome manifest. Also verifies classified body-owned headers,
-shell-covering route presentation, and raw hero exceptions; tab-root headers
+shell-covering route presentation, and raw hero exceptions; root-screen headers
 and primitive-owned geometry are verified when their optional manifests are
 present.`);
     return;
@@ -1779,8 +1779,8 @@ present.`);
       `Screen top-bar contracts: ${result.contractCount} contracts, ` +
         `${result.appBarCount} app bars, ${result.trackedRootHeaderPathCount} ` +
         `tracked root paths, ${result.trackedRootSurfaceCount} tracked root ` +
-        `surfaces, ${result.rootHeaderCount} tab roots, ` +
-        `${result.rootSurfaceCount} tab-root surfaces, ${result.rawChromeCount} ` +
+        `surfaces, ${result.rootHeaderCount} root screens, ` +
+        `${result.rootSurfaceCount} root-screen surfaces, ${result.rawChromeCount} ` +
         `raw hero exceptions, ${result.routePresentationCount} root route ` +
         `presentations, ${result.manualHeaderCount} classified manual headers ` +
         `(${result.legacyManualHeaderCount} legacy), 0 findings.`,

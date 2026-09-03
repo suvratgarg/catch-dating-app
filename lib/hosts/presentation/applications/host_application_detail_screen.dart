@@ -44,8 +44,7 @@ class _HostApplicationDetailScreenState
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: CatchRouteBody.standard(
-        constrainToContentWidth: true,
+      body: CatchRouteBody.standardConstrained(
         child: CatchAsyncValueView<HostApplicationDetail>(
           value: detail,
           onRetry: _invalidateDetail,

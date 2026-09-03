@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.9.0
-updated: 2026-09-02
+version: 1.10.0
+updated: 2026-09-03
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -347,7 +347,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchTopBarMenuAction`. Do not pass a body-style `CatchButton` directly into
   any top-bar `actions` slot.
 - Screen hierarchy follows one control per level. Shell destinations express
-  product-level navigation; pinned `CatchTabRail` / `CatchTabbedScreenScaffold`
+  product-level navigation; pinned `CatchTabRail` / `CatchRootScreenScaffold.withPrimaryRail`
   tabs switch peer views within one destination. A small fixed set of terse,
   mutually-exclusive filters uses `CatchOptionGroup`; longer, numerous, or
   dynamic mutually-exclusive filters use `CatchAdaptiveSelectionControl` so
@@ -361,16 +361,20 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
   vertical content has actually scrolled beneath the compact bar. Root tab
   titles are scroll content rather than fixed app bars.
-- Root title screens route through `CatchRootScreenScaffold` (or its
-  parent-scaffold `CatchRootScreenScrollView` variant), and pinned peer-tab
-  screens route through `CatchTabbedScreenScaffold` plus
-  `CatchTabbedPageScrollView`. Every body declares the one regular `standard`
-  geometry (20 pt phone gutter, 16 pt body start) or explicitly edge-owned
-  `fullBleed` geometry through `CatchScreenBodyLayout`; feature screens do not
+- Root title screens route through `CatchRootScreenScaffold.standard` or
+  `.fullBleed` (or the corresponding parent-scaffold
+  `CatchRootScreenScrollView` role). The constructor jointly owns geometry,
+  responsive width, and shell clearance. Roots with pinned peer
+  navigation use `CatchRootScreenScaffold.withPrimaryRail` plus
+  a closed `CatchRootScreenPageScrollView.standard`, `.fullBleed`, or
+  `.embeddedViewport` role. Standard owns the 20 pt phone gutter, 16 pt body
+  start, responsive lane, and shell clearance; full bleed retains shell
+  clearance without outer body geometry; embedded viewport delegates scrolling
+  and clearance to its fill-remaining child. Feature screens do not
   reconstruct title gaps, page gutters, terminal navigation clearance,
-  responsive content lanes, or state-viewport placement. Tabbed roots use a
-  4 pt title-to-rail handoff, 44 pt rail, and the same 16 pt body start.
-  `CatchInsets.pageBody`, `CatchInsets.tabbedScreenTitleBlock`, and
+  responsive content lanes, or state-viewport placement. Primary-rail roots use a
+  8 pt title-to-rail handoff, 44 pt rail, and the same 16 pt body start.
+  `CatchInsets.pageBody`, `CatchInsets.primaryRailTitleBlock`, and
   `CatchLayout.tabRailHeight` own those values. Full bleed removes only the
   outer inset; named nested lanes such as `CatchInsets.chatListGutter` keep
   Consumer Chats and Host Inbox on the same 20 pt horizontal rhythm.

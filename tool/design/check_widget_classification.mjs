@@ -97,6 +97,14 @@ export function validateWidgetClassification(
   }
   validateSummary(registry.summary, registry.widgets, widgetbookNames, failures);
   validateSourceClosure(sourceDeclarations, registry.widgets, registryKeys, failures);
+  for (const widget of registry.widgets) {
+    if (widget.visibility === "public" && widget.classKind === "widget" &&
+        widget.conceptRole === "unclassified") {
+      failures.push(
+        `${widget.file}:${widget.name}: public widget cannot remain unclassified`,
+      );
+    }
+  }
   failures.push(...publicWidgetNamingProblems(registry.widgets));
   return [...new Set(failures)].sort();
 }
@@ -482,7 +490,8 @@ function runCli() {
     process.exitCode = 1;
     return;
   }
-  const reviewCount = registry.widgets.filter((widget) =>
+  const publicReviewCount = registry.widgets.filter((widget) =>
+    widget.visibility === "public" &&
     String(widget.decision ?? "").startsWith("review-"),
   ).length;
   const privateWidgetCount = registry.widgets.filter(
@@ -490,7 +499,10 @@ function runCli() {
   ).length;
   console.log(
     `Widget classification check passed (${registry.widgets.length} entries, ` +
-      `${reviewCount} review items, ${privateWidgetCount} private widget classes flagged).`,
+      `0 unclassified public widgets, 0 ungoverned public name collisions, ` +
+      `${registry.summary.collisionGroupCount} governed concept families; ` +
+      `${publicReviewCount} public catalog/consolidation candidates and ` +
+      `${privateWidgetCount} private widget classes flagged for review).`,
   );
 }
 

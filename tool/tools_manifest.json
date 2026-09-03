@@ -1791,7 +1791,7 @@
       "command": "node tool/design/check_component_enforcement_coverage.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Requires every component to have enforcement or an unexpired waiver and every plugin/checker code to have a catalog owner.",
+      "description": "Requires every component to have static enforcement, executable contract verification, or an exceptional unexpired waiver, and every plugin/checker code to have a catalog owner.",
       "checks": [
         "node --test tool/design/check_component_enforcement_coverage.test.mjs",
         "node tool/design/check_component_enforcement_coverage.mjs"
@@ -1804,7 +1804,7 @@
         "type": "test",
         "path": "tool/design/check_component_enforcement_coverage.test.mjs",
         "contains": [
-          "requires decisions, live waivers, ownership, and probes"
+          "requires decisions, executable verification, live waivers, ownership, and probes"
         ]
       }
     },
@@ -6201,7 +6201,7 @@
       ],
       "role": "gate",
       "rules": [
-        "TAB-ROOT-SCROLL-001"
+        "ROOT-SCREEN-COMPOSITION-001"
       ],
       "vacuityProof": {
         "type": "test",
@@ -6213,30 +6213,30 @@
       }
     },
     {
-      "id": "design:tab-root-scroll-contracts",
+      "id": "design:root-screen-composition-contracts",
       "category": "design",
-      "path": "tool/design/check_tab_root_scroll_contracts.mjs",
-      "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check",
+      "path": "tool/design/check_root_screen_composition_contracts.mjs",
+      "command": "node tool/design/check_root_screen_composition_contracts.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Requires every consumer and host StatefulShellBranch to declare semantic screen-composition owners and shell-aware terminal clearance, enforces registered body roles and box-layout CatchStateViewport adoption, and rejects raw root or empty/error composition that bypasses shared geometry.",
+      "description": "Registers every consumer and host StatefulShellBranch, verifies adaptive shell adoption, rejects superseded root APIs, and rejects raw empty/error sliver composition. Analyzer-backed UI composition contracts separately own route layout roles and terminal geometry.",
       "checks": [
-        "node --check tool/design/check_tab_root_scroll_contracts.mjs",
-        "node --test tool/design/check_tab_root_scroll_contracts.test.mjs",
-        "node tool/design/check_tab_root_scroll_contracts.mjs --check"
+        "node --check tool/design/check_root_screen_composition_contracts.mjs",
+        "node --test tool/design/check_root_screen_composition_contracts.test.mjs",
+        "node tool/design/check_root_screen_composition_contracts.mjs --check"
       ],
       "role": "gate",
       "rules": [
-        "TAB-ROOT-SCROLL-001"
+        "ROOT-SCREEN-COMPOSITION-001"
       ],
       "vacuityProof": {
         "type": "test",
-        "path": "tool/design/check_tab_root_scroll_contracts.test.mjs",
+        "path": "tool/design/check_root_screen_composition_contracts.test.mjs",
         "contains": [
-          "accepts a root screen with an explicit semantic body role",
-          "flags a root screen that bypasses semantic composition",
+          "accepts a registered adaptive shell branch",
+          "rejects the superseded parallel tabbed-root API",
           "accepts lifecycle-owned StatefulShellBranch key member access",
-          "flags the known-bad tab root fixture when terminal padding is missing",
+          "flags a shell that bypasses the shared adaptive scaffold",
           "flags a new StatefulShellBranch until it is registered",
           "flags a raw SliverFillRemaining empty state in presentation code"
         ]

@@ -8,7 +8,6 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,7 +39,7 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
       isHostApp: isHostApp,
     );
 
-    return CatchRootScreenScaffold(
+    return CatchRootScreenScaffold.fullBleed(
       header: ChatsBrowseHeader(
         presentation: isHostApp
             ? ChatsBrowsePresentation.host
@@ -52,7 +51,6 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
         hostUnreadCount: screenState.unreadThreadCount,
         onHostFilterChanged: _handleHostFilterChanged,
       ),
-      bodyLayout: CatchScreenBodyLayout.fullBleed,
       slivers: [
         ChatsList(
           hostFilter: screenState.hostFilter,

@@ -10,7 +10,7 @@ import 'package:go_router/go_router.dart';
 
 enum SelfProfileTab { edit, preview, insights }
 
-class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
+class ProfileTabBar extends StatelessWidget implements CatchPrimaryRail {
   const ProfileTabBar({super.key, required this.controller});
 
   final TabController controller;

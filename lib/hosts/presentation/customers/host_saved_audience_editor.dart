@@ -35,8 +35,7 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: CatchRouteBody.standard(
-          scrollable: false,
+        body: CatchRouteBody.standardViewport(
           child: CatchErrorState.fromError(
             error,
             context: AppErrorContext.customers,
@@ -57,8 +56,7 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
               leadingType: CatchTopBarLeading.back,
               divider: scrolledUnder,
             ),
-            body: CatchRouteBody.standard(
-              scrollable: false,
+            body: CatchRouteBody.standardViewport(
               child: CatchErrorState.fromError(
                 StateError(context.l10n.hostSavedAudienceNotFound),
                 context: AppErrorContext.customers,

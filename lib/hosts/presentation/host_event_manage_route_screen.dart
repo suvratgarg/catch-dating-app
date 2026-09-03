@@ -44,8 +44,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
           divider: scrolledUnder,
         ),
-        body: const CatchRouteBody.standard(
-          scrollable: false,
+        body: const CatchRouteBody.standardViewport(
           child: HostRouteLoadingBody(padding: EdgeInsets.zero),
         ),
       ),
@@ -55,8 +54,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: CatchRouteBody.standard(
-          scrollable: false,
+        body: CatchRouteBody.standardViewport(
           child: CatchErrorState.fromError(
             error,
             context: AppErrorContext.event,
@@ -79,8 +77,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
               leadingType: CatchTopBarLeading.back,
               divider: scrolledUnder,
             ),
-            body: CatchRouteBody.standard(
-              scrollable: false,
+            body: CatchRouteBody.standardViewport(
               child: CatchErrorBody(
                 title: context
                     .l10n
@@ -102,8 +99,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
               leadingType: CatchTopBarLeading.back,
               divider: scrolledUnder,
             ),
-            body: CatchRouteBody.standard(
-              scrollable: false,
+            body: CatchRouteBody.standardViewport(
               child: CatchErrorBody(
                 title: context
                     .l10n

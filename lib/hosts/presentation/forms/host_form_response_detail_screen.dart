@@ -69,8 +69,7 @@ class _HostFormResponseDetailScreenState
               onConvert: (kind) => _reviewConversion(loadedDetail, kind),
             )
           : null,
-      body: CatchRouteBody.standard(
-        constrainToContentWidth: true,
+      body: CatchRouteBody.standardConstrained(
         child: CatchAsyncValueView<HostFormResponseDetail>(
           value: detail,
           onRetry: () => ref.invalidate(provider),

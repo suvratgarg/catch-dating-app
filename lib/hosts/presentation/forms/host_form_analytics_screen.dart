@@ -55,8 +55,7 @@ class _HostFormAnalyticsScreenState
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: CatchRouteBody.standard(
-        constrainToContentWidth: true,
+      body: CatchRouteBody.standardConstrained(
         child: CatchAsyncValueView<HostFormAnalytics>(
           value: analytics,
           onRetry: () => ref.invalidate(provider),

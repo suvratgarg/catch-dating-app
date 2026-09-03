@@ -94,7 +94,7 @@
       "member": 131,
       "screen": 15
     },
-    "collisionCount": 33,
+    "collisionCount": 32,
     "collisions": [
       {
         "key": "catch.async_value",
@@ -247,6 +247,7 @@
           "CatchActionMenu",
           "CatchAdaptiveSelectionControl",
           "CatchMenu",
+          "CatchMenuAnchor",
           "CatchMenuRow",
           "CatchSelectionMenu",
           "CatchSelectionSheet"
@@ -324,9 +325,11 @@
           "CatchFormStepBody",
           "CatchPageBody",
           "CatchResponsiveSectionPage",
+          "CatchRootScreenPageScrollView",
           "CatchRootScreenScaffold",
           "CatchScreenBody",
           "CatchScreenScaffold",
+          "CatchSliverContentWidth",
           "CatchSliverPageBody",
           "CatchSliverScreenBody"
         ]
@@ -394,14 +397,6 @@
           "CatchTabBar",
           "CatchTabBarButton",
           "CatchTabBarIcon"
-        ]
-      },
-      {
-        "key": "catch.tabbed_screen",
-        "symbols": [
-          "CatchSliverContentWidth",
-          "CatchTabbedPageScrollView",
-          "CatchTabbedScreenScaffold"
         ]
       },
       {
@@ -1179,7 +1174,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Menu",
       "claudeAllowed": true,
-      "contractDigest": "33c477701f5fbb6233c34ff42a6c830999f3446ea09141fd9dd51ebfc27aa350"
+      "contractDigest": "16496b47fb40d72946e0698f5444d5bdb7986f2e75d1caa392c8a10c982a29e9"
     },
     {
       "contractId": "catch.icon_tile",
@@ -1363,7 +1358,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 14,
-      "figmaExpectedPropertyDigest": "7d36b08f1eb4d15ccb0659356d5d590028bd3bf4ef6a195d4090165e34a5f479",
+      "figmaExpectedPropertyDigest": "87cbbc281e957fcb32903779c4ee7e918b557201e820da8cf00345a90161d105",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1371,7 +1366,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "8d3e44c8774526333163322aca913af86540ec556c92e42f05500c952b6cb17e"
+      "contractDigest": "9a90bc5acd109014cc4b53d4f1bc33de1013a825286293f5ee67f60b6e65f499"
     },
     {
       "contractId": "catch.privacy_badge",
@@ -1467,7 +1462,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ScreenBody",
       "claudeAllowed": true,
-      "contractDigest": "bebae6cda65fa680871871fbcc50159b4ea184946d67f702035ffe01651a9693"
+      "contractDigest": "7ef438ae8fd1dfb3722d48063e1ba33a1fc996e2c0498f5662a80f941f923b26"
     },
     {
       "contractId": "catch.section_stack",
@@ -2556,38 +2551,6 @@
       "claudeHandoffName": "ChatComposer",
       "claudeAllowed": true,
       "contractDigest": "8429e21c36382b5f8795190b532bbdc65e387dd805bd406982dc9a81942ef4c3"
-    },
-    {
-      "contractId": "catch.tabbed_screen",
-      "conceptRole": "concept",
-      "conceptId": "catch.tabbed_screen",
-      "dartSymbol": "CatchTabbedScreenScaffold",
-      "dartFile": "lib/core/widgets/catch_tabbed_screen.dart",
-      "figmaName": "Catch/TabbedScreen",
-      "figmaPropertyProjectionMode": "inferred",
-      "figmaReviewStatePolicy": "variant",
-      "figmaPropertySources": {},
-      "figmaDeclaredStatus": "unmapped",
-      "figmaDeclaredUrl": null,
-      "figmaStatus": "missing",
-      "figmaUrl": null,
-      "figmaNodeId": null,
-      "figmaComponentKey": null,
-      "figmaPublishStatus": null,
-      "figmaSnapshotCaptureMethod": "figma-mcp",
-      "figmaVariableBindingCount": 0,
-      "figmaVariableBindingDigest": null,
-      "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 7,
-      "figmaExpectedPropertyDigest": "da671af3f8e78947875fe0a7144add0739604005d5ed4706d7be16f50c815ffc",
-      "figmaActualPropertyCount": 0,
-      "figmaActualPropertyDigest": null,
-      "figmaDrift": [],
-      "codeConnectStatus": "planned",
-      "codeConnectTemplate": null,
-      "claudeHandoffName": "TabbedScreen",
-      "claudeAllowed": true,
-      "contractDigest": "ca4456440a6002112b4b37029830db1cb472377de79e6c1feb4c34b1f7716271"
     },
     {
       "contractId": "catch.bottom_action",

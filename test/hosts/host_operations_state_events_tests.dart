@@ -209,7 +209,7 @@ void _registerHostOperationsStateEventsTests() {
     expect(loadedState.organizers, [club]);
   });
 
-  testWidgets('Host clubs keeps tabbed root chrome while uid resolves', (
+  testWidgets('Host clubs keeps root primary-rail chrome while uid resolves', (
     tester,
   ) async {
     await _pumpHostScreen(
@@ -223,8 +223,8 @@ void _registerHostOperationsStateEventsTests() {
     );
 
     expect(find.byType(HostLoadingScreen), findsNothing);
-    expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
-    expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
+    expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchRootScreenPageScrollView), findsOneWidget);
     expect(find.byType(CatchSliverStateViewport), findsOneWidget);
     expect(find.text('Organizer'), findsOneWidget);
     expect(find.text('Edit'), findsOneWidget);
@@ -245,8 +245,8 @@ void _registerHostOperationsStateEventsTests() {
     );
     expect(
       tester
-          .widget<CatchTabbedPageScrollView>(
-            find.byType(CatchTabbedPageScrollView),
+          .widget<CatchRootScreenPageScrollView>(
+            find.byType(CatchRootScreenPageScrollView),
           )
           .bodyLayout,
       CatchScreenBodyLayout.standard,

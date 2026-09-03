@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
-import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -37,20 +37,19 @@ class HostAudienceStateScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabbedScreenScaffold(
-      title: context.l10n.hostNavigationAudience,
-      tabRail: HostAudienceTabRail(
+    return CatchRootScreenScaffold.withPrimaryRail(
+      header: CatchRootScreenHeader.title(
+        title: context.l10n.hostNavigationAudience,
+      ),
+      primaryRail: HostAudienceTabRail(
         selected: selected,
         selectionPosition: selected.index.toDouble(),
         onChanged: onChanged ?? (view) => _openView(context, view),
       ),
-      body: CatchTabbedScreenBody.single(
-        page: CatchTabbedPageSpec.scroll(
-          bodyLayout: CatchScreenBodyLayout.standard,
-          page: CatchTabbedPageScrollView(
+      body: CatchRootScreenBody.single(
+        page: CatchRootScreenPageSpec.scroll(
+          page: CatchRootScreenPageScrollView.standard(
             scrollKey: scrollKey,
-            bodyLayout: CatchScreenBodyLayout.standard,
-            constrainToContentWidth: true,
             slivers: slivers,
           ),
         ),
@@ -66,17 +65,23 @@ class HostAudienceStateScaffold extends StatelessWidget {
   }
 }
 
-class HostAudienceTabRail extends StatelessWidget
-    implements PreferredSizeWidget {
+class HostAudienceTabRail extends StatelessWidget implements CatchPrimaryRail {
   const HostAudienceTabRail({
     super.key,
     required this.selected,
-    required this.selectionPosition,
     required this.onChanged,
-  });
+    this.selectionPosition,
+    this.selectionAnimation,
+    this.animationOffset = 0,
+  }) : assert(
+         (selectionPosition == null) != (selectionAnimation == null),
+         'Provide exactly one static selection position or animation.',
+       );
 
   final HostAudienceView selected;
-  final double selectionPosition;
+  final double? selectionPosition;
+  final Animation<double>? selectionAnimation;
+  final double animationOffset;
   final ValueChanged<HostAudienceView> onChanged;
 
   @override
@@ -84,30 +89,36 @@ class HostAudienceTabRail extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabRail<HostAudienceView>(
-      groupKey: const ValueKey<String>('host-audience-view-tabs'),
-      selected: selected,
-      selectionPosition: selectionPosition,
-      onChanged: onChanged,
-      scrollable: true,
-      options: [
-        CatchOption(
-          value: HostAudienceView.people,
-          label: context.l10n.hostCustomersViewPeople,
-        ),
-        CatchOption(
-          value: HostAudienceView.audiences,
-          label: context.l10n.hostCustomersViewAudiences,
-        ),
-        CatchOption(
-          value: HostAudienceView.forms,
-          label: context.l10n.hostFormsViewForms,
-        ),
-        CatchOption(
-          value: HostAudienceView.responses,
-          label: context.l10n.hostFormsViewResponses,
-        ),
-      ],
+    final animation =
+        selectionAnimation ??
+        AlwaysStoppedAnimation<double>(selectionPosition!);
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, _) => CatchTabRail<HostAudienceView>(
+        groupKey: const ValueKey<String>('host-audience-view-tabs'),
+        selected: selected,
+        selectionPosition: animation.value + animationOffset,
+        onChanged: onChanged,
+        scrollable: true,
+        options: [
+          CatchOption(
+            value: HostAudienceView.people,
+            label: context.l10n.hostCustomersViewPeople,
+          ),
+          CatchOption(
+            value: HostAudienceView.audiences,
+            label: context.l10n.hostCustomersViewAudiences,
+          ),
+          CatchOption(
+            value: HostAudienceView.forms,
+            label: context.l10n.hostFormsViewForms,
+          ),
+          CatchOption(
+            value: HostAudienceView.responses,
+            label: context.l10n.hostFormsViewResponses,
+          ),
+        ],
+      ),
     );
   }
 }

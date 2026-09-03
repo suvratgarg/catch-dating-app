@@ -54,6 +54,7 @@ class CatchMenuAnchor<T> extends StatefulWidget {
     required this.builder,
     this.controller,
     this.onSelected,
+    this.width,
     this.alignmentOffset = Offset.zero,
   });
 
@@ -61,6 +62,7 @@ class CatchMenuAnchor<T> extends StatefulWidget {
   final CatchMenuAnchorBuilder builder;
   final MenuController? controller;
   final void Function(T value, CatchMenuItem<T> item)? onSelected;
+  final double? width;
   final Offset alignmentOffset;
 
   @override
@@ -77,16 +79,35 @@ class _CatchMenuAnchorState<T> extends State<CatchMenuAnchor<T>> {
       builder: (context, constraints) => MenuAnchor(
         controller: widget.controller,
         alignmentOffset: widget.alignmentOffset,
-        style: catchMenuAnchorStyle,
+        style: _catchMenuAnchorStyle,
         menuChildren: [
-          CatchMenuViewportBoundary(
-            anchorKey: _anchorKey,
-            viewport: viewport,
-            child: CatchMenu<T>(
-              width: constraints.maxWidth,
-              items: widget.items,
-              onSelected: widget.onSelected,
-            ),
+          Builder(
+            builder: (context) {
+              final boundary = viewport.boundaryFor(_anchorKey);
+              return Padding(
+                // The shell clearance is deliberately placed on the side
+                // away from the actual menu. It participates in Material's
+                // flip calculation while the visible menu stays flush with
+                // its trigger on the chosen side.
+                padding: boundary.padding,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: boundary.maxHeight > 0
+                        ? boundary.maxHeight
+                        : double.infinity,
+                  ),
+                  child: CatchMenu<T>(
+                    width:
+                        widget.width ??
+                        (constraints.hasBoundedWidth
+                            ? constraints.maxWidth
+                            : null),
+                    items: widget.items,
+                    onSelected: widget.onSelected,
+                  ),
+                ),
+              );
+            },
           ),
         ],
         builder: (context, controller, child) => KeyedSubtree(
@@ -132,78 +153,42 @@ class CatchMenuViewport {
 
   final Rect usableRect;
   final double overlayBottomClearance;
-}
 
-/// Keeps an anchored menu inside the usable viewport, including Catch's
-/// floating shell navigation.
-///
-/// Material's menu overlay is owned by the navigator and therefore cannot see
-/// shell-local inherited padding. This boundary measures the anchor against the
-/// shell-aware usable rectangle and caps the menu to the larger of the spaces
-/// above and below it. Material can then place the menu on the viable side,
-/// while the menu's own scroll view handles overflow without entering the
-/// floating navigation region.
-class CatchMenuViewportBoundary extends StatelessWidget {
-  const CatchMenuViewportBoundary({
-    super.key,
-    required this.anchorKey,
-    required this.viewport,
-    required this.child,
-  });
-
-  final GlobalKey anchorKey;
-  final CatchMenuViewport viewport;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
+  /// Resolves the physical boundary for a menu anchored in an overlay.
+  ///
+  /// Material's menu overlay is owned by the navigator and therefore cannot
+  /// see shell-local inherited padding. This measures the anchor against the
+  /// shell-aware usable rectangle and caps the menu to the larger of the spaces
+  /// above and below it. Material can then place the menu on the viable side,
+  /// while the menu's own scroll view handles overflow without entering the
+  /// floating navigation region.
+  ({EdgeInsets padding, double maxHeight}) boundaryFor(GlobalKey anchorKey) {
     final anchorBox =
         anchorKey.currentContext?.findRenderObject() as RenderBox?;
     final anchorRect = anchorBox == null || !anchorBox.hasSize
         ? null
         : anchorBox.localToGlobal(Offset.zero) & anchorBox.size;
     final spaceAbove = anchorRect == null
-        ? viewport.usableRect.height
-        : math.max(0.0, anchorRect.top - viewport.usableRect.top);
+        ? usableRect.height
+        : math.max(0.0, anchorRect.top - usableRect.top);
     final spaceBelow = anchorRect == null
-        ? viewport.usableRect.height
-        : math.max(0.0, viewport.usableRect.bottom - anchorRect.bottom);
+        ? usableRect.height
+        : math.max(0.0, usableRect.bottom - anchorRect.bottom);
     final placeAbove = spaceAbove > spaceBelow;
-    final clearance = viewport.overlayBottomClearance;
     final maxHeight = placeAbove
-        ? math.max(0.0, spaceAbove - clearance)
+        ? math.max(0.0, spaceAbove - overlayBottomClearance)
         : spaceBelow;
-    return Padding(
-      // The shell clearance is deliberately placed on the side away from the
-      // actual menu. It participates in Material's flip calculation while the
-      // visible menu stays flush with its trigger on the chosen side.
+    return (
       padding: EdgeInsets.only(
-        top: placeAbove ? clearance : 0,
-        bottom: placeAbove ? 0 : clearance,
+        top: placeAbove ? overlayBottomClearance : 0,
+        bottom: placeAbove ? 0 : overlayBottomClearance,
       ),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: maxHeight > 0 ? maxHeight : double.infinity,
-        ),
-        child: child,
-      ),
+      maxHeight: maxHeight,
     );
   }
 }
 
-Widget catchMenuWithViewportBoundary({
-  required BuildContext context,
-  required GlobalKey anchorKey,
-  required Widget child,
-}) {
-  return CatchMenuViewportBoundary(
-    anchorKey: anchorKey,
-    viewport: CatchMenuViewport.from(context),
-    child: child,
-  );
-}
-
-const catchMenuAnchorStyle = MenuStyle(
+const _catchMenuAnchorStyle = MenuStyle(
   backgroundColor: WidgetStatePropertyAll(Colors.transparent),
   elevation: WidgetStatePropertyAll(0),
   shadowColor: WidgetStatePropertyAll(Colors.transparent),

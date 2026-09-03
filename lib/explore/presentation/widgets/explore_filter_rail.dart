@@ -16,11 +16,11 @@ import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
-/// Explore scope + filter rail.
+/// Explore's pinned primary time-scope rail.
 ///
-/// Mirrors the handoff `OptionGroup`: the primary time scope stays visible as
-/// underline tabs while secondary filters move behind a right-aligned glyph.
-class ExploreFilterRail extends StatelessWidget {
+/// Secondary applied-filter chips are deliberately separate so they scroll
+/// with the feed instead of extending the pinned viewport obstruction.
+class ExploreFilterRail extends StatelessWidget implements CatchPrimaryRail {
   const ExploreFilterRail({
     super.key,
     this.filters = const ExploreFilterSelection(),
@@ -54,6 +54,9 @@ class ExploreFilterRail extends StatelessWidget {
   final VoidCallback? onOpenFilters;
   final bool showJoinedOnly;
 
+  @override
+  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+
   static List<CatchOption<ExploreTimeFilter>> _timeOptions(
     ExploreDateStripState state,
   ) => [
@@ -69,34 +72,20 @@ class ExploreFilterRail extends StatelessWidget {
     final effectiveDateStripState =
         dateStripState ??
         ExploreDateStripState.from(viewModel: null, l10n: context.l10n);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CatchTabRail<ExploreTimeFilter>(
-          selected: filters.timeFilter,
-          onChanged: onTimeFilterSelected,
-          options: _timeOptions(effectiveDateStripState),
-          scrollable: true,
-          backgroundColor: backgroundColor ?? t.bg,
-          trailing: CatchIconButton.counted(
-            key: const ValueKey('explore-filter-button'),
-            icon: CatchIcons.tuneRounded,
-            count: railState.activeCount,
-            variant: CatchIconButtonVariant.plain,
-            tooltip: railState.filterButtonSemanticLabel,
-            onTap: onOpenFilters ?? () => _showExploreFilterSheet(context),
-          ),
-        ),
-        _ExploreAppliedFilterChips(
-          filters: filters,
-          showJoinedOnly: showJoinedOnly,
-          onDistanceFilterSelected: onDistanceFilterSelected,
-          onToggleJoinedOnly: onToggleJoinedOnly,
-          onToggleHighRatedOnly: onToggleHighRatedOnly,
-          onToggleActivityTag: onToggleActivityTag,
-          onToggleArea: onToggleArea,
-        ),
-      ],
+    return CatchTabRail<ExploreTimeFilter>(
+      selected: filters.timeFilter,
+      onChanged: onTimeFilterSelected,
+      options: _timeOptions(effectiveDateStripState),
+      scrollable: true,
+      backgroundColor: backgroundColor ?? t.bg,
+      trailing: CatchIconButton.counted(
+        key: const ValueKey('explore-filter-button'),
+        icon: CatchIcons.tuneRounded,
+        count: railState.activeCount,
+        variant: CatchIconButtonVariant.plain,
+        tooltip: railState.filterButtonSemanticLabel,
+        onTap: onOpenFilters ?? () => _showExploreFilterSheet(context),
+      ),
     );
   }
 
@@ -118,8 +107,10 @@ class ExploreFilterRail extends StatelessWidget {
   }
 }
 
-class _ExploreAppliedFilterChips extends StatelessWidget {
-  const _ExploreAppliedFilterChips({
+/// Removable Explore filters that scroll beneath the pinned time-scope rail.
+class ExploreAppliedFilterChips extends StatelessWidget {
+  const ExploreAppliedFilterChips({
+    super.key,
     required this.filters,
     required this.showJoinedOnly,
     required this.onDistanceFilterSelected,

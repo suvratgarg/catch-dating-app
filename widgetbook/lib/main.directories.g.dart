@@ -2677,6 +2677,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchRootScreenPageScrollView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Root page with primary rail',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchRootScreenPageContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRootScreenScaffold',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchRootScreenPrimaryRailContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchSliverContentWidth',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2739,28 +2761,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchTabControllerRailContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTabbedPageScrollView',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Shared tabbed page',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTabbedPageContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTabbedScreenScaffold',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTabbedScreenContractStates,
               ),
             ],
           ),
@@ -4531,6 +4531,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Activity skeleton states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .eventTypeBrowseSkeletonStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ExploreAppliedFilterChips',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Applied filter states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreAppliedFilterChipsStates,
               ),
             ],
           ),

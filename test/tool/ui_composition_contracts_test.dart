@@ -1,8 +1,56 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:test/test.dart';
 
 import '../../tool/architecture/check_ui_composition_contracts.dart';
 
 void main() {
+  test('screen schema accepts exactly the analyzer layout vocabulary', () {
+    final schema =
+        jsonDecode(
+              File(
+                'design/screens/catch.screens.schema.json',
+              ).readAsStringSync(),
+            )
+            as Map<String, Object?>;
+    final definitions = (schema[r'$defs'] as Map).cast<String, Object?>();
+    final layoutExpression = (definitions['layoutExpression'] as Map)
+        .cast<String, Object?>();
+    final schemaExpressions = (layoutExpression['enum'] as List<Object?>)
+        .cast<String>()
+        .toSet();
+
+    expect(schemaExpressions, catchScreenLayoutOwnerExpressions);
+  });
+
+  test('canonical layout constructors match the analyzer vocabulary', () {
+    expect(
+      canonicalLayoutConstructorVocabularyFailures(
+        root: Directory.current.absolute.path,
+      ),
+      isEmpty,
+    );
+  });
+
+  test('rejects an unregistered public layout constructor', () {
+    final failures = canonicalLayoutConstructorVocabularyFailures(
+      root: Directory(
+        'test/tool/fixtures/layout_constructor_vocabulary',
+      ).absolute.path,
+    );
+
+    expect(
+      failures,
+      contains(
+        allOf(
+          contains(screenLayoutConstructorVocabularyCode),
+          contains('CatchRootScreenScaffold.experimental'),
+        ),
+      ),
+    );
+  });
+
   test('accepts a governed standard route owner', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',
@@ -99,6 +147,68 @@ class ExampleScreen {
     );
   });
 
+  test('rejects nested page geometry inside an ordinary standard root', () {
+    final failures = evaluateLayoutOwnerContract(
+      screenId: 'screen.fixture',
+      owner: <String, Object?>{
+        'symbol': 'ExampleScreen',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold.standard',
+        'bodyGeometry': 'standard',
+        'topEdge': 'safe-area',
+      },
+      declarationSource: '''
+class ExampleScreen {
+  Object build() => CatchRootScreenScaffold.standard(
+    slivers: [
+      CatchSliverScreenBody(
+        layout: CatchScreenBodyLayout.standard,
+        slivers: const [SliverToBoxAdapter()],
+      ),
+      SliverPadding(
+        padding: CatchInsets.pageBody,
+        sliver: const SliverToBoxAdapter(),
+      ),
+    ],
+  );
+}
+''',
+    );
+
+    expect(
+      failures,
+      contains(
+        allOf(
+          contains('standard root content'),
+          contains('CatchSliverScreenBody'),
+          contains('CatchInsets.pageBody'),
+        ),
+      ),
+    );
+  });
+
+  test('rejects the former loose ordinary root constructor', () {
+    final failures = evaluateLayoutOwnerContract(
+      screenId: 'screen.fixture',
+      owner: <String, Object?>{
+        'symbol': 'ExampleScreen',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold',
+        'bodyGeometry': 'standard',
+        'topEdge': 'safe-area',
+      },
+      declarationSource: '''
+class ExampleScreen {
+  Object build() => CatchRootScreenScaffold(
+    bodyLayout: CatchScreenBodyLayout.standard,
+  );
+}
+''',
+    );
+
+    expect(failures, contains(contains('cannot be owned')));
+  });
+
   test('allows component insets and ignores dead competing geometry', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',
@@ -136,16 +246,14 @@ class ExampleScreen {
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
         'family': 'adaptive-workspace',
-        'expression': 'CatchRootScreenScrollView',
+        'expression': 'CatchRootScreenScrollView.fullBleed',
         'bodyGeometry': 'full-bleed',
         'topEdge': 'safe-area',
       },
       declarationSource: '''
 class ExampleScreen {
   Object build() {
-    Object buildMaster() => CatchRootScreenScrollView(
-      bodyLayout: CatchScreenBodyLayout.fullBleed,
-    );
+    Object buildMaster() => CatchRootScreenScrollView.fullBleed();
 
     return CatchScreenScaffold.workspace(body: buildMaster());
   }
@@ -319,7 +427,7 @@ class ExampleScreen {
         owner: <String, Object?>{
           'symbol': 'ExampleScreen',
           'family': 'root',
-          'expression': 'CatchRootScreenScaffold',
+          'expression': 'CatchRootScreenScaffold.standard',
           'bodyGeometry': 'standard',
           'topEdge': 'safe-area',
         },
@@ -335,35 +443,33 @@ class ExampleScreen {
     },
   );
 
-  test('resolved terminal proof cannot bless wrong direct body geometry', () {
-    final failures = evaluateLayoutOwnerContract(
-      screenId: 'screen.fixture',
-      owner: <String, Object?>{
-        'symbol': 'ExampleScreen',
-        'family': 'root',
-        'expression': 'CatchRootScreenScaffold',
-        'bodyGeometry': 'standard',
-        'topEdge': 'safe-area',
-      },
-      declarationSource: '''
+  test(
+    'rejects registry geometry that disagrees with a closed constructor',
+    () {
+      final failures = evaluateLayoutOwnerContract(
+        screenId: 'screen.fixture',
+        owner: <String, Object?>{
+          'symbol': 'ExampleScreen',
+          'family': 'root',
+          'expression': 'CatchRootScreenScaffold.fullBleed',
+          'bodyGeometry': 'standard',
+          'topEdge': 'safe-area',
+        },
+        declarationSource: '''
 class ExampleScreen {
-  Object build(bool loading) => loading
-      ? CatchRootScreenScaffold(
-          bodyLayout: CatchScreenBodyLayout.fullBleed,
-        )
-      : const RegisteredRootDelegate();
+  Object build() => CatchRootScreenScaffold.fullBleed();
 }
 ''',
-      resolvedTerminalOwnerProof: true,
-    );
+      );
 
-    expect(
-      failures,
-      contains(
-        contains('must explicitly select CatchScreenBodyLayout.standard'),
-      ),
-    );
-  });
+      expect(
+        failures,
+        contains(
+          contains('must select the matching closed root-screen constructor'),
+        ),
+      );
+    },
+  );
 
   test('accepts one Stack root plane with conditional positioned overlays', () {
     final failures = evaluateLayoutOwnerContract(
@@ -371,7 +477,7 @@ class ExampleScreen {
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
         'family': 'root',
-        'expression': 'CatchRootScreenScaffold',
+        'expression': 'CatchRootScreenScaffold.fullBleed',
         'bodyGeometry': 'full-bleed',
         'topEdge': 'header-owned',
       },
@@ -379,8 +485,7 @@ class ExampleScreen {
 class ExampleScreen {
   Object build(bool showOverlay) => Stack(
     children: [
-      CatchRootScreenScaffold(
-        bodyLayout: CatchScreenBodyLayout.fullBleed,
+      CatchRootScreenScaffold.fullBleed(
         topEdge: CatchRootScreenTopEdge.headerOwned,
       ),
       if (showOverlay) Positioned(child: const MapLauncher()),
@@ -399,7 +504,7 @@ class ExampleScreen {
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
         'family': 'root',
-        'expression': 'CatchRootScreenScaffold',
+        'expression': 'CatchRootScreenScaffold.standard',
         'bodyGeometry': 'standard',
         'topEdge': 'safe-area',
       },
@@ -407,9 +512,7 @@ class ExampleScreen {
 class ExampleScreen {
   Object build() => Stack(
     children: [
-      CatchRootScreenScaffold(
-        bodyLayout: CatchScreenBodyLayout.standard,
-      ),
+      CatchRootScreenScaffold.standard(),
       const SizedBox.expand(),
     ],
   );
@@ -501,24 +604,22 @@ class ExampleScreen {
       screenId: 'screen.fixture',
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
-        'family': 'tabbed-root',
-        'expression': 'CatchTabbedScreenScaffold',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold.withPrimaryRail',
         'bodyGeometry': 'mixed',
         'topEdge': 'safe-area',
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build() => CatchTabbedScreenScaffold(
-    body: CatchTabbedScreenBody.single(
-      page: CatchTabbedPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.fullBleed,
-        page: FullBleedPage(),
+  Object build() => CatchRootScreenScaffold.withPrimaryRail(
+    body: CatchRootScreenBody.single(
+      page: CatchRootScreenPageSpec.scroll(
+        page: CatchRootScreenPageScrollView.fullBleed(),
       ),
     ),
   );
 
-  Object deadPage() => CatchTabbedPageSpec.scroll(
-    bodyLayout: CatchScreenBodyLayout.standard,
+  Object deadPage() => CatchRootScreenPageSpec.scroll(
     page: StandardPage(),
   );
 }
@@ -533,33 +634,27 @@ class ExampleScreen {
       screenId: 'screen.fixture',
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
-        'family': 'tabbed-root',
-        'expression': 'CatchTabbedScreenScaffold',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold.withPrimaryRail',
         'bodyGeometry': 'standard',
         'topEdge': 'safe-area',
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build(bool loading) => CatchTabbedScreenScaffold(
+  Object build(bool loading) => CatchRootScreenScaffold.withPrimaryRail(
     body: _body(loading),
   );
 
   Object _body(bool loading) => switch (loading) {
-    true => CatchTabbedScreenBody.single(
-      page: CatchTabbedPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.standard,
-        page: CatchTabbedPageScrollView(
-          bodyLayout: CatchScreenBodyLayout.standard,
-        ),
+    true => CatchRootScreenBody.single(
+      page: CatchRootScreenPageSpec.scroll(
+        page: CatchRootScreenPageScrollView.standard(),
       ),
     ),
-    false => CatchTabbedScreenBody.paged(
+    false => CatchRootScreenBody.paged(
       pages: [
-        CatchTabbedPageSpec.scroll(
-          bodyLayout: CatchScreenBodyLayout.standard,
-          page: CatchTabbedPageScrollView(
-            bodyLayout: CatchScreenBodyLayout.standard,
-          ),
+        CatchRootScreenPageSpec.scroll(
+          page: CatchRootScreenPageScrollView.standard(),
         ),
       ],
     ),
@@ -576,32 +671,29 @@ class ExampleScreen {
       screenId: 'screen.fixture',
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
-        'family': 'tabbed-root',
-        'expression': 'CatchTabbedScreenScaffold',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold.withPrimaryRail',
         'bodyGeometry': 'standard',
         'topEdge': 'safe-area',
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build(bool rogue) => CatchTabbedScreenScaffold(
+  Object build(bool rogue) => CatchRootScreenScaffold.withPrimaryRail(
     body: _body(rogue),
   );
 
   Object _body(bool rogue) => rogue
       ? const LegacyTabbedBody()
-      : CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
-            page: CatchTabbedPageScrollView(
-              bodyLayout: CatchScreenBodyLayout.standard,
-            ),
+      : CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
+            page: CatchRootScreenPageScrollView.standard(),
           ),
         );
 }
 ''',
     );
 
-    expect(failures, contains(contains('tabbed-root bodies must use')));
+    expect(failures, contains(contains('root primary-rail bodies must use')));
   });
 
   test('rejects an unresolved tab body helper', () {
@@ -609,54 +701,46 @@ class ExampleScreen {
       screenId: 'screen.fixture',
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
-        'family': 'tabbed-root',
-        'expression': 'CatchTabbedScreenScaffold',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold.withPrimaryRail',
         'bodyGeometry': 'standard',
         'topEdge': 'safe-area',
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build() => CatchTabbedScreenScaffold(
+  Object build() => CatchRootScreenScaffold.withPrimaryRail(
     body: external.buildBody(),
   );
 }
 ''',
     );
 
-    expect(failures, contains(contains('tabbed-root bodies must use')));
+    expect(failures, contains(contains('root primary-rail bodies must use')));
   });
 
-  test('rejects a semantic tab page owner that lies about its role', () {
-    final failures = evaluateTabbedPageOwnerContract(
-      symbol: 'LyingPageOwner',
+  test('rejects a semantic root page owner with mixed geometry terminals', () {
+    final failures = evaluateRootPageOwnerContract(
+      symbol: 'MixedPageOwner',
       declarationSource: '''
-class LyingPageOwner implements CatchTabbedPageOwner {
-  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
-
-  Object build() => CatchTabbedPageScrollView(
-    bodyLayout: CatchScreenBodyLayout.fullBleed,
-  );
-
-  Object deadHelper() => CatchTabbedPageScrollView(
-    bodyLayout: CatchScreenBodyLayout.standard,
-  );
+class MixedPageOwner implements CatchRootScreenPageOwner {
+  Object build(bool standard) => standard
+      ? CatchRootScreenPageScrollView.standard()
+      : CatchRootScreenPageScrollView.fullBleed();
 }
 ''',
     );
 
-    expect(failures, contains(contains('must forward its declared')));
+    expect(failures, contains(contains('one consistent')));
   });
 
-  test('rejects a rogue semantic tab page return branch', () {
-    final failures = evaluateTabbedPageOwnerContract(
+  test('rejects a rogue semantic root page return branch', () {
+    final failures = evaluateRootPageOwnerContract(
       symbol: 'BranchingPageOwner',
       declarationSource: '''
-class BranchingPageOwner implements CatchTabbedPageOwner {
-  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
-
+class BranchingPageOwner implements CatchRootScreenPageOwner {
   Object build(bool rogue) {
     if (rogue) return const SizedBox();
-    return CatchTabbedPageScrollView(bodyLayout: bodyLayout);
+    return CatchRootScreenPageScrollView.standard();
   }
 }
 ''',
@@ -664,29 +748,28 @@ class BranchingPageOwner implements CatchTabbedPageOwner {
 
     expect(
       failures,
-      contains(contains('every semantic tab page owner build/return terminal')),
+      contains(
+        contains('every semantic root page owner build/return terminal'),
+      ),
     );
   });
 
-  test('rejects an inline tab page whose role disagrees with its spec', () {
+  test('derives an inline root page role from the page owner', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
-        'family': 'tabbed-root',
-        'expression': 'CatchTabbedScreenScaffold',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold.withPrimaryRail',
         'bodyGeometry': 'standard',
         'topEdge': 'safe-area',
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build() => CatchTabbedScreenScaffold(
-    body: CatchTabbedScreenBody.single(
-      page: CatchTabbedPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.standard,
-        page: CatchTabbedPageScrollView(
-          bodyLayout: CatchScreenBodyLayout.fullBleed,
-        ),
+  Object build() => CatchRootScreenScaffold.withPrimaryRail(
+    body: CatchRootScreenBody.single(
+      page: CatchRootScreenPageSpec.scroll(
+        page: CatchRootScreenPageScrollView.fullBleed(),
       ),
     ),
   );
@@ -694,27 +777,28 @@ class ExampleScreen {
 ''',
     );
 
-    expect(failures, contains(contains('must match its CatchTabbedPageSpec')));
+    expect(
+      failures,
+      contains(contains('standard root primary-rail bodies must select only')),
+    );
   });
 
-  test('rejects nested page geometry inside an inline standard tab page', () {
+  test('rejects nested page geometry inside an inline standard root page', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
-        'family': 'tabbed-root',
-        'expression': 'CatchTabbedScreenScaffold',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold.withPrimaryRail',
         'bodyGeometry': 'standard',
         'topEdge': 'safe-area',
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build() => CatchTabbedScreenScaffold(
-    body: CatchTabbedScreenBody.single(
-      page: CatchTabbedPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.standard,
-        page: CatchTabbedPageScrollView(
-          bodyLayout: CatchScreenBodyLayout.standard,
+  Object build() => CatchRootScreenScaffold.withPrimaryRail(
+    body: CatchRootScreenBody.single(
+      page: CatchRootScreenPageSpec.scroll(
+        page: CatchRootScreenPageScrollView.standard(
           slivers: [
             SliverPadding(
               padding: CatchInsets.pageBody,
@@ -733,39 +817,35 @@ class ExampleScreen {
       failures,
       contains(
         allOf(
-          contains('standard tab page content'),
+          contains('standard root page content'),
           contains('CatchInsets.pageBody'),
         ),
       ),
     );
   });
 
-  test('does not inspect deliberate full-bleed tab page geometry', () {
+  test('does not inspect deliberate full-bleed root page geometry', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
-        'family': 'tabbed-root',
-        'expression': 'CatchTabbedScreenScaffold',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold.withPrimaryRail',
         'bodyGeometry': 'mixed',
         'topEdge': 'safe-area',
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build() => CatchTabbedScreenScaffold(
-    body: CatchTabbedScreenBody.paged(
+  Object build() => CatchRootScreenScaffold.withPrimaryRail(
+    body: CatchRootScreenBody.paged(
       pages: [
-        CatchTabbedPageSpec.scroll(
-          bodyLayout: CatchScreenBodyLayout.standard,
-          page: CatchTabbedPageScrollView(
-            bodyLayout: CatchScreenBodyLayout.standard,
+        CatchRootScreenPageSpec.scroll(
+          page: CatchRootScreenPageScrollView.standard(
             slivers: [const SliverToBoxAdapter()],
           ),
         ),
-        CatchTabbedPageSpec.scroll(
-          bodyLayout: CatchScreenBodyLayout.fullBleed,
-          page: CatchTabbedPageScrollView(
-            bodyLayout: CatchScreenBodyLayout.fullBleed,
+        CatchRootScreenPageSpec.scroll(
+          page: CatchRootScreenPageScrollView.fullBleed(
             slivers: [
               SliverPadding(
                 padding: CatchInsets.pageBody,
@@ -785,14 +865,11 @@ class ExampleScreen {
   });
 
   test('rejects nested page geometry in a semantic standard tab owner', () {
-    final failures = evaluateTabbedPageOwnerContract(
+    final failures = evaluateRootPageOwnerContract(
       symbol: 'SemanticPageOwner',
       declarationSource: '''
-class SemanticPageOwner implements CatchTabbedPageOwner {
-  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
-
-  Object build() => CatchTabbedPageScrollView(
-    bodyLayout: bodyLayout,
+class SemanticPageOwner implements CatchRootScreenPageOwner {
+  Object build() => CatchRootScreenPageScrollView.standard(
     slivers: [
       CatchSliverPageBody(sliver: const SliverToBoxAdapter()),
     ],
@@ -805,53 +882,54 @@ class SemanticPageOwner implements CatchTabbedPageOwner {
       failures,
       contains(
         allOf(
-          contains('semantic tab page content'),
+          contains('semantic root page content'),
           contains('CatchSliverPageBody'),
         ),
       ),
     );
   });
 
-  test('rejects a semantic tab page whose role disagrees with its spec', () {
+  test('derives a semantic root page role from the page owner', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
-        'family': 'tabbed-root',
-        'expression': 'CatchTabbedScreenScaffold',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold.withPrimaryRail',
         'bodyGeometry': 'full-bleed',
         'topEdge': 'safe-area',
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build() => CatchTabbedScreenScaffold(
-    body: CatchTabbedScreenBody.single(
-      page: CatchTabbedPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.fullBleed,
+  Object build() => CatchRootScreenScaffold.withPrimaryRail(
+    body: CatchRootScreenBody.single(
+      page: CatchRootScreenPageSpec.scroll(
         page: StandardSemanticPage(),
       ),
     ),
   );
 }
 ''',
-      semanticTabbedPageOwnerRoles: const <String, String>{
+      semanticRootPageOwnerRoles: const <String, String>{
         'StandardSemanticPage': 'CatchScreenBodyLayout.standard',
       },
     );
 
     expect(
       failures,
-      contains(contains('semantic CatchTabbedPageOwner must match')),
+      contains(
+        contains('full-bleed root primary-rail bodies must select only'),
+      ),
     );
   });
 
-  test('rejects a tab page hidden behind an unresolved variable', () {
+  test('rejects a root page hidden behind an unresolved variable', () {
     final failures = _evaluateIndirectTabPageOwner('someVariable');
 
     expect(failures, contains(contains('must resolve directly')));
   });
 
-  test('rejects a tab page hidden behind an unresolved helper', () {
+  test('rejects a root page hidden behind an unresolved helper', () {
     final failures = _evaluateIndirectTabPageOwner('helper()');
 
     expect(failures, contains(contains('must resolve directly')));
@@ -1088,18 +1166,17 @@ List<String> _evaluateIndirectTabPageOwner(String pageExpression) {
     screenId: 'screen.fixture',
     owner: <String, Object?>{
       'symbol': 'ExampleScreen',
-      'family': 'tabbed-root',
-      'expression': 'CatchTabbedScreenScaffold',
+      'family': 'root',
+      'expression': 'CatchRootScreenScaffold.withPrimaryRail',
       'bodyGeometry': 'standard',
       'topEdge': 'safe-area',
     },
     declarationSource:
         '''
 class ExampleScreen {
-  Object build() => CatchTabbedScreenScaffold(
-    body: CatchTabbedScreenBody.single(
-      page: CatchTabbedPageSpec.scroll(
-        bodyLayout: CatchScreenBodyLayout.standard,
+  Object build() => CatchRootScreenScaffold.withPrimaryRail(
+    body: CatchRootScreenBody.single(
+      page: CatchRootScreenPageSpec.scroll(
         page: $pageExpression,
       ),
     ),

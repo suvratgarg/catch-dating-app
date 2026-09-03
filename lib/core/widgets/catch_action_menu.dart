@@ -46,7 +46,6 @@ class CatchActionMenu<T> extends StatefulWidget {
 
 class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
   final _controller = MenuController();
-  final _anchorKey = GlobalKey();
 
   bool get _canOpen => widget.enabled && widget.items.isNotEmpty;
 
@@ -70,52 +69,39 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
       viewportWidth: MediaQuery.sizeOf(context).width,
     );
 
-    return MenuAnchor(
+    return CatchMenuAnchor<T>(
       controller: _controller,
+      width: menuWidth,
       alignmentOffset: Offset(
         CatchLayout.actionMenuAlignmentXFor(menuWidth),
         CatchSpacing.s1,
       ),
-      style: catchMenuAnchorStyle,
-      menuChildren: [
-        catchMenuWithViewportBoundary(
-          context: context,
-          anchorKey: _anchorKey,
-          child: CatchMenu<T>(
-            width: menuWidth,
-            items: [
-              for (final item in widget.items)
-                CatchMenuItem<T>(
-                  value: item.value,
-                  label: item.label,
-                  sublabel: item.sublabel,
-                  icon: item.icon,
-                  danger: item.isDestructive,
-                  enabled: item.enabled,
-                ),
-            ],
-            onSelected: (value, _) {
-              widget.onSelected?.call(value);
-              _controller.close();
-            },
+      items: [
+        for (final item in widget.items)
+          CatchMenuItem<T>(
+            value: item.value,
+            label: item.label,
+            sublabel: item.sublabel,
+            icon: item.icon,
+            danger: item.isDestructive,
+            enabled: item.enabled,
           ),
-        ),
       ],
+      onSelected: (value, _) {
+        widget.onSelected?.call(value);
+        _controller.close();
+      },
       builder: (context, controller, child) {
-        return KeyedSubtree(
-          key: _anchorKey,
-          child: CatchIconButton(
-            tooltip: widget.tooltip,
-            variant: widget.variant,
-            onTap: _canOpen
-                ? () =>
-                      controller.isOpen ? controller.close() : controller.open()
-                : null,
-            child: Icon(
-              widget.icon ?? CatchIcons.moreHorizRounded,
-              size: CatchIcon.md,
-              color: widget.enabled ? t.ink : t.ink3,
-            ),
+        return CatchIconButton(
+          tooltip: widget.tooltip,
+          variant: widget.variant,
+          onTap: _canOpen
+              ? () => controller.isOpen ? controller.close() : controller.open()
+              : null,
+          child: Icon(
+            widget.icon ?? CatchIcons.moreHorizRounded,
+            size: CatchIcon.md,
+            color: widget.enabled ? t.ink : t.ink3,
           ),
         );
       },

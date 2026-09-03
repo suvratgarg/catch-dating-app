@@ -16,7 +16,7 @@ const _eventDetailPathFragments = <String>[
 const _excludedPathFragments = <String>[
   '/lib/core/theme/',
   '/lib/core/schema_contracts/generated/',
-  '/generated/',
+  '/lib/l10n/generated/',
 ];
 
 const _spacingNamedArguments = <String>{
@@ -1593,6 +1593,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   bool _isAllowedPrimitiveRawButtonControl(String typeName) {
     return (_isCatchFieldImplementationPath &&
             (typeName == 'TextField' || typeName == 'TextFormField')) ||
+        (_isCatchMenuImplementationPath && typeName == 'MenuAnchor') ||
         (_isCatchTextInputImplementationPath && typeName == 'TextField') ||
         (_isCatchRangeSliderImplementationPath && typeName == 'RangeSlider') ||
         (_isCatchTextButtonImplementationPath && typeName == 'TextButton');
@@ -1976,6 +1977,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return path.endsWith('/lib/core/widgets/catch_section_layout.dart');
   }
 
+  bool get _isCatchMenuImplementationPath {
+    return path.endsWith('/lib/core/widgets/catch_menu.dart');
+  }
+
   bool get _isCatchTextButtonImplementationPath {
     return path.endsWith('/lib/core/widgets/catch_text_button.dart');
   }
@@ -2105,8 +2110,10 @@ class _CatchUiTestVisitor extends SimpleAstVisitor<void> {
 }
 
 String _constructorTypeName(InstanceCreationExpression node) {
+  final resolvedName = node.constructorName.element?.enclosingElement.name;
+  if (resolvedName != null && resolvedName.isNotEmpty) return resolvedName;
   final raw = node.constructorName.type.toSource();
-  return raw.split('<').first;
+  return raw.split('<').first.split('.').last;
 }
 
 bool isCatchUiDateArithmeticDuration(InstanceCreationExpression node) {

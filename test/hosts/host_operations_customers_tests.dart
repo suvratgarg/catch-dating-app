@@ -194,15 +194,11 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const _CustomersTestPrimaryRail(),
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -230,15 +226,11 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const _CustomersTestPrimaryRail(),
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -260,15 +252,11 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const _CustomersTestPrimaryRail(),
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -718,15 +706,11 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const _CustomersTestPrimaryRail(),
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -827,4 +811,16 @@ void _registerHostOperationsCustomersTests() {
     expect(find.text('Refresh exact preview'), findsOneWidget);
     expect(find.text('Archive'), findsOneWidget);
   });
+}
+
+class _CustomersTestPrimaryRail extends StatelessWidget
+    implements CatchPrimaryRail {
+  const _CustomersTestPrimaryRail();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+
+  @override
+  Widget build(BuildContext context) =>
+      const SizedBox(height: CatchLayout.tabRailHeight);
 }

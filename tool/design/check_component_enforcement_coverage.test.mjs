@@ -5,6 +5,7 @@ import {
   checkComponentEnforcementCoverage,
   extractCheckerCodes,
   extractPluginCodes,
+  extractWidgetbookNames,
 } from "./check_component_enforcement_coverage.mjs";
 
 test("extracts plugin and checker diagnostic declarations only", () => {
@@ -16,9 +17,13 @@ test("extracts plugin and checker diagnostic declarations only", () => {
     [...extractCheckerCodes("const code = 'catch_b'; // catch_noise")],
     ["catch_b"],
   );
+  assert.deepEqual(
+    [...extractWidgetbookNames("WidgetbookComponent(name: 'CatchOne')")],
+    ["CatchOne"],
+  );
 });
 
-test("requires decisions, live waivers, ownership, and probes", () => {
+test("requires decisions, executable verification, live waivers, ownership, and probes", () => {
   const registry = {
     components: [
       {
@@ -34,9 +39,21 @@ test("requires decisions, live waivers, ownership, and probes", () => {
       },
       {
         id: "catch.two",
-        waiver: {expires: "2026-01-01"},
+        dart: {symbol: "CatchTwo"},
+        verification: {
+          vehicle: "widgetbook-contract",
+          reason: "Canonical states are exercised in Widgetbook.",
+        },
       },
-      {id: "catch.three"},
+      {
+        id: "catch.three",
+        waiver: {
+          reason: "Pending executable coverage.",
+          owner: "design_system",
+          expires: "2026-01-01",
+        },
+      },
+      {id: "catch.four"},
     ],
   };
   const result = checkComponentEnforcementCoverage({
@@ -45,6 +62,7 @@ test("requires decisions, live waivers, ownership, and probes", () => {
     checkerCodes: new Set(),
     harnessSource: "",
     generatedProbeMinimums: {catch_a: 1},
+    widgetbookNames: new Set(["CatchTwo"]),
     today: "2026-07-19",
   });
 
@@ -52,6 +70,34 @@ test("requires decisions, live waivers, ownership, and probes", () => {
   assert.ok(result.failures.some((failure) => failure.includes("exactly one")));
   assert.ok(result.failures.some((failure) => failure.includes("catch_orphan")));
   assert.equal(result.metrics.expiredWaivers, 1);
+  assert.equal(result.metrics.verificationCount, 1);
+});
+
+test("rejects verification without its generated Widgetbook contract", () => {
+  const result = checkComponentEnforcementCoverage({
+    registry: {
+      components: [
+        {
+          id: "catch.two",
+          dart: {symbol: "CatchTwo"},
+          verification: {
+            vehicle: "widgetbook-contract",
+            reason: "Canonical states are exercised in Widgetbook.",
+          },
+        },
+      ],
+    },
+    pluginCodes: new Set(),
+    checkerCodes: new Set(),
+    harnessSource: "",
+    generatedProbeMinimums: {},
+    widgetbookNames: new Set(),
+    today: "2026-09-03",
+  });
+
+  assert.deepEqual(result.failures, [
+    "catch.two: verification requires generated Widgetbook contract CatchTwo",
+  ]);
 });
 
 test("primary enforcement code must match its declared vehicle", () => {

@@ -271,13 +271,18 @@ final class CatchRouteBody {
   Widget _unexpectedRenderer() => const SizedBox();
 }
 
-final class CatchTabbedPageSpec {
-  Widget _build() => const SizedBox();
+final class CatchRootScreenPageSpec {
+  Widget build() => const SizedBox();
   Widget anotherHelper() => const SizedBox();
 }
 
-final class CatchTabbedScreenBody {
+final class CatchRootScreenBody {
+  Widget build() => const SizedBox();
+}
+
+final class CatchRootScreenHeader {
   Widget _build() => const SizedBox();
+  Widget anotherHeaderHelper() => const SizedBox();
 }
 
 final class UnrelatedDescriptor {
@@ -297,7 +302,8 @@ final class UnrelatedDescriptor {
     helpers.map(({owner, name}) => ({owner, name})),
     [
       {owner: "CatchRouteBody", name: "_unexpectedRenderer"},
-      {owner: "CatchTabbedPageSpec", name: "anotherHelper"},
+      {owner: "CatchRootScreenPageSpec", name: "anotherHelper"},
+      {owner: "CatchRootScreenHeader", name: "anotherHeaderHelper"},
       {owner: "UnrelatedDescriptor", name: "_build"},
     ],
   );

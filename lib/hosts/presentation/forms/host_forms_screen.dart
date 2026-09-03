@@ -18,9 +18,9 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
-import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
@@ -196,48 +196,44 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         ? context.l10n.hostFormsSearch
         : context.l10n.hostFormResponsesSearch;
 
-    return CatchTabbedScreenScaffold(
-      title: context.l10n.hostNavigationAudience,
-      actions: activeSearchIsForms
-          ? [
-              CatchTopBarPrimaryAction(
-                key: const ValueKey('host-forms-create'),
-                label: context.l10n.hostFormsCreate,
-                icon: CatchIcons.add,
-                onPressed: () => _openTemplates(selectedClub.id),
-              ),
-            ]
-          : const [],
-      search: CatchTopBarSearch(
-        value: activeSearchIsForms ? _query ?? '' : _responseQuery ?? '',
-        contract: activeSearchIsForms
-            ? CatchContractConstraints.listOrganizerFormsCallablePayloadQuery
-            : CatchContractConstraints
-                  .listOrganizerFormResponsesCallablePayloadQuery,
-        placeholder: searchPlaceholder,
-        tooltip: searchPlaceholder,
-        semanticLabel: searchPlaceholder,
-        autofocus: true,
-        textInputAction: TextInputAction.search,
-        onChanged: (value) => _scheduleSearch(_view, value),
-        onSubmitted: (value) => _applySearch(_view, value),
-      ),
-      tabRail: PreferredSize(
-        preferredSize: const Size.fromHeight(CatchLayout.tabRailHeight),
-        child: AnimatedBuilder(
-          animation: _tabController.animation!,
-          builder: (context, _) => HostAudienceTabRail(
-            selected: _view,
-            selectionPosition: _tabController.animation!.value + 2,
-            onChanged: (view) => _selectAudienceView(view, selectedClub.id),
-          ),
+    return CatchRootScreenScaffold.withPrimaryRail(
+      header: CatchRootScreenHeader.title(
+        title: context.l10n.hostNavigationAudience,
+        actions: activeSearchIsForms
+            ? [
+                CatchTopBarPrimaryAction(
+                  key: const ValueKey('host-forms-create'),
+                  label: context.l10n.hostFormsCreate,
+                  icon: CatchIcons.add,
+                  onPressed: () => _openTemplates(selectedClub.id),
+                ),
+              ]
+            : const [],
+        search: CatchTopBarSearch(
+          value: activeSearchIsForms ? _query ?? '' : _responseQuery ?? '',
+          contract: activeSearchIsForms
+              ? CatchContractConstraints.listOrganizerFormsCallablePayloadQuery
+              : CatchContractConstraints
+                    .listOrganizerFormResponsesCallablePayloadQuery,
+          placeholder: searchPlaceholder,
+          tooltip: searchPlaceholder,
+          semanticLabel: searchPlaceholder,
+          autofocus: true,
+          textInputAction: TextInputAction.search,
+          onChanged: (value) => _scheduleSearch(_view, value),
+          onSubmitted: (value) => _applySearch(_view, value),
         ),
       ),
-      body: CatchTabbedScreenBody.paged(
+      primaryRail: HostAudienceTabRail(
+        selected: _view,
+        selectionAnimation: _tabController.animation!,
+        animationOffset: 2,
+        onChanged: (view) => _selectAudienceView(view, selectedClub.id),
+      ),
+      body: CatchRootScreenBody.paged(
         controller: _tabController,
         pages: [
-          CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
+          CatchRootScreenPageSpec.scroll(
             page: _HostFormsLibraryPage(
               request: request,
               directory: directory,
@@ -250,12 +246,9 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
                   _handleRowAction(action, form, request),
             ),
           ),
-          CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
-            page: CatchTabbedPageScrollView(
+          CatchRootScreenPageSpec.scroll(
+            page: CatchRootScreenPageScrollView.standard(
               scrollKey: const PageStorageKey<String>('host-forms-responses'),
-              bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
               slivers: [
                 SliverToBoxAdapter(
                   child: HostFormResponsesPanel(
@@ -420,7 +413,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
 }
 
 class _HostFormsLibraryPage extends ConsumerWidget
-    implements CatchTabbedPageOwner {
+    implements CatchRootScreenPageOwner {
   const _HostFormsLibraryPage({
     required this.request,
     required this.directory,
@@ -442,15 +435,10 @@ class _HostFormsLibraryPage extends ConsumerWidget
   final Future<void> Function(_HostFormRowAction, HostFormSummary) onRowAction;
 
   @override
-  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
-
-  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tokens = CatchTokens.of(context);
-    return CatchTabbedPageScrollView(
+    return CatchRootScreenPageScrollView.standard(
       scrollKey: const PageStorageKey<String>('host-forms-library'),
-      bodyLayout: bodyLayout,
-      constrainToContentWidth: true,
       maxContentExtent: CatchLayout.hostFormsDirectoryPageMaxExtent,
       slivers: [
         SliverList.list(

@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-09-02",
+  "updated": "2026-09-03",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -389,10 +389,9 @@
     },
     {
       "id": "catch.ui_label",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchSectionLabel",
       "status": "active",
@@ -1071,10 +1070,9 @@
     },
     {
       "id": "catch.empty_state",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchEmptyState",
       "status": "active",
@@ -1588,10 +1586,9 @@
     },
     {
       "id": "catch.error_banner",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchErrorBanner",
       "status": "active",
@@ -1768,10 +1765,9 @@
     },
     {
       "id": "catch.notice",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchNotice",
       "status": "active",
@@ -4200,10 +4196,9 @@
     },
     {
       "id": "catch.startup_loading_screen",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchStartupLoadingScreen",
       "status": "active",
@@ -4456,10 +4451,9 @@
     },
     {
       "id": "catch.mini_bar_chart",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchMiniBarChart",
       "status": "active",
@@ -4587,10 +4581,9 @@
     },
     {
       "id": "catch.metric_strip",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchMetricStrip",
       "status": "active",
@@ -4865,10 +4858,9 @@
     },
     {
       "id": "catch.sheet",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchBottomSheetScaffold",
       "status": "active",
@@ -5330,9 +5322,10 @@
         "vehicle": "plugin",
         "replaces": [
           "DropdownButton",
+          "MenuAnchor",
           "PopupMenuButton"
         ],
-        "replacement": "CatchMenu",
+        "replacement": "CatchMenuAnchor, CatchActionMenu, or CatchSelectionMenu",
         "steeringGroup": "button",
         "steeringCode": "catch_no_raw_button_control",
         "probeSeed": "PopupMenuButton<void>(itemBuilder: (_) => const [])"
@@ -5417,6 +5410,7 @@
           "CatchMenuItemRole",
           "CatchActionMenuItem",
           "CatchSelectionMenuItem",
+          "CatchMenuAnchor",
           "CatchMenuRow",
           "CatchActionMenu",
           "CatchSelectionMenu",
@@ -5430,6 +5424,26 @@
         ],
         "goldens": [],
         "members": [
+          {
+            "id": "catch.menu.anchor",
+            "symbol": "CatchMenuAnchor",
+            "file": "lib/core/widgets/catch_menu.dart",
+            "summary": "Canonical low-level anchored menu owner; applies the shell-aware viewport boundary before rendering typed CatchMenu rows.",
+            "states": [
+              "closed",
+              "open",
+              "flipped-above",
+              "scrolling",
+              "shell-obstructed"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.menu",
+              "parentConceptId": "catch.menu",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.menu"
+            }
+          },
           {
             "id": "catch.menu.row",
             "symbol": "CatchMenuRow",
@@ -5576,10 +5590,9 @@
     },
     {
       "id": "catch.icon_tile",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchIconTile",
       "status": "active",
@@ -5912,10 +5925,9 @@
     },
     {
       "id": "catch.number_stepper",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchNumberStepper",
       "status": "active",
@@ -6071,10 +6083,9 @@
     },
     {
       "id": "catch.option_card",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchOptionCard",
       "status": "active",
@@ -6496,7 +6507,7 @@
         "placement": {
           "allowedParents": [
             "CatchScreenBody",
-            "CatchTabbedScreenScaffold"
+            "CatchRootScreenScaffold"
           ],
           "slot": "topBar"
         },
@@ -6505,7 +6516,7 @@
       "name": "CatchTopBar",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical app-bar primitive for semantic compact/large title chrome, back/close leading, trailing actions, and expanding search.",
+      "summary": "Canonical app-bar primitive for semantic compact/large title chrome, back/close leading, trailing actions, expanding search, and an explicit divider input independent from surface selection.",
       "dart": {
         "symbol": "CatchTopBar",
         "file": "lib/core/widgets/catch_top_bar.dart",
@@ -6623,7 +6634,7 @@
             "dartType": "bool"
           },
           {
-            "name": "border",
+            "name": "divider",
             "type": "bool",
             "required": false,
             "default": false,
@@ -6657,7 +6668,7 @@
           "with-search",
           "conversation-title",
           "surface",
-          "bordered",
+          "divider",
           "plain-actions"
         ],
         "slots": [
@@ -6909,10 +6920,9 @@
     },
     {
       "id": "catch.privacy_badge",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchPrivacyBadge",
       "status": "active",
@@ -7019,10 +7029,9 @@
     },
     {
       "id": "catch.journey_steps",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchJourneySteps",
       "status": "active",
@@ -7152,6 +7161,7 @@
       "enforcement": {
         "code": "catch_prefer_semantic_insets",
         "codes": [
+          "catch_no_raw_breakpoint",
           "catch_no_raw_ui_spacing",
           "catch_no_token_arithmetic",
           "catch_no_raw_content_dimension",
@@ -7161,6 +7171,7 @@
           "catch_no_shell_local_measurement",
           "catch_screen_registry_conformance",
           "catch_screen_layout_family_conformance",
+          "catch_screen_layout_constructor_vocabulary",
           "catch_screen_route_owner_binding",
           "catch_screen_scaffold_ownership"
         ],
@@ -7170,7 +7181,7 @@
       "name": "CatchScreenBody",
       "status": "active",
       "kind": "pattern",
-      "summary": "Screen-composition family that owns root and tab body roles, page gutters, vertical rhythm, scrolling, responsive width, and shell clearance.",
+      "summary": "Screen-composition family that owns root body roles, optional pinned primary navigation, page gutters, vertical rhythm, scrolling, responsive width, and shell clearance.",
       "dart": {
         "symbol": "CatchScreenBody",
         "file": "lib/core/widgets/catch_section_layout.dart",
@@ -7267,7 +7278,11 @@
           "CatchScreenScaffold",
           "CatchRootScreenScaffold",
           "CatchRootScreenScrollView",
-          "CatchTabbedPageScrollView",
+          "CatchRootScreenHeader",
+          "CatchRootScreenBody",
+          "CatchRootScreenPageSpec",
+          "CatchRootScreenPageOwner",
+          "CatchRootScreenPageScrollView",
           "CatchFormStepBody",
           "CatchResponsiveSectionPage"
         ],
@@ -7295,10 +7310,12 @@
           {
             "id": "catch.screen_body.root_screen_scaffold",
             "symbol": "CatchRootScreenScaffold",
-            "summary": "Root-title screen owner for surface, safe area, one sliver scroll view, semantic body geometry, refresh, field obstruction, responsive width, and terminal shell clearance.",
+            "summary": "Single root-title screen owner whose closed standard and fullBleed constructors jointly select body geometry, responsive width, and terminal shell clearance; withPrimaryRail closes the pinned peer-navigation path over typed pages. It also owns surface, safe area, refresh, and field obstruction while privately selecting a simple CustomScrollView or overlap-safe NestedScrollView.",
             "states": [
               "standard",
               "full-bleed",
+              "primary-rail",
+              "paged-primary-rail",
               "responsive-width",
               "floating-bottom-navigation",
               "side-navigation"
@@ -7313,9 +7330,46 @@
             }
           },
           {
+            "id": "catch.screen_body.root_screen_page_scroll_view",
+            "symbol": "CatchRootScreenPageScrollView",
+            "summary": "Typed inner root-page scroll owner whose closed standard, fullBleed, and embeddedViewport constructors jointly select geometry, responsive width, and terminal-clearance policy. It also owns overlap injection, focus isolation, stable PageStorage restoration, and refresh; CatchRootScreenPageSpec selects only the surrounding page adapter.",
+            "states": [
+              "top",
+              "scrolled",
+              "restored",
+              "terminal-clearance",
+              "readable-width"
+            ],
+            "file": "lib/core/widgets/catch_root_screen_body.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.sliver_content_width",
+            "symbol": "CatchSliverContentWidth",
+            "summary": "Sliver-preserving responsive width adapter used by root screen bodies on viewports wider than their semantic content lane.",
+            "states": [
+              "direct-narrow",
+              "centered-wide"
+            ],
+            "file": "lib/core/widgets/catch_section_layout.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
             "id": "catch.screen_body.sliver_screen_body",
             "symbol": "CatchSliverScreenBody",
-            "summary": "Semantic sliver body used by root and nested-tab scroll owners; resolves the required standard or explicitly edge-owned full-bleed role and optional content-width lane.",
+            "summary": "Semantic sliver body used by ordinary and primary-rail root scroll owners; resolves the required standard or explicitly edge-owned full-bleed role and optional content-width lane.",
             "states": [
               "standard",
               "full-bleed",
@@ -7415,14 +7469,15 @@
       },
       "handoff": {
         "allowedChildren": [
+          "catch.tab_rail",
           "catch.section_stack",
           "catch.surface",
           "catch.section"
         ],
         "notes": [
           "Use for regular non-sliver route bodies before composing ad hoc page padding.",
-          "Every full-screen composition terminates in standalone, step-flow, or workspace surface ownership through CatchScreenScaffold. Root title destinations use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry; pinned peer-tab destinations declare the same role through CatchTabbedPageScrollView.",
-          "Regular root and tab bodies may not override the 24-point standard start; specialized full-bleed or intrinsic families and named semantic primitives own any alternate rhythm.",
+          "Every full-screen composition terminates in standalone, step-flow, or workspace surface ownership through CatchScreenScaffold. Root title destinations use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry. A root with primary peer navigation uses the same owner through its withPrimaryRail constructor and typed CatchRootScreenBody pages.",
+          "Regular root bodies may not override the 24-point standard start; specialized full-bleed or intrinsic families and named semantic primitives own any alternate rhythm.",
           "Use CatchResponsiveSectionPage when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
           "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding."
         ]
@@ -7645,10 +7700,9 @@
     },
     {
       "id": "catch.roster_tiles",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchRosterTiles",
       "status": "active",
@@ -7765,10 +7819,9 @@
     },
     {
       "id": "catch.roster_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchRosterRow",
       "status": "active",
@@ -7930,10 +7983,9 @@
     },
     {
       "id": "catch.roster_table",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchRosterTable",
       "status": "active",
@@ -8074,10 +8126,9 @@
     },
     {
       "id": "catch.activity_art",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchActivityArt",
       "status": "active",
@@ -8401,10 +8452,9 @@
     },
     {
       "id": "catch.distance_ring",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchDistanceRing",
       "status": "active",
@@ -8534,10 +8584,9 @@
     },
     {
       "id": "catch.code_input",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchCodeInput",
       "status": "active",
@@ -8748,10 +8797,9 @@
     },
     {
       "id": "catch.option_group",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchOptionGroup",
       "status": "active",
@@ -8936,10 +8984,9 @@
     },
     {
       "id": "catch.tab_rail",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchTabRail",
       "status": "active",
@@ -9022,6 +9069,7 @@
           "theme.light.color.line"
         ],
         "dartRoles": [
+          "CatchPrimaryRail",
           "CatchOptionGroup",
           "CatchOption",
           "CatchLayout.tabRailHeight"
@@ -9091,10 +9139,9 @@
     },
     {
       "id": "catch.search_field",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchSearchField",
       "status": "active",
@@ -9544,10 +9591,9 @@
     },
     {
       "id": "catch.status_bar",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchStatusBar",
       "status": "active",
@@ -9663,10 +9709,9 @@
     },
     {
       "id": "catch.step_header",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchStepHeader",
       "status": "active",
@@ -9880,10 +9925,10 @@
     },
     {
       "id": "catch.tab_bar",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "enforcement": {
+        "code": "catch_shell_owns_tab_scaffold",
+        "vehicle": "plugin",
+        "probeSeed": "Scaffold(bottomNavigationBar: const SizedBox())"
       },
       "name": "CatchTabBar",
       "status": "active",
@@ -10063,10 +10108,9 @@
     },
     {
       "id": "catch.bottom_dock",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchBottomDock",
       "status": "active",
@@ -10185,10 +10229,9 @@
     },
     {
       "id": "catch.confirm_dialog",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchConfirmDialog",
       "status": "active",
@@ -10304,10 +10347,9 @@
     },
     {
       "id": "catch.form_dialog",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchFormDialog",
       "status": "active",
@@ -10441,10 +10483,9 @@
     },
     {
       "id": "catch.count_pill",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchCountPill",
       "status": "active",
@@ -10583,10 +10624,9 @@
     },
     {
       "id": "catch.page_dots",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchPageDots",
       "status": "active",
@@ -10717,10 +10757,9 @@
     },
     {
       "id": "catch.club_dock",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "ClubDetailDock",
       "status": "active",
@@ -10896,10 +10935,9 @@
     },
     {
       "id": "catch.cover_story",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchCoverStory",
       "status": "active",
@@ -11084,10 +11122,9 @@
     },
     {
       "id": "catch.person_avatar",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchPersonAvatar",
       "status": "active",
@@ -11637,10 +11674,9 @@
     },
     {
       "id": "catch.person_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchPersonRow",
       "status": "active",
@@ -11883,10 +11919,9 @@
     },
     {
       "id": "catch.event_card",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchEventCard",
       "status": "active",
@@ -12266,10 +12301,9 @@
     },
     {
       "id": "catch.graded_image",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchGradedImage",
       "status": "active",
@@ -12380,10 +12414,9 @@
     },
     {
       "id": "catch.detail_media",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchDetailHeroBackdrop",
       "status": "active",
@@ -12530,10 +12563,9 @@
     },
     {
       "id": "catch.activity_map_pin",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchActivityMapPin",
       "status": "active",
@@ -13129,10 +13161,9 @@
     },
     {
       "id": "catch.notification_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "NotificationRow",
       "status": "active",
@@ -13461,255 +13492,10 @@
       }
     },
     {
-      "id": "catch.tabbed_screen",
-      "enforcement": {
-        "code": "catch_shell_owns_tab_scaffold",
-        "codes": [
-          "catch_no_raw_breakpoint"
-        ],
-        "vehicle": "plugin",
-        "states": [
-          "loading",
-          "error",
-          "empty",
-          "data"
-        ],
-        "probeSeed": "Scaffold(bottomNavigationBar: const SizedBox())"
-      },
-      "name": "CatchTabbedScreenScaffold",
-      "status": "active",
-      "kind": "pattern",
-      "summary": "Canonical root-screen shell for a scroll-away identity title, pinned option rail, native horizontal pager, and independently restored vertical tab pages.",
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/TabbedScreen",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "TabbedScreen",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "title",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "tabRail",
-            "type": "widget",
-            "required": true,
-            "dartType": "PreferredSizeWidget"
-          },
-          {
-            "name": "body",
-            "type": "object",
-            "required": true,
-            "dartType": "CatchTabbedScreenBody",
-            "notes": "Closed single-page or paged body specification. Each entry is a CatchTabbedPageSpec whose primary page implements CatchTabbedPageOwner."
-          },
-          {
-            "name": "eyebrow",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "subtitle",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "leading",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
-          },
-          {
-            "name": "actions",
-            "type": "list",
-            "required": false,
-            "dartType": "List<Widget>"
-          },
-          {
-            "name": "titleMaxLines",
-            "type": "number",
-            "required": false,
-            "default": 1,
-            "dartType": "int"
-          },
-          {
-            "name": "rowCrossAxisAlignment",
-            "type": "object",
-            "required": false,
-            "dartType": "CrossAxisAlignment"
-          },
-          {
-            "name": "outerScrollController",
-            "type": "object",
-            "required": false,
-            "dartType": "ScrollController?"
-          },
-          {
-            "name": "semanticsLabel",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "semanticsHint",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          }
-        ],
-        "states": [
-          "title-expanded",
-          "title-collapsed",
-          "tab-rail-pinned",
-          "tab-page-restored"
-        ],
-        "slots": [
-          {
-            "name": "tabRail",
-            "kind": "pinned-preferred-size",
-            "allowedComponents": [
-              "catch.tab_rail"
-            ]
-          },
-          {
-            "name": "body",
-            "kind": "typed-screen-body",
-            "notes": "The route supplies CatchTabbedScreenBody.single or CatchTabbedScreenBody.paged. The paged variant owns the TabBarView internally and binds it to the supplied controller."
-          }
-        ],
-        "tokens": [
-          "theme.light.color.bg",
-          "space.s1",
-          "space.s5",
-          "space.s6"
-        ],
-        "dartRoles": [
-          "CatchInsets.tabbedScreenTitleBlock",
-          "CatchLayout.tabRailHeight",
-          "CatchScreenBodyLayout",
-          "CatchTabbedScreenBody",
-          "CatchTabbedPageSpec",
-          "CatchTabbedPageOwner",
-          "CatchScreenHeaderTitle.block",
-          "CatchSliverHeader",
-          "NestedScrollView",
-          "SliverOverlapAbsorber",
-          "SliverOverlapInjector",
-          "CatchPagerFocusBoundary",
-          "CatchSliverTerminalPadding"
-        ],
-        "goldens": [],
-        "members": [
-          {
-            "id": "catch.tabbed_screen.page_scroll_view",
-            "symbol": "CatchTabbedPageScrollView",
-            "file": "lib/core/widgets/catch_tabbed_screen.dart",
-            "summary": "Per-page vertical owner for focus isolation, matching overlap injection, stable PageStorage restoration, shell-aware terminal padding, and an optional screen-owned semantic maximum extent for bounded operational records.",
-            "states": [
-              "top",
-              "scrolled",
-              "restored",
-              "terminal-clearance",
-              "readable-width"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.tabbed_screen",
-              "parentConceptId": "catch.tabbed_screen",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.tabbed_screen"
-            }
-          },
-          {
-            "id": "catch.tabbed_screen.sliver_content_width",
-            "symbol": "CatchSliverContentWidth",
-            "file": "lib/core/widgets/catch_tabbed_screen.dart",
-            "summary": "Sliver-native semantic width policy that stays direct below the supplied maximum extent and centers the canonical or screen-owned bounded lane on wider viewports.",
-            "states": [
-              "phone-direct",
-              "wide-centered",
-              "full-sliver-protocol"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.tabbed_screen",
-              "parentConceptId": "catch.tabbed_screen",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.tabbed_screen"
-            }
-          }
-        ],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [
-          "catch.tab_rail"
-        ],
-        "notes": [
-          "The route owns the typed TabController and supplies CatchTabbedScreenBody.single or CatchTabbedScreenBody.paged with CatchTabbedPageSpec entries; the closed body builds any TabBarView internally, while the shell owns title, pinned rail, overlap, and safe-area composition.",
-          "The shell enforces a 4-point title-to-rail handoff, a 44-point pinned rail, and the standard 24-point rail-to-body content start; feature routes do not restate these values.",
-          "Every page uses CatchTabbedPageScrollView with a stable PageStorageKey. Never switch tab children inside one shared vertical ListView.",
-          "Feature code retains async state, data policy, route actions, and specialized inner-scroll bridges."
-        ]
-      },
-      "governance": {
-        "role": "pattern",
-        "canonicalFamily": "catch.tabbed_screen",
-        "publicApi": true,
-        "stateOwnership": "none",
-        "asyncOwnership": "none",
-        "layoutOwnership": "screen-layout",
-        "actionOwnership": "none",
-        "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.tabbed_screen"
-      },
-      "dart": {
-        "symbol": "CatchTabbedScreenScaffold",
-        "file": "lib/core/widgets/catch_tabbed_screen.dart",
-        "constructors": [
-          "CatchTabbedScreenScaffold"
-        ]
-      },
-      "surfaces": {
-        "flutter": "CatchTabbedScreenScaffold"
-      }
-    },
-    {
       "id": "catch.bottom_action",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchBottomAction",
       "status": "active",
@@ -13952,10 +13738,9 @@
     },
     {
       "id": "catch.host_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchHostRow",
       "status": "active",
@@ -14132,10 +13917,9 @@
     },
     {
       "id": "catch.map_preview",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchMapPreview",
       "status": "active",
@@ -14268,10 +14052,9 @@
     },
     {
       "id": "catch.meta_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchMetaRow",
       "status": "active",
@@ -14386,10 +14169,9 @@
     },
     {
       "id": "catch.index_row",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchIndexRow",
       "status": "active",
@@ -14528,10 +14310,9 @@
     },
     {
       "id": "catch.organizer_poster",
-      "waiver": {
-        "reason": "Entity-material placement is governed by ARCH-ENTITY-MATERIAL-001 and the design-language metaphor contract.",
-        "owner": "design_system",
-        "expires": "2026-12-31"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchOrganizerPoster",
       "status": "active",
@@ -14765,10 +14546,9 @@
     },
     {
       "id": "catch.person_polaroid",
-      "waiver": {
-        "reason": "Entity-material placement is governed by ARCH-ENTITY-MATERIAL-001 and the design-language metaphor contract.",
-        "owner": "design_system",
-        "expires": "2026-12-31"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchPersonPolaroid",
       "status": "active",
@@ -14922,10 +14702,9 @@
     },
     {
       "id": "catch.club_cover",
-      "waiver": {
-        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
-        "owner": "design_system",
-        "expires": "2026-09-30"
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchClubCover",
       "status": "active",

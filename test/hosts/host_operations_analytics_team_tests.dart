@@ -50,7 +50,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
         find.descendant(of: tabRail, matching: find.text(label));
 
     void expectSharedChrome({bool constrainToContentWidth = true}) {
-      expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
+      expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
       expect(find.byType(NestedScrollView), findsOneWidget);
       expect(find.byType(SliverOverlapAbsorber), findsOneWidget);
       expect(find.byType(TabBarView), findsOneWidget);
@@ -72,8 +72,8 @@ void _registerHostOperationsAnalyticsTeamTests() {
         workspaceSemantics.properties.hint,
         'Drag left or right to switch between Edit, Insights, and Preview.',
       );
-      final currentPage = tester.widget<CatchTabbedPageScrollView>(
-        find.byType(CatchTabbedPageScrollView),
+      final currentPage = tester.widget<CatchRootScreenPageScrollView>(
+        find.byType(CatchRootScreenPageScrollView),
       );
       expect(currentPage.includeTerminalPadding, isTrue);
       expect(currentPage.constrainToContentWidth, constrainToContentWidth);

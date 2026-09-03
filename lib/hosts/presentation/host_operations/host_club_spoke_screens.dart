@@ -73,8 +73,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: CatchRouteBody.standard(
-          scrollable: false,
+        body: CatchRouteBody.standardViewport(
           child: CatchErrorState.fromError(
             uidState.error!,
             context: AppErrorContext.auth,
@@ -92,8 +91,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: CatchRouteBody.standard(
-          scrollable: false,
+        body: CatchRouteBody.standardViewport(
           child: CatchErrorBody(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
@@ -117,8 +115,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: CatchRouteBody.standard(
-          scrollable: false,
+        body: CatchRouteBody.standardViewport(
           child: CatchErrorState.fromError(
             error,
             context: AppErrorContext.club,
@@ -135,8 +132,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
               leadingType: CatchTopBarLeading.back,
               divider: scrolledUnder,
             ),
-            body: CatchRouteBody.standard(
-              scrollable: false,
+            body: CatchRouteBody.standardViewport(
               child: CatchErrorState.fromError(
                 StateError('Organizer unavailable'),
                 context: AppErrorContext.club,
