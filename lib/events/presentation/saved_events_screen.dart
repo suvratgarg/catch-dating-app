@@ -36,44 +36,54 @@ class SavedEventsScreen extends ConsumerWidget {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: SafeArea(
-        child: Builder(
-          builder: (context) {
-            if (uidAsync.isLoading) return const SavedEventsLoading();
-            if (uidAsync.hasError) {
-              return CatchErrorState.fromError(
-                uidAsync.error!,
-                context: AppErrorContext.auth,
-                onRetry: () => ref.invalidate(uidProvider),
-              );
-            }
+      body: CatchRouteBody.standardSlivers(
+        slivers: [
+          Consumer(
+            builder: (context, ref, _) {
+              if (uidAsync.isLoading) {
+                return const EventAgendaSliverSkeleton(
+                  padding: EdgeInsets.zero,
+                );
+              }
+              if (uidAsync.hasError) {
+                return CatchSliverErrorState.fromError(
+                  uidAsync.error!,
+                  context: AppErrorContext.auth,
+                  onRetry: () => ref.invalidate(uidProvider),
+                );
+              }
 
-            final uid = uidAsync.asData?.value;
-            final savedEventsAsync = uid == null
-                ? const AsyncData(<Event>[])
-                : ref.watch(watchSavedEventDetailsForUserProvider(uid));
-
-            return CatchAsyncValueView<List<Event>>(
-              value: savedEventsAsync,
-              onRetry: () {
-                ref.invalidate(uidProvider);
-                if (uid != null) {
-                  ref.invalidate(watchSavedEventDetailsForUserProvider(uid));
-                }
-              },
-              loadingBuilder: (_) => const SavedEventsLoading(),
-              errorBuilder: (_, error, _) => SavedEventsError(
-                error: error,
-                onRetry: uid == null
-                    ? null
-                    : () => ref.invalidate(
-                        watchSavedEventDetailsForUserProvider(uid),
-                      ),
-              ),
-              builder: (context, events) {
-                if (events.isEmpty) {
-                  return Center(
-                    child: CatchEmptyState(
+              final userId = uidAsync.asData?.value;
+              final savedEvents = userId == null
+                  ? const AsyncData(<Event>[])
+                  : ref.watch(watchSavedEventDetailsForUserProvider(userId));
+              return CatchAsyncValueSliver<List<Event>>(
+                value: savedEvents,
+                onRetry: () {
+                  ref.invalidate(uidProvider);
+                  if (userId != null) {
+                    ref.invalidate(
+                      watchSavedEventDetailsForUserProvider(userId),
+                    );
+                  }
+                },
+                initialLoadTimeout: null,
+                sliverLoadingBuilder: (_) =>
+                    const EventAgendaSliverSkeleton(padding: EdgeInsets.zero),
+                sliverErrorBuilder: (_, error, _) =>
+                    SavedEventsClubNamesErrorSliver(
+                      error: error,
+                      onRetry: () {
+                        if (userId != null) {
+                          ref.invalidate(
+                            watchSavedEventDetailsForUserProvider(userId),
+                          );
+                        }
+                      },
+                    ),
+                builder: (context, events) {
+                  if (events.isEmpty) {
+                    return CatchSliverEmptyState(
                       icon: CatchIcons.bookmarkBorderRounded,
                       title: context
                           .l10n
@@ -82,53 +92,47 @@ class SavedEventsScreen extends ConsumerWidget {
                           .l10n
                           .eventsSavedEventsScreenMessageSaveEventsYouWant,
                       iconSize: CatchLayout.calendarEmptyIconSize,
-                      padding: CatchInsets.contentSpacious,
+                      padding: EdgeInsets.zero,
                       titleStyle: CatchTextStyles.titleL(context),
                       messageStyle: CatchTextStyles.proseM(
                         context,
-                        color: t.ink2,
+                        color: CatchTokens.of(context).ink2,
                       ),
+                    );
+                  }
+
+                  final state = SavedEventsListState.from(
+                    events,
+                    now: referenceNow ?? DateTime.now(),
+                  );
+                  final clubNames = ref.watch(
+                    clubNameLookupProvider(ClubNameLookupQuery(state.clubIds)),
+                  );
+                  return CatchAsyncValueSliver<Map<String, String>>(
+                    value: clubNames,
+                    onRetry: () => ref.invalidate(clubNameLookupProvider),
+                    sliverLoadingBuilder: (_) =>
+                        const EventAgendaSliverSkeleton(
+                          padding: EdgeInsets.zero,
+                        ),
+                    sliverErrorBuilder: (_, error, _) =>
+                        SavedEventsClubNamesErrorSliver(
+                          error: error,
+                          onRetry: () => ref.invalidate(clubNameLookupProvider),
+                        ),
+                    builder: (context, names) => SavedEventsAgendaSliver(
+                      state: state,
+                      clubNames: names,
+                      padding: EdgeInsets.zero,
+                      onEventSelected: (event) =>
+                          _openEventDetail(context, event),
                     ),
                   );
-                }
-
-                final now = referenceNow ?? DateTime.now();
-                final savedEventsState = SavedEventsListState.from(
-                  events,
-                  now: now,
-                );
-                final clubNamesAsync = ref.watch(
-                  clubNameLookupProvider(
-                    ClubNameLookupQuery(savedEventsState.clubIds),
-                  ),
-                );
-
-                return CustomScrollView(
-                  slivers: [
-                    CatchAsyncValueSliver<Map<String, String>>(
-                      value: clubNamesAsync,
-                      onRetry: () => ref.invalidate(clubNameLookupProvider),
-                      sliverLoadingBuilder: (_) =>
-                          const EventAgendaSliverSkeleton(),
-                      sliverErrorBuilder: (_, error, _) =>
-                          SavedEventsClubNamesErrorSliver(
-                            error: error,
-                            onRetry: () =>
-                                ref.invalidate(clubNameLookupProvider),
-                          ),
-                      builder: (context, clubNames) => SavedEventsAgendaSliver(
-                        state: savedEventsState,
-                        clubNames: clubNames,
-                        onEventSelected: (event) =>
-                            _openEventDetail(context, event),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        ),
+                },
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -148,11 +152,13 @@ class SavedEventsAgendaSliver extends StatelessWidget {
     required this.state,
     required this.clubNames,
     required this.onEventSelected,
+    this.padding,
   });
 
   final SavedEventsListState state;
   final Map<String, String> clubNames;
   final ValueChanged<Event> onEventSelected;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -165,6 +171,14 @@ class SavedEventsAgendaSliver extends StatelessWidget {
       badgeLabelBuilder: state.badgeLabelFor,
       statusBuilder: state.statusFor,
       onEventSelected: onEventSelected,
+      padding:
+          padding ??
+          const EdgeInsets.fromLTRB(
+            CatchLayout.detailScreenHorizontalPadding,
+            CatchLayout.agendaListTopPadding,
+            CatchLayout.detailScreenHorizontalPadding,
+            CatchLayout.agendaListBottomPadding,
+          ),
     );
   }
 }

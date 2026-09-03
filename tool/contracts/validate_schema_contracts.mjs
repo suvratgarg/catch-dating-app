@@ -33,6 +33,7 @@ function main() {
   checkWireShapeExtensions(parsed);
   checkPromptCatalogs(parsed);
   checkPersonFieldCatalog(parsed);
+  checkHostAttentionPolicyCatalog(parsed);
   checkFixturePlacement(parsed);
   checkCurrentCodeDrift(parsed);
 
@@ -42,6 +43,168 @@ function main() {
       file.endsWith(".schema.json")
     ).length,
   });
+}
+
+function checkHostAttentionPolicyCatalog(parsed) {
+  const catalogPath = path.join(
+    contractRoot,
+    "catalogs/host_attention_policies.json"
+  );
+  const commonPath = path.join(
+    contractRoot,
+    "shared/host_attention_common.schema.json"
+  );
+  const responsePath = path.join(
+    contractRoot,
+    "callable_responses/list_organizer_attention_items_response.schema.json"
+  );
+  const catalog = parsed.get(catalogPath);
+  const common = parsed.get(commonPath);
+  const response = parsed.get(responsePath);
+  if (!catalog || !common || !response) {
+    fail("Missing Host attention policy catalog or companion schemas.");
+    return;
+  }
+
+  if (catalog.schemaVersion !== 1 || catalog.kind !== "hostAttentionPolicies") {
+    fail(`${relative(catalogPath)}: invalid catalog identity.`);
+  }
+  for (const field of [
+    "policyVersion",
+    "horizonHours",
+    "immediateHours",
+    "soonHours",
+  ]) {
+    if (!Number.isInteger(catalog[field]) || catalog[field] < 1) {
+      fail(`${relative(catalogPath)}: ${field} must be a positive integer.`);
+    }
+  }
+  if (!(catalog.immediateHours < catalog.soonHours &&
+      catalog.soonHours < catalog.horizonHours)) {
+    fail(
+      `${relative(catalogPath)}: urgency thresholds must increase before ` +
+      "the horizon."
+    );
+  }
+
+  const expectedKinds = common.definitions?.kind?.enum;
+  if (!Array.isArray(expectedKinds) || expectedKinds.length === 0) {
+    fail(`${relative(commonPath)}: kind enum must be non-empty.`);
+    return;
+  }
+  if (common.definitions?.kind?.["x-catch-catalog"] !==
+      "../catalogs/host_attention_policies.json") {
+    fail(`${relative(commonPath)}: kind must declare the policy catalog.`);
+  }
+  if (!Array.isArray(catalog.definitions)) {
+    fail(`${relative(catalogPath)}: definitions must be an array.`);
+    return;
+  }
+  const actualKinds = catalog.definitions.map((definition) => definition?.kind);
+  if (JSON.stringify(actualKinds) !== JSON.stringify(expectedKinds)) {
+    fail(
+      `${relative(catalogPath)}: definition kinds must match ` +
+      `${relative(commonPath)} exactly and in order.`
+    );
+  }
+
+  const scopes = new Set(common.definitions?.scope?.enum ?? []);
+  const sourceOwners = new Set(common.definitions?.sourceOwner?.enum ?? []);
+  const consequences = new Set(common.definitions?.consequence?.enum ?? []);
+  const routes = new Set(common.definitions?.destinationRoute?.enum ?? []);
+  const deliveryModes = new Set([
+    "serverProjected",
+    "clientMerged",
+    "shortcutOnly",
+    "blockedMissingTruth",
+  ]);
+  const readinessStates = new Set(["sourceReady", "blocked"]);
+  const requiredTextFields = [
+    "kind",
+    "scope",
+    "sourceOwner",
+    "sourceIdPolicy",
+    "sourceRevisionPolicy",
+    "triggerPredicate",
+    "resolutionPredicate",
+    "permissionPredicate",
+    "consequence",
+    "dueAtPolicy",
+    "expiresAtPolicy",
+    "dedupePolicy",
+    "deliveryMode",
+    "readiness",
+    "readinessReason",
+  ];
+  const seenKinds = new Set();
+  for (const [index, definition] of catalog.definitions.entries()) {
+    const label = `${relative(catalogPath)} definitions[${index}]`;
+    if (!definition || typeof definition !== "object") {
+      fail(`${label}: definition must be an object.`);
+      continue;
+    }
+    for (const field of requiredTextFields) {
+      if (typeof definition[field] !== "string" ||
+          definition[field].trim().length === 0) {
+        fail(`${label}: ${field} must be a non-empty string.`);
+      }
+    }
+    if (seenKinds.has(definition.kind)) {
+      fail(`${label}: duplicate kind ${String(definition.kind)}.`);
+    }
+    seenKinds.add(definition.kind);
+    checkEnumValue(label, "scope", definition.scope, scopes);
+    checkEnumValue(label, "sourceOwner", definition.sourceOwner, sourceOwners);
+    checkEnumValue(
+      label,
+      "consequence",
+      definition.consequence,
+      consequences
+    );
+    checkEnumValue(
+      label,
+      "deliveryMode",
+      definition.deliveryMode,
+      deliveryModes
+    );
+    checkEnumValue(
+      label,
+      "readiness",
+      definition.readiness,
+      readinessStates
+    );
+    if (!definition.destination || typeof definition.destination !== "object") {
+      fail(`${label}: destination must be an object.`);
+    } else {
+      checkEnumValue(
+        `${label} destination`,
+        "route",
+        definition.destination.route,
+        routes
+      );
+      if (definition.destination.section !== null &&
+          (typeof definition.destination.section !== "string" ||
+            definition.destination.section.length === 0)) {
+        fail(`${label}: destination.section must be null or non-empty text.`);
+      }
+    }
+    const expectsBlocked = definition.deliveryMode === "blockedMissingTruth";
+    if ((definition.readiness === "blocked") !== expectsBlocked) {
+      fail(
+        `${label}: only blockedMissingTruth definitions may be blocked, and ` +
+        "all blockedMissingTruth definitions must be blocked."
+      );
+    }
+  }
+
+  const coverage = response.properties?.coverage;
+  if (coverage?.minItems !== expectedKinds.length ||
+      coverage?.maxItems !== expectedKinds.length) {
+    fail(
+      `${relative(responsePath)}: coverage bounds must equal the policy kind ` +
+      `count (${expectedKinds.length}).`
+    );
+  }
 }
 
 function checkPersonFieldCatalog(parsed) {

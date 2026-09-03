@@ -134,17 +134,16 @@ class CatchMenuViewport {
   final double overlayBottomClearance;
 }
 
-enum _CatchMenuClearancePlacement { none, above, below }
-
 /// Keeps an anchored menu inside the usable viewport, including Catch's
 /// floating shell navigation.
 ///
 /// Material's menu overlay is owned by the navigator and therefore cannot see
-/// shell-local inherited padding. The boundary carries the measured obstruction
-/// into the overlay. It uses trailing clearance when the menu must scroll,
-/// leading clearance when Material flips a shorter menu above its trigger, and
-/// removes the spacer when the menu already fits below the trigger.
-class CatchMenuViewportBoundary extends StatefulWidget {
+/// shell-local inherited padding. This boundary measures the anchor against the
+/// shell-aware usable rectangle and caps the menu to the larger of the spaces
+/// above and below it. Material can then place the menu on the viable side,
+/// while the menu's own scroll view handles overflow without entering the
+/// floating navigation region.
+class CatchMenuViewportBoundary extends StatelessWidget {
   const CatchMenuViewportBoundary({
     super.key,
     required this.anchorKey,
@@ -157,63 +156,38 @@ class CatchMenuViewportBoundary extends StatefulWidget {
   final Widget child;
 
   @override
-  State<CatchMenuViewportBoundary> createState() =>
-      _CatchMenuViewportBoundaryState();
-}
-
-class _CatchMenuViewportBoundaryState extends State<CatchMenuViewportBoundary> {
-  final _menuKey = GlobalKey();
-  _CatchMenuClearancePlacement _placement = _CatchMenuClearancePlacement.below;
-  double _lastChildMaxHeight = double.infinity;
-
-  @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => _resolvePlacement());
-    final clearance = widget.viewport.overlayBottomClearance;
-    final mediaQuery = MediaQuery.of(context);
-    _lastChildMaxHeight = CatchLayout.menuOverlayChildMaxHeightFor(
-      viewportHeight: mediaQuery.size.height,
-      verticalSafePadding: mediaQuery.padding.vertical,
-      overlayBottomClearance: clearance,
-    );
+    final anchorBox =
+        anchorKey.currentContext?.findRenderObject() as RenderBox?;
+    final anchorRect = anchorBox == null || !anchorBox.hasSize
+        ? null
+        : anchorBox.localToGlobal(Offset.zero) & anchorBox.size;
+    final spaceAbove = anchorRect == null
+        ? viewport.usableRect.height
+        : math.max(0.0, anchorRect.top - viewport.usableRect.top);
+    final spaceBelow = anchorRect == null
+        ? viewport.usableRect.height
+        : math.max(0.0, viewport.usableRect.bottom - anchorRect.bottom);
+    final placeAbove = spaceAbove > spaceBelow;
+    final clearance = viewport.overlayBottomClearance;
+    final maxHeight = placeAbove
+        ? math.max(0.0, spaceAbove - clearance)
+        : spaceBelow;
     return Padding(
+      // The shell clearance is deliberately placed on the side away from the
+      // actual menu. It participates in Material's flip calculation while the
+      // visible menu stays flush with its trigger on the chosen side.
       padding: EdgeInsets.only(
-        top: _placement == _CatchMenuClearancePlacement.above ? clearance : 0,
-        bottom: _placement == _CatchMenuClearancePlacement.below
-            ? clearance
-            : 0,
+        top: placeAbove ? clearance : 0,
+        bottom: placeAbove ? 0 : clearance,
       ),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: widget.viewport.usableRect.height > 0
-              ? widget.viewport.usableRect.height
-              : double.infinity,
+          maxHeight: maxHeight > 0 ? maxHeight : double.infinity,
         ),
-        child: KeyedSubtree(key: _menuKey, child: widget.child),
+        child: child,
       ),
     );
-  }
-
-  void _resolvePlacement() {
-    if (!mounted) return;
-    final anchorBox =
-        widget.anchorKey.currentContext?.findRenderObject() as RenderBox?;
-    final menuBox = _menuKey.currentContext?.findRenderObject() as RenderBox?;
-    if (anchorBox == null || menuBox == null || !anchorBox.hasSize) return;
-
-    final anchorOrigin = anchorBox.localToGlobal(Offset.zero);
-    final anchorRect = anchorOrigin & anchorBox.size;
-    final menuHeight = menuBox.size.height;
-    final menuWasConstrained = menuHeight >= _lastChildMaxHeight - 0.5;
-    final next =
-        !menuWasConstrained &&
-            anchorRect.bottom + menuHeight <= widget.viewport.usableRect.bottom
-        ? _CatchMenuClearancePlacement.none
-        : anchorRect.top - menuHeight >= widget.viewport.usableRect.top
-        ? _CatchMenuClearancePlacement.above
-        : _CatchMenuClearancePlacement.below;
-    if (next == _placement) return;
-    setState(() => _placement = next);
   }
 }
 

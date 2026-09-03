@@ -31,30 +31,69 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
           title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
           divider: scrolledUnder,
         ),
-        body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
+        body: const CatchRouteBody.standard(
+          scrollable: false,
+          child: HostRouteLoadingBody(
+            showTabRail: true,
+            padding: EdgeInsets.zero,
+          ),
+        ),
       ),
-      HostEventEditRouteStatus.error => CatchErrorScaffold.fromError(
-        state.error!,
-        context: AppErrorContext.event,
-        onRetry: () {
-          ref.invalidate(fetchClubProvider(clubId));
-          ref.invalidate(watchEventProvider(eventId));
-        },
+      HostEventEditRouteStatus.error => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
+        body: CatchRouteBody.standard(
+          scrollable: false,
+          child: CatchErrorState.fromError(
+            state.error!,
+            context: AppErrorContext.event,
+            onRetry: () {
+              ref.invalidate(fetchClubProvider(clubId));
+              ref.invalidate(watchEventProvider(eventId));
+            },
+          ),
+        ),
       ),
-      HostEventEditRouteStatus.notFound => CatchErrorScaffold(
-        title: context.l10n.hostsEditHostedEventRouteScreenTitleEventNotFound,
-        message: context
-            .l10n
-            .hostsEditHostedEventRouteScreenMessageThisHostedEventIs,
-        secondaryAction: const CatchErrorBackAction(),
+      HostEventEditRouteStatus.notFound => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
+        body: CatchRouteBody.standard(
+          scrollable: false,
+          child: CatchErrorBody(
+            title:
+                context.l10n.hostsEditHostedEventRouteScreenTitleEventNotFound,
+            message: context
+                .l10n
+                .hostsEditHostedEventRouteScreenMessageThisHostedEventIs,
+            secondaryAction: const CatchErrorBackAction(),
+          ),
+        ),
       ),
-      HostEventEditRouteStatus.unauthorized => CatchErrorScaffold(
-        title:
-            context.l10n.hostsEditHostedEventRouteScreenTitleActionUnavailable,
-        message:
-            context.l10n.hostsEditHostedEventRouteScreenMessageYouCanEditOnly,
-        icon: CatchIcons.blockRounded,
-        secondaryAction: const CatchErrorBackAction(),
+      HostEventEditRouteStatus.unauthorized => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
+        body: CatchRouteBody.standard(
+          scrollable: false,
+          child: CatchErrorBody(
+            title: context
+                .l10n
+                .hostsEditHostedEventRouteScreenTitleActionUnavailable,
+            message: context
+                .l10n
+                .hostsEditHostedEventRouteScreenMessageYouCanEditOnly,
+            icon: CatchIcons.blockRounded,
+            secondaryAction: const CatchErrorBackAction(),
+          ),
+        ),
       ),
       HostEventEditRouteStatus.ready => EditHostedEventScreen(
         club: state.club!,

@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
@@ -54,6 +55,7 @@ void main() {
 
       await pumpAuthScreen(tester, container: container, appRole: AppRole.host);
 
+      expect(find.byType(CatchScreenScaffold), findsOneWidget);
       expect(find.byType(HostAuthFlowFrame), findsOneWidget);
       expect(find.byType(CatchStartupBrandStage), findsOneWidget);
       expect(find.byType(HostAuthCard), findsOneWidget);
@@ -161,6 +163,7 @@ void main() {
 
       await pumpAuthScreen(tester, container: container);
 
+      expect(find.byType(CatchScreenScaffold), findsOneWidget);
       expect(find.byType(CatchScreenBody), findsOneWidget);
       expect(find.byType(CatchBottomDock), findsOneWidget);
       expect(find.byType(CatchStepHeader), findsOneWidget);

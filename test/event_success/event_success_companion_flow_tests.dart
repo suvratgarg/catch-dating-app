@@ -734,6 +734,7 @@ void _registerEventSuccessCompanionFlowTests() {
 
       await tester.pump();
 
+      expect(find.byType(CatchScreenScaffold), findsOneWidget);
       expect(find.text('Event companion'), findsOneWidget);
       expect(find.byType(EventSuccessCompanionLoadingBody), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);

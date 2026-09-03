@@ -1,80 +1,32 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
-typedef HostHomeCreateEventCallback = void Function(Club club);
-typedef HostHomeRepeatEventCallback = void Function(Club club, Event event);
-typedef HostHomeManageEventCallback = void Function(Club club, Event event);
-typedef HostHomeOpenTaskCallback =
-    void Function(Club club, Event event, HostEventAttentionData task);
+typedef HostEventsManageEventCallback = void Function(Club club, Event event);
 
-enum HostHomeRouteStatus { authRequired, loading, error, empty, loaded }
+enum HostEventsRouteStatus { authRequired, loading, error, empty, loaded }
 
 @immutable
-class HostHomeRouteState {
-  const HostHomeRouteState({
+class HostEventsRouteState {
+  const HostEventsRouteState({
     required this.status,
     this.uid,
-    this.clubs = const [],
+    this.organizers = const <Club>[],
     this.error,
     this.stackTrace,
     this.errorContext = AppErrorContext.club,
   });
 
-  final HostHomeRouteStatus status;
+  final HostEventsRouteStatus status;
   final String? uid;
-  final List<Club> clubs;
+  final List<Club> organizers;
   final Object? error;
   final StackTrace? stackTrace;
   final AppErrorContext errorContext;
-}
-
-@immutable
-class HostHomeScreenState {
-  const HostHomeScreenState._({
-    required this.clubs,
-    required this.currentUid,
-    required this.selectedClubIndex,
-  });
-
-  factory HostHomeScreenState.resolve({
-    required List<Club> clubs,
-    required String currentUid,
-    int selectedClubIndex = 0,
-    String? selectedClubId,
-  }) {
-    return HostHomeScreenState._(
-      clubs: List<Club>.unmodifiable(clubs),
-      currentUid: currentUid,
-      selectedClubIndex: _resolveSelectedClubIndex(
-        clubs: clubs,
-        selectedClubIndex: selectedClubIndex,
-        selectedClubId: selectedClubId,
-      ),
-    );
-  }
-
-  final List<Club> clubs;
-  final String currentUid;
-  final int selectedClubIndex;
-
-  bool get hasClubs => clubs.isNotEmpty;
-  bool get showClubPicker => clubs.length > 1;
-  Club? get selectedClub => hasClubs ? clubs[selectedClubIndex] : null;
-  bool get selectedClubIsOwner => selectedClub?.isOwnedBy(currentUid) ?? false;
-
-  HostHomeScreenState selectClubIndex(int index) {
-    return HostHomeScreenState.resolve(
-      clubs: clubs,
-      currentUid: currentUid,
-      selectedClubIndex: index,
-    );
-  }
 }
 
 enum HostEventsWorkspaceStatus { loading, error, empty, populated }
@@ -279,112 +231,9 @@ class HostEventLifecycleRowData {
   }
 }
 
-enum HostEventsOverviewStatus { loading, error, empty, content }
-
-@immutable
-class HostEventsOverviewState {
-  const HostEventsOverviewState({
-    required this.status,
-    this.event,
-    this.tasks = const <HostEventAttentionData>[],
-    this.error,
-    this.stackTrace,
-  });
-
-  final HostEventsOverviewStatus status;
-  final Event? event;
-  final List<HostEventAttentionData> tasks;
-  final Object? error;
-  final StackTrace? stackTrace;
-}
-
-@immutable
-class HostEventAttentionData {
-  const HostEventAttentionData({
-    required this.id,
-    required this.event,
-    required this.title,
-    required this.body,
-    required this.primaryActionLabel,
-    required this.icon,
-    required this.destination,
-  });
-
-  factory HostEventAttentionData.reviewWaitlist(
-    Event event,
-    AppLocalizations l10n,
-  ) {
-    final waitlistCount = event.waitlistCount;
-    final availability = event.spotsRemaining > 0
-        ? l10n.hostsHostHomeScreenStateVisiblecopySpotsremainingSpotsOpen(
-            spotsRemaining: event.spotsRemaining,
-          )
-        : l10n.hostsHostHomeScreenStateVisiblecopyEventFull;
-    return HostEventAttentionData(
-      id: 'waitlist:${event.id}',
-      event: event,
-      title: l10n.hostsHostHomeScreenStateTitleReviewWaitlist,
-      body: l10n
-          .hostsHostHomeScreenStateBodyTitleWaitlistcountWaitingAvailability(
-            title: event.title,
-            waitlistCount: waitlistCount,
-            availability: availability,
-          ),
-      primaryActionLabel: l10n.hostsHostHomeScreenStateVisiblecopyReview,
-      icon: CatchIcons.personSearchOutlined,
-      destination: HostEventAttentionDestination.guests,
-    );
-  }
-
-  static List<HostEventAttentionData> forEvent(
-    Event event,
-    AppLocalizations l10n,
-  ) {
-    return event.waitlistCount > 0 &&
-            !event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired
-        ? <HostEventAttentionData>[
-            HostEventAttentionData.reviewWaitlist(event, l10n),
-          ]
-        : const <HostEventAttentionData>[];
-  }
-
-  static List<HostEventAttentionData> forEvents(
-    Iterable<Event> events,
-    AppLocalizations l10n,
-  ) => List<HostEventAttentionData>.unmodifiable(
-    events.expand((event) => HostEventAttentionData.forEvent(event, l10n)),
-  );
-
-  final String id;
-  final Event event;
-  final String title;
-  final String body;
-  final String primaryActionLabel;
-  final IconData icon;
-  final HostEventAttentionDestination destination;
-}
-
-enum HostEventAttentionDestination { guests, setup }
-
 bool _canRepeatEvent(Event event) => CreateEventPrefill.canRepeat(event);
 
 String _monthSectionLabel(DateTime date, DateTime now) {
   final month = EventFormatters.longMonth(date);
   return date.year == now.year ? month : '$month ${date.year}';
-}
-
-int _resolveSelectedClubIndex({
-  required List<Club> clubs,
-  required int selectedClubIndex,
-  String? selectedClubId,
-}) {
-  if (clubs.isEmpty) return 0;
-  final selectedId = selectedClubId;
-  if (selectedId != null) {
-    final index = clubs.indexWhere((club) => club.id == selectedId);
-    if (index != -1) return index;
-  }
-  if (selectedClubIndex < 0) return 0;
-  if (selectedClubIndex >= clubs.length) return clubs.length - 1;
-  return selectedClubIndex;
 }

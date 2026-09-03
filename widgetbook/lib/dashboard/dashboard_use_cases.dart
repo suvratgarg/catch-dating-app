@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
@@ -486,9 +487,14 @@ Widget dashboardFullSliverBodyReview(BuildContext context) {
           child: _DashboardRouteScope(
             child: CustomScrollView(
               slivers: [
-                DashboardFullSliverBody(
-                  viewModel: _dashboardFullViewModel(),
-                  user: _viewer,
+                CatchSliverScreenBody(
+                  layout: CatchScreenBodyLayout.standard,
+                  slivers: [
+                    DashboardFullSliverBody(
+                      viewModel: _dashboardFullViewModel(),
+                      user: _viewer,
+                    ),
+                  ],
                 ),
               ],
             ),

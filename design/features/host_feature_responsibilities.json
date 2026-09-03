@@ -1,0 +1,438 @@
+{
+  "$schema": "./host_feature_responsibilities.schema.json",
+  "version": 1,
+  "updated": "2026-09-02",
+  "owner": "hosts",
+  "sourceOfTruth": "Defines the ordered responsibility, route ownership, current implementation seams, and explicit exclusions for the five authenticated Host destinations. Runtime behavior remains owned by production code and its specialist data contracts.",
+  "features": [
+    {
+      "id": "today",
+      "destination": "hostToday",
+      "primaryRouteId": "hostTodayScreen",
+      "ownedRouteIds": ["hostTodayScreen"],
+      "handoffRouteIds": [
+        "hostEventsScreen",
+        "hostAppEventManageScreen",
+        "hostApplicationsScreen",
+        "hostApplicationDetailScreen",
+        "hostAudienceScreen",
+        "hostInboxScreen",
+        "hostClubPaymentsScreen",
+        "hostEventRehearsalStartScreen"
+      ],
+      "targetRoot": "lib/hosts/today",
+      "migrationStatus": "verticalSlice",
+      "purpose": "Act as the organizer command centre: show the live or next event, surface every authoritative time-sensitive task inside the policy horizon, and route the host to the safest immediate action.",
+      "responsibilities": [
+        "Own the /host/today route, its authentication and organizer-selection states, and its provider-free body composition.",
+        "Fetch the bounded active-event context independently of the Events inventory controller.",
+        "Consume the manager-authorized attention callable, parse exhaustive coverage, and merge device-local attendance retry or conflict work.",
+        "Order work by urgency, consequence, deadline, and stable identity without inferring mandatory tasks from missing optional data.",
+        "Own the dedicated Dress Rehearsal entry point and typed handoffs to Events, Event Manage, Audience, Inbox, Applications, and Payouts.",
+        "Keep incomplete attention sources visible so the screen cannot claim a false all-clear."
+      ],
+      "doesNotOwn": [
+        "The durable event inventory, history pagination, event creation internals, or event-management mutations.",
+        "CRM segmentation, form authoring, messaging workflows, organizer settings, payout onboarding behavior, or rehearsal runtime internals.",
+        "A generic notification feed or speculative reminders derived from null setup fields, unread messages, aggregate counts, or zero staff grants."
+      ],
+      "currentRoots": ["lib/hosts/today"],
+      "featureContractBindings": [
+        {
+          "contractId": "feature.host_home",
+          "surfaceId": "host_flutter",
+          "actionOwnerIds": [
+            "today_route",
+            "today_body",
+            "today_attention_model",
+            "today_attention_repository",
+            "today_feed",
+            "host_shell"
+          ],
+          "includeDataContracts": false
+        }
+      ],
+      "additionalCodeOwners": [],
+      "additionalDataContracts": [
+        "contracts/callable_responses/list_organizer_attention_items_response.schema.json",
+        "contracts/callables/list_organizer_attention_items_payload.schema.json",
+        "contracts/catalogs/host_attention_policies.json",
+        "contracts/firestore/events.schema.json",
+        "contracts/firestore/organizer_attention_items.schema.json",
+        "contracts/shared/host_attention_common.schema.json"
+      ],
+      "sharedDependencies": [
+        {
+          "path": "lib/events/data/event_repository.dart",
+          "reason": "Shared canonical event reads; Today owns only its bounded projection."
+        },
+        {
+          "path": "lib/hosts/data/host_attendance_outbox.dart",
+          "reason": "Device-local absolute attendance operations are intentionally merged after the server projection."
+        },
+        {
+          "path": "lib/core/presentation/host_app_shell.dart",
+          "reason": "The shell owns global destination navigation and organizer scope."
+        }
+      ],
+      "testFiles": [
+        "test/hosts/today/host_attention_item_test.dart",
+        "test/hosts/today/host_today_feed_controller_test.dart",
+        "test/hosts/today/host_today_state_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ]
+    },
+    {
+      "id": "events",
+      "destination": "hostEvents",
+      "primaryRouteId": "hostEventsScreen",
+      "ownedRouteIds": ["hostEventsScreen"],
+      "handoffRouteIds": [
+        "hostCreateEventScreen",
+        "hostAppEventManageScreen",
+        "hostAppEventDetailScreen"
+      ],
+      "targetRoot": "lib/hosts/events",
+      "migrationStatus": "verticalSlice",
+      "purpose": "Provide the durable event inventory and lifecycle workspace entry: upcoming schedule, history, pagination, create, repeat, and manage navigation independent of Today’s operational queue.",
+      "responsibilities": [
+        "Own the /host/events route, its authentication and organizer-selection states, and the complete event inventory composition.",
+        "Own independent active-schedule and history pagination, partial history recovery, cursor de-duplication, and stable session boundaries.",
+        "Group events by lifecycle without duplicating Today’s command-centre policy.",
+        "Own entry to create, repeat, event detail, and event manage flows while those destination features retain their mutations.",
+        "Retain past events and future events outside Today’s time-sensitivity horizon."
+      ],
+      "doesNotOwn": [
+        "The attention policy, local attendance outbox merge, or Dress Rehearsal entry point.",
+        "Event creation form state, Event Manage mutations, booking decisions, or Event Success runtime behavior.",
+        "CRM, Forms, Inbox, Organizer, or global shell state."
+      ],
+      "currentRoots": ["lib/hosts/events"],
+      "featureContractBindings": [
+        {
+          "contractId": "feature.host_home",
+          "surfaceId": "host_flutter",
+          "actionOwnerIds": [
+            "events_route",
+            "workspace",
+            "events_list",
+            "events_timeline",
+            "host_shell"
+          ],
+          "includeDataContracts": false
+        }
+      ],
+      "additionalCodeOwners": [],
+      "additionalDataContracts": [
+        "contracts/firestore/clubs.schema.json",
+        "contracts/firestore/events.schema.json",
+        "contracts/firestore/organizer_team_memberships.schema.json",
+        "contracts/firestore/organizers.schema.json"
+      ],
+      "sharedDependencies": [
+        {
+          "path": "lib/events/data/event_repository.dart",
+          "reason": "The shared repository owns canonical event queries; Events owns inventory pagination and display policy."
+        },
+        {
+          "path": "lib/core/presentation/host_app_shell.dart",
+          "reason": "The shell owns global destination navigation and organizer scope."
+        }
+      ],
+      "testFiles": [
+        "test/hosts/host_events_screen_state_test.dart",
+        "test/hosts/host_events_timeline_controller_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ]
+    },
+    {
+      "id": "audience",
+      "destination": "hostAudience",
+      "primaryRouteId": "hostAudienceScreen",
+      "ownedRouteIds": [
+        "hostAudienceScreen",
+        "hostAddCustomerScreen",
+        "hostCreateSavedAudienceScreen",
+        "hostSavedAudienceDetailScreen",
+        "hostFormTemplatesScreen",
+        "hostFormResponseDetailScreen",
+        "hostFormBuilderScreen",
+        "hostFormPreviewScreen",
+        "hostFormShareScreen",
+        "hostFormAnalyticsScreen",
+        "hostFormAutomationsScreen",
+        "hostApplicationsScreen",
+        "hostApplicationDetailScreen",
+        "hostCustomerDetailScreen"
+      ],
+      "handoffRouteIds": ["hostInboxScreen", "hostAppEventDetailScreen"],
+      "targetRoot": "lib/hosts/audience",
+      "migrationStatus": "targetDefinedLegacyImplementation",
+      "purpose": "Own the participant relationship system as one destination: People, saved Audiences, Forms, Responses, and organizer Applications, with shared organizer scope and deliberate handoff to Inbox for delivery.",
+      "responsibilities": [
+        "Own the /host/audience destination and its People, Audiences, Forms, and Responses peer modes; Forms must not return as a global tab.",
+        "Own customer directory, identity, private memory, tags, notes, attendance history, merge review, and contact administration.",
+        "Own reusable audience definitions, exact previews, reach summaries, archive, and the vocabulary that decides who belongs to a group.",
+        "Own form templates, drafts, builder state, publication, share links, responses, analytics, exports, and automation configuration or recovery.",
+        "Own organizer application queues and review routing as participant intake.",
+        "Pass saved-audience or contact identity to Inbox without implementing message delivery."
+      ],
+      "doesNotOwn": [
+        "Conversation threads, campaign delivery, provider send adapters, or sender onboarding; those belong to Inbox.",
+        "Event inventory, event-management mutations, organizer profile settings, or payout setup.",
+        "High-spender segmentation until canonical completed non-refunded payment totals are projected into indexed contact traits."
+      ],
+      "currentRoots": [
+        "lib/hosts/presentation/customers",
+        "lib/hosts/presentation/forms",
+        "lib/hosts/presentation/applications"
+      ],
+      "featureContractBindings": [
+        {
+          "contractId": "feature.host_customers",
+          "surfaceId": "host_flutter",
+          "actionOwnerIds": [
+            "customers_screen",
+            "audiences_workspace",
+            "audience_editor",
+            "customer_create",
+            "customers_directory",
+            "customers_mutations",
+            "customer_detail",
+            "customer_memory",
+            "customer_merge_review"
+          ],
+          "includeDataContracts": true
+        }
+      ],
+      "additionalCodeOwners": [
+        {
+          "id": "audience_view",
+          "file": "lib/hosts/presentation/host_audience_view.dart",
+          "symbol": "HostAudienceView",
+          "role": "Closed peer-mode vocabulary for People, Audiences, Forms, and Responses."
+        },
+        {
+          "id": "forms_screen",
+          "file": "lib/hosts/presentation/forms/host_forms_screen.dart",
+          "symbol": "HostFormsScreen",
+          "role": "Forms and Responses route composition inside Audience."
+        },
+        {
+          "id": "forms_directory",
+          "file": "lib/hosts/presentation/forms/host_forms_controller.dart",
+          "symbol": "HostFormsDirectoryController",
+          "role": "Organizer form inventory state."
+        },
+        {
+          "id": "form_editor",
+          "file": "lib/hosts/presentation/forms/host_forms_controller.dart",
+          "symbol": "HostFormEditorController",
+          "role": "Draft/editor state and publication actions."
+        },
+        {
+          "id": "form_responses",
+          "file": "lib/hosts/presentation/forms/host_form_operations_controller.dart",
+          "symbol": "HostFormResponsesController",
+          "role": "Response list and review-facing projection."
+        },
+        {
+          "id": "form_automations",
+          "file": "lib/hosts/presentation/forms/host_form_operations_controller.dart",
+          "symbol": "HostFormAutomationsController",
+          "role": "Automation configuration and run recovery."
+        },
+        {
+          "id": "applications",
+          "file": "lib/hosts/presentation/applications/host_applications_controller.dart",
+          "symbol": "HostApplicationsDirectoryController",
+          "role": "Organizer application intake queue."
+        }
+      ],
+      "additionalDataContracts": [
+        "contracts/firestore/organizer_applications.schema.json",
+        "contracts/firestore/organizer_form_automation_rules.schema.json",
+        "contracts/firestore/organizer_form_automation_runs.schema.json",
+        "contracts/firestore/organizer_form_responses.schema.json",
+        "contracts/firestore/organizer_form_versions.schema.json",
+        "contracts/firestore/organizer_forms.schema.json",
+        "contracts/shared/organizer_form_common.schema.json",
+        "contracts/shared/organizer_form_response_common.schema.json"
+      ],
+      "sharedDependencies": [
+        {
+          "path": "lib/hosts/data/host_crm_repository.dart",
+          "reason": "Current shared Host data seam for organizer contacts and saved audiences until A3 relocates it."
+        },
+        {
+          "path": "lib/hosts/data/host_forms_repository.dart",
+          "reason": "Current shared Host data seam for forms, responses, exports, and automations until A3 relocates it."
+        },
+        {
+          "path": "lib/core/presentation/host_app_shell.dart",
+          "reason": "The shell owns global destination navigation and organizer scope."
+        }
+      ],
+      "testFiles": [
+        "test/hosts/host_customers_screen_state_test.dart",
+        "test/hosts/forms/host_forms_screen_test.dart",
+        "test/hosts/forms/host_form_builder_screen_test.dart",
+        "test/hosts/forms/host_form_response_detail_screen_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ]
+    },
+    {
+      "id": "inbox",
+      "destination": "hostInbox",
+      "primaryRouteId": "hostInboxScreen",
+      "ownedRouteIds": ["hostInboxScreen", "hostOrganizerMessagingScreen"],
+      "handoffRouteIds": ["hostChatScreen", "hostAudienceScreen"],
+      "targetRoot": "lib/hosts/inbox",
+      "migrationStatus": "targetDefinedLegacyImplementation",
+      "purpose": "Own organizer communication work: inquiry conversations, WhatsApp threads, outbound Sends, saved-audience consumption, delivery operations, and sender-readiness recovery.",
+      "responsibilities": [
+        "Own the /host/inbox destination, its Inbox and Sends peer workspaces, organizer/event scope, search, and thread selection.",
+        "Own broadcast, announcement, campaign, follower-update, manual-send, and WhatsApp reply composition or delivery orchestration.",
+        "Own sender setup and provider-readiness recovery for otherwise eligible sends.",
+        "Consume saved-audience identifiers and recipient projections without recreating Audience membership logic.",
+        "Preserve conversation drafts, send status, retries, and deep links to a selected thread."
+      ],
+      "doesNotOwn": [
+        "Customer identity, tagging, saved-audience definitions, form responses, or participant segmentation.",
+        "Event lifecycle management, organizer profile/settings, or payment-account onboarding.",
+        "The shared Consumer/Host chat message implementation when a dedicated chat route owns it."
+      ],
+      "currentRoots": ["lib/hosts/presentation/inbox"],
+      "featureContractBindings": [
+        {
+          "contractId": "feature.host_inbox",
+          "surfaceId": "host_flutter",
+          "actionOwnerIds": [
+            "inbox_screen",
+            "search_header",
+            "search_query",
+            "broadcast_composer",
+            "broadcast_controller",
+            "sends_workspace",
+            "manual_send_queue",
+            "follower_update_composer",
+            "messaging_setup_screen",
+            "whatsapp_setup",
+            "campaign_composer",
+            "campaign_controller",
+            "whatsapp_thread"
+          ],
+          "includeDataContracts": true
+        }
+      ],
+      "additionalCodeOwners": [],
+      "additionalDataContracts": [],
+      "sharedDependencies": [
+        {
+          "path": "lib/chats/presentation/inbox",
+          "reason": "Shared inquiry list/search presentation remains a cross-role chat implementation seam."
+        },
+        {
+          "path": "lib/hosts/presentation/host_audience_controller.dart",
+          "reason": "Legacy campaign orchestration is relocated by A4; the responsibility remains Inbox-owned now."
+        },
+        {
+          "path": "lib/core/presentation/host_app_shell.dart",
+          "reason": "The shell owns global destination navigation and organizer scope."
+        }
+      ],
+      "testFiles": [
+        "test/hosts/host_inbox_screen_test.dart",
+        "test/hosts/host_inbox_view_model_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ]
+    },
+    {
+      "id": "organizer",
+      "destination": "hostOrganizer",
+      "primaryRouteId": "hostOrganizerScreen",
+      "ownedRouteIds": [
+        "hostOrganizerScreen",
+        "hostClubsScreen",
+        "hostClubEventDefaultsScreen",
+        "hostClubLiveGuideScreen",
+        "hostClubTeamScreen",
+        "hostClubPaymentsScreen"
+      ],
+      "handoffRouteIds": [
+        "hostCreateClubScreen",
+        "hostEventsScreen",
+        "hostAppEventManageScreen",
+        "hostClubDetailScreen"
+      ],
+      "targetRoot": "lib/hosts/organizer",
+      "migrationStatus": "targetDefinedLegacyImplementation",
+      "purpose": "Own the organizer as an operating entity: profile and media, publication readiness, defaults, Live Guide, team and host identity, payouts, insights, preview, and account-level controls.",
+      "responsibilities": [
+        "Own the /host/organizer destination, organizer selection, Edit, Insights, Preview, and settings spokes.",
+        "Own organizer identity, type, contact data, media, publication coaching, and event defaults.",
+        "Own team membership, ownership transfer, professional host profile, and hosted-organizer navigation.",
+        "Own payout-account setup/status surfaces and organizer analytics query controls.",
+        "Own account exit and organizer-level settings that do not belong to an event, audience, or communication workflow."
+      ],
+      "doesNotOwn": [
+        "Event inventory, Event Create internals, Event Manage mutations, or Today attention policy.",
+        "Customer/audience membership, form authoring, message delivery, or shared public organizer-detail behavior.",
+        "Provider-hosted onboarding internals, analytics computation, or backend authorization rules."
+      ],
+      "currentRoots": [
+        "lib/hosts/presentation/host_operations",
+        "lib/hosts/presentation/club_management",
+        "lib/hosts/presentation/payments"
+      ],
+      "featureContractBindings": [
+        {
+          "contractId": "feature.host_organizers",
+          "surfaceId": "host_flutter",
+          "actionOwnerIds": [
+            "route_screen",
+            "workspace",
+            "edit_tab",
+            "edit_controller",
+            "spoke_resolver",
+            "defaults_saver",
+            "insights",
+            "payout_adapter",
+            "payout_controller",
+            "team_screen",
+            "team_section",
+            "team_controller",
+            "profile_controller",
+            "auth_controller",
+            "host_shell"
+          ],
+          "includeDataContracts": true
+        }
+      ],
+      "additionalCodeOwners": [],
+      "additionalDataContracts": [],
+      "sharedDependencies": [
+        {
+          "path": "lib/clubs/data/clubs_repository.dart",
+          "reason": "Transitional Organizer repository alias remains the canonical Flutter read/write seam during the domain cutover."
+        },
+        {
+          "path": "lib/payments/data/host_payment_account_repository.dart",
+          "reason": "Provider-neutral payout account persistence and callable orchestration."
+        },
+        {
+          "path": "lib/core/presentation/host_app_shell.dart",
+          "reason": "The shell owns global destination navigation and organizer scope."
+        }
+      ],
+      "testFiles": [
+        "test/hosts/host_club_defaults_saver_test.dart",
+        "test/hosts/host_organizer_identity_switcher_test.dart",
+        "test/hosts/host_team_management_controller_test.dart",
+        "test/hosts/host_team_management_section_test.dart",
+        "test/payments/host_payment_account_test.dart",
+        "test/hosts/host_operations_screen_test.dart"
+      ]
+    }
+  ]
+}

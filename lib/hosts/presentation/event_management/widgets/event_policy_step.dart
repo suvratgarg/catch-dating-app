@@ -355,6 +355,7 @@ class EventPolicyStep extends StatelessWidget {
                       body: context
                           .l10n
                           .hostsEventPolicyStepBodyIncreaseTheStraightMen,
+                      bodyMaxLines: 4,
                       value: dynamicPricingEnabled,
                       onChanged: onDynamicPricingChanged,
                     ),

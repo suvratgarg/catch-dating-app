@@ -5,11 +5,15 @@ import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -94,7 +98,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Messaging'), findsOneWidget);
-    expect(find.text('One-to-one conversations and replies.'), findsOneWidget);
+    expect(find.text('One-to-one conversations and replies.'), findsNothing);
     expect(find.text('Inbox'), findsOneWidget);
     expect(find.text('Sends'), findsOneWidget);
     expect(find.byType(HostInboxScopeSelector), findsOneWidget);
@@ -143,16 +147,51 @@ void main() {
         previews: [preview],
         participations: const [],
         now: now,
+        routeWidth: 1200,
       ),
     );
     await pumpFeatureUi(tester);
 
+    expect(find.byType(CatchScreenScaffold), findsOneWidget);
     expect(
       find.byKey(const ValueKey('catch-master-detail-divider')),
       findsOneWidget,
     );
     expect(find.text('Select a conversation'), findsOneWidget);
     expect(find.text('Expanded Guest'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('split view uses route-body width after shell chrome', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final preview = _preview(
+      uid: 'constrained-guest',
+      name: 'Constrained Guest',
+      eventIds: const [],
+    );
+
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: [preview],
+        participations: const [],
+        now: now,
+        routeWidth: 700,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.byKey(const ValueKey('catch-master-detail-divider')),
+      findsNothing,
+    );
+    expect(find.text('Select a conversation'), findsNothing);
+    expect(find.text('Constrained Guest'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -193,6 +232,34 @@ void main() {
     await tester.tap(find.text('Send an event announcement'));
     await pumpFeatureUi(tester);
     expect(find.text('New broadcast'), findsOneWidget);
+  });
+
+  testWidgets('wide Sends keeps its operational content in a bounded lane', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: const [],
+        participations: const [],
+        now: now,
+        initialWorkspace: HostMessagingWorkspace.campaigns,
+        routeWidth: 1200,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    final lane = tester.widget<CatchSliverContentWidth>(
+      find.byType(CatchSliverContentWidth),
+    );
+    expect(lane.maxExtent, CatchLayout.hostMessagingSendsPageMaxExtent);
+    expect(find.text('Outbound delivery and history.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('keeps WhatsApp threads inside the existing Inbox scopes', (
@@ -548,6 +615,58 @@ void main() {
     expect(find.byType(HostInboxAudienceRail), findsNothing);
   });
 
+  testWidgets(
+    'scope menu stays above floating shell navigation and scrolls internally',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(400, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      const bottomOverlayInset = 100.0;
+      final events = [
+        for (var index = 0; index < 20; index++)
+          event_test.buildEvent(
+            id: 'event-$index',
+            name: 'Scope event $index',
+            startTime: now.add(Duration(days: index + 1)),
+            endTime: now.add(Duration(days: index + 1, hours: 1)),
+          ),
+      ];
+
+      await tester.pumpWidget(
+        _app(
+          event: events.first,
+          events: events,
+          previews: const [],
+          participations: const [],
+          now: now,
+          routeWidth: 400,
+          floatingBottomOverlayInset: bottomOverlayInset,
+        ),
+      );
+      await pumpFeatureUi(tester);
+
+      await tester.tap(find.bySemanticsLabel(RegExp('Inbox scope')));
+      await pumpFeatureUi(tester);
+
+      final menu = find.byType(CatchMenu<HostInboxScope>);
+      expect(menu, findsOneWidget);
+      final usableBottom =
+          tester.view.physicalSize.height / tester.view.devicePixelRatio -
+          bottomOverlayInset;
+      expect(tester.getRect(menu).bottom, lessThanOrEqualTo(usableBottom));
+      final scrollable = find.descendant(
+        of: menu,
+        matching: find.byType(Scrollable),
+      );
+      expect(scrollable, findsOneWidget);
+      expect(
+        tester.state<ScrollableState>(scrollable).position.maxScrollExtent,
+        greaterThan(0),
+      );
+    },
+  );
+
   testWidgets('General scope excludes event-specific inquiries', (
     tester,
   ) async {
@@ -653,6 +772,7 @@ void main() {
 
 Widget _app({
   required Event? event,
+  List<Event>? events,
   required List<ChatThreadPreview> previews,
   required List<EventParticipation> participations,
   required DateTime now,
@@ -664,12 +784,25 @@ Widget _app({
   List<HostManualSendTask> manualSendTasks = const [],
   AsyncValue<HostWhatsappThreadPage>? whatsappThreadsValue,
   int remainingFollowerQuota = 3,
+  double routeWidth = 390,
+  double floatingBottomOverlayInset = 0,
 }) {
   final club = club_test.buildClub(id: event?.clubId ?? 'club-1');
   final inbox = ChatsListViewModel(
     newMatches: const [],
     conversations: previews,
     totalThreadCount: previews.length,
+  );
+  final screen = HostInboxScreen(
+    initialScope: initialScope,
+    initialWorkspace: initialWorkspace,
+    initialSavedAudienceId: initialSavedAudienceId,
+    syncSelectionToRoute: false,
+    now: now,
+  );
+  final route = Align(
+    alignment: Alignment.topLeft,
+    child: SizedBox(width: routeWidth, height: 900, child: screen),
   );
   return ProviderScope(
     overrides: [
@@ -680,7 +813,7 @@ Widget _app({
       hostOperableClubsProvider('host-1').overrideWithValue(AsyncData([club])),
       watchEventsForClubProvider(
         club.id,
-      ).overrideWith((ref) => Stream.value([?event])),
+      ).overrideWith((ref) => Stream.value(events ?? [?event])),
       chatsListViewModelProvider.overrideWithValue(AsyncData(inbox)),
       hostMessagingSetupProvider(
         club.id,
@@ -736,13 +869,14 @@ Widget _app({
     ],
     child: MaterialApp(
       theme: AppTheme.light,
-      home: HostInboxScreen(
-        initialScope: initialScope,
-        initialWorkspace: initialWorkspace,
-        initialSavedAudienceId: initialSavedAudienceId,
-        syncSelectionToRoute: false,
-        now: now,
-      ),
+      home: floatingBottomOverlayInset > 0
+          ? AppShellActiveTab(
+              index: appShellChatsTabIndex,
+              bottomBarPlacement: AppShellBottomBarPlacement.floating,
+              bottomOverlayInset: floatingBottomOverlayInset,
+              child: route,
+            )
+          : route,
     ),
   );
 }

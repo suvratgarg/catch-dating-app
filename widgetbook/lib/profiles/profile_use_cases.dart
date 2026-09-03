@@ -35,6 +35,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
+import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state_provider.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart'
@@ -146,21 +147,21 @@ Widget profileScreenSelfRouteStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Self tab body states',
-  type: SelfProfileTabBody,
+  type: ProfileScreen,
   path: '[P1 product surfaces]/Profiles/Sections',
 )
 Widget profileScreenSelfTabBodyStates(BuildContext context) {
   const idleUploadState = _idlePhotoUploadState;
 
   return _ProfileCatalog(
-    title: 'SelfProfileTabBody',
+    title: 'ProfileScreen tab body',
     contractId: 'screen.profile.self.tab_body',
     children: [
       _StateCard(
         label: 'loading tab shell',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
-          child: _SelfProfileTabBodyPreview(
+          child: _ProfileScreenTabBodyPreview(
             state: SelfProfileScreenState(
               status: SelfProfileRouteStatus.loading,
               uploadState: idleUploadState,
@@ -173,7 +174,7 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
         label: 'load error',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
-          child: _SelfProfileTabBodyPreview(
+          child: _ProfileScreenTabBodyPreview(
             state: SelfProfileScreenState(
               status: SelfProfileRouteStatus.error,
               error: StateError('Profile failed'),
@@ -188,7 +189,7 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
         label: 'profile unavailable',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
-          child: _SelfProfileTabBodyPreview(
+          child: _ProfileScreenTabBodyPreview(
             state: SelfProfileScreenState(
               status: SelfProfileRouteStatus.unavailable,
               uploadState: idleUploadState,
@@ -201,7 +202,7 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
         label: 'ready edit tab',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
-          child: _SelfProfileTabBodyPreview(
+          child: _ProfileScreenTabBodyPreview(
             state: SelfProfileScreenState.fromAsync(
               profileState: CatchAsyncState.data(_viewer),
               today: ProfileSurfaceFixtures.now,
@@ -230,7 +231,14 @@ Widget profileInsightsTabSliverBodyStates(BuildContext context) {
         label: 'analytics body',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
-          child: CustomScrollView(slivers: [ProfileInsightsTabSliverBody()]),
+          child: CustomScrollView(
+            slivers: [
+              CatchSliverScreenBody(
+                layout: CatchScreenBodyLayout.standard,
+                slivers: [ProfileInsightsTabSliverBody()],
+              ),
+            ],
+          ),
         ),
       ),
     ],
@@ -847,9 +855,14 @@ Widget profileTabSliverBodyStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
           child: CustomScrollView(
             slivers: [
-              ProfileTabSliverBody(
-                user: _viewer,
-                uploadState: _idlePhotoUploadState,
+              CatchSliverScreenBody(
+                layout: CatchScreenBodyLayout.standard,
+                slivers: [
+                  ProfileTabSliverBody(
+                    user: _viewer,
+                    uploadState: _idlePhotoUploadState,
+                  ),
+                ],
               ),
             ],
           ),
@@ -873,7 +886,14 @@ Widget profileTabSkeletonSliverBodyStates(BuildContext context) {
         label: 'loading',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
-          child: CustomScrollView(slivers: [ProfileTabSkeletonSliverBody()]),
+          child: CustomScrollView(
+            slivers: [
+              CatchSliverScreenBody(
+                layout: CatchScreenBodyLayout.standard,
+                slivers: [ProfileTabSkeletonSliverBody()],
+              ),
+            ],
+          ),
         ),
       ),
     ],
@@ -2019,66 +2039,16 @@ class _SelfProfileRouteScope extends StatelessWidget {
   }
 }
 
-class _SelfProfileTabBodyPreview extends StatefulWidget {
-  const _SelfProfileTabBodyPreview({required this.state});
+class _ProfileScreenTabBodyPreview extends StatelessWidget {
+  const _ProfileScreenTabBodyPreview({required this.state});
 
   final SelfProfileScreenState state;
 
   @override
-  State<_SelfProfileTabBodyPreview> createState() =>
-      _SelfProfileTabBodyPreviewState();
-}
-
-class _SelfProfileTabBodyPreviewState extends State<_SelfProfileTabBodyPreview>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-  late final ScrollController _previewScrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-    _previewScrollController = ScrollController();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    _previewScrollController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        final headerSlivers = CatchSliverHeader(
-          title: const CatchScreenHeaderTitle.block(
-            title: 'Your profile',
-            actions: [ProfileSettingsButton()],
-          ),
-          bottomHeight: CatchLayout.tabRailHeight,
-          bottom: ProfileTabBar(controller: _tabController),
-        ).buildSlivers(context);
-        final collapsibleSlivers = headerSlivers.take(headerSlivers.length - 1);
-        final pinnedSliver = headerSlivers.last;
-
-        return [
-          ...collapsibleSlivers,
-          SliverOverlapAbsorber(
-            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-            sliver: pinnedSliver,
-          ),
-        ];
-      },
-      body: SelfProfileTabBody(
-        state: widget.state,
-        controller: _tabController,
-        previewScrollController: _previewScrollController,
-        onPreviewForwardScroll: (_) => 0,
-        onPreviewLeadingOverscroll: (_) {},
-        onRetry: () {},
-      ),
+    return ProviderScope(
+      overrides: [selfProfileScreenStateProvider.overrideWithValue(state)],
+      child: const ProfileScreen(),
     );
   }
 }

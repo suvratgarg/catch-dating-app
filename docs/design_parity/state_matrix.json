@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-08-31",
+  "updated": "2026-09-01",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -4704,12 +4704,22 @@
           "routeId": "hostHomeScreen",
           "routeIds": [
             "hostHomeScreen",
+            "hostTodayScreen",
             "hostEventsScreen"
           ],
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
-            "lib/hosts/presentation/host_home_screen_state.dart",
-            "lib/hosts/presentation/host_events_timeline_controller.dart",
+            "lib/hosts/events/presentation/host_events_screen.dart",
+            "lib/hosts/events/presentation/host_events_state.dart",
+            "lib/hosts/events/presentation/host_events_view_model.dart",
+            "lib/hosts/events/presentation/host_events_timeline_controller.dart",
+            "lib/hosts/data/host_attendance_outbox.dart",
+            "lib/hosts/today/data/host_attention_repository.dart",
+            "lib/hosts/today/domain/host_attention_item.dart",
+            "lib/hosts/today/presentation/host_today_feed_controller.dart",
+            "lib/hosts/today/presentation/host_today_screen.dart",
+            "lib/hosts/today/presentation/host_today_state.dart",
+            "lib/hosts/today/presentation/host_today_view_model.dart",
             "lib/clubs/data/clubs_repository.dart",
             "lib/events/data/event_repository.dart"
           ],
@@ -4759,7 +4769,7 @@
               "id": "uid_missing",
               "kind": "permission",
               "status": "captured",
-              "notes": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry. Signed-out/access capture is registered.",
+              "notes": "Null uid renders the signed-out Host Home route state with Sign in required copy and an auth route retry. Signed-out/access capture is registered.",
               "previewIds": [
                 "hostHomeRouteStates"
               ],
@@ -4953,7 +4963,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "_HostEventsScaffold owns the typed Add event callback and pushes hostCreateEventScreen with selected club id plus club extra. HostEventsClubCard receives the callback instead of constructing route parameters locally.",
+              "notes": "HostEventsRouteScaffold owns the typed Add event callback and pushes hostCreateEventScreen with selected organizer id plus organizer extra. HostEventsClubCard receives the callback instead of constructing route parameters locally.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -4966,10 +4976,22 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "HostEventsScaffold owns one lifecycle-aware event callback and pushes hostAppEventManageScreen with clubId, eventId, event extra, and live/setup/report section. HostEventOperationalSpotlight and HostEventLifecycleRow remain provider/router-free and delegate taps to their parent.",
+              "notes": "HostTodayScreen and HostEventsRouteScaffold own independent lifecycle-aware event callbacks and push hostAppEventManageScreen with organizer id, event id, event extra, and live/setup/report section. Provider-free Today and Events rows delegate taps to their owning route edges.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "HostEventLifecycleRow/Exact catalog"
+              ]
+            },
+            {
+              "id": "dress_rehearsal_action",
+              "kind": "populated",
+              "status": "tested",
+              "tests": [
+                "test/hosts/host_operations_screen_test.dart"
+              ],
+              "notes": "HostTodayScreen owns the dedicated Dress Rehearsal callback and pushes hostEventRehearsalStartScreen for the selected organizer. Event creation does not expose rehearsal as a creation intent.",
+              "previewIds": [
+                "hostHomeRouteStates"
               ]
             },
             {
@@ -5035,28 +5057,35 @@
             {
               "id": "DP-HOST-HOME-003",
               "status": "closed",
-              "nextAction": "HostHomeRouteState maps uid plus host-club async state into auth-required, loading, error, empty, or loaded branches before shell composition. HostHomeScreenState owns selected organizer; HostEventsTimelineController owns schedule/history pagination and partial recovery; HostEventsOverviewState owns live-or-next spotlight and attention derivation; HostEventsWorkspaceState owns loading/error/empty/populated branches, grouping, featured-event de-duplication, Repeat availability, and render-ready rows."
+              "nextAction": "Closed. HostTodayScreen, HostTodayRouteState, HostTodayState, HostTodayFeedController, and HostAttentionPolicy own the independent Today route, live-first spotlight, exhaustive attention, and seven-day projection. HostEventsScreen, HostEventsRouteState, HostEventsWorkspaceState, and HostEventsTimelineController own the independent Events route and durable inventory under lib/hosts/events/presentation/."
             },
             {
               "id": "DP-HOST-HOME-004",
               "status": "blocked",
-              "nextAction": "Create and approve a canonical consolidated Events reference before recalculating or removing historical Host Events and Today comparison debt. Compose real pending-approval, offer, draft, and guest-inquiry sources into the attention model only when their backend owners exist. Additional loading/empty/role/theme variants still need design exports."
+              "nextAction": "Approve canonical reference exports for the separate Today and Events destinations before recalculating or removing historical comparison debt. The populated Today runtime now has compact and wide captures; additional loading, quiet, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and Events lifecycle variants still need design exports."
             },
             {
               "id": "DS-HOST-HOME-005",
               "status": "open",
-              "nextAction": "Close feature.host_home evidence exceptions with focused tests for 12 registered route, nested-event, empty, offline, accessibility, and theme states; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
+              "nextAction": "Close feature.host_home's 22 registered evidence exceptions with focused route, attention-coverage, nested-event, empty, offline, accessibility, and theme tests; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
             }
           ]
         },
         {
-          "id": "host.customers",
-          "routeId": "hostCustomersScreen",
+          "id": "host.audience",
+          "routeId": "hostAudienceScreen",
           "routeIds": [
-            "hostCustomersScreen",
+            "hostAudienceScreen",
             "hostAddCustomerScreen",
             "hostCreateSavedAudienceScreen",
             "hostSavedAudienceDetailScreen",
+            "hostFormTemplatesScreen",
+            "hostFormResponseDetailScreen",
+            "hostFormBuilderScreen",
+            "hostFormPreviewScreen",
+            "hostFormShareScreen",
+            "hostFormAnalyticsScreen",
+            "hostFormAutomationsScreen",
             "hostCustomerDetailScreen"
           ],
           "implementationPaths": [
@@ -5762,7 +5791,7 @@
               "id": "uid_missing",
               "kind": "permission",
               "status": "captured",
-              "notes": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry. Host Clubs now has a deterministic signed-out/access capture.",
+              "notes": "Null uid renders CatchSliverErrorState inside HostOrganizerStateScaffold with Sign in required copy and auth route retry, preserving the canonical Organizer title, pinned peer rail, body rhythm, and terminal clearance.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5774,7 +5803,7 @@
               "id": "host_clubs_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "_hostClubsForUserProvider loading renders _HostLoadingScreen with HostRouteLoadingBody, preserving host shell and tab-rail skeleton chrome. Keep loading capture synced with future HostRouteLoadingBody visual edits.",
+              "notes": "Authentication or organizer loading renders HostRouteLoadingBody inside CatchSliverStateViewport while HostOrganizerStateScaffold preserves the canonical Organizer title, pinned peer rail, body rhythm, and terminal clearance.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5786,7 +5815,7 @@
               "id": "host_clubs_error",
               "kind": "error",
               "status": "captured",
-              "notes": "Hosted or owned club stream errors become CatchErrorScaffold.fromError with AppErrorContext.club and retry invalidation. Generic and offline load-error captures are now registered.",
+              "notes": "Authentication and organizer stream errors become CatchSliverErrorState inside HostOrganizerStateScaffold with typed error context and retry owned by CatchAsyncValueView. Generic and offline load-error captures are registered.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -5799,7 +5828,7 @@
               "id": "no_host_clubs",
               "kind": "empty",
               "status": "captured",
-              "notes": "No hosted or owned clubs renders HostEmptyActionCard with No host clubs yet copy. Decide whether this route should expose create-club directly or defer to host setup routes.",
+              "notes": "No hosted or owned clubs renders CatchSliverEmptyState inside HostOrganizerStateScaffold with the direct create-organizer action and the same canonical tabbed route geometry.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -7434,6 +7463,7 @@
             "host_manage_attendance_mutation_pending",
             "host_manage_attendance_mutation_error",
             "host_live_console",
+            "host_live_console_wide",
             "host_manage_live_unavailable",
             "host_manage_live_plan_loading",
             "host_manage_live_plan_error",
@@ -7633,6 +7663,7 @@
                 "host_manage_setup_private_access",
                 "host_manage_attendance_roster",
                 "host_live_console",
+                "host_live_console_wide",
                 "host_post_event_report"
               ],
               "widgetbook": [
@@ -7810,7 +7841,8 @@
                 "test/hosts/host_create_event_screen_test.dart"
               ],
               "captureIds": [
-                "host_live_console"
+                "host_live_console",
+                "host_live_console_wide"
               ],
               "previewIds": [
                 "HostEventManageRouteScreen/Route and section states"
@@ -7835,7 +7867,7 @@
               "id": "live_event_success_ready",
               "kind": "populated",
               "status": "captured",
-              "notes": "Saved live plans load roster, assignments, preferences, rotation assignments, wingman requests, reveal, and override states through EventSuccessHostSection. The host_live_console capture covers the compact saved live baseline; dedicated captures now cover active wingman requests, assigned micro-pods, guided rotations, check-in QR, conversation cues, revealed partner round, and host-edited micro-pod overrides. Compact step-count semantics remain a product-model follow-up only if kept.",
+              "notes": "Saved live plans load roster, assignments, preferences, rotation assignments, wingman requests, reveal, and override states through EventSuccessHostSection. host_live_console and host_live_console_wide cover the compact and wide saved-live baseline; dedicated captures cover active wingman requests, assigned micro-pods, guided rotations, check-in QR, conversation cues, revealed partner round, and host-edited micro-pod overrides. Compact step-count semantics remain a product-model follow-up only if kept.",
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
@@ -7844,6 +7876,7 @@
               ],
               "captureIds": [
                 "host_live_console",
+                "host_live_console_wide",
                 "host_manage_live_wingman_requests",
                 "host_manage_live_micro_pods_assigned",
                 "host_manage_live_guided_rotations_assigned",
@@ -8620,7 +8653,9 @@
             "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
             "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
+            "lib/chats/presentation/chat_screen.dart",
             "lib/core/widgets/catch_person_row.dart",
+            "lib/core/widgets/catch_master_detail_layout.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "lib/events/data/event_repository.dart",
             "lib/events/data/event_participation_repository.dart"
@@ -8639,6 +8674,7 @@
             "host_inbox_offline",
             "host_inbox_empty",
             "host_inbox_queries",
+            "host_inbox_thread_selected",
             "host_messaging_campaigns",
             "host_inbox_prospective",
             "host_inbox_general",
@@ -8736,15 +8772,20 @@
               "id": "populated_queries",
               "kind": "populated",
               "status": "captured",
-              "notes": "Host Inbox renders the selected event, Booked/Prospective personal inquiry rows, and roster-backed broadcast card inside the production HostAppShell. The fresh 2026-07-11 strict comparison passes at 7.34% mismatch / 7.62 meanDelta. HOST-V2-INBOX-PARITY-001 remains active only because production callable/IAM and delivery proof are external and not yet recorded.",
+              "notes": "Host Inbox renders the selected event, Booked/Prospective personal inquiry rows, and roster-backed broadcast card inside the production HostAppShell. At capable route-body widths it keeps a semantic selected row beside a keyed thread and retains per-thread drafts across resize. The fresh 2026-07-11 strict comparison passes at 7.34% mismatch / 7.62 meanDelta. HOST-V2-INBOX-PARITY-001 remains active only because production callable/IAM and delivery proof are external and not yet recorded.",
               "tests": [
-                "test/chats/chat_inbox_screen_test.dart"
+                "test/chats/chat_inbox_screen_test.dart",
+                "test/chats/chat_conversations_list_test.dart",
+                "test/chats/chat_screen_test.dart",
+                "test/core/catch_master_detail_layout_test.dart",
+                "test/hosts/host_inbox_screen_test.dart"
               ],
               "previewIds": [
                 "HostInboxScreen/Event-scoped states"
               ],
               "captureIds": [
                 "host_inbox_queries",
+                "host_inbox_thread_selected",
                 "host_inbox_text_scale_2",
                 "host_inbox_light_dark"
               ]
@@ -8972,7 +9013,7 @@
               "tests": [
                 "test/hosts/host_crm_repository_test.dart"
               ],
-              "notes": "Active campaigns expose authoritative dispatch status and cancellation through the Messaging workspace."
+              "notes": "Active campaigns expose authoritative dispatch status and cancellation through the Inbox destination's Sends workspace."
             },
             {
               "id": "search_collapsed",

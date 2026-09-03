@@ -989,6 +989,37 @@ describe("firestore.rules", () => {
       )));
     });
 
+    it("keeps organizer attention projections server-only", async () => {
+      await seed(["organizerAttentionItems", "attention-1"], {
+        organizerId: "organizer-1",
+        kind: "eventWaitlistReview",
+        status: "open",
+        dueAt: Timestamp.fromDate(new Date("2026-09-02T10:00:00.000Z")),
+      });
+
+      for (const uid of ["owner-1", "owner-2"]) {
+        const db = authedDb(uid);
+        await assertFails(getDoc(doc(
+          db,
+          "organizerAttentionItems",
+          "attention-1",
+        )));
+        await assertFails(getDocs(query(
+          collection(db, "organizerAttentionItems"),
+          where("organizerId", "==", "organizer-1"),
+        )));
+        await assertFails(setDoc(doc(
+          db,
+          "organizerAttentionItems",
+          `client-${uid}`,
+        ), {
+          organizerId: "organizer-1",
+          kind: "eventWaitlistReview",
+          status: "open",
+        }));
+      }
+    });
+
     it("keeps organizer form state server-only", async () => {
       await seed(["organizerForms", "form-1"], {
         organizerId: "organizer-1",

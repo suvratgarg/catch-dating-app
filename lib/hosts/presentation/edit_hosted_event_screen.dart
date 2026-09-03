@@ -419,16 +419,15 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               : CatchTopBarLeading.auto,
           divider: scrolledUnder,
         ),
-        body: SafeArea(
-          top: false,
+        body: CatchRouteBody.standard(
           child: IgnorePointer(
             ignoring: mutation.isPending,
             child: Form(
               key: _formKey,
               autovalidateMode: widget.formAutovalidateMode,
-              child: ListView(
+              child: Column(
                 key: EditHostedEventKeys.scrollView,
-                padding: CatchInsets.pageBody,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CatchSectionList(
                     emptyStateOmitted: true,

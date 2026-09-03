@@ -5,30 +5,18 @@ void _registerProfileShellLayoutTests() {
     'Profile terminal empty and error branches use shell-aware placement',
     (tester) async {
       Future<void> pumpState(SelfProfileScreenState state) async {
-        final previewScrollController = ScrollController();
-        addTearDown(previewScrollController.dispose);
         await tester.pumpWidget(
           ProviderScope(
+            overrides: [
+              selfProfileScreenStateProvider.overrideWithValue(state),
+            ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: AppShellActiveTab(
+              home: const AppShellActiveTab(
                 index: appShellProfileTabIndex,
                 bottomBarPlacement: AppShellBottomBarPlacement.floating,
                 bottomOverlayInset: _profileBottomOverlayInset,
-                child: Scaffold(
-                  body: DefaultTabController(
-                    length: 3,
-                    child: Builder(
-                      builder: (context) => SelfProfileTabBody(
-                        state: state,
-                        controller: DefaultTabController.of(context),
-                        previewScrollController: previewScrollController,
-                        onPreviewForwardScroll: (delta) => delta,
-                        onPreviewLeadingOverscroll: (_) {},
-                      ),
-                    ),
-                  ),
-                ),
+                child: ProfileScreen(),
               ),
             ),
           ),
@@ -55,7 +43,7 @@ void _registerProfileShellLayoutTests() {
         ),
       );
       expect(find.byType(CatchStateViewport), findsOneWidget);
-      expect(find.bySubtype<CatchErrorState>(), findsOneWidget);
+      expect(find.byType(CatchErrorBody), findsOneWidget);
     },
   );
 
@@ -79,6 +67,8 @@ void _registerProfileShellLayoutTests() {
     );
     await tester.pump();
 
+    expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchTabbedPageScrollView), findsWidgets);
     expect(find.byType(TabBarView), findsOneWidget);
     expect(find.byType(ProfileTabSkeletonSliverBody), findsOneWidget);
     expect(find.byType(CatchLoadingIndicator), findsNothing);
@@ -310,7 +300,7 @@ void _registerProfileShellLayoutTests() {
     );
   });
 
-  testWidgets('ProfileScreen limits field terminal clearance to Edit', (
+  testWidgets('ProfileScreen limits terminal clearance to Edit', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1.0;
@@ -332,7 +322,7 @@ void _registerProfileShellLayoutTests() {
 
     Finder activeTabWrapper(PageStorageKey<String> key) => find.ancestor(
       of: find.byKey(key),
-      matching: find.byType(ProfileTabScrollView),
+      matching: find.byType(CatchTabbedPageScrollView),
     );
 
     final editWrapper = activeTabWrapper(
@@ -340,7 +330,9 @@ void _registerProfileShellLayoutTests() {
     );
     expect(editWrapper, findsOneWidget);
     expect(
-      tester.widget<ProfileTabScrollView>(editWrapper).managesFieldVisibility,
+      tester
+          .widget<CatchTabbedPageScrollView>(editWrapper)
+          .includeTerminalPadding,
       isTrue,
     );
     expect(
@@ -361,8 +353,8 @@ void _registerProfileShellLayoutTests() {
     expect(previewWrapper, findsOneWidget);
     expect(
       tester
-          .widget<ProfileTabScrollView>(previewWrapper)
-          .managesFieldVisibility,
+          .widget<CatchTabbedPageScrollView>(previewWrapper)
+          .includeTerminalPadding,
       isFalse,
     );
     expect(
@@ -385,8 +377,8 @@ void _registerProfileShellLayoutTests() {
     expect(insightsWrapper, findsOneWidget);
     expect(
       tester
-          .widget<ProfileTabScrollView>(insightsWrapper)
-          .managesFieldVisibility,
+          .widget<CatchTabbedPageScrollView>(insightsWrapper)
+          .includeTerminalPadding,
       isFalse,
     );
     expect(

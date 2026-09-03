@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_controller.dart';
@@ -64,44 +65,41 @@ class UpdateRequiredContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: CatchInsets.emptyStateContent,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Icon(
-                CatchIcons.systemUpdateOutlined,
-                size: CatchIcon.forceUpdate,
-                color: t.primary,
-              ),
-              gapH32,
-              Text(
-                context.l10n.forceUpdateUpdateRequiredScreenTextUpdateRequired,
-                style: CatchTextStyles.headline(
-                  context,
-                ).copyWith(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              gapH12,
-              Text(
-                context.l10n.forceUpdateUpdateRequiredScreenTextANewVersionOf,
-                style: CatchTextStyles.bodyLead(context, color: t.ink2),
-                textAlign: TextAlign.center,
-              ),
-              gapH48,
-              CatchButton(
-                key: UpdateRequiredKeys.updateNowButton,
-                label:
-                    context.l10n.forceUpdateUpdateRequiredScreenLabelUpdateNow,
-                onPressed: onUpdateNow,
-                icon: Icon(CatchIcons.openInNew),
-                fullWidth: true,
-              ),
-            ],
-          ),
+    return CatchScreenScaffold.standalone(
+      body: Padding(
+        padding: CatchInsets.emptyStateContent,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Icon(
+              CatchIcons.systemUpdateOutlined,
+              size: CatchIcon.forceUpdate,
+              color: t.primary,
+            ),
+            gapH32,
+            Text(
+              context.l10n.forceUpdateUpdateRequiredScreenTextUpdateRequired,
+              style: CatchTextStyles.headline(
+                context,
+              ).copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            gapH12,
+            Text(
+              context.l10n.forceUpdateUpdateRequiredScreenTextANewVersionOf,
+              style: CatchTextStyles.bodyLead(context, color: t.ink2),
+              textAlign: TextAlign.center,
+            ),
+            gapH48,
+            CatchButton(
+              key: UpdateRequiredKeys.updateNowButton,
+              label: context.l10n.forceUpdateUpdateRequiredScreenLabelUpdateNow,
+              onPressed: onUpdateNow,
+              icon: Icon(CatchIcons.openInNew),
+              fullWidth: true,
+            ),
+          ],
         ),
       ),
     );

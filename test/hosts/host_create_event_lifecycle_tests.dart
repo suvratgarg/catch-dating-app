@@ -1,7 +1,7 @@
 part of 'host_create_event_screen_test.dart';
 
 void runHostCreateEventLifecycleTests() {
-  testWidgets('host manage exposes one lifecycle workspace and roster edge', (
+  testWidgets('host manage exposes one lifecycle workspace and roster action', (
     tester,
   ) async {
     final participationRepository = FakeEventParticipationRepository();
@@ -53,7 +53,7 @@ void runHostCreateEventLifecycleTests() {
     );
     expect(find.text('Event staff access'), findsOneWidget);
 
-    await tester.tap(find.bySemanticsLabel('Open guest roster'));
+    await tester.tap(find.byType(CatchTopBarPrimaryAction));
     await _pumpTestAnimation(tester);
 
     final rosterPanel = find.byKey(
@@ -128,7 +128,9 @@ void runHostCreateEventLifecycleTests() {
     expect(find.text('Event recap'), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, hostManageEventTitle(event));
-    expect(topBar.subtitle, 'Event recap');
+    expect(topBar.eyebrow, 'Event recap');
+    expect(topBar.subtitle, isNull);
+    expect(topBar.titleWidget, isNull);
     expect(topBar.height, CatchLayout.browseHeaderHeight);
     expect(find.text('SETUP'), findsNothing);
     expect(find.text('GUESTS'), findsNothing);
@@ -143,7 +145,7 @@ void runHostCreateEventLifecycleTests() {
     );
     expect(find.text('Review event setup'), findsOneWidget);
 
-    await tester.tap(find.bySemanticsLabel('Open guest roster'));
+    await tester.tap(find.byType(CatchTopBarPrimaryAction));
     await _pumpTestAnimation(tester);
     final rosterPanel = find.byKey(
       const ValueKey<String>('host_event_roster_drawer.panel'),

@@ -4,9 +4,12 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
@@ -89,9 +92,7 @@ class _HostCustomerDetailScreenState
             : CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
+      body: CatchRouteBody.standard(
         child: CatchAsyncValueView<HostAudienceContactDetail>(
           value: detail,
           onRetry: () => ref.invalidate(
@@ -132,15 +133,13 @@ class _HostCustomerDetailScreenState
               onUndoMerge: (_) {},
             ),
           ),
-          errorBuilder: (_, error, _) => CatchPageBody(
-            child: CatchErrorState.fromError(
-              error,
-              context: AppErrorContext.customer,
-              onRetry: () => ref.invalidate(
-                hostAudienceContactDetailProvider(
-                  widget.organizerId,
-                  widget.contactId,
-                ),
+          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.customer,
+            onRetry: () => ref.invalidate(
+              hostAudienceContactDetailProvider(
+                widget.organizerId,
+                widget.contactId,
               ),
             ),
           ),
@@ -150,6 +149,12 @@ class _HostCustomerDetailScreenState
             communicationPlan: communicationPlanState?.value,
             communicationPlanLoading: communicationPlanState?.isLoading ?? true,
             communicationPlanFailed: communicationPlanState?.hasError ?? false,
+            messageActionInHeader:
+                communicationPlanState
+                    ?.value
+                    ?.singleRecipient
+                    .recommendedRouteId !=
+                null,
             openingConversation: _openingConversation,
             updatingCustomer: _updatingCustomer,
             onSaveDetails: ({required displayName, phoneE164, email}) =>
@@ -601,6 +606,7 @@ class HostCustomerDetailBody extends StatelessWidget {
     required this.communicationPlan,
     required this.communicationPlanLoading,
     required this.communicationPlanFailed,
+    this.messageActionInHeader = false,
     required this.openingConversation,
     required this.updatingCustomer,
     required this.onSaveDetails,
@@ -624,6 +630,7 @@ class HostCustomerDetailBody extends StatelessWidget {
   final HostCommunicationPlan? communicationPlan;
   final bool communicationPlanLoading;
   final bool communicationPlanFailed;
+  final bool messageActionInHeader;
   final bool openingConversation;
   final bool updatingCustomer;
   final HostCustomerDetailsSaveCallback onSaveDetails;
@@ -643,13 +650,35 @@ class HostCustomerDetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: CatchInsets.pageBody.copyWith(bottom: 0),
+    final headerMessageAction = messageActionInHeader
+        ? CatchButton(
+            key: const ValueKey('host-customer-message'),
+            label: context.l10n.hostCustomersWhatsappMessage,
+            icon: Icon(CatchIcons.tabChats, size: CatchIcon.sm),
+            variant: CatchButtonVariant.secondary,
+            size: CatchButtonSize.sm,
+            isLoading: openingConversation,
+            onPressed: openingConversation ? null : onMessage,
+          )
+        : null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchSectionList(
           emptyStateOmitted: true,
           children: [
-            HostCustomerIdentityCard(customer: customer, onSave: onSaveDetails),
+            HostCustomerIdentityCard(
+              customer: customer,
+              onSave: onSaveDetails,
+              primaryAction: headerMessageAction,
+            ),
+            HostCustomerDetailOverview(
+              customer: customer,
+              currentUid: currentUid,
+              onEditTags: onEditTags,
+              onAddNote: onAddNote,
+              onEditNote: onEditNote,
+            ),
             HostCustomerReachSection(
               customer: customer,
               communicationPlan: communicationPlan,
@@ -658,23 +687,13 @@ class HostCustomerDetailBody extends StatelessWidget {
               messageLoading: openingConversation,
               onMessage: onMessage,
               onRetryCommunicationPlan: onRetryCommunicationPlan,
+              messageActionInHeader: messageActionInHeader,
               onMessagingEnabledChanged: updatingCustomer
                   ? null
                   : onMessagingEnabledChanged,
               onReviewDuplicates: customer.ambiguousCandidateCount > 0
                   ? onReviewDuplicates
                   : null,
-            ),
-            HostCustomerMemorySection(
-              customer: customer,
-              currentUid: currentUid,
-              onEditTags: onEditTags,
-              onAddNote: onAddNote,
-              onEditNote: onEditNote,
-            ),
-            KeyedSubtree(
-              key: const ValueKey('host-customer-activity'),
-              child: HostCustomerAttendanceCard(customer: customer),
             ),
             HostCustomerRevenueCard(revenue: customer.revenue),
             HostCustomerTimelineSection(
@@ -705,10 +724,71 @@ class HostCustomerDetailBody extends StatelessWidget {
             ),
           ],
         ),
-        const CatchScrollTerminalPadding(),
       ],
     );
   }
+}
+
+class HostCustomerDetailOverview extends StatelessWidget {
+  const HostCustomerDetailOverview({
+    super.key,
+    required this.customer,
+    required this.currentUid,
+    required this.onEditTags,
+    required this.onAddNote,
+    required this.onEditNote,
+  });
+
+  final HostAudienceContactDetail customer;
+  final String? currentUid;
+  final VoidCallback onEditTags;
+  final VoidCallback onAddNote;
+  final ValueChanged<HostCustomerNote> onEditNote;
+
+  @override
+  Widget build(BuildContext context) => ComponentResponsiveBuilder(
+    breakpoint: ComponentBreakpoints.sectionPageTwoColumnBreakpoint,
+    compact: (context) => Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        HostCustomerMemorySection(
+          customer: customer,
+          currentUid: currentUid,
+          onEditTags: onEditTags,
+          onAddNote: onAddNote,
+          onEditNote: onEditNote,
+        ),
+        gapH24,
+        KeyedSubtree(
+          key: const ValueKey('host-customer-activity'),
+          child: HostCustomerAttendanceCard(customer: customer),
+        ),
+      ],
+    ),
+    expanded: (context) => Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 3,
+          child: HostCustomerMemorySection(
+            customer: customer,
+            currentUid: currentUid,
+            onEditTags: onEditTags,
+            onAddNote: onAddNote,
+            onEditNote: onEditNote,
+          ),
+        ),
+        gapW24,
+        Expanded(
+          flex: 2,
+          child: KeyedSubtree(
+            key: const ValueKey('host-customer-activity'),
+            child: HostCustomerAttendanceCard(customer: customer),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 HostAudienceContactDetail _hostCustomerSkeletonDetail({

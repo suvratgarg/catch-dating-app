@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.8.5
-updated: 2026-08-29
+version: 1.9.0
+updated: 2026-09-02
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -133,8 +133,8 @@ Three roles, no competition:
 
 | Role | Family | Use |
 |---|---|---|
-| **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | brand moments, screen/event/club display titles, and the welcome reel |
-| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | prose, bios, descriptions, names, buttons, nav, inputs, and dense UI controls |
+| **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | brand moments, root headlines, compact route titles, event/club display titles, and the welcome reel |
+| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | prose, bios, descriptions, user-authored names, buttons, navigation controls, inputs, and dense UI controls |
 | **Data** | **IBM Plex Mono** | time, price, counts, OTP digits, kickers, and explicit uppercase labels |
 
 **Why Archivo:** the current direction is typographic, restrained, and non-serif. Archivo
@@ -167,6 +167,12 @@ These map onto the existing `CatchTextStyles` roles — display/title styles mov
 Archivo, sentence/data roles to untracked IBM Plex Mono, explicit caps roles to tracked
 IBM Plex Mono, and names/controls/prose to the platform system font. App UI calls semantic
 `CatchTextStyles` roles; `CatchFonts` is an internal theme implementation detail.
+
+Route hierarchy is size and composition, not a competing font family. Root-screen
+titles use `CatchTextStyles.headline` (Archivo, 32/600/1.04); compact pushed-route
+labels use `CatchTextStyles.routeTitle` (Archivo, 20/700/1.16). A route whose title
+becomes a user-authored person name selects the semantic identity title role and
+stays in the platform family. Feature screens do not restate these styles.
 
 ---
 
@@ -306,6 +312,45 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
   vertical content has actually scrolled beneath the compact bar. Root tab
   titles are scroll content rather than fixed app bars.
+- Root title screens route through `CatchRootScreenScaffold` (or its
+  parent-scaffold `CatchRootScreenScrollView` variant), and pinned peer-tab
+  screens route through `CatchTabbedScreenScaffold` plus
+  `CatchTabbedPageScrollView`. Every body declares the one regular `standard`
+  geometry (20 pt phone gutter, 24 pt body start) or explicitly edge-owned
+  `fullBleed` geometry through `CatchScreenBodyLayout`; feature screens do not
+  reconstruct title gaps, page gutters, terminal navigation clearance,
+  responsive content lanes, or state-viewport placement. Tabbed roots use a
+  4 pt title-to-rail handoff, 44 pt rail, and the same 24 pt body start.
+  `CatchInsets.pageBody`, `CatchInsets.tabbedScreenTitleBlock`, and
+  `CatchLayout.tabRailHeight` own those values. Full bleed removes only the
+  outer inset; named nested lanes such as `CatchInsets.chatListGutter` keep
+  Consumer Chats and Host Inbox on the same 20 pt horizontal rhythm.
+- Every full-screen composition terminates in
+  `CatchScreenScaffold.standalone`, `.stepFlow`, or `.workspace`; higher-level
+  root, tabbed, and pushed-route owners delegate to that role. Only the
+  canonical primitive may construct a Material `Scaffold`. The composition gate
+  reconciles route, coverage, and registry membership; resolves declared
+  owners; verifies an allowed family expression and selected explicit body and
+  top-edge arguments; rejects unauthorized raw `Scaffold` construction; and
+  proves analyzer-resolved reachability from every rendered
+  `builder`/`pageBuilder` target to each registered owner declaration and
+  requires branch-universal static proof across every statically reachable
+  widget-producing terminal. The checker does not execute conditions; it treats
+  every reachable branch as possible, so every build/return arm, approved
+  widget-builder callback, local helper/value, and registered same-family
+  delegate must terminate in the declared layout family. It also discovers all
+  full-screen `PageRoute` forms globally. Only direct `MaterialPageRoute`
+  construction is supported and generated into the imperative route inventory;
+  aliases, tear-offs, factories, `CupertinoPageRoute`, `PageRouteBuilder`, and
+  subclasses fail closed. Other geometry/top-edge metadata remains review
+  policy, while focused tests prove runtime state and redirect behavior.
+- Widget names share one namespace across `lib/**`, `apps/consumer/lib/**`, and
+  `apps/host/lib/**`. Source discovery resolves widget subclassing transitively,
+  then rejects exact public-class duplicates and ungoverned normalized-name
+  collisions across all three production roots. Only `.g.dart`,
+  `.freezed.dart`, and the named localization outputs are excluded as generated
+  source; a hand-authored file is not exempt merely because it lives below a
+  directory named `generated`.
 - Compact route bars use the default `CatchTopBar` geometry. Feature screens do
   not override height, safe-area, alignment, gutter, or content padding. A
   detail route whose title is loaded asynchronously carries the known subject

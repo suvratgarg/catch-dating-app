@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedFrom": "design/components/catch.components.json",
-  "registryUpdated": "2026-08-29",
+  "registryUpdated": "2026-09-02",
   "codeToComponents": {
     "catch_async_requires_retry": [
       "catch.async_value"
@@ -149,10 +149,16 @@
     "catch_screen_gutter_uses_semantic_insets": [
       "catch.screen_body"
     ],
-    "catch_screen_nested_scaffold": [
-      "catch.tabbed_screen"
+    "catch_screen_layout_family_conformance": [
+      "catch.screen_body"
     ],
     "catch_screen_registry_conformance": [
+      "catch.screen_body"
+    ],
+    "catch_screen_route_owner_binding": [
+      "catch.screen_body"
+    ],
+    "catch_screen_scaffold_ownership": [
       "catch.screen_body"
     ],
     "catch_screen_top_bar_conformance": [

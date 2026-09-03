@@ -1,9 +1,9 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-30",
+  "updated": "2026-08-31",
   "id": "feature.host_inbox",
-  "name": "Host Messaging",
+  "name": "Host Inbox",
   "owner": "hosts",
   "status": "pilot",
   "description": "Orchestrates organizer-scoped Host messaging through an inbound Inbox plus Sends for outbound intent selection, event-announcement and follower-update composition, reusable-audience campaigns, manual handoff work, and mixed outbound history.",
@@ -13,7 +13,7 @@
       "runtime": "flutter",
       "authority": {"registry": "flutter_screens", "id": "screen.host.inbox"},
       "actionScope": {
-        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective inquiry classification, explicit Catch chat routing, and organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies; Sends-owned outbound intent selection for existing conversations, saved-audience campaigns, event announcements, and follower updates; reverse-chronological managed-send history; durable manual handoff work; dedicated sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
+        "included": "Inbox workspace switching; Inbox retry, search, event/general scope, booked/prospective inquiry classification, explicit Catch chat routing, and organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies; Sends-owned outbound intent selection for existing conversations, saved-audience campaigns, event announcements, and follower updates; reverse-chronological managed-send history; durable manual handoff work; dedicated sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
         "excluded": [
           "Raw broadcast body edits are form data; the contract cardinalizes template/audience decisions and the send mutation instead of individual keystrokes.",
           "Conversation thread behavior and safety actions retain the shared chat-thread contract."
@@ -116,7 +116,7 @@
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "organizerId", "workspace"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["populated_queries", "customer_messaging_ready"]}],
-          "description": "Switches the selected organizer's Messaging surface between Inbox and Sends; the wire value remains campaigns for deep-link compatibility."
+          "description": "Switches the selected organizer's Inbox destination between Inbox and Sends; the wire value remains campaigns for deep-link compatibility."
         },
         {
           "id": "retry_inbox",

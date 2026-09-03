@@ -10,7 +10,6 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/responsive/breakpoints.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -24,6 +23,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -77,6 +77,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
   late HostMessagingWorkspace _workspace;
   bool _campaignBusy = false;
   String? _selectedThreadId;
+  final Map<String, String> _threadDrafts = {};
 
   @override
   void initState() {
@@ -131,35 +132,6 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
           );
     final query = ref.watch(chatSearchQueryProvider);
     final isInbox = _workspace == HostMessagingWorkspace.inbox;
-    final workspaceSliver = isInbox
-        ? _HostInboxWorkspaceGroup(
-            uidState: uidState,
-            uid: uid,
-            clubsState: clubsState,
-            selectedClub: selectedClub,
-            query: query,
-            now: now,
-            requestedScope: _requestedScope,
-            selectedSegment: _segment,
-            onRetry: _retry,
-            onScopeChanged: _selectScope,
-            onSegmentChanged: (segment) => setState(() => _segment = segment),
-            onThreadSelected: _openThread,
-          )
-        : _HostCampaignWorkspaceSliver(
-            uidState: uidState,
-            uid: uid,
-            clubsState: clubsState,
-            selectedClub: selectedClub,
-            initialSavedAudienceId: widget.initialSavedAudienceId,
-            preferredEventId: _requestedScope?.eventId,
-            initialSegment: _segment,
-            broadcastEnabled: _broadcastEnabled,
-            now: now,
-            onRetry: _retry,
-            onBusyChanged: _setCampaignBusy,
-            onOpenInbox: () => _selectWorkspace(HostMessagingWorkspace.inbox),
-          );
     final inbox = isInbox
         ? catchAsyncStateFromAsyncValue(
             ref.watch(chatsListViewModelProvider),
@@ -173,49 +145,97 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
           ].where((preview) => preview.match.clubId == selectedClub.id).length;
     final showSearch =
         isInbox && (selectedThreadCount > 0 || query.trim().isNotEmpty);
-    final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
+    final selectedThreadId = _selectedThreadId;
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: CatchMasterDetailLayout(
-        expanded: screenSize.isExpanded && isInbox,
-        master: SafeArea(
-          bottom: false,
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: ChatsBrowseHeader(
-                  presentation: ChatsBrowsePresentation.host,
-                  showSearchAction: showSearch,
-                  searchValue: isInbox ? query : '',
-                  onSearchChanged: isInbox
-                      ? ref.read(chatSearchQueryProvider.notifier).setQuery
-                      : null,
-                  hostFilter: null,
-                  hostUnreadCount: 0,
-                  onHostFilterChanged: null,
-                  subtitle: isInbox
-                      ? context.l10n.hostInboxSubtitle
-                      : context.l10n.hostSendsSubtitle,
-                ),
+    Widget buildMaster(BuildContext context, bool splitView) {
+      final workspaceSliver = isInbox
+          ? _HostInboxWorkspaceGroup(
+              uidState: uidState,
+              uid: uid,
+              clubsState: clubsState,
+              selectedClub: selectedClub,
+              query: query,
+              now: now,
+              requestedScope: _requestedScope,
+              selectedSegment: _segment,
+              selectedThreadId: selectedThreadId,
+              onRetry: _retry,
+              onScopeChanged: _selectScope,
+              onSegmentChanged: _selectSegment,
+              onThreadSelected: (preview) =>
+                  _openThread(preview, splitView: splitView),
+            )
+          : CatchSliverContentWidth(
+              maxExtent: CatchLayout.hostMessagingSendsPageMaxExtent,
+              sliver: _HostCampaignWorkspaceSliver(
+                uidState: uidState,
+                uid: uid,
+                clubsState: clubsState,
+                selectedClub: selectedClub,
+                initialSavedAudienceId: widget.initialSavedAudienceId,
+                preferredEventId: _requestedScope?.eventId,
+                initialSegment: _segment,
+                broadcastEnabled: _broadcastEnabled,
+                now: now,
+                onRetry: _retry,
+                onBusyChanged: _setCampaignBusy,
+                onOpenInbox: () =>
+                    _selectWorkspace(HostMessagingWorkspace.inbox),
               ),
-              HostMessagingWorkspaceRail(
-                selected: _workspace,
-                onChanged: _campaignBusy ? null : _selectWorkspace,
-              ),
-              workspaceSliver,
-              const CatchSliverTerminalPadding(),
-            ],
-          ),
+            );
+      return CatchRootScreenScrollView(
+        header: ChatsBrowseHeader(
+          presentation: ChatsBrowsePresentation.host,
+          showSearchAction: showSearch,
+          searchValue: isInbox ? query : '',
+          onSearchChanged: isInbox
+              ? ref.read(chatSearchQueryProvider.notifier).setQuery
+              : null,
+          hostFilter: null,
+          hostUnreadCount: 0,
+          onHostFilterChanged: null,
+          showHostSubtitle: !isInbox,
+          subtitle: isInbox ? null : context.l10n.hostSendsSubtitle,
         ),
-        detail: _selectedThreadId == null
-            ? CatchEmptyState(
-                icon: CatchIcons.chatBubbleOutlineRounded,
-                title: context.l10n.hostInboxSelectConversationTitle,
-                message: context.l10n.hostInboxSelectConversationBody,
-              )
-            : ChatScreen(matchId: _selectedThreadId!, embedded: true),
-      ),
+        bodyLayout: CatchScreenBodyLayout.fullBleed,
+        slivers: [
+          HostMessagingWorkspaceRail(
+            selected: _workspace,
+            onChanged: _campaignBusy ? null : _selectWorkspace,
+          ),
+          workspaceSliver,
+        ],
+      );
+    }
+
+    final detail = selectedThreadId == null
+        ? CatchEmptyState(
+            icon: CatchIcons.chatBubbleOutlineRounded,
+            title: context.l10n.hostInboxSelectConversationTitle,
+            message: context.l10n.hostInboxSelectConversationBody,
+          )
+        : ChatScreen(
+            key: ValueKey<String>('host-inbox-thread-$selectedThreadId'),
+            matchId: selectedThreadId,
+            initialDraftText: _threadDrafts[selectedThreadId],
+            onDraftChanged: (draft) =>
+                _rememberThreadDraft(selectedThreadId, draft),
+            embedded: true,
+          );
+
+    return CatchScreenScaffold.workspace(
+      backgroundColor: t.bg,
+      body: isInbox
+          ? CatchAdaptiveMasterDetailLayout(
+              minimumExpandedWidth: CatchLayout.hostMessagingSplitViewMinWidth,
+              masterBuilder: buildMaster,
+              detail: detail,
+            )
+          : CatchMasterDetailLayout(
+              expanded: false,
+              master: buildMaster(context, false),
+              detail: detail,
+            ),
     );
   }
 
@@ -228,6 +248,11 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
       _workspace = workspace;
       _selectedThreadId = null;
     });
+    if (!widget.syncSelectionToRoute) return;
+    context.goNamed(
+      Routes.hostInboxScreen.name,
+      queryParameters: _routeQuery(workspace: workspace),
+    );
   }
 
   void _setCampaignBusy(bool value) {
@@ -260,8 +285,21 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     );
   }
 
-  void _openThread(ChatThreadPreview preview) {
-    if (ScreenSize.fromWidth(MediaQuery.sizeOf(context).width).isExpanded) {
+  void _selectSegment(HostInboxAudienceSegment segment) {
+    if (segment == _segment) return;
+    setState(() {
+      _segment = segment;
+      _selectedThreadId = null;
+    });
+    if (!widget.syncSelectionToRoute) return;
+    context.goNamed(
+      Routes.hostInboxScreen.name,
+      queryParameters: _routeQuery(),
+    );
+  }
+
+  void _openThread(ChatThreadPreview preview, {required bool splitView}) {
+    if (splitView) {
       setState(() => _selectedThreadId = preview.matchId);
       if (widget.syncSelectionToRoute) {
         context.goNamed(
@@ -280,15 +318,25 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     );
   }
 
+  void _rememberThreadDraft(String threadId, String draft) {
+    if (draft.isEmpty) {
+      _threadDrafts.remove(threadId);
+      return;
+    }
+    _threadDrafts[threadId] = draft;
+  }
+
   Map<String, String> _routeQuery({
     HostInboxScope? scope,
+    HostMessagingWorkspace? workspace,
     String? organizerId,
     String? threadId,
   }) {
     final effectiveScope = scope ?? _requestedScope;
+    final effectiveWorkspace = workspace ?? _workspace;
     return {
-      if (_workspace != HostMessagingWorkspace.inbox)
-        'workspace': _workspace.name,
+      if (effectiveWorkspace != HostMessagingWorkspace.inbox)
+        'workspace': effectiveWorkspace.name,
       if (effectiveScope?.isGeneral == true) 'scope': 'general',
       'eventId': ?effectiveScope?.eventId,
       if (organizerId != null && organizerId.isNotEmpty)
@@ -310,6 +358,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
     required this.now,
     required this.requestedScope,
     required this.selectedSegment,
+    required this.selectedThreadId,
     required this.onRetry,
     required this.onScopeChanged,
     required this.onSegmentChanged,
@@ -324,6 +373,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
   final DateTime now;
   final HostInboxScope? requestedScope;
   final HostInboxAudienceSegment selectedSegment;
+  final String? selectedThreadId;
   final ValueChanged<String?> onRetry;
   final ValueChanged<HostInboxScope> onScopeChanged;
   final ValueChanged<HostInboxAudienceSegment> onSegmentChanged;
@@ -425,6 +475,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
           workspace: workspace,
           whatsappThreads: whatsappThreads,
           now: now,
+          selectedThreadId: selectedThreadId,
           onThreadSelected: onThreadSelected,
           onWhatsappSelected: (thread) => showCatchBottomSheet<void>(
             context: context,
@@ -628,14 +679,26 @@ class _HostInboxScopeSelectorState extends State<HostInboxScopeSelector> {
                   height: CatchLayout.hostInboxScopeSelectorHeight,
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      selectedLabel.toUpperCase(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.monoLabel(
-                        context,
-                        color: labelColor,
-                      ).copyWith(fontWeight: FontWeight.w700),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            selectedLabel.toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: CatchTextStyles.monoLabel(
+                              context,
+                              color: labelColor,
+                            ).copyWith(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                        gapW8,
+                        Icon(
+                          CatchIcons.expandMoreRounded,
+                          size: CatchIcon.sm,
+                          color: t.ink3,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -740,6 +803,7 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
     required this.workspace,
     this.whatsappThreads = const [],
     required this.now,
+    this.selectedThreadId,
     required this.onThreadSelected,
     this.onWhatsappSelected,
   });
@@ -747,6 +811,7 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
   final HostInboxViewModel workspace;
   final List<HostWhatsappThreadSummary> whatsappThreads;
   final DateTime now;
+  final String? selectedThreadId;
   final ChatThreadSelectedCallback onThreadSelected;
   final ValueChanged<HostWhatsappThreadSummary>? onWhatsappSelected;
 
@@ -777,6 +842,7 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
                       details: row.supportingText,
                     );
             },
+            selectedMatchId: selectedThreadId,
             onThreadSelected: onThreadSelected,
           ),
         if (whatsappThreads.isNotEmpty)

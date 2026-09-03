@@ -5,7 +5,7 @@ import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/presentation/host_events_timeline_controller.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

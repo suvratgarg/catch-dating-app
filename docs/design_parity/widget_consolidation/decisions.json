@@ -3155,7 +3155,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K4 churn threshold: the celebration detail rows are separate immersive and paper-mode renderers inside CatchCelebrationScreen; merging would add mode styling knobs without simplifying callers.",
+      "rationale": "K4 churn threshold: the celebration detail rows belong to separate deterministic surface owners, CatchCelebrationScreen for standalone immersive moments and PaperCelebrationScaffold for step-flow confirmations; merging would add mode and layout-family styling knobs without simplifying callers.",
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
@@ -5811,11 +5811,11 @@
           "action": "keep"
         },
         {
-          "name": "ProfileTabScrollView",
+          "name": "CatchTabbedPageScrollView",
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): section-type dispatcher inside the shared profile surface vs the profile screen scroll view; different abstraction levels.",
+      "rationale": "Name-family review (batch 2, canonicalized): section-type dispatcher inside the shared profile surface vs the shared tab-page scroll owner; different abstraction levels.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -6376,6 +6376,20 @@
       "decidedBy": "codex-rule:K3 -> prior-reviewed-ledger:handoff-2.3",
       "date": "2026-07-19",
       "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "n005-host-screen-supersession-2026-09-02",
+      "decision": "delete-unreachable",
+      "members": [
+        {
+          "name": "HostAuthRequiredScreen",
+          "action": "delete"
+        }
+      ],
+      "rationale": "Supersedes only the HostAuthRequiredScreen member of the historical n005-host-screen keep decision. The class had no production route or widget call site and existed only as duplicate Widgetbook catalog metadata. Reachable signed-out states remain composed inside their actual root or pushed-route owner with the canonical error-body primitives, so retaining a standalone Screen type would create a false route owner and naming collision.",
+      "decidedBy": "owner-authorized -> codex",
+      "date": "2026-09-02",
+      "status": "executed-screen-composition-completion"
     }
   ]
 }

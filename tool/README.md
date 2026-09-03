@@ -859,6 +859,34 @@ node tool/design/build_feature_contracts.mjs --summary
 The `--check` command is blocking in the design parity gate. Generated feature
 contracts are review artifacts and must not be edited by hand.
 
+## Host Feature Responsibility Generator
+
+`design/features/host_feature_responsibilities.json` defines the exact ordered
+responsibility boundary for Today, Events, Audience, Inbox, and Organizer. It
+is intentionally an index over the Host shell, typed route contract, and the
+existing cross-surface feature contracts; it does not duplicate their state or
+action algorithms. Direct transitional owners are allowed only when the wider
+feature contract does not yet cover that destination seam.
+
+The generator resolves referenced action-owner paths and symbols, verifies
+owned and handoff routes, checks data-contract and focused-test paths, and
+writes one `README.md` under each target `lib/hosts/<destination>/` root. The
+generated docs state whether the vertical slice is live or whether current code
+still resides in named legacy roots. This makes migration state visible without
+letting five handwritten summaries drift.
+
+```sh
+node tool/design/build_host_feature_responsibilities.mjs
+node tool/design/build_host_feature_responsibilities.mjs --check
+node tool/run.mjs check design:host-feature-responsibilities
+```
+
+The selected implementation uses the repository's existing Node/Ajv tooling
+instead of adding a documentation framework or extending the much denser
+feature-contract schema with Host-only migration prose. The JSON contract is
+Catch-specific architecture policy, generation is deterministic and
+network-free, and the standard design-parity gate owns freshness.
+
 ## Design Tokens
 
 The canonical UI primitive source is `design/tokens/catch.tokens.json`. It

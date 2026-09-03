@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 enum HostEventEntryIntent {
   resumeDraft,
   repeatLastEvent,
-  dressRehearsal,
   createWithCatchBookings,
   createFromGuestList,
 }
@@ -18,11 +17,10 @@ typedef HostEventEntryCallback =
       HostEventEntryIntent intent,
     );
 
-/// Resolves the event-entry choices available for one organizer.
+/// Resolves the event-creation choices available for one organizer.
 ///
-/// The state is deliberately copy- and widget-free: callers decide how the
-/// same intents are presented on mobile sheets, larger-screen menus, or future
-/// onboarding surfaces without duplicating capability checks.
+/// Dress rehearsal is intentionally not a creation mode. Today owns its
+/// dedicated operational entry point into the isolated rehearsal feature.
 @immutable
 class HostEventEntryState {
   const HostEventEntryState._({
@@ -65,7 +63,6 @@ class HostEventEntryState {
         if (matchingRepeatSource != null) HostEventEntryIntent.repeatLastEvent,
       ]),
       startIntents: const <HostEventEntryIntent>[
-        HostEventEntryIntent.dressRehearsal,
         HostEventEntryIntent.createWithCatchBookings,
         HostEventEntryIntent.createFromGuestList,
       ],

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -194,6 +195,136 @@ void main() {
       await tester.pump();
       expect(find.text('One shared room'), findsOneWidget);
       expect(find.byType(CatchBottomAction), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'wide Control Room keeps command and supporting operations concurrent',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1180, 900);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final event = buildEvent(
+        id: 'wide-control-room',
+        eventFormat: const EventFormatSnapshot(
+          activityKind: ActivityKind.pubQuiz,
+          interactionModel: EventInteractionModel.hostLedProgram,
+          customActivityLabel: 'host-led social',
+          defaultPlaybookId: 'host_led_social',
+        ),
+      );
+      final plan = EventSuccessPlan.defaultForEvent(
+        event,
+        now: event.startTime,
+      ).copyWith(status: EventSuccessPlanStatus.live, activeStepIndex: 1);
+      var guestDrawerOpenCount = 0;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: EventSuccessHostPanel(
+                event: event,
+                plan: plan,
+                planIsPersisted: true,
+                roster: EventParticipationRoster.empty(),
+                operationalRosterSummary:
+                    const EventSuccessOperationalRosterSummary(
+                      checkedInCount: 18,
+                      expectedCount: 24,
+                    ),
+                initialTab: EventSuccessHostTab.live,
+                showTabs: false,
+                compactLiveControls: true,
+                fixtureActions: EventSuccessHostFixtureActions(
+                  onPreviousStep: () {},
+                  onNextStep: () {},
+                  onCompletePlan: () {},
+                ),
+                onOpenGuests: () => guestDrawerOpenCount += 1,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final commandPane = find.byKey(
+        const ValueKey<String>('event_success.live.command_pane'),
+      );
+      final supportingPane = find.byKey(
+        const ValueKey<String>('event_success.live.supporting_pane'),
+      );
+      expect(
+        find.byKey(const ValueKey<String>('event_success.live.wide_workspace')),
+        findsOneWidget,
+      );
+      expect(commandPane, findsOneWidget);
+      expect(supportingPane, findsOneWidget);
+      expect(
+        tester.getRect(supportingPane).width,
+        CatchLayout.hostEventLiveSupportingPaneWidth,
+      );
+      expect(
+        tester.getRect(commandPane).right,
+        lessThanOrEqualTo(tester.getRect(supportingPane).left),
+      );
+      expect(find.byType(CatchBottomAction), findsOneWidget);
+      expect(find.text('18 checked in · 24 expected'), findsOneWidget);
+
+      await tester.tap(
+        find.descendant(of: supportingPane, matching: find.text('Guests')),
+      );
+      await tester.pump();
+      expect(guestDrawerOpenCount, 1);
+      expect(tester.takeException(), isNull);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: const TextScaler.linear(2)),
+              child: child!,
+            ),
+            home: Scaffold(
+              body: EventSuccessHostPanel(
+                event: event,
+                plan: plan,
+                planIsPersisted: true,
+                roster: EventParticipationRoster.empty(),
+                operationalRosterSummary:
+                    const EventSuccessOperationalRosterSummary(
+                      checkedInCount: 18,
+                      expectedCount: 24,
+                    ),
+                initialTab: EventSuccessHostTab.live,
+                showTabs: false,
+                compactLiveControls: true,
+                fixtureActions: EventSuccessHostFixtureActions(
+                  onPreviousStep: () {},
+                  onNextStep: () {},
+                  onCompletePlan: () {},
+                ),
+                onOpenGuests: () => guestDrawerOpenCount += 1,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(const ValueKey<String>('event_success.live.wide_workspace')),
+        findsNothing,
+      );
+      expect(supportingPane, findsNothing);
+      expect(find.byType(CatchBottomAction), findsOneWidget);
+      expect(tester.takeException(), isNull);
     },
   );
 

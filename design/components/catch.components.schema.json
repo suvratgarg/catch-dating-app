@@ -547,7 +547,8 @@
           "uniqueItems": true
         },
         "vehicle": {
-          "enum": ["plugin", "checker", "api"]
+          "enum": ["plugin", "checker", "api"],
+          "description": "Implementation vehicle for the primary code. Supplemental codes may map the same component to additional plugin, checker, or API enforcement."
         },
         "replaces": {
           "type": "array",

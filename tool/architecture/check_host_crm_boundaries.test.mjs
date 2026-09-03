@@ -48,9 +48,13 @@ test("accepts audience-bound compose and dedicated sender recovery", () => {
 
 test("flags modal, contained, or duplicate saved-audience presentation", () => {
   const findings = audienceWorkspacePresentationFindings({
+    audienceViewPath: "audience_view.dart",
+    audienceViewSource: [
+      "enum HostAudienceView { people, audiences }",
+      "class HostAudienceTabRail {}",
+    ].join("\n"),
     customersPath: "customers.dart",
     customersSource: [
-      "enum HostCustomersView { people, audiences }",
       "CatchTabbedScreenScaffold(",
       "HostSavedAudiencesWorkspace(",
       "actions: peopleView",
@@ -71,8 +75,9 @@ test("flags modal, contained, or duplicate saved-audience presentation", () => {
   assert.ok(findings.some((item) => /divided section/u.test(item.reason)));
   assert.ok(findings.some((item) => /exactly one/u.test(item.reason)));
   assert.ok(findings.some((item) => /parallel modal/u.test(item.reason)));
+  assert.ok(findings.some((item) => /all four peer workspaces/u.test(item.reason)));
   assert.equal(
-    findings.filter((item) => /full-page Customers routes/u.test(item.reason))
+    findings.filter((item) => /full-page Audience routes/u.test(item.reason))
       .length,
     2,
   );
@@ -167,7 +172,7 @@ test("flags visible Host CRM counts without ICU plurals", () => {
   assert.match(findings[0].reason, /without ICU plural ownership/u);
 });
 
-test("flags application queue ownership under Customers", () => {
+test("flags application queue ownership outside Audience", () => {
   const findings = applicationRouteOwnershipFindings({
     routeContractPath: "lib/routing/route_contract.dart",
     routeContractSource:
@@ -181,7 +186,7 @@ test("flags application queue ownership under Customers", () => {
       "navigatorKey: keys.hostInbox",
     ].join("\n"),
   });
-  assert.ok(findings.some((item) => /canonically Forms-owned/u.test(item.reason)));
-  assert.ok(findings.some((item) => /Forms shell branch/u.test(item.reason)));
-  assert.ok(findings.some((item) => /Legacy Customers/u.test(item.reason)));
+  assert.ok(findings.some((item) => /canonically Audience-owned/u.test(item.reason)));
+  assert.ok(findings.some((item) => /Audience shell branch/u.test(item.reason)));
+  assert.ok(findings.some((item) => /Legacy Customers and Forms/u.test(item.reason)));
 });

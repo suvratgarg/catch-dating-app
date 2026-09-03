@@ -150,6 +150,8 @@ export {
   publishOrganizerApplicationForm,
   reviewOrganizerApplication,
 } from "./organizers/organizerApplications";
+export {listOrganizerAttentionItems} from
+  "./organizers/organizerAttention";
 export {
   createOrganizerForm,
   deleteOrganizerFormDraft,

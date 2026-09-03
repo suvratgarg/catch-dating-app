@@ -2,10 +2,13 @@
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -16,6 +19,9 @@ import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
+import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,8 +33,104 @@ void main() {
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
+  testWidgets('Host Forms keeps Audience composition across route states', (
+    tester,
+  ) async {
+    for (final (screen, view) in [
+      (const HostFormsScreen(), HostAudienceView.forms),
+      (
+        const HostFormsScreen(initialResponses: true),
+        HostAudienceView.responses,
+      ),
+    ]) {
+      await _pumpFormsRouteState(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncLoading<String?>()),
+        ],
+        settle: false,
+      );
+      _expectFormsAudienceStateOwner(tester, selected: view);
+      expect(find.byType(HostRouteLoadingBody), findsOneWidget);
+      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+
+      await _pumpFormsRouteState(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(
+            AsyncError<String?>(StateError('uid failed'), StackTrace.current),
+          ),
+        ],
+        settle: false,
+      );
+      _expectFormsAudienceStateOwner(tester, selected: view);
+      expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+
+      await _pumpFormsRouteState(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>(null)),
+        ],
+        settle: false,
+      );
+      _expectFormsAudienceStateOwner(tester, selected: view);
+      expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+      expect(find.text('Sign in required'), findsOneWidget);
+
+      await _pumpFormsRouteState(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
+          hostOperableClubsProvider(
+            'host-1',
+          ).overrideWithValue(const AsyncLoading<List<Club>>()),
+        ],
+        settle: false,
+      );
+      _expectFormsAudienceStateOwner(tester, selected: view);
+      expect(find.byType(HostRouteLoadingBody), findsOneWidget);
+      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+
+      await _pumpFormsRouteState(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
+          hostOperableClubsProvider('host-1').overrideWithValue(
+            AsyncError<List<Club>>(
+              StateError('clubs failed'),
+              StackTrace.current,
+            ),
+          ),
+        ],
+        settle: false,
+      );
+      _expectFormsAudienceStateOwner(tester, selected: view);
+      expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
+
+      await _pumpFormsRouteState(
+        tester,
+        screen,
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
+          hostOperableClubsProvider(
+            'host-1',
+          ).overrideWithValue(const AsyncData<List<Club>>([])),
+        ],
+        settle: false,
+      );
+      _expectFormsAudienceStateOwner(tester, selected: view);
+      expect(find.byType(HostFormsNoOrganizer), findsOneWidget);
+      expect(find.byType(CatchSliverEmptyState), findsOneWidget);
+    }
+  });
+
   testWidgets(
-    'Forms and Responses use pinned tabs and one view-aware header search',
+    'Audience Forms and Responses use shared tabs and view-aware search',
     (tester) async {
       final formRequests = <HostFormListRequest>[];
       final responseRequests = <HostFormResponseListRequest>[];
@@ -59,9 +161,11 @@ void main() {
       final scaffold = find.byType(CatchTabbedScreenScaffold);
       expect(scaffold, findsOneWidget);
       expect(
-        find.byKey(const ValueKey('host-forms-view-tabs')),
+        find.byKey(const ValueKey('host-audience-view-tabs')),
         findsOneWidget,
       );
+      expect(find.text('People'), findsOneWidget);
+      expect(find.text('Audiences'), findsOneWidget);
       expect(find.text('Forms'), findsWidgets);
       expect(find.text('Responses'), findsOneWidget);
       expect(find.byKey(const ValueKey('host-forms-create')), findsOneWidget);
@@ -134,6 +238,10 @@ void main() {
   testWidgets('Forms directory is flat and published row menus stay bounded', (
     tester,
   ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 1000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
     final club = buildClub(id: 'forms-club', ownerUserId: 'host-1');
 
     await tester.pumpWidget(
@@ -179,6 +287,10 @@ void main() {
 
     expect(find.byKey(CatchSectionFocusSurface.rowGroupClipKey), findsNothing);
     expect(find.byKey(const ValueKey('host-form-published')), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const ValueKey('host-form-published'))).width,
+      CatchLayout.hostFormsDirectoryMaxContentWidth,
+    );
     expect(find.byKey(const ValueKey('host-form-paused')), findsOneWidget);
     expect(find.textContaining('Verifies email'), findsNWidgets(2));
     expect(find.textContaining('Adds a record to Customers'), findsNWidgets(2));
@@ -192,6 +304,52 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
+}
+
+Future<void> _pumpFormsRouteState(
+  WidgetTester tester,
+  HostFormsScreen screen, {
+  required List overrides,
+  bool settle = true,
+}) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      key: UniqueKey(),
+      overrides: [...overrides],
+      child: MaterialApp(theme: AppTheme.light, home: screen),
+    ),
+  );
+  if (settle) {
+    await pumpFeatureUi(tester);
+  } else {
+    await tester.pump();
+  }
+}
+
+void _expectFormsAudienceStateOwner(
+  WidgetTester tester, {
+  required HostAudienceView selected,
+}) {
+  expect(find.byType(HostAudienceStateScaffold), findsOneWidget);
+  expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
+  expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
+  expect(find.byType(HostAudienceTabRail), findsOneWidget);
+  expect(find.byType(CatchErrorScaffold), findsNothing);
+  expect(find.byType(HostLoadingScreen), findsNothing);
+  expect(
+    tester
+        .widget<HostAudienceTabRail>(find.byType(HostAudienceTabRail))
+        .selected,
+    selected,
+  );
+  expect(
+    tester
+        .widget<CatchTabbedPageScrollView>(
+          find.byType(CatchTabbedPageScrollView),
+        )
+        .bodyLayout,
+    CatchScreenBodyLayout.standard,
+  );
 }
 
 class _FixedHostFormsDirectoryController extends HostFormsDirectoryController {

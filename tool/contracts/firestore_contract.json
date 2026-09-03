@@ -662,6 +662,28 @@
       ]
     },
     {
+      "id": "organizerAttentionItems",
+      "path": "organizerAttentionItems/{attentionId}",
+      "rulesMatch": "/organizerAttentionItems/{attentionId}",
+      "typescriptInterface": "OrganizerAttentionItemDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer attention projections server-only"
+      ],
+      "owner": "Host Today read-through attention reconciliation",
+      "read": "server only; managers receive a bounded sanitized callable projection",
+      "write": "server only; source-owned read-through reconciliation",
+      "exportedFunctions": [
+        "listOrganizerAttentionItems"
+      ],
+      "migrationNotes": [
+        "The projection stores evaluated provenance, deadlines, destination, and resolution state; executable trigger and permission policy remains versioned in contracts/catalogs/host_attention_policies.json.",
+        "The list callable reconciles authoritative source collections before returning supported items and fails closed rather than returning a partial source scan.",
+        "Client-local attendance outbox work is merged in Flutter and Dress Rehearsal is a shortcut, so neither is persisted as a mandatory server attention row."
+      ]
+    },
+    {
       "id": "organizerForms",
       "path": "organizerForms/{formId}",
       "rulesMatch": "/organizerForms/{formId}",

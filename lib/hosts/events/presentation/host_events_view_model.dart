@@ -1,0 +1,94 @@
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
+
+HostEventsRouteState buildHostEventsRouteState({
+  required CatchAsyncState<String?> uid,
+  CatchAsyncState<List<Club>>? organizers,
+}) {
+  if (uid.hasError) {
+    return HostEventsRouteState(
+      status: HostEventsRouteStatus.error,
+      error: uid.error,
+      stackTrace: uid.stackTrace,
+      errorContext: AppErrorContext.auth,
+    );
+  }
+
+  final currentUid = uid.value;
+  if (currentUid == null) {
+    return uid.isLoading
+        ? const HostEventsRouteState(status: HostEventsRouteStatus.loading)
+        : const HostEventsRouteState(
+            status: HostEventsRouteStatus.authRequired,
+          );
+  }
+
+  final organizerValue = organizers;
+  if (organizerValue == null || organizerValue.isLoading) {
+    return HostEventsRouteState(
+      status: HostEventsRouteStatus.loading,
+      uid: currentUid,
+    );
+  }
+  if (organizerValue.hasError) {
+    return HostEventsRouteState(
+      status: HostEventsRouteStatus.error,
+      uid: currentUid,
+      error: organizerValue.error,
+      stackTrace: organizerValue.stackTrace,
+    );
+  }
+
+  final resolvedOrganizers = List<Club>.unmodifiable(
+    organizerValue.value ?? const <Club>[],
+  );
+  return HostEventsRouteState(
+    status: resolvedOrganizers.isEmpty
+        ? HostEventsRouteStatus.empty
+        : HostEventsRouteStatus.loaded,
+    uid: currentUid,
+    organizers: resolvedOrganizers,
+  );
+}
+
+HostEventsWorkspaceState buildHostEventsWorkspaceState(
+  CatchAsyncState<List<Event>> events, {
+  required DateTime now,
+  String? featuredEventId,
+  bool hasMoreActive = false,
+  bool hasMorePast = false,
+  bool loadingMoreActive = false,
+  bool loadingMorePast = false,
+  Object? activeLoadMoreError,
+  Object? pastError,
+  StackTrace? pastStackTrace,
+}) {
+  if (events.hasError) {
+    return HostEventsWorkspaceState(
+      status: HostEventsWorkspaceStatus.error,
+      error: events.error,
+      stackTrace: events.stackTrace,
+    );
+  }
+  if (events.isLoading) {
+    return const HostEventsWorkspaceState(
+      status: HostEventsWorkspaceStatus.loading,
+    );
+  }
+
+  return HostEventsWorkspaceState.fromEvents(
+    events: events.value ?? const <Event>[],
+    now: now,
+    featuredEventId: featuredEventId,
+    hasMoreActive: hasMoreActive,
+    hasMorePast: hasMorePast,
+    loadingMoreActive: loadingMoreActive,
+    loadingMorePast: loadingMorePast,
+    activeLoadMoreError: activeLoadMoreError,
+    pastError: pastError,
+    pastStackTrace: pastStackTrace,
+  );
+}

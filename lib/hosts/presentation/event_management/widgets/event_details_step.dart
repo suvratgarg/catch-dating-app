@@ -320,14 +320,6 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   ],
                 ),
               ],
-              CreateEventPhotoPicker(
-                photos: widget.photoPreviews,
-                onAddPhotos: widget.onPickPhotos,
-                onRemovePhoto: widget.onRemovePhoto,
-                onReorderPhoto: widget.onReorderPhoto,
-                organizerName: widget.organizerName,
-                organizerLogoUrl: widget.organizerLogoUrl,
-              ),
               CatchSection.fieldRows(
                 children: [
                   CatchField.input(
@@ -535,6 +527,14 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                     textInputAction: TextInputAction.newline,
                   ),
                 ],
+              ),
+              CreateEventPhotoPicker(
+                photos: widget.photoPreviews,
+                onAddPhotos: widget.onPickPhotos,
+                onRemovePhoto: widget.onRemovePhoto,
+                onReorderPhoto: widget.onReorderPhoto,
+                organizerName: widget.organizerName,
+                organizerLogoUrl: widget.organizerLogoUrl,
               ),
               if (widget.selectedActivityKind == ActivityKind.openActivity ||
                   widget.routePlan != null)

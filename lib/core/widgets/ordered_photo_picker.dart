@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -375,15 +376,16 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Scaffold(
+    return CatchRouteScaffold(
       key: OrderedPhotoPickerKeys.managerScreen,
       backgroundColor: t.bg,
-      appBar: CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.coreOrderedPhotoPickerTitlePhotoManager,
         subtitle: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
           count: _photos.length,
         ),
         leadingType: CatchTopBarLeading.close,
+        border: scrolledUnder,
         actions: widget.showDoneAction
             ? [
                 CatchTextButton(
@@ -394,73 +396,55 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
             : const [],
       ),
       bottomNavigationBar: widget.footer,
-      body: SafeArea(
-        top: false,
+      body: CatchRouteBody.standard(
+        scrollable: false,
         child: Column(
           children: [
-            if (widget.header case final header?) ...[
-              Padding(
-                padding: CatchInsets.pageHorizontal.copyWith(
-                  top: CatchSpacing.s2,
-                ),
-                child: header,
-              ),
-              gapH12,
-            ],
+            if (widget.header case final header?) ...[header, gapH12],
             if (_photos.isNotEmpty)
               Padding(
-                padding: CatchInsets.pageHorizontal.copyWith(
-                  top: CatchSpacing.s2,
-                  bottom: CatchSpacing.s2,
-                ),
+                padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
                 child: Text(
                   context.l10n.coreOrderedPhotoPickerBodyCoverPhoto,
                   style: CatchTextStyles.supporting(context, color: t.ink3),
                 ),
               ),
-            Padding(
-              padding: CatchInsets.pageHorizontal,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      context.l10n.coreOrderedPhotoPickerTitleGallery,
-                      style: CatchTextStyles.sectionTitle(context),
-                    ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    context.l10n.coreOrderedPhotoPickerTitleGallery,
+                    style: CatchTextStyles.sectionTitle(context),
                   ),
-                  CatchTextButton(
-                    label: context.l10n.coreOrderedPhotoPickerActionAddPhotos,
-                    onPressed:
-                        widget.canAdd &&
-                            !_adding &&
-                            (widget.onAddPhotos != null ||
-                                widget.onAddPhotosInManager != null)
-                        ? _addPhotos
-                        : null,
-                    leading: Icon(
-                      CatchIcons.addPhotoAlternateOutlined,
-                      size: CatchIcon.sm,
-                    ),
+                ),
+                CatchTextButton(
+                  label: context.l10n.coreOrderedPhotoPickerActionAddPhotos,
+                  onPressed:
+                      widget.canAdd &&
+                          !_adding &&
+                          (widget.onAddPhotos != null ||
+                              widget.onAddPhotosInManager != null)
+                      ? _addPhotos
+                      : null,
+                  leading: Icon(
+                    CatchIcons.addPhotoAlternateOutlined,
+                    size: CatchIcon.sm,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             gapH8,
             Expanded(
               child: _photos.isEmpty
-                  ? Padding(
-                      padding: CatchInsets.pageBodyTight,
-                      child: OrderedPhotoAddTile(
-                        label:
-                            context.l10n.coreOrderedPhotoPickerActionAddPhotos,
-                        onTap:
-                            widget.canAdd &&
-                                !_adding &&
-                                (widget.onAddPhotos != null ||
-                                    widget.onAddPhotosInManager != null)
-                            ? _addPhotos
-                            : null,
-                      ),
+                  ? OrderedPhotoAddTile(
+                      label: context.l10n.coreOrderedPhotoPickerActionAddPhotos,
+                      onTap:
+                          widget.canAdd &&
+                              !_adding &&
+                              (widget.onAddPhotos != null ||
+                                  widget.onAddPhotosInManager != null)
+                          ? _addPhotos
+                          : null,
                     )
                   : ReorderableBuilder<int>.builder(
                       itemCount: _photos.length,
@@ -493,8 +477,8 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
                               ? 3
                               : 2;
                           return GridView.builder(
-                            padding: CatchInsets.pageHorizontal.add(
-                              const EdgeInsets.only(bottom: CatchSpacing.s8),
+                            padding: const EdgeInsets.only(
+                              bottom: CatchSpacing.s8,
                             ),
                             itemCount: _photos.length,
                             gridDelegate:

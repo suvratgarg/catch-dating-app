@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
@@ -53,6 +54,19 @@ void main() {
     expect(find.text('Continue to publish'), findsNothing);
     expect(find.text('Form title'), findsNothing);
     final topBar = find.byType(CatchTopBar);
+    expect(tester.widget<CatchTopBar>(topBar).titleWidget, isNull);
+    final titleFinder = find.descendant(
+      of: topBar,
+      matching: find.text('Saturday Social application'),
+    );
+    final titleContext = tester.element(titleFinder);
+    expect(
+      tester.widget<Text>(titleFinder).style,
+      CatchTextStyles.routeTitle(
+        titleContext,
+        color: CatchTokens.of(titleContext).ink,
+      ),
+    );
     final topBarButtons = find.descendant(
       of: topBar,
       matching: find.byType(CatchIconButton),
@@ -92,6 +106,28 @@ void main() {
       CatchButtonShape.rounded,
     );
   });
+
+  testWidgets(
+    'tablet builder keeps three panes and publish in the command bar',
+    (tester) async {
+      await _pumpBuilder(tester, size: const Size(1024, 1366));
+
+      expect(find.text('Outline'), findsOneWidget);
+      expect(find.text('SECTION 1'), findsOneWidget);
+      expect(find.byType(CatchBottomAction), findsNothing);
+      final publishAction = find.byType(CatchTopBarPrimaryAction);
+      expect(publishAction, findsOneWidget);
+      expect(
+        tester.widget<CatchTopBarPrimaryAction>(publishAction).label,
+        'Review & publish',
+      );
+
+      await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+      await pumpFeatureUi(tester);
+      expect(find.text('Preview'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets(
     'question editor stays focused and settings remain directly reachable',
@@ -349,9 +385,10 @@ Future<void> _pumpBuilder(
   double textScale = 1,
   bool disableAnimations = false,
   ThemeData? theme,
+  Size size = const Size(390, 844),
 }) async {
   tester.view.devicePixelRatio = 1;
-  tester.view.physicalSize = const Size(390, 844);
+  tester.view.physicalSize = size;
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
   final summary = _summaryMap();

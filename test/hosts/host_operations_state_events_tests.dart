@@ -1,6 +1,13 @@
 part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsStateEventsTests() {
+  test('HostRouteLoadingBody delegates page geometry to its parent', () {
+    expect(
+      const HostRouteLoadingBody(padding: EdgeInsets.zero).padding,
+      EdgeInsets.zero,
+    );
+  });
+
   test(
     'HostTeamWorkspaceState uses club fallback while profile is loading',
     () {
@@ -144,113 +151,105 @@ void _registerHostOperationsStateEventsTests() {
     expect(switchedClub.rangePreset, HostClubInsightsRangePreset.twelveMonths);
   });
 
-  test('HostHomeScreenState resolves selected club and host role', () {
-    final ownedClub = buildClub(
-      id: 'owned-club',
-      name: 'Owner Club',
-      ownerUserId: _hostUid,
-    );
-    final cohostClub = buildClub(
-      id: 'cohost-club',
-      name: 'Co-host Club',
-      hostUserId: 'owner-2',
-      hostUserIds: const [_hostUid],
-    );
-
-    final state = HostHomeScreenState.resolve(
-      clubs: [ownedClub, cohostClub],
-      currentUid: _hostUid,
-      selectedClubId: cohostClub.id,
-    );
-
-    expect(state.selectedClub, cohostClub);
-    expect(state.selectedClubIsOwner, isFalse);
-    expect(state.showClubPicker, isTrue);
-
-    final ownerState = state.selectClubIndex(0);
-    expect(ownerState.selectedClub, ownedClub);
-    expect(ownerState.selectedClubIsOwner, isTrue);
-
-    final clampedState = HostHomeScreenState.resolve(
-      clubs: [ownedClub],
-      currentUid: _hostUid,
-      selectedClubIndex: 99,
-    );
-    expect(clampedState.selectedClub, ownedClub);
-  });
-
-  test('HostHomeRouteState maps auth and club async branches', () {
+  test('HostEventsRouteState maps auth and organizer async branches', () {
     final club = buildClub(id: 'owned-club', ownerUserId: _hostUid);
     final stackTrace = StackTrace.current;
     final authError = StateError('auth failed');
     final clubsError = StateError('clubs failed');
 
     expect(
-      buildHostHomeRouteState(
+      buildHostEventsRouteState(
         uid: const CatchAsyncState<String?>.data(null),
       ).status,
-      HostHomeRouteStatus.authRequired,
+      HostEventsRouteStatus.authRequired,
     );
     expect(
-      buildHostHomeRouteState(
+      buildHostEventsRouteState(
         uid: const CatchAsyncState<String?>.loading(),
       ).status,
-      HostHomeRouteStatus.loading,
+      HostEventsRouteStatus.loading,
     );
 
-    final authErrorState = buildHostHomeRouteState(
+    final authErrorState = buildHostEventsRouteState(
       uid: CatchAsyncState<String?>.error(authError, stackTrace),
     );
-    expect(authErrorState.status, HostHomeRouteStatus.error);
+    expect(authErrorState.status, HostEventsRouteStatus.error);
     expect(authErrorState.error, authError);
     expect(authErrorState.errorContext, AppErrorContext.auth);
 
     expect(
-      buildHostHomeRouteState(
+      buildHostEventsRouteState(
         uid: const CatchAsyncState<String?>.data(_hostUid),
-        clubs: const CatchAsyncState<List<Club>>.loading(),
+        organizers: const CatchAsyncState<List<Club>>.loading(),
       ).status,
-      HostHomeRouteStatus.loading,
+      HostEventsRouteStatus.loading,
     );
 
-    final clubsErrorState = buildHostHomeRouteState(
+    final clubsErrorState = buildHostEventsRouteState(
       uid: const CatchAsyncState<String?>.data(_hostUid),
-      clubs: CatchAsyncState<List<Club>>.error(clubsError, stackTrace),
+      organizers: CatchAsyncState<List<Club>>.error(clubsError, stackTrace),
     );
-    expect(clubsErrorState.status, HostHomeRouteStatus.error);
+    expect(clubsErrorState.status, HostEventsRouteStatus.error);
     expect(clubsErrorState.uid, _hostUid);
     expect(clubsErrorState.error, clubsError);
     expect(clubsErrorState.errorContext, AppErrorContext.club);
 
-    final emptyState = buildHostHomeRouteState(
+    final emptyState = buildHostEventsRouteState(
       uid: const CatchAsyncState<String?>.data(_hostUid),
-      clubs: const CatchAsyncState<List<Club>>.data([]),
+      organizers: const CatchAsyncState<List<Club>>.data([]),
     );
-    expect(emptyState.status, HostHomeRouteStatus.empty);
+    expect(emptyState.status, HostEventsRouteStatus.empty);
     expect(emptyState.uid, _hostUid);
 
-    final loadedState = buildHostHomeRouteState(
+    final loadedState = buildHostEventsRouteState(
       uid: const CatchAsyncState<String?>.data(_hostUid),
-      clubs: CatchAsyncState<List<Club>>.data([club]),
+      organizers: CatchAsyncState<List<Club>>.data([club]),
     );
-    expect(loadedState.status, HostHomeRouteStatus.loaded);
-    expect(loadedState.clubs, [club]);
+    expect(loadedState.status, HostEventsRouteStatus.loaded);
+    expect(loadedState.organizers, [club]);
   });
 
-  testWidgets('Host clubs shows loading while uid resolves', (tester) async {
+  testWidgets('Host clubs keeps tabbed root chrome while uid resolves', (
+    tester,
+  ) async {
     await _pumpHostScreen(
       tester,
-      const HostClubsScreen(),
+      const HostClubsScreen(
+        initialTab: HostClubTab.insights,
+        initialExpandedEditField: HostClubEditFieldKeys.description,
+      ),
       overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
       settle: false,
     );
 
-    expect(find.byType(HostLoadingScreen), findsOneWidget);
-    expect(find.text('Organizers'), findsOneWidget);
+    expect(find.byType(HostLoadingScreen), findsNothing);
+    expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.text('Organizer'), findsOneWidget);
+    expect(find.text('Edit'), findsOneWidget);
+    expect(find.text('Insights'), findsOneWidget);
+    expect(find.text('Preview'), findsOneWidget);
+    expect(
+      tester
+          .widget<CatchOptionGroup<HostClubTab>>(
+            find.byKey(const ValueKey('host-club-tab-rail')),
+          )
+          .selected,
+      HostClubTab.edit,
+    );
     expect(find.text('Sign in required'), findsNothing);
     expect(
       tester.widget<CatchSectionStack>(find.byType(CatchSectionStack)).padding,
-      CatchInsets.pageBody,
+      EdgeInsets.zero,
+    );
+    expect(
+      tester
+          .widget<CatchTabbedPageScrollView>(
+            find.byType(CatchTabbedPageScrollView),
+          )
+          .bodyLayout,
+      CatchScreenBodyLayout.standard,
     );
   });
 

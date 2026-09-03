@@ -100,18 +100,39 @@ test("design authority ledgers select their exact consuming checks", () => {
     ["design/public_surface_behavior.json", ["design:public-surface-behavior"]],
     [
       "design/screens/catch.screens.json",
-      ["design:parity-matrix", "design:screen-contracts", "design:screen-coverage"],
+      [
+        "architecture:ui-composition-contracts",
+        "design:parity-matrix",
+        "design:screen-contracts",
+        "design:screen-coverage",
+      ],
     ],
-    ["design/screens/screen_coverage.json", ["design:screen-coverage"]],
+    [
+      "design/screens/catch.screens.schema.json",
+      ["architecture:ui-composition-contracts", "design:screen-contracts"],
+    ],
+    [
+      "design/screens/screen_coverage.json",
+      ["architecture:ui-composition-contracts", "design:screen-coverage"],
+    ],
+    [
+      "tool/ui_capture/check_route_inventory.mjs",
+      ["architecture:ui-composition-contracts", "ui-capture:route-inventory"],
+    ],
     [
       "tool/ui_capture/route_inventory.json",
       [
+        "architecture:ui-composition-contracts",
         "design:parity-matrix",
         "design:screen-contracts",
         "design:screen-coverage",
         "ui-capture:coverage",
         "ui-capture:route-inventory",
       ],
+    ],
+    [
+      "tool/design/screen_top_bar_contracts.json",
+      ["architecture:ui-composition-contracts"],
     ],
     [
       "tool/ui_capture/capture_coverage.json",
@@ -137,7 +158,12 @@ test("design authority ledgers select their exact consuming checks", () => {
     manifest: productionManifest,
     componentGraph: componentGraph(),
   });
-  assert.deepEqual(combined.setupRequirements, ["node", "root-npm"]);
+  assert.deepEqual(combined.setupRequirements, [
+    "node",
+    "flutter",
+    "flutter-pub",
+    "root-npm",
+  ]);
 });
 
 test("l10n usage changes keep the full source view with Node-only setup", () => {

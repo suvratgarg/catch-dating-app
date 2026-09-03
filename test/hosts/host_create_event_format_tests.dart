@@ -62,9 +62,11 @@ void runHostCreateEventFormatTests() {
 
       await _tapActivityKind(tester, 'Open activity');
       expect(find.text('Route-based event'), findsOneWidget);
-      await tester.ensureVisible(
-        find.byKey(CreateEventFormKeys.routePlanEnabled),
+      await Scrollable.ensureVisible(
+        tester.element(find.byKey(CreateEventFormKeys.routePlanEnabled)),
+        alignment: 0.25,
       );
+      await tester.pump();
       await tester.tap(find.byKey(CreateEventFormKeys.routePlanEnabled));
       await _pumpTestAnimation(tester);
       await _openCatchField(tester, 'Route operations');

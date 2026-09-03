@@ -187,4 +187,36 @@ void main() {
 
     expect(other.entries, isEmpty);
   });
+
+  test(
+    'loadAll normalizes the complete account queue for Host Today',
+    () async {
+      final store = MemoryOutboxStore();
+      final outbox = HostAttendanceOutbox(store, FakeAttendanceMutator());
+      await store.save('staff-1', [
+        entry(createdAt: DateTime(2026, 8)),
+        HostAttendanceOutboxEntry(
+          eventId: 'event-2',
+          attendeeId: 'attendee-2',
+          desiredCheckedIn: false,
+          expectedRevision: 2,
+          clientOperationId: 'operation_2222222222',
+          createdAt: DateTime(2026, 8, 11),
+          status: HostAttendanceOutboxStatus.pending,
+        ),
+      ]);
+
+      final summary = await outbox.loadAll(
+        accountId: 'staff-1',
+        now: DateTime(2026, 8, 12),
+      );
+
+      expect(summary.entries.map((item) => item.eventId), [
+        'event-1',
+        'event-2',
+      ]);
+      expect(summary.needsReviewCount, 1);
+      expect(store.values['staff-1'], hasLength(2));
+    },
+  );
 }

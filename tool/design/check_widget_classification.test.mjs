@@ -5,7 +5,12 @@ import test from "node:test";
 import {fileURLToPath} from "node:url";
 
 import {validateWidgetClassification} from "./check_widget_classification.mjs";
-import {buildWidgetClassification} from "./generate_widget_classification.mjs";
+import {publicWidgetNamingProblems} from "./component_concepts.mjs";
+import {
+  buildWidgetClassification,
+  collectProductionWidgetClassificationDeclarations,
+  collectWidgetClassificationDeclarations,
+} from "./generate_widget_classification.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const contracts = JSON.parse(
@@ -16,16 +21,126 @@ const classification = buildWidgetClassification({
   repoRoot,
   updated: "2026-08-07",
 });
-const sourceDeclarations = classification.widgets.map(({file, name, baseClass}) => ({
-  file,
-  name,
-  baseClass,
-}));
+const sourceDeclarations = collectProductionWidgetClassificationDeclarations({repoRoot})
+  .map(({file, name, baseClass}) => ({file, name, baseClass}));
 
 test("source-derived widget classification passes its structural and semantic contract", () => {
   assert.equal(Object.hasOwn(classification, "$schema"), false);
   assert.equal(classification.widgets.length > 0, true);
+  assert.ok(classification.widgets.some((widget) =>
+    widget.file === "apps/consumer/lib/consumer_platform_app.dart" &&
+    widget.name === "ConsumerPlatformApp",
+  ));
+  assert.ok(classification.widgets.some((widget) =>
+    widget.file === "apps/host/lib/host_platform_app.dart" &&
+    widget.name === "HostPlatformApp",
+  ));
+  assert.ok(classification.widgets.some((widget) =>
+    widget.file === "lib/core/presentation/app_shell_active_tab.dart" &&
+    widget.name === "AppShellActiveTab" &&
+    widget.baseClass === "InheritedWidget",
+  ));
+  assert.ok(classification.widgets.some((widget) =>
+    widget.file === "lib/core/widgets/catch_pager_focus_boundary.dart" &&
+    widget.name === "CatchPagerFocusBoundary" &&
+    widget.baseClass === "SingleChildRenderObjectWidget",
+  ));
   assert.deepEqual(validate(classification), []);
+});
+
+test("classification discovers indirect and nontraditional Widgets across roots", () => {
+  const declarations = collectWidgetClassificationDeclarations([
+    {
+      file: "lib/core/widgets/catch_cross_root_base.dart",
+      source: `
+abstract class CatchCrossRootBase extends InheritedWidget {}
+class CatchRenderBoundary extends SingleChildRenderObjectWidget {}
+`,
+    },
+    {
+      file: "apps/consumer/lib/cross_root_panel.dart",
+      source: `
+class CatchCrossRootPanelWidget extends CatchCrossRootBase {}
+class CatchExactPanel extends CatchRenderBoundary {}
+`,
+    },
+    {
+      file: "apps/host/lib/cross_root_panel.dart",
+      source: `
+class CrossRootPanelView extends CatchCrossRootBase {}
+class CatchExactPanel extends RenderObjectWidget {}
+`,
+    },
+  ]);
+
+  assert.deepEqual(
+    declarations.map(({file, name, baseClass, classKind}) => ({
+      file,
+      name,
+      baseClass,
+      classKind,
+    })),
+    [
+      {
+        file: "lib/core/widgets/catch_cross_root_base.dart",
+        name: "CatchCrossRootBase",
+        baseClass: "InheritedWidget",
+        classKind: "widget",
+      },
+      {
+        file: "lib/core/widgets/catch_cross_root_base.dart",
+        name: "CatchRenderBoundary",
+        baseClass: "SingleChildRenderObjectWidget",
+        classKind: "widget",
+      },
+      {
+        file: "apps/consumer/lib/cross_root_panel.dart",
+        name: "CatchCrossRootPanelWidget",
+        baseClass: "CatchCrossRootBase",
+        classKind: "widget",
+      },
+      {
+        file: "apps/consumer/lib/cross_root_panel.dart",
+        name: "CatchExactPanel",
+        baseClass: "CatchRenderBoundary",
+        classKind: "widget",
+      },
+      {
+        file: "apps/host/lib/cross_root_panel.dart",
+        name: "CrossRootPanelView",
+        baseClass: "CatchCrossRootBase",
+        classKind: "widget",
+      },
+      {
+        file: "apps/host/lib/cross_root_panel.dart",
+        name: "CatchExactPanel",
+        baseClass: "RenderObjectWidget",
+        classKind: "widget",
+      },
+    ],
+  );
+
+  const publicRows = declarations.map((entry) => ({
+    ...entry,
+    conceptRole: "composition",
+    conceptId: null,
+  }));
+  const problems = publicWidgetNamingProblems(publicRows).join("\n");
+  assert.match(problems, /duplicate public widget class CatchExactPanel/u);
+  assert.match(
+    problems,
+    /ungoverned normalized widget collision cross_root_panel/u,
+  );
+
+  const governedRows = publicRows.map((entry) =>
+    ["CatchCrossRootPanelWidget", "CrossRootPanelView"].includes(entry.name)
+      ? {...entry, conceptRole: "member", conceptId: "catch.cross_root_panel"}
+      : entry,
+  );
+  assert.doesNotMatch(
+    publicWidgetNamingProblems(governedRows).join("\n"),
+    /normalized widget collision cross_root_panel/u,
+  );
 });
 
 test("rejects undeclared properties and invalid enum values", () => {
@@ -36,6 +151,19 @@ test("rejects undeclared properties and invalid enum values", () => {
   const invalidRole = clone(classification);
   invalidRole.widgets[0].role = "molecule";
   assert.ok(validate(invalidRole).some((failure) => failure.includes("role has invalid value")));
+
+  const invalidPath = clone(classification);
+  invalidPath.widgets[0].file = "widgetbook/lib/not_a_production_widget.dart";
+  assert.ok(validate(invalidPath).some((failure) =>
+    failure.includes("file must be a Dart source under lib/**, apps/consumer/lib/**, apps/host/lib/**"),
+  ));
+
+  const incompleteScope = clone(classification);
+  incompleteScope.sourceOfTruth.scope =
+    "Production widget classes under lib/** and apps/consumer/lib/**.";
+  assert.ok(validate(incompleteScope).includes(
+    "sourceOfTruth.scope must include apps/host/lib/**",
+  ));
 });
 
 test("rejects duplicate remediation values and summary drift", () => {
@@ -73,7 +201,7 @@ test("rejects missing and stale source classifications", () => {
     widgetbookNames,
     sourceDeclarations: staleSource,
   });
-  const stale = classification.widgets.at(-1);
+  const stale = sourceDeclarations.at(-1);
   assert.ok(failures.includes(`${stale.file}:${stale.name}: stale classification`));
 });
 

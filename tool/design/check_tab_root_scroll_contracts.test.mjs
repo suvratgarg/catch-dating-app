@@ -16,15 +16,105 @@ test("accepts a registered shell branch with a semantic terminal owner", () => {
 
 test("accepts a tab root that delegates scroll ownership to the shared shell", () => {
   const root = fixtureRoot({
-    ownerSource:
-      "CatchTabbedScreenScaffold(body: CatchTabbedPageScrollView());",
+    ownerSource: `
+      class ExamplePage extends Widget implements CatchTabbedPageOwner {
+        CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
+        Widget build(BuildContext context) => CatchTabbedPageScrollView(
+          bodyLayout: bodyLayout,
+        );
+      }
+      CatchTabbedScreenScaffold(
+        body: CatchTabbedScreenBody.single(
+          page: CatchTabbedPageSpec.scroll(
+            bodyLayout: CatchScreenBodyLayout.standard,
+            page: ExamplePage(),
+          ),
+        ),
+      );
+    `,
     requires: [
       {text: "CatchTabbedScreenScaffold", minimumOccurrences: 1},
       {text: "CatchTabbedPageScrollView", minimumOccurrences: 1},
+      {text: "implements CatchTabbedPageOwner", minimumOccurrences: 1},
+      {text: "CatchTabbedScreenBody.single", minimumOccurrences: 1},
+      {text: "CatchTabbedPageSpec.scroll", minimumOccurrences: 1},
     ],
   });
   const result = checkTabRootScrollContracts({root});
   assert.deepEqual(result.findings, []);
+});
+
+test("accepts a root screen with an explicit semantic body role", () => {
+  const root = fixtureRoot({
+    ownerSource: `
+      CatchRootScreenScaffold(
+        bodyLayout: CatchScreenBodyLayout.standard,
+        slivers: const [SliverToBoxAdapter(child: Text("Body"))],
+      );
+    `,
+    requires: [
+      {text: "CatchRootScreenScaffold", minimumOccurrences: 1},
+      {
+        text: "bodyLayout: CatchScreenBodyLayout.standard",
+        minimumOccurrences: 1,
+      },
+    ],
+    forbids: [{text: "CustomScrollView("}],
+  });
+  const result = checkTabRootScrollContracts({root});
+  assert.deepEqual(result.findings, []);
+});
+
+test("flags a root screen that bypasses semantic composition", () => {
+  const root = fixtureRoot({
+    ownerSource: "SafeArea(child: CustomScrollView());",
+    requires: [
+      {text: "CatchRootScreenScaffold", minimumOccurrences: 1},
+      {
+        text: "bodyLayout: CatchScreenBodyLayout.standard",
+        minimumOccurrences: 1,
+      },
+    ],
+    forbids: [{text: "CustomScrollView("}],
+  });
+  const result = checkTabRootScrollContracts({root});
+  assert.ok(
+    result.findings.some(
+      (finding) => finding.code === "missing-required-text",
+    ),
+  );
+  assert.ok(
+    result.findings.some((finding) => finding.code === "forbidden-text"),
+  );
+});
+
+test("flags a state branch that escapes an otherwise valid root owner", () => {
+  const root = fixtureRoot({
+    ownerSource: `
+      return switch (state) {
+        ScreenState.loaded => CatchRootScreenScaffold(
+          bodyLayout: CatchScreenBodyLayout.standard,
+        ),
+        ScreenState.error => CatchErrorScaffold(),
+      };
+    `,
+    requires: [
+      {text: "CatchRootScreenScaffold", minimumOccurrences: 1},
+      {
+        text: "bodyLayout: CatchScreenBodyLayout.standard",
+        minimumOccurrences: 1,
+      },
+    ],
+    forbids: [{text: "CatchErrorScaffold"}],
+  });
+  const result = checkTabRootScrollContracts({root});
+  assert.ok(
+    result.findings.some(
+      (finding) =>
+        finding.code === "forbidden-text" &&
+        finding.message.includes("CatchErrorScaffold"),
+    ),
+  );
 });
 
 test("accepts lifecycle-owned StatefulShellBranch key member access", () => {
@@ -117,6 +207,7 @@ function fixtureRoot({
     {text: "bottom: false", minimumOccurrences: 1},
     {text: "CatchSliverTerminalPadding", minimumOccurrences: 1},
   ],
+  forbids = [],
 }) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-tab-root-"));
   write(
@@ -156,6 +247,7 @@ function fixtureRoot({
             {
               path: "lib/home/home_screen.dart",
               requires,
+              forbids,
             },
           ],
         },

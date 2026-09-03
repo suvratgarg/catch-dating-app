@@ -54,6 +54,11 @@ class CaptureDevice {
     safeArea: EdgeInsets.only(top: 24, bottom: 20),
   );
 
+  static const auditDesktop = CaptureDevice(
+    id: 'audit-desktop-1440x1000',
+    size: Size(1440, 1000),
+  );
+
   static const all = <CaptureDevice>[
     reviewTall,
     reviewPhone,
@@ -63,6 +68,7 @@ class CaptureDevice {
     iphone17Pro,
     auditMedium,
     auditTablet,
+    auditDesktop,
   ];
 
   static CaptureDevice fromId(String id) {

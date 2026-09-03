@@ -15,55 +15,39 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: CatchInsets.formEditBodyRelaxed,
-      sliver: SliverToBoxAdapter(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: CatchLayout.maxContentWidth,
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchSectionList(
+              emptyStateOmitted: true,
+              gap: 0,
+              children: [
+                const ProfilePhotosSkeletonSection(),
+                ProfileInfoSkeletonSection(
+                  title: context.l10n.userProfileProfileTabSkeletonTitlePrompts,
+                  rows: maxProfilePromptAnswers,
+                ),
+                ProfileInfoSkeletonSection(
+                  title:
+                      context.l10n.userProfileProfileTabSkeletonTitleAboutYou,
+                  rows: 5,
+                ),
+                ProfileInfoSkeletonSection(
+                  title: context.l10n.userProfileProfileTabSkeletonTitleRunning,
+                  rows: 4,
+                ),
+                ProfileInfoSkeletonSection(
+                  title:
+                      context.l10n.userProfileProfileTabSkeletonTitleLifestyle,
+                  rows: 4,
+                ),
+              ],
             ),
-            child: SizedBox(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  CatchSectionList(
-                    emptyStateOmitted: true,
-                    gap: 0,
-                    children: [
-                      const ProfilePhotosSkeletonSection(),
-                      ProfileInfoSkeletonSection(
-                        title: context
-                            .l10n
-                            .userProfileProfileTabSkeletonTitlePrompts,
-                        rows: maxProfilePromptAnswers,
-                      ),
-                      ProfileInfoSkeletonSection(
-                        title: context
-                            .l10n
-                            .userProfileProfileTabSkeletonTitleAboutYou,
-                        rows: 5,
-                      ),
-                      ProfileInfoSkeletonSection(
-                        title: context
-                            .l10n
-                            .userProfileProfileTabSkeletonTitleRunning,
-                        rows: 4,
-                      ),
-                      ProfileInfoSkeletonSection(
-                        title: context
-                            .l10n
-                            .userProfileProfileTabSkeletonTitleLifestyle,
-                        rows: 4,
-                      ),
-                    ],
-                  ),
-                  gapH32,
-                ],
-              ),
-            ),
-          ),
+            gapH32,
+          ],
         ),
       ),
     );

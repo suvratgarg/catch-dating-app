@@ -41,16 +41,16 @@ class PaymentHistoryScreen extends ConsumerWidget {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: CatchAsyncValueView<String?>(
-        value: uidAsync,
-        loadingBuilder: (_) => const PaymentHistorySkeleton(),
-        errorContext: AppErrorContext.payments,
-        onRetry: () => ref.invalidate(uidProvider),
-        builder: (context, uid) {
-          if (uid == null) {
-            return CatchScreenBody(
-              scrollable: false,
-              child: Center(
+      body: CatchRouteBody.standard(
+        constrainToContentWidth: true,
+        child: CatchAsyncValueView<String?>(
+          value: uidAsync,
+          loadingBuilder: (_) => const PaymentHistorySkeleton(),
+          errorContext: AppErrorContext.payments,
+          onRetry: () => ref.invalidate(uidProvider),
+          builder: (context, uid) {
+            if (uid == null) {
+              return Center(
                 child: CatchEmptyState(
                   icon: CatchIcons.lockOutlineRounded,
                   title: context
@@ -60,11 +60,11 @@ class PaymentHistoryScreen extends ConsumerWidget {
                       .l10n
                       .paymentsPaymentHistoryScreenMessageSignInAgainTo,
                 ),
-              ),
-            );
-          }
-          return PaymentHistoryListController(userId: uid);
-        },
+              );
+            }
+            return PaymentHistoryListController(userId: uid);
+          },
+        ),
       ),
     );
   }
@@ -114,16 +114,13 @@ class PaymentHistoryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (paymentHistory.isEmpty) {
-      return CatchScreenBody(
-        scrollable: false,
-        child: Center(
-          child: CatchEmptyState(
-            icon: CatchIcons.receiptLongOutlined,
-            title: context.l10n.paymentsPaymentHistoryScreenTitleNoPaymentsYet,
-            message: context
-                .l10n
-                .paymentsPaymentHistoryScreenMessageEventBookingsAndRefunds,
-          ),
+      return Center(
+        child: CatchEmptyState(
+          icon: CatchIcons.receiptLongOutlined,
+          title: context.l10n.paymentsPaymentHistoryScreenTitleNoPaymentsYet,
+          message: context
+              .l10n
+              .paymentsPaymentHistoryScreenMessageEventBookingsAndRefunds,
         ),
       );
     }
@@ -141,25 +138,15 @@ class PaymentHistoryList extends StatelessWidget {
         break;
     }
 
-    return ListView.separated(
-      padding: CatchInsets.listBody,
-      itemCount: paymentHistory.rows.length,
-      separatorBuilder: (context, _) => Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: const CatchDivider.fieldRow(indent: 0),
-        ),
-      ),
-      itemBuilder: (context, index) => Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: PaymentHistoryTile(row: paymentHistory.rows[index]),
-        ),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var index = 0; index < paymentHistory.rows.length; index++) ...[
+          PaymentHistoryTile(row: paymentHistory.rows[index]),
+          if (index < paymentHistory.rows.length - 1)
+            const CatchDivider.fieldRow(indent: 0),
+        ],
+      ],
     );
   }
 }
@@ -169,25 +156,19 @@ class PaymentHistorySkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: CatchInsets.listBody,
-      itemCount: 5,
-      separatorBuilder: (context, _) => Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: const CatchDivider.fieldRow(indent: 0),
-        ),
-      ),
-      itemBuilder: (context, _) => Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: const PaymentHistoryTileSkeleton(),
-        ),
-      ),
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        PaymentHistoryTileSkeleton(),
+        CatchDivider.fieldRow(indent: 0),
+        PaymentHistoryTileSkeleton(),
+        CatchDivider.fieldRow(indent: 0),
+        PaymentHistoryTileSkeleton(),
+        CatchDivider.fieldRow(indent: 0),
+        PaymentHistoryTileSkeleton(),
+        CatchDivider.fieldRow(indent: 0),
+        PaymentHistoryTileSkeleton(),
+      ],
     );
   }
 }

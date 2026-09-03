@@ -2,12 +2,12 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
-  "generatedFor": "2026-08-30",
-  "sourceDigest": "sha256:0bee6826fc8ca234592441ea4ddc63b28b52c5e93285ae2cb8aa78d40c1afd54",
-  "resolvedDigest": "sha256:0b948cf0b4ff9bbea50fe1d40ccaeb3e4e604eb890a564856355855cfd912e7e",
+  "generatedFor": "2026-08-31",
+  "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
+  "resolvedDigest": "sha256:5edb591c95ff9d0526ce6908f80c897eb15397d705a05e244bf658ead058d678",
   "feature": {
     "id": "feature.host_inbox",
-    "name": "Host Messaging",
+    "name": "Host Inbox",
     "owner": "hosts",
     "status": "pilot",
     "description": "Orchestrates organizer-scoped Host messaging through an inbound Inbox plus Sends for outbound intent selection, event-announcement and follower-update composition, reusable-audience campaigns, manual handoff work, and mixed outbound history."
@@ -18,9 +18,9 @@
     "scenarios": 42,
     "actionCases": 46,
     "actions": 21,
-    "captures": 19,
+    "captures": 20,
     "previews": 3,
-    "testFiles": 12,
+    "testFiles": 15,
     "evidenceExceptions": 44
   },
   "surfaces": [
@@ -32,7 +32,7 @@
         "id": "screen.host.inbox"
       },
       "actionScope": {
-        "included": "Messaging workspace switching; Inbox retry, search, event/general scope, booked/prospective inquiry classification, explicit Catch chat routing, and organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies; Sends-owned outbound intent selection for existing conversations, saved-audience campaigns, event announcements, and follower updates; reverse-chronological managed-send history; durable manual handoff work; dedicated sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
+        "included": "Inbox workspace switching; Inbox retry, search, event/general scope, booked/prospective inquiry classification, explicit Catch chat routing, and organizer-scoped inbound WhatsApp thread facets with 12-month retention and service-window-aware replies; Sends-owned outbound intent selection for existing conversations, saved-audience campaigns, event announcements, and follower updates; reverse-chronological managed-send history; durable manual handoff work; dedicated sender setup; and deep-linked campaign create, schedule, preview, approve, dispatch, cancel, and report controls.",
         "excluded": [
           "Raw broadcast body edits are form data; the contract cardinalizes template/audience decisions and the send mutation instead of individual keystrokes.",
           "Conversation thread behavior and safety actions retain the shared chat-thread contract."
@@ -230,9 +230,9 @@
         "scenarios": 42,
         "actionCases": 46,
         "actions": 21,
-        "captures": 19,
+        "captures": 20,
         "previews": 3,
-        "testFiles": 12,
+        "testFiles": 15,
         "evidenceExceptions": 44
       },
       "dimensions": {
@@ -383,7 +383,7 @@
               ]
             }
           ],
-          "description": "Switches the selected organizer's Messaging surface between Inbox and Sends; the wire value remains campaigns for deep-link compatibility.",
+          "description": "Switches the selected organizer's Inbox destination between Inbox and Sends; the wire value remains campaigns for deep-link compatibility.",
           "implementationStatus": "implemented"
         },
         {
@@ -1438,6 +1438,7 @@
           "evidence": {
             "captureIds": [
               "host_inbox_queries",
+              "host_inbox_thread_selected",
               "host_inbox_text_scale_2",
               "host_inbox_light_dark"
             ],
@@ -1445,7 +1446,11 @@
               "HostInboxScreen/Event-scoped states"
             ],
             "tests": [
-              "test/chats/chat_inbox_screen_test.dart"
+              "test/chats/chat_inbox_screen_test.dart",
+              "test/chats/chat_conversations_list_test.dart",
+              "test/chats/chat_screen_test.dart",
+              "test/core/catch_master_detail_layout_test.dart",
+              "test/hosts/host_inbox_screen_test.dart"
             ]
           },
           "actionCases": [

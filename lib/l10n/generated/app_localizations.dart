@@ -166,6 +166,12 @@ abstract class AppLocalizations {
   /// **'You'**
   String get consumerNavigationProfile;
 
+  /// Host bottom navigation label for the operational home.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get hostNavigationToday;
+
   /// Host bottom navigation label for the event-management tab.
   ///
   /// In en, this message translates to:
@@ -178,10 +184,16 @@ abstract class AppLocalizations {
   /// **'Customers'**
   String get hostNavigationCustomers;
 
+  /// Host bottom navigation label for people, saved audiences, forms, and responses.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience'**
+  String get hostNavigationAudience;
+
   /// Host bottom navigation label for conversations, broadcasts, and campaigns.
   ///
   /// In en, this message translates to:
-  /// **'Messaging'**
+  /// **'Inbox'**
   String get hostNavigationInbox;
 
   /// Host bottom navigation label for organizer identity and settings.
@@ -189,6 +201,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Organizer'**
   String get hostNavigationOrganizer;
+
+  /// Today workspace title when no live or upcoming event needs attention.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re all caught up'**
+  String get hostTodayEmptyTitle;
+
+  /// Today workspace guidance when no live or upcoming event needs attention.
+  ///
+  /// In en, this message translates to:
+  /// **'No live or upcoming events need your attention. Check the calendar or rehearse a run-of-show.'**
+  String get hostTodayEmptyBody;
+
+  /// Opens the full Host Events inventory from Today.
+  ///
+  /// In en, this message translates to:
+  /// **'View full calendar'**
+  String get hostTodayViewAllEvents;
+
+  /// Today workspace section for the next events after the operational spotlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Next 7 days'**
+  String get hostTodayLater;
 
   /// Host inbox filter label showing the number of unread attendee inquiries.
   ///
@@ -352,7 +388,7 @@ abstract class AppLocalizations {
   /// **'Chats'**
   String get consumerChatsTitle;
 
-  /// Host messaging screen heading.
+  /// Host messaging screen heading above the Inbox and Sends modes.
   ///
   /// In en, this message translates to:
   /// **'Messaging'**
@@ -10016,12 +10052,6 @@ abstract class AppLocalizations {
   /// **'Cancellation policy'**
   String get hostsHostClubProfileTitleCancellationPolicy;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (kicker).
-  ///
-  /// In en, this message translates to:
-  /// **'HOST ORGANIZERS'**
-  String get hostsHostClubsScaffoldKickerHostClubs;
-
   /// Accessibility label for the Host Clubs tabbed workspace.
   ///
   /// In en, this message translates to:
@@ -10069,12 +10099,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create organizer'**
   String get hostsHostClubsScaffoldLabelCreateClub;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Organizers'**
-  String get hostsHostClubsScreenTitleClubs;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
   ///
@@ -10210,12 +10234,6 @@ abstract class AppLocalizations {
   /// **'Create organizer'**
   String get hostsHostEventsScaffoldLabelCreateClub;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_operations_home_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Host events'**
-  String get hostsHostOperationsHomeScreenTitleHostEvents;
-
   /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (label).
   ///
   /// In en, this message translates to:
@@ -10330,17 +10348,11 @@ abstract class AppLocalizations {
   /// **'This preview is capped at 2,500 roster records.'**
   String get hostsHostOrganizerCrmTruncated;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (title).
+  /// Section title for the time-sensitive action queue on Host Today.
   ///
   /// In en, this message translates to:
-  /// **'Needs you'**
+  /// **'Needs attention'**
   String get hostsHostTodayTitleNeedsYou;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing needs you right now.'**
-  String get hostsHostTodayTextNothingNeedsYouRight;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (tooltip).
   ///
@@ -10357,22 +10369,22 @@ abstract class AppLocalizations {
     required Object time,
   });
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
+  /// Expected guest count label in the Host Today current-event focus.
   ///
   /// In en, this message translates to:
-  /// **'Going'**
+  /// **'expected'**
   String get hostsHostTodayLabelGoing;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
+  /// Checked-in guest count label in the Host Today current-event focus.
   ///
   /// In en, this message translates to:
-  /// **'Waiting'**
+  /// **'checked in'**
   String get hostsHostTodayLabelWaiting;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
+  /// Open task count label in the Host Today current-event focus.
   ///
   /// In en, this message translates to:
-  /// **'Needs you'**
+  /// **'things to finish'**
   String get hostsHostTodayLabelNeedsYou;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
@@ -10381,11 +10393,176 @@ abstract class AppLocalizations {
   /// **'Open run-of-show'**
   String get hostsHostTodayLabelOpenRunOfShow;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (label).
+  /// Primary action for continuing setup of the current Host Today event.
   ///
   /// In en, this message translates to:
-  /// **'Set up & run'**
+  /// **'Continue setup'**
   String get hostsHostTodayLabelSetUpRun;
+
+  /// Concise summary of the event work represented by the current-event task count.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup, guests, run sheet'**
+  String get hostTodayTaskSummary;
+
+  /// Title for a live-event operations task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Event is live'**
+  String get hostTodayAttentionLiveTitle;
+
+  /// Body for a live-event operations task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{eventName} is happening now. Keep guest operations moving.'**
+  String hostTodayAttentionLiveBody({required Object eventName});
+
+  /// Action for a live-event operations task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Open live controls'**
+  String get hostTodayAttentionOpenLive;
+
+  /// Body for an ordinary event waitlist task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} people are waiting for {eventName}.'**
+  String hostTodayAttentionWaitlistBody({
+    required Object count,
+    required Object eventName,
+  });
+
+  /// Title for a manual join-request task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Review join requests'**
+  String get hostTodayAttentionJoinTitle;
+
+  /// Body for a manual join-request task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} join requests are waiting for {eventName}.'**
+  String hostTodayAttentionJoinBody({
+    required Object count,
+    required Object eventName,
+  });
+
+  /// Title for an organizer application task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Review application'**
+  String get hostTodayAttentionApplicationTitle;
+
+  /// Body for an organizer application task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{subjectLabel} is waiting for a decision.'**
+  String hostTodayAttentionApplicationBody({required Object subjectLabel});
+
+  /// Shared review action for Host Today tasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get hostTodayAttentionReview;
+
+  /// Title for a provider sync task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve guest sync'**
+  String get hostTodayAttentionProviderTitle;
+
+  /// Body for a provider sync task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{eventName} has a guest-list sync that needs reconciliation.'**
+  String hostTodayAttentionProviderBody({required Object eventName});
+
+  /// Title for a form automation task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix form automation'**
+  String get hostTodayAttentionAutomationTitle;
+
+  /// Body for a form automation task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{subjectLabel} stopped before every action completed.'**
+  String hostTodayAttentionAutomationBody({required Object subjectLabel});
+
+  /// Repair action for Host Today tasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix'**
+  String get hostTodayAttentionFix;
+
+  /// Title for a payout-readiness task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish payout setup'**
+  String get hostTodayAttentionPayoutTitle;
+
+  /// Body for a payout-readiness task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} paid events need an active {provider} payout account.'**
+  String hostTodayAttentionPayoutBody({
+    required Object count,
+    required Object provider,
+  });
+
+  /// Action for a payout-readiness task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up payouts'**
+  String get hostTodayAttentionSetUpPayouts;
+
+  /// Title for a local attendance reconciliation task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve attendance sync'**
+  String get hostTodayAttentionAttendanceTitle;
+
+  /// Body for a local attendance reconciliation task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{eventName} has an attendance change that needs review.'**
+  String hostTodayAttentionAttendanceBody({required Object eventName});
+
+  /// Action for a local attendance reconciliation task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Review attendance'**
+  String get hostTodayAttentionReviewAttendance;
+
+  /// Fallback event label for a Host Today task.
+  ///
+  /// In en, this message translates to:
+  /// **'This event'**
+  String get hostTodayAttentionFallbackEvent;
+
+  /// Fallback subject label for a Host Today task.
+  ///
+  /// In en, this message translates to:
+  /// **'This item'**
+  String get hostTodayAttentionFallbackSubject;
+
+  /// Fallback title for a future Host Today task kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Review task'**
+  String get hostTodayAttentionGenericTitle;
+
+  /// Fallback body for a future Host Today task kind.
+  ///
+  /// In en, this message translates to:
+  /// **'This item needs a host decision.'**
+  String get hostTodayAttentionGenericBody;
+
+  /// Fallback action for a Host Today task.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get hostTodayAttentionOpen;
 
   /// Product copy used by lib/core/widgets/block_user_dialog.dart (message).
   ///
@@ -12917,35 +13094,11 @@ abstract class AppLocalizations {
   /// **'Create your next event to start filling this list.'**
   String get hostsHostHomeScreenStateEmptybodyCreateYourNextEvent;
 
-  /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{spotsRemaining} spots open'**
-  String hostsHostHomeScreenStateVisiblecopySpotsremainingSpotsOpen({
-    required Object spotsRemaining,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'event full'**
-  String get hostsHostHomeScreenStateVisiblecopyEventFull;
-
   /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Review waitlist'**
   String get hostsHostHomeScreenStateTitleReviewWaitlist;
-
-  /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'{title}\n{waitlistCount} waiting · {availability}'**
-  String hostsHostHomeScreenStateBodyTitleWaitlistcountWaitingAvailability({
-    required Object title,
-    required Object waitlistCount,
-    required Object availability,
-  });
 
   /// Product copy used by lib/hosts/presentation/host_home_screen_state.dart (visibleCopy).
   ///
@@ -15216,14 +15369,6 @@ abstract class AppLocalizations {
   /// **'{signedUpCount}'**
   String hostsHostTodayVisiblecopySignedupcount({
     required Object signedUpCount,
-  });
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{waitlistCount}'**
-  String hostsHostTodayVisiblecopyWaitlistcount({
-    required Object waitlistCount,
   });
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (visibleCopy).
@@ -19732,12 +19877,6 @@ abstract class AppLocalizations {
   /// **'Remove customer'**
   String get hostsHostAudienceRemoveAction;
 
-  /// Organizer-local audience contact name field.
-  ///
-  /// In en, this message translates to:
-  /// **'Name shown to your team'**
-  String get hostsHostAudienceContactName;
-
   /// Organizer-local audience contact name disclosure.
   ///
   /// In en, this message translates to:
@@ -22804,6 +22943,12 @@ abstract class AppLocalizations {
   /// **'Close guest roster'**
   String get hostsHostEventRosterDrawerClose;
 
+  /// Action that opens this event's scoped Host Inbox from the guest roster.
+  ///
+  /// In en, this message translates to:
+  /// **'Message guests'**
+  String get hostsHostEventRosterDrawerMessageGuests;
+
   /// Host application review queue title.
   ///
   /// In en, this message translates to:
@@ -23148,12 +23293,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Application review updated'**
   String get hostApplicationReviewUpdated;
-
-  /// Host bottom navigation label for the standalone forms workspace.
-  ///
-  /// In en, this message translates to:
-  /// **'Forms'**
-  String get hostNavigationForms;
 
   /// Creates a standalone organizer form.
   ///

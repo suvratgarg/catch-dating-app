@@ -40,7 +40,7 @@ import 'package:go_router/go_router.dart';
 
 enum _BuilderView { build, responses }
 
-enum _BuilderAction { undo, redo, share, pause, resume, archive }
+enum _BuilderAction { preview, undo, redo, share, pause, resume, archive }
 
 enum _SectionAction { edit, moveUp, moveDown, remove }
 
@@ -91,15 +91,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
 
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        title: commandCenter || compact ? null : title,
-        titleWidget: compact && !commandCenter
-            ? Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.sectionTitle(context),
-              )
-            : null,
+        title: commandCenter ? null : title,
         subtitle: commandCenter || editorValue == null
             ? null
             : _saveLabel(context, editorValue),
@@ -126,112 +118,140 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                 onChanged: (view) => setState(() => _view = view),
               ),
         actions: [
-          if (_view == _BuilderView.build && !commandCenter)
+          if (_view == _BuilderView.build && !commandCenter && compact)
             CatchIconAction(
               icon: CatchIcons.visibilityOutlined,
               tooltip: context.l10n.hostFormPreview,
               onPressed: editorValue == null ? null : _openPreview,
             ),
+          if (_view == _BuilderView.build &&
+              !commandCenter &&
+              !compact &&
+              editorValue != null &&
+              editorValue.editor.form.status !=
+                  HostFormLifecycleStatus.archived)
+            CatchTopBarPrimaryAction(
+              label:
+                  editorValue.editor.form.status ==
+                      HostFormLifecycleStatus.published
+                  ? context.l10n.hostFormReviewPublishChanges
+                  : context.l10n.hostFormReviewPublish,
+              icon: CatchIcons.checkCircleOutlineRounded,
+              onPressed: editorValue.operationInProgress
+                  ? null
+                  : () => _reviewAndPublish(notifier, editorValue),
+            ),
           if (editorValue != null &&
-              _builderActions(context, editorValue).isNotEmpty)
+              _builderActions(
+                context,
+                editorValue,
+                includePreview: !compact,
+              ).isNotEmpty)
             CatchActionMenu<_BuilderAction>(
               tooltip: context.l10n.hostFormsActions,
-              items: _builderActions(context, editorValue),
+              items: _builderActions(
+                context,
+                editorValue,
+                includePreview: !compact,
+              ),
               onSelected: (action) => _runBuilderAction(notifier, action),
             ),
         ],
       ),
       bottomNavigationBar: _HostFormBuilderBottomAction(
         state: editorValue,
-        visible: _view == _BuilderView.build && !commandCenter,
+        visible: compact && _view == _BuilderView.build && !commandCenter,
         onReviewAndPublish: editorValue == null
             ? null
             : () => _reviewAndPublish(notifier, editorValue),
       ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: CatchAsyncValueView<HostFormEditorState>(
-          value: editor,
-          onRetry: notifier.reload,
-          initialLoadTimeout: null,
-          loadingBuilder: (_) =>
-              const CatchPageBody(child: CatchSkeletonRows(count: 8)),
-          errorBuilder: (_, error, _) => CatchPageBody(
-            child: CatchErrorState.fromError(
-              error,
-              context: AppErrorContext.forms,
-              onRetry: notifier.reload,
+      body: CatchRouteBody.fullBleed(
+        child: SafeArea(
+          top: false,
+          bottom: false,
+          child: CatchAsyncValueView<HostFormEditorState>(
+            value: editor,
+            onRetry: notifier.reload,
+            initialLoadTimeout: null,
+            loadingBuilder: (_) =>
+                const CatchPageBody(child: CatchSkeletonRows(count: 8)),
+            errorBuilder: (_, error, _) => CatchPageBody(
+              child: CatchErrorState.fromError(
+                error,
+                context: AppErrorContext.forms,
+                onRetry: notifier.reload,
+              ),
             ),
-          ),
-          builder: (context, value) => commandCenter
-              ? CatchScreenBody(
-                  key: const ValueKey('host-form-command-center'),
-                  pb: CatchSpacing.s10,
-                  child: _PublishedFormCommandCenter(
-                    organizerId: widget.organizerId,
-                    state: value,
-                    onEdit: () => setState(() => _editingPublishedForm = true),
-                    onReviewResponses: () =>
-                        setState(() => _view = _BuilderView.responses),
-                    onQuestions: () =>
-                        setState(() => _editingPublishedForm = true),
-                    onAudience: () => _showFormSettingsSheet(
-                      context,
-                      definition: value.editor.definition,
-                      notifier: notifier,
-                    ),
-                    onShare: () =>
-                        _runBuilderAction(notifier, _BuilderAction.share),
-                    onPreview: _openPreview,
-                  ),
-                )
-              : _view == _BuilderView.responses
-              ? CatchScreenBody(
-                  key: const ValueKey('host-form-builder-responses'),
-                  pb: CatchSpacing.s10,
-                  child: HostFormResponsesPanel(
-                    organizerId: widget.organizerId,
-                    formId: widget.formId,
-                    formTitle: value.editor.definition.title,
-                    showFormContext: false,
-                  ),
-                )
-              : ComponentResponsiveBuilder(
-                  breakpoint: CatchLayout.formBuilderExpandedBreakpoint,
-                  compact: (context) => CatchScreenBody(
-                    key: const ValueKey('host-form-builder-build'),
+            builder: (context, value) => commandCenter
+                ? CatchScreenBody(
+                    key: const ValueKey('host-form-command-center'),
                     pb: CatchSpacing.s10,
-                    child: _CompactFormEditor(
+                    child: _PublishedFormCommandCenter(
+                      organizerId: widget.organizerId,
+                      state: value,
+                      onEdit: () =>
+                          setState(() => _editingPublishedForm = true),
+                      onReviewResponses: () =>
+                          setState(() => _view = _BuilderView.responses),
+                      onQuestions: () =>
+                          setState(() => _editingPublishedForm = true),
+                      onAudience: () => _showFormSettingsSheet(
+                        context,
+                        definition: value.editor.definition,
+                        notifier: notifier,
+                      ),
+                      onShare: () =>
+                          _runBuilderAction(notifier, _BuilderAction.share),
+                      onPreview: _openPreview,
+                    ),
+                  )
+                : _view == _BuilderView.responses
+                ? CatchScreenBody(
+                    key: const ValueKey('host-form-builder-responses'),
+                    pb: CatchSpacing.s10,
+                    child: HostFormResponsesPanel(
                       organizerId: widget.organizerId,
                       formId: widget.formId,
-                      state: value,
-                      notifier: notifier,
-                      onSelectionChanged: (section, question) => setState(() {
-                        _selectedSection = section;
-                        _selectedQuestion = question;
-                      }),
+                      formTitle: value.editor.definition.title,
+                      showFormContext: false,
                     ),
+                  )
+                : ComponentResponsiveBuilder(
+                    breakpoint: CatchLayout.formBuilderExpandedBreakpoint,
+                    compact: (context) => CatchScreenBody(
+                      key: const ValueKey('host-form-builder-build'),
+                      pb: CatchSpacing.s10,
+                      child: _CompactFormEditor(
+                        organizerId: widget.organizerId,
+                        formId: widget.formId,
+                        state: value,
+                        notifier: notifier,
+                        onSelectionChanged: (section, question) => setState(() {
+                          _selectedSection = section;
+                          _selectedQuestion = question;
+                        }),
+                      ),
+                    ),
+                    expanded: (context) {
+                      final definition = value.editor.definition;
+                      final sectionIndex = _validSectionIndex(definition);
+                      final questionIndex = _validQuestionIndex(
+                        definition,
+                        sectionIndex,
+                      );
+                      return _ExpandedFormEditor(
+                        state: value,
+                        notifier: notifier,
+                        sectionIndex: sectionIndex,
+                        questionIndex: questionIndex,
+                        onSelectionChanged: (section, question) => setState(() {
+                          _selectedSection = section;
+                          _selectedQuestion = question;
+                        }),
+                      );
+                    },
                   ),
-                  expanded: (context) {
-                    final definition = value.editor.definition;
-                    final sectionIndex = _validSectionIndex(definition);
-                    final questionIndex = _validQuestionIndex(
-                      definition,
-                      sectionIndex,
-                    );
-                    return _ExpandedFormEditor(
-                      state: value,
-                      notifier: notifier,
-                      sectionIndex: sectionIndex,
-                      questionIndex: questionIndex,
-                      onSelectionChanged: (section, question) => setState(() {
-                        _selectedSection = section;
-                        _selectedQuestion = question;
-                      }),
-                    );
-                  },
-                ),
+          ),
         ),
       ),
     );
@@ -252,10 +272,17 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
 
   List<CatchActionMenuItem<_BuilderAction>> _builderActions(
     BuildContext context,
-    HostFormEditorState state,
-  ) {
+    HostFormEditorState state, {
+    required bool includePreview,
+  }) {
     final status = state.editor.form.status;
     return [
+      if (includePreview)
+        CatchActionMenuItem(
+          value: _BuilderAction.preview,
+          label: context.l10n.hostFormPreview,
+          icon: CatchIcons.visibilityOutlined,
+        ),
       if (state.canUndo)
         CatchActionMenuItem(
           value: _BuilderAction.undo,
@@ -307,6 +334,8 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     _BuilderAction action,
   ) async {
     switch (action) {
+      case _BuilderAction.preview:
+        _openPreview();
       case _BuilderAction.undo:
         notifier.undo();
       case _BuilderAction.redo:
@@ -429,6 +458,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
       _BuilderAction.pause => HostFormLifecycleAction.pause,
       _BuilderAction.resume => HostFormLifecycleAction.resume,
       _BuilderAction.archive => HostFormLifecycleAction.archive,
+      _BuilderAction.preview ||
       _BuilderAction.undo ||
       _BuilderAction.redo ||
       _BuilderAction.share => throw StateError('Expected a lifecycle action.'),

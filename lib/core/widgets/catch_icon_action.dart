@@ -29,15 +29,13 @@ class CatchIconAction extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Tooltip(
-      message: tooltip,
-      child: CatchIconButton(
-        onTap: onPressed,
-        variant: variant,
-        background: backgroundColor ?? background,
-        size: size ?? CatchIconButton.navSize,
-        child: Icon(icon, size: CatchIcon.md, color: foregroundColor ?? t.ink),
-      ),
+    return CatchIconButton(
+      onTap: onPressed,
+      tooltip: tooltip,
+      variant: variant,
+      background: backgroundColor ?? background,
+      size: size ?? CatchIconButton.navSize,
+      child: Icon(icon, size: CatchIcon.md, color: foregroundColor ?? t.ink),
     );
   }
 }

@@ -8,6 +8,10 @@ const graph = repositorySnapshot.readJson(
   "tool/harness/component_graph.json",
   {required: true},
 );
+const toolsManifest = repositorySnapshot.readJson(
+  "tool/tools_manifest.json",
+  {required: true},
+);
 const workflow = (name) => repositorySnapshot.readText(
   `.github/workflows/${name}`,
   {required: true},
@@ -153,6 +157,87 @@ test("Flutter CI runs Consumer and Host package tests as aggregate gates", () =>
   assert.match(
     flutter,
     /APP_PACKAGES_RESULT: \$\{\{ needs\['app-package-tests'\]\.result \}\}/u,
+  );
+});
+
+test("Flutter new-widget gate consumes the planner's exact reachable base", () => {
+  const ci = workflow("ci.yml");
+  const flutter = workflow("flutter-ci.yml");
+  assert.match(
+    flutter,
+    /workflow_call:\s*\n\s+inputs:\s*\n\s+base_sha:\s*\n\s+required: true\s*\n\s+type: string/u,
+  );
+  assert.match(
+    ci,
+    /flutter:\s*\n[\s\S]*?uses: \.\/\.github\/workflows\/flutter-ci\.yml\s*\n\s+with:\s*\n\s+base_sha: \$\{\{ needs\.plan\.outputs\.base_sha \}\}/u,
+  );
+
+  const gate = namedStep(flutter, "New widget inventory gate");
+  assert.match(gate, /BASE_SHA: \$\{\{ inputs\.base_sha \}\}/u);
+  assert.match(gate, /git cat-file -e "\$\{BASE_SHA\}\^\{commit\}"/u);
+  assert.match(
+    gate,
+    /git merge-base --is-ancestor "\$BASE_SHA" "\$GITHUB_SHA"/u,
+  );
+  assert.match(
+    gate,
+    /check_new_widget_inventory\.mjs[\s\S]*--base "\$BASE_SHA"[\s\S]*--check[\s\S]*--no-write/u,
+  );
+
+  const checkout = flutter.slice(0, flutter.indexOf("      - id: toolchain"));
+  assert.match(checkout, /actions\/checkout@v6\s*\n\s+with:\s*\n\s+fetch-depth: 0/u);
+});
+
+test("resolved composition gate owns its authorities and both split suites", () => {
+  const flutter = workflow("flutter-ci.yml");
+  const gate = namedStep(flutter, "Catch UI resolved composition contracts");
+  assert.match(
+    gate,
+    /dart run tool\/architecture\/check_ui_composition_contracts\.dart --check/u,
+  );
+
+  const tool = toolsManifest.tools.find(
+    ({id}) => id === "architecture:ui-composition-contracts",
+  );
+  assert.ok(tool, "missing architecture:ui-composition-contracts manifest entry");
+  for (const authority of [
+    "test/tool/ui_composition_contracts_test.dart",
+    "test/tool/ui_composition_ownership_test.dart",
+    "design/screens/catch.screens.json",
+    "design/screens/catch.screens.schema.json",
+    "design/screens/screen_coverage.json",
+    "tool/ui_capture/check_route_inventory.mjs",
+    "tool/ui_capture/route_inventory.json",
+    "tool/design/screen_top_bar_contracts.json",
+    "lib/routing/go_router.dart",
+    "lib/**",
+    "apps/host/lib/**",
+    "apps/consumer/lib/**",
+  ]) {
+    assert.ok(
+      tool.impactPaths.includes(authority),
+      `composition gate does not own ${authority}`,
+    );
+  }
+
+  const suites = [
+    "test/tool/ui_composition_contracts_test.dart",
+    "test/tool/ui_composition_ownership_test.dart",
+  ];
+  const formatCheck = tool.checks.find((check) =>
+    check.startsWith("dart format"),
+  );
+  assert.ok(formatCheck, "composition gate is missing its format check");
+  for (const suite of suites) {
+    assert.ok(formatCheck.includes(suite), `format check omits ${suite}`);
+    assert.ok(
+      tool.checks.includes(`dart test ${suite}`),
+      `test check omits ${suite}`,
+    );
+  }
+  assert.equal(
+    tool.vacuityProof.path,
+    "test/tool/ui_composition_ownership_test.dart",
   );
 });
 

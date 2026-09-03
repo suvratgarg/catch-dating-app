@@ -1,9 +1,9 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-08-29",
+  "updated": "2026-09-02",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
-  "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for a future screen contract, or explicitly excluded from baseline design parity.",
+  "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for future design-parity work, or explicitly excluded from baseline design parity. The schema admits planned as a lifecycle value, but the zero-debt UI composition gate accepts no planned route: rendered routes must be contracted or excluded with typed owners, and redirect-only routes must be aliases.",
   "routes": [
     {
       "routeId": "loadingScreen",
@@ -139,10 +139,10 @@
     },
     {
       "routeId": "swipeHubScreen",
-      "status": "contracted",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Legacy screen.catches.hub contract remains until Home+Catches U1/U2/U4 absorb the hub states; runtime /catches now redirects to Dashboard Home after the Catches tab removal.",
-      "screenId": "screen.catches.hub"
+      "canonicalRouteId": "dashboardScreen",
+      "reason": "The runtime /catches GoRoute is redirect-only and resolves to Dashboard Home; screen.catches.hub remains historical design evidence."
     },
     {
       "routeId": "swipeEventScreen",
@@ -224,8 +224,15 @@
       "routeId": "hostHomeScreen",
       "status": "alias",
       "priority": "P1",
-      "canonicalRouteId": "hostEventsScreen",
-      "reason": "Legacy /host entry redirects to the canonical consolidated Host Events workspace."
+      "canonicalRouteId": "hostTodayScreen",
+      "reason": "Legacy /host entry redirects to the canonical Host Today workspace."
+    },
+    {
+      "routeId": "hostTodayScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.home as the cross-event operational Today workspace.",
+      "screenId": "screen.host.home"
     },
     {
       "routeId": "hostEventsScreen",
@@ -235,10 +242,10 @@
       "screenId": "screen.host.home"
     },
     {
-      "routeId": "hostCustomersScreen",
+      "routeId": "hostAudienceScreen",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Covered by screen.host.customers as the canonical organizer customer directory workspace.",
+      "reason": "Covered by screen.host.customers as the canonical People, Audiences, Forms, and Responses workspace.",
       "screenId": "screen.host.customers"
     },
     {
@@ -263,52 +270,53 @@
       "screenId": "screen.host.customers"
     },
     {
-      "routeId": "hostFormsScreen",
-      "status": "planned",
-      "priority": "P1",
-      "reason": "The standalone Forms library and response inbox are implemented; a dedicated screen.host.forms contract will follow capture-backed visual reconciliation."
-    },
-    {
       "routeId": "hostFormTemplatesScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "The versioned form template gallery is implemented; its dedicated contract awaits deterministic template-gallery captures."
+      "reason": "Covered by screen.host.customers as the Audience-owned versioned form template gallery.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormResponseDetailScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "The immutable response-detail and reviewed conversion route is implemented; its dedicated contract awaits deterministic response fixtures."
+      "reason": "Covered by screen.host.customers as the Audience-owned immutable response-detail and reviewed conversion route.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormBuilderScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "The responsive outline, canvas, inspector, preview, validation, and lifecycle workspace is implemented; capture-backed builder state coverage remains planned."
+      "reason": "Covered by screen.host.customers as the Audience-owned responsive form builder workspace.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormPreviewScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "The shared-renderer phone and desktop preview route is implemented; deterministic logic, validation, and availability captures remain planned."
+      "reason": "Covered by screen.host.customers as the Audience-owned shared-renderer preview route.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormShareScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P2",
-      "reason": "The canonical link, attributed link, QR, native share, and embed workspace is implemented; capture-backed distribution states remain planned."
+      "reason": "Covered by screen.host.customers as the Audience-owned form distribution workspace.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormAnalyticsScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P2",
-      "reason": "The precomputed analytics and asynchronous export workspace is implemented; populated and privacy-threshold capture states remain planned."
+      "reason": "Covered by screen.host.customers as the Audience-owned form analytics workspace.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostFormAutomationsScreen",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P2",
-      "reason": "The explicit automation rules and paginated run history workspace is implemented; configured, failure, and disabled-state captures remain planned."
+      "reason": "Covered by screen.host.customers as the Audience-owned form automation workspace.",
+      "screenId": "screen.host.customers"
     },
     {
       "routeId": "hostApplicationsScreen",
@@ -332,11 +340,25 @@
       "screenId": "screen.host.customers"
     },
     {
-      "routeId": "hostOperatorEventScreen",
+      "routeId": "hostCustomersLegacyScreen",
       "status": "alias",
       "priority": "P1",
-      "canonicalRouteId": "hostAppEventManageScreen",
-      "reason": "Least-privilege staff variant of the canonical per-event Host roster workspace; it intentionally removes manager-only sections and actions."
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "Legacy Customers links redirect to the canonical Audience workspace while preserving deep-link state."
+    },
+    {
+      "routeId": "hostFormsLegacyScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "Legacy Forms links redirect to the canonical Audience workspace while preserving deep-link state."
+    },
+    {
+      "routeId": "hostOperatorEventScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.host.event.manage",
+      "reason": "Covered by screen.host.event.manage as the rendered least-privilege staff variant of the canonical per-event Host roster workspace; it intentionally removes manager-only sections and actions."
     },
     {
       "routeId": "hostOrganizerScreen",
@@ -354,10 +376,10 @@
     },
     {
       "routeId": "hostClubsScreen",
-      "status": "contracted",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Covered by screen.host.clubs as the legacy Host club-management route; the exact root redirects to Organizer while nested deep links remain stable.",
-      "screenId": "screen.host.clubs"
+      "canonicalRouteId": "hostOrganizerScreen",
+      "reason": "The exact Host organizers index is redirect-only and resolves to the canonical Organizer root; nested child routes remain independently contracted."
     },
     {
       "routeId": "hostClubEventDefaultsScreen",
@@ -445,17 +467,17 @@
     },
     {
       "routeId": "hostAppAttendanceSheet",
-      "status": "alias",
+      "status": "contracted",
       "priority": "P2",
-      "canonicalRouteId": "hostAppEventManageScreen",
-      "reason": "Alias remains covered by screen.host.event.manage; the attendance route opens the canonical Live roster section of Host Event Manage."
+      "screenId": "screen.host.event.manage",
+      "reason": "The rendered attendance route opens the canonical Live roster section of Host Event Manage."
     },
     {
       "routeId": "hostAppEventSuccessScreen",
-      "status": "alias",
+      "status": "contracted",
       "priority": "P2",
-      "canonicalRouteId": "hostAppEventManageScreen",
-      "reason": "Alias remains covered by screen.host.event.manage; the Event Success route enters the canonical Host Event Manage surface."
+      "screenId": "screen.host.event.manage",
+      "reason": "The rendered Event Success route enters the canonical Host Event Manage surface."
     },
     {
       "routeId": "hostInboxScreen",

@@ -26,6 +26,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../events/events_test_helpers.dart';
 
+part 'host_create_event_draft_signature_tests.dart';
+
 void main() {
   final steps = [
     for (final step in CreateEventWizardStep.values) step.toSpec(),
@@ -284,6 +286,7 @@ void main() {
     final now = DateTime(2026, 8, 19, 9);
     final review = CreateEventWizardReviewState.resolve(
       activeSteps: steps,
+      name: 'Sunday social run',
       activityKind: ActivityKind.socialRun,
       customActivityLabel: '',
       distance: '5',
@@ -323,8 +326,48 @@ void main() {
       CatchFormStepStatus.optional,
     ]);
 
+    final missingName = CreateEventWizardReviewState.resolve(
+      activeSteps: steps,
+      name: '  ',
+      activityKind: ActivityKind.socialRun,
+      customActivityLabel: '',
+      distance: '5',
+      pace: PaceLevel.moderate,
+      externalBookingMode: false,
+      externalEventUrl: '',
+      hasStartingPoint: true,
+      meetingPoint: 'Saket sports complex',
+      scheduleState: CreateEventScheduleState(
+        selectedDate: DateTime(2026, 8, 20),
+        selectedStartTime: const TimeOfDay(hour: 7, minute: 0),
+      ),
+      now: now,
+      capacity: '20',
+      price: '0',
+      currencyCode: 'INR',
+      admissionPreset: EventAdmissionPreset.openCapacity,
+      inviteCode: '',
+      cohortCapsEnabled: false,
+      maxMen: '',
+      maxWomen: '',
+      crossPathsPairInventoryEnabled: false,
+      crossPathsPairCapacity: '2',
+      dynamicPricingEnabled: false,
+      dynamicPricingStep: '',
+      dynamicPricingMax: '',
+      minAge: '',
+      maxAge: '',
+    );
+
+    expect(missingName.canSubmit, isFalse);
+    expect(
+      missingName.items.first.status,
+      CatchFormStepStatus.needsInformation,
+    );
+
     final incomplete = CreateEventWizardReviewState.resolve(
       activeSteps: steps,
+      name: '',
       activityKind: ActivityKind.socialRun,
       customActivityLabel: '',
       distance: '',
@@ -362,6 +405,7 @@ void main() {
   test('external event review requires draft roster reattachment', () {
     final review = CreateEventWizardReviewState.resolve(
       activeSteps: steps,
+      name: 'Sunday dinner',
       activityKind: ActivityKind.dinner,
       customActivityLabel: '',
       distance: '',
@@ -1036,118 +1080,7 @@ void main() {
     expect(draft.eventSuccessDefaults, eventSuccessDefaults);
   });
 
-  test('CreateEventDraftSnapshot signature includes dirty-only fields', () {
-    const base = CreateEventDraftSnapshot(
-      distance: '5',
-      capacity: null,
-      price: null,
-      description: null,
-      activityKind: 'socialRun',
-      customActivityLabel: null,
-      interactionModel: null,
-      paceName: null,
-      meetingPoint: null,
-      locationDetails: null,
-      meetingLocationAddress: null,
-      meetingLocationPlaceId: null,
-      startingPointLat: null,
-      startingPointLng: null,
-      selectedDateMillis: null,
-      selectedStartHour: null,
-      selectedStartMinute: null,
-      durationMinutes: 60,
-      minAge: null,
-      maxAge: null,
-      maxMen: null,
-      maxWomen: null,
-      cohortCapsEnabled: false,
-      admissionPreset: 'open',
-      inviteCode: null,
-      dynamicPricingEnabled: false,
-      dynamicPricingStep: null,
-      dynamicPricingMax: null,
-      cancellationPolicy: 'standard',
-      eventSuccessDefaults: EventSuccessDefaults(),
-      eventPhotoIds: 'photo-1',
-    );
-    const photoChanged = CreateEventDraftSnapshot(
-      distance: '5',
-      capacity: null,
-      price: null,
-      description: null,
-      activityKind: 'socialRun',
-      customActivityLabel: null,
-      interactionModel: null,
-      paceName: null,
-      meetingPoint: null,
-      locationDetails: null,
-      meetingLocationAddress: null,
-      meetingLocationPlaceId: null,
-      startingPointLat: null,
-      startingPointLng: null,
-      selectedDateMillis: null,
-      selectedStartHour: null,
-      selectedStartMinute: null,
-      durationMinutes: 60,
-      minAge: null,
-      maxAge: null,
-      maxMen: null,
-      maxWomen: null,
-      cohortCapsEnabled: false,
-      admissionPreset: 'open',
-      inviteCode: null,
-      dynamicPricingEnabled: false,
-      dynamicPricingStep: null,
-      dynamicPricingMax: null,
-      cancellationPolicy: 'standard',
-      eventSuccessDefaults: EventSuccessDefaults(),
-      eventPhotoIds: 'photo-1,photo-2',
-    );
-    const capsChanged = CreateEventDraftSnapshot(
-      distance: '5',
-      capacity: null,
-      price: null,
-      description: null,
-      activityKind: 'socialRun',
-      customActivityLabel: null,
-      interactionModel: null,
-      paceName: null,
-      meetingPoint: null,
-      locationDetails: null,
-      meetingLocationAddress: null,
-      meetingLocationPlaceId: null,
-      startingPointLat: null,
-      startingPointLng: null,
-      selectedDateMillis: null,
-      selectedStartHour: null,
-      selectedStartMinute: null,
-      durationMinutes: 60,
-      minAge: null,
-      maxAge: null,
-      maxMen: null,
-      maxWomen: null,
-      cohortCapsEnabled: true,
-      admissionPreset: 'open',
-      inviteCode: null,
-      dynamicPricingEnabled: false,
-      dynamicPricingStep: null,
-      dynamicPricingMax: null,
-      cancellationPolicy: 'standard',
-      eventSuccessDefaults: EventSuccessDefaults(),
-      eventPhotoIds: 'photo-1',
-    );
-
-    expect(photoChanged.signature, isNot(base.signature));
-    expect(capsChanged.signature, isNot(base.signature));
-    expect(
-      photoChanged.toDraft(
-        id: 'draft-1',
-        clubId: 'club-1',
-        savedAt: DateTime(2026, 7),
-      ),
-      base.toDraft(id: 'draft-1', clubId: 'club-1', savedAt: DateTime(2026, 7)),
-    );
-  });
+  _registerCreateEventDraftSignatureTests();
 }
 
 PickedEventPhoto _pickedEventPhoto(String name, int byte) {

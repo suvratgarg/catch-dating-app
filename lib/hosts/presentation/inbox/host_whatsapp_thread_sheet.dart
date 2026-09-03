@@ -34,19 +34,18 @@ class HostWhatsappThreadRow extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                thread.displayName,
-                style: CatchTextStyles.name(context),
-              ),
-            ),
-            Text(
-              context.l10n.hostInboxWhatsappChannel,
-              style: CatchTextStyles.statusLabel(context),
-            ),
-          ],
+        Text(
+          thread.displayName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.name(context),
+        ),
+        gapH4,
+        Text(
+          context.l10n.hostInboxWhatsappChannel,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.statusLabel(context),
         ),
         gapH4,
         Text(

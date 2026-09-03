@@ -457,6 +457,14 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             padding: CatchInsets.pageBody,
             children: workspaceChildren,
           );
+    final topBarEyebrow = _hostEventManageLifecycleLabel(
+      context,
+      event: event,
+      phase: screenState.phase,
+    );
+    final topBarTitleMaxLines = MediaQuery.textScalerOf(context).scale(1) >= 1.4
+        ? 3
+        : 1;
     return CatchMutationErrorListener(
       mutation: HostEventManageController.sharePrivateLinkMutation,
       errorContext: AppErrorContext.event,
@@ -464,47 +472,45 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           large: false,
           title: screenState.eventTitle,
-          subtitle: _hostEventManageLifecycleLabel(
-            context,
-            event: event,
-            phase: screenState.phase,
+          eyebrow: topBarEyebrow,
+          titleMaxLines: topBarTitleMaxLines,
+          height: CatchTopBar.workspaceHeightFor(
+            context: context,
+            hasEyebrow: true,
+            titleMaxLines: topBarTitleMaxLines,
           ),
-          height: MediaQuery.textScalerOf(context).scale(1) >= 1.4
-              ? CatchScreenTopBar.heightFor(
-                  context: context,
-                  hasEyebrow: true,
-                  titleMaxLines: 3,
-                  titleStyle: CatchTextStyles.titleL(context),
-                )
-              : CatchLayout.browseHeaderHeight,
           allowContentHeightExpansion: true,
           contentCrossAxisAlignment: CrossAxisAlignment.start,
-          titleWidget: _HostManageTopBarTitle(
-            eyebrow: _hostEventManageLifecycleLabel(
-              context,
-              event: event,
-              phase: screenState.phase,
-            ),
-            title: screenState.eventTitle,
-          ),
-          titleWidgetIncludesSupplementalText: true,
           leading: CatchIconAction(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             icon: CatchIcons.arrowBackIosNewRounded,
             onPressed: onBackToSuccess,
           ),
+          actions: [
+            CatchTopBarPrimaryAction(
+              label: context.l10n.hostsHostEventRosterDrawerTitle,
+              icon: CatchIcons.groupsRounded,
+              onPressed: () => _setRosterOpen(true, screenState.phase),
+            ),
+          ],
           divider: scrolledUnder,
         ),
-        body: HostEventRosterDrawer(
-          open: _rosterOpen,
-          bookedCount: bookedCount,
-          showHandle: screenState.phase != HostEventWorkspacePhase.runtime,
-          onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
-          body: workspaceBody,
-          roster: ListView(
-            key: const ValueKey<String>('host_event_roster_drawer.scroll'),
-            padding: CatchInsets.pageBody,
-            children: rosterChildren,
+        body: CatchRouteBody.fullBleed(
+          child: HostEventRosterDrawer(
+            open: _rosterOpen,
+            bookedCount: bookedCount,
+            showHandle: false,
+            onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
+            onMessageGuests: () => _openEventMessages(club, event),
+            bodyMaxWidth: screenState.phase == HostEventWorkspacePhase.runtime
+                ? CatchLayout.hostEventLiveWorkspaceMaxContentWidth
+                : CatchLayout.maxContentWidth,
+            body: workspaceBody,
+            roster: ListView(
+              key: const ValueKey<String>('host_event_roster_drawer.scroll'),
+              padding: CatchInsets.pageBody,
+              children: rosterChildren,
+            ),
           ),
         ),
       ),
@@ -523,6 +529,14 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               HostEventWorkspacePhase.runtime => HostEventManageSection.live,
               HostEventWorkspacePhase.recap => HostEventManageSection.report,
             },
+    );
+  }
+
+  void _openEventMessages(Club club, Event event) {
+    context.pushNamed(
+      Routes.hostInboxScreen.name,
+      queryParameters: {'eventId': event.id},
+      extra: club,
     );
   }
 
@@ -1831,35 +1845,3 @@ String _hostEventManageLifecycleLabel(
         HostEventWorkspacePhase.recap =>
           context.l10n.hostsHostEventManageWorkspaceRecap,
       };
-
-class _HostManageTopBarTitle extends StatelessWidget {
-  const _HostManageTopBarTitle({required this.eyebrow, required this.title});
-
-  final String eyebrow;
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          eyebrow,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.kicker(context, color: t.ink3),
-        ),
-        gapH2,
-        Text(
-          title,
-          maxLines: largeText ? 3 : 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.titleL(context, color: t.ink),
-        ),
-      ],
-    );
-  }
-}

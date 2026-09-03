@@ -7,9 +7,8 @@ import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_h
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +26,6 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final isHostApp = AppConfig.appRole.isHost;
 
     final uidAsync = ref.watch(uidProvider);
@@ -42,36 +40,26 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
       isHostApp: isHostApp,
     );
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            ...CatchSliverHeader(
-              title: ChatsBrowseHeader(
-                presentation: isHostApp
-                    ? ChatsBrowsePresentation.host
-                    : ChatsBrowsePresentation.consumer,
-                showSearchAction: screenState.showSearchAction,
-                searchValue: searchValue,
-                onSearchChanged: ref
-                    .read(chatSearchQueryProvider.notifier)
-                    .setQuery,
-                hostFilter: screenState.hostFilter,
-                hostUnreadCount: screenState.unreadThreadCount,
-                onHostFilterChanged: _handleHostFilterChanged,
-              ),
-            ).buildSlivers(context),
-            ChatsList(
-              hostFilter: screenState.hostFilter,
-              displayState: screenState.displayState,
-              onThreadSelected: _openChatThread,
-            ),
-            const CatchSliverTerminalPadding(),
-          ],
-        ),
+    return CatchRootScreenScaffold(
+      header: ChatsBrowseHeader(
+        presentation: isHostApp
+            ? ChatsBrowsePresentation.host
+            : ChatsBrowsePresentation.consumer,
+        showSearchAction: screenState.showSearchAction,
+        searchValue: searchValue,
+        onSearchChanged: ref.read(chatSearchQueryProvider.notifier).setQuery,
+        hostFilter: screenState.hostFilter,
+        hostUnreadCount: screenState.unreadThreadCount,
+        onHostFilterChanged: _handleHostFilterChanged,
       ),
+      bodyLayout: CatchScreenBodyLayout.fullBleed,
+      slivers: [
+        ChatsList(
+          hostFilter: screenState.hostFilter,
+          displayState: screenState.displayState,
+          onThreadSelected: _openChatThread,
+        ),
+      ],
     );
   }
 

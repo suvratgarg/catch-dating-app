@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
@@ -31,6 +32,7 @@ void main() {
     await _pumpPublicProfile(tester, targetStream: controller.stream);
     await tester.pump();
 
+    expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.byType(ProfileSurfaceSkeleton), findsOneWidget);
     expect(find.byType(CatchLoadingIndicator), findsNothing);
   });

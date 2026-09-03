@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-30",
+  "updated": "2026-08-31",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -618,8 +618,9 @@
     },
     {
       "routeId": "hostHomeScreen",
-      "status": "captured",
+      "status": "alias",
       "priority": "P1",
+      "canonicalRouteId": "hostTodayScreen",
       "captureIds": [
         "host_home_dashboard",
         "host_home_switcher_cohost",
@@ -637,7 +638,16 @@
         "host_home_reduced_motion",
         "host_home_light_dark"
       ],
-      "reason": "The retired Host home identity redirects to Events. Its historical capture set remains useful regression coverage for owner/co-host switching, long selected-organizer labels, signed-out access, loading/error/offline, empty organizers/events, text scale 2.0, reduced motion, and paired light/dark output; it is not a persistent shell destination."
+      "reason": "The retired Host root redirects to Today. Its historical capture set remains useful regression coverage and the current dashboard capture also proves the canonical Today destination."
+    },
+    {
+      "routeId": "hostTodayScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": [
+        "host_home_dashboard"
+      ],
+      "reason": "The first-class Today branch has a deterministic full-shell capture of its cross-event operational spotlight and later schedule."
     },
     {
       "routeId": "hostEventsScreen",
@@ -649,14 +659,15 @@
       "reason": "The first-class Host Events branch is captured through the real five-destination Host shell and compared against the pinned full-shell Events source reference."
     },
     {
-      "routeId": "hostCustomersScreen",
+      "routeId": "hostAudienceScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
         "host_customers_populated",
-        "host_customers_audiences_populated"
+        "host_customers_audiences_populated",
+        "host_forms_populated"
       ],
-      "reason": "The production Customers destination has deterministic populated full-shell captures for the People and Audiences peer workspaces; broader loading, empty, filtering, pagination, accessibility, and theme states remain future coverage."
+      "reason": "The production Audience destination has deterministic full-shell captures for People, Audiences, and Forms within one four-mode workspace; broader response, loading, accessibility, and theme states remain future coverage."
     },
     {
       "routeId": "hostAddCustomerScreen",
@@ -686,15 +697,6 @@
       "reason": "The Customers-owned full-page audience detail and edit route has a deterministic capture with exact-preview reach context and archive ownership."
     },
     {
-      "routeId": "hostFormsScreen",
-      "status": "captured",
-      "priority": "P1",
-      "captureIds": [
-        "host_forms_populated"
-      ],
-      "reason": "The production Forms library has a deterministic populated full-shell capture; empty, loading, pagination, response-inbox, accessibility, and theme states remain future coverage."
-    },
-    {
       "routeId": "hostFormTemplatesScreen",
       "status": "planned",
       "priority": "P1",
@@ -708,9 +710,12 @@
     },
     {
       "routeId": "hostFormBuilderScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The responsive builder is implemented; compact and expanded editing, undo, logic, validation, conflict, and publish capture states remain planned."
+      "captureIds": [
+        "host_form_builder_draft"
+      ],
+      "reason": "The responsive draft builder has a deterministic capture for compact and expanded composition; undo, logic, validation, conflict, and post-publication states remain in the focused capture queue."
     },
     {
       "routeId": "hostFormPreviewScreen",
@@ -756,6 +761,20 @@
         "host_customer_detail_memory"
       ],
       "reason": "The nested production customer detail has a deterministic identity, organizer-memory, exact-revenue, event-history, campaign-delivery, and controls capture; alternate identity, coverage, accessibility, and theme variants remain planned."
+    },
+    {
+      "routeId": "hostCustomersLegacyScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "Legacy Customers links redirect to Audience while preserving their deep-link state."
+    },
+    {
+      "routeId": "hostFormsLegacyScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "Legacy Forms links redirect to Audience while preserving their deep-link state."
     },
     {
       "routeId": "hostOperatorEventScreen",
@@ -1017,6 +1036,7 @@
         "host_manage_attendance_mutation_pending",
         "host_manage_attendance_mutation_error",
         "host_live_console",
+        "host_live_console_wide",
         "host_live_room_workspace",
         "host_manage_live_unavailable",
         "host_manage_live_plan_loading",
@@ -1040,7 +1060,7 @@
         "host_manage_reduced_motion",
         "host_manage_light_dark"
       ],
-      "reason": "Host app manage route now has deterministic captures for route loading/error/offline/not-found, initial-event fallback, unauthorized access, attendance loading/error/empty, attendee profile loading/error, filtered roster empty, private-access loading/error/offline/missing-code, invite-link loading/error/offline/empty/disabled-row/long-label-source, invite-link mutation pending/error, private-link share pending/error, edit/cancel/delete host actions, setup/private access, full/waitlist apron, attendance roster, attendance mutation pending/error, live console, live unavailable/no saved guide, live Event Success plan loading/error/offline, live wingman requests, assigned micro-pods, assigned guided rotations, check-in QR, conversation cues, revealed partner round, host-edited micro-pod override, report workspace, report scorecard loading/error/offline, report export pending/error, cancelled event, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are invite reference-specific variants, compact step-count semantics if product keeps them, modal Event Success override editor sheets if contractual, and reference-specific variants."
+      "reason": "Host app manage route now has deterministic captures for route loading/error/offline/not-found, initial-event fallback, unauthorized access, attendance loading/error/empty, attendee profile loading/error, filtered roster empty, private-access loading/error/offline/missing-code, invite-link loading/error/offline/empty/disabled-row/long-label-source, invite-link mutation pending/error, private-link share pending/error, edit/cancel/delete host actions, setup/private access, full/waitlist apron, attendance roster, attendance mutation pending/error, compact and wide live consoles, live unavailable/no saved guide, live Event Success plan loading/error/offline, live wingman requests, assigned micro-pods, assigned guided rotations, check-in QR, conversation cues, revealed partner round, host-edited micro-pod override, report workspace, report scorecard loading/error/offline, report export pending/error, cancelled event, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are invite reference-specific variants, compact step-count semantics if product keeps them, modal Event Success override editor sheets if contractual, and reference-specific variants."
     },
     {
       "routeId": "hostAppEditEventScreen",
@@ -1091,6 +1111,7 @@
         "host_inbox_offline",
         "host_inbox_empty",
         "host_inbox_queries",
+        "host_inbox_thread_selected",
         "host_messaging_campaigns",
         "host_inbox_prospective",
         "host_inbox_general",
@@ -1105,7 +1126,7 @@
         "host_inbox_reduced_motion",
         "host_inbox_light_dark"
       ],
-      "reason": "The production Host Messaging route has deterministic captures for its Inbox and Campaigns workspaces, uid/data loading, generic and offline errors, empty, Booked, Prospective, explicit General inquiries, roster-without-threads, search active/empty, inquiry-only rows, broadcast composer ready/pending/error, text scale 2.0, reduced motion, and paired light/dark output. The old All/Unread captures were retired. A fresh strict comparison is still required before visual parity can close."
+      "reason": "The production Host Messaging route has deterministic captures for its Inbox and Sends workspaces, selected-thread tablet composition, uid/data loading, generic and offline errors, empty, Booked, Prospective, explicit General inquiries, roster-without-threads, search active/empty, inquiry-only rows, broadcast composer ready/pending/error, text scale 2.0, reduced motion, and paired light/dark output. The old All/Unread captures were retired. A fresh strict comparison is still required before visual parity can close."
     },
     {
       "routeId": "hostChatScreen",

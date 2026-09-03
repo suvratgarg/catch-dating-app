@@ -13,11 +13,13 @@ class HostCustomerIdentityCard extends StatefulWidget {
     required this.customer,
     required this.onSave,
     this.initiallyEditing = false,
+    this.primaryAction,
   });
 
   final HostAudienceContactDetail customer;
   final HostCustomerDetailsSaveCallback onSave;
   final bool initiallyEditing;
+  final Widget? primaryAction;
 
   @override
   State<HostCustomerIdentityCard> createState() =>
@@ -146,41 +148,33 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
                 ],
               ),
             )
-          : CatchSection.containedFieldRows(
+          : CatchSection.plain(
               key: const ValueKey('host-customer-contact-details'),
               title: context.l10n.hostCustomersContactDetails,
-              trailing: CatchButton(
-                key: const ValueKey('host-customer-edit-details'),
-                label: context.l10n.hostCustomersEditDetails,
-                variant: CatchButtonVariant.ghost,
-                size: CatchButtonSize.sm,
-                onPressed: _beginEditing,
+              trailing: Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  ?widget.primaryAction,
+                  CatchButton(
+                    key: const ValueKey('host-customer-edit-details'),
+                    label: context.l10n.hostCustomersEditDetails,
+                    variant: CatchButtonVariant.ghost,
+                    size: CatchButtonSize.sm,
+                    onPressed: _beginEditing,
+                  ),
+                ],
               ),
-              footer: Text(
-                widget.customer.contactDetailsEditable
-                    ? context.l10n.hostCustomersUnverifiedContactDetails
-                    : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
-                style: CatchTextStyles.supporting(context),
+              child: _HostCustomerIdentitySummary(
+                customer: widget.customer,
+                displayName: _displayName,
+                phoneE164: _phoneE164,
+                phonePlaceholder: phonePlaceholder,
+                email: _email,
+                emailPlaceholder: emailPlaceholder,
               ),
-              children: [
-                CatchField.read(
-                  key: const ValueKey('host-customer-name-field'),
-                  title: context.l10n.hostsHostAudienceContactName,
-                  body: _displayName,
-                ),
-                CatchField.read(
-                  key: const ValueKey('host-customer-phone-field'),
-                  title: phoneTitle,
-                  body: _phoneE164,
-                  placeholder: phonePlaceholder,
-                ),
-                CatchField.read(
-                  key: const ValueKey('host-customer-email-field'),
-                  title: context.l10n.hostsHostAudienceContactEmail,
-                  body: _email,
-                  placeholder: emailPlaceholder,
-                ),
-              ],
             ),
     );
   }
@@ -274,6 +268,120 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
     if (_contactMethodError == null) return;
     setState(() => _contactMethodError = null);
   }
+}
+
+class _HostCustomerIdentitySummary extends StatelessWidget {
+  const _HostCustomerIdentitySummary({
+    required this.customer,
+    required this.displayName,
+    required this.phoneE164,
+    required this.phonePlaceholder,
+    required this.email,
+    required this.emailPlaceholder,
+  });
+
+  final HostAudienceContactDetail customer;
+  final String displayName;
+  final String? phoneE164;
+  final String phonePlaceholder;
+  final String? email;
+  final String emailPlaceholder;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final usesLargeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+    final segmentLabel = _hostCustomerPrimarySegmentLabel(
+      context,
+      customer.traits.segments,
+    );
+    final details = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          displayName,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.sectionTitle(context, color: t.ink),
+        ),
+        gapH6,
+        if (segmentLabel != null) ...[
+          Text(
+            segmentLabel,
+            style: CatchTextStyles.badgeCaps(context, color: t.ink2),
+          ),
+          gapH8,
+        ],
+        CatchMetaRow(
+          key: const ValueKey('host-customer-phone-summary'),
+          icon: CatchIcons.phoneOutlined,
+          label: phoneE164 ?? phonePlaceholder,
+          color: t.ink3,
+          labelColor: t.ink,
+        ),
+        gapH8,
+        CatchMetaRow(
+          key: const ValueKey('host-customer-email-summary'),
+          icon: CatchIcons.emailOutlined,
+          label: email ?? emailPlaceholder,
+          color: t.ink3,
+          labelColor: t.ink,
+        ),
+        gapH12,
+        Text(
+          customer.contactDetailsEditable
+              ? context.l10n.hostCustomersUnverifiedContactDetails
+              : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
+      ],
+    );
+    if (usesLargeText) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchPersonAvatar(size: CatchSpacing.s16, name: displayName),
+          gapH16,
+          details,
+        ],
+      );
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchPersonAvatar(size: CatchSpacing.s16, name: displayName),
+        gapW16,
+        Expanded(child: details),
+      ],
+    );
+  }
+}
+
+String? _hostCustomerPrimarySegmentLabel(
+  BuildContext context,
+  Set<HostAudienceSegment> segments,
+) {
+  const priority = [
+    HostAudienceSegment.highImpactAdvocate,
+    HostAudienceSegment.lapsedRegular,
+    HostAudienceSegment.needsConfirmation,
+    HostAudienceSegment.regular,
+    HostAudienceSegment.reliableAttendee,
+    HostAudienceSegment.repeatAttendee,
+    HostAudienceSegment.firstTimeAttendee,
+    HostAudienceSegment.newToOrganizer,
+    HostAudienceSegment.advocate,
+    HostAudienceSegment.pastAttendee,
+  ];
+  for (final segment in priority) {
+    if (segments.contains(segment)) {
+      return _customerFilterLabel(
+        context,
+        hostCustomerFilterForAudienceSegment(segment),
+      );
+    }
+  }
+  return null;
 }
 
 class HostCustomerAttendanceCard extends StatelessWidget {

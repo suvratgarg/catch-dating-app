@@ -96,10 +96,62 @@ void _registerHostOperationsCustomerCommunicationsTests() {
       ],
     );
 
-    expect(find.text('Message Ananya Rao'), findsOneWidget);
-    expect(find.text('Opens the Catch conversation.'), findsOneWidget);
+    expect(find.text('Message'), findsOneWidget);
+    expect(find.text('Message Ananya Rao'), findsNothing);
+    expect(find.text('Opens the Catch conversation.'), findsNothing);
     expect(find.byKey(const ValueKey('host-customer-message')), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.byKey(const ValueKey('host-customer-message')),
+        matching: find.byType(HostCustomerIdentityCard),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('You press send'), findsNothing);
+  });
+
+  testWidgets('wide customer detail aligns memory with attendance', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 1200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await _pumpHostScreen(
+      tester,
+      const HostCustomerDetailScreen(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      ),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        hostAudienceContactDetailProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(_customerDetail())),
+        hostCommunicationPlanProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
+      ],
+    );
+
+    final memoryTop = tester
+        .getTopLeft(find.byType(HostCustomerMemorySection))
+        .dy;
+    final attendanceTop = tester
+        .getTopLeft(find.byKey(const ValueKey('host-customer-activity')))
+        .dy;
+    expect(memoryTop, closeTo(attendanceTop, 0.5));
+    expect(
+      tester.getRect(find.byType(HostCustomerMemorySection)).right,
+      lessThan(
+        tester
+            .getRect(find.byKey(const ValueKey('host-customer-activity')))
+            .left,
+      ),
+    );
   });
 
   testWidgets('customer WhatsApp handoff pre-fills copy and opens the app', (

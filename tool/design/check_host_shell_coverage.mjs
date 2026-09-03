@@ -54,6 +54,34 @@ export function validateHostShellCoverage({
   if (routes.length !== 5) {
     errors.push(`expected five primary Host routes, found ${routes.length}`);
   }
+  const informationArchitecture = manifest?.informationArchitectureDecision;
+  if (
+    informationArchitecture?.selectedOption !==
+    "today-events-audience-inbox-organizer"
+  ) {
+    errors.push(
+      "information architecture must remain Today, Events, Audience, Inbox, Organizer",
+    );
+  }
+  const declaredLabels = routes.map((route) => route.label);
+  if (
+    JSON.stringify(informationArchitecture?.primaryLabels) !==
+    JSON.stringify(declaredLabels)
+  ) {
+    errors.push(
+      `primary labels ${JSON.stringify(declaredLabels)} do not match the information architecture decision`,
+    );
+  }
+  for (const [ownerKey, expectedRouteId] of Object.entries({
+    todayOwnerRouteId: "hostTodayScreen",
+    formsOwnerRouteId: "hostAudienceScreen",
+    audiencesOwnerRouteId: "hostAudienceScreen",
+    inboxWorkspaceOwnerRouteId: "hostInboxScreen",
+  })) {
+    if (informationArchitecture?.[ownerKey] !== expectedRouteId) {
+      errors.push(`${ownerKey} must remain ${expectedRouteId}`);
+    }
+  }
 
   const routeIds = new Set();
   const inventoryById = new Map(
@@ -96,9 +124,23 @@ export function validateHostShellCoverage({
   );
   if (
     legacyHome?.status !== "redirect" ||
-    legacyHome?.canonicalRouteId !== "hostEventsScreen"
+    legacyHome?.canonicalRouteId !== "hostTodayScreen"
   ) {
-    errors.push("hostHomeScreen must remain a redirect to hostEventsScreen");
+    errors.push("hostHomeScreen must remain a redirect to hostTodayScreen");
+  }
+  for (const [legacyRouteId, canonicalRouteId] of Object.entries({
+    hostCustomersLegacyScreen: "hostAudienceScreen",
+    hostFormsLegacyScreen: "hostAudienceScreen",
+  })) {
+    const legacyRoute = (manifest?.legacyRoutes ?? []).find(
+      (route) => route.routeId === legacyRouteId,
+    );
+    if (
+      legacyRoute?.status !== "redirect" ||
+      legacyRoute?.canonicalRouteId !== canonicalRouteId
+    ) {
+      errors.push(`${legacyRouteId} must remain a redirect to ${canonicalRouteId}`);
+    }
   }
   return errors;
 }
@@ -122,7 +164,7 @@ function checkHostShellCoverage() {
     return;
   }
   console.log(
-    `Host shell coverage is current: ${manifest.primaryRoutes.length} ordered destinations, routes, sources, and canonical captures.`,
+    `Host shell coverage is current: ${manifest.primaryRoutes.length} ordered destinations, information-architecture owners, routes, sources, and canonical captures.`,
   );
 }
 

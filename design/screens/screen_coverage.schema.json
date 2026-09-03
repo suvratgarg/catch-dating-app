@@ -49,6 +49,7 @@
           "minLength": 1
         },
         "status": {
+          "description": "Design-parity lifecycle status. The schema admits planned work, while the stricter zero-debt UI composition gate accepts no planned route: rendered routes must be contracted or excluded with typed owners, and redirect-only routes must be aliases.",
           "enum": ["contracted", "alias", "planned", "excluded"]
         },
         "priority": {

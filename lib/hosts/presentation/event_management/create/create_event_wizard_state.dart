@@ -145,6 +145,7 @@ class CreateEventWizardReviewState {
 
   factory CreateEventWizardReviewState.resolve({
     required List<CatchFormStepSpec> activeSteps,
+    required String name,
     required ActivityKind activityKind,
     required String customActivityLabel,
     required String distance,
@@ -175,6 +176,7 @@ class CreateEventWizardReviewState {
   }) {
     final completion = <bool>[
       _eventDetailsReady(
+        name: name,
         activityKind: activityKind,
         customActivityLabel: customActivityLabel,
         distance: distance,
@@ -229,6 +231,7 @@ class CreateEventWizardReviewState {
   List<CatchFormStepReviewItem> get items => formReview.items;
 
   static bool _eventDetailsReady({
+    required String name,
     required ActivityKind activityKind,
     required String customActivityLabel,
     required String distance,
@@ -237,6 +240,7 @@ class CreateEventWizardReviewState {
     required String externalEventUrl,
     required bool rosterAttachmentRequired,
   }) {
+    if (name.trim().isEmpty) return false;
     if (rosterAttachmentRequired) return false;
     if (externalBookingMode && externalEventUrl.trim().isNotEmpty) {
       final uri = Uri.tryParse(externalEventUrl.trim());

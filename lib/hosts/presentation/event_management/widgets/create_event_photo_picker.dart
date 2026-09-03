@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -29,10 +30,31 @@ class CreateEventPhotoPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (photos.isEmpty) {
+      return CatchSection.divided(
+        title: context.l10n.hostsCreateEventPhotoPickerTitleCoverAndGallery,
+        count: context.l10n.coreCatchFormFieldLabelTextOptional,
+        showInternalDividers: false,
+        child: Padding(
+          padding: CatchInsets.fieldSectionChildTop,
+          child: KeyedSubtree(
+            key: const ValueKey('create_event.inherited_organizer_logo'),
+            child: CatchField.action(
+              key: const ValueKey('create_event.add_event_photos'),
+              title: context
+                  .l10n
+                  .hostsCreateEventPhotoPickerVisiblecopyAddEventPhotos,
+              body: context.l10n.hostsCreateEventPhotoPickerBodyInheritedLogo,
+              icon: CatchIcons.addPhotoAlternateOutlined,
+              onTap: onAddPhotos,
+            ),
+          ),
+        ),
+      );
+    }
     return CatchSection.divided(
       title: context.l10n.hostsCreateEventPhotoPickerTitleCoverAndGallery,
       count: context.l10n.coreCatchFormFieldLabelTextOptional,
-      first: true,
       showInternalDividers: false,
       child: Padding(
         padding: CatchInsets.fieldSectionChildTop,

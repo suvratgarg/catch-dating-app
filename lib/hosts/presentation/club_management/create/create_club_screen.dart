@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -675,175 +676,169 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
           ).ignore();
         }
       },
-      child: Scaffold(
+      child: CatchScreenScaffold.stepFlow(
         backgroundColor: t.bg,
-        body: SafeArea(
-          child: Column(
-            children: [
-              CreateClubStepHeader(
-                title: _isReviewing
-                    ? context.l10n.hostsCreateClubReviewTitle
-                    : screenState.title,
-                subtitle: screenState.subtitle,
-                currentStep: screenState.currentStep,
-                totalSteps: screenState.totalSteps,
-                isReviewing: _isReviewing,
-                onClose: screenState.requestControlsEnabled
-                    ? () => _handleCloseIntent(
-                        _hasUnsavedChanges
-                            ? HostClubCreateCloseIntent.confirmUnsavedChanges
-                            : HostClubCreateCloseIntent.close,
-                      ).ignore()
-                    : null,
-                onStepOverview: screenState.requestControlsEnabled
-                    ? _showStepOverview
-                    : null,
-              ),
-              gapH4,
-              Expanded(
-                child: StepperFooter(
-                  body: IgnorePointer(
-                    ignoring: !screenState.requestControlsEnabled,
-                    child: _isReviewing
-                        ? CatchFormReviewBody(
-                            message: context.l10n.hostsWizardReviewBody,
-                            items: reviewState.items,
-                            onStepSelected: _showStep,
-                          )
-                        : PageView(
-                            controller: _pageController,
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: [
-                              ClubBasicsStep(
-                                formKey: _basicsFormKey,
-                                autovalidateMode: autovalidateMode,
-                                nameController: _nameController,
-                                selectedOrganizerType: _organizerType,
-                                onOrganizerTypeChanged: (organizerType) =>
-                                    _handleRouteIntent(
-                                      HostClubCreateOrganizerTypeChangedIntent(
-                                        organizerType,
-                                      ),
-                                    ),
-                                selectedCity: screenState.fields.selectedCity,
-                                onCityChanged: (city) => _handleRouteIntent(
-                                  HostClubCreateCityChangedIntent(city),
-                                ),
-                                areaController: _areaController,
-                                detailsEnabled:
-                                    screenState.fields.detailsEnabled,
-                                clubPhotoPreviews:
-                                    screenState.media.clubPhotoPreviews,
-                                existingImageUrl:
-                                    screenState.media.existingCoverImageUrl,
-                                profileImageBytes:
-                                    screenState.media.profileImageBytes,
-                                existingProfileImageUrl:
-                                    screenState.media.existingProfileImageUrl,
-                                onPickClubPhotos: screenState.media.enabled
-                                    ? () => _handleRouteIntent(
-                                        const HostClubCreatePickClubPhotosIntent(),
-                                      )
-                                    : null,
-                                onRemoveClubPhoto: screenState.media.enabled
-                                    ? (index) => _handleRouteIntent(
-                                        HostClubCreateRemoveClubPhotoIntent(
-                                          index,
-                                        ),
-                                      )
-                                    : null,
-                                onReorderClubPhoto: screenState.media.enabled
-                                    ? (
-                                        fromIndex,
-                                        toIndex,
-                                      ) => _handleRouteIntent(
-                                        HostClubCreateReorderClubPhotoIntent(
-                                          fromIndex: fromIndex,
-                                          toIndex: toIndex,
-                                        ),
-                                      )
-                                    : null,
-                                onPickProfileImage: screenState.media.enabled
-                                    ? () => _handleRouteIntent(
-                                        const HostClubCreatePickProfileImageIntent(),
-                                      )
-                                    : null,
-                                onRemoveProfileImage: screenState.media.enabled
-                                    ? () => _handleRouteIntent(
-                                        const HostClubCreateRemoveProfileImageIntent(),
-                                      )
-                                    : null,
-                              ),
-                              ClubDetailsStep(
-                                formKey: _detailsFormKey,
-                                autovalidateMode: autovalidateMode,
-                                descriptionController: _descriptionController,
-                                instagramController: _instagramController,
-                                phoneController: _phoneController,
-                                emailController: _emailController,
-                              ),
-                              ClubHostDefaultsStep(
-                                formKey: _defaultsFormKey,
-                                defaults: _hostDefaults,
-                                currencyCode: screenState.fields.currencyCode,
-                                onChanged: (defaults) => _handleRouteIntent(
-                                  HostClubCreateDefaultsChangedIntent(defaults),
-                                ),
-                              ),
-                              ClubEventSuccessDefaultsStep(
-                                formKey: _eventSuccessFormKey,
-                                defaults: _hostDefaults,
-                                onChanged: (defaults) => _handleRouteIntent(
-                                  HostClubCreateDefaultsChangedIntent(defaults),
-                                ),
-                              ),
-                            ],
-                          ),
-                  ),
-                  notice:
-                      screenState.mutationError == null &&
-                          !screenState.draftRestore.hasError
-                      ? null
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
+        body: Column(
+          children: [
+            CreateClubStepHeader(
+              title: _isReviewing
+                  ? context.l10n.hostsCreateClubReviewTitle
+                  : screenState.title,
+              subtitle: screenState.subtitle,
+              currentStep: screenState.currentStep,
+              totalSteps: screenState.totalSteps,
+              isReviewing: _isReviewing,
+              onClose: screenState.requestControlsEnabled
+                  ? () => _handleCloseIntent(
+                      _hasUnsavedChanges
+                          ? HostClubCreateCloseIntent.confirmUnsavedChanges
+                          : HostClubCreateCloseIntent.close,
+                    ).ignore()
+                  : null,
+              onStepOverview: screenState.requestControlsEnabled
+                  ? _showStepOverview
+                  : null,
+            ),
+            gapH4,
+            Expanded(
+              child: StepperFooter(
+                body: IgnorePointer(
+                  ignoring: !screenState.requestControlsEnabled,
+                  child: _isReviewing
+                      ? CatchFormReviewBody(
+                          message: context.l10n.hostsWizardReviewBody,
+                          items: reviewState.items,
+                          onStepSelected: _showStep,
+                        )
+                      : PageView(
+                          controller: _pageController,
+                          physics: const NeverScrollableScrollPhysics(),
                           children: [
-                            if (screenState.mutationError != null)
-                              CatchErrorBanner(
-                                message: screenState.mutationError!,
+                            ClubBasicsStep(
+                              formKey: _basicsFormKey,
+                              autovalidateMode: autovalidateMode,
+                              nameController: _nameController,
+                              selectedOrganizerType: _organizerType,
+                              onOrganizerTypeChanged: (organizerType) =>
+                                  _handleRouteIntent(
+                                    HostClubCreateOrganizerTypeChangedIntent(
+                                      organizerType,
+                                    ),
+                                  ),
+                              selectedCity: screenState.fields.selectedCity,
+                              onCityChanged: (city) => _handleRouteIntent(
+                                HostClubCreateCityChangedIntent(city),
                               ),
-                            if (screenState.draftRestore.hasError)
-                              CatchErrorBanner.fromError(
-                                screenState.draftRestore.error!,
-                                context: AppErrorContext.club,
-                                onRetry:
-                                    screenState.draftRestore.retryIntent ==
-                                            null ||
-                                        screenState.draftRestore.isLoading
-                                    ? null
-                                    : () => unawaited(
-                                        _handleDraftRestoreIntent(
-                                          screenState.draftRestore.retryIntent!,
-                                        ),
+                              areaController: _areaController,
+                              detailsEnabled: screenState.fields.detailsEnabled,
+                              clubPhotoPreviews:
+                                  screenState.media.clubPhotoPreviews,
+                              existingImageUrl:
+                                  screenState.media.existingCoverImageUrl,
+                              profileImageBytes:
+                                  screenState.media.profileImageBytes,
+                              existingProfileImageUrl:
+                                  screenState.media.existingProfileImageUrl,
+                              onPickClubPhotos: screenState.media.enabled
+                                  ? () => _handleRouteIntent(
+                                      const HostClubCreatePickClubPhotosIntent(),
+                                    )
+                                  : null,
+                              onRemoveClubPhoto: screenState.media.enabled
+                                  ? (index) => _handleRouteIntent(
+                                      HostClubCreateRemoveClubPhotoIntent(
+                                        index,
                                       ),
+                                    )
+                                  : null,
+                              onReorderClubPhoto: screenState.media.enabled
+                                  ? (fromIndex, toIndex) => _handleRouteIntent(
+                                      HostClubCreateReorderClubPhotoIntent(
+                                        fromIndex: fromIndex,
+                                        toIndex: toIndex,
+                                      ),
+                                    )
+                                  : null,
+                              onPickProfileImage: screenState.media.enabled
+                                  ? () => _handleRouteIntent(
+                                      const HostClubCreatePickProfileImageIntent(),
+                                    )
+                                  : null,
+                              onRemoveProfileImage: screenState.media.enabled
+                                  ? () => _handleRouteIntent(
+                                      const HostClubCreateRemoveProfileImageIntent(),
+                                    )
+                                  : null,
+                            ),
+                            ClubDetailsStep(
+                              formKey: _detailsFormKey,
+                              autovalidateMode: autovalidateMode,
+                              descriptionController: _descriptionController,
+                              instagramController: _instagramController,
+                              phoneController: _phoneController,
+                              emailController: _emailController,
+                            ),
+                            ClubHostDefaultsStep(
+                              formKey: _defaultsFormKey,
+                              defaults: _hostDefaults,
+                              currencyCode: screenState.fields.currencyCode,
+                              onChanged: (defaults) => _handleRouteIntent(
+                                HostClubCreateDefaultsChangedIntent(defaults),
                               ),
+                            ),
+                            ClubEventSuccessDefaultsStep(
+                              formKey: _eventSuccessFormKey,
+                              defaults: _hostDefaults,
+                              onChanged: (defaults) => _handleRouteIntent(
+                                HostClubCreateDefaultsChangedIntent(defaults),
+                              ),
+                            ),
                           ],
                         ),
-                  isLastStep:
-                      screenState.footer.isLastStep || screenState.isReviewing,
-                  isLoading: screenState.footer.isLoading,
-                  primaryEnabled: screenState.footer.primaryEnabled,
-                  primaryLabel: _primaryLabel(screenState.footer.primaryIntent),
-                  onPrimary: () =>
-                      _handlePrimaryIntent(screenState.footer.primaryIntent),
-                  onPrevious: screenState.footer.previousIntent == null
-                      ? null
-                      : () => _handlePreviousIntent(
-                          screenState.footer.previousIntent!,
-                        ),
                 ),
+                notice:
+                    screenState.mutationError == null &&
+                        !screenState.draftRestore.hasError
+                    ? null
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (screenState.mutationError != null)
+                            CatchErrorBanner(
+                              message: screenState.mutationError!,
+                            ),
+                          if (screenState.draftRestore.hasError)
+                            CatchErrorBanner.fromError(
+                              screenState.draftRestore.error!,
+                              context: AppErrorContext.club,
+                              onRetry:
+                                  screenState.draftRestore.retryIntent ==
+                                          null ||
+                                      screenState.draftRestore.isLoading
+                                  ? null
+                                  : () => unawaited(
+                                      _handleDraftRestoreIntent(
+                                        screenState.draftRestore.retryIntent!,
+                                      ),
+                                    ),
+                            ),
+                        ],
+                      ),
+                isLastStep:
+                    screenState.footer.isLastStep || screenState.isReviewing,
+                isLoading: screenState.footer.isLoading,
+                primaryEnabled: screenState.footer.primaryEnabled,
+                primaryLabel: _primaryLabel(screenState.footer.primaryIntent),
+                onPrimary: () =>
+                    _handlePrimaryIntent(screenState.footer.primaryIntent),
+                onPrevious: screenState.footer.previousIntent == null
+                    ? null
+                    : () => _handlePreviousIntent(
+                        screenState.footer.previousIntent!,
+                      ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

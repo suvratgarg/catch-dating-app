@@ -44,41 +44,77 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
           divider: scrolledUnder,
         ),
-        body: const SafeArea(child: HostRouteLoadingBody()),
+        body: const CatchRouteBody.standard(
+          scrollable: false,
+          child: HostRouteLoadingBody(padding: EdgeInsets.zero),
+        ),
       ),
-      errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.event,
-        onRetry: () {
-          ref.invalidate(fetchClubProvider(clubId));
-          ref.invalidate(watchEventProvider(eventId));
-        },
+      errorBuilder: (_, error, _) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
+        body: CatchRouteBody.standard(
+          scrollable: false,
+          child: CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.event,
+            onRetry: () {
+              ref.invalidate(fetchClubProvider(clubId));
+              ref.invalidate(watchEventProvider(eventId));
+            },
+          ),
+        ),
       ),
       builder: (context, routeData) {
         final uid = routeData.uid;
         final club = routeData.club;
         final event = routeData.event;
         if (club == null || event == null) {
-          return CatchErrorScaffold(
-            title:
-                context.l10n.hostsHostEventManageRouteScreenTitleEventNotFound,
-            message: context
-                .l10n
-                .hostsHostEventManageRouteScreenMessageThisHostedEventIs,
-            secondaryAction: const CatchErrorBackAction(),
+          return CatchRouteScaffold(
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+              title:
+                  context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
+              leadingType: CatchTopBarLeading.back,
+              divider: scrolledUnder,
+            ),
+            body: CatchRouteBody.standard(
+              scrollable: false,
+              child: CatchErrorBody(
+                title: context
+                    .l10n
+                    .hostsHostEventManageRouteScreenTitleEventNotFound,
+                message: context
+                    .l10n
+                    .hostsHostEventManageRouteScreenMessageThisHostedEventIs,
+                secondaryAction: const CatchErrorBackAction(),
+              ),
+            ),
           );
         }
 
         if (uid == null || !club.isHostedBy(uid)) {
-          return CatchErrorScaffold(
-            title: context
-                .l10n
-                .hostsHostEventManageRouteScreenTitleActionUnavailable,
-            message: context
-                .l10n
-                .hostsHostEventManageRouteScreenMessageYouCanManageOnly,
-            icon: CatchIcons.blockRounded,
-            secondaryAction: const CatchErrorBackAction(),
+          return CatchRouteScaffold(
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+              title:
+                  context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
+              leadingType: CatchTopBarLeading.back,
+              divider: scrolledUnder,
+            ),
+            body: CatchRouteBody.standard(
+              scrollable: false,
+              child: CatchErrorBody(
+                title: context
+                    .l10n
+                    .hostsHostEventManageRouteScreenTitleActionUnavailable,
+                message: context
+                    .l10n
+                    .hostsHostEventManageRouteScreenMessageYouCanManageOnly,
+                icon: CatchIcons.blockRounded,
+                secondaryAction: const CatchErrorBackAction(),
+              ),
+            ),
           );
         }
 

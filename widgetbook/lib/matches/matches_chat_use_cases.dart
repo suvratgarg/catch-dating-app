@@ -32,6 +32,7 @@ import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_timestamped_message_text.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -1364,7 +1365,7 @@ Widget messageBubblePrimitiveStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Timestamped message text',
-  type: TimestampedMessageText,
+  type: CatchTimestampedMessageText,
   path: '[P1 product surfaces]/Matches and chat/Primitives',
 )
 Widget timestampedMessageTextState(BuildContext context) {
@@ -1372,7 +1373,7 @@ Widget timestampedMessageTextState(BuildContext context) {
 
   return Padding(
     padding: CatchInsets.content,
-    child: TimestampedMessageText(
+    child: CatchTimestampedMessageText(
       text: 'That final kilometer was harder than advertised.',
       timestamp: '7:42 PM',
       textStyle: CatchTextStyles.chatMessage(context, color: t.ink),

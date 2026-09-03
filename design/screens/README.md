@@ -18,10 +18,39 @@ dart run tool/architecture/check_ui_composition_contracts.dart --check
 ```
 
 The first checker validates route, capture, state, and component references.
-The second resolves every Dart source and fails missing symbols, mismatched
-top-bar/state contracts, or increases to the shell-owned nested-Scaffold
-ratchet. New screen contracts must add all three enforcement columns in the
-same change.
+The second resolves every production Dart source and fails missing symbols,
+mismatched top-bar/state contracts, unauthorized Material Scaffold ownership,
+or an unregistered named or imperative full-screen presentation. Named
+GoRoutes bind through `layoutContracts` or `layoutOnlyRoutes`. Analyzer
+discovery covers every full-screen `PageRoute` construction form, but the
+imperative inventory and `imperativePageContracts` support only direct
+`MaterialPageRoute` construction, with every call site generated into
+`tool/ui_capture/route_inventory.json`. Aliases, constructor tear-offs,
+factories/wrappers, `CupertinoPageRoute`, `PageRouteBuilder`, and subclasses
+fail closed rather than bypassing the inventory. New screen contracts must add
+all three enforcement columns in the same change.
+
+For each registered layout owner, `family` plus `bodyGeometry` deterministically
+selects the body boundary; there is no second body-owner field to drift. Root
+owners explicitly select `CatchScreenBodyLayout`, pushed routes select the
+matching `CatchRouteBody` variant, and tabbed roots select
+`CatchTabbedScreenBody` with an explicit `bodyLayout` on every
+`CatchTabbedPageSpec`. The analyzer follows the owner declaration's actual
+build/return tree and requires branch-universal static proof across every
+statically reachable widget-producing terminal. It treats every reachable
+conditional or switch arm as possible, follows approved builder callbacks and
+local helpers/values, and accepts only registered same-family delegates. A
+canonical scaffold or page hidden in an unused helper cannot satisfy the
+contract, and a behavior callback cannot disguise a rogue branch. Semantic
+tab-page wrappers must expose and forward the same body role to
+`CatchTabbedPageScrollView`.
+
+The complementary widget-classification and new-widget gates scan `lib/**`,
+`apps/consumer/lib/**`, and `apps/host/lib/**` as one production namespace.
+They resolve indirect widget subclasses transitively and reject exact or
+ungoverned normalized public-name collisions across roots. Generated
+exclusions are narrow (`.g.dart`, `.freezed.dart`, and named localization
+outputs), not directory-wide.
 
 Every screen in this registry must also have exactly one decision in
 `design/features/feature_coverage.json`. A screen contract governs composition;

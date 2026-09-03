@@ -282,53 +282,50 @@ export function applicationRouteOwnershipFindings({
 }) {
   const findings = [];
   const expectedListPath =
-    "hostApplicationsScreen('/host/forms/applications'";
+    "'/host/audience/applications'";
   const expectedDetailPath =
-    "'/host/forms/applications/:applicationId'";
+    "'/host/audience/applications/:applicationId'";
   if (!routeContractSource.includes(expectedListPath) ||
       !routeContractSource.includes(expectedDetailPath) ||
       routeContractSource.includes("/host/customers/applications")) {
     findings.push({
       path: routeContractPath,
       line: 1,
-      reason: "Applications and application detail routes must be canonically Forms-owned.",
+      reason: "Applications and application detail routes must be canonically Audience-owned.",
     });
   }
 
-  const customersBranch = shellBranchSource(
-    routerSource,
-    "navigatorKey: keys.hostCustomers"
-  );
-  const formsBranch = shellBranchSource(
-    routerSource,
-    "navigatorKey: keys.hostForms"
-  );
   const applicationsRoute = "name: Routes.hostApplicationsScreen.name";
   const applicationDetailRoute =
     "name: Routes.hostApplicationDetailScreen.name";
-  const formsOwnBothRoutes = formsBranch.includes(applicationsRoute) &&
-    formsBranch.includes(applicationDetailRoute) &&
-    !customersBranch.includes(applicationsRoute) &&
-    !customersBranch.includes(applicationDetailRoute);
-  if (!formsOwnBothRoutes) {
+  const audienceOwnsBothRoutes =
+    routerSource.includes("navigatorKey: keys.hostAudience") &&
+    routerSource.includes("_hostAudienceRoute(keys)") &&
+    routerSource.includes(applicationsRoute) &&
+    routerSource.includes(applicationDetailRoute) &&
+    !routerSource.includes("navigatorKey: keys.hostForms");
+  if (!audienceOwnsBothRoutes) {
     findings.push({
       path: routerPath,
       line: 1,
-      reason: "Named application routes must be mounted in the Forms shell branch.",
+      reason: "Named application routes must be mounted in the Audience shell branch.",
     });
   }
 
-  if (!customersBranch.includes("hostApplicationsLegacyRedirect")) {
+  if (!routerSource.includes("hostCustomersLegacyRedirect") ||
+      !routerSource.includes("hostFormsLegacyRedirect")) {
     findings.push({
       path: routerPath,
       line: 1,
-      reason: "Legacy Customers application links must redirect to Forms ownership.",
+      reason: "Legacy Customers and Forms links must redirect to Audience ownership.",
     });
   }
   return findings;
 }
 
 export function audienceWorkspacePresentationFindings({
+  audienceViewPath,
+  audienceViewSource,
   customersPath,
   customersSource,
   workspacePath,
@@ -340,7 +337,6 @@ export function audienceWorkspacePresentationFindings({
 }) {
   const findings = [];
   for (const anchor of [
-    "enum HostCustomersView { people, audiences }",
     "CatchTabbedScreenScaffold(",
     "HostSavedAudiencesWorkspace(",
     "actions: peopleView",
@@ -349,6 +345,17 @@ export function audienceWorkspacePresentationFindings({
       path: customersPath,
       line: 1,
       reason: `Customers must keep People and Audiences as peer workspaces: ${anchor}`,
+    });
+  }
+  for (const anchor of [
+    "enum HostAudienceView { people, audiences, forms, responses }",
+    "class HostAudienceTabRail",
+    "ValueKey<String>('host-audience-view-tabs')",
+  ]) {
+    if (!audienceViewSource.includes(anchor)) findings.push({
+      path: audienceViewPath,
+      line: 1,
+      reason: `Audience must expose all four peer workspaces: ${anchor}`,
     });
   }
   if (customersSource.includes("savedAudiences") ||
@@ -385,13 +392,13 @@ export function audienceWorkspacePresentationFindings({
     });
   }
   for (const anchor of [
-    "hostCreateSavedAudienceScreen(\n    '/host/customers/audiences/new'",
-    "hostSavedAudienceDetailScreen(\n    '/host/customers/audiences/:audienceId'",
+    "hostCreateSavedAudienceScreen(\n    '/host/audience/audiences/new'",
+    "hostSavedAudienceDetailScreen(\n    '/host/audience/audiences/:audienceId'",
   ]) {
     if (!routeContractSource.includes(anchor)) findings.push({
       path: routeContractPath,
       line: 1,
-      reason: "Saved-audience create and detail must remain full-page Customers routes.",
+      reason: "Saved-audience create and detail must remain full-page Audience routes.",
     });
   }
   return findings;
@@ -442,13 +449,6 @@ export function customerMessagingHandoffFindings({
     });
   }
   return findings;
-}
-
-function shellBranchSource(source, navigatorAnchor) {
-  const start = source.indexOf(navigatorAnchor);
-  if (start < 0) return "";
-  const end = source.indexOf("StatefulShellBranch(", start);
-  return source.slice(start, end < 0 ? source.length : end);
 }
 
 function scanManualSendContract(root) {
@@ -502,6 +502,8 @@ function scanApplicationRouteOwnership(root) {
 }
 
 function scanAudienceWorkspacePresentation(root) {
+  const audienceViewPath =
+    "lib/hosts/presentation/host_audience_view.dart";
   const customersPath =
     "lib/hosts/presentation/customers/host_customers_screen.dart";
   const workspacePath =
@@ -510,6 +512,7 @@ function scanAudienceWorkspacePresentation(root) {
     "lib/hosts/presentation/customers/host_customer_editor_sheets.dart";
   const routeContractPath = "lib/routing/route_contract.dart";
   const paths = [
+    audienceViewPath,
     customersPath,
     workspacePath,
     editorSheetsPath,
@@ -520,6 +523,11 @@ function scanAudienceWorkspacePresentation(root) {
   const customersSource = fs.readFileSync(path.join(root, customersPath), "utf8");
   return [
     ...audienceWorkspacePresentationFindings({
+      audienceViewPath,
+      audienceViewSource: fs.readFileSync(
+        path.join(root, audienceViewPath),
+        "utf8"
+      ),
       customersPath,
       customersSource,
       workspacePath,

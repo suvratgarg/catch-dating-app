@@ -18,6 +18,7 @@ class StepperFooter extends StatelessWidget {
     this.lastStepLabel = 'Done',
     this.primaryEnabled = true,
     this.primaryIcon,
+    this.expandSoloPrimary = false,
   });
 
   final Widget body;
@@ -30,6 +31,7 @@ class StepperFooter extends StatelessWidget {
   final String lastStepLabel;
   final bool primaryEnabled;
   final Widget? primaryIcon;
+  final bool expandSoloPrimary;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +64,9 @@ class StepperFooter extends StatelessWidget {
     return CatchBottomActionOverlay(
       body: body,
       notice: notice,
-      actions: stacksActions
+      actions: onPrevious == null && expandSoloPrimary
+          ? primaryButton
+          : stacksActions
           ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [

@@ -78,12 +78,14 @@ import '../test_pump_helpers.dart';
 part 'catch_primitives_controls_tests.dart';
 part 'catch_primitives_composition_tests.dart';
 part 'catch_primitives_async_feedback_tests.dart';
+part 'catch_primitives_error_async_tests.dart';
 part 'catch_primitives_search_menu_tests.dart';
 
 void main() {
   _registerCatchPrimitivesControlsTests();
   _registerCatchPrimitivesCompositionTests();
   _registerCatchPrimitivesAsyncFeedbackTests();
+  _registerCatchPrimitivesErrorAsyncTests();
   _registerCatchPrimitivesSearchMenuTests();
 }
 

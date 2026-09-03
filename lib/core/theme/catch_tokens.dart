@@ -412,15 +412,6 @@ abstract final class CatchInsets {
     CatchSpacing.screenPb,
   );
 
-  /// Compact body padding for dense chrome where the content already owns
-  /// vertical separation.
-  static const EdgeInsets pageBodyCompact = EdgeInsets.fromLTRB(
-    CatchSpacing.screenPx,
-    CatchSpacing.s2,
-    CatchSpacing.screenPx,
-    CatchSpacing.s4,
-  );
-
   /// Compact-top scroll body for tab screens that own their title block inline
   /// (no pinned header) and need section-sized scroll-end breathing room — the
   /// Catches hub feed and its empty state share this single contract.
@@ -451,6 +442,11 @@ abstract final class CatchInsets {
   /// Horizontal page/list gutters when vertical padding is owned elsewhere.
   static const EdgeInsets pageHorizontal = EdgeInsets.symmetric(
     horizontal: CatchSpacing.screenPx,
+  );
+
+  /// Separation between the scroll-owned Today header and its first state.
+  static const EdgeInsets hostTodayContentStart = EdgeInsets.only(
+    top: CatchSpacing.s5,
   );
 
   /// Leading route action aligned to the canonical screen gutter.
@@ -532,14 +528,22 @@ abstract final class CatchInsets {
   // centralise that rhythm so screens stop tuning their own raw EdgeInsets.
   // The horizontal page gutter stays [CatchSpacing.screenPx] (s5) everywhere.
 
-  /// (1) Title block padding for tab screens whose header pairs a title with a
-  /// subtitle (Chats, Explore, and Host browse headers). Root titles begin at
-  /// the safe-area content edge; the title component owns its internal height.
+  /// Root-screen title block. Separation from the first body element belongs
+  /// to the enclosing screen family, so the title contributes no trailing gap.
   static const EdgeInsets screenTitleBlock = EdgeInsets.fromLTRB(
     CatchSpacing.s5,
     CatchSpacing.s0,
     CatchSpacing.s5,
-    CatchSpacing.s3,
+    CatchSpacing.s0,
+  );
+
+  /// Title block for a pinned peer-tab destination. The rail owns its full
+  /// interactive height; this is the small visual handoff into that rail.
+  static const EdgeInsets tabbedScreenTitleBlock = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s0,
+    CatchSpacing.s5,
+    CatchSpacing.s1,
   );
 
   /// (1) Title block padding for tab screens whose header is a compact
@@ -927,7 +931,15 @@ abstract final class CatchInsets {
     bottom: CatchSpacing.s3,
   );
 
-  /// Host lifecycle section label above a group of event rows.
+  /// First Host lifecycle section label at the page-body boundary.
+  ///
+  /// The page owner already supplies the standard 24 pt body inset, so the
+  /// first visible label must not add another leading inset of its own.
+  static const EdgeInsets hostEventFirstSectionLabel = EdgeInsets.only(
+    bottom: CatchSpacing.micro10,
+  );
+
+  /// Host lifecycle section label following content within the page body.
   static const EdgeInsets hostEventSectionLabel = EdgeInsets.only(
     top: CatchSpacing.s1,
     bottom: CatchSpacing.micro10,
@@ -1063,10 +1075,10 @@ abstract final class CatchInsets {
     bottom: CatchSpacing.micro6,
   );
 
-  /// Horizontal gutters for the Chats conversation list. Matches the section
-  /// kicker gutter so the list tiles, header label, and dividers all align.
+  /// Horizontal gutters for conversation lists. Matches the app-wide page
+  /// gutter so Consumer Chats and Host Inbox align with every inset body.
   static const EdgeInsets chatListGutter = EdgeInsets.symmetric(
-    horizontal: CatchSpacing.s4,
+    horizontal: CatchSpacing.screenPx,
   );
 
   /// Vertical padding for a single chat conversation row.
@@ -2162,9 +2174,46 @@ abstract final class CatchLayout {
   static const double tabbedPageMaxExtent =
       maxContentWidth + pageBodyHorizontalGutters;
 
+  /// Reading lane for the Host Forms directory on capable widths. Forms rows
+  /// carry lifecycle, response, and consequence summaries that need more room
+  /// than prose while remaining visibly one bounded list.
+  static const double hostFormsDirectoryMaxContentWidth = 840;
+  static const double hostFormsDirectoryPageMaxExtent =
+      hostFormsDirectoryMaxContentWidth + pageBodyHorizontalGutters;
+
+  /// Bounded command workspace for a live Host Event on tablet and desktop.
+  /// The stage remains dominant while one supporting operations pane can stay
+  /// visible without turning the runtime into a dashboard.
+  static const double hostEventLiveWorkspaceMaxContentWidth = 1040;
+
+  /// Supporting operations lane beside the live command stage.
+  static const double hostEventLiveSupportingPaneWidth = 360;
+
+  /// Width at which Today can keep the current-event lane and its attention
+  /// queue visible together without compressing either into card fragments.
+  static const double hostTodayTwoPaneBreakpoint = 720;
+
+  /// Bounded command-centre workspace for Today on tablet and desktop.
+  static const double hostTodayWorkspaceMaxContentWidth = 1120;
+
+  /// Supporting attention lane beside Today's current-event workspace.
+  static const double hostTodayAttentionPaneWidth = 360;
+
+  /// Narrowest useful attention lane when the app rail leaves tablet content
+  /// less room than the desktop workspace.
+  static const double hostTodayAttentionPaneCompactWidth = 300;
+
+  /// Width at which Today's supporting pane can expand without narrowing the
+  /// primary current-event and seven-day lane.
+  static const double hostTodayExpandedAttentionPaneBreakpoint = 960;
+
+  /// Visual separation extent for the bounded Today command workspace. The
+  /// page remains scroll-owned; this rule only separates the initial lanes.
+  static const double hostTodayWorkspaceRuleExtent = 640;
+
   /// Width at which the Host form builder can fit outline, preview, and
   /// inspector panes without compressing any one pane below its useful size.
-  static const double formBuilderExpandedBreakpoint = 1040;
+  static const double formBuilderExpandedBreakpoint = 960;
 
   /// Navigation outline width in the expanded Host form builder.
   static const double formBuilderOutlineWidth = 260;
@@ -2686,9 +2735,21 @@ abstract final class CatchLayout {
   static const double appShellLargeTextRailWidth = 168.0;
   static const double appShellSidebarWidth = 240.0;
   static const double masterDetailIndexPaneWidth = 360.0;
+
+  /// Minimum width inside the Messaging route body that can hold the
+  /// canonical conversation index and an equally usable thread pane. This is
+  /// intentionally measured after shell navigation has taken its width.
+  static const double hostMessagingSplitViewMinWidth =
+      masterDetailIndexPaneWidth * 2;
+  static const double hostMessagingSendsMaxContentWidth = 840.0;
+  static const double hostMessagingSendsPageMaxExtent =
+      hostMessagingSendsMaxContentWidth + pageBodyHorizontalGutters;
+  static const double hostCreateEventStepRailWidth = 240.0;
+  static const double hostCreateEventConsequencePaneWidth = 320.0;
+  static const double hostCreateEventFormLaneMaxWidth = 680.0;
   static const double appShellRailItemMinHeight = 64.0;
   static const double appShellSidebarItemMinHeight = 48.0;
-  static const double tabRailHeight = 48.0;
+  static const double tabRailHeight = 44.0;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;
   static const double topBarLargeTextActionReserve =

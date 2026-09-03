@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/events.dart'
@@ -237,7 +238,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
             ),
           );
 
-    return Scaffold(
+    return CatchScreenScaffold.workspace(
       backgroundColor: t.bg,
       body: Stack(
         children: [
