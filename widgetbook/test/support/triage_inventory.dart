@@ -102,6 +102,20 @@ class _References extends RecursiveAstVisitor<void> {
   }
 }
 
+bool _isUiDeclaration(AstNode? declaration) {
+  if (declaration is ClassDeclaration) {
+    final base = declaration.extendsClause?.superclass.toSource() ?? '';
+    return RegExp(
+      r'(Widget|InheritedNotifier|InheritedModel)(<|$)',
+    ).hasMatch(base);
+  }
+  if (declaration is FunctionDeclaration) {
+    final returns = declaration.returnType?.toSource() ?? '';
+    return RegExp(r'(^|[<, ])Widget([>, ?]|$)').hasMatch(returns);
+  }
+  return false;
+}
+
 Map<String, Object?> _reach(String path, String builder) {
   final pending = <(String, String)>[(path, builder)];
   final seen = <String>{};
@@ -139,11 +153,14 @@ Map<String, Object?> _reach(String path, String builder) {
         pending.add((target, ref));
       } else if (target.startsWith('lib/')) {
         final declaration = _members(target)[ref];
-        if (declaration is ClassDeclaration) {
+        if (declaration is ClassDeclaration || _isUiDeclaration(declaration)) {
           production['$target:$ref'] = {
             'symbol': ref,
             'file': target,
-            'base': declaration.extendsClause?.superclass.toSource(),
+            'base': declaration is ClassDeclaration
+                ? declaration.extendsClause?.superclass.toSource()
+                : null,
+            'ui': _isUiDeclaration(declaration),
           };
         }
       }

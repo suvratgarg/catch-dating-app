@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_golden_test_core/widgetbook_golden_test_core.dart';
 import 'package:widgetbook_workspace/main.directories.g.dart';
+import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart';
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 import '../../test/goldens/support/golden_pump.dart';
@@ -40,6 +43,35 @@ void main() {
     expect(renderer.visited.length, registered);
     expect(renderer.visited.toSet().length, registered);
     expect(renderer.selected, unorderedEquals(_referenceCases.keys));
+  });
+
+  testWidgets('booking dock catalog mounts the production state surface', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: WidgetbookCaseScope(
+            builder: eventDetailBookingDockCatalogStates,
+          ),
+        ),
+      ),
+    );
+    final docks = tester.widgetList<EventBookingDock>(
+      find.byType(EventBookingDock),
+    );
+    expect(docks, hasLength(4));
+    expect(docks.map((dock) => dock.label), [
+      'Join event - 3 spots left',
+      'Cancel booking',
+      'Join waitlist',
+      'You attended this event',
+    ]);
+    expect(
+      docks.where((dock) => dock.onPressed == null).single.label,
+      'You attended this event',
+    );
   });
 
   testWidgets('shared scope preserves theme, scale and knob defaults', (
