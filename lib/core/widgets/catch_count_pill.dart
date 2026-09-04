@@ -30,6 +30,8 @@ class CatchCountPill extends StatefulWidget {
 
   final IconData? icon;
   final String label;
+
+  /// Readable secondary control text; caller casing and wrapping are retained.
   final String? value;
   final int count;
   final VoidCallback onPressed;

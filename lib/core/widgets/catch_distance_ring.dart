@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-/// Handoff map radius ring with an optional tappable mono label.
+/// Map radius ring with an optional readable, wrapping control-role label.
 class CatchDistanceRing extends StatelessWidget {
   const CatchDistanceRing({
     super.key,
