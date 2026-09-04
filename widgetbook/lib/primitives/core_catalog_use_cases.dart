@@ -36,6 +36,8 @@ import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
@@ -597,6 +599,71 @@ Widget catchControlShellCatalogStates(BuildContext context) {
             shell(label: 'Error', hasError: true),
             shell(label: 'Disabled', enabled: false),
           ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchDivider,
+  path: '[Core catalog]/Layout',
+)
+Widget catchDividerCatalogStates(BuildContext context) {
+  return const WidgetbookCatalogFrame(
+    title: 'CatchDivider',
+    catalogId: 'core.widgets.catch_divider',
+    children: [
+      _StateCard(
+        label: 'section / field section / field row',
+        child: Column(
+          children: [
+            CatchDivider.section(),
+            SizedBox(height: CatchSpacing.s4),
+            CatchDivider.fieldSection(),
+            SizedBox(height: CatchSpacing.s4),
+            CatchDivider.fieldRow(),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchFormReviewBody,
+  path: '[Core catalog]/Layout',
+)
+Widget catchFormReviewBodyCatalogStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'CatchFormReviewBody',
+    catalogId: 'core.widgets.catch_form_review_body',
+    children: [
+      _StateCard(
+        label: 'summary / step statuses',
+        child: SizedBox(
+          height: WidgetbookPreviewLayout.stateViewportHeight,
+          child: CatchFormReviewBody(
+            message: 'Review the event before publishing.',
+            onStepSelected: _ignoreInt,
+            summaryItems: const [
+              CatchFormReviewSummaryItem(label: 'Event', value: 'Sundowner 5K'),
+            ],
+            items: const [
+              CatchFormStepReviewItem(
+                index: 0,
+                title: 'Event basics',
+                status: CatchFormStepStatus.complete,
+              ),
+              CatchFormStepReviewItem(
+                index: 1,
+                title: 'Meeting point',
+                status: CatchFormStepStatus.needsInformation,
+              ),
+            ],
+          ),
         ),
       ),
     ],
@@ -4464,6 +4531,8 @@ Widget _sliverTextData(String value) => SliverToBoxAdapter(
 void _noop() {}
 
 void _ignoreString(String _) {}
+
+void _ignoreInt(int _) {}
 
 final _whenCelebrationDetail = CelebrationDetail(
   label: 'When',
