@@ -357,3 +357,33 @@ test("Audience retains answers to the recurring product questions", () => {
     assert.ok(result.guide.sections.some((section) => section.id === question && section.answer.trim()));
   }
 });
+
+test("CI impact reporting runs with only the Node planner closure and Git history", () => {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "audience-doc-closure-")));
+  const git = (...args) => execFileSync("git", args, {cwd: root, stdio: "pipe"});
+  try {
+    for (const folder of ["tool/design", "tool/lib", "design/features"]) {
+      fs.mkdirSync(path.join(root, folder), {recursive: true});
+    }
+    for (const file of ["build_host_feature_responsibilities.mjs", "../lib/repo_paths.mjs"]) {
+      fs.copyFileSync(new URL(file, import.meta.url), path.join(root, "tool/design", file));
+    }
+    const {feature} = guideFixture();
+    fs.writeFileSync(path.join(root, "design/features/host_feature_responsibilities.json"),
+      JSON.stringify({features: [feature]}));
+    git("init", "--quiet");
+    git("config", "user.name", "Documentation test");
+    git("config", "user.email", "test@example.invalid");
+    git("add", ".");
+    git("-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false", "commit", "--quiet", "-m", "fixture");
+    const report = JSON.parse(execFileSync(process.execPath, [
+      path.join(root, "tool/design/build_host_feature_responsibilities.mjs"),
+      "--affected", "audience", "--base", "HEAD", "--json",
+    ], {cwd: root, encoding: "utf8"}));
+    assert.equal(report.advisory, true);
+    assert.deepEqual(report.sections, []);
+    assert.deepEqual(report.changedReferenceSources, []);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});

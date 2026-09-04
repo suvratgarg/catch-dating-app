@@ -14,6 +14,9 @@ import {
   parseSemanticVersion,
   runSelfTest,
   widgetCatalogViolation,
+  documentReferences,
+  buildDocumentInventory,
+  retiredDocumentReferences,
 } from "./check_doc_metadata.mjs";
 
 const scriptPath = fileURLToPath(new URL("./check_doc_metadata.mjs", import.meta.url));
@@ -212,3 +215,110 @@ function writeDoc(repo, version, status) {
 function git(repo, args) {
   return execFileSync("git", args, {cwd: repo, encoding: "utf8"});
 }
+
+test("literal document references respect Markdown relativity and repository code paths", () => {
+  const refs = documentReferences("docs/plans/current.md", [
+    "[Owner](../owner.md#policy)",
+    "`docs/owner.md:42` and `../../lib/README.md`",
+    "[nested](docs/owner.md)",
+    "[External](https://example.com/docs/owner.md)",
+    "[space](<../old%20plan.md>)",
+    "[ref]: ../owner.md#policy",
+    "[not-doc](../owner.json) and `not a path`",
+  ].join("\n"), new Set(["docs/owner.md"]));
+  assert.deepEqual(refs, [
+    {path: "docs/owner.md", line: 1},
+    {path: "docs/owner.md", line: 2},
+    {path: "lib/README.md", line: 2},
+    {path: "docs/plans/docs/owner.md", line: 3},
+    {path: "docs/old plan.md", line: 5},
+    {path: "docs/owner.md", line: 6},
+  ]);
+});
+
+test("inventory includes ungoverned Markdown and exposes headings and incoming references", () => {
+  const sources = new Map([
+    ["docs/README.md", "# Docs\n\n[Guide](guide.md)\n"],
+    ["docs/guide.md", "<!-- GENERATED FROM contract.json. DO NOT EDIT. -->\n# Guide\n\n```md\n## Not a heading\n```\n## Usage\n"],
+    ["lib/example.dart", "not Markdown"],
+  ]);
+  const inventory = buildDocumentInventory({paths: sources.keys(), readSource: (p) => sources.get(p)});
+  assert.equal(inventory.documents.length, 2);
+  const guide = inventory.documents.find((d) => d.path === "docs/guide.md");
+  assert.equal(guide.metadata, null);
+  assert.match(guide.generatedMarker, /GENERATED FROM/u);
+  assert.deepEqual(guide.headings.map((h) => h.title), ["Guide", "Usage"]);
+  assert.deepEqual(guide.referencedBy, [{path: "docs/README.md", line: 3}]);
+  assert.match(inventory.coverage, /no semantic freshness/u);
+});
+
+test("retirement finds remaining references without blocking unrelated historical broken links", () => {
+  const findings = retiredDocumentReferences({
+    paths: new Set(["docs/README.md", "lib/README.md"]),
+    readSource: (p) => p === "docs/README.md"
+      ? "[Old](plans/old.md#acceptance)\n[Existing broken](already-missing.md)"
+      : "See `docs/plans/old.md`.\n",
+    retiredPaths: ["docs/plans/old.md"],
+  });
+  assert.deepEqual(findings.map((f) => [f.path, f.line, f.target]), [
+    ["docs/README.md", 1, "docs/plans/old.md"],
+    ["lib/README.md", 1, "docs/plans/old.md"],
+  ]);
+});
+
+test("CLI retirement protects ungoverned docs and handles dirty, committed, and renamed files", () => {
+  const repo = fs.mkdtempSync(path.join(os.tmpdir(), "catch-doc-retirement-"));
+  try {
+    git(repo, ["init", "-q"]);
+    git(repo, ["config", "user.email", "test@example.com"]);
+    git(repo, ["config", "user.name", "Catch Test"]);
+    fs.mkdirSync(path.join(repo, "docs"));
+    fs.writeFileSync(path.join(repo, "docs/old.md"), "# Old\n");
+    fs.writeFileSync(path.join(repo, "docs/README.md"), "[Old](old.md)\n");
+    git(repo, ["add", "."]);
+    git(repo, ["commit", "-qm", "base"]);
+    const base = git(repo, ["rev-parse", "HEAD"]).trim();
+    fs.renameSync(path.join(repo, "docs/old.md"), path.join(repo, "docs/new.md"));
+    const run = (...args) => spawnSync(process.execPath, [scriptPath, "--repo", repo, "--base", base, "--json", ...args], {encoding: "utf8"});
+    const bad = run();
+    assert.equal(bad.status, 1, bad.stderr);
+    assert.equal(JSON.parse(bad.stdout).findings[0].kind, "retired-document-reference");
+    fs.writeFileSync(path.join(repo, "docs/README.md"), "[Current](new.md)\n");
+    const good = run("--inventory");
+    assert.equal(good.status, 0, good.stderr);
+    assert.equal(JSON.parse(good.stdout).inventory.documents.length, 2);
+    git(repo, ["add", "-A"]);
+    git(repo, ["commit", "-qm", "rename and repair"]);
+    assert.equal(run("--ref", "HEAD").status, 0);
+    fs.writeFileSync(path.join(repo, "docs/README.md"), "[Old](old.md)\n");
+    assert.equal(run().status, 1);
+    assert.equal(run("--ref", "HEAD").status, 0);
+    assert.equal(run("--ref", "").status, 1);
+  } finally {
+    fs.rmSync(repo, {recursive: true, force: true});
+  }
+});
+
+test("references handle nested and escaped destinations, root literals, and fenced samples", () => {
+  const refs = documentReferences("docs/guide.md", [
+    "[other](image.png) [one](notes/a(b(c)).md) [two](<notes/a(b).md>)",
+    String.raw`[escaped](notes/a\(b\).md "Title")`,
+    "`AGENTS.md` and `README.md`",
+    "```md",
+    "[Sample](old.md) and `docs/old.md`",
+    "```",
+    "[real]: <notes/a(b).md> \"Title\"",
+  ].join("\n"), new Set(["AGENTS.md", "README.md", "docs/README.md"]));
+  assert.deepEqual(refs, [
+    {path: "docs/notes/a(b(c)).md", line: 1},
+    {path: "docs/notes/a(b).md", line: 1},
+    {path: "docs/notes/a(b).md", line: 2},
+    {path: "AGENTS.md", line: 3},
+    {path: "docs/README.md", line: 3},
+    {path: "docs/notes/a(b).md", line: 7},
+  ]);
+  assert.equal(retiredDocumentReferences({
+    paths: ["docs/guide.md"], readSource: () => "Read `AGENTS.md` and `operations/README.md`.",
+    retiredPaths: ["AGENTS.md", "operations/README.md"],
+  }).length, 2);
+});
