@@ -1,0 +1,178 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import {spawnSync} from "node:child_process";
+import {fileURLToPath} from "node:url";
+import path from "node:path";
+
+const root = fileURLToPath(new URL("../../", import.meta.url));
+export const classes = ["component-mount", "body-mount", "screen-scope", "prototype"];
+const simpleType = (value) => value?.replace(/<.*>/u, "");
+const key = (row) => [row.file, row.builder, simpleType(row.type), row.name].join(":");
+const proposalMarker = /(?:^|[\s·([])proposed(?:$|[\s)\]])/iu;
+
+// Classification is about what a case mounts, not its folder or display name.
+// The syntax inventory follows local helpers, State classes and fixture scopes
+// conservatively, including callbacks. It does not execute routes or infer
+// runtime provider values; that remains the capture pipeline's responsibility.
+export function classify(row, routeTargets = new Set()) {
+  if (!row.typeFile) return {classification: null, reason: "Unresolved annotated type"};
+  if (row.typeFile.startsWith("widgetbook/")) {
+    // These marker types name token specimens, not alternative product UI.
+    if (row.typeFile === "widgetbook/lib/foundation/foundation_token_use_cases.dart" &&
+        row.type.startsWith("Foundation") &&
+        row.productionReferences.some((ref) => ref.file.startsWith("lib/core/theme/"))) {
+      return {classification: "component-mount", reason: "Production foundation/token specimen"};
+    }
+    if (!proposalMarker.test(row.name)) {
+      return {classification: null, reason: "Widgetbook-defined composition lacks explicit proposed marker"};
+    }
+    return {classification: "prototype", reason: "Marked proposal; review disposition stays with its feature owner"};
+  }
+  if (!row.productionReferences.length) {
+    return {classification: null, reason: "No production declarations reachable from builder"};
+  }
+  const route = row.productionReferences.find((ref) => routeTargets.has(ref.symbol));
+  const providerFeature = row.productionReferences.find((ref) =>
+    !ref.file.startsWith("lib/core/") && /^Consumer(?:Stateful)?Widget$/u.test(ref.base ?? ""));
+  const featureUi = row.productionReferences.find((ref) =>
+    ref.ui && !ref.file.startsWith("lib/core/"));
+  if (route || providerFeature) {
+    return {classification: "screen-scope", reason: route
+      ? `Mount dependency includes route target ${route.symbol}`
+      : `Mount dependency includes provider-owned feature ${providerFeature.symbol}`};
+  }
+  if (!featureUi && row.typeFile.startsWith("lib/core/")) {
+    return {classification: "component-mount", reason: "Production shared component/pattern or adapter"};
+  }
+  if (!featureUi) {
+    return {classification: null, reason: "Feature annotation has no reachable production feature UI mount"};
+  }
+  if (row.wrappers.length) {
+    return {classification: "screen-scope", reason: `Feature mount requires ${row.wrappers.join(", ")}`};
+  }
+  return {classification: "body-mount", reason: "Production feature composition with local fixture inputs"};
+}
+
+export function triage(inventory, routeTargets = new Set()) {
+  const failures = [];
+  const annotations = new Map();
+  for (const row of inventory.cases) {
+    if (annotations.has(key(row))) failures.push(`Duplicate annotation identity: ${key(row)}`);
+    annotations.set(key(row), {...row, ...classify(row, routeTargets)});
+  }
+  const ids = new Set();
+  const registeredKeys = new Set();
+  const cases = inventory.generated.map((registration) => {
+    const id = `${registration.path}/${registration.name}`;
+    if (ids.has(id)) failures.push(`Duplicate registered id: ${id}`);
+    ids.add(id);
+    registeredKeys.add(key(registration));
+    const annotation = annotations.get(key(registration));
+    if (!annotation) failures.push(`Registration has no matching annotation: ${id}`);
+    return {
+      ...annotation,
+      id,
+      classification: annotation?.classification ?? null,
+      goldenCoverageEligible: annotation?.classification != null && annotation.classification !== "prototype",
+    };
+  }).sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+  const unregisteredAnnotations = [...annotations.values()]
+    .filter((row) => !registeredKeys.has(key(row)));
+  for (const row of unregisteredAnnotations) {
+    // widgetbook_generator emits one case from stacked UseCase metadata.
+    // Keep EVERY omitted annotation visible and classified, not a waiver list.
+    if (!inventory.generated.some((other) => other.file === row.file && other.builder === row.builder)) {
+      failures.push(`Annotated builder missing from generated directories: ${key(row)}`);
+    }
+  }
+  for (const row of annotations.values()) {
+    if (!row.classification) failures.push(`${key(row)}: ${row.reason}`);
+  }
+  if (!cases.length) failures.push("Generated corpus is empty");
+  const counts = (rows) => Object.fromEntries(classes.map((name) =>
+    [name, rows.filter((row) => row.classification === name).length]));
+  return {
+    registeredCount: cases.length,
+    counts: counts(cases),
+    unclassified: cases.filter((row) => !row.classification).length,
+    annotationCount: inventory.cases.length,
+    annotationCounts: counts([...annotations.values()]),
+    unclassifiedAnnotations: [...annotations.values()].filter((row) => !row.classification).length,
+    unregisteredAnnotationCount: unregisteredAnnotations.length,
+    failures,
+    cases,
+    unregisteredAnnotations,
+  };
+}
+
+function selfTest() {
+  const component = {
+    file: "widgetbook/lib/primitives/sample.dart", builder: "sample",
+    type: "CatchButton", name: "Default", typeFile: "lib/core/widgets/catch_button.dart",
+    productionReferences: [{symbol: "CatchButton", file: "lib/core/widgets/catch_button.dart", base: "StatelessWidget", ui: true}],
+    wrappers: [],
+  };
+  const body = {...component, type: "ExampleBody", typeFile: "lib/example/presentation/widgets/example_body.dart",
+    productionReferences: [{symbol: "ExampleBody", file: "lib/example/presentation/widgets/example_body.dart", base: "StatelessWidget", ui: true}]};
+  const prototype = {...component, typeFile: "widgetbook/lib/example/prototype.dart", name: "Option · proposed"};
+  assert.equal(classify(component).classification, "component-mount");
+  assert.equal(classify(body).classification, "body-mount");
+  assert.equal(classify({...body, productionReferences: component.productionReferences}).classification, null);
+  assert.equal(classify({...body, typeFile: component.typeFile}).classification, "body-mount");
+  assert.equal(classify({...body, wrappers: ["ProviderScope"]}).classification, "screen-scope");
+  assert.equal(classify(component, new Set(["CatchButton"])).classification, "screen-scope");
+  assert.equal(classify(prototype).classification, "prototype");
+  assert.equal(classify({...prototype, productionReferences: []}).classification, "prototype");
+  assert.equal(classify({...prototype, name: "Option"}).classification, null);
+  assert.equal(classify({...prototype, name: "Unproposed"}).classification, null);
+  assert.equal(classify({...body, name: "Typed descriptor prototype"}).classification, "body-mount");
+  assert.equal(classify({...component, typeFile: null}).classification, null);
+  assert.equal(classify({...component, productionReferences: []}).classification, null);
+  const generated = {...component, path: "Core/CatchButton"};
+  const valid = triage({cases: [component], generated: [generated]});
+  assert.deepEqual(valid.failures, []);
+  assert.equal(valid.unclassified, 0);
+  assert.equal(triage({cases: [prototype], generated: [{...prototype, path: "Proposals"}]}).cases[0].goldenCoverageEligible, false);
+  assert.ok(triage({cases: [], generated: [generated]}).failures.length);
+  assert.ok(triage({cases: [component], generated: []}).failures.length);
+  assert.ok(triage({cases: [component], generated: [generated, generated]}).failures.length);
+  const second = {...component, type: "CatchBadge"};
+  const stacked = triage({cases: [component, second], generated: [generated]});
+  assert.equal(stacked.unregisteredAnnotationCount, 1);
+  assert.equal(stacked.annotationCounts["component-mount"], 2);
+  assert.deepEqual(stacked.failures, []);
+  console.log("Widgetbook triage probes passed (four classes, prototype marker/exclusion, missing/duplicate registrations, stacked metadata).");
+}
+
+function main(args) {
+  if (args.includes("--self-test")) return selfTest();
+  if (args.includes("--help")) {
+    console.log("Usage: node tool/design/classify_widgetbook_use_cases.mjs [--json|--check|--self-test]\nRuns the existing Dart analyzer as a syntax parser. Output is on demand; nothing is written to the repository.");
+    return;
+  }
+  if (args.some((arg) => !["--json", "--check"].includes(arg))) throw Error("Unknown argument; use --help");
+  const parsed = spawnSync("dart", ["run", "widgetbook/test/support/triage_inventory.dart"], {
+    cwd: root, encoding: "utf8", maxBuffer: 32 * 1024 * 1024,
+  });
+  if (parsed.status !== 0) throw Error(parsed.stderr || parsed.error?.message || "Dart inventory failed");
+  const routes = JSON.parse(fs.readFileSync(path.join(root, "tool/ui_capture/route_inventory.json"), "utf8"));
+  const targets = new Set(routes.routes.map((route) => route.presentationTarget).filter(Boolean));
+  const result = triage(JSON.parse(parsed.stdout), targets);
+  if (args.includes("--json")) console.log(JSON.stringify(result, null, 2));
+  else {
+    console.log(`Registered Widgetbook cases: ${result.registeredCount}`);
+    for (const name of classes) console.log(`${name}: ${result.counts[name]}`);
+    console.log(`Unclassified: ${result.unclassified}; unclassified annotations: ${result.unclassifiedAnnotations}`);
+    console.log(`Annotation occurrences: ${result.annotationCount}; stacked annotations not emitted by generator: ${result.unregisteredAnnotationCount} (included in --json)`);
+    for (const failure of result.failures) console.error(failure);
+  }
+  if (result.failures.length) process.exitCode = 1;
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  try { main(process.argv.slice(2)); } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
+  }
+}
