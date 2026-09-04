@@ -3,6 +3,7 @@ import {createHash} from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {affectedFunctionTargets} from "../firebase/affected_function_targets.mjs";
 import {planFirebaseDeployGroups} from "../firebase/plan_firebase_deploy_targets.mjs";
 import {
   dormantFirebaseFunctionTargets,
@@ -516,6 +517,7 @@ export function verifyFirebaseDelivery({
   functionTargets,
   allowRuntimeDependencies = false,
   trustedPackageDir,
+  selectAffectedFunctions = false,
 }) {
   const binding = {sourceSha, baseSha, sourceCiRunId, sourceCiRunAttempt};
   validateBinding(binding);
@@ -609,7 +611,20 @@ export function verifyFirebaseDelivery({
     assert(jsonEqual(packagedPackage, boundedFunctionsPackage(sourcePackage)),
       "Packaged Functions package.json is not the bounded lifecycle-safe projection.");
   }
-  return {...deliveryPlan, targets: effectiveSelection.targets};
+  const result = {...deliveryPlan, targets: effectiveSelection.targets};
+  if (selectAffectedFunctions && result.stages.includes("functions")) {
+    const index = result.stages.indexOf("functions");
+    result.functionSelection = affectedFunctionTargets({
+      sourceRoot,
+      sourceSha,
+      baseSha,
+      authorizedTargets: result.targets[index].split(","),
+      fullSnapshot: impactPlan.rebaseline?.cumulativeSnapshot === true ||
+        impactPlan.snapshot?.cumulativeSnapshot === true,
+    });
+    result.targets[index] = result.functionSelection.targets.join(",");
+  }
+  return result;
 }
 
 function parseArgs(argv) {
@@ -657,6 +672,7 @@ function main() {
       provenanceManifestPath: required(values, "provenance-manifest"),
       allowRuntimeDependencies: values["allow-runtime-dependencies"] === "true",
       trustedPackageDir: values["trusted-package-dir"],
+      selectAffectedFunctions: values["affected-functions"] === "true",
     });
   } else {
     throw new Error("Command must be prepare or verify.");

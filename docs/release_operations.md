@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.3.1
-updated: 2026-09-02
+version: 2.4.0
+updated: 2026-09-04
 owner: recursive_audit_loop
 status: active
 ---
@@ -37,9 +37,11 @@ visual-smoke workflows use `macos-26`.
 
 ## Firebase Environment Readiness
 
-The reusable backend Firebase promotion workflow runs the target-aware metadata
-preflight after OIDC authentication and before Node/Java setup, dependency
-installation, Firebase CLI installation, or repeated backend validation.
+The reusable backend Firebase promotion workflow installs its pinned source
+parser without lifecycle scripts and verifies affected targets before cloud
+authentication. The target-aware metadata preflight then runs after OIDC
+authentication and before Functions runtime dependency installation, Firebase
+CLI installation, or any backend mutation.
 Hosting and explicit Remote Config/Extensions operations have separate owners:
 
 ```sh
@@ -61,8 +63,8 @@ Confirmed missing state exits `1`; authentication, authorization, unavailable
 tooling, or malformed metadata exits `2`; invalid invocation exits `64`. All
 non-zero results block deployment. Add a requirement in the same change that
 introduces a new `defineSecret`, TTL-dependent capability, or deploy-time
-project prerequisite. A missing prerequisite must fail before dependency
-installation; do not move this gate into Firebase predeploy hooks.
+project prerequisite. A missing prerequisite must fail before Functions runtime
+dependency installation; do not move this gate into Firebase predeploy hooks.
 
 ## Firebase Functions Deployment Parity
 
@@ -114,7 +116,8 @@ Delivery can still encounter an immutable CI package created before a Function
 became dormant. Package verification accepts only one of two exact target sets:
 all exports recorded by that historical source, or the same exports reduced by
 the current dormant policy. It then returns the reduced set for readiness and
-the current executor strips only the named dormant targets before batching.
+the current executor excludes the named dormant targets before batching;
+promotion may further narrow that authorized set using verified source dependencies.
 Every other missing, added, or unknown exact Function target remains a hard
 failure. This lets the queue drain without rebuilding an old artifact or
 recreating recurring infrastructure.
@@ -296,7 +299,7 @@ The current workflows are:
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
-| `.github/workflows/delivery.yml` | Sole backend delivery entrypoint. Authorizes a successful same-repository `main` CI run and promotes its exact package through dev, staging, and protected production. |
+| `.github/workflows/delivery.yml` | Ordered backend delivery entrypoint. Authorizes a successful same-repository `main` CI run and promotes its exact package through dev and protected production. |
 | `.github/workflows/_firebase-promote.yml` | Reusable environment adapter that verifies provenance before authentication, resumes ordered stages, and waits for deployed Firestore indexes to become ready before dependent stages continue. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
@@ -767,13 +770,38 @@ trial upload. The promoter still refuses every track except `qa`.
 
 ## CD Policy
 
+Staging is refreshed independently on the first day of each month at 02:17 UTC
+(07:47 IST), or manually through `Backend Staging Refresh`. That main-only
+workflow validates a full current snapshot with the Functions, contract/index,
+and rules lanes, then promotes their exact tested package only to staging.
+It does not write the production cursor or block routine releases. Its separate
+workflow lock and the shared per-environment promotion lock prevent overlapping
+staging mutations. Start a fresh refresh instead of partially rerunning it.
+
 Firebase backend delivery is one ordered promotion chain. After a successful
 same-repository `main` push, CI packages only the backend groups authorized by
 the exact impact plan. `Delivery` verifies that CI-produced package and promotes
-the same bytes through `dev`, then `staging`, then `prod`; each environment waits
-for the prior environment to finish. The reusable promotion job attaches the
+the same bytes through `dev`, then protected `prod`; production waits for dev
+to finish. The reusable promotion job attaches the
 matching GitHub Environment, so reviewer protection on `prod` pauses the chain
 without rebuilding or changing the approved artifact.
+
+Functions packages retain their full immutable CI-authorized target set. Before
+promotion, the current control plane derives an execution subset from the exact
+base/source Git objects using TypeScript imports and re-exports. A changed
+module selects each exported function that transitively depends on it; new or
+retargeted entrypoint exports are included. Selection is at module granularity,
+so multiple functions implemented in one file move together. Test-only changes
+can produce a verified Functions no-op without invoking Firebase with an empty
+or broad selector. Every execution plan is recomputed before mutation.
+
+Changes to runtime/dependency/build configuration, global initialization or its
+dependencies, runtime assets, and uncertain module analysis keep the full
+CI-authorized set. Bootstrap, rebaseline, and monthly staging snapshots are
+always full. Dormant targets remain excluded, historical package bytes remain
+unchanged, and the ordered cursor continues to establish the deployed base.
+Out-of-band drift is repaired with an explicit full snapshot, not assumed fixed
+by an incremental release. The job log reports the selected targets and reason.
 
 The backend stages inside each environment are ordered
 `firestore-indexes` → `functions` → `firestore-rules` → `storage-rules`, omitting
@@ -799,6 +827,15 @@ normalization changes no query capability because Firestore's built-in
 single-field index already owns the shape; all other packaged bytes and stages
 remain bound to the original CI authority.
 
+Before each stage, artifact promotion refreshes main and verifies both the
+pinned control-plane commit and package source remain ancestors of it. Ordinary
+ordered artifacts and independent staging snapshots then use the executor's
+explicit older-ref option: an unrelated newer main commit must not interrupt
+an already authorized immutable package. Rebaseline additionally requires exact
+current-main equality at every stage and does not enable that option. Direct
+local deployment keeps the default stale-checkout refusal. This does not permit
+queue skipping, package substitution, or source outside main history.
+
 `Backend Rebaseline` is the exceptional cumulative-snapshot lane for an
 explicitly approved stale-queue recovery. It is manual-only, shares the
 `backend-delivery` concurrency key, and accepts only the exact current `main`
@@ -811,7 +848,7 @@ packages their exact tested output in the rebaseline run; it does not borrow
 or rebuild an older pending backend package.
 
 The resulting immutable package follows the ordinary ordered promotion path
-through `dev`, `staging`, and protected `prod`. Every environment additionally
+through `dev` and protected `prod`. Every environment additionally
 requires the package source to remain the exact live `main` head. Only a
 successful production promotion may publish a normal v4 delivery cursor for
 the current successful `main` CI authority; that cursor supersedes the covered

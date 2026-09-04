@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
@@ -10,6 +11,29 @@ const workflow = (name) => fs.readFileSync(
   path.join(repoRoot, ".github/workflows", name),
   "utf8",
 );
+
+test("staging refresh is monthly or manual, validates its exact snapshot, and cannot advance production", () => {
+  const staging = workflow("backend-staging.yml");
+  assert.match(staging, /schedule:\s+- cron: '17 2 1 \* \*'/);
+  assert.match(staging, /workflow_dispatch:/);
+  assert.doesNotMatch(staging, /workflow_run:|\n  push:|\n  pull_request:/);
+  assert.match(staging, /if: github\.ref == 'refs\/heads\/main'/);
+  assert.match(staging, /group: backend-staging\n  cancel-in-progress: false/);
+  assert.match(staging, /test "\$CONTROL_PLANE_SHA" = "\$SOURCE_SHA"/);
+  assert.match(staging, /test "\$GITHUB_RUN_ATTEMPT" = "1"/);
+  assert.match(staging, /baseSha: \$sourceSha/);
+  assert.match(staging, /snapshot: \{[\s\S]*cumulativeSnapshot: true/);
+  for (const lane of ["functions", "contracts", "firestore-rules"]) {
+    assert.ok(staging.includes(`uses: ./.github/workflows/${lane}-ci.yml`));
+    assert.ok(staging.includes(`needs.${lane}.result == 'success'`));
+  }
+  assert.match(staging, /name: functions-lib-\$\{\{ needs\.authorize\.outputs\.source_sha \}\}-\$\{\{ github\.run_attempt \}\}/);
+  assert.match(staging, /--functions-lib-dir build\/staging\/tested-functions-lib/);
+  assert.match(staging, /name: firebase-delivery-\$\{\{ needs\.authorize\.outputs\.source_sha \}\}-\$\{\{ github\.run_attempt \}\}/);
+  assert.match(staging, /environment: staging/);
+  assert.doesNotMatch(staging, /environment: (?:dev|prod)|backend-delivery-cursor|backend-delivery-drain|contents: write/);
+  assert.equal((staging.match(/uses: \.\/\.github\/workflows\/_firebase-promote.yml/g) ?? []).length, 1);
+});
 
 test("main CI serializes planning and re-covers every failed validation window", () => {
   const ci = workflow("ci.yml");
@@ -122,7 +146,7 @@ test("Delivery keeps the current immutable control plane separate from an older 
   assert.match(delivery, /test "\$\(git rev-parse HEAD\)" = "\$CONTROL_PLANE_SHA"/);
   assert.match(delivery, /git -C "\$SOURCE_CHECKOUT" merge-base --is-ancestor "\$SOURCE_SHA" refs\/remotes\/origin\/main/);
   assert.match(delivery, /package_firebase_delivery\.mjs verify[\s\S]*--source-root build\/delivery\/source-checkout/);
-  assert.equal((delivery.match(/control_plane_sha: \$\{\{ github\.workflow_sha \}\}/g) ?? []).length, 3);
+  assert.equal((delivery.match(/control_plane_sha: \$\{\{ github\.workflow_sha \}\}/g) ?? []).length, 2);
 
   assert.match(promotion, /control_plane_sha:[\s\S]*required: true/);
   assert.match(promotion, /timeout-minutes: 240/);
@@ -466,11 +490,11 @@ test("only the successful finalizer advances and drains the cursor", () => {
   assert.equal((delivery.match(/name: backend-delivery-cursor-v4-/g) ?? []).length, 1);
 });
 
-test("promotion is ordered dev to staging to protected prod", () => {
+test("promotion is ordered dev to protected prod", () => {
   const delivery = workflow("delivery.yml");
   assert.match(delivery, /dev:[\s\S]*environment: dev/);
-  assert.match(delivery, /staging:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: staging/);
-  assert.match(delivery, /prod:[\s\S]*needs: \[authorize, staging\][\s\S]*environment: prod/);
+  assert.doesNotMatch(delivery, /\n  staging:|environment: staging|needs\.staging/);
+  assert.match(delivery, /prod:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: prod/);
 
   const promotion = workflow("_firebase-promote.yml");
   const verifyOffset = promotion.indexOf("Verify artifact provenance");
@@ -507,6 +531,96 @@ test("promotion is ordered dev to staging to protected prod", () => {
     /Resume ordered backend stages[\s\S]*Verify active rules match the exact approved source[\s\S]*check_rules_deployment_drift\.mjs[\s\S]*--project "\$PROJECT_ID"[\s\S]*--repo-root build\/delivery\/source-checkout/,
   );
   assert.doesNotMatch(promotion, /npm (?:--prefix \S+ )?(?:test|run lint|run build)|emulators:exec/);
+});
+
+test("promotion executes the reverified subset and handles empty Functions as a checkpointed no-op", () => {
+  const promotion = workflow("_firebase-promote.yml");
+  assert.match(promotion, /npm ci --ignore-scripts --workspaces=false/);
+  assert.equal((promotion.match(/--affected-functions true/g) ?? []).length, 3);
+  assert.equal((promotion.match(/cmp build\/delivery\/execution-plan.json build\/delivery\/reverified-plan.json/g) ?? []).length, 2);
+  assert.match(promotion, /' build\/delivery\/execution-plan.json\)"/);
+  assert.doesNotMatch(promotion, /' "\$PACKAGE_DIR\/delivery-plan.json"\)"/);
+  assert.match(promotion, /if \[\[ "\$stage" == "functions" && -z "\$target" \]\]; then[\s\S]*verified no-op stage[\s\S]*else[\s\S]*\.\/tool\/deploy_firebase_targets.sh/);
+  assert.match(promotion, /if: \$\{\{ steps.verify.outputs.has_targets == 'true' \}\}/);
+  assert.match(promotion, /\.targets \| any\(startswith\("functions:"\)\)/);
+});
+
+test("ordered artifacts survive main advancing but preserve exact-source and snapshot guards at every stage", () => {
+  const promotion = workflow("_firebase-promote.yml");
+  const loop = promotion.slice(promotion.indexOf("          while true; do"));
+  const boundary = loop.slice(0, loop.indexOf('            deploy_args='));
+  for (const assertion of [
+    'test "$(git rev-parse HEAD)" = "$CONTROL_PLANE_SHA"',
+    'test "$(git -C "$SOURCE_CHECKOUT" rev-parse HEAD)" = "$SOURCE_SHA"',
+    'git -C "$SOURCE_CHECKOUT" fetch origin refs/heads/main:refs/remotes/origin/main --no-tags',
+    'git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$CONTROL_PLANE_SHA" refs/remotes/origin/main',
+    'git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main',
+  ]) assert.ok(boundary.includes(assertion), assertion);
+  assert.match(boundary, /if \[\[ "\$REQUIRE_CURRENT_MAIN" == "true" \]\]; then[\s\S]*test "\$\(git -C "\$SOURCE_CHECKOUT" rev-parse refs\/remotes\/origin\/main\)" = "\$SOURCE_SHA"[\s\S]*export CATCH_DEPLOY_ALLOW_BEHIND=0[\s\S]*else\s+export CATCH_DEPLOY_ALLOW_BEHIND=1/);
+  assert.match(promotion, /REQUIRE_CURRENT_MAIN: \$\{\{ inputs.require_current_main \}\}/);
+  const executor = fs.readFileSync(path.join(repoRoot, "tool/deploy_firebase_targets.sh"), "utf8");
+  assert.match(executor, /CATCH_DEPLOY_ALLOW_BEHIND:-0/);
+  assert.match(executor, /check_deploy_ref.mjs/);
+});
+
+test("the stage guard accepts an advancing main and rejects changed pins or a stale rebaseline", (t) => {
+  const directory = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), "delivery-stage-guard-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const control = path.join(directory, "control");
+  const source = path.join(directory, "source");
+  const remote = path.join(directory, "remote.git");
+  const git = (cwd, ...args) => {
+    const result = spawnSync("git", args, {cwd, encoding: "utf8"});
+    assert.equal(result.status, 0, result.stderr);
+    return result.stdout.trim();
+  };
+  fs.mkdirSync(control);
+  git(control, "init", "-q", "-b", "main");
+  git(control, "config", "user.name", "Delivery test");
+  git(control, "config", "user.email", "delivery-test@example.invalid");
+  fs.writeFileSync(path.join(control, "README"), "approved\n");
+  git(control, "add", ".");
+  git(control, "commit", "-qm", "approved", "--no-verify");
+  const approved = git(control, "rev-parse", "HEAD");
+  git(directory, "clone", "--bare", control, remote);
+  git(control, "remote", "add", "origin", remote);
+  git(directory, "clone", remote, source);
+  git(source, "config", "fetch.prune", "true");
+  const promotion = workflow("_firebase-promote.yml");
+  const loop = promotion.slice(promotion.indexOf("          while true; do"));
+  const guard = loop.slice(
+    loop.indexOf('            test "$(git rev-parse HEAD)"'),
+    loop.indexOf('            deploy_args='),
+  );
+  assert.ok(guard.includes("merge-base --is-ancestor"));
+  const run = (overrides = {}) => spawnSync("bash", ["-c",
+    'set -euo pipefail\n' + guard + '\nprintf "%s" "$CATCH_DEPLOY_ALLOW_BEHIND"\n',
+  ], {
+    cwd: control, encoding: "utf8",
+    env: {...process.env, CONTROL_PLANE_SHA: approved, SOURCE_SHA: approved,
+      SOURCE_CHECKOUT: source, REQUIRE_CURRENT_MAIN: "true", ...overrides},
+  });
+  const initial = run();
+  assert.equal(initial.status, 0, initial.stderr);
+  assert.equal(initial.stdout, "0");
+  fs.writeFileSync(path.join(control, "README"), "unrelated newer UI\n");
+  git(control, "add", ".");
+  git(control, "commit", "-qm", "new UI", "--no-verify");
+  const newer = git(control, "rev-parse", "HEAD");
+  git(control, "push", "origin", "main");
+  git(control, "checkout", "--detach", approved);
+  const ordered = run({REQUIRE_CURRENT_MAIN: "false"});
+  assert.equal(ordered.status, 0, ordered.stderr);
+  assert.equal(ordered.stdout, "1");
+  assert.notEqual(run().status, 0, "rebaseline must remain exactly current main");
+  assert.notEqual(run({REQUIRE_CURRENT_MAIN: "false", CONTROL_PLANE_SHA: newer}).status, 0);
+  assert.notEqual(run({REQUIRE_CURRENT_MAIN: "false", SOURCE_SHA: newer}).status, 0);
+  fs.writeFileSync(path.join(control, "README"), "unmerged workflow\n");
+  git(control, "add", ".");
+  git(control, "commit", "-qm", "unmerged", "--no-verify");
+  const unmerged = git(control, "rev-parse", "HEAD");
+  assert.notEqual(run({REQUIRE_CURRENT_MAIN: "false", CONTROL_PLANE_SHA: unmerged}).status, 0,
+    "a matching checkout pin outside main history must still fail");
 });
 
 test("promotion keeps the verified package immutable and reverifies its deploy copy", () => {
@@ -611,9 +725,9 @@ test("Backend Rebaseline authorizes one exact all-backend snapshot", () => {
 test("Backend Rebaseline promotes in order and advances only a successful current-main prod", () => {
   const rebaseline = workflow("backend-rebaseline.yml");
   assert.match(rebaseline, /dev:[\s\S]*needs: \[authorize, package\][\s\S]*environment: dev/);
-  assert.match(rebaseline, /staging:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: staging/);
-  assert.match(rebaseline, /prod:[\s\S]*needs: \[authorize, staging\][\s\S]*environment: prod/);
-  assert.equal((rebaseline.match(/require_current_main: true/g) ?? []).length, 3);
+  assert.doesNotMatch(rebaseline, /\n  staging:|environment: staging|needs\.staging/);
+  assert.match(rebaseline, /prod:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: prod/);
+  assert.equal((rebaseline.match(/require_current_main: true/g) ?? []).length, 2);
   const finalizer = rebaseline.slice(rebaseline.indexOf("  finalize:"));
   assert.match(finalizer, /needs\.prod\.result == 'success'/);
   assert.match(finalizer, /test "\$GITHUB_RUN_ATTEMPT" = "1"/);

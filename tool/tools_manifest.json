@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-02",
+  "updated": "2026-09-04",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -394,6 +394,36 @@
       }
     },
     {
+      "id": "firebase:affected-function-targets",
+      "category": "firebase",
+      "path": "tool/firebase/affected_function_targets.mjs",
+      "command": "node --test tool/firebase/affected_function_targets.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
+      "impactPaths": [
+        "tool/firebase/affected_function_targets.test.mjs",
+        "tool/ci/package_firebase_delivery.mjs",
+        ".github/workflows/_firebase-promote.yml"
+      ],
+      "description": "Selects the authorized Functions affected by exact committed module dependencies, with full snapshot and conservative fallback behavior.",
+      "checks": [
+        "node --check tool/firebase/affected_function_targets.mjs",
+        "node --test tool/firebase/affected_function_targets.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/firebase/affected_function_targets.test.mjs"
+      }
+    },
+    {
       "id": "ci:firebase-delivery-package",
       "category": "ci",
       "path": "tool/ci/package_firebase_delivery.mjs",
@@ -403,7 +433,8 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
         ]
       },
       "impactPaths": [
@@ -415,14 +446,19 @@
         "functions/src/index.ts",
         "functions/scripts/set-callable-invokers-public.cjs",
         "tool/firebase/list_firebase_function_targets.mjs",
-        "tool/firebase/plan_firebase_deploy_targets.mjs"
+        "tool/firebase/plan_firebase_deploy_targets.mjs",
+        "tool/firebase/affected_function_targets.mjs",
+        "tool/firebase/affected_function_targets.test.mjs"
       ],
-      "description": "Projects the CI-authorized backend into one bounded no-predeploy Firebase package, binding the exact source/base SHAs, source CI run, impact-plan digest, compiled Functions, ordered stages, and permitted targets.",
+      "description": "Projects the CI-authorized backend into one bounded no-predeploy Firebase package, binding the exact source/base SHAs, source CI run, impact-plan digest, compiled Functions, ordered stages, and permitted targets. Promotion derives affected exports from exact Git module dependencies, preserving full snapshot and conservative fallback behavior.",
       "checks": [
         "node --check tool/ci/package_firebase_delivery.mjs",
         "node --test tool/ci/package_firebase_delivery.test.mjs"
       ],
-      "role": "generator"
+      "role": "generator",
+      "alsoCheckIds": [
+        "firebase:affected-function-targets"
+      ]
     },
     {
       "id": "ci:firebase-delivery-workflow",
@@ -443,9 +479,11 @@
         ".github/workflows/delivery.yml",
         ".github/workflows/_firebase-promote.yml",
         "tool/ci/firebase_delivery_workflow.test.mjs",
-        "tool/deploy_firebase_targets.sh"
+        "tool/deploy_firebase_targets.sh",
+        ".github/workflows/backend-staging.yml",
+        ".github/workflows/backend-rebaseline.yml"
       ],
-      "description": "Guards the sole automatic backend-delivery path: every completed CI run safely wakes the cursor queue, workflow-generation-bound successful-attempt authorities reference immutable artifact ids and digests, queue discovery performs bounded verification work, promotion is dev-to-staging-to-protected-prod, and recovery is source-bound.",
+      "description": "Guards the sole automatic backend-delivery path: every completed CI run safely wakes the cursor queue, workflow-generation-bound successful-attempt authorities reference immutable artifact ids and digests, queue discovery performs bounded verification work, promotion is dev-to-protected-prod with an independent monthly staging snapshot, and recovery is source-bound.",
       "checks": [
         "node --check tool/ci/firebase_delivery_workflow.test.mjs",
         "node --test tool/ci/firebase_delivery_workflow.test.mjs"
@@ -458,7 +496,7 @@
           "CI packages one immutable backend from its exact plan and tested Functions",
           "Delivery treats every completed CI trigger as a queue wakeup and trusts only exact artifacts",
           "high-cardinality queue metadata still resolves one cursor and one oldest authority",
-          "promotion is ordered dev to staging to protected prod",
+          "promotion is ordered dev to protected prod",
           "automatic target planning rejects broad and unrelated Firebase products"
         ]
       }
@@ -2776,7 +2814,7 @@
         "contains": [
           "secret runtime IAM fails closed before Firebase can mutate policy",
           "secret metadata classification never returns payload fields",
-          "backend promotion runs readiness before dependency installation"
+          "backend promotion selects targets before credentials and checks readiness before runtime installation"
         ]
       }
     },
