@@ -4600,6 +4600,10 @@
       "safety": "local-build-test",
       "status": "active",
       "description": "Measures platform targets, disjoint edge taps, keyboard and disabled semantics, text reflow, scaled ancestors and pinned floating-navigation typography using production widgets.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "flutter", "flutter-pub"]
+      },
       "checks": [
         "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart"
       ],

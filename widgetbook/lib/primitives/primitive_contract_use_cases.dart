@@ -7352,7 +7352,7 @@ Widget catchCountPillContractStates(BuildContext context) {
       'with-count',
       'focused',
       'semantic-label',
-      'text-scale-truncation',
+      'text-scale-reflow',
     ],
     children: [
       _StateCard(
@@ -7405,7 +7405,7 @@ Widget catchCountPillContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'text-scale-truncation',
+        label: 'text-scale-reflow',
         child: SizedBox(
           width: WidgetbookPreviewLayout.compactControlWidth,
           child: CatchCountPill.label(

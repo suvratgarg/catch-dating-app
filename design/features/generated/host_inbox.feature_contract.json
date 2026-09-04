@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:fcc9b909403c63e3874fb2aac7b252a2f2cbb51f637bcaaaaba16b774f25427f",
+  "resolvedDigest": "sha256:08dc2d4c652c574568b522aed78d2108c1cf696eedc8b1e950aa25788b730d71",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4810,7 +4810,9 @@
               "symbol": "CatchSearchField",
               "file": "lib/core/widgets/catch_search_field.dart",
               "constructors": [
-                "CatchSearchField"
+                "CatchSearchField",
+                "CatchSearchField.expanded",
+                "CatchSearchField.expanding"
               ]
             }
           },
