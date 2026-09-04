@@ -332,7 +332,7 @@ abstract final class CatchSpacing {
   static const double s1 = GeneratedCatchSpacingTokens.s1;
   static const double s2 = GeneratedCatchSpacingTokens.s2;
   static const double s3 = GeneratedCatchSpacingTokens.s3;
-  static const double s4 = GeneratedCatchSpacingTokens.s4;
+  static const double s4 = 32; // Scratch known-bad proof; never merge.
   static const double s5 = GeneratedCatchSpacingTokens.s5;
   static const double s6 = GeneratedCatchSpacingTokens.s6;
   static const double s7 = GeneratedCatchSpacingTokens.s7;
