@@ -1,13 +1,28 @@
 part of 'catch_top_bar.dart';
 
-class CatchTopBarTabBar extends StatefulWidget implements PreferredSizeWidget {
+class CatchTopBarTabBar extends StatefulWidget
+    implements CatchScaledPreferredSize {
   const CatchTopBarTabBar({super.key, required this.tabs, this.controller});
 
   final List<Widget> tabs;
   final TabController? controller;
 
   @override
-  Size get preferredSize => const Size.fromHeight(CatchLayout.topBarTabHeight);
+  Size get preferredSize => Size.fromHeight(
+    CatchIconButton.targetExtentFor(CatchLayout.topBarTabHeight),
+  );
+
+  @override
+  Size preferredSizeFor(BuildContext context) {
+    final style = CatchTextStyles.labelL(context);
+    final lineHeight =
+        MediaQuery.textScalerOf(context).scale(style.fontSize!) *
+        (style.height ?? 1);
+    final height = lineHeight + CatchSpacing.s4;
+    return Size.fromHeight(
+      height > preferredSize.height ? height : preferredSize.height,
+    );
+  }
 
   @override
   State<CatchTopBarTabBar> createState() => _CatchTopBarTabBarState();
@@ -53,17 +68,14 @@ class _CatchTopBarTabBarState extends State<CatchTopBarTabBar> {
 
     if (prefersCupertinoControls() && _controller != null) {
       return SizedBox(
-        height: widget.preferredSize.height,
+        height: widget.preferredSizeFor(context).height,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CatchSpacing.s4,
-            vertical: CatchSpacing.s1,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
           child: CupertinoSlidingSegmentedControl<int>(
             groupValue: _controller!.index,
             backgroundColor: t.raised,
             thumbColor: t.surface,
-            padding: const EdgeInsets.all(CatchSpacing.micro3),
+            padding: EdgeInsets.zero,
             onValueChanged: (index) {
               if (index == null || index == _controller!.index) return;
               _controller!.animateTo(index);
@@ -81,15 +93,29 @@ class _CatchTopBarTabBarState extends State<CatchTopBarTabBar> {
       );
     }
 
-    return TabBar(
-      controller: widget.controller,
-      tabs: widget.tabs,
-      labelColor: t.ink,
-      unselectedLabelColor: t.ink3,
-      indicatorColor: t.primary,
-      indicatorSize: TabBarIndicatorSize.label,
-      labelStyle: CatchTextStyles.labelL(context),
-      unselectedLabelStyle: CatchTextStyles.labelL(context),
+    return SizedBox(
+      height: widget.preferredSizeFor(context).height,
+      child: TabBar(
+        controller: widget.controller,
+        tabs: [
+          for (final tab in widget.tabs)
+            SizedBox(
+              height: widget.preferredSizeFor(context).height,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minWidth: CatchPlatformTokens.minimumInteractiveExtent,
+                ),
+                child: tab,
+              ),
+            ),
+        ],
+        labelColor: t.ink,
+        unselectedLabelColor: t.ink3,
+        indicatorColor: t.primary,
+        indicatorSize: TabBarIndicatorSize.label,
+        labelStyle: CatchTextStyles.labelL(context),
+        unselectedLabelStyle: CatchTextStyles.labelL(context),
+      ),
     );
   }
 }
@@ -103,15 +129,20 @@ Widget _buildCupertinoTabLabel(
   final color = selected ? t.ink : t.ink2;
   final style = CatchTextStyles.labelL(context, color: color);
 
-  return Center(
-    child: DefaultTextStyle(
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      textAlign: TextAlign.center,
-      style: style,
-      child: IconTheme(
-        data: IconThemeData(color: color, size: CatchIcon.sm),
-        child: _tabChild(tab, style),
+  return ConstrainedBox(
+    constraints: BoxConstraints(
+      minWidth: CatchPlatformTokens.minimumInteractiveExtent,
+    ),
+    child: Center(
+      child: DefaultTextStyle(
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: style,
+        child: IconTheme(
+          data: IconThemeData(color: color, size: CatchIcon.sm),
+          child: _tabChild(tab, style),
+        ),
       ),
     ),
   );

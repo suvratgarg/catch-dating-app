@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -17,17 +20,30 @@ class CatchTabRail<T> extends StatelessWidget
     implements CatchPrimaryRail, CatchScaledPreferredSize {
   /// The pinned slot and its content use the same scaled line-box geometry.
   /// The unscaled preferredSize remains the canonical minimum contract.
-  static double heightFor(BuildContext context) {
+  static double heightFor(
+    BuildContext context, {
+    CatchOptionGroupVariant variant = CatchOptionGroupVariant.label,
+  }) {
     final style = CatchTextStyles.tabLabel(context);
     final lineHeight =
         MediaQuery.textScalerOf(context).scale(style.fontSize!) * style.height!;
     final contentHeight = lineHeight + CatchSpacing.s4 + CatchSpacing.micro2;
     final gridHeight =
         (contentHeight / CatchSpacing.s1).ceil() * CatchSpacing.s1;
-    return gridHeight < CatchLayout.tabRailHeight
-        ? CatchLayout.tabRailHeight
-        : gridHeight;
+    final inset = variant == CatchOptionGroupVariant.operational
+        ? CatchSpacing.s2
+        : 0.0;
+    return math.max(gridHeight, minimumHeight) + inset;
   }
+
+  static double get minimumHeight => math.max(
+    CatchLayout.tabRailHeight,
+    CatchPlatformTokens.minimumInteractiveExtent,
+  );
+
+  static double minimumHeightFor(CatchOptionGroupVariant variant) =>
+      minimumHeight +
+      (variant == CatchOptionGroupVariant.operational ? CatchSpacing.s2 : 0);
 
   const CatchTabRail({
     super.key,
@@ -57,11 +73,11 @@ class CatchTabRail<T> extends StatelessWidget
   final EdgeInsetsGeometry contentPadding;
 
   @override
-  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+  Size get preferredSize => Size.fromHeight(minimumHeightFor(variant));
 
   @override
   Size preferredSizeFor(BuildContext context) =>
-      Size.fromHeight(CatchTabRail.heightFor(context));
+      Size.fromHeight(CatchTabRail.heightFor(context, variant: variant));
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +91,7 @@ class CatchTabRail<T> extends StatelessWidget
             ? const EdgeInsets.symmetric(horizontal: CatchSpacing.s4)
             : EdgeInsets.zero,
         child: SizedBox(
-          height: heightFor(context),
+          height: heightFor(context, variant: variant),
           child: DecoratedBox(
             decoration: operational
                 ? BoxDecoration(
@@ -127,7 +143,7 @@ class CatchTabControllerRail<T> extends StatelessWidget
   final Key? groupKey;
 
   @override
-  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
 
   @override
   Size preferredSizeFor(BuildContext context) =>

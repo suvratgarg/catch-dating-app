@@ -147,8 +147,6 @@ class _CatchButtonState extends State<CatchButton> {
     final transitionDuration = reduceMotion
         ? CatchMotion.none
         : CatchMotion.fast;
-    final reflowLabel =
-        widget.fullWidth && (mediaQuery?.textScaler.scale(1) ?? 1) >= 1.4;
     final radius = widget.shape == CatchButtonShape.pill
         ? CatchRadius.pill
         : CatchRadius.md;
@@ -199,7 +197,7 @@ class _CatchButtonState extends State<CatchButton> {
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: spec.padding,
-            vertical: reflowLabel ? CatchSpacing.s2 : 0,
+            vertical: CatchSpacing.s2,
           ),
           child: AnimatedSwitcher(
             duration: transitionDuration,
@@ -213,7 +211,7 @@ class _CatchButtonState extends State<CatchButton> {
                     icon: widget.icon,
                     gap: spec.gap,
                     fullWidth: widget.fullWidth,
-                    allowMultiline: reflowLabel,
+                    allowMultiline: true,
                     textStyle: spec.textStyle(context),
                   ),
           ),
@@ -222,10 +220,7 @@ class _CatchButtonState extends State<CatchButton> {
     );
 
     final decoratedButton = ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: spec.height,
-        maxHeight: reflowLabel ? double.infinity : spec.height,
-      ),
+      constraints: BoxConstraints(minHeight: spec.height),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: palette.background,
@@ -235,24 +230,7 @@ class _CatchButtonState extends State<CatchButton> {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(radius),
-          child: widget.isInteractive
-              ? Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: _enabled ? widget.onPressed : null,
-                    onHover: (hovered) => setState(() => _hovered = hovered),
-                    onFocusChange: (focused) =>
-                        setState(() => _focused = focused),
-                    onHighlightChanged: (pressed) =>
-                        setState(() => _pressed = pressed),
-                    splashColor: palette.foreground.withValues(
-                      alpha: CatchOpacity.controlOverlayPressed,
-                    ),
-                    highlightColor: Colors.transparent,
-                    child: buttonContent,
-                  ),
-                )
-              : buttonContent,
+          child: buttonContent,
         ),
       ),
     );
@@ -273,7 +251,38 @@ class _CatchButtonState extends State<CatchButton> {
       button: widget.isInteractive,
       enabled: widget.isInteractive ? _enabled : null,
       label: widget.semanticsLabel ?? widget.label,
-      child: widget.fullWidth
+      child: widget.isInteractive
+          ? Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _enabled ? widget.onPressed : null,
+                onHover: (hovered) => setState(() => _hovered = hovered),
+                onFocusChange: (focused) => setState(() => _focused = focused),
+                onHighlightChanged: (pressed) =>
+                    setState(() => _pressed = pressed),
+                // Feedback is painted on the visual button, not its invisible
+                // target padding. There is only one gesture/focus owner.
+                splashFactory: NoSplash.splashFactory,
+                highlightColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                borderRadius: BorderRadius.circular(radius),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: CatchPlatformTokens.minimumInteractiveExtent,
+                    minWidth: CatchPlatformTokens.minimumInteractiveExtent,
+                  ),
+                  child: Align(
+                    widthFactor: widget.fullWidth ? null : 1,
+                    heightFactor: 1,
+                    child: widget.fullWidth
+                        ? SizedBox(width: double.infinity, child: child)
+                        : child,
+                  ),
+                ),
+              ),
+            )
+          : widget.fullWidth
           ? SizedBox(width: double.infinity, child: child)
           : child,
     );
@@ -305,7 +314,7 @@ class CatchButtonLabel extends StatelessWidget {
     final iconWidget = icon;
     final labelWidget = Text(
       label,
-      maxLines: allowMultiline ? 2 : 1,
+      maxLines: allowMultiline ? null : 1,
       overflow: allowMultiline ? TextOverflow.visible : TextOverflow.ellipsis,
       textAlign: TextAlign.center,
       style: textStyle.copyWith(color: color),
@@ -323,10 +332,7 @@ class CatchButtonLabel extends StatelessWidget {
           ),
           SizedBox(width: gap),
         ],
-        if (allowMultiline && fullWidth)
-          Expanded(child: labelWidget)
-        else
-          labelWidget,
+        if (allowMultiline) Flexible(child: labelWidget) else labelWidget,
       ],
     );
 

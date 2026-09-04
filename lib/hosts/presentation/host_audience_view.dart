@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_scaled_preferred_size.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -65,7 +65,8 @@ class HostAudienceStateScaffold extends StatelessWidget {
   }
 }
 
-class HostAudienceTabRail extends StatelessWidget implements CatchPrimaryRail {
+class HostAudienceTabRail extends StatelessWidget
+    implements CatchPrimaryRail, CatchScaledPreferredSize {
   const HostAudienceTabRail({
     super.key,
     required this.selected,
@@ -85,7 +86,11 @@ class HostAudienceTabRail extends StatelessWidget implements CatchPrimaryRail {
   final ValueChanged<HostAudienceView> onChanged;
 
   @override
-  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+
+  @override
+  Size preferredSizeFor(BuildContext context) =>
+      Size.fromHeight(CatchTabRail.heightFor(context));
 
   @override
   Widget build(BuildContext context) {

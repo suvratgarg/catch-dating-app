@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -136,6 +139,11 @@ class CatchIconButton extends StatefulWidget {
   static const double defaultSize = CatchLayout.iconButtonSize;
   static const double navSize = CatchLayout.iconButtonNavSize;
 
+  /// Layout and hit extent, distinct from the visible circle's diameter.
+  /// Ancestor chrome must reserve this extent rather than [navSize].
+  static double targetExtentFor(double visualExtent) =>
+      math.max(visualExtent, CatchPlatformTokens.minimumInteractiveExtent);
+
   final Widget child;
   final VoidCallback? onTap;
   final CatchIconButtonVariant variant;
@@ -150,7 +158,7 @@ class CatchIconButton extends StatefulWidget {
   /// Override border color. Defaults to the variant's handoff border.
   final Color? borderColor;
 
-  /// Diameter of the button circle. Defaults to [defaultSize].
+  /// Visible circle diameter. Cannot reduce the platform minimum hit area.
   final double size;
 
   /// Override shape radius. Defaults to [CatchRadius.pill] (full circle).
@@ -170,6 +178,8 @@ class CatchIconButton extends StatefulWidget {
 
 class _CatchIconButtonState extends State<CatchIconButton> {
   bool _focused = false;
+  bool _hovered = false;
+  bool _pressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -182,6 +192,7 @@ class _CatchIconButtonState extends State<CatchIconButton> {
     final borderColor = widget.borderColor;
     final disabled = widget.disabled;
     final size = widget.size;
+    final targetExtent = CatchIconButton.targetExtentFor(size);
     final radius = widget.borderRadius ?? CatchRadius.pill;
     final palette = _IconBtnPalette.from(
       tokens: t,
@@ -226,15 +237,20 @@ class _CatchIconButtonState extends State<CatchIconButton> {
       child: CatchSurface(
         width: size,
         height: size,
-        backgroundColor: palette.background,
+        backgroundColor: enabled && (_hovered || _pressed)
+            ? Color.alphaBlend(
+                palette.foreground.withValues(
+                  alpha: _pressed
+                      ? CatchOpacity.controlOverlayPressed
+                      : CatchOpacity.controlOverlayHover,
+                ),
+                palette.background,
+              )
+            : palette.background,
         radius: radius,
         borderSpec: border,
         boxShadow: _focused ? CatchElevation.focusRing(t) : palette.shadow,
         padding: EdgeInsets.zero,
-        onTap: enabled ? onTap : null,
-        onFocusChange: (focused) {
-          if (_focused != focused) setState(() => _focused = focused);
-        },
         child: Center(
           child: IconTheme.merge(data: iconTheme, child: widget.child),
         ),
@@ -248,18 +264,36 @@ class _CatchIconButtonState extends State<CatchIconButton> {
             child: CatchCountBadge(count: count, child: button),
           );
     final message = widget.tooltip;
-    if (message == null || message.isEmpty) return countedButton;
-    return Semantics(
+    final target = Semantics(
       button: true,
       enabled: enabled,
       label: message,
       liveRegion: widget.liveRegion,
-      child: Tooltip(
-        message: message,
-        excludeFromSemantics: true,
-        child: countedButton,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: enabled ? onTap : null,
+          onHover: (hovered) => setState(() => _hovered = hovered),
+          onHighlightChanged: (pressed) => setState(() => _pressed = pressed),
+          // The visible surface is opaque. Paint feedback there rather than
+          // letting ink disappear behind it or fill only the target padding.
+          splashFactory: NoSplash.splashFactory,
+          hoverColor: Colors.transparent,
+          focusColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          onFocusChange: (focused) {
+            if (_focused != focused) setState(() => _focused = focused);
+          },
+          borderRadius: BorderRadius.circular(radius),
+          child: SizedBox.square(
+            dimension: targetExtent,
+            child: Center(child: countedButton),
+          ),
+        ),
       ),
     );
+    if (message == null || message.isEmpty) return target;
+    return Tooltip(message: message, excludeFromSemantics: true, child: target);
   }
 }
 

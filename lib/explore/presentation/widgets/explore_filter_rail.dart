@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_scaled_preferred_size.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
@@ -20,7 +21,8 @@ import 'package:flutter/material.dart';
 ///
 /// Secondary applied-filter chips are deliberately separate so they scroll
 /// with the feed instead of extending the pinned viewport obstruction.
-class ExploreFilterRail extends StatelessWidget implements CatchPrimaryRail {
+class ExploreFilterRail extends StatelessWidget
+    implements CatchPrimaryRail, CatchScaledPreferredSize {
   const ExploreFilterRail({
     super.key,
     this.filters = const ExploreFilterSelection(),
@@ -55,7 +57,11 @@ class ExploreFilterRail extends StatelessWidget implements CatchPrimaryRail {
   final bool showJoinedOnly;
 
   @override
-  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+
+  @override
+  Size preferredSizeFor(BuildContext context) =>
+      Size.fromHeight(CatchTabRail.heightFor(context));
 
   static List<CatchOption<ExploreTimeFilter>> _timeOptions(
     ExploreDateStripState state,

@@ -63,23 +63,20 @@ void main() {
         ),
       );
 
-      final chipOutline = find.byKey(
-        const ValueKey('catch-field-choice-Hindi-focus-outline'),
-      );
-      Focus.of(tester.element(chipOutline)).requestFocus();
+      final chip = find.byKey(const ValueKey('catch-field-choice-Hindi'));
+      Focus.of(tester.element(find.text('Hindi'))).requestFocus();
       await tester.pump();
-      expect(
-        find.descendant(
-          of: chipOutline,
-          matching: find.byWidgetPredicate(
-            (widget) =>
-                widget is CustomPaint &&
-                widget.painter.runtimeType.toString() ==
-                    '_CatchFieldFocusOutlinePainter',
-          ),
-        ),
-        findsOneWidget,
-      );
+      final chipDecoration =
+          tester
+                  .widget<AnimatedContainer>(
+                    find.descendant(
+                      of: chip,
+                      matching: find.byType(AnimatedContainer),
+                    ),
+                  )
+                  .foregroundDecoration
+              as BoxDecoration;
+      expect(chipDecoration.border?.top.width, CatchFieldTokens.focusRingWidth);
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
       expect(selected, {'English', 'Hindi'});
@@ -103,7 +100,7 @@ void main() {
       );
       expect(
         tester.getSize(stepperOutline),
-        const Size.square(CatchFieldTokens.stepperHitExtent),
+        Size.square(CatchFieldRepeatButton.hitExtent),
       );
       expect(
         tester.getSize(

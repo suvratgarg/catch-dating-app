@@ -204,7 +204,7 @@ void main() {
                 tooltip: 'Search forms',
               ),
             ),
-            primaryRail: _TestPrimaryRail(height: CatchLayout.tabRailHeight),
+            primaryRail: _TestPrimaryRail(),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
                 page: CatchRootScreenPageScrollView.standard(
@@ -224,12 +224,13 @@ void main() {
         find.byType(CatchScreenTopBar),
       );
       final expectedContentHeight =
-          CatchIconButton.navSize + CatchInsets.primaryRailTitleBlock.vertical;
+          CatchIconButton.targetExtentFor(CatchIconButton.navSize) +
+          CatchInsets.primaryRailTitleBlock.vertical;
       expect(titleBar.contentPadding, CatchInsets.primaryRailTitleBlock);
       expect(titleBar.applySafeArea, isFalse);
       expect(titleBar.leadingType, CatchTopBarLeading.none);
       expect(titleBar.height, expectedContentHeight);
-      expect(titleBar.height, lessThan(CatchLayout.topBarHeight));
+      expect(titleBar.height, lessThanOrEqualTo(CatchLayout.topBarHeight));
 
       await tester.tap(find.byIcon(CatchIcons.search));
       await tester.pump(CatchMotion.base);
@@ -252,7 +253,7 @@ void main() {
           theme: AppTheme.light,
           home: const CatchRootScreenScaffold.withPrimaryRail(
             header: CatchRootScreenHeader.title(title: 'Workspace'),
-            primaryRail: _TestPrimaryRail(height: 48),
+            primaryRail: _TestPrimaryRail(height: 52),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
                 page: CatchRootScreenPageScrollView.standard(
@@ -271,10 +272,10 @@ void main() {
         error.toString(),
         contains(
           'CatchRootScreenScaffold requires a '
-          '${CatchLayout.tabRailHeight}-point primary rail.',
+          '${CatchTabRail.minimumHeight}-point primary rail.',
         ),
       );
-      expect(error.toString(), contains('declared a preferred height of 48.0'));
+      expect(error.toString(), contains('declared a preferred height of 52.0'));
       expect(
         error.toString(),
         contains('screens must not define local rail geometry'),
@@ -290,7 +291,7 @@ void main() {
         theme: AppTheme.light,
         home: const CatchRootScreenScaffold.withPrimaryRail(
           header: CatchRootScreenHeader.title(title: 'Workspace'),
-          primaryRail: _TestPrimaryRail(height: CatchLayout.tabRailHeight),
+          primaryRail: _TestPrimaryRail(),
           body: CatchRootScreenBody.single(
             page: CatchRootScreenPageSpec.scroll(page: _TestPageOwner()),
           ),
@@ -346,10 +347,7 @@ Widget _wrap({
               selected: 0,
               options: [CatchOption(value: 0, label: 'People')],
             )
-          : const _TestPrimaryRail(
-              key: ValueKey('root-page-rail'),
-              height: CatchLayout.tabRailHeight,
-            ),
+          : const _TestPrimaryRail(key: ValueKey('root-page-rail')),
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(page: page),
       ),
@@ -362,7 +360,7 @@ Widget _wrapEmbeddedViewport() {
     theme: AppTheme.light,
     home: const CatchRootScreenScaffold.withPrimaryRail(
       header: CatchRootScreenHeader.title(title: 'Workspace'),
-      primaryRail: _TestPrimaryRail(height: CatchLayout.tabRailHeight),
+      primaryRail: _TestPrimaryRail(),
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
           page: CatchRootScreenPageScrollView.embeddedViewport(
@@ -376,15 +374,16 @@ Widget _wrapEmbeddedViewport() {
 }
 
 class _TestPrimaryRail extends StatelessWidget implements CatchPrimaryRail {
-  const _TestPrimaryRail({super.key, required this.height});
+  const _TestPrimaryRail({super.key, this.height});
 
-  final double height;
-
-  @override
-  Size get preferredSize => Size.fromHeight(height);
+  final double? height;
 
   @override
-  Widget build(BuildContext context) => SizedBox(height: height);
+  Size get preferredSize =>
+      Size.fromHeight(height ?? CatchTabRail.minimumHeight);
+
+  @override
+  Widget build(BuildContext context) => SizedBox(height: preferredSize.height);
 }
 
 class _TestPageOwner extends StatelessWidget

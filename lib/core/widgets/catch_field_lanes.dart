@@ -368,7 +368,7 @@ class CatchFieldTrailing extends StatelessWidget {
     topPadding: topPadding,
     builder: (context) => IconButton(
       tooltip: tooltip,
-      visualDensity: VisualDensity.compact,
+      visualDensity: VisualDensity.standard,
       padding: EdgeInsets.zero,
       constraints: CatchControlMetrics.squareConstraints(CatchSpacing.s6),
       style: IconButton.styleFrom(
@@ -960,11 +960,7 @@ class _CatchFieldCommitButtonState extends State<CatchFieldCommitButton> {
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       side: BorderSide(color: widget.primary ? Colors.transparent : t.line2),
       shape: const StadiumBorder(),
-      textStyle: CatchTextStyles.fieldRowTitle(context).copyWith(
-        fontSize: CatchFieldTokens.actionButtonFontSize,
-        fontWeight: FontWeight.w600,
-        height: 1,
-      ),
+      textStyle: CatchTextStyles.control(context),
       leading: widget.loading
           ? ExcludeSemantics(
               child: SizedBox.square(

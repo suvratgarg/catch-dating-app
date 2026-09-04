@@ -23,6 +23,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_scaled_preferred_size.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
@@ -588,7 +589,7 @@ class _HostAuthRequiredSliver extends StatelessWidget {
 }
 
 class HostMessagingWorkspaceRail extends StatelessWidget
-    implements CatchPrimaryRail {
+    implements CatchPrimaryRail, CatchScaledPreferredSize {
   const HostMessagingWorkspaceRail({
     super.key,
     required this.selected,
@@ -599,7 +600,11 @@ class HostMessagingWorkspaceRail extends StatelessWidget
   final ValueChanged<HostMessagingWorkspace>? onChanged;
 
   @override
-  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+
+  @override
+  Size preferredSizeFor(BuildContext context) =>
+      Size.fromHeight(CatchTabRail.heightFor(context));
 
   @override
   Widget build(BuildContext context) => CatchTabRail<HostMessagingWorkspace>(
