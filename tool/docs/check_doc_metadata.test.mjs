@@ -297,3 +297,26 @@ test("CLI retirement protects ungoverned docs and handles dirty, committed, and 
     fs.rmSync(repo, {recursive: true, force: true});
   }
 });
+
+test("references handle nested and escaped destinations, root literals, and fenced samples", () => {
+  const refs = documentReferences("docs/guide.md", [
+    "[other](image.png) [one](notes/a(b(c)).md) [two](<notes/a(b).md>)",
+    String.raw`[escaped](notes/a\(b\).md "Title")`,
+    "`AGENTS.md` and `README.md`",
+    "```md",
+    "[Sample](old.md) and `docs/old.md`",
+    "```",
+    "[real]: <notes/a(b).md> \"Title\"",
+  ].join("\n"), new Set(["AGENTS.md", "README.md", "docs/README.md"]));
+  assert.deepEqual(refs, [
+    {path: "docs/notes/a(b(c)).md", line: 1},
+    {path: "docs/notes/a(b).md", line: 1},
+    {path: "docs/notes/a(b).md", line: 2},
+    {path: "AGENTS.md", line: 3},
+    {path: "docs/README.md", line: 3},
+    {path: "docs/notes/a(b).md", line: 7},
+  ]);
+  assert.equal(retiredDocumentReferences({
+    paths: ["docs/guide.md"], readSource: () => "Read `AGENTS.md`.", retiredPaths: ["AGENTS.md"],
+  }).length, 1);
+});
