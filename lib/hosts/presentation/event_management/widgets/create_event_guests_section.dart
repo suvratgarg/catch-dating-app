@@ -54,7 +54,22 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
   @override
   void initState() {
     super.initState();
+    _showBookingDetails = _sourceNeedsCorrection;
     _accordion.addListener(_handleAccordionChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant CreateEventGuestsSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_sourceNeedsCorrection) _showBookingDetails = true;
+  }
+
+  bool get _sourceNeedsCorrection {
+    if (widget.autovalidateMode == AutovalidateMode.disabled) return false;
+    final value = widget.externalEventUrlController.text.trim();
+    if (value.isEmpty) return false;
+    final uri = Uri.tryParse(value);
+    return uri == null || uri.scheme != _secureUrlScheme || uri.host.isEmpty;
   }
 
   @override
@@ -161,9 +176,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
       CatchSection.fieldRows(
         children: [
           Semantics(
-            expanded:
-                _showBookingDetails ||
-                widget.autovalidateMode != AutovalidateMode.disabled,
+            expanded: _showBookingDetails,
             child: CatchField.action(
               key: const ValueKey('host.create_event.booking_details'),
               title: context.l10n.hostsCreateEventExternalDetailsTitle,
@@ -177,8 +190,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
                   setState(() => _showBookingDetails = !_showBookingDetails),
             ),
           ),
-          if (_showBookingDetails ||
-              widget.autovalidateMode != AutovalidateMode.disabled) ...[
+          if (_showBookingDetails) ...[
             CatchField.choices<ExternalBookingProvider>(
               key: CreateEventFormKeys.externalBookingProvider,
               title: context.l10n.hostsEventDetailsStepExternalProviderTitle,
