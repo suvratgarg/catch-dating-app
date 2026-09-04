@@ -1077,6 +1077,26 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Layout',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchDivider',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchDividerCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFormReviewBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchFormReviewBodyCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFormStepBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(

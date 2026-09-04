@@ -1012,9 +1012,14 @@
         "tool/design/check_widget_classification.mjs",
         "tool/design/generate_widget_classification.mjs",
         "tool/design/component_concepts.mjs",
-        "tool/design/component_concepts.test.mjs"
+        "tool/design/component_concepts.test.mjs",
+        "tool/design/check_widgetbook_golden_coverage.mjs",
+        "tool/design/check_widgetbook_golden_coverage.test.mjs",
+        "widgetbook/test/support/golden_coverage_waivers.json",
+        "widgetbook/test/support/triage_inventory.dart",
+        "test/goldens/**"
       ],
-      "instruction": "Keep docs/widget_catalog.md as current inventory only. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook and catalog coverage; a widget moved into or added under lib/core/widgets must also use the canonical Catch* namespace and have a component contract. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Update affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
+      "instruction": "Keep docs/widget_catalog.md as current inventory only. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook and catalog coverage; a widget moved into or added under lib/core/widgets must also use the canonical Catch* namespace and have a component contract. Before catch_ui extraction, every public Catch* class under lib/core/widgets must map to a registered core Widgetbook golden id or a current owner-and-expiry waiver, with no more than 20 live waivers. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Update affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
       "sunset_when": [
         "A generated widget inventory or CI check makes catalog drift visible automatically"
       ],
@@ -1038,6 +1043,11 @@
           "tool": "docs:metadata",
           "stage": "scanner-gate",
           "docAnchor": "docs/widget_catalog.md#maintenance-contract"
+        },
+        {
+          "tool": "design:golden-coverage",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/plans/ui_system_blueprint_and_conformance_audit.md#d3-goldens-are-derived-from-the-widgetbook-corpus-and-coverage-is-whole-corpus"
         },
         {
           "stage": "manual",
@@ -3328,6 +3338,6 @@
       ]
     }
   },
-  "version": "2.11.1",
-  "updated": "2026-08-30"
+  "version": "2.12.0",
+  "updated": "2026-09-04"
 }
