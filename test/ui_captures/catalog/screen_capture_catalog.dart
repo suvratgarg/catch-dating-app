@@ -10123,6 +10123,35 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'host_home_events_past',
+    routeIds: const <String>['hostEventsScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ..._hostOperationsProviderOverrides(
+        hostedClubs: [_hostEventsReferenceClub],
+        ownedClubs: [_hostEventsReferenceClub],
+        clubEvents: {
+          _hostEventsReferenceClub.id: AsyncData<List<Event>>(
+            _hostEventsReferenceEvents,
+          ),
+        },
+      ),
+    ],
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation: '/host/events',
+      activeIndex: 1,
+      child: HostEventsScreen(
+        initialOrganizerId: _hostEventsReferenceClub.id,
+        now: _hostEventsReferenceNow,
+      ),
+    ),
+    drive: (tester) async {
+      await tester.tap(find.text('Past'));
+      await pumpFeatureUi(tester);
+    },
+  ),
+  ScreenCaptureEntry(
     id: 'host_home_switcher_cohost',
     routeIds: const <String>['hostHomeScreen'],
     device: CaptureDevice.reviewTall,

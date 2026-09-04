@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.10.0
-updated: 2026-09-03
+version: 1.11.0
+updated: 2026-09-04
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -179,7 +179,8 @@ The Audience review promotes these selected metrics into
 `design/tokens/catch.tokens.json`, generated as immutable iOS/Android profiles.
 Numbers below are size / line height / weight in logical units. They are Catch
 composition choices informed by the 2026-09-03 platform inventory, **not a claim
-that every value is a native default**. iOS Caption 1 informs context; Material
+that every value is a native default**. iOS Footnote informs context (Caption 1
+is 12/16, not 13/18); Material
 Title Medium and Body Small inform Android names/context. Compact 16/24 reading
 text and zero tracking are deliberate Catch choices.
 
@@ -196,7 +197,7 @@ text and zero tracking are deliberate Catch choices.
 | Prominent quantity | 24 / 30 / 600 | 24 / 32 / 600 |
 | Editable field value | 16 / 24 / 500 | 16 / 24 / 500 |
 | Field caption/support | 13 / 18 / 500 | 12 / 16 / 500 |
-| Minimum command/summary hit area | 44 | 48 |
+| Minimum interactive hit area | 44 | 48 |
 
 `CatchPlatformTokens` selects the same `defaultTargetPlatform` used by
 `CatchFonts`. Flutter treats that native target as a compiler constant in
@@ -213,7 +214,7 @@ Field caption and value extents derive from typography, so a scale change also
 updates disclosure and save-status alignment.
 
 Use `CatchPersonRow.directory` for identity plus rich metadata/context/status;
-`CatchRecordRow` for historical evidence or provenance; and `CatchField` for an
+`CatchRecordRow` for activity/event inventory, historical evidence or provenance; and `CatchField` for an
 editable value or setting. Record text has natural height. Status moves below
 content at enlarged text sizes. `CatchBadge.status` is a passive rounded rectangle
 with readable categorical tones. `CatchOptionGroupVariant.summary` is a tappable
@@ -221,6 +222,57 @@ rounded rectangle with selected semantics; `CatchButton.command` owns the paired
 sort/filter action treatment. Color communicates positive, attention, or affinity
 meaning and does not introduce a brand accent. These recipes supersede the
 feature-local Audience preview typography and palette.
+
+Action and CTA labels wrap naturally at the selected platform font size.
+`CatchButton.selection` is the explicit compact-chrome exception for a current
+value (for example, the selected city): one visible line with ellipsis, full
+value in semantics and tooltip, and the same native target minimum. It never
+shrinks text. Do not use this constructor to truncate commands or form labels.
+Field trailing value plus custom metadata wraps inside its allocated lane;
+disclosure glyphs remain fixed and custom actions retain their full hit targets.
+
+### 5.2 Native reference and Catch adoption boundary
+
+`design/tokens/catch.tokens.json` separates three authorities:
+
+1. `platformReference` preserves researched native defaults and source identity,
+   units and version. Pinned upstream Material inputs and focused Apple/native
+   acceptance inputs live in `design/tokens/platform_sources/`. They are source
+   dependencies, not runtime theme skins or an app-adoption ledger.
+2. Semantic `typography`, `interaction`, `layout`, `motion` and accessibility
+   policies select Catch's authored choices. A native reference is not permission
+   to silently replace the ratified 11-role reading profile, brand typography,
+   activity palette, 20-point body gutter or floating navigation. Every researched
+   domain has an explicit adoption, reference-only or runtime-owned decision.
+3. Shared primitives consume generated semantic values. Functional text and
+   Material fallback text use the same platform profiles. Compact visual controls
+   can remain smaller than their 44/48 hit areas, but padding must actually
+   respond to input and neighboring targets must not overlap.
+
+The floating navigation label has its own generated `navigationLabel` role
+(13/13, weight 600, zero tracking on both platforms). It deliberately does not
+inherit button typography: changing a generic control must not resize the
+approved selected navigation pill.
+
+Safe areas, keyboards, platform clock format, text scaling, reduced-motion
+preferences, window constraints and OS font optics remain runtime-owned. Device
+snapshot coordinates, every Dynamic Type category's measured font size, native
+UIKit control snapshots and asset pixel grids are not portable layout constants.
+The runtime must adapt rather than select hardcoded phone-specific offsets.
+
+`design:platform-token-coverage` independently verifies pinned source values and
+provenance, rejects missing reference leaves and unclassified domains, and checks
+semantic profile completeness and functional-style consumption. Its mutation
+tests must fail for deleted values, changed numbers, wrong units and wrong
+platform provenance. Generator freshness alone is not adoption evidence.
+Measured widget tests separately cover real hit regions, keyboard behavior,
+large-text reflow, reduced motion and pinned rail ancestors in both apps'
+shared component system.
+
+Events is the activity-led inventory adopter: Upcoming groups by day; Past groups
+by month/year. Both use `CatchRecordRow` facts and whole-row navigation. The
+canonical root owns its pinned rail, body gutters and navigation obstruction;
+the feature supplies grouping and meaningful copy, not another geometry recipe.
 
 
 ---
@@ -400,9 +452,10 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   and clearance to its fill-remaining child. Feature screens do not
   reconstruct title gaps, page gutters, terminal navigation clearance,
   responsive content lanes, or state-viewport placement. Primary-rail roots use a
-  8 pt title-to-rail handoff, 44 pt rail, and the same 16 pt body start.
+  8 pt title-to-rail handoff, a minimum 44 pt iOS / 48 dp Android rail that
+  grows with text scale, and the same 16 pt body start.
   `CatchInsets.pageBody`, `CatchInsets.primaryRailTitleBlock`, and
-  `CatchLayout.tabRailHeight` own those values. Full bleed removes only the
+  `CatchTabRail.minimumHeight` / `heightFor` own those values. Full bleed removes only the
   outer inset; named nested lanes such as `CatchInsets.chatListGutter` keep
   Consumer Chats and Host Inbox on the same 20 pt horizontal rhythm.
 - Every full-screen composition terminates in

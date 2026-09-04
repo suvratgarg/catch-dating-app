@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
 import 'package:catch_dating_app/core/responsive/breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -92,6 +93,11 @@ class CatchTopBarActionGroup extends StatelessWidget {
   const CatchTopBarActionGroup({super.key, required this.actions});
 
   final List<Widget> actions;
+
+  double get minimumWidth => actions.isEmpty
+      ? 0
+      : CatchPlatformTokens.minimumInteractiveExtent * actions.length +
+            CatchSpacing.s2 * (actions.length - 1);
 
   @override
   Widget build(BuildContext context) {
@@ -450,9 +456,10 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       textHeight += CatchLayout.topBarLargeTextActionReserve;
     }
 
-    final contentHeight = textHeight > CatchIconButton.navSize
-        ? textHeight
-        : CatchIconButton.navSize;
+    final actionExtent = CatchIconButton.targetExtentFor(
+      CatchIconButton.navSize,
+    );
+    final contentHeight = textHeight > actionExtent ? textHeight : actionExtent;
     // Text layout can round a scaled glyph run slightly above the nominal
     // style height, so reserve the next logical pixel in the preferred size.
     final requiredHeight = (contentHeight + resolvedPadding.vertical)
@@ -618,7 +625,21 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
       final bar? => bar.preferredSize.height,
       null => 0.0,
     };
-    return Size.fromHeight((isLarge ? largeHeight : height) + bottomHeight);
+    return Size.fromHeight(contentHeightFor(context) + bottomHeight);
+  }
+
+  double contentHeightFor(BuildContext context) {
+    final original = isLarge ? largeHeight : height;
+    if (search == null) return original;
+    final searchHeight = CatchSearchField.heightFor(
+      context,
+      visualExtent: search!.collapsedExtent,
+    );
+    final padding =
+        contentPadding?.resolve(Directionality.of(context)).vertical ??
+        (isLarge ? CatchSpacing.s3 : 0);
+    final required = searchHeight + padding;
+    return required > original ? required : original;
   }
 
   bool get isLarge => large ?? (kicker != null && kicker!.isNotEmpty);
@@ -677,7 +698,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
         if (widget.isLarge)
           _buildLargeTopBarFrame(
             context,
-            height: widget.largeHeight,
+            height: widget.contentHeightFor(context),
             allowContentHeightExpansion: widget.allowContentHeightExpansion,
             gutter: widget.gutter,
             contentPadding: widget.contentPadding,
@@ -693,7 +714,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
         else
           _buildCompactTopBarFrame(
             context,
-            height: widget.height,
+            height: widget.contentHeightFor(context),
             allowContentHeightExpansion: widget.allowContentHeightExpansion,
             contentCrossAxisAlignment: widget.contentCrossAxisAlignment,
             gutter: widget.gutter,
@@ -1062,7 +1083,11 @@ class _TopBarSearchLane extends StatelessWidget {
                       trailing: trailing,
                     ),
                     if (trailing != null) gapW4,
-                    SizedBox(width: searchCollapsedExtent),
+                    SizedBox(
+                      width: CatchIconButton.targetExtentFor(
+                        searchCollapsedExtent,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1080,8 +1105,13 @@ Widget _buildTopBarTrailingEdge({
   required Widget? trailing,
 }) {
   if (trailing == null) return const SizedBox.shrink();
+  final minimumWidth = trailing is CatchTopBarActionGroup
+      ? trailing.minimumWidth
+      : CatchPlatformTokens.minimumInteractiveExtent;
   return ConstrainedBox(
-    constraints: BoxConstraints(maxWidth: maxWidth),
+    constraints: BoxConstraints(
+      maxWidth: maxWidth < minimumWidth ? minimumWidth : maxWidth,
+    ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [Flexible(child: trailing)],
@@ -1105,21 +1135,27 @@ Widget _buildCatchTopBarIdentityTitle(
     child: InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(CatchRadius.lg),
-      child: Padding(
-        padding: CatchInsets.controlVerticalTight,
-        child: Row(
-          children: [
-            CatchPersonAvatar(size: 36, name: name, imageUrl: photoUrl),
-            gapW10,
-            Expanded(
-              child: Text(
-                name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.titleL(context, color: t.ink),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: CatchPlatformTokens.minimumInteractiveExtent,
+          minWidth: CatchPlatformTokens.minimumInteractiveExtent,
+        ),
+        child: Padding(
+          padding: CatchInsets.controlVerticalTight,
+          child: Row(
+            children: [
+              CatchPersonAvatar(size: 36, name: name, imageUrl: photoUrl),
+              gapW10,
+              Expanded(
+                child: Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.titleL(context, color: t.ink),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     ),

@@ -10,6 +10,48 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
+  for (final platform in [TargetPlatform.iOS, TargetPlatform.android]) {
+    testWidgets(
+      'floating nav retains its label and pill geometry on $platform',
+      (tester) async {
+        await _pumpTabBar(tester);
+        final label = find.byKey(const ValueKey('catch_tab_bar.label.Events'));
+        final style = tester
+            .widget<Text>(
+              find.descendant(of: label, matching: find.byType(Text)),
+            )
+            .style!;
+        expect(style.fontSize, 13);
+        expect(style.height, 1);
+        expect(style.fontWeight, FontWeight.w600);
+        expect(style.letterSpacing, 0);
+        final painter = TextPainter(
+          text: TextSpan(text: 'Events', style: style),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        addTearDown(painter.dispose);
+        final chrome = tester.getRect(
+          find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+        );
+        final indicator = tester.getRect(
+          find.byKey(const ValueKey('catch_tab_bar.indicator')),
+        );
+        expect(indicator.height, CatchLayout.tabBarIndicatorExtent);
+        expect(
+          indicator.width,
+          CatchLayout.tabBarSelectedExtentFor(
+            availableWidth:
+                chrome.width -
+                CatchLayout.tabBarFloatingContentHorizontalPadding * 2,
+            itemCount: 5,
+            labelWidth: painter.width,
+          ),
+        );
+      },
+      variant: TargetPlatformVariant.only(platform),
+    );
+  }
+
   testWidgets('floating tab indicator owns exact inset geometry', (
     tester,
   ) async {

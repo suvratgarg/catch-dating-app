@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
@@ -121,7 +122,7 @@ void main() {
     );
     expect(
       tester.getSize(find.byKey(const ValueKey('catch-field-done'))).height,
-      34,
+      CatchPlatformTokens.minimumInteractiveExtent,
     );
 
     // The legacy aggregate status input coalesces into the same visible owner.

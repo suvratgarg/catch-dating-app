@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:207257466d6e33ced3f1f94027ae766f64b6dd857bb8fee74c2c7521720de28d",
-  "resolvedDigest": "sha256:7f1ae29783856ffc98aab8aef9745e802354671203e5229472ef178d0790ac51",
+  "resolvedDigest": "sha256:dcb239062def9d111c990923cb0e5125929545758d4bfa0c0e8b9bbfe0b9e62c",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6114,7 +6114,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },
@@ -6219,7 +6220,9 @@
               "symbol": "CatchSearchField",
               "file": "lib/core/widgets/catch_search_field.dart",
               "constructors": [
-                "CatchSearchField"
+                "CatchSearchField",
+                "CatchSearchField.expanded",
+                "CatchSearchField.expanding"
               ]
             }
           },

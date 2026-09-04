@@ -138,6 +138,10 @@ class GeneratedCatchTypographyProfile {
     required this.metric,
     required this.fieldValue,
     required this.fieldLabel,
+    required this.displayLarge,
+    required this.displayMedium,
+    required this.displaySmall,
+    required this.navigationLabel,
   });
   final TextStyle headline;
   final TextStyle title;
@@ -150,6 +154,10 @@ class GeneratedCatchTypographyProfile {
   final TextStyle metric;
   final TextStyle fieldValue;
   final TextStyle fieldLabel;
+  final TextStyle displayLarge;
+  final TextStyle displayMedium;
+  final TextStyle displaySmall;
+  final TextStyle navigationLabel;
 }
 
 abstract final class GeneratedCatchTypographyTokens {
@@ -165,6 +173,10 @@ abstract final class GeneratedCatchTypographyTokens {
     metric: TextStyle(fontSize: 24.0, height: 30.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
     fieldValue: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
     fieldLabel: TextStyle(fontSize: 13.0, height: 18.0 / 13.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
+    displayLarge: TextStyle(fontSize: 34.0, height: 41.0 / 34.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    displayMedium: TextStyle(fontSize: 28.0, height: 34.0 / 28.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    displaySmall: TextStyle(fontSize: 22.0, height: 28.0 / 22.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    navigationLabel: TextStyle(fontSize: 13.0, height: 13.0 / 13.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
   );
   static const android = GeneratedCatchTypographyProfile(
     headline: TextStyle(fontSize: 24.0, height: 32.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
@@ -178,6 +190,10 @@ abstract final class GeneratedCatchTypographyTokens {
     metric: TextStyle(fontSize: 24.0, height: 32.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
     fieldValue: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
     fieldLabel: TextStyle(fontSize: 12.0, height: 16.0 / 12.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
+    displayLarge: TextStyle(fontSize: 57.0, height: 64.0 / 57.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    displayMedium: TextStyle(fontSize: 45.0, height: 52.0 / 45.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    displaySmall: TextStyle(fontSize: 36.0, height: 44.0 / 36.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    navigationLabel: TextStyle(fontSize: 13.0, height: 13.0 / 13.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
   );
 }
 
@@ -197,9 +213,28 @@ abstract final class GeneratedCatchLayoutTokens {
   static const double selectionVerticalPadding = 6.0;
   static const double statusHorizontalPadding = 8.0;
   static const double statusVerticalPadding = 2.0;
+  static const double pageGutter = 20.0;
+  static const double pageBodyStart = 16.0;
 }
 
 abstract final class GeneratedCatchInteractionTokens {
   static const double iosMinimumExtent = 44.0;
   static const double androidMinimumExtent = 48.0;
+}
+
+abstract final class GeneratedCatchMotionTokens {
+  static const Duration fast = Duration(milliseconds: 120);
+  static const Duration micro = Duration(milliseconds: 180);
+  static const Duration chatScroll = Duration(milliseconds: 200);
+  static const Duration base = Duration(milliseconds: 220);
+  static const Duration pageStep = Duration(milliseconds: 280);
+  static const Duration calendarScroll = Duration(milliseconds: 320);
+  static const Duration slow = Duration(milliseconds: 420);
+  static const Curve standardCurve = Cubic(0.2, 0.0, 0.0, 1.0);
+}
+
+abstract final class GeneratedCatchAccessibilityTokens {
+  static const double minimumTextContrast = 4.5;
+  static const double largeTextContrast = 3.0;
+  static const double minimumTextScaleTest = 2.0;
 }

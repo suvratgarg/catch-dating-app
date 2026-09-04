@@ -426,7 +426,9 @@ void _registerHostOperationsClubWorkspaceTests() {
       findsNothing,
     );
     final fill = tester.widget<SliverFillRemaining>(
-      find.ancestor(of: emptyState, matching: find.byType(SliverFillRemaining)),
+      find
+          .ancestor(of: emptyState, matching: find.byType(SliverFillRemaining))
+          .first,
     );
     expect(fill.hasScrollBody, isTrue);
     expect(
@@ -467,11 +469,15 @@ void _registerHostOperationsClubWorkspaceTests() {
       ],
     );
 
-    expect(find.text('SCHEDULE'), findsNothing);
-    final headerRect = tester.getRect(find.byType(CatchScreenHeaderTitle));
-    final historyRect = tester.getRect(find.text('HISTORY'));
+    expect(find.text('No upcoming events'), findsOneWidget);
+    await tester.tap(find.text('Past'));
+    await pumpFeatureUi(tester);
+    final railRect = tester.getRect(
+      find.byKey(const ValueKey('host-events-tabs')),
+    );
+    final historyRect = tester.getRect(find.text('MAY 2026'));
     expect(
-      historyRect.top - headerRect.bottom,
+      historyRect.top - railRect.bottom,
       closeTo(CatchInsets.pageBody.top, 0.5),
     );
   });
@@ -527,10 +533,10 @@ void _registerHostOperationsClubWorkspaceTests() {
       ],
     );
 
-    expect(find.text('Upcoming'), findsNothing);
+    expect(find.text('Upcoming'), findsOneWidget);
     expect(find.text('Live'), findsNothing);
-    expect(find.text('Past'), findsNothing);
-    expect(find.text('SCHEDULE'), findsOneWidget);
+    expect(find.text('Past'), findsOneWidget);
+    expect(find.text('SCHEDULE'), findsNothing);
     expect(find.byType(HostTodayEventSpotlight), findsNothing);
     expect(
       find.byKey(const ValueKey<String>('host-event-row-live-event')),
@@ -547,13 +553,10 @@ void _registerHostOperationsClubWorkspaceTests() {
       findsOneWidget,
     );
 
-    await tester.scrollUntilVisible(
-      find.byKey(const ValueKey<String>('host-events-month-2026-6')),
-      300,
-      scrollable: _hostEventsScrollable(),
-    );
+    await tester.tap(find.text('Past'));
+    await pumpFeatureUi(tester);
     expect(
-      find.byKey(const ValueKey<String>('host-event-field-past-event')),
+      find.byKey(const ValueKey<String>('host-event-row-past-event')),
       findsOneWidget,
     );
     await tester.scrollUntilVisible(
@@ -562,11 +565,11 @@ void _registerHostOperationsClubWorkspaceTests() {
       scrollable: _hostEventsScrollable(),
     );
     expect(
-      find.byKey(const ValueKey<String>('host-event-field-older-past-event')),
+      find.byKey(const ValueKey<String>('host-event-row-older-past-event')),
       findsOneWidget,
     );
     expect(
-      find.byKey(const ValueKey<String>('host-event-field-oldest-past-event')),
+      find.byKey(const ValueKey<String>('host-event-row-oldest-past-event')),
       findsOneWidget,
     );
 
@@ -578,67 +581,54 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
     expect(juneSection, findsOneWidget);
     expect(maySection, findsOneWidget);
-    expect(tester.widget<CatchSection>(juneSection).title, 'June');
-    expect(tester.widget<CatchSection>(maySection).title, 'May');
+    expect(tester.widget<CatchSection>(juneSection).title, 'June 2026');
+    expect(tester.widget<CatchSection>(maySection).title, 'May 2026');
 
     final juneFieldFinder = find.descendant(
       of: juneSection,
-      matching: find.byType(CatchField),
+      matching: find.byType(CatchRecordRow),
     );
     final mayFieldFinder = find.descendant(
       of: maySection,
-      matching: find.byType(CatchField),
+      matching: find.byType(CatchRecordRow),
     );
     expect(juneFieldFinder, findsOneWidget);
     expect(mayFieldFinder, findsNWidgets(2));
-    final juneField = tester.widget<CatchField>(juneFieldFinder);
+    final juneField = tester.widget<CatchRecordRow>(juneFieldFinder);
     expect(juneField.title, past.title);
-    expect(juneField.body, contains('attended'));
-    expect(juneField.leading, isA<HostEventLifecycleDateBlock>());
+    expect(juneField.facts.last, contains('attended'));
+    expect(
+      juneField.icon,
+      ActivityPalette.resolve(
+        tester.element(juneSection),
+        past.activityKind,
+      ).glyph,
+    );
     final mayDividers = tester
         .widgetList<CatchDivider>(
           find.descendant(of: maySection, matching: find.byType(CatchDivider)),
         )
         .toList();
     expect(mayDividers.map((divider) => divider.role), [
-      CatchDividerRole.section,
-      CatchDividerRole.fieldSection,
+      CatchDividerRole.fieldRow,
     ]);
     final tokens = CatchTokens.of(tester.element(maySection));
-    expect(CatchDivider.colorFor(tokens, mayDividers.last.role), tokens.line);
-    final mayDateBlock = find
-        .descendant(
-          of: maySection,
-          matching: find.byType(HostEventLifecycleDateBlock),
-        )
-        .first;
+    expect(
+      CatchDivider.colorFor(tokens, mayDividers.last.role),
+      tokens.line.withValues(
+        alpha: tokens.line.a * CatchOpacity.fieldRowDivider,
+      ),
+    );
     final mayRowDivider = find.descendant(
       of: maySection,
       matching: find.byWidgetPredicate(
         (widget) =>
-            widget is CatchDivider &&
-            widget.role == CatchDividerRole.fieldSection,
+            widget is CatchDivider && widget.role == CatchDividerRole.fieldRow,
       ),
-    );
-    expect(
-      tester.getTopLeft(mayDateBlock).dx,
-      closeTo(tester.getTopLeft(maySection).dx, 0.5),
     );
     expect(
       tester.getTopLeft(mayRowDivider).dx,
-      closeTo(
-        tester
-            .getTopLeft(
-              find.descendant(
-                of: find.byKey(
-                  const ValueKey<String>('host-event-field-oldest-past-event'),
-                ),
-                matching: find.text(oldestPast.title),
-              ),
-            )
-            .dx,
-        0.5,
-      ),
+      closeTo(tester.getTopLeft(maySection).dx, 0.5),
     );
     expect(
       tester.getTopRight(mayRowDivider).dx,

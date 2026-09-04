@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 typedef HostEventsManageEventCallback = void Function(Club club, Event event);
 
@@ -31,12 +31,16 @@ class HostEventsRouteState {
 
 enum HostEventsWorkspaceStatus { loading, error, empty, populated }
 
+enum HostEventsView { upcoming, past }
+
+enum HostEventsGrouping { day, month }
+
 @immutable
 class HostEventsWorkspaceState {
   const HostEventsWorkspaceState({
     required this.status,
-    this.activeSections = const <HostEventsMonthSection>[],
-    this.pastSections = const <HostEventsMonthSection>[],
+    this.activeSections = const <HostEventsSection>[],
+    this.pastSections = const <HostEventsSection>[],
     this.repeatSource,
     this.hasMoreActive = false,
     this.hasMorePast = false,
@@ -77,8 +81,12 @@ class HostEventsWorkspaceState {
         ? currentAndUpcoming
         : currentAndUpcoming.where((event) => event.id != featuredEventId);
 
-    final activeSections = _eventMonthSections(visibleActive, now);
-    final pastSections = _eventMonthSections(past, now);
+    final activeSections = _eventSections(
+      visibleActive,
+      now,
+      HostEventsGrouping.day,
+    );
+    final pastSections = _eventSections(past, now, HostEventsGrouping.month);
 
     return HostEventsWorkspaceState(
       // The operational spotlight is the richer representation of the
@@ -107,8 +115,8 @@ class HostEventsWorkspaceState {
   }
 
   final HostEventsWorkspaceStatus status;
-  final List<HostEventsMonthSection> activeSections;
-  final List<HostEventsMonthSection> pastSections;
+  final List<HostEventsSection> activeSections;
+  final List<HostEventsSection> pastSections;
   final Event? repeatSource;
   final bool hasMoreActive;
   final bool hasMorePast;
@@ -142,38 +150,62 @@ class HostEventsWorkspaceState {
       l10n.hostsHostHomeScreenStateEmptybodyCreateYourNextEvent;
 }
 
-List<HostEventsMonthSection> _eventMonthSections(
+List<HostEventsSection> _eventSections(
   Iterable<Event> events,
   DateTime now,
+  HostEventsGrouping grouping,
 ) {
-  final sectionsByMonth = <String, List<HostEventLifecycleRowData>>{};
+  final sections = <String, List<HostEventLifecycleRowData>>{};
   for (final event in events) {
-    final key = '${event.startTime.year}-${event.startTime.month}';
-    sectionsByMonth
+    final date = event.startTime;
+    final key = grouping == HostEventsGrouping.day
+        ? '${date.year}-${date.month}-${date.day}'
+        : '${date.year}-${date.month}';
+    sections
         .putIfAbsent(key, () => <HostEventLifecycleRowData>[])
         .add(HostEventLifecycleRowData.fromEvent(event: event, now: now));
   }
-  return List<HostEventsMonthSection>.unmodifiable([
-    for (final entry in sectionsByMonth.entries)
-      HostEventsMonthSection(
+  return List<HostEventsSection>.unmodifiable([
+    for (final entry in sections.entries)
+      HostEventsSection(
         key: entry.key,
-        label: _monthSectionLabel(entry.value.first.event.startTime, now),
+        date: entry.value.first.event.startTime,
+        grouping: grouping,
+        isToday: DateUtils.isSameDay(entry.value.first.event.startTime, now),
+        includeYear: entry.value.first.event.startTime.year != now.year,
         rows: List<HostEventLifecycleRowData>.unmodifiable(entry.value),
       ),
   ]);
 }
 
 @immutable
-class HostEventsMonthSection {
-  const HostEventsMonthSection({
+class HostEventsSection {
+  const HostEventsSection({
     required this.key,
-    required this.label,
+    required this.date,
+    required this.grouping,
+    required this.isToday,
+    required this.includeYear,
     required this.rows,
   });
 
   final String key;
-  final String label;
+  final DateTime date;
+  final HostEventsGrouping grouping;
+  final bool isToday;
+  final bool includeYear;
   final List<HostEventLifecycleRowData> rows;
+
+  String label(AppLocalizations l10n) {
+    if (grouping == HostEventsGrouping.month) {
+      return DateFormat.yMMMM(l10n.localeName).format(date);
+    }
+    final dateLabel = DateFormat(
+      includeYear ? 'EEE, d MMM y' : 'EEE, d MMM',
+      l10n.localeName,
+    ).format(date);
+    return isToday ? l10n.hostEventsTodayDate(date: dateLabel) : dateLabel;
+  }
 }
 
 @immutable
@@ -183,23 +215,17 @@ class HostEventLifecycleRowData {
     required this.isToday,
     required this.isLive,
     required this.isPast,
-    required this.fillRatio,
   });
 
   factory HostEventLifecycleRowData.fromEvent({
     required Event event,
     required DateTime now,
   }) {
-    final capacity = event.capacityLimit;
-    final fillRatio = capacity <= 0
-        ? 0.0
-        : (event.signedUpCount / capacity).clamp(0.0, 1.0);
     return HostEventLifecycleRowData(
       event: event,
       isToday: DateUtils.isSameDay(event.startTime, now),
       isLive: !event.startTime.isAfter(now) && event.endTime.isAfter(now),
       isPast: !event.endTime.isAfter(now),
-      fillRatio: fillRatio,
     );
   }
 
@@ -207,33 +233,26 @@ class HostEventLifecycleRowData {
   final bool isToday;
   final bool isLive;
   final bool isPast;
-  final double fillRatio;
 
-  String get dateLabel => '${event.startTime.day}'.padLeft(2, '0');
-  String get monthLabel =>
-      EventFormatters.shortMonth(event.startTime).toUpperCase();
-  int get fillPercent => (fillRatio * 100).round();
-
-  String get metaLabel {
-    if (isLive) return 'Live · ${event.signedUpCount} going';
-    if (isPast) {
-      final price = event.isFree
-          ? 'free'
-          : EventFormatters.priceInPaise(
-              event.priceInPaise,
-              currencyCode: event.currency,
-            );
-      return '${event.attendedCount} attended · $fillPercent% full · $price';
-    }
-    if (isToday) return 'Today · ${event.signedUpCount} going';
-    return '${EventFormatters.shortWeekday(event.startTime)} · '
-        '${EventFormatters.time(event.startTime)} · $fillPercent% full';
+  List<String> facts(AppLocalizations l10n, {required String time}) {
+    final dateTime = isPast
+        ? '${DateFormat.MMMEd(l10n.localeName).format(event.startTime)} · $time'
+        : time;
+    final location = event.locationName.trim();
+    final schedule = location.isEmpty ? dateTime : '$dateTime · $location';
+    return [
+      isLive ? l10n.hostEventsLiveSchedule(schedule: schedule) : schedule,
+      if (isPast)
+        l10n.hostEventsAttended(count: event.attendedCount)
+      else if (event.capacityLimit > 0)
+        l10n.hostEventsRegisteredCapacity(
+          count: event.signedUpCount,
+          capacity: event.capacityLimit,
+        )
+      else
+        l10n.hostEventsRegistered(count: event.signedUpCount),
+    ];
   }
 }
 
 bool _canRepeatEvent(Event event) => CreateEventPrefill.canRepeat(event);
-
-String _monthSectionLabel(DateTime date, DateTime now) {
-  final month = EventFormatters.longMonth(date);
-  return date.year == now.year ? month : '$month ${date.year}';
-}

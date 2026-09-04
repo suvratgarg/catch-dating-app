@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-09-03",
+  "updated": "2026-09-04",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -525,7 +525,8 @@
         "file": "lib/core/widgets/catch_button.dart",
         "constructors": [
           "CatchButton",
-          "CatchButton.command"
+          "CatchButton.command",
+          "CatchButton.selection"
         ]
       },
       "design": {
@@ -582,7 +583,8 @@
               "sm",
               "md",
               "lg"
-            ]
+            ],
+            "notes": "Selects visual minimum height and density; interactive targets retain the platform minimum and labels grow naturally without a fixed line cap."
           },
           {
             "name": "shape",
@@ -613,7 +615,8 @@
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "notes": "Fills available width when true. Both width modes preserve full-size text and reflow rather than scaling it down."
           },
           {
             "name": "accentColor",
@@ -627,6 +630,14 @@
             "required": false,
             "default": false,
             "dartType": "bool"
+          },
+          {
+            "name": "isInteractive",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool",
+            "notes": "False renders a passive button-looking label inside an already tappable parent, without a second action or independent target."
           }
         ],
         "states": [
@@ -641,7 +652,8 @@
           "rounded",
           "large-text",
           "reduced-motion",
-          "command"
+          "command",
+          "selection"
         ],
         "slots": [
           {
@@ -687,7 +699,7 @@
             "id": "catch.button.text",
             "symbol": "CatchTextButton",
             "file": "lib/core/widgets/catch_text_button.dart",
-            "summary": "Text-only action member for inline actions, dialog actions, top-bar text actions, and compact retry links, with optional FocusNode forwarding for canonical composite focus chrome.",
+            "summary": "Text-only action with naturally wrapping labels, native disabled/keyboard semantics, optional FocusNode forwarding, and a platform minimum that local minimumSize, shrinkWrap, or compact density cannot reduce.",
             "states": [
               "primary",
               "neutral",
@@ -759,7 +771,8 @@
         "notes": [
           "Every product action still needs action cardinality and controller ownership outside this visual contract.",
           "Use accentColor only for activity-scoped primary actions.",
-          "Use CatchTextButton for text-only actions; do not create separate inline-action wrappers."
+          "Use CatchTextButton for text-only actions; do not create separate inline-action wrappers.",
+          "Command and CTA sizes and width modes reflow labels without a two-line cap or FittedBox shrinking. CatchButton.selection is only for a bounded current-value trigger in compact chrome: one visible line with ellipsis, full semantics and tooltip, and unchanged platform typography. One outer gesture/focus owner reserves the platform target around the compact visual; hover/press feedback is painted inside that visual."
         ]
       },
       "governance": {
@@ -2624,7 +2637,13 @@
           "CatchStroke.focusRing",
           "CatchStroke.hairline",
           "CatchTextStyles.fieldLabel",
-          "CatchTextStyles.titleS"
+          "CatchTextStyles.titleS",
+          "CatchChip.selectable",
+          "CatchTextStyles.labelL",
+          "CatchTextStyles.fieldRowTitle",
+          "CatchTextStyles.control",
+          "CatchPlatformTokens.minimumInteractiveExtent",
+          "CatchFieldTrailing.clearTargetConstraints"
         ],
         "goldens": [],
         "members": [
@@ -2841,7 +2860,7 @@
           {
             "id": "catch.field.focus_outline",
             "symbol": "CatchFieldFocusOutline",
-            "summary": "Layout-neutral immediate 2 px outer focus ring with a 2 px transparent gap for field-family atoms.",
+            "summary": "Layout-neutral immediate 2 px outer focus ring with a 2 px transparent gap for field stepper targets and commit buttons. Choice chips delegate focus chrome to CatchChip instead of drawing a second field outline.",
             "states": [
               "hidden",
               "visible"
@@ -2896,7 +2915,7 @@
           {
             "id": "catch.field.choice_chip",
             "symbol": "CatchFieldChoiceChip",
-            "summary": "Exact 14 px / 600 single-line field-choice tile whose visual and hit box are identical, with primaryInk selected content, selected check, pressed scale, 8 px wrapped-run spacing, Enter/Space activation, and a focus-visible ring.",
+            "summary": "Field-semantic adapter over CatchChip.selectable for both accent and ordinary choices. Uses natural-height wrapping labelL typography and shared selected/check/hover/press/focus chrome, platform targets, checked semantics, single-choice exclusivity, and Enter/Space activation.",
             "states": [
               "selected",
               "unselected",
@@ -2916,7 +2935,7 @@
           {
             "id": "catch.field.stepper",
             "symbol": "CatchFieldStepper",
-            "summary": "Bounded minus-value-plus control with 15 px glyphs, complete 44 px hit areas around 32 px visuals, immediate pointer-down stepping, touch drag-exit cancellation, an immediate outer keyboard-focus ring, and acceleration after the tenth repeat tick.",
+            "summary": "Bounded minus-value-plus control with fieldRowTitle value typography, 15 px glyphs, platform-sized targets around 32 px visuals, a preserved 16 px visual circle-to-value gap, immediate pointer-down stepping, touch drag-exit cancellation, an outer keyboard-focus ring, and acceleration after the tenth repeat tick.",
             "states": [
               "default",
               "minimum",
@@ -2936,7 +2955,7 @@
           {
             "id": "catch.field.commit_button",
             "symbol": "CatchFieldCommitButton",
-            "summary": "Field-owned 14 px / 600 Cancel or Done pill with exact 18 by 10 padding, primaryInk Done content, animated saving opacity, a 13 px spinner separated from Saving ellipsis by 7 px, sole progress ownership while its explicit commit bar is visible, and an immediate 2 px outer keyboard-focus ring at a 2 px offset.",
+            "summary": "Field-owned Cancel or Done pill using CatchTextButton and the control text role, 18 by 10 padding, primaryInk Done content, animated saving opacity, a 13 px spinner with a 7 px label gap, sole explicit-commit progress ownership, and an immediate 2 px outer keyboard-focus ring at a 2 px offset.",
             "states": [
               "cancel",
               "done",
@@ -2956,7 +2975,7 @@
           {
             "id": "catch.field.toggle",
             "symbol": "CatchFieldToggle",
-            "summary": "Exact 44 by 26 field switch with animated track, knob, and saving opacity plus Enter/Space activation and a focus-visible ring.",
+            "summary": "Field switch with a 44 by 26 visual track inside a platform-sized hit/focus target, animated track/knob/saving opacity, Enter/Space activation, and focus-visible chrome.",
             "states": [
               "off",
               "on",
@@ -2976,7 +2995,7 @@
           {
             "id": "catch.field.repeat_button",
             "symbol": "CatchFieldRepeatButton",
-            "summary": "Stepper-owned 44 px repeat target with a 32 px visual circle, immediate pointer-down step, pointer-up and touch drag-exit cancellation, 400 ms delay, 110 ms repeats, and 55 ms repeats after tick 10.",
+            "summary": "Stepper-owned platform-sized repeat target with a 32 px visual circle. Rendered target and pointer-exit bounds share hitExtent; layoutGap preserves visual spacing. Supports immediate pointer-down step, pointer-up and drag-exit cancellation, 400 ms delay, 110 ms repeats, and 55 ms repeats after tick 10.",
             "states": [
               "enabled",
               "disabled",
@@ -3038,14 +3057,14 @@
           "Explicit-save compatibility order is editor, supporting metadata, feedback, secondary action, then Cancel and Done. Validation/helper/counter support is a root sibling after disclosure controls and the commit bar, matching the React handoff. Field-caption color is resolved once at the root: actual error uses danger, active focus or open disclosure uses semantic ink, and inactive state uses the configured tone or ink3. Optional suffix copy remains ink3. Focus never changes label size, weight, baseline, or position.",
           "Press feedback begins on header pointer down; disclosure ownership transfers once on pointer up. The full-row disclosure drawer is a sibling below that header, so nested chips, steppers, and commit buttons cannot trigger header press tint and retain complete hit/focus geometry. Coordinated pressed and active layers use one contextual silhouette: standalone and divided fields paint a rounded tint plus outline, while contained rows paint rectangular internal bands beneath one section-owned group clip. CatchFieldGeometryScope separately publishes content-gutter ownership, interaction bleed, and interaction-shape ownership; divided rows retain their tile overlap, while contained edge rows overlap the section's consumed border inset by exactly one hairline so both primitives paint one shared left/right edge. Explicit-save tap-away cancels on pointer up only when movement remains within touch slop, while drag/scroll leaves the field open and loading blocks Cancel or Escape. Ordinary inputs retain Flutter's shared EditableText tap group for affiliated actions and place the native cursor during the first gesture. A closed explicit-save input transfers native focus when its drawer reveal completes so keyboard viewport relayout cannot compete with disclosure motion; an editor built already open focuses immediately, and a direct input tap during reveal may still focus intentionally. Disclosure content stays mounted behind a clipped height-factor plus opacity reveal, uses CatchMotion.base, and becomes instantaneous when reduced motion is enabled.",
           "CatchField.content always owns title/supporting-copy typography. Its default body emphasis preserves the React handoff's top-aligned leading/trailing slots; callers may opt into title emphasis when a combined content block and trailing action should center together.",
-          "Choice chips use a compact full-width wrapping layout, identical visual/hit boxes, and an 8 px visual run gap; explicit-save choices preserve staged selection until Done, while a single choice without a save bar closes after 180 ms. Steppers keep their value centered between bounded 44 px repeat targets; toggle tracks are 44 by 26 px, stay visible but disabled while saving, and vertically center with the leading icon and text lane.",
+          "Choice chips compose CatchChip.selectable in a full-width wrapping group with an 8 px gap between allocated targets. Labels wrap naturally and compact visuals can sit within larger platform hit boxes. Explicit-save choices preserve staged selection until Done; a single choice without a save bar closes after 180 ms. Steppers center fieldRowTitle values between platform-sized repeat targets while preserving the 16 px visual circle-to-value gap. Toggle tracks remain 44 by 26 px inside platform-sized targets and stay visible but disabled while saving.",
           "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' \u00b7 '. An explicit body remains the compatibility override for custom formatting.",
           "CatchField.optionCards is the single-select explanatory counterpart to choices: the collapsed row derives the selected title, while every expanded option keeps its title and description inside one full-width CatchOptionCard target. Use chips only when labels are terse and do not need per-option explanation.",
           "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
           "Every empty inactive editable row uses one canonical value lane: primary 14/600 'Add {field}' plus an optional inline ink3/500 suffix, with no separate caption. Direct and explicit-save text paths keep the same native editable mounted behind that presentation; focus restores the caption, input-only hint, and input-only units without a second tap or cursor reset. Addable disclosures use the same typography, row height, and icon alignment.",
-          "A populated labeled direct input reserves and overlays its 24 px clear hit target; the target must never participate in intrinsic collapsed-row height. Label-less compact clear inputs retain their own control geometry.",
+          "A populated labeled direct input reserves clear-action width from CatchFieldTrailing.clearTargetConstraints. Its overlaid target aligns toward the scaled value line and is clamped inside the row, without covering input text or changing an already sufficient collapsed-row height. Label-less compact clear inputs retain native suffix geometry.",
           "Disclosure opening drives the nearest existing vertical scroll owner frame by frame with the same CatchMotion.base duration and curve, revealing the commit bar above CatchFieldVisibilityScope bottom obstruction as new extent becomes available, with a disclosure-bottom fallback when no commit bar exists. Rapid close cancels the drive, direct user scrolling wins, reduced motion jumps immediately, and a zero-duration final correction covers any residual collapsed-extent clamp. CatchField never creates or owns a ScrollController.",
-          "Implemented handoff tranche: dedicated 14/600 title plus 13/400 supporting-copy content rows with 2/3 clamps and a 3 px gap while legacy value rows retain 1/2 clamps; canonical 14/700 editable values at every line count with a 1.5 multiline line height; 16 px caret; 600-weight chip/Add labels; 15 px stepper glyph; 16/13 px spinners with a 7 px commit gap and 800 ms cadence; filled saved and warning error icons; directional underline sweep; 200 ms control-opacity reveal; animated toggle/Cancel states; post-tick-10 repeat acceleration; hardware-keyboard activation; immediate transparent-offset focus-visible rings; primaryInk selected/action foregrounds; and exact support/value typography.",
+          "Implemented handoff tranche: title/supporting-copy content rows with 2/3 clamps and a 3 px gap while legacy value rows retain 1/2 clamps; canonical editable-value typography; 16 px caret; labelL choice chips and fieldRowTitle stepper values; control-role commit labels; 15 px stepper glyph; 16/13 px spinners with a 7 px commit gap and 800 ms cadence; filled saved and warning error icons; directional underline sweep; 200 ms control-opacity reveal; animated toggle/Cancel states; post-tick-10 repeat acceleration; hardware-keyboard activation; shared chip focus chrome and transparent-offset stepper/commit rings; and semantic selected/action foregrounds.",
           "Owner-gated behavior remains unchanged for single-choice persistence, clearability, deselection, and save policy. The implemented 180 ms no-save-bar close behavior and standardized empty Add presentation are not authorization to change domain persistence semantics.",
           "CatchField does not own rounded section or input-container chrome; use CatchSection contained focus/error chrome when fields need a grouped rounded surface.",
           "Field labels and support/error text belong to catch.field; shared container chrome belongs to CatchSection."
@@ -5303,7 +5322,8 @@
             "type": "number",
             "required": false,
             "default": "CatchIconButton.defaultSize",
-            "dartType": "double"
+            "dartType": "double",
+            "notes": "Visible circle diameter, not target allocation. targetExtentFor(size) supplies the greater of this diameter and the platform minimum; ancestor chrome must reserve that extent."
           },
           {
             "name": "count",
@@ -5345,7 +5365,9 @@
           "CatchLayout.iconButtonGlyphScale",
           "CatchOpacity.disabledControl",
           "CatchElevation.iconButtonFloat",
-          "CatchCountBadge"
+          "CatchCountBadge",
+          "CatchIconButton.targetExtentFor",
+          "CatchPlatformTokens.minimumInteractiveExtent"
         ],
         "goldens": [],
         "accessibility": {
@@ -5366,7 +5388,8 @@
         "allowedChildren": [],
         "notes": [
           "Design handoff must include tooltip/action label when used as an accessible command.",
-          "Use CatchIconButton.counted for integer overlays; zero hides and values above 99 clamp through CatchCountBadge."
+          "Use CatchIconButton.counted for integer overlays; zero hides and values above 99 clamp through CatchCountBadge.",
+          "defaultSize and navSize both select the current 44-point visual diameter. One outer gesture/focus owner supplies the larger platform target; hover/press tint is painted inside the opaque visual rather than hidden behind it."
         ]
       },
       "governance": {
@@ -8531,7 +8554,7 @@
       "name": "CatchDistanceRing",
       "status": "active",
       "kind": "primitive",
-      "summary": "Map-adjacent radius ring with optional mono label and tappable label semantics.",
+      "summary": "Map-adjacent radius ring with an optional readable control-role edge label and accessible label action.",
       "dart": {
         "symbol": "CatchDistanceRing",
         "file": "lib/core/widgets/catch_distance_ring.dart",
@@ -8595,14 +8618,16 @@
         "dartRoles": [
           "CatchLayout.distanceRingDefaultSize",
           "CatchLayout.distanceRingStrokeWidth",
-          "CatchTextStyles.monoLabelS"
+          "CatchTextStyles.control",
+          "CatchPlatformTokens.minimumInteractiveExtent",
+          "CatchSurface"
         ],
         "goldens": [],
         "members": [
           {
             "id": "catch.distance_ring.label",
             "symbol": "CatchDistanceRingLabel",
-            "summary": "Tappable mono edge label shared by static and native geographic distance rings.",
+            "summary": "Natural-casing, naturally wrapping control-role edge label shared by static and native geographic rings. CatchSurface supplies keyboard and press feedback; explicit semantic labels preserve activation and the target reserves the platform minimum.",
             "states": [
               "label",
               "tappable"
@@ -8634,7 +8659,8 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use for Flutter-rendered radius visuals; native map overlays remain platform-specific but should match this visual grammar."
+          "Use for Flutter-rendered radius visuals; native map overlays remain platform-specific but should match this visual grammar.",
+          "Preserve caller-provided label casing and readable control typography; do not recreate the former tiny uppercase mono treatment."
         ]
       },
       "governance": {
@@ -8944,6 +8970,14 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?"
+          },
+          {
+            "name": "scrollable",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "notes": "Forces horizontal scrolling for non-summary variants. False still permits content-driven overflow when scaled labels and targets do not fit; summary choices wrap."
           }
         ],
         "states": [
@@ -8996,7 +9030,7 @@
             "id": "catch.option_group.item",
             "symbol": "CatchOptionGroupItem",
             "file": "lib/core/widgets/catch_option_group.dart",
-            "summary": "Direct underline option renderer used by CatchOptionGroup.",
+            "summary": "Direct option renderer with platform-sized activation, selected/disabled semantics, and preserved custom spoken-label actions. Underline and operational labels retain a defensive one-line ellipsis fallback; CatchOptionGroup measures full content and enables scrolling before that fallback is needed. Summary labels wrap.",
             "states": [
               "selected",
               "unselected",
@@ -9033,7 +9067,8 @@
           "catch.icon_button"
         ],
         "notes": [
-          "Use as the canonical inline single-select scope and mode row when a fixed set of terse lifecycle, audience, granularity, or workspace choices remains legible in the viewport. Use CatchAdaptiveSelectionControl when it does not."
+          "Use as the canonical inline single-select scope and mode row when a fixed set of terse lifecycle, audience, granularity, or workspace choices remains legible in the viewport. Use CatchAdaptiveSelectionControl when it does not.",
+          "The group measures full scaled labels before allocation and scrolls automatically if they would be compressed. Operational choices are equal-width while they fit and intrinsic-width when scrolling; icons yield to labels at large text scale. Reduced motion makes item and selected-indicator transitions immediate."
         ]
       },
       "governance": {
@@ -9063,7 +9098,7 @@
       "name": "CatchTabRail",
       "status": "active",
       "kind": "composite",
-      "summary": "Preferred-size rail that wraps CatchOptionGroup in standard underline or operational segmented chrome.",
+      "summary": "Platform-minimum, text-scaled preferred-size adapter over CatchOptionGroup with matching rendered and reserved geometry for underline or operational chrome.",
       "dart": {
         "symbol": "CatchTabRail",
         "file": "lib/core/widgets/catch_tab_rail.dart",
@@ -9098,8 +9133,8 @@
           {
             "name": "onChanged",
             "type": "callback",
-            "required": true,
-            "dartType": "ValueChanged<T>"
+            "required": false,
+            "dartType": "ValueChanged<T>?"
           },
           {
             "name": "options",
@@ -9124,6 +9159,14 @@
               "mono",
               "operational"
             ]
+          },
+          {
+            "name": "scrollable",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "notes": "Forwards the canonical option-group scrolling policy; overflow can still scroll when false."
           }
         ],
         "states": [
@@ -9144,7 +9187,11 @@
           "CatchPrimaryRail",
           "CatchOptionGroup",
           "CatchOption",
-          "CatchLayout.tabRailHeight"
+          "CatchLayout.tabRailHeight",
+          "CatchScaledPreferredSize",
+          "CatchTabRail.minimumHeight",
+          "CatchTabRail.minimumHeightFor",
+          "CatchTabRail.heightFor"
         ],
         "goldens": [],
         "members": [
@@ -9186,7 +9233,8 @@
           "catch.option_group"
         ],
         "notes": [
-          "Use for app-bar bottom tabs. Use CatchOptionGroup directly for inline scope controls that are not PreferredSizeWidget app-bar bottoms."
+          "Use for app-bar bottom tabs. Use CatchOptionGroup directly for inline scope controls that are not PreferredSizeWidget app-bar bottoms.",
+          "preferredSize reports the variant-specific unscaled minimum; preferredSizeFor(context) and rendering share heightFor(context, variant). Operational chrome includes its existing 8-point inner vertical inset. Root adapters must forward these values: root validation rejects inconsistent minimum or scaled declarations."
         ]
       },
       "governance": {
@@ -9223,7 +9271,9 @@
         "symbol": "CatchSearchField",
         "file": "lib/core/widgets/catch_search_field.dart",
         "constructors": [
-          "CatchSearchField"
+          "CatchSearchField",
+          "CatchSearchField.expanded",
+          "CatchSearchField.expanding"
         ]
       },
       "design": {
@@ -9255,8 +9305,9 @@
             "name": "placeholder",
             "type": "string",
             "required": false,
-            "default": "Search",
-            "dartType": "String"
+            "default": null,
+            "dartType": "String?",
+            "notes": "Null resolves the localized search placeholder."
           },
           {
             "name": "onChanged",
@@ -9279,29 +9330,12 @@
             "dartType": "bool"
           },
           {
-            "name": "mode",
-            "type": "enum",
-            "required": false,
-            "default": "field",
-            "dartType": "CatchSearchFieldMode",
-            "values": [
-              "field",
-              "expanding",
-              "expanded"
-            ]
-          },
-          {
             "name": "expanded",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
-          },
-          {
-            "name": "emptyTrailingIcon",
-            "type": "object",
-            "required": false,
-            "dartType": "IconData?"
+            "dartType": "bool",
+            "notes": "Only .expanding accepts this state. Fixed field and .expanded modes are always visible and expose no empty close action."
           },
           {
             "name": "onOpenSearch",
@@ -9314,6 +9348,14 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?"
+          },
+          {
+            "name": "collapsedExtent",
+            "type": "number",
+            "required": false,
+            "default": "CatchIconButton.navSize",
+            "dartType": "double",
+            "notes": "Expanding-mode visual request. Collapsed allocation is clamped to the platform target; heightFor(context) also accounts for the scaled text line box."
           }
         ],
         "states": [
@@ -9341,7 +9383,10 @@
           "CatchControlShell",
           "CatchSearchFieldMode",
           "CatchTextStyles.bodyM",
-          "CatchLayout.searchFieldClearSize"
+          "CatchLayout.searchFieldClearSize",
+          "CatchSearchField.heightFor",
+          "CatchIconButton.targetExtentFor",
+          "CatchPlatformTokens.minimumInteractiveExtent"
         ],
         "goldens": [],
         "accessibility": {
@@ -9361,7 +9406,8 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Do not register a separate ExpandingSearch contract; expanding and expanded modes live here."
+          "Do not register a separate ExpandingSearch contract; expanding and expanded modes live here.",
+          "Named constructors determine mode. Fixed browse fields clear only non-empty input; .expanding owns opening and empty-query closing. Clear/close targets use CatchIconButton, header height shares the scaled line box, and reduced motion skips the morph animation."
         ]
       },
       "governance": {
@@ -10604,7 +10650,8 @@
             "name": "value",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "notes": "Optional secondary control text. Preserves caller casing and wraps naturally; counts remain separately typed numeric badges."
           },
           {
             "name": "count",
@@ -10633,7 +10680,7 @@
           "with-count",
           "focused",
           "semantic-label",
-          "text-scale-truncation"
+          "text-scale-reflow"
         ],
         "slots": [],
         "tokens": [
@@ -10650,9 +10697,9 @@
         "dartRoles": [
           "CatchBorderRole.control",
           "CatchBorderRole.focus",
-          "CatchTextStyles.monoLabel",
+          "CatchTextStyles.control",
           "CatchLayout.countPillIconSize",
-          "CatchIconButton.defaultSize",
+          "CatchPlatformTokens.minimumInteractiveExtent",
           "CatchCountBadge"
         ],
         "goldens": [],
@@ -10674,7 +10721,8 @@
         "allowedChildren": [],
         "notes": [
           "Use for labelled floating actions only; use CatchIconButton for icon-only commands.",
-          "Counts are integers rendered by CatchCountBadge; raw string badges are not accepted."
+          "Counts are integers rendered by CatchCountBadge; raw string badges are not accepted.",
+          "Label and optional value use readable control typography with natural casing and wrapping. Explicit semanticLabel replaces spoken text without removing the action; keyboard focus and platform-sized activation remain on the shared surface."
         ]
       },
       "governance": {
@@ -11509,7 +11557,7 @@
       "name": "CatchRecordRow",
       "status": "active",
       "kind": "composite",
-      "summary": "Natural-height read-only record with heading, evidence metadata, prose, semantic marker and optional navigation.",
+      "summary": "Natural-height read-only record with heading, important facts, evidence metadata, prose, semantic marker and optional navigation.",
       "dart": {
         "symbol": "CatchRecordRow",
         "file": "lib/core/widgets/catch_record_row.dart",
@@ -11560,6 +11608,12 @@
             "dartType": "String"
           },
           {
+            "name": "facts",
+            "type": "list",
+            "required": false,
+            "dartType": "List<String>"
+          },
+          {
             "name": "description",
             "type": "string",
             "required": false,
@@ -11575,17 +11629,20 @@
         "states": [
           "read-only",
           "navigable",
-          "multiline"
+          "multiline",
+          "facts"
         ],
         "slots": [
           "title",
           "metadata",
+          "facts",
           "description"
         ],
         "tokens": [],
         "dartRoles": [
           "CatchTextStyles.recordTitle",
           "CatchTextStyles.recordContext",
+          "CatchTextStyles.supporting",
           "CatchTextStyles.recordBody"
         ],
         "goldens": [],

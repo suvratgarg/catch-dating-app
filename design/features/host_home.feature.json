@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-09-01",
+  "updated": "2026-09-04",
   "id": "feature.host_home",
   "name": "Host Today and Events",
   "owner": "hosts",
   "status": "pilot",
-  "description": "Contract covering the independently routed Host Today command centre and Host Events inventory. Today owns operational spotlight, attention policy, and Dress Rehearsal entry through its bounded feed controller; Events owns its route state, paginated schedule and history controller, create and repeat entry, and lifecycle-aware manage navigation.",
+  "description": "Contract covering the independently routed Host Today command centre and Host Events inventory. Today owns operational spotlight, attention policy, and Dress Rehearsal entry through its bounded feed controller; Events owns sticky Upcoming/Past navigation, day-grouped upcoming and month-grouped past records, independently paginated lanes, create and repeat entry, and lifecycle-aware manage navigation.",
   "surfaces": [
     {
       "id": "host_flutter",
@@ -94,6 +94,7 @@
           "catch.event_card",
           "catch.field",
           "catch.menu",
+          "catch.record_row",
           "catch.section",
           "catch.skeleton",
           "catch.surface",
@@ -248,7 +249,7 @@
               "stateIds": ["upcoming_events", "event_history_error"]
             }
           ],
-          "description": "Retries the first completed-event history page while preserving the already loaded schedule."
+          "description": "Retries the failed completed-event history cursor, or the initial page if no history has loaded, while preserving both lanes and concurrent schedule progress."
         },
         {
           "id": "create_event",

@@ -1655,8 +1655,20 @@ Widget catchButtonContractStates(BuildContext context) {
       'large-text',
       'reduced-motion',
       'command',
+      'selection',
     ],
     children: [
+      _StateCard(
+        label: 'selection',
+        child: SizedBox(
+          width: 132,
+          child: CatchButton.selection(
+            label: 'Thiruvananthapuram',
+            icon: Icon(CatchIcons.locationOnOutlined),
+            onPressed: _noop,
+          ),
+        ),
+      ),
       _StateCard(
         label: 'command',
         child: CatchButton.command(
@@ -1794,7 +1806,7 @@ Widget catchButtonLabelContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'full-width fit',
+        label: 'full-width bounded label',
         child: SizedBox(
           width: WidgetbookPreviewLayout.fullWidthButtonWidth,
           child: CatchButtonLabel(
@@ -2018,8 +2030,17 @@ Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
 Widget catchRecordRowContractStates(BuildContext context) => _ContractScreen(
   title: 'CatchRecordRow',
   contractId: 'catch.record_row',
-  states: const ['read-only', 'navigable', 'multiline'],
+  states: const ['read-only', 'navigable', 'multiline', 'facts'],
   children: [
+    _StateCard(
+      label: 'facts',
+      child: CatchRecordRow(
+        title: 'Friday Evening Trivia Night at The Daily Bar',
+        icon: CatchIcons.eventAvailable,
+        facts: const ['8:00 PM · The Daily Bar', '24 of 30 registered'],
+        onTap: _noop,
+      ),
+    ),
     _StateCard(
       label: 'read-only',
       child: CatchRecordRow(
@@ -7343,7 +7364,7 @@ Widget catchCountPillContractStates(BuildContext context) {
       'with-count',
       'focused',
       'semantic-label',
-      'text-scale-truncation',
+      'text-scale-reflow',
     ],
     children: [
       _StateCard(
@@ -7396,7 +7417,7 @@ Widget catchCountPillContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'text-scale-truncation',
+        label: 'text-scale-reflow',
         child: SizedBox(
           width: WidgetbookPreviewLayout.compactControlWidth,
           child: CatchCountPill.label(

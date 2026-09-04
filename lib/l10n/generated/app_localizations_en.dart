@@ -6428,10 +6428,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostEventsListTextToday => 'TODAY';
 
   @override
-  String get hostEventsTimelineSchedule => 'Schedule';
+  String get hostEventsUpcomingTab => 'Upcoming';
 
   @override
-  String get hostEventsTimelineHistory => 'History';
+  String get hostEventsPastTab => 'Past';
+
+  @override
+  String get hostEventsPastEmptyTitle => 'No past events yet';
+
+  @override
+  String get hostEventsPastEmptyBody =>
+      'Completed events will appear here with their attendance history.';
+
+  @override
+  String hostEventsTodayDate({required String date}) {
+    return 'Today · $date';
+  }
+
+  @override
+  String hostEventsLiveSchedule({required String schedule}) {
+    return 'Live · $schedule';
+  }
+
+  @override
+  String hostEventsAttended({required int count}) {
+    return '$count attended';
+  }
+
+  @override
+  String hostEventsRegisteredCapacity({
+    required int count,
+    required int capacity,
+  }) {
+    return '$count of $capacity registered';
+  }
+
+  @override
+  String hostEventsRegistered({required int count}) {
+    return '$count registered';
+  }
 
   @override
   String get hostEventsTimelineLoadMoreSchedule => 'Load more events';

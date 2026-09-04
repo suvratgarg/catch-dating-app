@@ -826,13 +826,17 @@ void _registerHostOperationsCustomersTests() {
 }
 
 class _CustomersTestPrimaryRail extends StatelessWidget
-    implements CatchPrimaryRail {
+    implements CatchPrimaryRail, CatchScaledPreferredSize {
   const _CustomersTestPrimaryRail();
 
   @override
-  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+
+  @override
+  Size preferredSizeFor(BuildContext context) =>
+      Size.fromHeight(CatchTabRail.heightFor(context));
 
   @override
   Widget build(BuildContext context) =>
-      const SizedBox(height: CatchLayout.tabRailHeight);
+      SizedBox(height: preferredSizeFor(context).height);
 }

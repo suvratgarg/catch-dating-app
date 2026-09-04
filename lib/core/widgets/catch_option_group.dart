@@ -32,6 +32,8 @@ class CatchOption<T> {
 
 /// Design-system OptionGroup: an underline selection row for tabs, lenses, and
 /// inline scalar scope controls whose fixed, terse options fit the viewport.
+/// Non-summary variants scroll automatically when full scaled labels no longer
+/// fit. [scrollable] forces that mode; it never permits undersized targets.
 /// Use `CatchAdaptiveSelectionControl` when the choices are numerous, long, or
 /// dynamic enough that the inline row would hide their meaning.
 class CatchOptionGroup<T> extends StatefulWidget {
@@ -64,6 +66,8 @@ class CatchOptionGroup<T> extends StatefulWidget {
   final Color? accent;
   final Widget? trailing;
   final EdgeInsetsGeometry contentPadding;
+
+  /// Force horizontal scrolling; overflow also enables it when false.
   final bool scrollable;
   final bool showDivider;
 
@@ -193,47 +197,54 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
       (option) => option.value == widget.selected,
     );
     final indicatorRect = _indicatorRect(selectedIndex);
-    final indicatorDuration = widget.selectionPosition == null
+    final indicatorDuration =
+        !MediaQuery.disableAnimationsOf(context) &&
+            widget.selectionPosition == null
         ? CatchMotion.fast
         : Duration.zero;
 
-    final optionsRow = Row(
-      mainAxisSize: widget.scrollable ? MainAxisSize.min : MainAxisSize.max,
-      children: [
-        for (var index = 0; index < options.length; index += 1) ...[
-          if (index != 0) SizedBox(width: gap),
-          if (widget.scrollable)
-            CatchOptionGroupItem<T>(
-              option: options[index],
-              selected: index == selectedIndex,
-              selectedRule: selectedRule,
-              variant: widget.variant,
-              showIndicator: false,
-              labelKey: _labelKeys[index],
-              onTap: widget.onChanged == null || !options[index].enabled
-                  ? null
-                  : () => widget.onChanged!(options[index].value),
-            )
-          else
-            Flexible(
-              flex: widget.variant == CatchOptionGroupVariant.operational
-                  ? 1
-                  : options[index].label.length,
-              child: CatchOptionGroupItem<T>(
-                option: options[index],
-                selected: index == selectedIndex,
-                selectedRule: selectedRule,
-                variant: widget.variant,
-                showIndicator: false,
-                labelKey: _labelKeys[index],
-                onTap: widget.onChanged == null || !options[index].enabled
-                    ? null
-                    : () => widget.onChanged!(options[index].value),
-              ),
+    // Select scrolling from content, not a caller's guess. Compressing a row
+    // of choices must never shrink its hitboxes or ellipsize the only labels.
+    final optionWidths = <double>[];
+    final neededWidth =
+        options.fold<double>(0, (width, option) {
+          final style = switch (widget.variant) {
+            CatchOptionGroupVariant.mono => CatchTextStyles.monoLabel(context),
+            CatchOptionGroupVariant.operational => CatchTextStyles.labelL(
+              context,
             ),
-        ],
-      ],
-    );
+            _ => CatchTextStyles.tabLabel(context, selected: true),
+          };
+          final painter = TextPainter(
+            text: TextSpan(
+              text: widget.variant == CatchOptionGroupVariant.mono
+                  ? option.label.toUpperCase()
+                  : option.label,
+              style: style,
+            ),
+            textDirection: Directionality.of(context),
+            textScaler: MediaQuery.textScalerOf(context),
+          )..layout();
+          final horizontalPadding =
+              widget.variant == CatchOptionGroupVariant.operational &&
+                  MediaQuery.textScalerOf(context).scale(1) < 1.4
+              ? CatchSpacing.s4
+              : CatchSpacing.s2;
+          final iconWidth =
+              option.icon != null &&
+                  MediaQuery.textScalerOf(context).scale(1) < 1.4
+              ? CatchLayout.optionGroupIconSlotExtent
+              : 0;
+          final contentWidth = painter.width + horizontalPadding + iconWidth;
+          painter.dispose();
+          final targetWidth =
+              contentWidth < CatchPlatformTokens.minimumInteractiveExtent
+              ? CatchPlatformTokens.minimumInteractiveExtent
+              : contentWidth.ceilToDouble();
+          optionWidths.add(targetWidth);
+          return width + targetWidth;
+        }) +
+        gap * (options.length - 1).clamp(0, options.length);
 
     return Stack(
       key: _groupKey,
@@ -254,12 +265,88 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
           child: Row(
             children: [
               Expanded(
-                child: widget.scrollable
-                    ? SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: optionsRow,
-                      )
-                    : optionsRow,
+                child: LayoutBuilder(
+                  builder: (context, available) {
+                    final operationalWidth = optionWidths.isEmpty
+                        ? 0.0
+                        : optionWidths.reduce((a, b) => a > b ? a : b) *
+                                  options.length +
+                              gap * (options.length - 1);
+                    final requiredWidth =
+                        widget.variant == CatchOptionGroupVariant.operational
+                        ? operationalWidth
+                        : neededWidth;
+                    final scrollable =
+                        widget.scrollable || requiredWidth > available.maxWidth;
+                    final optionsRow = Row(
+                      mainAxisSize: scrollable
+                          ? MainAxisSize.min
+                          : MainAxisSize.max,
+                      children: [
+                        for (
+                          var index = 0;
+                          index < options.length;
+                          index += 1
+                        ) ...[
+                          if (index != 0) SizedBox(width: gap),
+                          if (scrollable)
+                            CatchOptionGroupItem<T>(
+                              option: options[index],
+                              selected: index == selectedIndex,
+                              selectedRule: selectedRule,
+                              variant: widget.variant,
+                              showIndicator: false,
+                              labelKey: _labelKeys[index],
+                              onTap:
+                                  widget.onChanged == null ||
+                                      !options[index].enabled
+                                  ? null
+                                  : () =>
+                                        widget.onChanged!(options[index].value),
+                            )
+                          else
+                            Flexible(
+                              flex:
+                                  widget.variant ==
+                                      CatchOptionGroupVariant.operational
+                                  ? 1
+                                  : optionWidths[index].ceil(),
+                              child: CatchOptionGroupItem<T>(
+                                option: options[index],
+                                selected: index == selectedIndex,
+                                selectedRule: selectedRule,
+                                variant: widget.variant,
+                                showIndicator: false,
+                                labelKey: _labelKeys[index],
+                                onTap:
+                                    widget.onChanged == null ||
+                                        !options[index].enabled
+                                    ? null
+                                    : () => widget.onChanged!(
+                                        options[index].value,
+                                      ),
+                              ),
+                            ),
+                        ],
+                      ],
+                    );
+
+                    return scrollable
+                        ? NotificationListener<ScrollNotification>(
+                            onNotification: (_) {
+                              WidgetsBinding.instance.addPostFrameCallback(
+                                (_) => _updateLabelRects(),
+                              );
+                              return false;
+                            },
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: optionsRow,
+                            ),
+                          )
+                        : optionsRow;
+                  },
+                ),
               ),
               if (widget.trailing != null) ...[
                 const SizedBox(width: CatchSpacing.s3),
@@ -414,19 +501,27 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final showIcon = option.icon != null && textScale < 1.4;
     final item = Semantics(
-      button: onTap != null,
-      enabled: option.enabled,
+      button: true,
+      enabled: option.enabled && onTap != null,
       hint: option.disabledReason,
       selected: selected,
       label: option.semanticLabel,
       excludeSemantics: option.semanticLabel != null,
+      onTap: option.enabled ? onTap : null,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          excludeFromSemantics: true,
+          onTap: option.enabled ? onTap : null,
           borderRadius: BorderRadius.circular(CatchRadius.sm),
           child: AnimatedContainer(
-            duration: CatchMotion.fast,
+            constraints: BoxConstraints(
+              minHeight: CatchPlatformTokens.minimumInteractiveExtent,
+              minWidth: CatchPlatformTokens.minimumInteractiveExtent,
+            ),
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : CatchMotion.fast,
             curve: CatchMotion.standardCurve,
             padding: EdgeInsets.symmetric(
               horizontal: variant == CatchOptionGroupVariant.operational

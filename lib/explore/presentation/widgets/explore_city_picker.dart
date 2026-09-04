@@ -117,27 +117,23 @@ class CityTrigger extends StatelessWidget {
     );
 
     final labelColor = enabled ? effectiveForeground : t.ink3;
-    return Tooltip(
-      message: state.tooltipLabel,
-      excludeFromSemantics: true,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 132),
-        child: CatchButton(
-          label: presentation == ExploreCityPickerPresentation.scopeLabel
-              ? state.scopeLabel
-              : city.label,
-          semanticsLabel: state.semanticLabel,
-          icon: Icon(state.icon),
-          variant: CatchButtonVariant.secondary,
-          backgroundColor:
-              backgroundColor ??
-              (presentation == ExploreCityPickerPresentation.scopeLabel
-                  ? Colors.transparent
-                  : t.surface),
-          foregroundColor: labelColor,
-          borderColor: borderColor ?? t.line2,
-          onPressed: enabled ? onTap : null,
-        ),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 132),
+      child: CatchButton.selection(
+        label: presentation == ExploreCityPickerPresentation.scopeLabel
+            ? state.scopeLabel
+            : city.label,
+        semanticsLabel: state.semanticLabel,
+        tooltip: state.tooltipLabel,
+        icon: Icon(state.icon),
+        backgroundColor:
+            backgroundColor ??
+            (presentation == ExploreCityPickerPresentation.scopeLabel
+                ? Colors.transparent
+                : t.surface),
+        foregroundColor: labelColor,
+        borderColor: borderColor ?? t.line2,
+        onPressed: enabled ? onTap : null,
       ),
     );
   }

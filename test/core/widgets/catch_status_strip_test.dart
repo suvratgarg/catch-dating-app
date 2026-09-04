@@ -142,13 +142,23 @@ void main() {
       online.value = false;
       await tester.pump();
       expect(tester.getTopLeft(find.byKey(_rail)).dy, 59);
-      expect(tester.getTopLeft(find.byKey(_rehearsal)).dy, 103);
+      expect(
+        tester.getTopLeft(find.byKey(_rehearsal)).dy,
+        tester.getBottomLeft(find.byKey(_rail)).dy,
+      );
       await tester.tap(find.text('Insights'));
       await pumpFeatureUi(tester);
       expect(find.byKey(_offline), findsOneWidget);
-      expect(tester.getTopLeft(find.byKey(_rehearsal)).dy, 103);
+      expect(
+        tester.getTopLeft(find.byKey(_rehearsal)).dy,
+        tester.getBottomLeft(find.byKey(_rail)).dy,
+      );
       expect(tester.takeException(), isNull);
     },
+    variant: const TargetPlatformVariant({
+      TargetPlatform.iOS,
+      TargetPlatform.android,
+    }),
   );
 
   testWidgets(

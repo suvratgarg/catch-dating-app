@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:401717db58c0e473d4f18c2c86e4db9efd16507c92f836c5e375875e8e8bc41c",
-  "resolvedDigest": "sha256:c7aaea80470a5a5ad8d8f23e227d4d59074c2b726a75765d022c786e2936b8cb",
+  "resolvedDigest": "sha256:8abf5450d6b1995c4a0ae201feee477e7d706b15e521089d130930b1ff7ab178",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -3888,7 +3888,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },

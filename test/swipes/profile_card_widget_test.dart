@@ -35,6 +35,21 @@ Widget _profileCardHarness({required ThemeData theme}) {
   );
 }
 
+Future<void> _scrollToProfileSection(WidgetTester tester, String title) async {
+  // Profile sections are lazy; content assertions must not depend on cache extent.
+  await tester.scrollUntilVisible(
+    find.text(title),
+    300,
+    scrollable: find
+        .descendant(
+          of: find.byKey(CatchProfileView.scrollViewKey),
+          matching: find.byType(Scrollable),
+        )
+        .first,
+  );
+  await tester.pump();
+}
+
 void main() {
   testWidgets(
     'ProfileSurface renders polished missing-photo state in light mode',
@@ -49,19 +64,10 @@ void main() {
         find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'),
         findsOneWidget,
       );
+      await _scrollToProfileSection(tester, 'RUNNING RHYTHM');
       expect(find.text('5:00-7:00/km'), findsWidgets);
       expect(find.text('RUNNING RHYTHM'), findsOneWidget);
-      await tester.scrollUntilVisible(
-        find.text('DETAILS'),
-        300,
-        scrollable: find
-            .descendant(
-              of: find.byKey(CatchProfileView.scrollViewKey),
-              matching: find.byType(Scrollable),
-            )
-            .first,
-      );
-      await tester.pump();
+      await _scrollToProfileSection(tester, 'DETAILS');
       expect(find.text('DETAILS'), findsOneWidget);
       expect(find.text('LOOKING FOR'), findsNothing);
       expect(find.text('Something casual'), findsOneWidget);
@@ -82,6 +88,7 @@ void main() {
 
     expect(find.byType(EventActivityBackdrop), findsOneWidget);
     expect(find.text('Manan, 26'), findsOneWidget);
+    await _scrollToProfileSection(tester, 'RUNNING RHYTHM');
     expect(find.text('RUNNING RHYTHM'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

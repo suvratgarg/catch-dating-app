@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:4fdc792050fdf521693ce53e99c56d3fc6a1c09bc9565e6abef8edb5a4ff79a2",
-  "resolvedDigest": "sha256:b2a3335562ae6304131ad3d78b48bf59d3c13c1f7e919317e077baf04ae897c5",
+  "resolvedDigest": "sha256:af4b7740d0942678d1eec751ed41f2e17263711f7e79e71b0e54668534492bf3",
   "feature": {
     "id": "feature.matches_list",
     "name": "Matches List",
@@ -906,7 +906,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },

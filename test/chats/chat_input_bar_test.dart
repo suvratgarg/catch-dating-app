@@ -5,39 +5,50 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';
 
 void main() {
-  testWidgets('uses canonical symmetric one-line geometry', (tester) async {
-    final controller = TextEditingController();
-    addTearDown(controller.dispose);
+  testWidgets(
+    'uses canonical symmetric one-line geometry',
+    (tester) async {
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
 
-    await _pumpComposer(tester, controller: controller);
+      await _pumpComposer(tester, controller: controller);
 
-    final pillRect = tester.getRect(find.byKey(ChatInputBar.pillKey));
-    final imageRect = tester.getRect(find.byKey(ChatInputBar.imageButtonKey));
-    final sendRect = tester.getRect(find.byKey(ChatInputBar.sendButtonKey));
+      final pillRect = tester.getRect(find.byKey(ChatInputBar.pillKey));
+      final imageRect = tester.getRect(find.byKey(ChatInputBar.imageButtonKey));
+      final sendRect = tester.getRect(find.byKey(ChatInputBar.sendButtonKey));
+      final targetExtent = defaultTargetPlatform == TargetPlatform.iOS
+          ? 44.0
+          : 48.0;
 
-    expect(find.byType(CatchBottomDock), findsNothing);
-    expect(pillRect.left, CatchSpacing.screenPx);
-    expect(pillRect.right, 390 - CatchSpacing.screenPx);
-    expect(pillRect.height, 60);
-    expect(imageRect.size, const Size.square(CatchIconButton.defaultSize));
-    expect(sendRect.size, const Size.square(CatchIconButton.defaultSize));
-    expect(imageRect.left - pillRect.left, CatchSpacing.s2);
-    expect(imageRect.top - pillRect.top, CatchSpacing.s2);
-    expect(pillRect.bottom - imageRect.bottom, CatchSpacing.s2);
-    expect(pillRect.right - sendRect.right, CatchSpacing.s2);
-    expect(sendRect.top - pillRect.top, CatchSpacing.s2);
-    expect(pillRect.bottom - sendRect.bottom, CatchSpacing.s2);
-    expect(imageRect.center.dy, sendRect.center.dy);
-    expect(find.byTooltip('Send an image'), findsOneWidget);
-    expect(find.byTooltip('Send message'), findsOneWidget);
-    expect(find.text('Message...'), findsOneWidget);
-  });
+      expect(find.byType(CatchBottomDock), findsNothing);
+      expect(pillRect.left, CatchSpacing.screenPx);
+      expect(pillRect.right, 390 - CatchSpacing.screenPx);
+      expect(pillRect.height, targetExtent + 2 * CatchSpacing.s2);
+      expect(imageRect.size, Size.square(targetExtent));
+      expect(sendRect.size, Size.square(targetExtent));
+      expect(imageRect.left - pillRect.left, CatchSpacing.s2);
+      expect(imageRect.top - pillRect.top, CatchSpacing.s2);
+      expect(pillRect.bottom - imageRect.bottom, CatchSpacing.s2);
+      expect(pillRect.right - sendRect.right, CatchSpacing.s2);
+      expect(sendRect.top - pillRect.top, CatchSpacing.s2);
+      expect(pillRect.bottom - sendRect.bottom, CatchSpacing.s2);
+      expect(imageRect.center.dy, sendRect.center.dy);
+      expect(find.byTooltip('Send an image'), findsOneWidget);
+      expect(find.byTooltip('Send message'), findsOneWidget);
+      expect(find.text('Message...'), findsOneWidget);
+    },
+    variant: const TargetPlatformVariant({
+      TargetPlatform.iOS,
+      TargetPlatform.android,
+    }),
+  );
 
   testWidgets('derives sendability from the trimmed draft', (tester) async {
     final controller = TextEditingController();
@@ -102,34 +113,42 @@ void main() {
     expect(tester.getRect(find.byKey(ChatInputBar.sendButtonKey)), beforeSend);
   });
 
-  testWidgets('animates multiline growth and keeps actions bottom aligned', (
-    tester,
-  ) async {
-    final controller = TextEditingController(text: 'One line');
-    addTearDown(controller.dispose);
+  testWidgets(
+    'animates multiline growth and keeps actions bottom aligned',
+    (tester) async {
+      final controller = TextEditingController(text: 'One line');
+      addTearDown(controller.dispose);
 
-    await _pumpComposer(tester, controller: controller);
-    final initialPill = tester.getRect(find.byKey(ChatInputBar.pillKey));
+      await _pumpComposer(tester, controller: controller);
+      final initialPill = tester.getRect(find.byKey(ChatInputBar.pillKey));
 
-    controller.text = 'Line one\nLine two\nLine three\nLine four';
-    await tester.pump();
-    final animationStart = tester.getRect(find.byKey(ChatInputBar.pillKey));
-    await pumpFeatureUiFor(tester, const Duration(milliseconds: 60));
-    final animationMiddle = tester.getRect(find.byKey(ChatInputBar.pillKey));
-    await pumpFeatureUi(tester);
-    final finalPill = tester.getRect(find.byKey(ChatInputBar.pillKey));
-    final imageRect = tester.getRect(find.byKey(ChatInputBar.imageButtonKey));
-    final sendRect = tester.getRect(find.byKey(ChatInputBar.sendButtonKey));
+      controller.text = 'Line one\nLine two\nLine three\nLine four';
+      await tester.pump();
+      final animationStart = tester.getRect(find.byKey(ChatInputBar.pillKey));
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 60));
+      final animationMiddle = tester.getRect(find.byKey(ChatInputBar.pillKey));
+      await pumpFeatureUi(tester);
+      final finalPill = tester.getRect(find.byKey(ChatInputBar.pillKey));
+      final imageRect = tester.getRect(find.byKey(ChatInputBar.imageButtonKey));
+      final sendRect = tester.getRect(find.byKey(ChatInputBar.sendButtonKey));
+      final targetExtent = defaultTargetPlatform == TargetPlatform.iOS
+          ? 44.0
+          : 48.0;
 
-    expect(animationStart.height, initialPill.height);
-    expect(animationMiddle.height, greaterThan(initialPill.height));
-    expect(animationMiddle.height, lessThan(finalPill.height));
-    expect(finalPill.height, greaterThan(initialPill.height));
-    expect(finalPill.bottom - imageRect.bottom, CatchSpacing.s2);
-    expect(finalPill.bottom - sendRect.bottom, CatchSpacing.s2);
-    expect(imageRect.size, const Size.square(CatchIconButton.defaultSize));
-    expect(sendRect.size, const Size.square(CatchIconButton.defaultSize));
-  });
+      expect(animationStart.height, initialPill.height);
+      expect(animationMiddle.height, greaterThan(initialPill.height));
+      expect(animationMiddle.height, lessThan(finalPill.height));
+      expect(finalPill.height, greaterThan(initialPill.height));
+      expect(finalPill.bottom - imageRect.bottom, CatchSpacing.s2);
+      expect(finalPill.bottom - sendRect.bottom, CatchSpacing.s2);
+      expect(imageRect.size, Size.square(targetExtent));
+      expect(sendRect.size, Size.square(targetExtent));
+    },
+    variant: const TargetPlatformVariant({
+      TargetPlatform.iOS,
+      TargetPlatform.android,
+    }),
+  );
 
   testWidgets('keeps focus for keyboard and internal action taps', (
     tester,

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_scaled_preferred_size.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -10,13 +10,18 @@ import 'package:go_router/go_router.dart';
 
 enum SelfProfileTab { edit, preview, insights }
 
-class ProfileTabBar extends StatelessWidget implements CatchPrimaryRail {
+class ProfileTabBar extends StatelessWidget
+    implements CatchPrimaryRail, CatchScaledPreferredSize {
   const ProfileTabBar({super.key, required this.controller});
 
   final TabController controller;
 
   @override
-  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+
+  @override
+  Size preferredSizeFor(BuildContext context) =>
+      Size.fromHeight(CatchTabRail.heightFor(context));
 
   @override
   Widget build(BuildContext context) {
