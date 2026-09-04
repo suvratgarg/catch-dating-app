@@ -239,7 +239,7 @@ export function productionPromotionEnvironment({
     const ts = require("typescript");
     const before = sourceTree(sourceRoot, baseSha);
     const after = sourceTree(sourceRoot, sourceSha);
-    const sensitive = /auth|permission|credential|secret|token|claim|role|invoker|serviceAccount|appCheck|migrat|backfill/i;
+    const sensitive = /auth|permission|credential|secret|token|claim|role|invoker|serviceAccount|appCheck|migrat|backfill|security|polic(?:y|ies)|access|grant|revoke|privileg|admin|identity|verif|session|encrypt/i;
     const tokens = (text) => {
       const scanner = ts.createScanner(ts.ScriptTarget.Latest, true, ts.LanguageVariant.Standard, text);
       const result = [];
@@ -254,8 +254,6 @@ export function productionPromotionEnvironment({
       const bodies = [];
       const visit = (node) => {
         if (ts.isFunctionLike(node) && node.body) {
-          const body = node.body.getText(source);
-          if (sensitive.test(body)) throw new Error(`Sensitive implementation: ${name}`);
           bodies.push([node.body.getStart(source), node.body.end]);
           return;
         }
@@ -269,6 +267,12 @@ export function productionPromotionEnvironment({
     for (const name of runtime) {
       if (!before.has(name) || !after.has(name)) return review("Source additions and deletions require review");
       if (sensitive.test(name)) return review(`Sensitive source owner: ${name}`);
+      // Security ownership can be in a stable function/variable/class name or
+      // import, while the changed body is only "return true". Inspect both
+      // complete modules before normalizing bodies; prefer review on ambiguity.
+      if (sensitive.test(before.get(name)) || sensitive.test(after.get(name))) {
+        return review(`Security-sensitive module requires review: ${name}`);
+      }
       if (envelope(before, name) !== envelope(after, name)) {
         return review(`Exports, imports, initialization, or deployment options changed: ${name}`);
       }

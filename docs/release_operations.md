@@ -498,7 +498,8 @@ its verified package and exact Git window; the promoter recomputes eligibility
 before authentication. `productionPromotionEnvironment` beside the affected
 Functions selector admits only changes to existing implementation bodies with
 unchanged imports, exports, signatures, initialization and trigger options.
-Sensitive source names or implementation bodies, additions/deletions, contracts,
+Sensitive source names or identifiers anywhere in either complete source module,
+additions/deletions, contracts,
 configuration, mixed runtime surfaces, non-Functions stages, snapshots, and
 manual recovery retain `prod` review. Uncertain parsing also retains review.
 This intentionally conservative structural policy complements code review; it

@@ -280,3 +280,20 @@ test("ordinary handler bodies may change with identical trigger options", (t) =>
     sourceRoot: f.root, baseSha: base, sourceSha: head, stages: ["functions", "firestore-rules"],
   }).environment, "prod");
 });
+
+for (const declaration of [
+  "export function requireAuth() { return false; }",
+  "export const enforceAppCheck = () => false;",
+  "export class Permissions { check() { return false; } }",
+  'import {authorization} from "./helper"; export function check() { return false; }',
+]) {
+  test(`security ownership outside the changed body retains review: ${declaration}`, (t) => {
+    const f = fixture(t);
+    f.write("functions/src/gamma.ts", declaration);
+    const base = f.commit();
+    f.write("functions/src/gamma.ts", declaration.replace("false", "true"));
+    assert.equal(productionPromotionEnvironment({
+      sourceRoot: f.root, baseSha: base, sourceSha: f.commit(), stages: ["functions"],
+    }).environment, "prod");
+  });
+}
