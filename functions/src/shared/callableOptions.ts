@@ -1,7 +1,16 @@
 import {CallableOptions} from "firebase-functions/v2/https";
 
+/** Only the isolated demo suite may omit the live App Check service. */
+export function enforceAppCheckForRuntime(env: NodeJS.ProcessEnv): boolean {
+  return !(env.FUNCTIONS_EMULATOR === "true" &&
+    env.GCLOUD_PROJECT === "demo-catch" &&
+    env.FIREBASE_AUTH_EMULATOR_HOST === "127.0.0.1:9099" &&
+    env.FIRESTORE_EMULATOR_HOST === "127.0.0.1:8080" &&
+    env.FIREBASE_STORAGE_EMULATOR_HOST === "127.0.0.1:9199");
+}
+
 export const appCheckCallableOptions: CallableOptions = {
-  enforceAppCheck: true,
+  enforceAppCheck: enforceAppCheckForRuntime(process.env),
   invoker: "public",
 };
 

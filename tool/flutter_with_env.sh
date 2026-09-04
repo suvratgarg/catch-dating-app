@@ -2,11 +2,16 @@
 set -euo pipefail
 
 if [[ $# -lt 2 ]]; then
-  echo "Usage: ./tool/flutter_with_env.sh <dev|staging|prod> [--role <consumer|host>] [--platform <android|ios|macos|web>] <flutter args...>"
+  echo "Usage: ./tool/flutter_with_env.sh <local|dev|staging|prod> [--role <consumer|host>] [--platform <android|ios|macos|web>] <flutter args...>"
   exit 1
 fi
 
 environment="$1"
+local_emulators=false
+if [[ "$environment" == local ]]; then
+  environment=dev
+  local_emulators=true
+fi
 shift
 app_role="${CATCH_APP_ROLE:-consumer}"
 target_platform="${CATCH_TARGET_PLATFORM:-}"
@@ -51,6 +56,9 @@ esac
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 define_file="$repo_root/tool/env/dart_defines/$environment.json"
+if [[ "$local_emulators" == true ]]; then
+  define_file="$repo_root/tool/env/dart_defines/local.json"
+fi
 
 if [[ ! -f "$define_file" ]]; then
   echo "Missing dart define file: $define_file"
@@ -242,8 +250,10 @@ run_flutter_with_bounded_ci_retry() {
   done
 }
 
-load_local_env_file "$repo_root/.env.$environment.local"
-load_local_env_file "$repo_root/.env.local"
+if [[ "$local_emulators" != true ]]; then
+  load_local_env_file "$repo_root/.env.$environment.local"
+  load_local_env_file "$repo_root/.env.local"
+fi
 
 flutter_args=("$@")
 target_device="$(extract_target_device)"
@@ -298,6 +308,25 @@ elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" ]]; then
   fi
 fi
 
+if [[ "$local_emulators" == true ]]; then
+  for arg in "${flutter_args[@]}"; do
+    case "$arg" in
+      --dart-define|--dart-define=*|--dart-define-from-file|--dart-define-from-file=*)
+        echo "The local target owns its Firebase defines. Use dev for custom environment configuration."
+        exit 64
+        ;;
+    esac
+  done
+  if [[ "${flutter_args[0]:-}" == run && "$target_platform" == web ]] ||
+     [[ "${flutter_args[0]:-}" == build && "${flutter_args[1]:-}" == web ]] ||
+     [[ "${flutter_args[0]:-}" == test ]]; then
+    echo "Using demo-catch with local Firebase emulators. Start npm --prefix functions run serve first."
+  else
+    echo "The isolated local target supports web runs/builds and tests. Use dev for native device testing."
+    exit 64
+  fi
+fi
+
 has_flavor=0
 has_target=0
 supplied_flavor=""
@@ -341,10 +370,12 @@ if [[ -n "$supplied_target" && "$supplied_target" != "$target_entrypoint" ]]; th
   exit 1
 fi
 
-bash "$repo_root/tool/use_firebase_environment.sh" \
-  "$environment" \
-  "$app_role" \
-  "$target_project_root" >/dev/null
+if [[ "$local_emulators" != true ]]; then
+  bash "$repo_root/tool/use_firebase_environment.sh" \
+    "$environment" \
+    "$app_role" \
+    "$target_project_root" >/dev/null
+fi
 
 if [[ $has_target -eq 0 && ${#flutter_args[@]} -ge 1 ]]; then
   case "${flutter_args[0]}" in
@@ -453,35 +484,37 @@ fi
 
 extra_dart_defines=()
 extra_dart_defines+=("--dart-define=CATCH_APP_ROLE=${app_role}")
-if [[ -n "${FIREBASE_APP_CHECK_DEBUG_TOKEN:-}" ]]; then
-  extra_dart_defines+=(
-    "--dart-define=FIREBASE_APP_CHECK_DEBUG_TOKEN=${FIREBASE_APP_CHECK_DEBUG_TOKEN}"
-  )
-fi
-if [[ -n "${VERBOSE_AUTH_DEBUG_LOGS:-}" ]]; then
-  extra_dart_defines+=(
-    "--dart-define=VERBOSE_AUTH_DEBUG_LOGS=${VERBOSE_AUTH_DEBUG_LOGS}"
-  )
-fi
-if [[ -n "${DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING:-}" ]]; then
-  extra_dart_defines+=(
-    "--dart-define=DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING=${DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING}"
-  )
-fi
-if [[ -n "${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER:-}" ]]; then
-  extra_dart_defines+=(
-    "--dart-define=USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER=${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER}"
-  )
-fi
-if [[ -n "${ENABLE_OBSERVABILITY_COLLECTION:-}" ]]; then
-  extra_dart_defines+=(
-    "--dart-define=ENABLE_OBSERVABILITY_COLLECTION=${ENABLE_OBSERVABILITY_COLLECTION}"
-  )
-fi
-if [[ -n "${EMIT_OBSERVABILITY_SMOKE_EVENT:-}" ]]; then
-  extra_dart_defines+=(
-    "--dart-define=EMIT_OBSERVABILITY_SMOKE_EVENT=${EMIT_OBSERVABILITY_SMOKE_EVENT}"
-  )
+if [[ "$local_emulators" != true ]]; then
+  if [[ -n "${FIREBASE_APP_CHECK_DEBUG_TOKEN:-}" ]]; then
+    extra_dart_defines+=(
+      "--dart-define=FIREBASE_APP_CHECK_DEBUG_TOKEN=${FIREBASE_APP_CHECK_DEBUG_TOKEN}"
+    )
+  fi
+  if [[ -n "${VERBOSE_AUTH_DEBUG_LOGS:-}" ]]; then
+    extra_dart_defines+=(
+      "--dart-define=VERBOSE_AUTH_DEBUG_LOGS=${VERBOSE_AUTH_DEBUG_LOGS}"
+    )
+  fi
+  if [[ -n "${DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING:-}" ]]; then
+    extra_dart_defines+=(
+      "--dart-define=DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING=${DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING}"
+    )
+  fi
+  if [[ -n "${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER:-}" ]]; then
+    extra_dart_defines+=(
+      "--dart-define=USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER=${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER}"
+    )
+  fi
+  if [[ -n "${ENABLE_OBSERVABILITY_COLLECTION:-}" ]]; then
+    extra_dart_defines+=(
+      "--dart-define=ENABLE_OBSERVABILITY_COLLECTION=${ENABLE_OBSERVABILITY_COLLECTION}"
+    )
+  fi
+  if [[ -n "${EMIT_OBSERVABILITY_SMOKE_EVENT:-}" ]]; then
+    extra_dart_defines+=(
+      "--dart-define=EMIT_OBSERVABILITY_SMOKE_EVENT=${EMIT_OBSERVABILITY_SMOKE_EVENT}"
+    )
+  fi
 fi
 
 resolved_flutter_args=("${flutter_args[@]}")

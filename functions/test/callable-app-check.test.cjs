@@ -45,6 +45,19 @@ test("shared callable options declare App Check and public invoker intent", () =
     "utf8",
   );
 
-  assert.match(source, /enforceAppCheck:\s*true/);
+  const {enforceAppCheckForRuntime, appCheckCallableOptions} = require("../lib/shared/callableOptions.js");
+  assert.equal(appCheckCallableOptions.enforceAppCheck, true);
+  assert.equal(enforceAppCheckForRuntime({}), true);
+  const local = {FUNCTIONS_EMULATOR: "true", GCLOUD_PROJECT: "demo-catch",
+    FIREBASE_AUTH_EMULATOR_HOST: "127.0.0.1:9099", FIRESTORE_EMULATOR_HOST: "127.0.0.1:8080",
+    FIREBASE_STORAGE_EMULATOR_HOST: "127.0.0.1:9199"};
+  assert.equal(enforceAppCheckForRuntime(local), false);
+  for (const key of Object.keys(local)) {
+    const missing = {...local}; delete missing[key];
+    assert.equal(enforceAppCheckForRuntime(missing), true, key);
+  }
+  assert.equal(enforceAppCheckForRuntime({...local, GCLOUD_PROJECT: "catchdates-dev"}), true);
+  assert.equal(enforceAppCheckForRuntime({...local, GCLOUD_PROJECT: "catch-dating-app-64e51"}), true);
+  assert.equal(enforceAppCheckForRuntime({...local, FIRESTORE_EMULATOR_HOST: "cloud.example:8080"}), true);
   assert.match(source, /invoker:\s*"public"/);
 });
