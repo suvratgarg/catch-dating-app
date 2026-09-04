@@ -5265,15 +5265,41 @@
       "id": "design:widgetbook-use-case-triage",
       "category": "design",
       "path": "tool/design/classify_widgetbook_use_cases.mjs",
+      "impactPaths": [
+        "widgetbook/test/support/screen_scope_dispositions.json",
+        "widgetbook/test/support/triage_inventory.dart",
+        "widgetbook/lib/**"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      },
       "command": "node tool/design/classify_widgetbook_use_cases.mjs",
-      "safety": "local",
+      "safety": "local-readonly",
       "status": "active",
-      "description": "Classifies registered Widgetbook use cases on demand across production component, body, screen and explicitly marked prototype mounts.",
+      "description": "Classifies every registered Widgetbook use case into four catalog roles and requires an authored disposition for every screen-scope case.",
       "checks": [
         "node --check tool/design/classify_widgetbook_use_cases.mjs",
         "node tool/design/classify_widgetbook_use_cases.mjs --self-test"
       ],
-      "role": "finder"
+      "role": "gate",
+      "rules": [
+        "WIDGET-CATALOG-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/classify_widgetbook_use_cases.mjs",
+        "contains": [
+          "Widgetbook-defined composition lacks explicit proposed marker",
+          "Duplicate registered id",
+          "screen-scope disposition requires an owner",
+          "expected exactly one screen-scope disposition"
+        ]
+      }
     },
     {
       "id": "design:golden-coverage",

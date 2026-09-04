@@ -1013,13 +1013,15 @@
         "tool/design/generate_widget_classification.mjs",
         "tool/design/component_concepts.mjs",
         "tool/design/component_concepts.test.mjs",
+        "tool/design/classify_widgetbook_use_cases.mjs",
         "tool/design/check_widgetbook_golden_coverage.mjs",
         "tool/design/check_widgetbook_golden_coverage.test.mjs",
         "widgetbook/test/support/golden_coverage_waivers.json",
+        "widgetbook/test/support/screen_scope_dispositions.json",
         "widgetbook/test/support/triage_inventory.dart",
         "test/goldens/**"
       ],
-      "instruction": "Keep docs/widget_catalog.md as current inventory only. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook and catalog coverage; a widget moved into or added under lib/core/widgets must also use the canonical Catch* namespace and have a component contract. Before catch_ui extraction, every public Catch* class under lib/core/widgets must map to a registered core Widgetbook golden id or a current owner-and-expiry waiver, with no more than 20 live waivers. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Update affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
+      "instruction": "Keep docs/widget_catalog.md as current inventory only. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook and catalog coverage; a widget moved into or added under lib/core/widgets must also use the canonical Catch* namespace and have a component contract. Before catch_ui extraction, every public Catch* class under lib/core/widgets must map to a registered core Widgetbook golden id or a current owner-and-expiry waiver, with no more than 20 live waivers. Every registered Widgetbook case must classify as component-mount, body-mount, screen-scope, or explicitly marked prototype; every screen-scope case must match one authored capture-migration or named-keep disposition. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Update affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
       "sunset_when": [
         "A generated widget inventory or CI check makes catalog drift visible automatically"
       ],
@@ -1043,6 +1045,11 @@
           "tool": "docs:metadata",
           "stage": "scanner-gate",
           "docAnchor": "docs/widget_catalog.md#maintenance-contract"
+        },
+        {
+          "tool": "design:widgetbook-use-case-triage",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-1-catalog-becomes-a-test-goldens-before-any-moves"
         },
         {
           "tool": "design:golden-coverage",
@@ -3338,6 +3345,6 @@
       ]
     }
   },
-  "version": "2.12.0",
-  "updated": "2026-09-04"
+  "version": "2.13.0",
+  "updated": "2026-09-05"
 }
