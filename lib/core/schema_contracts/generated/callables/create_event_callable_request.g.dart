@@ -28,6 +28,7 @@ final class CreateEventCallableRequest {
     this.eventId,
     required this.name,
     required this.organizerId,
+    this.sourceVenueId,
     this.clubId,
     required this.startTimeMillis,
     required this.endTimeMillis,
@@ -57,6 +58,7 @@ final class CreateEventCallableRequest {
   final String? eventId;
   final String name;
   final String organizerId;
+  final String? sourceVenueId;
   final String? clubId;
   final int startTimeMillis;
   final int endTimeMillis;
@@ -86,6 +88,7 @@ final class CreateEventCallableRequest {
     'eventId': ?eventId,
     'name': name,
     'organizerId': organizerId,
+    'sourceVenueId': ?sourceVenueId,
     'clubId': ?clubId,
     'startTimeMillis': startTimeMillis,
     'endTimeMillis': endTimeMillis,

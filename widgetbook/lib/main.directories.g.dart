@@ -7856,6 +7856,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostSavedPlacesSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by meeting-location step',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .savedPlacesSectionCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostTeamProfileRows',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

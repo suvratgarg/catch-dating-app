@@ -82,6 +82,15 @@ const schemaEventDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'x-catch-ownership': 'callable-owned',
     },
+    'sourceVenueId': <String, Object?>{
+      'description': 'Optional organizer venue used to prefill this event. Meeting location and capacity remain event-local snapshots.',
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+      'x-catch-ownership': 'callable-owned',
+    },
     'eventOrigin': <String, Object?>{
       'title': 'EventOrigin',
       'description': 'Immutable operational booking/roster provenance. Missing values deny Catch booking authority.',

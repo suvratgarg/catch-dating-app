@@ -315,6 +315,7 @@ export {
   getEventSuccessSpatialLayout,
   upsertEventSuccessLayout,
 } from "./eventSuccess/layoutAssets";
+export {upsertOrganizerEventVenue} from "./events/organizerEventVenues";
 export {
   fetchEventSuccessWingmanCandidates,
   submitEventSuccessWingmanRequest,

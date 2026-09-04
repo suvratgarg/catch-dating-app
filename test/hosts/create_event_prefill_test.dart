@@ -40,7 +40,7 @@ void main() {
         inviteCodeHint: 'TR...42',
         cancellationPolicy: const EventCancellationPolicy.strict(),
       ),
-    );
+    ).copyWith(sourceVenueId: 'venue-7');
 
     final prefill = CreateEventPrefill.repeat(
       event: event,
@@ -57,6 +57,7 @@ void main() {
     expect(values.description, event.description);
     expect(values.meetingPoint, 'The Daily Bar');
     expect(values.meetingLocationAddress, 'Bandra West, Mumbai');
+    expect(values.sourceVenueId, isNull);
     expect(values.selectedDateMillis, isNull);
     expect(values.selectedStartHour, 20);
     expect(values.selectedStartMinute, 15);

@@ -22,6 +22,7 @@ options when specific functions need higher or lower limits.
 | `createStripeCheckoutSession` | `src/payments/createStripeCheckoutSession.ts` | Create a non-INR Stripe destination checkout for an enabled host account |
 | `verifyRazorpayPayment` | `src/payments/` | Verify payment signature + sign up |
 | `createEvent` / `updateEvent` / `cancelEvent` / `deleteEvent` | `src/events/` | Host-owned event mutation surface |
+| `upsertOrganizerEventVenue` | `src/events/organizerEventVenues.ts` | Create, update, archive, or restore one organizer-owned reusable event venue |
 | `publishEventLivePosition` | `src/events/eventLivePositions.ts` | Publish or clear a short-lived foreground Host/operator position when the event route policy and exact operator grant allow it |
 | `signUpForFreeEvent` | `src/events/` | Book a free event |
 | `cancelEventSignUp` | `src/events/` | Cancel booking (refunds paid events) |

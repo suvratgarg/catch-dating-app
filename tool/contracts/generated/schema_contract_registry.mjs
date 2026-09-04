@@ -28429,6 +28429,15 @@ export const eventDocumentSchema = {
       "maxLength": 180,
       "x-catch-ownership": "callable-owned"
     },
+    "sourceVenueId": {
+      "description": "Optional organizer venue used to prefill this event. Meeting location and capacity remain event-local snapshots.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$",
+      "x-catch-ownership": "callable-owned"
+    },
     "eventOrigin": {
       "title": "EventOrigin",
       "description": "Immutable operational booking/roster provenance. Missing values deny Catch booking authority.",
@@ -38424,6 +38433,156 @@ export const organizerEventSuccessLayoutDocumentSchema = {
           }
         }
       },
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
+export const organizerEventVenueDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_venues.schema.json",
+  "title": "OrganizerEventVenueDocument",
+  "description": "Reusable organizer-owned event venue stored at organizerEventVenues/{organizerId_venueId}. Events copy the meeting location and capacity so later venue edits never rewrite event history.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerEventVenues",
+  "x-firestore-path": "organizerEventVenues/{venueDocumentId}",
+  "x-document-id-field": "id",
+  "x-owner": "organizer manager through upsertOrganizerEventVenue",
+  "required": [
+    "organizerId",
+    "venueId",
+    "label",
+    "meetingLocation",
+    "status",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "venueId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "meetingLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+      "required": [
+        "name",
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "placeId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "latitude": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "defaultEventCapacity": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ],
       "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
@@ -57848,6 +58007,14 @@ export const createEventCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 180
     },
+    "sourceVenueId": {
+      "description": "Optional organizer venue provenance. The event still stores an independent meeting-location snapshot.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
     "clubId": {
       "type": "string",
       "minLength": 1,
@@ -70578,6 +70745,211 @@ export const upsertEventSuccessLayoutCallablePayloadSchema = {
             "minimum": 1,
             "maximum": 200
           }
+        }
+      }
+    }
+  }
+};
+
+export const upsertOrganizerEventVenueCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_organizer_event_venue_payload.schema.json",
+  "title": "UpsertOrganizerEventVenueCallablePayload",
+  "description": "Creates, updates, archives, or restores one organizer-owned reusable event venue.",
+  "x-callable-aliases": [
+    "upsertOrganizerEventVenue"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "label",
+    "meetingLocation"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "venueId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "meetingLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+      "required": [
+        "name",
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "placeId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "latitude": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    "defaultEventCapacity": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ]
+    }
+  }
+};
+
+export const upsertOrganizerEventVenueCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/upsert_organizer_event_venue_response.schema.json",
+  "title": "UpsertOrganizerEventVenueCallableResponse",
+  "description": "Canonical reusable venue returned after an organizer venue upsert.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "venue"
+  ],
+  "properties": {
+    "venue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "venueId",
+        "label",
+        "meetingLocation",
+        "status"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "venueId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "meetingLocation": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+          "required": [
+            "name",
+            "latitude",
+            "longitude"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "address": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "placeId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "notes": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        },
+        "defaultEventCapacity": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "archived"
+          ]
         }
       }
     }

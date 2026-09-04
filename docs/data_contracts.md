@@ -291,6 +291,21 @@ complete Euclidean graph derived from the stored grid with no cutoff. A
 `wholeGroup` structure suppresses layout projection even if a legacy plan or
 assignment contains stale spatial fields.
 
+### Organizer Saved Event Venues
+
+`contracts/firestore/organizer_event_venues.schema.json` owns reusable meeting
+places at `organizerEventVenues/{organizerId_venueId}`. Each asset contains a
+team-facing label, the canonical exact `meetingLocation`, an optional default
+event capacity, active/archived status, and server timestamps. Organizer
+managers may query their assets directly; `upsertOrganizerEventVenue` owns all
+creates, edits, archival, and restoration.
+
+Create Event copies the selected venue's location into the event and treats its
+capacity only as a suggestion when the draft capacity is empty. The resulting
+event may retain `sourceVenueId` as provenance, but `meetingLocation` and
+`capacityLimit` remain event-local snapshots. Moving the pin clears the source
+link, and later venue edits or archival never rewrite existing events.
+
 ### Event Success Sequence Capacity Boundary
 
 `contracts/shared/event_common.schema.json` owns the closed `topology` values

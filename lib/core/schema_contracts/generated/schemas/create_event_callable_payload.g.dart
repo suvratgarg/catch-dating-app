@@ -42,6 +42,14 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'sourceVenueId': <String, Object?>{
+      'description': 'Optional organizer venue provenance. The event still stores an independent meeting-location snapshot.',
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+    },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,

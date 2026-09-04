@@ -878,6 +878,22 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    // Saved event venues are organizer-team operational assets. Managers can
+    // select them directly; validated callables own every mutation.
+    match /organizerEventVenues/{venueDocumentId} {
+      allow get, list: if isAuthed()
+        && resource.data.organizerId is string
+        && exists(/databases/$(database)/documents/organizers/$(
+          resource.data.organizerId
+        ))
+        && isClubHostData(get(
+          /databases/$(database)/documents/organizers/$(
+            resource.data.organizerId
+          )
+        ).data);
+      allow create, update, delete: if false;
+    }
+
     match /organizerFollows/{followId} {
       allow read: if isAuthed() && resource.data.uid == request.auth.uid;
       allow write: if false;

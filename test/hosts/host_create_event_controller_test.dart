@@ -104,6 +104,7 @@ void main() {
               startTime: DateTime(2025, 3, 1, 6),
               endTime: DateTime(2025, 3, 1, 7, 15),
               meetingLocation: _meetingLocation(name: '  Marine Drive  '),
+              sourceVenueId: 'venue-7',
               eventFormat: const EventFormatSnapshot.socialRun(),
               distanceKm: 7.5,
               pace: PaceLevel.moderate,
@@ -136,6 +137,7 @@ void main() {
         expect(createdEvent.endTime, DateTime(2025, 3, 1, 7, 15));
         expect(createdEvent.meetingPoint, 'Marine Drive');
         expect(createdEvent.meetingLocation?.name, 'Marine Drive');
+        expect(createdEvent.sourceVenueId, 'venue-7');
         expect(createdEvent.startingPointLat, 19.076);
         expect(createdEvent.startingPointLng, 72.8777);
         expect(createdEvent.locationDetails, isNull);

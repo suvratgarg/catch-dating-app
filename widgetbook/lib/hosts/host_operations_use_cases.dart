@@ -51,6 +51,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_wingman_requ
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/organizer_event_venue_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -59,6 +60,7 @@ import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
@@ -5296,6 +5298,14 @@ Widget eventDetailsStepCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Covered by meeting-location step',
+  type: HostSavedPlacesSection,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget savedPlacesSectionCatalogStates(BuildContext context) =>
+    whereStepCatalogStates(context);
+
+@widgetbook.UseCase(
   name: 'Where step states',
   type: WhereStep,
   path: '[P1 product surfaces]/Host create event',
@@ -6413,9 +6423,28 @@ class _WhereStepFrame extends StatefulWidget {
 }
 
 class _WhereStepFrameState extends State<_WhereStepFrame> {
+  static const _organizerId = 'design-host-organizer';
+  static const _venue = OrganizerEventVenue(
+    organizerId: _organizerId,
+    venueId: 'carter-road-amphitheatre',
+    label: 'Carter Road Amphitheatre',
+    meetingLocation: EventMeetingLocation(
+      name: 'Carter Road Amphitheatre',
+      address: 'Carter Road, Bandra West',
+      placeId: 'design-carter-road',
+      latitude: 19.0706,
+      longitude: 72.8223,
+      notes: 'Meet by the sea-facing steps.',
+    ),
+    defaultEventCapacity: 40,
+    status: OrganizerEventVenueStatus.active,
+  );
+
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _meetingPointController;
   late final TextEditingController _locationDetailsController;
+  EventMeetingLocation _meetingLocation = _venue.meetingLocation;
+  String? _selectedVenueId = _venue.venueId;
 
   @override
   void initState() {
@@ -6437,13 +6466,35 @@ class _WhereStepFrameState extends State<_WhereStepFrame> {
 
   @override
   Widget build(BuildContext context) {
-    return WhereStep(
-      formKey: _formKey,
-      meetingPointController: _meetingPointController,
-      locationDetailsController: _locationDetailsController,
-      startingPoint: const LocationCoordinate(19.0706, 72.8223),
-      onMeetingPointChanged: (_) {},
-      onPickLocation: () {},
+    return ProviderScope(
+      overrides: [
+        watchOrganizerEventVenuesProvider(
+          _organizerId,
+        ).overrideWith((ref) => Stream.value(const [_venue])),
+      ],
+      child: WhereStep(
+        formKey: _formKey,
+        organizerId: _organizerId,
+        meetingPointController: _meetingPointController,
+        locationDetailsController: _locationDetailsController,
+        startingPoint: const LocationCoordinate(19.0706, 72.8223),
+        onMeetingPointChanged: (name) => setState(
+          () => _meetingLocation = _meetingLocation.copyWith(name: name),
+        ),
+        onLocationDetailsChanged: (notes) => setState(
+          () => _meetingLocation = _meetingLocation.copyWith(notes: notes),
+        ),
+        onPickLocation: () {},
+        currentMeetingLocation: _meetingLocation,
+        selectedVenueId: _selectedVenueId,
+        onVenueSelected: (venue) => setState(() {
+          _selectedVenueId = venue.venueId;
+          _meetingLocation = venue.meetingLocation;
+          _meetingPointController.text = venue.meetingLocation.name;
+          _locationDetailsController.text = venue.meetingLocation.notes ?? '';
+        }),
+        currentCapacity: 40,
+      ),
     );
   }
 }

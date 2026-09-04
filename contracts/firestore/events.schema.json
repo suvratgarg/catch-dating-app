@@ -72,6 +72,12 @@
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "callable-owned"
     },
+    "sourceVenueId": {
+      "description": "Optional organizer venue used to prefill this event. Meeting location and capacity remain event-local snapshots.",
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$",
+      "x-catch-ownership": "callable-owned"
+    },
     "eventOrigin": {
       "$ref": "../embedded/event_origin.schema.json",
       "description": "Immutable operational booking/roster provenance. Missing values deny Catch booking authority.",

@@ -1926,6 +1926,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsWhenStepPlaceholderSelectStartTime => 'Select start time';
 
   @override
+  String get hostsWhereStepSavedPlacesTitle => 'Saved places';
+
+  @override
+  String get hostsWhereStepSavedPlacesSubtitle =>
+      'Choose a team-saved place to fill the location, or save the current place for next time.';
+
+  @override
+  String get hostsWhereStepSavedPlaceSelected => 'Selected';
+
+  @override
+  String get hostsWhereStepSaveCurrentPlace => 'Save current place';
+
+  @override
+  String get hostsWhereStepUpdateSavedPlace => 'Update saved place';
+
+  @override
   String get hostsWhereStepTitleLocationName => 'Location name';
 
   @override

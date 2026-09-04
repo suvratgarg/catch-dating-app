@@ -212,6 +212,7 @@ abstract class Event with _$Event {
     @JsonKey(includeToJson: false) String? seedPrefix,
     @JsonKey(name: 'organizerId', readValue: _readOrganizerId)
     required String clubId,
+    @JsonKey(includeIfNull: false) String? sourceVenueId,
     @Default('') String name,
     @TimestampConverter() required DateTime startTime,
     @TimestampConverter() required DateTime endTime,

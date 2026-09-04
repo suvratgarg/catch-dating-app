@@ -157,6 +157,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
     windowMs: 60 * 1000,
   },
   upsertEventSuccessLayout: {maxRequests: 20, windowMs: 60 * 1000},
+  upsertOrganizerEventVenue: {maxRequests: 20, windowMs: 60 * 1000},
   controlEventSuccessSpatial: {maxRequests: 120, windowMs: 60 * 1000},
   claimEventRuntimeAccess: {maxRequests: 10, windowMs: 60 * 60 * 1000},
   submitEventRuntimeProfile: {maxRequests: 30, windowMs: 60 * 60 * 1000},

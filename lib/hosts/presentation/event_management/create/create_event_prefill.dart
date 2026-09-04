@@ -65,6 +65,8 @@ class CreateEventPrefill {
         meetingLocationPlaceId: location?.placeId,
         startingPointLat: event.effectiveStartingPointLat,
         startingPointLng: event.effectiveStartingPointLng,
+        // Repeating copies the event-local location snapshot, not mutable
+        // saved-place provenance. The host can reselect an active saved place.
         // A repeat is a new scheduling decision. Preserve the familiar time
         // and duration, but require the host to choose a fresh date.
         selectedStartHour: event.startTime.hour,
