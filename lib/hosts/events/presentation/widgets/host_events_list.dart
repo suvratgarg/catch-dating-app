@@ -3,19 +3,19 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
@@ -100,7 +100,7 @@ class HostEventsClubCard extends ConsumerWidget {
   }
 }
 
-class HostEventsClubSection extends StatelessWidget {
+class HostEventsClubSection extends StatefulWidget {
   const HostEventsClubSection({
     super.key,
     required this.club,
@@ -125,182 +125,218 @@ class HostEventsClubSection extends StatelessWidget {
   final HostEventsManageEventCallback onManageEvent;
 
   @override
+  State<HostEventsClubSection> createState() => _HostEventsClubSectionState();
+}
+
+class _HostEventsClubSectionState extends State<HostEventsClubSection>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabs;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabs = TabController(length: HostEventsView.values.length, vsync: this);
+  }
+
+  @override
+  void didUpdateWidget(HostEventsClubSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.club.id != widget.club.id) _tabs.index = 0;
+  }
+
+  @override
+  void dispose() {
+    _tabs.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final hasScheduleRegion =
-        state.activeSections.isNotEmpty ||
-        state.activeLoadMoreError != null ||
-        state.hasMoreActive;
-    return CatchRootScreenScaffold.standard(
+    return CatchRootScreenScaffold.withPrimaryRail(
       scrollKey: const ValueKey<String>('host-events-scroll-view'),
-      header: CatchScreenHeaderTitle.block(
+      header: CatchRootScreenHeader.title(
         title: context.l10n.hostsHostEventsListTextEvents,
         actions: [
           CatchTopBarPrimaryAction(
             key: const ValueKey<String>('host-events-create-event'),
             label: context.l10n.hostsHostEventsListLabelNewEvent,
             icon: CatchIcons.addRounded,
-            onPressed: () => _showEventEntrySheet(context),
+            onPressed: _showEventEntrySheet,
           ),
         ],
       ),
-      slivers: [
-        switch (state.status) {
-          HostEventsWorkspaceStatus.loading => const SliverToBoxAdapter(
-            child: CatchSkeletonRows(
-              leading: CatchSkeletonRowLeading.mediaTile,
-              count: 4,
+      primaryRail: CatchTabControllerRail<HostEventsView>(
+        controller: _tabs,
+        groupKey: const ValueKey('host-events-tabs'),
+        options: [
+          CatchOption(
+            value: HostEventsView.upcoming,
+            label: context.l10n.hostEventsUpcomingTab,
+          ),
+          CatchOption(
+            value: HostEventsView.past,
+            label: context.l10n.hostEventsPastTab,
+          ),
+        ],
+      ),
+      body: CatchRootScreenBody.paged(
+        controller: _tabs,
+        pages: [
+          for (final view in HostEventsView.values)
+            CatchRootScreenPageSpec.scroll(
+              page: HostEventsTimelinePage(
+                key: ValueKey('host-events-${widget.club.id}-${view.name}'),
+                organizerId: widget.club.id,
+                view: view,
+                state: widget.state,
+                onRetryEvents: widget.onRetryEvents,
+                onLoadMore: view == HostEventsView.upcoming
+                    ? widget.onLoadMoreActive
+                    : widget.onLoadMorePast,
+                onRetryPage: view == HostEventsView.upcoming
+                    ? widget.onLoadMoreActive
+                    : widget.onRetryPast,
+                onCreateEvent: _showEventEntrySheet,
+                onManageEvent: (event) =>
+                    widget.onManageEvent(widget.club, event),
+              ),
             ),
-          ),
-          HostEventsWorkspaceStatus.error => CatchSliverErrorState.fromError(
-            state.error!,
-            context: AppErrorContext.event,
-            onRetry: onRetryEvents,
-          ),
-          HostEventsWorkspaceStatus.empty => CatchSliverEmptyState(
-            icon: CatchIcons.eventBusy,
-            title: state.emptyTitle(context.l10n),
-            message: state.emptyBody(context.l10n),
-            action: CatchButton(
-              label: context.l10n.hostsHostEventsListLabelNewEvent,
-              size: CatchButtonSize.sm,
-              onPressed: () => _showEventEntrySheet(context),
-            ),
-          ),
-          HostEventsWorkspaceStatus.populated => SliverList.list(
-            children: [
-              if (state.activeSections.isNotEmpty) ...[
-                Padding(
-                  padding: CatchInsets.hostEventFirstSectionLabel,
-                  child: Text(
-                    context.l10n.hostEventsTimelineSchedule.toUpperCase(),
-                    style: CatchTextStyles.monoLabel(
-                      context,
-                      color: CatchTokens.of(context).ink3,
-                    ),
-                  ),
-                ),
-                for (final section in state.activeSections) ...[
-                  Padding(
-                    padding: CatchInsets.hostEventSectionLabel,
-                    child: Text(
-                      section.label.toUpperCase(),
-                      style: CatchTextStyles.monoLabel(
-                        context,
-                        color: CatchTokens.of(context).ink3,
-                      ),
-                    ),
-                  ),
-                  for (final row in section.rows) ...[
-                    HostEventLifecycleRow(
-                      key: ValueKey<String>('host-event-row-${row.event.id}'),
-                      data: row,
-                      onPressed: () => onManageEvent(club, row.event),
-                    ),
-                    gapH10,
-                  ],
-                ],
-              ],
-              if (state.activeLoadMoreError != null)
-                CatchInlineErrorState.fromError(
-                  state.activeLoadMoreError!,
-                  context: AppErrorContext.event,
-                  onRetry: onLoadMoreActive,
-                )
-              else if (state.hasMoreActive)
-                Align(
-                  child: CatchButton(
-                    key: const ValueKey('host-events-load-more-active'),
-                    label: context.l10n.hostEventsTimelineLoadMoreSchedule,
-                    variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
-                    isLoading: state.loadingMoreActive,
-                    onPressed: state.canLoadMoreActive
-                        ? onLoadMoreActive
-                        : null,
-                  ),
-                ),
-              if (state.pastSections.isNotEmpty) ...[
-                if (hasScheduleRegion) gapH24,
-                Padding(
-                  padding: hasScheduleRegion
-                      ? CatchInsets.hostEventSectionLabel
-                      : CatchInsets.hostEventFirstSectionLabel,
-                  child: Text(
-                    context.l10n.hostEventsTimelineHistory.toUpperCase(),
-                    style: CatchTextStyles.monoLabel(
-                      context,
-                      color: CatchTokens.of(context).ink3,
-                    ),
-                  ),
-                ),
-                for (
-                  var sectionIndex = 0;
-                  sectionIndex < state.pastSections.length;
-                  sectionIndex += 1
-                )
-                  CatchSection.fieldRows(
-                    key: ValueKey<String>(
-                      'host-events-month-${state.pastSections[sectionIndex].key}',
-                    ),
-                    title: state.pastSections[sectionIndex].label,
-                    first: sectionIndex == 0,
-                    children: [
-                      for (final row in state.pastSections[sectionIndex].rows)
-                        CatchField.nav(
-                          key: ValueKey<String>(
-                            'host-event-field-${row.event.id}',
-                          ),
-                          leading: HostEventLifecycleDateBlock(
-                            data: row,
-                            accent: ActivityPalette.resolve(
-                              context,
-                              row.event.activityKind,
-                            ).accent,
-                          ),
-                          leadingExtent: CatchSpacing.s12,
-                          title: row.event.title,
-                          body: row.metaLabel,
-                          emphasis: CatchFieldEmphasis.title,
-                          bodyMaxLines: 1,
-                          onTap: () => onManageEvent(club, row.event),
-                        ),
-                    ],
-                  ),
-              ],
-              if (state.pastError != null)
-                CatchInlineErrorState.fromError(
-                  state.pastError!,
-                  context: AppErrorContext.event,
-                  onRetry: onRetryPast,
-                )
-              else if (state.hasMorePast)
-                Align(
-                  child: CatchButton(
-                    key: const ValueKey('host-events-load-more-past'),
-                    label: context.l10n.hostEventsTimelineLoadMoreHistory,
-                    variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
-                    isLoading: state.loadingMorePast,
-                    onPressed: state.canLoadMorePast ? onLoadMorePast : null,
-                  ),
-                ),
-            ],
-          ),
-        },
-      ],
+        ],
+      ),
     );
   }
 
-  Future<void> _showEventEntrySheet(BuildContext context) async {
+  Future<void> _showEventEntrySheet() async {
     final intent = await showHostEventEntrySheet(
       context: context,
-      state: entryState,
+      state: widget.entryState,
     );
-    if (intent == null || !context.mounted) return;
-    onEventEntrySelected(club, entryState, intent);
+    if (intent == null || !mounted) return;
+    widget.onEventEntrySelected(widget.club, widget.entryState, intent);
   }
 }
 
+/// One lifecycle page. The root owns tabs and scrolling chrome; this adapter
+/// selects data/state only, and the shared page/section/record owners lay it out.
+class HostEventsTimelinePage extends StatelessWidget
+    implements CatchRootScreenPageOwner {
+  const HostEventsTimelinePage({
+    super.key,
+    required this.organizerId,
+    required this.view,
+    required this.state,
+    required this.onLoadMore,
+    required this.onRetryPage,
+    required this.onCreateEvent,
+    required this.onManageEvent,
+    this.onRetryEvents,
+  });
+
+  final String organizerId;
+  final HostEventsView view;
+  final HostEventsWorkspaceState state;
+  final VoidCallback onLoadMore;
+  final VoidCallback onRetryPage;
+  final VoidCallback onCreateEvent;
+  final ValueChanged<Event> onManageEvent;
+  final VoidCallback? onRetryEvents;
+
+  @override
+  Widget build(BuildContext context) {
+    final upcoming = view == HostEventsView.upcoming;
+    final sections = upcoming ? state.activeSections : state.pastSections;
+    final pageError = upcoming ? state.activeLoadMoreError : state.pastError;
+    final hasMore = upcoming ? state.hasMoreActive : state.hasMorePast;
+    final loadingMore = upcoming
+        ? state.loadingMoreActive
+        : state.loadingMorePast;
+    return CatchRootScreenPageScrollView.standard(
+      scrollKey: PageStorageKey('host-events-$organizerId-${view.name}'),
+      slivers: [
+        if (state.status == HostEventsWorkspaceStatus.loading ||
+            (sections.isEmpty && loadingMore))
+          const SliverToBoxAdapter(child: CatchSkeletonRows(count: 4))
+        else if (state.status == HostEventsWorkspaceStatus.error)
+          CatchSliverErrorState.fromError(
+            state.error!,
+            context: AppErrorContext.event,
+            onRetry: onRetryEvents,
+          )
+        else if (sections.isEmpty && pageError != null)
+          CatchSliverErrorState.fromError(
+            pageError,
+            context: AppErrorContext.event,
+            onRetry: onRetryPage,
+          )
+        else if (sections.isEmpty && !hasMore)
+          CatchSliverEmptyState(
+            icon: CatchIcons.eventBusy,
+            title: upcoming
+                ? state.emptyTitle(context.l10n)
+                : context.l10n.hostEventsPastEmptyTitle,
+            message: upcoming
+                ? state.emptyBody(context.l10n)
+                : context.l10n.hostEventsPastEmptyBody,
+            action: upcoming
+                ? CatchButton(
+                    label: context.l10n.hostsHostEventsListLabelNewEvent,
+                    onPressed: onCreateEvent,
+                  )
+                : null,
+          )
+        else
+          SliverToBoxAdapter(
+            child: CatchSectionList(
+              emptyStateOmitted: true,
+              children: [
+                for (final section in sections)
+                  CatchSection.plain(
+                    key: ValueKey(
+                      'host-events-${section.grouping.name}-${section.key}',
+                    ),
+                    title: section.label(context.l10n),
+                    titleColor: CatchTokens.of(context).ink2,
+                    children: [
+                      for (final row in section.rows)
+                        HostEventLifecycleRow(
+                          key: ValueKey('host-event-row-${row.event.id}'),
+                          data: row,
+                          onPressed: () => onManageEvent(row.event),
+                        ),
+                    ],
+                  ),
+                if (pageError != null)
+                  CatchInlineErrorState.fromError(
+                    pageError,
+                    context: AppErrorContext.event,
+                    onRetry: onRetryPage,
+                  )
+                else if (hasMore)
+                  Align(
+                    child: CatchButton(
+                      key: ValueKey(
+                        upcoming
+                            ? 'host-events-load-more-active'
+                            : 'host-events-load-more-past',
+                      ),
+                      label: upcoming
+                          ? context.l10n.hostEventsTimelineLoadMoreSchedule
+                          : context.l10n.hostEventsTimelineLoadMoreHistory,
+                      variant: CatchButtonVariant.secondary,
+                      isLoading: loadingMore,
+                      onPressed: loadingMore ? null : onLoadMore,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Host lifecycle semantics over the canonical record row. Both tabs use this
+/// adapter; it cannot choose its own padding, typography or interaction shape.
 class HostEventLifecycleRow extends StatelessWidget {
   const HostEventLifecycleRow({
     super.key,
@@ -313,148 +349,19 @@ class HostEventLifecycleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, data.event.activityKind);
-
-    return CatchSurface(
-      borderColor: t.line,
-      radius: CatchRadius.md,
-      clipBehavior: Clip.antiAlias,
-      onTap: onPressed,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 76),
-        child: IntrinsicHeight(
-          child: Row(
-            children: [
-              SizedBox(
-                width: CatchSpacing.s1,
-                child: ColoredBox(color: activity.accent),
-              ),
-              Padding(
-                padding: CatchInsets.hostEventLifecycleDate,
-                child: HostEventLifecycleDateBlock(
-                  data: data,
-                  accent: activity.accent,
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: CatchInsets.contentVertical,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        data.event.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.name(context, color: t.ink),
-                      ),
-                      gapH4,
-                      Text(
-                        data.metaLabel,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.monoLabelS(
-                          context,
-                          color: t.ink3,
-                        ),
-                      ),
-                      if (!data.isPast) ...[
-                        gapH8,
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(CatchRadius.pill),
-                          child: SizedBox(
-                            height: CatchSpacing.s1,
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                ColoredBox(color: t.line2),
-                                FractionallySizedBox(
-                                  alignment: Alignment.centerLeft,
-                                  widthFactor: data.fillRatio,
-                                  child: ColoredBox(color: activity.accent),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: CatchInsets.inlineHorizontalRelaxed,
-                child: Icon(
-                  CatchIcons.chevronRightRounded,
-                  color: t.ink3,
-                  size: CatchIcon.sm,
-                ),
-              ),
-            ],
-          ),
+    return CatchRecordRow(
+      title: data.event.title,
+      icon: activity.glyph,
+      color: activity.accent,
+      facts: data.facts(
+        context.l10n,
+        time: MaterialLocalizations.of(context).formatTimeOfDay(
+          TimeOfDay.fromDateTime(data.event.startTime),
+          alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
         ),
       ),
-    );
-  }
-}
-
-class HostEventLifecycleDateBlock extends StatelessWidget {
-  const HostEventLifecycleDateBlock({
-    super.key,
-    required this.data,
-    required this.accent,
-  });
-
-  final HostEventLifecycleRowData data;
-  final Color accent;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final semanticLabel = data.isLive || data.isToday
-        ? (data.isLive
-              ? context.l10n.hostsHostEventsListTextLive
-              : context.l10n.hostsHostEventsListTextToday)
-        : '${data.dateLabel} ${data.monthLabel}';
-    return Semantics(
-      label: semanticLabel,
-      excludeSemantics: true,
-      child: SizedBox(
-        width: CatchSpacing.s12,
-        child: data.isLive || data.isToday
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(CatchIcons.eventLive, color: accent, size: CatchIcon.sm),
-                  gapH3,
-                  Text(
-                    data.isLive
-                        ? context.l10n.hostsHostEventsListTextLive
-                        : context.l10n.hostsHostEventsListTextToday,
-                    style: CatchTextStyles.monoLabelS(context, color: t.ink3),
-                  ),
-                ],
-              )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    data.dateLabel,
-                    style: CatchTextStyles.titleL(
-                      context,
-                      color: data.isPast ? t.ink3 : t.ink,
-                    ),
-                  ),
-                  gapH3,
-                  Text(
-                    data.monthLabel,
-                    style: CatchTextStyles.monoLabelS(context, color: t.ink3),
-                  ),
-                ],
-              ),
-      ),
+      onTap: onPressed,
     );
   }
 }

@@ -31,6 +31,10 @@ void main() {
                           title:
                               'A long record title which must remain completely readable',
                           metadata: 'Form response · 20 May 2026',
+                          facts: const [
+                            '18:00 · A location name that must remain fully readable',
+                            '24 of 30 registered',
+                          ],
                           description:
                               'A complete message or source explanation belongs here, including its last sentence.',
                           icon: CatchIcons.descriptionOutlined,

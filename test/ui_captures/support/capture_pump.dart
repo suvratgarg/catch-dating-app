@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -207,6 +208,8 @@ Widget _frame({
     overrides: [...providerOverrides],
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: _captureTheme(AppTheme.light),
       darkTheme: _captureTheme(AppTheme.dark),
       themeMode: brightness == Brightness.dark

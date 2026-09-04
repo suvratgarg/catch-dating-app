@@ -94,7 +94,7 @@
         {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/widgets/host_today_body.dart", "symbol": "HostTodayBody", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
         {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "HostEventsScreen", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
         {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "_HostEventsRouteScaffoldState", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/widgets/host_events_list.dart", "symbol": "HostEventsClubSection", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"}
+        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/widgets/host_events_list.dart", "symbol": "_HostEventsClubSectionState", "family": "root", "expression": "CatchRootScreenScaffold.withPrimaryRail", "bodyGeometry": "standard", "topEdge": "safe-area"}
       ],
       "reason": "Host Today and Events use the same root composition in loading, error, empty, and populated states."
     },
@@ -8979,7 +8979,12 @@
         {
           "id": "host_home_events_list",
           "status": "captured",
-      "notes": "The deterministic full-shell capture is the canonical Host Events evidence ID. Events owns New/exact-policy-gated Repeat actions, paginated Schedule and History sections, month groups, activity-spined rows, and truthful fill progress without duplicating Today's operational spotlight or attention queue. The pre-merge reference drift remains tracked by HOST-V2-EVENTS-VISUAL-DRIFT-001; canonical references are not refreshed merely to clear CI."
+          "notes": "Canonical full-shell Upcoming capture: sticky Upcoming/Past navigation, day groups, natural-height activity-led record rows, meaningful time/place and registration facts, and New/exact-policy-gated Repeat actions. Floating navigation is preserved. This is the approved option-one row family with option-two upcoming grouping; it does not duplicate Today's operational spotlight."
+        },
+        {
+          "id": "host_home_events_past",
+          "status": "captured",
+          "notes": "The same production Events route after selecting Past. Month/year groups and date/time/place/attendance facts reuse CatchRecordRow and preserve full-shell navigation."
         },
         {
           "id": "host_home_switcher_cohost",
@@ -9172,7 +9177,7 @@
           "id": "club_events_error",
           "kind": "error",
           "status": "captured",
-          "source": "HostEventsClubCard maps event errors into HostEventsWorkspaceState before HostEventsClubSection renders CatchInlineErrorState.fromError with AppErrorContext.event and a typed retry callback.",
+          "source": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelinePage renders CatchSliverErrorState.fromError in the canonical page viewport with AppErrorContext.event and a typed retry callback.",
           "nextAction": "Add nested event-list offline capture if event-specific offline copy diverges from club-load offline.",
           "previewIds": [
             "hostHomeRouteStates"
@@ -9185,7 +9190,7 @@
           "id": "club_events_offline",
           "kind": "offline",
           "status": "captured",
-          "source": "hostEventsTimelineControllerProvider offline errors render CatchInlineErrorState.fromError with retryable connection issue copy inside the selected club event card.",
+          "source": "hostEventsTimelineControllerProvider offline errors render CatchSliverErrorState.fromError with retryable connection issue copy inside the canonical page viewport.",
           "captureIds": [
             "host_home_events_offline"
           ],
@@ -9195,9 +9200,11 @@
           "id": "upcoming_events",
           "kind": "populated",
           "status": "captured",
-          "source": "HostEventsWorkspaceState excludes cancelled events, classifies exact Upcoming/Live/Past boundaries from the paginated timeline, orders and month-groups them, and feeds HostEventLifecycleRow with provider-free display data.",
+          "source": "HostEventsWorkspaceState excludes cancelled events, groups Upcoming by day and Past by month/year, and feeds HostEventLifecycleRow. CatchRootScreenScaffold owns the sticky Upcoming/Past rail; CatchRecordRow owns natural-height activity-led rows and semantic facts.",
           "tests": [
-            "test/hosts/host_operations_screen_test.dart"
+            "test/hosts/host_operations_screen_test.dart",
+            "test/hosts/host_events_screen_state_test.dart",
+            "test/hosts/host_events_layout_test.dart"
           ],
       "nextAction": "Re-baseline the deliberately consolidated Events composition through an approved design-parity change, then remove the applicable visual-drift debt. Pending approval, offer, draft, and guest-inquiry sources remain future truthful attention inputs rather than fabricated UI.",
           "previewIds": [
@@ -9205,7 +9212,8 @@
           ],
           "captureIds": [
             "host_home_dashboard",
-            "host_home_events_list"
+            "host_home_events_list",
+            "host_home_events_past"
           ]
         },
         {
@@ -9479,7 +9487,7 @@
               "cancelled_filtered",
               "long_titles"
             ],
-        "migration": "HostEventsClubCard maps the paginated event timeline only into HostEventsWorkspaceState. The timeline controller owns schedule/history paging and partial recovery; the workspace owns loading/error/empty/populated mapping, lifecycle classification, sorting, month grouping, Repeat availability, and row display data. Provider-free Events sections receive typed retry/pagination/New/Repeat/Manage callbacks; Today owns spotlight and attention separately.",
+        "migration": "HostEventsClubCard maps the paginated event timeline into HostEventsWorkspaceState. The controller independently merges both paging lanes and guards refreshed sessions. HostEventsClubSection supplies a canonical sticky rail and typed page owners. HostEventsTimelinePage selects day-grouped Upcoming or month-grouped Past and page-local loading/error/empty states. Shared section and record primitives own geometry; Today remains separate.",
             "previewIds": [
               "hostHomeRouteStates",
               "hostHomeEventSectionStates"
@@ -9499,9 +9507,9 @@
               "symbol": "HostEventLifecycleRow"
             },
             "currentOwner": "HostEventLifecycleRow",
-            "targetOwner": "local Host Events row rendering unless reused by Host Manage/Host Clubs",
+            "targetOwner": "Host lifecycle semantic adapter over canonical CatchRecordRow",
             "dependencies": [
-              "catch.surface"
+              "catch.record_row"
             ],
             "states": [
               "upcoming",
@@ -9510,7 +9518,7 @@
               "long_title",
               "divider"
             ],
-            "migration": "HostEventLifecycleRow receives provider-free HostEventLifecycleRowData plus a typed tap callback, renders activity/date/meta/fill semantics, and stays Host-feature-owned until another surface proves the identical contract.",
+            "migration": "HostEventLifecycleRow maps title, activity glyph, locale/clock-aware schedule, location, registration or attendance, and destination into CatchRecordRow. It owns no independent padding, font sizing, hit treatment or date-block renderer; primary facts reflow without truncation.",
             "previewIds": [
               "hostHomeRouteStates",
               "HostEventLifecycleRow/Exact catalog"

@@ -11841,19 +11841,96 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_events_list"
   },
-  "hostEventsTimelineSchedule": "Schedule",
-  "@hostEventsTimelineSchedule": {
-    "description": "Heading for live and upcoming events in the unified Host Events timeline.",
+  "hostEventsUpcomingTab": "Upcoming",
+  "@hostEventsUpcomingTab": {
+    "description": "Peer view containing live and upcoming events.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
+    "x-surface": "hosts.events.presentation.host_events_list"
   },
-  "hostEventsTimelineHistory": "History",
-  "@hostEventsTimelineHistory": {
-    "description": "Heading for completed events in the unified Host Events timeline.",
+  "hostEventsPastTab": "Past",
+  "@hostEventsPastTab": {
+    "description": "Peer view containing completed events.",
     "x-audience": "host",
     "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
+    "x-surface": "hosts.events.presentation.host_events_list"
+  },
+  "hostEventsPastEmptyTitle": "No past events yet",
+  "@hostEventsPastEmptyTitle": {
+    "description": "Empty completed event inventory title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.host_events_list"
+  },
+  "hostEventsPastEmptyBody": "Completed events will appear here with their attendance history.",
+  "@hostEventsPastEmptyBody": {
+    "description": "Empty completed event inventory explanation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.host_events_list"
+  },
+  "hostEventsTodayDate": "Today · {date}",
+  "@hostEventsTodayDate": {
+    "description": "Day section heading for events starting today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.host_events_list",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "hostEventsLiveSchedule": "Live · {schedule}",
+  "@hostEventsLiveSchedule": {
+    "description": "Live event timing and meeting location.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.host_events_list",
+    "placeholders": {
+      "schedule": {
+        "type": "String"
+      }
+    }
+  },
+  "hostEventsAttended": "{count} attended",
+  "@hostEventsAttended": {
+    "description": "Actual attendance count for a completed event.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.host_events_list",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hostEventsRegisteredCapacity": "{count} of {capacity} registered",
+  "@hostEventsRegisteredCapacity": {
+    "description": "Registrations relative to event capacity, not attendance.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.host_events_list",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "capacity": {
+        "type": "int"
+      }
+    }
+  },
+  "hostEventsRegistered": "{count} registered",
+  "@hostEventsRegistered": {
+    "description": "Registration count when an event has no positive capacity.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.host_events_list",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "hostEventsTimelineLoadMoreSchedule": "Load more events",
   "@hostEventsTimelineLoadMoreSchedule": {

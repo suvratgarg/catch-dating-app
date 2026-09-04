@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.23.0
-updated: 2026-09-03
+version: 1.24.0
+updated: 2026-09-04
 owner: app_architecture
 status: active
 ---
@@ -554,11 +554,15 @@ title gap, terminal spacer, or field interaction plane.
 `CatchInsets.pageBody` owns the 20 pt horizontal gutter and 16 pt standard body
 start. `CatchInsets.primaryRailTitleBlock` owns the 8 pt title-to-rail handoff;
 `CatchRootScreenScaffold.withPrimaryRail` accepts only the typed `CatchPrimaryRail`
-contract, owns the 44 pt minimum rail and its scaled extent, and runtime-enforces its reported extent; and
+contract, owns the iOS 44 / Android 48 minimum rail and its scaled extent, and
+runtime-enforces the canonical variant's reported extent; feature adapters
+forward that scaled preferred size instead of restating a fixed height. The
 `CatchRootScreenPageScrollView` reapplies the same 16 pt standard body start after
 the rail. The semantic-layout and tabbed-scaffold tests pin those numeric
 mappings. The composition checker validates semantic roles rather than the
-literal numbers.
+literal numbers. Native source reference, semantic adoption and measured
+interaction verification remain separate responsibilities; see
+[the platform token boundary](design_language.md#52-native-reference-and-catch-adoption-boundary).
 
 Persistent context uses `CatchStatusStripData`, not queued notices.
 `MyApp` publishes honest connectivity context through `CatchStatusStripScope`

@@ -103,10 +103,14 @@ class HostEventsTimelineData {
 
 @riverpod
 class HostEventsTimelineController extends _$HostEventsTimelineController {
+  int _generation = 0;
+
   @override
   Future<HostEventsTimelineData> build(
     HostEventsTimelineRequest request,
   ) async {
+    ++_generation;
+    ref.onDispose(() => ++_generation);
     final repository = ref.read(eventRepositoryProvider);
     final activePage = await repository.fetchActiveEventsPage(
       organizerId: request.organizerId,
@@ -129,6 +133,7 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
   }
 
   Future<void> loadMoreActive() async {
+    final generation = _generation;
     final current = state.asData?.value;
     if (current == null || !current.canLoadMoreActive) return;
     state = AsyncData(
@@ -142,17 +147,22 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
             sessionBoundary: request.sessionBoundary,
             startAfter: current.activeCursor,
           );
+      final latest = _currentData(generation);
+      if (latest == null) return;
       state = AsyncData(
-        _appendActive(current, page).copyWith(loadingMoreActive: false),
+        _appendActive(latest, page).copyWith(loadingMoreActive: false),
       );
     } on Object catch (error) {
+      final latest = _currentData(generation);
+      if (latest == null) return;
       state = AsyncData(
-        current.copyWith(loadingMoreActive: false, activeLoadMoreError: error),
+        latest.copyWith(loadingMoreActive: false, activeLoadMoreError: error),
       );
     }
   }
 
   Future<void> loadMorePast() async {
+    final generation = _generation;
     final current = state.asData?.value;
     if (current == null || !current.canLoadMorePast) return;
     state = AsyncData(
@@ -166,12 +176,16 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
             sessionBoundary: request.sessionBoundary,
             startAfter: current.pastCursor,
           );
+      final latest = _currentData(generation);
+      if (latest == null) return;
       state = AsyncData(
-        _appendPast(current, page).copyWith(loadingMorePast: false),
+        _appendPast(latest, page).copyWith(loadingMorePast: false),
       );
     } on Object catch (error, stackTrace) {
+      final latest = _currentData(generation);
+      if (latest == null) return;
       state = AsyncData(
-        current.copyWith(
+        latest.copyWith(
           loadingMorePast: false,
           pastError: error,
           pastStackTrace: stackTrace,
@@ -181,8 +195,13 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
   }
 
   Future<void> retryPast() async {
+    final generation = _generation;
     final current = state.asData?.value;
     if (current == null || current.loadingMorePast) return;
+    if (current.pastEvents.isNotEmpty && current.hasMorePast) {
+      await loadMorePast();
+      return;
+    }
     state = AsyncData(
       current.copyWith(loadingMorePast: true, clearPastError: true),
     );
@@ -193,8 +212,10 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
             organizerId: request.organizerId,
             sessionBoundary: request.sessionBoundary,
           );
+      final latest = _currentData(generation);
+      if (latest == null) return;
       state = AsyncData(
-        current.copyWith(
+        latest.copyWith(
           pastEvents: page.items,
           pastCursor: page.nextCursor,
           clearPastCursor: page.nextCursor == null,
@@ -204,8 +225,10 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
         ),
       );
     } on Object catch (error, stackTrace) {
+      final latest = _currentData(generation);
+      if (latest == null) return;
       state = AsyncData(
-        current.copyWith(
+        latest.copyWith(
           loadingMorePast: false,
           pastError: error,
           pastStackTrace: stackTrace,
@@ -213,6 +236,11 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
       );
     }
   }
+
+  // A page response updates its own lane in the latest state. Never restore a
+  // pre-await snapshot over the other tab's progress, or a refreshed session.
+  HostEventsTimelineData? _currentData(int generation) =>
+      generation == _generation ? state.asData?.value : null;
 }
 
 HostEventsTimelineData _initialState(

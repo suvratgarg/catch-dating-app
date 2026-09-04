@@ -2018,8 +2018,17 @@ Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
 Widget catchRecordRowContractStates(BuildContext context) => _ContractScreen(
   title: 'CatchRecordRow',
   contractId: 'catch.record_row',
-  states: const ['read-only', 'navigable', 'multiline'],
+  states: const ['read-only', 'navigable', 'multiline', 'facts'],
   children: [
+    _StateCard(
+      label: 'facts',
+      child: CatchRecordRow(
+        title: 'Friday Evening Trivia Night at The Daily Bar',
+        icon: CatchIcons.eventAvailable,
+        facts: const ['8:00 PM · The Daily Bar', '24 of 30 registered'],
+        onTap: _noop,
+      ),
+    ),
     _StateCard(
       label: 'read-only',
       child: CatchRecordRow(

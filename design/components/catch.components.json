@@ -11509,7 +11509,7 @@
       "name": "CatchRecordRow",
       "status": "active",
       "kind": "composite",
-      "summary": "Natural-height read-only record with heading, evidence metadata, prose, semantic marker and optional navigation.",
+      "summary": "Natural-height read-only record with heading, important facts, evidence metadata, prose, semantic marker and optional navigation.",
       "dart": {
         "symbol": "CatchRecordRow",
         "file": "lib/core/widgets/catch_record_row.dart",
@@ -11560,6 +11560,12 @@
             "dartType": "String"
           },
           {
+            "name": "facts",
+            "type": "list",
+            "required": false,
+            "dartType": "List<String>"
+          },
+          {
             "name": "description",
             "type": "string",
             "required": false,
@@ -11575,17 +11581,20 @@
         "states": [
           "read-only",
           "navigable",
-          "multiline"
+          "multiline",
+          "facts"
         ],
         "slots": [
           "title",
           "metadata",
+          "facts",
           "description"
         ],
         "tokens": [],
         "dartRoles": [
           "CatchTextStyles.recordTitle",
           "CatchTextStyles.recordContext",
+          "CatchTextStyles.supporting",
           "CatchTextStyles.recordBody"
         ],
         "goldens": [],
