@@ -437,6 +437,7 @@ function parseArgs(argv) {
     repo: repoRoot,
     selfTest: false,
     inventory: false,
+    query: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -445,9 +446,13 @@ function parseArgs(argv) {
     else if (arg === "--repo") args.repo = path.resolve(requireValue(argv, (index += 1), arg));
     else if (arg === "--json") args.json = true;
     else if (arg === "--inventory") args.inventory = true;
+    else if (arg === "--query") args.query = requireValue(argv, (index += 1), arg);
     else if (arg === "--self-test") args.selfTest = true;
     else if (arg === "--help" || arg === "-h") args.help = true;
     else throw new DocumentMetadataError(`Unknown argument: ${arg}`);
+  }
+  if (args.query != null && !args.inventory) {
+    throw new DocumentMetadataError("--query requires --inventory.");
   }
   return args;
 }
@@ -530,6 +535,7 @@ Options:
   --base <ref>    Reject source-frontmatter identity swaps and version decreases.
   --ref <ref>     Inspect an exact Git revision instead of the working tree.
   --inventory     Include a disposable Markdown owner/heading/reference inventory.
+  --query <text>  Limit inventory output to matching paths, owners, or headings.
   --json          Print the comparison report as JSON.
   --self-test     Prove known-bad decrease and deletion detection.
 `);
@@ -587,6 +593,14 @@ function main() {
       ...comparison,
       ...(args.inventory ? {inventory: buildDocumentInventory(target)} : {}),
     };
+    if (args.query != null) {
+      const query = args.query.toLowerCase();
+      report.inventory.query = args.query;
+      report.inventory.documents = report.inventory.documents.filter((document) =>
+        [document.path, document.metadata?.id, document.metadata?.owner,
+          ...document.headings.map((heading) => heading.title)]
+          .some((value) => value?.toLowerCase().includes(query)));
+    }
     if (args.json) console.log(JSON.stringify(report, null, 2));
     else if (!comparison.pass) {
       console.error("Document metadata check failed:");
@@ -598,6 +612,7 @@ function main() {
         `Document metadata passed: ${currentDocuments.length} source-governed Markdown files.`,
       );
       if (args.inventory) {
+        console.log(`Inventory: ${report.inventory.documents.length} matching Markdown files.`);
         for (const document of report.inventory.documents) {
           console.log(`${document.path}\t${document.words} words\t${document.metadata?.owner ?? "no metadata"}\t${document.referencedBy.length} inbound Markdown references`);
         }
