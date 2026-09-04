@@ -11,16 +11,17 @@ import {
 
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {CreateEventRosterHandoffCallablePayload} from
+import type {CreateEventRosterHandoffCallablePayload} from
   "../shared/generated/createEventRosterHandoffCallablePayload";
-import {CreateEventRosterHandoffCallableResponse} from
+import type {CreateEventRosterHandoffCallableResponse} from
   "../shared/generated/createEventRosterHandoffCallableResponse";
-import {
+import type {
   EventDocument,
   EventRosterHandoffDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {validateCreateEventRosterHandoffCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateCreateEventRosterHandoffCallablePayload,
+} from "../shared/generated/validators/createEventRosterHandoffInput";
 import {
   eventOrganizerRef,
   isEventOrganizerManager,

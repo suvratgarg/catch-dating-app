@@ -3,7 +3,9 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import sharp from "sharp";
-import {profilePhotoPolicy} from "../shared/generated/schemaRegistry";
+import {
+  profilePhotoPolicy,
+} from "../shared/generated/catalogs/profilePhotoPolicy";
 
 const GALLERY_THUMBNAIL_SIZE = 640;
 const LOGO_THUMBNAIL_SIZE = profilePhotoPolicy.thumbnailSize;

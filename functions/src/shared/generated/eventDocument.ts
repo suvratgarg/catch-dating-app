@@ -2,9 +2,9 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-import {UploadedPhoto} from "./uploadedPhoto";
-import {EventOrigin} from "./eventOrigin";
-import {EventRuntimeAccess} from "./eventRuntimeAccess";
+import type {UploadedPhoto} from "./uploadedPhoto";
+import type {EventOrigin} from "./eventOrigin";
+import type {EventRuntimeAccess} from "./eventRuntimeAccess";
 
 /**
  * Canonical event document stored at events/{eventId}. The event id is the document id and is not stored in document data.

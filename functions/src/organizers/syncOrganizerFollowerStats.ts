@@ -1,6 +1,8 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import {OrganizerFollowDocument} from "../shared/generated/firestoreAdminTypes";
+import type {
+  OrganizerFollowDocument,
+} from "../shared/generated/firestoreAdminTypes";
 
 interface SyncOrganizerFollowerStatsDeps {
   firestore: () => FirebaseFirestore.Firestore;

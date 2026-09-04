@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
-import {OrganizerContactDocument} from
+import type {OrganizerContactDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {mergeConflicts, mergeEvidence} from "./organizerContactMerges";
 

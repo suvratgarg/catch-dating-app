@@ -5,21 +5,23 @@ import {CallableRequest, HttpsError, onCall} from
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
-import {
+import type {
   OrganizerContactDocument,
   OrganizerContactIdentityClaimDocument,
   OrganizerContactMergeReceiptDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {MergeOrganizerContactsCallablePayload} from
+import type {MergeOrganizerContactsCallablePayload} from
   "../shared/generated/mergeOrganizerContactsCallablePayload";
-import {MutateOrganizerContactMergeCallableResponse} from
+import type {MutateOrganizerContactMergeCallableResponse} from
   "../shared/generated/mutateOrganizerContactMergeCallableResponse";
-import {UnmergeOrganizerContactsCallablePayload} from
+import type {UnmergeOrganizerContactsCallablePayload} from
   "../shared/generated/unmergeOrganizerContactsCallablePayload";
 import {
   validateMergeOrganizerContactsCallablePayload,
+} from "../shared/generated/validators/mergeOrganizerContactsInput";
+import {
   validateUnmergeOrganizerContactsCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/unmergeOrganizerContactsInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

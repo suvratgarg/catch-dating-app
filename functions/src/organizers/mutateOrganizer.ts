@@ -3,18 +3,22 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
-import {ArchiveOrganizerCallablePayload} from
+import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
+import type {ArchiveOrganizerCallablePayload} from
   "../shared/generated/archiveOrganizerCallablePayload";
-import {DeleteOrganizerCallablePayload} from
+import type {DeleteOrganizerCallablePayload} from
   "../shared/generated/deleteOrganizerCallablePayload";
-import {UpdateOrganizerCallablePayload} from
+import type {UpdateOrganizerCallablePayload} from
   "../shared/generated/updateOrganizerCallablePayload";
 import {
   validateArchiveOrganizerCallablePayload,
+} from "../shared/generated/validators/archiveOrganizerInput";
+import {
   validateDeleteOrganizerCallablePayload,
+} from "../shared/generated/validators/deleteOrganizerInput";
+import {
   validateUpdateOrganizerCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/updateOrganizerInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {isOrganizerManager, isOrganizerOwner} from

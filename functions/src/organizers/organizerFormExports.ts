@@ -9,18 +9,20 @@ import {appCheckCallableOptionsWithLimits} from
 import {normalizePayloadStrings} from
   "../shared/callablePayloadNormalization";
 import {requireAuth} from "../shared/auth";
-import {
+import type {
   OrganizerFormDocument,
   OrganizerFormExportDocument,
   OrganizerFormResponseDocument,
   OrganizerFormVersionDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {RequestOrganizerFormExportCallablePayload} from
+import type {RequestOrganizerFormExportCallablePayload} from
   "../shared/generated/requestOrganizerFormExportCallablePayload";
-import {RequestOrganizerFormExportCallableResponse} from
+import type {RequestOrganizerFormExportCallableResponse} from
   "../shared/generated/requestOrganizerFormExportCallableResponse";
-import {validateRequestOrganizerFormExportCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateRequestOrganizerFormExportCallablePayload,
+} from
+  "../shared/generated/validators/requestOrganizerFormExportInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

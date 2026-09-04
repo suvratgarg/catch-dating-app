@@ -5,7 +5,7 @@ import {
   createStripeHostOnboardingLinkHandler,
   refreshStripeHostPaymentAccountHandler,
 } from "./stripeHostAccounts";
-import {
+import type {
   HostPaymentAccountDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {

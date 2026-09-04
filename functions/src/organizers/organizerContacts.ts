@@ -9,29 +9,29 @@ import {
   appCheckCallableOptionsWithSecrets,
 } from
   "../shared/callableOptions";
-import {GetOrganizerContactDetailCallablePayload} from
+import type {GetOrganizerContactDetailCallablePayload} from
   "../shared/generated/getOrganizerContactDetailCallablePayload";
-import {GetOrganizerContactDetailCallableResponse} from
+import type {GetOrganizerContactDetailCallableResponse} from
   "../shared/generated/getOrganizerContactDetailCallableResponse";
-import {CreateOrganizerContactCallablePayload} from
+import type {CreateOrganizerContactCallablePayload} from
   "../shared/generated/createOrganizerContactCallablePayload";
-import {CreateOrganizerContactCallableResponse} from
+import type {CreateOrganizerContactCallableResponse} from
   "../shared/generated/createOrganizerContactCallableResponse";
-import {CreateOrganizerContactNoteCallablePayload} from
+import type {CreateOrganizerContactNoteCallablePayload} from
   "../shared/generated/createOrganizerContactNoteCallablePayload";
-import {ExportOrganizerContactsCallablePayload} from
+import type {ExportOrganizerContactsCallablePayload} from
   "../shared/generated/exportOrganizerContactsCallablePayload";
-import {ExportOrganizerContactsCallableResponse} from
+import type {ExportOrganizerContactsCallableResponse} from
   "../shared/generated/exportOrganizerContactsCallableResponse";
-import {MutateOrganizerContactCallablePayload} from
+import type {MutateOrganizerContactCallablePayload} from
   "../shared/generated/mutateOrganizerContactCallablePayload";
-import {MutateOrganizerContactCallableResponse} from
+import type {MutateOrganizerContactCallableResponse} from
   "../shared/generated/mutateOrganizerContactCallableResponse";
-import {MutateOrganizerContactNoteCallablePayload} from
+import type {MutateOrganizerContactNoteCallablePayload} from
   "../shared/generated/mutateOrganizerContactNoteCallablePayload";
-import {OrganizerContactNoteCallableResponse} from
+import type {OrganizerContactNoteCallableResponse} from
   "../shared/generated/organizerContactNoteCallableResponse";
-import {
+import type {
   OrganizerAudienceSummaryDocument,
   OrganizerBroadcastSummaryDocument,
   OrganizerCampaignDocument,
@@ -57,19 +57,34 @@ import {
   ChatMessageDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {eventTitleLabel} from "../shared/eventLabels";
-import {ListOrganizerContactsCallablePayload} from
+import type {ListOrganizerContactsCallablePayload} from
   "../shared/generated/listOrganizerContactsCallablePayload";
-import {ListOrganizerContactsCallableResponse} from
+import type {ListOrganizerContactsCallableResponse} from
   "../shared/generated/listOrganizerContactsCallableResponse";
 import {
   validateExportOrganizerContactsCallablePayload,
+} from "../shared/generated/validators/exportOrganizerContactsInput";
+import {
   validateCreateOrganizerContactNoteCallablePayload,
+} from
+  "../shared/generated/validators/createOrganizerContactNoteInput";
+import {
   validateCreateOrganizerContactCallablePayload,
+} from "../shared/generated/validators/createOrganizerContactInput";
+import {
   validateGetOrganizerContactDetailCallablePayload,
+} from
+  "../shared/generated/validators/getOrganizerContactDetailInput";
+import {
   validateListOrganizerContactsCallablePayload,
+} from "../shared/generated/validators/listOrganizerContactsInput";
+import {
   validateMutateOrganizerContactCallablePayload,
+} from "../shared/generated/validators/mutateOrganizerContactInput";
+import {
   validateMutateOrganizerContactNoteCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/mutateOrganizerContactNoteInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

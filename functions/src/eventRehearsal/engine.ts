@@ -1,14 +1,14 @@
-import {
+import type {
   EventRehearsalActorDocument,
   EventRehearsalDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ControlEventRehearsalCallablePayload} from
+import type {ControlEventRehearsalCallablePayload} from
   "../shared/generated/controlEventRehearsalCallablePayload";
-import {ControlEventRehearsalSpatialCallablePayload} from
+import type {ControlEventRehearsalSpatialCallablePayload} from
   "../shared/generated/controlEventRehearsalSpatialCallablePayload";
-import {InjectEventRehearsalBehaviorCallablePayload} from
+import type {InjectEventRehearsalBehaviorCallablePayload} from
   "../shared/generated/injectEventRehearsalBehaviorCallablePayload";
-import {SubmitEventRehearsalGuestActionCallablePayload} from
+import type {SubmitEventRehearsalGuestActionCallablePayload} from
   "../shared/generated/submitEventRehearsalGuestActionCallablePayload";
 
 export const REHEARSAL_MAX_ACTORS = 50;

@@ -9,53 +9,78 @@ import {
   appCheckCallableOptions,
   appCheckCallableOptionsWithLimits,
 } from "../shared/callableOptions";
-import {
+import type {
   EventDocument,
   EventRehearsalActionDocument,
   EventRehearsalActorDocument,
   EventRehearsalDocument,
   EventRehearsalGuestViewDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ControlEventRehearsalCallablePayload} from
+import type {ControlEventRehearsalCallablePayload} from
   "../shared/generated/controlEventRehearsalCallablePayload";
-import {ControlEventRehearsalSpatialCallablePayload} from
+import type {ControlEventRehearsalSpatialCallablePayload} from
   "../shared/generated/controlEventRehearsalSpatialCallablePayload";
-import {CreateEventRehearsalCallablePayload} from
+import type {CreateEventRehearsalCallablePayload} from
   "../shared/generated/createEventRehearsalCallablePayload";
-import {CreateEventRehearsalCallableResponse} from
+import type {CreateEventRehearsalCallableResponse} from
   "../shared/generated/createEventRehearsalCallableResponse";
-import {EventRehearsalBootstrapCallableResponse} from
+import type {EventRehearsalBootstrapCallableResponse} from
   "../shared/generated/eventRehearsalBootstrapCallableResponse";
-import {EventRehearsalGuestBootstrapCallableResponse} from
+import type {EventRehearsalGuestBootstrapCallableResponse} from
   "../shared/generated/eventRehearsalGuestBootstrapCallableResponse";
-import {EventRehearsalReproductionCallableResponse} from
+import type {EventRehearsalReproductionCallableResponse} from
   "../shared/generated/eventRehearsalReproductionCallableResponse";
-import {GetEventRehearsalBootstrapCallablePayload} from
+import type {GetEventRehearsalBootstrapCallablePayload} from
   "../shared/generated/getEventRehearsalBootstrapCallablePayload";
-import {GetEventRehearsalGuestBootstrapCallablePayload} from
+import type {GetEventRehearsalGuestBootstrapCallablePayload} from
   "../shared/generated/getEventRehearsalGuestBootstrapCallablePayload";
-import {InjectEventRehearsalBehaviorCallablePayload} from
+import type {InjectEventRehearsalBehaviorCallablePayload} from
   "../shared/generated/injectEventRehearsalBehaviorCallablePayload";
-import {ResetEventRehearsalCallablePayload} from
+import type {ResetEventRehearsalCallablePayload} from
   "../shared/generated/resetEventRehearsalCallablePayload";
-import {RotateEventRehearsalGuestLinkCallablePayload} from
+import type {RotateEventRehearsalGuestLinkCallablePayload} from
   "../shared/generated/rotateEventRehearsalGuestLinkCallablePayload";
-import {SubmitEventRehearsalGuestActionCallablePayload} from
+import type {SubmitEventRehearsalGuestActionCallablePayload} from
   "../shared/generated/submitEventRehearsalGuestActionCallablePayload";
-import {UpdateEventRehearsalSetupCallablePayload} from
+import type {UpdateEventRehearsalSetupCallablePayload} from
   "../shared/generated/updateEventRehearsalSetupCallablePayload";
 import {
   validateControlEventRehearsalCallablePayload,
+} from "../shared/generated/validators/controlEventRehearsalInput";
+import {
   validateControlEventRehearsalSpatialCallablePayload,
+} from
+  "../shared/generated/validators/controlEventRehearsalSpatialInput";
+import {
   validateCreateEventRehearsalCallablePayload,
+} from "../shared/generated/validators/createEventRehearsalInput";
+import {
   validateGetEventRehearsalBootstrapCallablePayload,
+} from
+  "../shared/generated/validators/getEventRehearsalBootstrapInput";
+import {
   validateGetEventRehearsalGuestBootstrapCallablePayload,
+} from
+  "../shared/generated/validators/getEventRehearsalGuestBootstrapInput";
+import {
   validateInjectEventRehearsalBehaviorCallablePayload,
+} from
+  "../shared/generated/validators/injectEventRehearsalBehaviorInput";
+import {
   validateResetEventRehearsalCallablePayload,
+} from "../shared/generated/validators/resetEventRehearsalInput";
+import {
   validateRotateEventRehearsalGuestLinkCallablePayload,
+} from
+  "../shared/generated/validators/rotateEventRehearsalGuestLinkInput";
+import {
   validateSubmitEventRehearsalGuestActionCallablePayload,
+} from
+  "../shared/generated/validators/submitEventRehearsalGuestActionInput";
+import {
   validateUpdateEventRehearsalSetupCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/updateEventRehearsalSetupInput";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";

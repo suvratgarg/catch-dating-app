@@ -2,66 +2,87 @@ import {createHash, randomBytes} from "crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
-import {CreateOrganizerFormCallablePayload} from
+import type {CreateOrganizerFormCallablePayload} from
   "../shared/generated/createOrganizerFormCallablePayload";
-import {CreateOrganizerFormCallableResponse} from
+import type {CreateOrganizerFormCallableResponse} from
   "../shared/generated/createOrganizerFormCallableResponse";
-import {DeleteOrganizerFormDraftCallablePayload} from
+import type {DeleteOrganizerFormDraftCallablePayload} from
   "../shared/generated/deleteOrganizerFormDraftCallablePayload";
-import {DeleteOrganizerFormDraftCallableResponse} from
+import type {DeleteOrganizerFormDraftCallableResponse} from
   "../shared/generated/deleteOrganizerFormDraftCallableResponse";
-import {DuplicateOrganizerFormCallablePayload} from
+import type {DuplicateOrganizerFormCallablePayload} from
   "../shared/generated/duplicateOrganizerFormCallablePayload";
-import {DuplicateOrganizerFormCallableResponse} from
+import type {DuplicateOrganizerFormCallableResponse} from
   "../shared/generated/duplicateOrganizerFormCallableResponse";
-import {GetOrganizerFormEditorCallablePayload} from
+import type {GetOrganizerFormEditorCallablePayload} from
   "../shared/generated/getOrganizerFormEditorCallablePayload";
-import {GetOrganizerFormEditorCallableResponse} from
+import type {GetOrganizerFormEditorCallableResponse} from
   "../shared/generated/getOrganizerFormEditorCallableResponse";
-import {ListOrganizerFormsCallablePayload} from
+import type {ListOrganizerFormsCallablePayload} from
   "../shared/generated/listOrganizerFormsCallablePayload";
-import {ListOrganizerFormsCallableResponse} from
+import type {ListOrganizerFormsCallableResponse} from
   "../shared/generated/listOrganizerFormsCallableResponse";
-import {ListOrganizerFormTemplatesCallablePayload} from
+import type {ListOrganizerFormTemplatesCallablePayload} from
   "../shared/generated/listOrganizerFormTemplatesCallablePayload";
-import {ListOrganizerFormTemplatesCallableResponse} from
+import type {ListOrganizerFormTemplatesCallableResponse} from
   "../shared/generated/listOrganizerFormTemplatesCallableResponse";
-import {PublishOrganizerFormCallablePayload} from
+import type {PublishOrganizerFormCallablePayload} from
   "../shared/generated/publishOrganizerFormCallablePayload";
-import {PublishOrganizerFormCallableResponse} from
+import type {PublishOrganizerFormCallableResponse} from
   "../shared/generated/publishOrganizerFormCallableResponse";
-import {SetOrganizerFormLifecycleCallablePayload} from
+import type {SetOrganizerFormLifecycleCallablePayload} from
   "../shared/generated/setOrganizerFormLifecycleCallablePayload";
-import {SetOrganizerFormLifecycleCallableResponse} from
+import type {SetOrganizerFormLifecycleCallableResponse} from
   "../shared/generated/setOrganizerFormLifecycleCallableResponse";
-import {UpdateOrganizerFormDraftCallablePayload} from
+import type {UpdateOrganizerFormDraftCallablePayload} from
   "../shared/generated/updateOrganizerFormDraftCallablePayload";
-import {UpdateOrganizerFormDraftCallableResponse} from
+import type {UpdateOrganizerFormDraftCallableResponse} from
   "../shared/generated/updateOrganizerFormDraftCallableResponse";
-import {ValidateOrganizerFormDraftCallablePayload} from
+import type {ValidateOrganizerFormDraftCallablePayload} from
   "../shared/generated/validateOrganizerFormDraftCallablePayload";
-import {ValidateOrganizerFormDraftCallableResponse} from
+import type {ValidateOrganizerFormDraftCallableResponse} from
   "../shared/generated/validateOrganizerFormDraftCallableResponse";
-import {
+import type {
   OrganizerFormDocument,
   OrganizerFormDraftDocument,
   OrganizerFormVersionDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   organizerFormTemplateCatalog,
-} from "../shared/generated/schemaRegistry";
+} from "../shared/generated/catalogs/organizerFormTemplateCatalog";
 import {
   validateCreateOrganizerFormCallablePayload,
+} from "../shared/generated/validators/createOrganizerFormInput";
+import {
   validateDeleteOrganizerFormDraftCallablePayload,
+} from "../shared/generated/validators/deleteOrganizerFormDraftInput";
+import {
   validateDuplicateOrganizerFormCallablePayload,
+} from "../shared/generated/validators/duplicateOrganizerFormInput";
+import {
   validateGetOrganizerFormEditorCallablePayload,
+} from "../shared/generated/validators/getOrganizerFormEditorInput";
+import {
   validateListOrganizerFormsCallablePayload,
+} from "../shared/generated/validators/listOrganizerFormsInput";
+import {
   validateListOrganizerFormTemplatesCallablePayload,
+} from
+  "../shared/generated/validators/listOrganizerFormTemplatesInput";
+import {
   validatePublishOrganizerFormCallablePayload,
+} from "../shared/generated/validators/publishOrganizerFormInput";
+import {
   validateSetOrganizerFormLifecycleCallablePayload,
+} from
+  "../shared/generated/validators/setOrganizerFormLifecycleInput";
+import {
   validateUpdateOrganizerFormDraftCallablePayload,
+} from "../shared/generated/validators/updateOrganizerFormDraftInput";
+import {
   validateValidateOrganizerFormDraftCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/validateOrganizerFormDraftInput";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";

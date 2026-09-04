@@ -9,15 +9,19 @@ import {normalizePayloadStrings} from
   "../shared/callablePayloadNormalization";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {CreateRazorpayHostPaymentAccountCallablePayload} from
+import type {CreateRazorpayHostPaymentAccountCallablePayload} from
   "../shared/generated/createRazorpayHostPaymentAccountCallablePayload";
-import {RefreshRazorpayHostPaymentAccountCallablePayload} from
+import type {RefreshRazorpayHostPaymentAccountCallablePayload} from
   "../shared/generated/refreshRazorpayHostPaymentAccountCallablePayload";
 import {
   validateCreateRazorpayHostPaymentAccountCallablePayload,
-  validateRefreshRazorpayHostPaymentAccountCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/createRazorpayHostPaymentAccountInput";
 import {
+  validateRefreshRazorpayHostPaymentAccountCallablePayload,
+} from
+  "../shared/generated/validators/refreshRazorpayHostPaymentAccountInput";
+import type {
   HostPaymentAccountDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {findHostPaymentAccount} from "./hostPaymentAccounts";

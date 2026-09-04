@@ -1,5 +1,5 @@
 import {computeAge} from "./dates";
-import {
+import type {
   ActivityPreferences,
   PhotoPromptAnswer,
   ProfilePromptAnswer,
@@ -7,10 +7,8 @@ import {
   UserProfileDocument,
 } from "./generated/firestoreAdminTypes";
 import {DemoMetadata, demoMetadataFromSources} from "./demoMetadata";
-import {
-  profilePhotoPolicy,
-  profilePromptCatalog,
-} from "./generated/schemaRegistry";
+import {profilePhotoPolicy} from "./generated/catalogs/profilePhotoPolicy";
+import {profilePromptCatalog} from "./generated/catalogs/profilePromptCatalog";
 
 export type PublicProfileProjection = PublicProfileDocument & DemoMetadata;
 

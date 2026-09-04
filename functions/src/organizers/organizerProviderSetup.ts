@@ -5,36 +5,48 @@ import {CallableRequest, HttpsError, onCall} from
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
-import {ConnectOrganizerLumaProviderCallablePayload} from
+import type {ConnectOrganizerLumaProviderCallablePayload} from
   "../shared/generated/connectOrganizerLumaProviderCallablePayload";
-import {DisconnectOrganizerProviderCallablePayload} from
+import type {DisconnectOrganizerProviderCallablePayload} from
   "../shared/generated/disconnectOrganizerProviderCallablePayload";
-import {
+import type {
   EventAttendeeDocument,
   EventDocument,
   ExternalEventMappingDocument,
   OrganizerProviderConnectionDocument,
   ProviderSyncRunDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {GetOrganizerProviderSetupCallablePayload} from
+import type {GetOrganizerProviderSetupCallablePayload} from
   "../shared/generated/getOrganizerProviderSetupCallablePayload";
-import {ListOrganizerLumaEventsCallablePayload} from
+import type {ListOrganizerLumaEventsCallablePayload} from
   "../shared/generated/listOrganizerLumaEventsCallablePayload";
-import {ListOrganizerLumaEventsCallableResponse} from
+import type {ListOrganizerLumaEventsCallableResponse} from
   "../shared/generated/listOrganizerLumaEventsCallableResponse";
-import {OrganizerProviderSetupCallableResponse} from
+import type {OrganizerProviderSetupCallableResponse} from
   "../shared/generated/organizerProviderSetupCallableResponse";
-import {SyncOrganizerProviderEventCallablePayload} from
+import type {SyncOrganizerProviderEventCallablePayload} from
   "../shared/generated/syncOrganizerProviderEventCallablePayload";
-import {SyncOrganizerProviderEventCallableResponse} from
+import type {SyncOrganizerProviderEventCallableResponse} from
   "../shared/generated/syncOrganizerProviderEventCallableResponse";
 import {
   validateConnectOrganizerLumaProviderCallablePayload,
+} from
+  "../shared/generated/validators/connectOrganizerLumaProviderInput";
+import {
   validateDisconnectOrganizerProviderCallablePayload,
+} from
+  "../shared/generated/validators/disconnectOrganizerProviderInput";
+import {
   validateGetOrganizerProviderSetupCallablePayload,
+} from
+  "../shared/generated/validators/getOrganizerProviderSetupInput";
+import {
   validateListOrganizerLumaEventsCallablePayload,
+} from "../shared/generated/validators/listOrganizerLumaEventsInput";
+import {
   validateSyncOrganizerProviderEventCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/syncOrganizerProviderEventInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

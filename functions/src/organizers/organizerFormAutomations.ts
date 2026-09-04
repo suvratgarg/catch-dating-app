@@ -12,11 +12,11 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {normalizePayloadStrings} from "../shared/callablePayloadNormalization";
 import {requireAuth} from "../shared/auth";
 import {createActivityForActiveUserIfAbsent} from "../shared/notifications";
-import {CreateOrganizerFormAutomationCallablePayload} from
+import type {CreateOrganizerFormAutomationCallablePayload} from
   "../shared/generated/createOrganizerFormAutomationCallablePayload";
-import {CreateOrganizerFormAutomationCallableResponse} from
+import type {CreateOrganizerFormAutomationCallableResponse} from
   "../shared/generated/createOrganizerFormAutomationCallableResponse";
-import {
+import type {
   OrganizerApplicationDocument,
   OrganizerContactEventEdgeDocument,
   OrganizerContactTagVocabularyDocument,
@@ -27,19 +27,26 @@ import {
   OrganizerFormResponseDocument,
   OrganizerFormVersionDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ListOrganizerFormAutomationRunsCallablePayload} from
+import type {ListOrganizerFormAutomationRunsCallablePayload} from
   "../shared/generated/listOrganizerFormAutomationRunsCallablePayload";
-import {ListOrganizerFormAutomationRunsCallableResponse} from
+import type {ListOrganizerFormAutomationRunsCallableResponse} from
   "../shared/generated/listOrganizerFormAutomationRunsCallableResponse";
-import {SetOrganizerFormAutomationStateCallablePayload} from
+import type {SetOrganizerFormAutomationStateCallablePayload} from
   "../shared/generated/setOrganizerFormAutomationStateCallablePayload";
-import {SetOrganizerFormAutomationStateCallableResponse} from
+import type {SetOrganizerFormAutomationStateCallableResponse} from
   "../shared/generated/setOrganizerFormAutomationStateCallableResponse";
 import {
   validateCreateOrganizerFormAutomationCallablePayload,
+} from
+  "../shared/generated/validators/createOrganizerFormAutomationInput";
+import {
   validateListOrganizerFormAutomationRunsCallablePayload,
+} from
+  "../shared/generated/validators/listOrganizerFormAutomationRunsInput";
+import {
   validateSetOrganizerFormAutomationStateCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/setOrganizerFormAutomationStateInput";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";

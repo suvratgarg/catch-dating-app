@@ -1,4 +1,4 @@
-import {
+import type {
   ClubDocument,
   OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";

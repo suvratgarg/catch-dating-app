@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
-import {OrganizerSavedAudienceDocument} from
+import type {OrganizerSavedAudienceDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {AudienceTestStore} from "./organizerAudienceTestStore";
 import {genericFormApplicationId} from "./organizerApplicationAccess";

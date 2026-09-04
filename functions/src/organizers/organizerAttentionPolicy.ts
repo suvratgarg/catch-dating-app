@@ -1,6 +1,6 @@
 import {createHash} from "crypto";
 import {eventPolicyFromEvent} from "../events/eventPolicy";
-import {
+import type {
   EventDocument,
   EventParticipationDocument,
   HostPaymentAccountDocument,
@@ -10,10 +10,11 @@ import {
   OrganizerFormAutomationRunDocument,
   ProviderSyncRunDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ListOrganizerAttentionItemsCallableResponse} from
+import type {ListOrganizerAttentionItemsCallableResponse} from
   "../shared/generated/listOrganizerAttentionItemsCallableResponse";
-import {hostAttentionPolicyCatalog} from
-  "../shared/generated/schemaRegistry";
+import {
+  hostAttentionPolicyCatalog,
+} from "../shared/generated/catalogs/hostAttentionPolicyCatalog";
 
 export type HostAttentionItem =
   ListOrganizerAttentionItemsCallableResponse["items"][number];

@@ -1,17 +1,18 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {
+import type {
   EventDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {
+import type {
   EventIdCallablePayload,
 } from "../shared/generated/eventIdCallablePayload";
-import {validateEventIdCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateEventIdCallablePayload,
+} from "../shared/generated/validators/eventIdInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
   participantUids,

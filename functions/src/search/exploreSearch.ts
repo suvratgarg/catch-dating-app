@@ -9,12 +9,13 @@ import {normalizePayloadStrings} from
 import {requireAuth} from "../shared/auth";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {ExploreSearchCallablePayload} from
+import type {ExploreSearchCallablePayload} from
   "../shared/generated/exploreSearchCallablePayload";
-import {ExploreSearchCallableResponse} from
+import type {ExploreSearchCallableResponse} from
   "../shared/generated/exploreSearchCallableResponse";
-import {validateExploreSearchCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateExploreSearchCallablePayload,
+} from "../shared/generated/validators/exploreSearchInput";
 
 export const algoliaAppId = defineSecret("ALGOLIA_APP_ID");
 export const algoliaSearchApiKey = defineSecret("ALGOLIA_SEARCH_API_KEY");

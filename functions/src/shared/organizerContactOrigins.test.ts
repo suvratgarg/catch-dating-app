@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
-import {EventAttendeeDocument} from "./generated/firestoreAdminTypes";
+import type {EventAttendeeDocument} from "./generated/firestoreAdminTypes";
 import {
   attendeeOrganizerContactOrigin,
   formResponseOrganizerContactOrigin,

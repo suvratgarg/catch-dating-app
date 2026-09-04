@@ -6,7 +6,7 @@ import {
   organizerCommunicationPreferenceId,
 } from
   "../shared/organizerCommunicationPreferences";
-import {
+import type {
   EventAttendeeDocument,
   EventDocument,
   OrganizerAudienceProjectionReceiptDocument,

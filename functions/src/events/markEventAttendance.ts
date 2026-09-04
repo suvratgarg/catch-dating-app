@@ -2,14 +2,15 @@ import {CallableRequest, onCall, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {
+import type {
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
-import {MarkEventAttendanceCallablePayload} from
+import type {MarkEventAttendanceCallablePayload} from
   "../shared/generated/markEventAttendanceCallablePayload";
-import {validateMarkEventAttendanceCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateMarkEventAttendanceCallablePayload,
+} from "../shared/generated/validators/markEventAttendanceInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";

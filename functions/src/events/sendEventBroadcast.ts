@@ -16,19 +16,20 @@ import {
   eventBroadcastDeliveryKey,
   eventBroadcastId,
 } from "../shared/eventBroadcasts";
-import {
+import type {
   EventDocument,
   EventParticipationDocument,
   OrganizerBroadcastSummaryDocument,
   OrganizerContactDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {SendEventBroadcastCallablePayload} from
+import type {SendEventBroadcastCallablePayload} from
   "../shared/generated/sendEventBroadcastCallablePayload";
-import {SendEventBroadcastCallableResponse} from
+import type {SendEventBroadcastCallableResponse} from
   "../shared/generated/sendEventBroadcastCallableResponse";
-import {validateSendEventBroadcastCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateSendEventBroadcastCallablePayload,
+} from "../shared/generated/validators/sendEventBroadcastInput";
 import {moderateText} from "../moderation/textFilter";
 import {
   activityNotificationId,

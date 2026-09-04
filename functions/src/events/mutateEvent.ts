@@ -8,7 +8,7 @@ import {
   appCheckCallableOptionsWithSecrets,
 } from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {
+import type {
   PaymentDocument,
   OrganizerDocument,
   EventDocument,
@@ -20,19 +20,25 @@ import {
   OrganizerEventVenueDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {CancelEventCallablePayload} from
+import type {CancelEventCallablePayload} from
   "../shared/generated/cancelEventCallablePayload";
-import {CreateEventCallablePayload} from
+import type {CreateEventCallablePayload} from
   "../shared/generated/createEventCallablePayload";
-import {DeleteEventCallablePayload} from
+import type {DeleteEventCallablePayload} from
   "../shared/generated/deleteEventCallablePayload";
 import {
   validateCancelEventCallablePayload,
+} from "../shared/generated/validators/cancelEventInput";
+import {
   validateCreateEventCallablePayload,
+} from "../shared/generated/validators/createEventInput";
+import {
   validateDeleteEventCallablePayload,
+} from "../shared/generated/validators/deleteEventInput";
+import {
   validateUpdateEventCallablePayload,
-} from "../shared/generated/schemaValidators";
-import {UpdateEventCallablePayload} from
+} from "../shared/generated/validators/updateEventInput";
+import type {UpdateEventCallablePayload} from
   "../shared/generated/updateEventCallablePayload";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {

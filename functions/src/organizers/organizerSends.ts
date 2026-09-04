@@ -6,7 +6,7 @@ import {
 } from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
-import {
+import type {
   OrganizerBroadcastSummaryDocument,
   OrganizerCampaignDocument,
   OrganizerMessageTemplateDocument,
@@ -14,12 +14,13 @@ import {
   OrganizerPostDocument,
   OrganizerSavedAudienceDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ListOrganizerCampaignsCallablePayload} from
+import type {ListOrganizerCampaignsCallablePayload} from
   "../shared/generated/listOrganizerCampaignsCallablePayload";
-import {ListOrganizerCampaignsCallableResponse} from
+import type {ListOrganizerCampaignsCallableResponse} from
   "../shared/generated/listOrganizerCampaignsCallableResponse";
-import {validateListOrganizerCampaignsCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateListOrganizerCampaignsCallablePayload,
+} from "../shared/generated/validators/listOrganizerCampaignsInput";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";

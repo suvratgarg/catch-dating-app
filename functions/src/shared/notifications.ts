@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import {
+import type {
   EventDocument,
   PublicProfileDocument,
 } from "./generated/firestoreAdminTypes";

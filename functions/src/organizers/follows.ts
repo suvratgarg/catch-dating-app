@@ -2,18 +2,21 @@ import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {
+import type {
   OrganizerDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {OrganizerFollowCallablePayload} from
+import type {OrganizerFollowCallablePayload} from
   "../shared/generated/organizerFollowCallablePayload";
-import {SetOrganizerNotificationPreferenceCallablePayload} from
+import type {SetOrganizerNotificationPreferenceCallablePayload} from
   "../shared/generated/setOrganizerNotificationPreferenceCallablePayload";
 import {
   validateOrganizerFollowCallablePayload,
+} from "../shared/generated/validators/organizerFollowInput";
+import {
   validateSetOrganizerNotificationPreferenceCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/setOrganizerNotificationPreferenceInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {

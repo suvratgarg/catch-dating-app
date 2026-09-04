@@ -4,7 +4,7 @@ import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {
+import type {
   EventDocument,
   MatchDocument,
   OrganizerContactDocument,
@@ -13,13 +13,17 @@ import {
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
   validateStartOrganizerContactConversationCallablePayload,
+} from
+  "../shared/generated/validators/startOrganizerContactConversationInput";
+import {
   validateStartOrganizerConversationCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/startOrganizerConversationInput";
 import {organizerManagerUserIds} from "../shared/organizerHosts";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
-import {StartOrganizerConversationCallablePayload} from
+import type {StartOrganizerConversationCallablePayload} from
   "../shared/generated/startOrganizerConversationCallablePayload";
-import {StartOrganizerContactConversationCallablePayload} from
+import type {StartOrganizerContactConversationCallablePayload} from
   "../shared/generated/startOrganizerContactConversationCallablePayload";
 import {normalizeOrganizerHostPayload} from
   "../organizers/organizerPayloadNormalization";

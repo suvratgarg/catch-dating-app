@@ -6,7 +6,7 @@ import {
   clubSearchIndexSettings,
   eventSearchIndexSettings,
 } from "./algoliaExploreIndex.js";
-import {
+import type {
   ClubDocument,
   EventDocument,
   OrganizerDocument,

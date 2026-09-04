@@ -1,7 +1,7 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {
+import type {
   EventDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -9,11 +9,12 @@ import {signUpUserForEvent} from "./signUpUserForEvent";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {
+import type {
   EventBookingCallablePayload,
 } from "../shared/generated/eventBookingCallablePayload";
-import {validateEventBookingCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateEventBookingCallablePayload,
+} from "../shared/generated/validators/eventBookingInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {

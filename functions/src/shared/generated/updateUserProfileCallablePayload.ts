@@ -2,9 +2,9 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-import {ProfilePromptAnswer} from "./profilePromptAnswer";
-import {PhotoPromptAnswer} from "./photoPromptAnswer";
-import {ActivityPreferences} from "./activityPreferences";
+import type {ProfilePromptAnswer} from "./profilePromptAnswer";
+import type {PhotoPromptAnswer} from "./photoPromptAnswer";
+import type {ActivityPreferences} from "./activityPreferences";
 
 /**
  * Callable request body for updateUserProfile. Values are normalized before Firestore writes.

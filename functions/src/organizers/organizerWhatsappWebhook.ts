@@ -4,7 +4,7 @@ import * as logger from "firebase-functions/logger";
 import {defineSecret} from "firebase-functions/params";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {onRequest} from "firebase-functions/v2/https";
-import {
+import type {
   OrganizerCampaignRecipientDocument,
   OrganizerCommunicationPreferenceDocument,
   OrganizerContactChannelStateDocument,

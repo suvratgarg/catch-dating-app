@@ -14,8 +14,9 @@ import type {AdminSetAdminUserRolesCallablePayload} from
   "../shared/generated/adminSetAdminUserRolesCallablePayload";
 import type {AdminSetAdminUserRolesCallableResponse} from
   "../shared/generated/adminSetAdminUserRolesCallableResponse";
-import {validateAdminSetAdminUserRolesCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateAdminSetAdminUserRolesCallablePayload,
+} from "../shared/generated/validators/adminSetAdminUserRolesInput";
 import {validateCallableWithAjv} from "../shared/validation";
 
 const adminUserRoleOwnerRoles = ["adminOwner"] as const;

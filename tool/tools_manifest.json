@@ -2071,9 +2071,10 @@
       "command": "node tool/contracts/generate_schema_contracts.mjs",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Generates schema registries, validators, paths, Dart schema metadata, and typed cross-runtime catalog contracts.",
+      "description": "Generates isolated Functions schemas, validators and catalogs plus test/tool inventories, paths and cross-runtime contracts.",
       "checks": [
-        "node --check tool/contracts/generate_schema_contracts.mjs"
+        "node --check tool/contracts/generate_schema_contracts.mjs",
+        "node --test tool/contracts/schema_modules.test.mjs"
       ]
     },
     {
@@ -2252,9 +2253,11 @@
       "command": "node tool/contracts/check_schema_type_boundaries.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Checks schema/type boundary hygiene.",
+      "description": "Checks schema/type boundaries, direct generated runtime imports, and explicit erased Admin type imports.",
       "checks": [
-        "node --check tool/contracts/check_schema_type_boundaries.mjs"
+        "node --check tool/contracts/check_schema_type_boundaries.mjs",
+        "node --test tool/contracts/check_schema_type_boundaries.test.mjs",
+        "node tool/contracts/check_schema_type_boundaries.mjs"
       ]
     },
     {

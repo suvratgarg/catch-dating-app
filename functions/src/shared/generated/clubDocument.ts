@@ -2,8 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-import {UploadedPhoto} from "./uploadedPhoto";
-import {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
+import type {UploadedPhoto} from "./uploadedPhoto";
+import type {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
 
 /**
  * Legacy storage contract for an organizer document stored at clubs/{clubId} during the clubs-to-organizers migration. The organizer id is the document id and is not stored in document data.

@@ -2,7 +2,7 @@ import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
-import {
+import type {
   EventAttendeeDocument,
   EventAttendeeImportDocument,
   EventDocument,
@@ -10,24 +10,32 @@ import {
   OrganizerCommunicationPermissionReceiptDocument,
   OrganizerCommunicationPreferenceDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ImportEventAttendeesCallablePayload} from
+import type {ImportEventAttendeesCallablePayload} from
   "../shared/generated/importEventAttendeesCallablePayload";
-import {MarkEventAttendeeAttendanceCallablePayload} from
+import type {MarkEventAttendeeAttendanceCallablePayload} from
   "../shared/generated/markEventAttendeeAttendanceCallablePayload";
-import {SetEventAttendeeAttendanceCallablePayload} from
+import type {SetEventAttendeeAttendanceCallablePayload} from
   "../shared/generated/setEventAttendeeAttendanceCallablePayload";
-import {SetEventAttendeeAttendanceCallableResponse} from
+import type {SetEventAttendeeAttendanceCallableResponse} from
   "../shared/generated/setEventAttendeeAttendanceCallableResponse";
-import {RegisterPublicEventCallablePayload} from
+import type {RegisterPublicEventCallablePayload} from
   "../shared/generated/registerPublicEventCallablePayload";
-import {RegisterPublicEventCallableResponse} from
+import type {RegisterPublicEventCallableResponse} from
   "../shared/generated/registerPublicEventCallableResponse";
 import {
   validateImportEventAttendeesCallablePayload,
+} from "../shared/generated/validators/importEventAttendeesInput";
+import {
   validateMarkEventAttendeeAttendanceCallablePayload,
+} from
+  "../shared/generated/validators/markEventAttendeeAttendanceInput";
+import {
   validateRegisterPublicEventCallablePayload,
+} from "../shared/generated/validators/registerPublicEventInput";
+import {
   validateSetEventAttendeeAttendanceCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/setEventAttendeeAttendanceInput";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {

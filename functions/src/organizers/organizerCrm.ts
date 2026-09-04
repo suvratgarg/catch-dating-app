@@ -4,17 +4,18 @@ import * as admin from "firebase-admin";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {
+import type {
   EventAttendeeDocument,
   OrganizerAudienceSummaryDocument,
   OrganizerCommunicationPreferenceDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {GetOrganizerCrmSummaryCallablePayload} from
+import type {GetOrganizerCrmSummaryCallablePayload} from
   "../shared/generated/getOrganizerCrmSummaryCallablePayload";
-import {GetOrganizerCrmSummaryCallableResponse} from
+import type {GetOrganizerCrmSummaryCallableResponse} from
   "../shared/generated/getOrganizerCrmSummaryCallableResponse";
-import {validateGetOrganizerCrmSummaryCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateGetOrganizerCrmSummaryCallablePayload,
+} from "../shared/generated/validators/getOrganizerCrmSummaryInput";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";

@@ -4,7 +4,7 @@ import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {
+import type {
   EventDocument,
   EventParticipationDocument,
   EventRuntimeParticipantDocument,
@@ -13,23 +13,29 @@ import {
   OrganizerDocument,
   OrganizerEventSuccessLayoutDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {EventSuccessSpatialActionCallablePayload} from
+import type {EventSuccessSpatialActionCallablePayload} from
   "../shared/generated/eventSuccessSpatialActionCallablePayload";
-import {EventSuccessSpatialActionCallableResponse} from
+import type {EventSuccessSpatialActionCallableResponse} from
   "../shared/generated/eventSuccessSpatialActionCallableResponse";
-import {GetEventSuccessSpatialLayoutCallablePayload} from
+import type {GetEventSuccessSpatialLayoutCallablePayload} from
   "../shared/generated/getEventSuccessSpatialLayoutCallablePayload";
-import {GetEventSuccessSpatialLayoutCallableResponse} from
+import type {GetEventSuccessSpatialLayoutCallableResponse} from
   "../shared/generated/getEventSuccessSpatialLayoutCallableResponse";
-import {UpsertEventSuccessLayoutCallablePayload} from
+import type {UpsertEventSuccessLayoutCallablePayload} from
   "../shared/generated/upsertEventSuccessLayoutCallablePayload";
-import {UpsertEventSuccessLayoutCallableResponse} from
+import type {UpsertEventSuccessLayoutCallableResponse} from
   "../shared/generated/upsertEventSuccessLayoutCallableResponse";
 import {
   validateEventSuccessSpatialActionCallablePayload,
+} from
+  "../shared/generated/validators/eventSuccessSpatialActionInput";
+import {
   validateGetEventSuccessSpatialLayoutCallablePayload,
+} from
+  "../shared/generated/validators/getEventSuccessSpatialLayoutInput";
+import {
   validateUpsertEventSuccessLayoutCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/upsertEventSuccessLayoutInput";
 import {
   eventOrganizerRef,
   isEventOrganizerManager,

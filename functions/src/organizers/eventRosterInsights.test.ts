@@ -8,7 +8,7 @@ import {
   getEventRosterInsightsHandler,
   shouldExposeAttendanceInsight,
 } from "./eventRosterInsights";
-import {
+import type {
   OrganizerContactEventEdgeDocument,
   PaymentDocument,
 } from "../shared/generated/firestoreAdminTypes";

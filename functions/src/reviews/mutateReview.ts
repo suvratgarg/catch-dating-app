@@ -4,7 +4,7 @@ import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {moderateText} from "../moderation/textFilter";
-import {
+import type {
   ReviewDocument,
   EventDocument,
   EventParticipationDocument,
@@ -18,29 +18,41 @@ import {
 import {
   eventParticipationId,
 } from "../shared/relationshipDocuments";
-import {CreateEventReviewCallablePayload} from
+import type {CreateEventReviewCallablePayload} from
   "../shared/generated/createEventReviewCallablePayload";
-import {CreatePublicOrganizerReviewCallablePayload} from
+import type {CreatePublicOrganizerReviewCallablePayload} from
   "../shared/generated/createPublicOrganizerReviewCallablePayload";
-import {CreatePublicOrganizerReviewCallableResponse} from
+import type {CreatePublicOrganizerReviewCallableResponse} from
   "../shared/generated/createPublicOrganizerReviewCallableResponse";
-import {DeleteEventReviewCallablePayload} from
+import type {DeleteEventReviewCallablePayload} from
   "../shared/generated/deleteEventReviewCallablePayload";
-import {ListPublicOrganizerReviewsCallablePayload} from
+import type {ListPublicOrganizerReviewsCallablePayload} from
   "../shared/generated/listPublicOrganizerReviewsCallablePayload";
-import {ListPublicOrganizerReviewsCallableResponse} from
+import type {ListPublicOrganizerReviewsCallableResponse} from
   "../shared/generated/listPublicOrganizerReviewsCallableResponse";
 import {
   validateCreateEventReviewCallablePayload,
+} from "../shared/generated/validators/createEventReviewInput";
+import {
   validateCreatePublicOrganizerReviewCallablePayload,
+} from
+  "../shared/generated/validators/createPublicOrganizerReviewInput";
+import {
   validateDeleteEventReviewCallablePayload,
+} from "../shared/generated/validators/deleteEventReviewInput";
+import {
   validateListPublicOrganizerReviewsCallablePayload,
+} from
+  "../shared/generated/validators/listPublicOrganizerReviewsInput";
+import {
   validateSetReviewResponseCallablePayload,
+} from "../shared/generated/validators/setReviewResponseInput";
+import {
   validateUpdateEventReviewCallablePayload,
-} from "../shared/generated/schemaValidators";
-import {SetReviewResponseCallablePayload} from
+} from "../shared/generated/validators/updateEventReviewInput";
+import type {SetReviewResponseCallablePayload} from
   "../shared/generated/setReviewResponseCallablePayload";
-import {UpdateEventReviewCallablePayload} from
+import type {UpdateEventReviewCallablePayload} from
   "../shared/generated/updateEventReviewCallablePayload";
 import {normalizePayloadStrings, normalizeSingleIdPayload} from
   "../shared/callablePayloadNormalization";

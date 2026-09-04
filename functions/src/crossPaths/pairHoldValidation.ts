@@ -1,5 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {CrossPathsPairHoldDocument} from
+import type {CrossPathsPairHoldDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {requireDoc} from "../shared/validation";
 

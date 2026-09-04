@@ -1,4 +1,4 @@
-import {UserProfileDocument} from "./generated/firestoreAdminTypes";
+import type {UserProfileDocument} from "./generated/firestoreAdminTypes";
 
 export type ConversationPushRole = "consumer" | "host";
 

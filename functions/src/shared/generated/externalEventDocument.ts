@@ -2,8 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-import {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
-import {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
+import type {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
+import type {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
 
 /**
  * Read-only external event document stored at externalEvents/{eventId}. These records are sourced from reviewed organizer intake candidates and may link to external booking platforms, but they never enable Catch booking, payments, reservations, waitlists, attendance, or schedule locks.

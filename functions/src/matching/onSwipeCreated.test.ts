@@ -4,7 +4,7 @@ import {
   datingMatchIdForPair,
   onSwipeCreatedHandler,
 } from "./onSwipeCreated";
-import {
+import type {
   SwipeDocument,
 } from "../shared/generated/firestoreAdminTypes";
 

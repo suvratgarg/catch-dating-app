@@ -1,7 +1,7 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {
+import type {
   EventDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -14,10 +14,11 @@ import {
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
-import {EventJoinRequestDecisionCallablePayload} from
+import type {EventJoinRequestDecisionCallablePayload} from
   "../shared/generated/eventJoinRequestDecisionCallablePayload";
-import {validateEventJoinRequestDecisionCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateEventJoinRequestDecisionCallablePayload,
+} from "../shared/generated/validators/eventJoinRequestDecisionInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
   activityNotificationId,

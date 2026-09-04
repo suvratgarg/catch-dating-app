@@ -5,25 +5,29 @@ import {CallableRequest, HttpsError, onCall} from
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
-import {
+import type {
   OrganizerContactDocument,
   OrganizerContactEventEdgeDocument,
   OrganizerContactIdentityClaimDocument,
   OrganizerContactIdentityLinkDocument,
   OrganizerContactMergeReviewDecisionDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ListOrganizerContactMergeCandidatesCallablePayload} from
+import type {ListOrganizerContactMergeCandidatesCallablePayload} from
   "../shared/generated/listOrganizerContactMergeCandidatesCallablePayload";
-import {ListOrganizerContactMergeCandidatesCallableResponse} from
+import type {ListOrganizerContactMergeCandidatesCallableResponse} from
   "../shared/generated/listOrganizerContactMergeCandidatesCallableResponse";
-import {ReviewOrganizerContactMergeCandidateCallablePayload} from
+import type {ReviewOrganizerContactMergeCandidateCallablePayload} from
   "../shared/generated/reviewOrganizerContactMergeCandidateCallablePayload";
-import {ReviewOrganizerContactMergeCandidateCallableResponse} from
+import type {ReviewOrganizerContactMergeCandidateCallableResponse} from
   "../shared/generated/reviewOrganizerContactMergeCandidateCallableResponse";
 import {
   validateListOrganizerContactMergeCandidatesCallablePayload,
+} from
+  "../shared/generated/validators/listOrganizerContactMergeCandidatesInput";
+import {
   validateReviewOrganizerContactMergeCandidateCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/reviewOrganizerContactMergeCandidateInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

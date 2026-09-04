@@ -1,7 +1,7 @@
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {
+import type {
   EventDocument,
   EventParticipationDocument,
   UserProfileDocument,

@@ -4,7 +4,7 @@ import {
   onCall,
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {
+import type {
   ClubHostClaimDocument,
   HostPaymentAccountDocument,
   UserProfileDocument,
@@ -15,16 +15,20 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {normalizePayloadStrings} from "../shared/callablePayloadNormalization";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {publicDisplayName} from "../shared/profileProjection";
-import {
+import type {
   CreateStripeHostOnboardingLinkCallablePayload,
 } from "../shared/generated/createStripeHostOnboardingLinkCallablePayload";
-import {
+import type {
   RefreshStripeHostPaymentAccountCallablePayload,
 } from "../shared/generated/refreshStripeHostPaymentAccountCallablePayload";
 import {
   validateCreateStripeHostOnboardingLinkCallablePayload,
+} from
+  "../shared/generated/validators/createStripeHostOnboardingLinkInput";
+import {
   validateRefreshStripeHostPaymentAccountCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/refreshStripeHostPaymentAccountInput";
 import {
   createStripeClient,
   StripeAccountSnapshot,

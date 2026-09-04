@@ -1,13 +1,15 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {EventDocument} from "../shared/generated/firestoreAdminTypes";
-import {RecordEventSuccessUnitOutcomesCallablePayload} from
+import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import type {RecordEventSuccessUnitOutcomesCallablePayload} from
   "../shared/generated/recordEventSuccessUnitOutcomesCallablePayload";
-import {RecordEventSuccessUnitOutcomesCallableResponse} from
+import type {RecordEventSuccessUnitOutcomesCallableResponse} from
   "../shared/generated/recordEventSuccessUnitOutcomesCallableResponse";
-import {validateRecordEventSuccessUnitOutcomesCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateRecordEventSuccessUnitOutcomesCallablePayload,
+} from
+  "../shared/generated/validators/recordEventSuccessUnitOutcomesInput";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {

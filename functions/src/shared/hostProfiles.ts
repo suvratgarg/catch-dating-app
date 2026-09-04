@@ -1,4 +1,4 @@
-import {
+import type {
   HostProfileDocument,
   UserProfileDocument,
 } from "./generated/firestoreAdminTypes";

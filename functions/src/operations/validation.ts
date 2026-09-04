@@ -1,8 +1,10 @@
 import {ValidateFunction} from "ajv";
 import {
   validateOperationRun as validateOperationRunContract,
+} from "../shared/generated/validators/operationRunContract";
+import {
   validateOperationWorkItem as validateOperationWorkItemContract,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/operationWorkItemContract";
 import {
   OperationActionReceipt,
   OperationDecision,

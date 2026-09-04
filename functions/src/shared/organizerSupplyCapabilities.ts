@@ -1,5 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {OrganizerSupplyCapabilities} from
+import type {OrganizerSupplyCapabilities} from
   "./generated/organizerSupplyCapabilities";
 
 export interface OrganizerCapabilityAuthority {

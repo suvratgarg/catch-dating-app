@@ -6,12 +6,14 @@ import {ValidateFunction} from "ajv";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {profilePhotoPolicy} from "../shared/generated/schemaRegistry";
 import {
-  schemaErrorMessages,
+  profilePhotoPolicy,
+} from "../shared/generated/catalogs/profilePhotoPolicy";
+import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
+import {
   validateUpdateUserProfileCallablePayload,
-} from "../shared/generated/schemaValidators";
-import {
+} from "../shared/generated/validators/updateUserProfileInput";
+import type {
   UpdateUserProfileCallablePayload,
 } from "../shared/generated/updateUserProfileCallablePayload";
 

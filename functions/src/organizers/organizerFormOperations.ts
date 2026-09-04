@@ -11,19 +11,19 @@ import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {ListOrganizerFormResponsesCallablePayload} from
+import type {ListOrganizerFormResponsesCallablePayload} from
   "../shared/generated/listOrganizerFormResponsesCallablePayload";
-import {ListOrganizerFormResponsesCallableResponse} from
+import type {ListOrganizerFormResponsesCallableResponse} from
   "../shared/generated/listOrganizerFormResponsesCallableResponse";
-import {GetOrganizerFormResponseDetailCallablePayload} from
+import type {GetOrganizerFormResponseDetailCallablePayload} from
   "../shared/generated/getOrganizerFormResponseDetailCallablePayload";
-import {GetOrganizerFormResponseDetailCallableResponse} from
+import type {GetOrganizerFormResponseDetailCallableResponse} from
   "../shared/generated/getOrganizerFormResponseDetailCallableResponse";
-import {GetOrganizerFormAnalyticsCallablePayload} from
+import type {GetOrganizerFormAnalyticsCallablePayload} from
   "../shared/generated/getOrganizerFormAnalyticsCallablePayload";
-import {GetOrganizerFormAnalyticsCallableResponse} from
+import type {GetOrganizerFormAnalyticsCallableResponse} from
   "../shared/generated/getOrganizerFormAnalyticsCallableResponse";
-import {
+import type {
   OrganizerApplicationDocument,
   OrganizerContactOriginDocument,
   OrganizerFormAggregateDocument,
@@ -36,9 +36,16 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 import {
   validateGetOrganizerFormAnalyticsCallablePayload,
+} from
+  "../shared/generated/validators/getOrganizerFormAnalyticsInput";
+import {
   validateGetOrganizerFormResponseDetailCallablePayload,
+} from
+  "../shared/generated/validators/getOrganizerFormResponseDetailInput";
+import {
   validateListOrganizerFormResponsesCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/listOrganizerFormResponsesInput";
 
 import {genericFormApplicationId} from "./organizerApplicationAccess";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
-import {OrganizerContactEventEdgeDocument} from
+import type {OrganizerContactEventEdgeDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {
   attributionTransitions,

@@ -3,7 +3,7 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import Razorpay from "razorpay";
 import {signUpUserForEvent} from "../events/signUpUserForEvent";
-import {RazorpayPendingOrderDocument} from
+import type {RazorpayPendingOrderDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {
   RazorpayPaymentSnapshot,

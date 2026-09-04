@@ -1,4 +1,4 @@
-import {
+import type {
   EventFormatSnapshot,
   EventSuccessFormatPrimitives,
 } from "../shared/generated/firestoreAdminTypes";

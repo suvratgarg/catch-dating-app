@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest} from "firebase-functions/v2/https";
 import {Timestamp} from "firebase-admin/firestore";
-import {OrganizerSavedAudienceDocument} from
+import type {OrganizerSavedAudienceDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {AudienceTestStore} from "./organizerAudienceTestStore";
 import {staticAudienceMembers, savedAudienceSpendMatches} from

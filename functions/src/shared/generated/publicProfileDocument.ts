@@ -2,9 +2,9 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-import {ProfilePromptAnswer} from "./profilePromptAnswer";
-import {ProfilePhoto} from "./profilePhoto";
-import {ActivityPreferences} from "./activityPreferences";
+import type {ProfilePromptAnswer} from "./profilePromptAnswer";
+import type {ProfilePhoto} from "./profilePhoto";
+import type {ActivityPreferences} from "./activityPreferences";
 
 /**
  * Backend-owned public profile projection stored at publicProfiles/{uid}. The uid is the document id and is not stored in document data.

@@ -6,16 +6,17 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {BigQueryClient, defaultBigQueryClient} from "../shared/bigQuery";
 import {checkIpRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
-import {
+import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
+import type {
   RecordOrganizerAnalyticsEventCallablePayload,
 } from "../shared/generated/recordOrganizerAnalyticsEventCallablePayload";
-import {
+import type {
   RecordOrganizerAnalyticsEventCallableResponse,
 } from "../shared/generated/recordOrganizerAnalyticsEventCallableResponse";
 import {
   validateRecordOrganizerAnalyticsEventCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/recordOrganizerAnalyticsEventInput";
 import {
   assertPublicOrganizerPageEligible,
 } from "../shared/publicOrganizerPage";

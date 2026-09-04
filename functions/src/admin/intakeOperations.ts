@@ -2,10 +2,12 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {AdminListIntakeOperationsCallablePayload} from
+import type {AdminListIntakeOperationsCallablePayload} from
   "../shared/generated/adminListIntakeOperationsCallablePayload";
-import {validateAdminListIntakeOperationsCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateAdminListIntakeOperationsCallablePayload,
+} from
+  "../shared/generated/validators/adminListIntakeOperationsInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {FirestoreOperationsRepository} from

@@ -1,5 +1,5 @@
 import {createHash} from "node:crypto";
-import {CrossPathsShowcaseEligibilityDocument} from
+import type {CrossPathsShowcaseEligibilityDocument} from
   "../shared/generated/firestoreAdminTypes";
 
 export const crossPathsShowcaseRuleVersion = 1;

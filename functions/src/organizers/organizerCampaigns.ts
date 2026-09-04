@@ -6,7 +6,7 @@ import {
 } from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
-import {
+import type {
   EventDocument,
   OrganizerAudienceSummaryDocument,
   OrganizerCampaignDocument,
@@ -19,16 +19,18 @@ import {
   OrganizerSavedAudienceDocument,
   OrganizerSenderConnectionDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {OrganizerCampaignActionCallablePayload} from
+import type {OrganizerCampaignActionCallablePayload} from
   "../shared/generated/organizerCampaignActionCallablePayload";
-import {OrganizerCampaignCallableResponse} from
+import type {OrganizerCampaignCallableResponse} from
   "../shared/generated/organizerCampaignCallableResponse";
-import {UpsertOrganizerCampaignCallablePayload} from
+import type {UpsertOrganizerCampaignCallablePayload} from
   "../shared/generated/upsertOrganizerCampaignCallablePayload";
 import {
   validateOrganizerCampaignActionCallablePayload,
+} from "../shared/generated/validators/organizerCampaignActionInput";
+import {
   validateUpsertOrganizerCampaignCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/upsertOrganizerCampaignInput";
 import {
   effectiveOrganizerCommunicationStatus,
   organizerCommunicationPreferenceId,

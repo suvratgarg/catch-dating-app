@@ -3,20 +3,22 @@ import {onCall, CallableRequest, HttpsError} from
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {
+import type {
   BlockDocument,
   MatchDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {BlockUserCallablePayload} from
+import type {BlockUserCallablePayload} from
   "../shared/generated/blockUserCallablePayload";
 import {
   validateBlockUserCallablePayload,
+} from "../shared/generated/validators/blockUserInput";
+import {
   validateUnblockUserCallablePayload,
-} from "../shared/generated/schemaValidators";
-import {UnblockUserCallablePayload} from
+} from "../shared/generated/validators/unblockUserInput";
+import type {UnblockUserCallablePayload} from
   "../shared/generated/unblockUserCallablePayload";
 import {normalizePayloadStrings, normalizeSingleIdPayload} from
   "../shared/callablePayloadNormalization";

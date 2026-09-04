@@ -10,7 +10,7 @@ import {
 } from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
-import {
+import type {
   EventDocument,
   OrganizerCampaignDocument,
   OrganizerCampaignRecipientDocument,
@@ -20,12 +20,13 @@ import {
   OrganizerMessageTemplateDocument,
   OrganizerSenderConnectionDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {OrganizerCampaignActionCallablePayload} from
+import type {OrganizerCampaignActionCallablePayload} from
   "../shared/generated/organizerCampaignActionCallablePayload";
-import {OrganizerCampaignCallableResponse} from
+import type {OrganizerCampaignCallableResponse} from
   "../shared/generated/organizerCampaignCallableResponse";
-import {validateOrganizerCampaignActionCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateOrganizerCampaignActionCallablePayload,
+} from "../shared/generated/validators/organizerCampaignActionInput";
 import {
   effectiveOrganizerCommunicationStatus,
   organizerCommunicationPreferenceId,

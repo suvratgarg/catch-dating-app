@@ -2,12 +2,14 @@ import {onCall, CallableRequest} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {AdminDecideOrganizerIntakeCallablePayload} from
+import type {AdminDecideOrganizerIntakeCallablePayload} from
   "../shared/generated/adminDecideOrganizerIntakeCallablePayload";
-import {OrganizerIntakeReviewDecisionDocument} from
+import type {OrganizerIntakeReviewDecisionDocument} from
   "../shared/generated/organizerIntakeReviewDecisionDocument";
-import {validateAdminDecideOrganizerIntakeCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateAdminDecideOrganizerIntakeCallablePayload,
+} from
+  "../shared/generated/validators/adminDecideOrganizerIntakeInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAdminRole} from "./adminAuth";

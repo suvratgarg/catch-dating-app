@@ -7,16 +7,18 @@ import {organizerCommunicationPlanCapabilityVersion,
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
-import {ResolveOrganizerCommunicationPlanCallablePayload} from
+import type {ResolveOrganizerCommunicationPlanCallablePayload} from
   "../shared/generated/resolveOrganizerCommunicationPlanCallablePayload";
-import {ResolveOrganizerCommunicationPlanCallableResponse} from
+import type {ResolveOrganizerCommunicationPlanCallableResponse} from
   "../shared/generated/resolveOrganizerCommunicationPlanCallableResponse";
-import {
+import type {
   OrganizerContactChannelStateDocument,
   OrganizerContactDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {validateResolveOrganizerCommunicationPlanCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateResolveOrganizerCommunicationPlanCallablePayload,
+} from
+  "../shared/generated/validators/resolveOrganizerCommunicationPlanInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

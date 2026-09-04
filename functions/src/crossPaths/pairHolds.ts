@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {CrossPathsPairHoldDocument} from
+import type {CrossPathsPairHoldDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {decrementCount} from "../events/eventPolicy";
 import {requireDoc} from "../shared/validation";

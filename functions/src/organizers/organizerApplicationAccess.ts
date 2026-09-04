@@ -1,5 +1,5 @@
 import {createHash} from "crypto";
-import {
+import type {
   OrganizerApplicationDocument,
   OrganizerApplicationResponseDocument,
   OrganizerContactOriginDocument,

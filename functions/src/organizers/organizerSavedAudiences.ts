@@ -6,9 +6,9 @@ import {resolveIndividualCommunicationPlan} from
   "../communications/organizerCommunicationPlan";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
-import {ArchiveOrganizerSavedAudienceCallablePayload} from
+import type {ArchiveOrganizerSavedAudienceCallablePayload} from
   "../shared/generated/archiveOrganizerSavedAudienceCallablePayload";
-import {
+import type {
   OrganizerCommunicationPreferenceDocument,
   OrganizerAudienceSummaryDocument,
   OrganizerContactChannelStateDocument,
@@ -17,25 +17,38 @@ import {
   OrganizerContactTraitDocument,
   OrganizerSavedAudienceDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ListOrganizerSavedAudiencesCallablePayload} from
+import type {ListOrganizerSavedAudiencesCallablePayload} from
   "../shared/generated/listOrganizerSavedAudiencesCallablePayload";
-import {ListOrganizerSavedAudiencesCallableResponse} from
+import type {ListOrganizerSavedAudiencesCallableResponse} from
   "../shared/generated/listOrganizerSavedAudiencesCallableResponse";
-import {OrganizerSavedAudienceCallableResponse} from
+import type {OrganizerSavedAudienceCallableResponse} from
   "../shared/generated/organizerSavedAudienceCallableResponse";
-import {PreviewOrganizerSavedAudienceCallablePayload} from
+import type {PreviewOrganizerSavedAudienceCallablePayload} from
   "../shared/generated/previewOrganizerSavedAudienceCallablePayload";
-import {PreviewOrganizerSavedAudienceCallableResponse} from
+import type {PreviewOrganizerSavedAudienceCallableResponse} from
   "../shared/generated/previewOrganizerSavedAudienceCallableResponse";
-import {UpsertOrganizerSavedAudienceCallablePayload} from
+import type {UpsertOrganizerSavedAudienceCallablePayload} from
   "../shared/generated/upsertOrganizerSavedAudienceCallablePayload";
 import {
   validateResolveOrganizerAudienceMembersCallablePayload,
+} from
+  "../shared/generated/validators/resolveOrganizerAudienceMembersInput";
+import {
   validateArchiveOrganizerSavedAudienceCallablePayload,
+} from
+  "../shared/generated/validators/archiveOrganizerSavedAudienceInput";
+import {
   validateListOrganizerSavedAudiencesCallablePayload,
+} from
+  "../shared/generated/validators/listOrganizerSavedAudiencesInput";
+import {
   validatePreviewOrganizerSavedAudienceCallablePayload,
+} from
+  "../shared/generated/validators/previewOrganizerSavedAudienceInput";
+import {
   validateUpsertOrganizerSavedAudienceCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/upsertOrganizerSavedAudienceInput";
 import {
   effectiveOrganizerCommunicationStatus,
   organizerCommunicationPreferenceId,
@@ -53,9 +66,9 @@ import {resolveOrganizerAudienceCoverage} from
 
 import {assertSavedAudienceSources, savedAudienceSourceMatches,
   savedAudienceFilterOptions} from "./organizerSavedAudienceSources";
-import {ResolveOrganizerAudienceMembersCallablePayload} from
+import type {ResolveOrganizerAudienceMembersCallablePayload} from
   "../shared/generated/resolveOrganizerAudienceMembersCallablePayload";
-import {ResolveOrganizerAudienceMembersCallableResponse} from
+import type {ResolveOrganizerAudienceMembersCallableResponse} from
   "../shared/generated/resolveOrganizerAudienceMembersCallableResponse";
 import {resolveStaticAudienceSelection} from
   "./organizerSavedAudienceMembership";

@@ -4,16 +4,18 @@ import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {
+import type {
   OrganizerDocument,
   OrganizerEventVenueDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {UpsertOrganizerEventVenueCallablePayload} from
+import type {UpsertOrganizerEventVenueCallablePayload} from
   "../shared/generated/upsertOrganizerEventVenueCallablePayload";
-import {UpsertOrganizerEventVenueCallableResponse} from
+import type {UpsertOrganizerEventVenueCallableResponse} from
   "../shared/generated/upsertOrganizerEventVenueCallableResponse";
-import {validateUpsertOrganizerEventVenueCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateUpsertOrganizerEventVenueCallablePayload,
+} from
+  "../shared/generated/validators/upsertOrganizerEventVenueInput";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";

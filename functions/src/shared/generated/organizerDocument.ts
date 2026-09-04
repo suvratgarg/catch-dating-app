@@ -2,8 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-import {UploadedPhoto} from "./uploadedPhoto";
-import {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
+import type {UploadedPhoto} from "./uploadedPhoto";
+import type {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
 
 /**
  * Canonical organizer document stored at organizers/{organizerId}. Club is one organizerType, not the parent entity name.

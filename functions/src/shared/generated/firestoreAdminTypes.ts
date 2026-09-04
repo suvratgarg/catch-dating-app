@@ -2,10 +2,10 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-import {EventOrigin} from "./eventOrigin";
-import {EventRuntimeAccess} from "./eventRuntimeAccess";
-import {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
-import {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
+import type {EventOrigin} from "./eventOrigin";
+import type {EventRuntimeAccess} from "./eventRuntimeAccess";
+import type {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
+import type {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
 
 /**
  * Schema-derived Admin SDK Firestore document types.

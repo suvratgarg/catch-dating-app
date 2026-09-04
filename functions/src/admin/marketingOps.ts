@@ -16,8 +16,12 @@ import type {AdminRecordMarketingReviewDecisionCallableResponse} from
   "../shared/generated/adminRecordMarketingReviewDecisionCallableResponse";
 import {
   validateAdminCreateMarketingContentDraftCallablePayload,
+} from
+  "../shared/generated/validators/adminCreateMarketingContentDraftInput";
+import {
   validateAdminRecordMarketingReviewDecisionCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/adminRecordMarketingReviewDecisionInput";
 import {validateCallableWithAjv} from "../shared/validation";
 
 const marketingOpsRoles = ["admin", "adminOwner", "support"] as const;

@@ -1,4 +1,4 @@
-import {EventDocument} from
+import type {EventDocument} from
   "../shared/generated/firestoreAdminTypes";
 
 export const crossPathsPilotMarketId = "in-mh-mumbai";

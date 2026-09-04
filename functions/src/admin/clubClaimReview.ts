@@ -2,7 +2,7 @@ import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {
+import type {
   OrganizerClaimRequestDocument,
   OrganizerDocument,
   UserProfileDocument,

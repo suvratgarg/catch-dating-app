@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
-import {OrganizerCampaignDocument} from
+import type {OrganizerCampaignDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
 import {organizerCommunicationPreferenceId} from

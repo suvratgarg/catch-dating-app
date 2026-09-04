@@ -4,11 +4,13 @@ import {onRequest} from "firebase-functions/v2/https";
 import {checkIpRateLimit} from "../shared/rateLimit";
 import type {JoinWaitlistHTTPResponse} from
   "../shared/generated/joinWaitlistHttpResponse";
+import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
 import {
-  schemaErrorMessages,
   validateJoinWaitlistHTTPRequest,
+} from "../shared/generated/validators/joinWaitlistHttpRequest";
+import {
   validateJoinWaitlistHTTPResponse,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/joinWaitlistHttpResponse";
 
 interface NormalizedMarketingAnalytics {
   consent: Record<string, unknown> | null;

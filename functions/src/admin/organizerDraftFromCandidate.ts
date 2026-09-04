@@ -12,7 +12,8 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {
   validateAdminCreateOrganizerDraftFromCandidateCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/adminCreateOrganizerDraftFromCandidateInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {validateOperationWorkItem} from "../operations/validation";
 import type {OperationWorkItem} from "../operations/models";

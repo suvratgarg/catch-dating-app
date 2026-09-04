@@ -3,31 +3,43 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import crypto from "node:crypto";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {
+import type {
   ClubDocument,
   OrganizerDocument,
   OrganizerIntakeFieldCorrectionDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {AdminGetClubDetailsCallablePayload} from
+import type {AdminGetClubDetailsCallablePayload} from
   "../shared/generated/adminGetClubDetailsCallablePayload";
-import {AdminListClubDetailsCallablePayload} from
+import type {AdminListClubDetailsCallablePayload} from
   "../shared/generated/adminListClubDetailsCallablePayload";
-import {AdminUpdateClubDetailsCallablePayload} from
+import type {AdminUpdateClubDetailsCallablePayload} from
   "../shared/generated/adminUpdateClubDetailsCallablePayload";
-import {AdminGetOrganizerDetailsCallablePayload} from
+import type {AdminGetOrganizerDetailsCallablePayload} from
   "../shared/generated/adminGetOrganizerDetailsCallablePayload";
-import {AdminListOrganizerDetailsCallablePayload} from
+import type {AdminListOrganizerDetailsCallablePayload} from
   "../shared/generated/adminListOrganizerDetailsCallablePayload";
-import {AdminUpdateOrganizerDetailsCallablePayload} from
+import type {AdminUpdateOrganizerDetailsCallablePayload} from
   "../shared/generated/adminUpdateOrganizerDetailsCallablePayload";
 import {
   validateAdminGetClubDetailsCallablePayload,
+} from "../shared/generated/validators/adminGetClubDetailsInput";
+import {
   validateAdminListClubDetailsCallablePayload,
+} from "../shared/generated/validators/adminListClubDetailsInput";
+import {
   validateAdminUpdateClubDetailsCallablePayload,
+} from "../shared/generated/validators/adminUpdateClubDetailsInput";
+import {
   validateAdminGetOrganizerDetailsCallablePayload,
+} from "../shared/generated/validators/adminGetOrganizerDetailsInput";
+import {
   validateAdminListOrganizerDetailsCallablePayload,
+} from
+  "../shared/generated/validators/adminListOrganizerDetailsInput";
+import {
   validateAdminUpdateOrganizerDetailsCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/adminUpdateOrganizerDetailsInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
