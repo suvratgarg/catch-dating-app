@@ -239,13 +239,14 @@ test("literal document references respect Markdown relativity and repository cod
 test("inventory includes ungoverned Markdown and exposes headings and incoming references", () => {
   const sources = new Map([
     ["docs/README.md", "# Docs\n\n[Guide](guide.md)\n"],
-    ["docs/guide.md", "# Guide\n\n```md\n## Not a heading\n```\n## Usage\n"],
+    ["docs/guide.md", "<!-- GENERATED FROM contract.json. DO NOT EDIT. -->\n# Guide\n\n```md\n## Not a heading\n```\n## Usage\n"],
     ["lib/example.dart", "not Markdown"],
   ]);
   const inventory = buildDocumentInventory({paths: sources.keys(), readSource: (p) => sources.get(p)});
   assert.equal(inventory.documents.length, 2);
   const guide = inventory.documents.find((d) => d.path === "docs/guide.md");
   assert.equal(guide.metadata, null);
+  assert.match(guide.generatedMarker, /GENERATED FROM/u);
   assert.deepEqual(guide.headings.map((h) => h.title), ["Guide", "Usage"]);
   assert.deepEqual(guide.referencedBy, [{path: "docs/README.md", line: 3}]);
   assert.match(inventory.coverage, /no semantic freshness/u);
