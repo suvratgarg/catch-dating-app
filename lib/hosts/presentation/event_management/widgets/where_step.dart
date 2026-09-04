@@ -196,6 +196,7 @@ class WhereStep extends ConsumerWidget {
 
 class HostSavedPlacesSection extends StatelessWidget {
   const HostSavedPlacesSection({
+    super.key,
     required this.venues,
     required this.selectedVenueId,
     required this.onVenueSelected,
