@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.4.0
-updated: 2026-09-04
+version: 1.5.0
+updated: 2026-09-05
 owner: app_architecture
 status: active
 ---
@@ -576,6 +576,33 @@ prototype has an explicit proposal marker, and every `screen-scope` case
 carries a disposition. Importing the production package is only a proxy for
 production mounting: the three Event Success prototypes are identified
 exceptions, despite importing production primitives.
+
+**Execution (2026-09-05):** Phase 1 is implemented. The adopted
+`widgetbook_golden_test_core` generator enumerates all 972 registered use
+cases inside `flutter_test`; the Catch adapter retains the existing bundled
+fonts, theme setup, `matchCatchGolden` comparator, and 0.30% tolerance. The
+designated `core/widgets` corpus contains 249 golden ids: every case renders
+at light and dark, and 217 text-bearing L2–L4 cases also render at text scale
+2.0. The checked baseline contains 944 images. Two consecutive local runs
+passed all 469 tests in 1:07 each with no rendering drift. The CI lane runs
+the same corpus twice sequentially and retains failure artifacts.
+
+The whole-corpus coverage gate measures 259 public pre-extraction `Catch*`
+classes: 241 are covered by 249 golden ids and 19 carry owner/expiry waivers
+(limit 20). The four-class triage measures 274 `component-mount`, 335
+`body-mount`, 360 `screen-scope`, and 3 `prototype` cases, with zero
+unclassified. All 360 screen-scope cases have authored dispositions (65
+`migrate-to-ui-capture`, 295 `keep-widgetbook`). The three prototypes retain
+the `· proposed` marker and remain owned by the Event Success consolidation
+review. A shared catalog/device/sheet frame API plus provider and case scopes
+now owns the repeated harness shapes; the reference cases and golden runner
+adopt it without a bulk catalog migration.
+
+The known-bad proof remains isolated on scratch commit `0171d20e0`: changing
+`CatchSpacing.s4` from 16 to 32 fails the reference menu-row goldens by
+22.8727% (light) and 22.8691% (dark), above the 0.30% threshold. The scratch
+commit is not part of Phase 1 history. No production `lib/**` file changed.
+Phase 2 remains blocked until the owner closes the Phase 1 review gate.
 
 ### Phase 2 — `packages/catch_tokens`
 
