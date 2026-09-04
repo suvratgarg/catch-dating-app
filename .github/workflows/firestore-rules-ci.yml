@@ -29,4 +29,7 @@ jobs:
 
       - run: node tool/contracts/check_firestore_contract.mjs
 
+      - name: Verify Storage path contracts against rules
+        run: node tool/contracts/check_storage_contract.mjs
+
       - run: firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
