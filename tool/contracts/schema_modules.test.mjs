@@ -1,10 +1,15 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
-import ts from "typescript";
 import * as canonical from "./generated/schema_contract_registry.mjs";
+
+const requireFromFunctions = createRequire(
+  new URL("../../functions/package.json", import.meta.url)
+);
+const ts = requireFromFunctions("typescript");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 

@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 import fs from "node:fs";
-import ts from "typescript";
+import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+
+const requireFromFunctions = createRequire(
+  new URL("../../functions/package.json", import.meta.url)
+);
+const ts = requireFromFunctions("typescript");
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
