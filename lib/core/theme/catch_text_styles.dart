@@ -352,6 +352,13 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
+  /// Approved floating navigation label, independent of generic buttons.
+  static TextStyle navigationLabel(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.navigationLabel,
+        color: color ?? CatchTokens.of(context).ink,
+      );
+
   static TextStyle buttonSm(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.control,

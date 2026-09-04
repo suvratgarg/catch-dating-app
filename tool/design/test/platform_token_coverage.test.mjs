@@ -91,6 +91,24 @@ test('an applicable source row cannot silently remain unmapped or change numeric
   fails(original, /domain needs an applicability decision/, { inventory: { rows: [{ ...body, category: 'New platform domain' }] } });
 });
 
+test('floating navigation metrics are an explicit authored exception, not generic button typography', () => {
+  const tokens = collectTokens(original);
+  for (const platform of ['ios', 'android']) {
+    for (const [field, expected] of [['size', 13], ['lineHeight', 13], ['weight', 600], ['tracking', 0]]) {
+      const value = resolveToken(tokens, `typography.${platform}.navigationLabel.${field}`);
+      assert.equal(typeof value === 'object' ? value.value : value, expected);
+      const changed = copy();
+      const token = changed.typography[platform].navigationLabel[field];
+      if (typeof token.$value === 'object') token.$value.value += 1;
+      else token.$value += 100;
+      fails(changed, /Approved floating navigation typography/);
+    }
+    const missingException = copy();
+    delete missingException.typography[platform].navigationLabel.$extensions['org.catch'].exception;
+    fails(missingException, /Approved floating navigation typography/);
+  }
+});
+
 test('a second raw functional scale and a raw Material fallback are rejected', () => {
   fails(original, /no second raw sans scale/, { textStyles: `${styles}\nfinal bad = CatchFonts.sans(fontSize: 13, height: 1);` });
   fails(original, /Material fallback must consume/, { textStyles: styles.replace('final profile = CatchPlatformTokens.typography;', 'final profile = TextTheme();') });

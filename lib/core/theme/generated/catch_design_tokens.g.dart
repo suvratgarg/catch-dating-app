@@ -141,6 +141,7 @@ class GeneratedCatchTypographyProfile {
     required this.displayLarge,
     required this.displayMedium,
     required this.displaySmall,
+    required this.navigationLabel,
   });
   final TextStyle headline;
   final TextStyle title;
@@ -156,6 +157,7 @@ class GeneratedCatchTypographyProfile {
   final TextStyle displayLarge;
   final TextStyle displayMedium;
   final TextStyle displaySmall;
+  final TextStyle navigationLabel;
 }
 
 abstract final class GeneratedCatchTypographyTokens {
@@ -174,6 +176,7 @@ abstract final class GeneratedCatchTypographyTokens {
     displayLarge: TextStyle(fontSize: 34.0, height: 41.0 / 34.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
     displayMedium: TextStyle(fontSize: 28.0, height: 34.0 / 28.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
     displaySmall: TextStyle(fontSize: 22.0, height: 28.0 / 22.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    navigationLabel: TextStyle(fontSize: 13.0, height: 13.0 / 13.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
   );
   static const android = GeneratedCatchTypographyProfile(
     headline: TextStyle(fontSize: 24.0, height: 32.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
@@ -190,6 +193,7 @@ abstract final class GeneratedCatchTypographyTokens {
     displayLarge: TextStyle(fontSize: 57.0, height: 64.0 / 57.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
     displayMedium: TextStyle(fontSize: 45.0, height: 52.0 / 45.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
     displaySmall: TextStyle(fontSize: 36.0, height: 44.0 / 36.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    navigationLabel: TextStyle(fontSize: 13.0, height: 13.0 / 13.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
   );
 }
 

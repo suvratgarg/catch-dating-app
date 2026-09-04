@@ -242,7 +242,7 @@
           "avatarTypography": "Content-free avatar initials/count glyph size follows avatar diameter",
           "rasterTypography": "Icon-font raster art and simulated phone-frame clock are not app reading roles",
           "spacing": "Reviewed Catch20point gutter and16point body start; no universal OS margin exists",
-          "floatingNavigation": "User explicitly retained current floating bottom navigation geometry"
+          "floatingNavigation": "User explicitly retained current floating bottom navigation geometry and typography. The dedicated navigationLabel role preserves 13/13, weight 600 and zero tracking on both platforms independently of generic button styles."
         },
         "sources": {
           "ios-font": {
@@ -3059,6 +3059,41 @@
             "decision": "Framework fallback display uses this native size/leading/weight with Catch zero tracking; Catch branded display continues to use Archivo."
           }
         }
+      },
+      "navigationLabel": {
+        "$description": "Authored floating navigation label. Preserve the approved compact label independently of generic button or native control typography.",
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.footnote",
+            "exception": "floatingNavigation",
+            "decision": "User retained the floating bottom navigation appearance. Its original 13/13, weight 600 and zero tracking are deliberately preserved on both platforms; this is not a native reference metric or a generic control role."
+          }
+        }
       }
     },
     "android": {
@@ -3431,6 +3466,41 @@
           "org.catch": {
             "reference": "platformReference.android.typography.displaySmall",
             "decision": "Framework fallback display uses this native size/leading/weight with Catch zero tracking; Catch branded display continues to use Archivo."
+          }
+        }
+      },
+      "navigationLabel": {
+        "$description": "Authored floating navigation label. Preserve the approved compact label independently of generic button or native control typography.",
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.labelMedium",
+            "exception": "floatingNavigation",
+            "decision": "User retained the floating bottom navigation appearance. Its original 13/13, weight 600 and zero tracking are deliberately preserved on both platforms; this is not a native reference metric or a generic control role."
           }
         }
       }
