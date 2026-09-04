@@ -490,7 +490,7 @@ test("only the successful finalizer advances and drains the cursor", () => {
   assert.equal((delivery.match(/name: backend-delivery-cursor-v4-/g) ?? []).length, 1);
 });
 
-test("promotion is ordered dev to protected prod", () => {
+test("promotion is ordered dev to production with separately bounded automatic approval", () => {
   const delivery = workflow("delivery.yml");
   assert.match(delivery, /dev:[\s\S]*environment: dev/);
   assert.doesNotMatch(delivery, /\n  staging:|environment: staging|needs\.staging/);
@@ -786,3 +786,25 @@ function runJq(program, input, args = []) {
   assert.equal(result.status, 0, result.error?.message ?? result.stderr);
   return JSON.parse(result.stdout);
 }
+
+
+test("automatic production is recomputed before credentials and cannot be used for recovery", () => {
+  const delivery = workflow("delivery.yml");
+  assert.match(delivery, /production_environment: \$\{\{ steps\.package\.outputs\.production_environment \}\}/);
+  assert.match(delivery, /approval_environment: \$\{\{ needs\.authorize\.outputs\.production_environment \}\}/);
+  assert.match(delivery, /GITHUB_EVENT_NAME.*workflow_dispatch.*production_environment=prod/);
+  const promotion = workflow("_firebase-promote.yml");
+  assert.match(promotion, /environment: \$\{\{ inputs\.approval_environment \|\| inputs\.environment \}\}/);
+  assert.match(promotion, /group: firebase-\$\{\{ inputs\.environment \}\}/);
+  for (const guard of ['test "$DEPLOY_ENVIRONMENT" = prod', 'test "$APPROVAL_ENVIRONMENT" = prod-backend',
+    'test "$GITHUB_REF" = refs/heads/main', 'test -z "$RESUME_RUN_ID"',
+    'test "$REQUIRE_CURRENT_MAIN" = false', 'workflow_run|repository_dispatch',
+    'delivery.yml@refs/heads/main']) assert.ok(promotion.includes(guard));
+  assert.ok(promotion.indexOf("Recompute automatic production eligibility") < promotion.indexOf("Authenticate to Google Cloud"));
+  assert.ok(promotion.includes('.productionPromotion.environment == "prod-backend" and .stages == ["functions"]'));
+});
+
+test("deployment-image retention has one bounded seven-day policy without indefinite keep exceptions", () => {
+  const policy = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/firebase/artifact_registry_cleanup_policy.json"), "utf8"));
+  assert.deepEqual(policy, [{name: "delete-deployment-images-after-7-days", action: {type: "Delete"}, condition: {tagState: "any", olderThan: "7d"}}]);
+});

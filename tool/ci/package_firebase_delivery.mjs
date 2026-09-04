@@ -3,7 +3,7 @@ import {createHash} from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {affectedFunctionTargets} from "../firebase/affected_function_targets.mjs";
+import {affectedFunctionTargets, productionPromotionEnvironment} from "../firebase/affected_function_targets.mjs";
 import {planFirebaseDeployGroups} from "../firebase/plan_firebase_deploy_targets.mjs";
 import {
   dormantFirebaseFunctionTargets,
@@ -623,6 +623,12 @@ export function verifyFirebaseDelivery({
         impactPlan.snapshot?.cumulativeSnapshot === true,
     });
     result.targets[index] = result.functionSelection.targets.join(",");
+    result.productionPromotion = productionPromotionEnvironment({
+      sourceRoot, sourceSha, baseSha, stages: result.stages,
+      noOp: result.functionSelection.mode === "no-op",
+      fullSnapshot: impactPlan.rebaseline?.cumulativeSnapshot === true ||
+        impactPlan.snapshot?.cumulativeSnapshot === true,
+    });
   }
   return result;
 }

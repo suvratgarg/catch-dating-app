@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {affectedFunctionTargets} from "./affected_function_targets.mjs";
+import {affectedFunctionTargets, productionPromotionEnvironment} from "./affected_function_targets.mjs";
 
 const targets = ["functions:alpha", "functions:alphaAlias", "functions:beta", "functions:gamma"];
 
@@ -207,4 +207,76 @@ test("shared validation runtime changes select customer and payment consumers", 
   const f = modularSchemaFixture(t);
   f.write(f.runtime, fs.readFileSync(path.join(f.root, f.runtime), "utf8") + '\n// Runtime revision\n');
   assert.deepEqual(f.select({baseSha: f.base}).targets, targets.slice(0, 3));
+});
+
+
+function promotionFixture(t) {
+  const f = fixture(t);
+  f.write("functions/src/gamma.ts", "export function gamma(value: number) { return value + 1; }");
+  const base = f.commit();
+  return {...f, base, policy(options = {}) {
+    return productionPromotionEnvironment({
+      sourceRoot: f.root, baseSha: base, sourceSha: f.commit(), stages: ["functions"], ...options,
+    });
+  }};
+}
+
+test("ordinary existing implementation updates may promote automatically", (t) => {
+  const f = promotionFixture(t);
+  f.write("functions/src/gamma.ts", "export function gamma(value: number) { return value + 2; }");
+  assert.equal(f.policy().environment, "prod-backend");
+});
+
+for (const [label, file, content] of [
+  ["exports", "functions/src/index.ts", 'export {gamma} from "./gamma";'],
+  ["initialization", "functions/src/config.ts", "export const config = 2;"],
+  ["imports", "functions/src/gamma.ts", 'import "./bootstrap"; export function gamma(value: number) { return value + 2; }'],
+  ["permission logic", "functions/src/gamma.ts", "export function gamma(value: number) { requirePermission(value); return value; }"],
+  ["authentication logic", "functions/src/gamma.ts", "export function gamma(value: number) { return request.auth.uid; }"],
+  ["secrets", "functions/src/gamma.ts", 'const key = defineSecret("KEY"); export function gamma(value: number) { return value; }'],
+  ["dependency update", "functions/package.json", '{"engines":{"node":"24"}}'],
+  ["migration", "tool/data/migration.mjs", "console.log('migration');"],
+  ["contract", "contracts/schemas/example.json", "{}"],
+  ["new source", "functions/src/newHelper.ts", "export function helper() { return 1; }"],
+]) {
+  test(`${label} retains protected production`, (t) => {
+    const f = promotionFixture(t);
+    f.write(file, content);
+    assert.equal(f.policy().environment, "prod");
+  });
+}
+
+test("deletions and full snapshots retain production review", (t) => {
+  const f = promotionFixture(t);
+  fs.unlinkSync(path.join(f.root, "functions/src/gamma.ts"));
+  assert.equal(f.policy().environment, "prod");
+  assert.equal(productionPromotionEnvironment({
+    sourceRoot: f.root, sourceSha: f.base, baseSha: f.base,
+    stages: ["functions"], fullSnapshot: true,
+  }).environment, "prod");
+});
+
+test("trigger options and security bodies cannot be hidden by handler-body normalization", (t) => {
+  const f = fixture(t);
+  f.write("functions/src/gamma.ts", 'export const gamma = onCall({invoker: "private"}, (request) => request.data);');
+  const base = f.commit();
+  f.write("functions/src/gamma.ts", 'export const gamma = onCall({invoker: "public"}, (request) => request.data);');
+  assert.equal(productionPromotionEnvironment({
+    sourceRoot: f.root, baseSha: base, sourceSha: f.commit(), stages: ["functions"],
+  }).environment, "prod");
+});
+
+test("ordinary handler bodies may change with identical trigger options", (t) => {
+  const f = fixture(t);
+  f.write("functions/src/gamma.ts", 'export const gamma = onCall({region: "asia-south1"}, (request) => request.data + 1);');
+  const base = f.commit();
+  f.write("functions/src/gamma.ts", 'export const gamma = onCall({region: "asia-south1"}, (request) => request.data + 2);');
+  const head = f.commit();
+  f.write("functions/src/gamma.ts", "dirty bytes must not change approval");
+  assert.equal(productionPromotionEnvironment({
+    sourceRoot: f.root, baseSha: base, sourceSha: head, stages: ["functions"],
+  }).environment, "prod-backend");
+  assert.equal(productionPromotionEnvironment({
+    sourceRoot: f.root, baseSha: base, sourceSha: head, stages: ["functions", "firestore-rules"],
+  }).environment, "prod");
 });

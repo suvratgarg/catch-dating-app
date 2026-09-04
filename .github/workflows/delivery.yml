@@ -61,6 +61,7 @@ jobs:
       source_sha: ${{ steps.source.outputs.source_sha }}
       base_sha: ${{ steps.plan.outputs.base_sha }}
       deploy_required: ${{ steps.plan.outputs.deploy_required }}
+      production_environment: ${{ steps.package.outputs.production_environment }}
     steps:
       - id: cursor
         name: Restore the latest verified delivery cursor
@@ -793,7 +794,23 @@ jobs:
             test "$(sha256sum build/delivery/source/firebase-provenance.json | awk '{print $1}')" = "$RESUME_PROVENANCE_SHA256"
           fi
 
-      - name: Verify the packaged CI plan and least-authority config
+      - id: toolchain
+        if: ${{ steps.plan.outputs.deploy_required == 'true' }}
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        if: ${{ steps.plan.outputs.deploy_required == 'true' }}
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install the pinned source-analysis parser
+        if: ${{ steps.plan.outputs.deploy_required == 'true' }}
+        run: npm ci --ignore-scripts --workspaces=false
+
+      - id: package
+        name: Verify the packaged CI plan and least-authority config
         if: ${{ steps.plan.outputs.deploy_required == 'true' }}
         env:
           BASE_SHA: ${{ steps.plan.outputs.base_sha }}
@@ -814,8 +831,15 @@ jobs:
             --base-sha "$BASE_SHA" \
             --ci-run-id "$SOURCE_CI_RUN_ID" \
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
-            --provenance-manifest build/delivery/source/firebase-provenance.json)"
+            --provenance-manifest build/delivery/source/firebase-provenance.json \
+            --affected-functions true)"
           test "$(jq -er '.baseSha' <<< "$result")" = "$BASE_SHA"
+          production_environment="$(jq -r '.productionPromotion.environment // "prod"' <<< "$result")"
+          # Explicit recovery remains reviewer-protected even for ordinary code.
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then production_environment=prod; fi
+          [[ "$production_environment" =~ ^(prod|prod-backend)$ ]]
+          jq '.productionPromotion // {environment: "prod", reason: "Non-Functions stages"}' <<< "$result"
+          echo "production_environment=$production_environment" >> "$GITHUB_OUTPUT"
 
       - name: Write the source-bound manual recovery authorization
         if: ${{ steps.plan.outputs.deploy_required == 'true' }}
@@ -896,6 +920,7 @@ jobs:
     uses: ./.github/workflows/_firebase-promote.yml
     with:
       environment: prod
+      approval_environment: ${{ needs.authorize.outputs.production_environment }}
       control_plane_sha: ${{ github.workflow_sha }}
       base_sha: ${{ needs.authorize.outputs.base_sha }}
       source_ci_run_attempt: ${{ needs.authorize.outputs.source_ci_run_attempt }}
