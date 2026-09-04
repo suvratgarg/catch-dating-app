@@ -225,7 +225,7 @@ test("literal document references respect Markdown relativity and repository cod
     "[space](<../old%20plan.md>)",
     "[ref]: ../owner.md#policy",
     "[not-doc](../owner.json) and `not a path`",
-  ].join("\n"));
+  ].join("\n"), new Set(["docs/owner.md"]));
   assert.deepEqual(refs, [
     {path: "docs/owner.md", line: 1},
     {path: "docs/owner.md", line: 2},
@@ -317,6 +317,7 @@ test("references handle nested and escaped destinations, root literals, and fenc
     {path: "docs/notes/a(b).md", line: 7},
   ]);
   assert.equal(retiredDocumentReferences({
-    paths: ["docs/guide.md"], readSource: () => "Read `AGENTS.md`.", retiredPaths: ["AGENTS.md"],
-  }).length, 1);
+    paths: ["docs/guide.md"], readSource: () => "Read `AGENTS.md` and `operations/README.md`.",
+    retiredPaths: ["AGENTS.md", "operations/README.md"],
+  }).length, 2);
 });

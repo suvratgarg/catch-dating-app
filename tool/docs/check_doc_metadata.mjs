@@ -314,10 +314,8 @@ export function documentReferences(documentPath, source, knownPaths = new Set())
       const relative = path.posix.join(path.posix.dirname(documentPath), target);
       // Code spans commonly use repo-root paths. Bare names resolve locally
       // first, then to an existing (or just-retired) root file such as AGENTS.md.
-      const rootLiteral = rootStyle && (
-        /^(?:docs|lib|tool|contracts|design|functions|website|admin|apps|packages|widgetbook)\//u.test(target) ||
-        (!target.includes("/") && !knownPaths.has(relative) && knownPaths.has(target))
-      );
+      const rootLiteral = rootStyle && knownPaths.has(target) &&
+        (target.includes("/") || !knownPaths.has(relative));
       const normalized = path.posix.normalize(target.startsWith("/") ? target.slice(1) : rootLiteral ? target : relative);
       if (!normalized.startsWith("../") && !seen.has(normalized)) {
         seen.add(normalized);
