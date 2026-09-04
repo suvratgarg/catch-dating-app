@@ -332,7 +332,7 @@ final _uploadCases = <UploadCase>[
   ),
   UploadCase(
     name: 'uploadClubCover',
-    schemaFileName: 'club_photos.schema.json',
+    schemaFileName: 'organizer_media_objects.schema.json',
     expectedPathPrefix: 'organizers/club-1/media/',
     invoke: (repository, image) => repository.uploadClubCover(
       uid: 'user-1',
@@ -342,7 +342,7 @@ final _uploadCases = <UploadCase>[
   ),
   UploadCase(
     name: 'uploadClubProfileImage',
-    schemaFileName: 'club_logo_images.schema.json',
+    schemaFileName: 'organizer_logo_media_objects.schema.json',
     expectedPathPrefix: 'organizers/club-1/logo/',
     invoke: (repository, image) => repository.uploadClubProfileImage(
       uid: 'user-1',

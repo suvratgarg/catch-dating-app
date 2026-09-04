@@ -73,7 +73,7 @@ firebase emulators:exec --project demo-catch-rules --only firestore,storage \
   "npm --prefix functions run test:rules"
 
 echo "==> Running focused Flutter analysis"
-flutter analyze \
+flutter analyze --fatal-infos \
   lib/core/schema_contracts/generated/callable_request_dtos.g.dart \
   lib/core/schema_contracts/generated/callables \
   lib/core/schema_contracts/generated/schema_contracts.g.dart \
@@ -81,6 +81,7 @@ flutter analyze \
   lib/clubs/data/clubs_repository.dart \
   lib/clubs/data/club_callable_responses.dart \
   lib/clubs/data/club_posts_repository.dart \
+  lib/image_uploads/data/image_upload_repository.dart \
   lib/hosts/presentation/club_management/create/create_club_controller.dart \
   lib/reviews/data/reviews_repository.dart \
   lib/reviews/data/review_callable_adapters.dart \
@@ -107,6 +108,7 @@ flutter analyze \
   test/core/update_user_profile_patch_test.dart \
   test/core/update_club_patch_test.dart \
   test/clubs/clubs_repository_test.dart \
+  test/image_uploads/image_upload_repository_test.dart \
   test/reviews/reviews_repository_test.dart \
   test/events/event_repository_test.dart \
   test/user_profile/user_profile_repository_test.dart \
@@ -125,6 +127,7 @@ flutter test \
   test/core/update_user_profile_patch_test.dart \
   test/core/update_club_patch_test.dart \
   test/clubs/clubs_repository_test.dart \
+  test/image_uploads/image_upload_repository_test.dart \
   test/reviews/reviews_repository_test.dart \
   test/events/event_repository_test.dart \
   test/user_profile/user_profile_repository_test.dart \
