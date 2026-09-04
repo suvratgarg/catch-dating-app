@@ -17,9 +17,9 @@ jobs:
   analysis-gates:
     name: Flutter analysis and gates
     runs-on: ubuntu-latest
-    # Full workspace analysis plus the UI lint diagnostic pass now exceeds the
-    # legacy 15-minute ceiling on hosted Linux runners.
-    timeout-minutes: 25
+    # Eight-package analysis and serial UI lint probes exceed 25 minutes on
+    # hosted Linux runners; retain every probe within a bounded job allowance.
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v6

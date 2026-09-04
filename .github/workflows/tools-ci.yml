@@ -236,7 +236,8 @@ jobs:
       needs.preflight.outputs.tool_mode == 'full' &&
       needs.fast-gates.result == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Serial analyzer probes need more time than the other scanner buckets.
+    timeout-minutes: ${{ matrix.name == 'lint-scanners' && 45 || 30 }}
     strategy:
       fail-fast: false
       matrix:
