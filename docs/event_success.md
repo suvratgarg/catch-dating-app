@@ -48,7 +48,7 @@ the host for help through the wingman request flow.
 Event Success must no longer infer that every human at an event has an
 `eventParticipations/{eventId_uid}` document. The Host runtime consumes the
 unified operational roster described in
-`docs/host_tooling_consolidation_tracker.md`.
+`docs/host_product.md#host-tooling-decisions`.
 
 - Host-only facilitation, run-of-show, prompts, manual attendance and aggregate
   reporting can address an `eventAttendee` without a linked UID. Existing

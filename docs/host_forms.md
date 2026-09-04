@@ -24,12 +24,12 @@ general intake must not be forced into application-review state.
 Forms is an Audience-owned navigation and source capability. The canonical Host
 destination is `/host/audience`, where Forms and Responses are peer modes; legacy
 `/host/forms` links redirect into that destination. The generated [Audience
-responsibility README](../../lib/hosts/audience/README.md) owns route composition,
+responsibility README](../lib/hosts/audience/README.md) owns route composition,
 source roots, and handoffs. This document remains the sole Forms product and
 implementation contract.
 
 This specification extends
-`docs/plans/standalone_host_product_and_crm_delivery_plan.md`. Data authority
+`docs/host_product.md`. Data authority
 remains owned by `docs/data_contracts.md`, client architecture by
 `docs/app_architecture.md`, and public route architecture by
 `docs/web_surface_architecture.md` and
@@ -476,10 +476,10 @@ or user availability.
 
 | Capability | Source evidence | Current status |
 | --- | --- | --- |
-| Audience navigation and Host Forms UI | [Audience README](../../lib/hosts/audience/README.md), [router](../../lib/routing/go_router.dart), `lib/hosts/presentation/forms/` | Audience-owned source implementation; route/state capture and release proof remain separate. |
-| Management, lifecycle, builder, validation, publication | [Functions inventory](../../functions/README.md) management entries and `lib/hosts/presentation/forms/` | Source seams are present for draft/editor/lifecycle operations; exact released-client coverage remains a gate. |
+| Audience navigation and Host Forms UI | [Audience README](../lib/hosts/audience/README.md), [router](../lib/routing/go_router.dart), `lib/hosts/presentation/forms/` | Audience-owned source implementation; route/state capture and release proof remain separate. |
+| Management, lifecycle, builder, validation, publication | [Functions inventory](../functions/README.md) management entries and `lib/hosts/presentation/forms/` | Source seams are present for draft/editor/lifecycle operations; exact released-client coverage remains a gate. |
 | Public respondent and distribution | Functions respondent/distribution entries, website `/f/` route metadata, and the `/f/:publicFormId/` contract above | Source route and callable seams are present; mobile/desktop runtime, environment, abuse, and deployment proof remain open. |
-| Responses, analytics, exports, automations, and conversion | [Functions inventory](../../functions/README.md) operations entries and `functions/src/organizers/organizerForm*.ts` | Source seams are present; aggregate/export/automation replay and downstream receipt proof remain open. |
+| Responses, analytics, exports, automations, and conversion | [Functions inventory](../functions/README.md) operations entries and `functions/src/organizers/organizerForm*.ts` | Source seams are present; aggregate/export/automation replay and downstream receipt proof remain open. |
 
 The product contract above remains authoritative for lifecycle, safety, consent,
 public respondent privacy, identity policy, uploads, analytics, automations, and

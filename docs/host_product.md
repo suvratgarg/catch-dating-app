@@ -6,12 +6,12 @@ owner: host_tooling
 status: active
 ---
 
-# Standalone Host Product And Implementation Specification
+# Host Product Contract
 
 ## Forms Product Owner
 
 The generic Host Forms product is specified in
-[Host Forms Product Specification](host_forms_product_spec.md). That
+[Host Forms Product Specification](host_forms.md). That
 specification owns form lifecycle, builder and template behavior, the app-free
 respondent route, distribution, responses, analytics, exports, automations, and
 reviewed downstream conversion. This document owns the broader standalone Host
@@ -20,9 +20,9 @@ and cross-surface rollout. Applications remain one Forms purpose with a review
 projection; they are not the generic response model.
 
 Audience owns Host navigation and route composition. The generated [Audience
-responsibility README](../../lib/hosts/audience/README.md) owns the canonical
+responsibility README](../lib/hosts/audience/README.md) owns the canonical
 `/host/audience` destination, peer modes, source roots, handoffs, and exclusions.
-This plan must not create a second Customers or Forms navigation owner.
+This contract must not create a second Customers or Forms navigation owner.
 
 ## Decision
 
@@ -112,7 +112,7 @@ Forms, and Responses. The router preserves legacy deep links by redirecting
 `/host/customers` and `/host/forms` into the Audience route while retaining the
 requested mode or nested destination.
 
-The generated [Audience responsibility README](../../lib/hosts/audience/README.md)
+The generated [Audience responsibility README](../lib/hosts/audience/README.md)
 is the canonical source for route ownership, implementation roots, handoffs, and
 exclusions. Current Flutter implementation remains in the listed legacy
 `customers`, `forms`, and `applications` folders while the target boundary is
@@ -1011,7 +1011,7 @@ or reconcile manually. Shared-device logout clears cached PII and keys.
 
 The Delivery Snapshot and current-state audit above are the live product summary.
 The canonical source owners are the generated [Audience responsibility
-README](../../lib/hosts/audience/README.md), the [Functions inventory](../../functions/README.md),
+README](../lib/hosts/audience/README.md), the [Functions inventory](../functions/README.md),
 and the Forms specification. They retain the roster, CRM, invitation,
 communication, attribution, deletion, and provider boundaries without repeating
 a completion receipt here.
@@ -1045,7 +1045,7 @@ imported person.
 ### Audience workspace
 
 The canonical route, peer-mode vocabulary, implementation roots, and code owners
-are maintained in the generated [Audience responsibility README](../../lib/hosts/audience/README.md).
+are maintained in the generated [Audience responsibility README](../lib/hosts/audience/README.md).
 This plan retains only the product-level contract:
 
 1. **Overview:** show explainable people, attendance, reachability, advocacy,
@@ -1061,9 +1061,11 @@ This plan retains only the product-level contract:
    context to Inbox; it does not compose, send, or infer communication
    permission from membership.
 
-Counts may be visible before PII. Only organizer owners/managers with explicit
-`audience.readPii` authority may open person detail, export it, connect a sender,
-or approve a campaign. Event staff never inherit cross-event CRM. Notes and
+Organizer owners and managers access contact PII through the existing
+`requireOrganizerManager` boundary in
+`functions/src/shared/organizerManagerAuthority.ts`; there is no separate
+`audience.readPii` capability. The owning callables also enforce their operation
+requirements. Event staff never inherit cross-event CRM. Notes and
 manual tags are source/UI capabilities, not proof of deployment or user
 availability.
 
@@ -1672,7 +1674,7 @@ machine-readable screen and feature contracts in the implementing PR.
 | Row | Safe identity, last event, checked-in count, explainable badges, reachability and ambiguity warning |
 | Actions | Open detail, add/remove reviewed tag, export authorized result; campaign starts from segment preview rather than row checkboxes in v1 |
 | States | Loading page, empty, no results, ambiguity, merged, deleted/suppressed, stale projection, error |
-| Privacy | Counts before PII; masked rows without `audience.readPii`; no event staff access |
+| Privacy | Organizer-manager authorization and operation-specific checks; no event staff access to cross-event contact PII |
 
 ### `host.audience.person_detail`
 
@@ -1817,7 +1819,7 @@ selected direction. The studies compare hierarchy only.
 
 ### Stage Director
 
-![Stage Director Control Room](../design_parity/host_standalone/control_room_stage_director.png)
+![Stage Director Control Room](design_parity/host_standalone/control_room_stage_director.png)
 
 Strength: the current beat and Host instruction dominate. Risk: event metadata
 and readiness consume vertical space before the primary action on small or
@@ -1826,7 +1828,7 @@ visible sync, pause, and undo behavior.
 
 ### Live Run Sheet
 
-![Live Run Sheet Control Room](../design_parity/host_standalone/control_room_live_run_sheet.png)
+![Live Run Sheet Control Room](design_parity/host_standalone/control_room_live_run_sheet.png)
 
 Strength: current, completed, and upcoming context are explicit. Risk: it can
 become a task-management list if later modules are appended instead of kept in
@@ -1836,7 +1838,7 @@ current plus next and adding a separate `View run sheet` action.
 
 ### Quiet Command Console
 
-![Quiet Command Console](../design_parity/host_standalone/control_room_quiet_command_console.png)
+![Quiet Command Console](design_parity/host_standalone/control_room_quiet_command_console.png)
 
 Strength: strongest live/wow distinction and one-handed scanning. Risk: the
 dark stage must be proven at text scale 2.0 and in bright venues, and the hard
@@ -1870,7 +1872,7 @@ gates.
 
 #### Implemented Flutter reference
 
-![Direction 3 Flutter Control Room](../design_parity/host_standalone/control_room_direction_3_flutter.png)
+![Direction 3 Flutter Control Room](design_parity/host_standalone/control_room_direction_3_flutter.png)
 
 The deterministic Host Manage capture uses 24 imported operational attendees,
 18 checked in, zero Consumer participations, and no participant profiles. It
@@ -1878,7 +1880,7 @@ proves the canonical route shell, roster-agnostic run sheet, Guests and recovery
 destinations, acknowledged persistence, Previous, and pinned activity-pigment
 action at the production phone viewport.
 
-![Direction 3 Flutter Control Room at text scale 2](../design_parity/host_standalone/control_room_direction_3_flutter_text_scale_2.png)
+![Direction 3 Flutter Control Room at text scale 2](design_parity/host_standalone/control_room_direction_3_flutter_text_scale_2.png)
 
 At text scale 2.0 the stage and supporting plane scroll while the primary action
 stays reachable. Event identity, status, current beat, instruction, next beat
@@ -2614,3 +2616,148 @@ The standalone Host strategy is feature-complete when:
   without a separate lawful Catch marketing gate;
 - each surface keeps its authority boundary and no parallel Host dashboard or
   event model is introduced.
+
+## Audience Workflow Requirements
+
+These product requirements cover intake, contact linking, reusable group
+inspection, and targeting in Audience. Read `lib/hosts/audience/README.md` for
+current source behavior. The requirements below do not certify completion of
+visual, release, or runtime verification.
+
+### Scope and responsibilities
+
+- People is the organizer's complete contact directory, including prospects,
+  imported/manual contacts and accepted applicants. Application decisions
+  remain attached to their applications; one person can have several.
+- Responses owns intake and a discoverable application-review queue. Ordinary
+  feedback and surveys do not acquire an artificial approval lifecycle.
+- Accepting an application atomically approves it and creates or links an
+  organizer contact. Preserve the original response, source and review note.
+  A unique existing contact is reused; conflicting matches require duplicate
+  resolution. Retries cannot create duplicate contacts.
+- Generic application forms use their exact submitted response authority.
+  Legacy native applications continue to require their participant data grant.
+  Withdrawn or inaccessible evidence cannot be approved or used for targeting.
+- Saved audiences own membership rules, exact member inspection, preview
+  freshness, reach summaries and an explicit handoff to Inbox compose.
+- Inbox owns content, approval, scheduling and dispatch. Event bookings,
+  verified Consumer identity and marketing permission are separate authorities.
+
+### Required workflows
+
+1. Repair generic-form application access, expose the review queue under
+   Responses, connect approval to People, and link the response/application/
+   person records in both directions.
+2. Make saved-audience detail an overview with members, rules, preview time,
+   reach and Message this audience. Keep editing and archive explicit.
+3. Extend the closed targeting vocabulary for applications by form/status,
+   versioned filterable choice/boolean answers, and attendance at a named
+   event. Resolve current organizer-scoped source facts on the server; do not
+   copy private Consumer attributes or execute arbitrary queries.
+
+### Spend, static membership, and automation requirements
+
+Required behavior across the three capabilities:
+
+1. Spend targeting: currency-specific minimum/maximum verified Catch spend,
+   with an optional trailing-day window. Read canonical successful payment
+   facts, exclude failed bookings and refunded charges, use completion time,
+   and validate organizer event ownership. Never mix currencies, infer private
+   identity, or treat imported estimates as verified spend. Exact evaluation
+   fails explicitly when source bounds are exceeded.
+2. Static audiences: explicitly selected organizer contacts with search,
+   pagination, add/remove, save/edit, exact member inspection and the existing
+   Messaging action. Membership changes only through host edits or canonical
+   contact merge/deletion resolution; static membership does not grant messaging
+   permission. Prevent accidental mixing with dynamic predicates.
+3. Automation delivery: extend the existing rule/run authority with application
+   acceptance and event-attendance triggers, complete signed HTTPS webhooks and
+   campaign follow-up actions, and expose editing, enable/pause and run history.
+   Activation explicitly approves the selected message configuration. Execution
+   rechecks manager authority, source validity, recipient permission and sender/
+   template availability. Stable event/action identities, exclusive execution,
+   bounded retries and visible failures prevent silent loss or duplicate sends.
+   Existing form submission/withdrawal rules retain their behavior and share
+   the same delivery implementation. Webhooks carry a minimal organizer-scoped
+   event envelope with a stable delivery id and signature, never raw answers or
+   private profile/payment data.
+
+### Exclusions
+
+Visual redesign and render matching remain deferred. Use existing Catch
+components. This scope does not add arbitrary nested expressions, a visual
+workflow canvas, imported-spend reconciliation, additional messaging providers,
+or bulk historical automation replay. Deployment and activation evidence are
+owned by `docs/release_operations.md`.
+
+### Checks and acceptance
+
+- Backend tests cover generic/legacy authority, withdrawal and cross-organizer
+  denial, optimistic conflict, repeat approval, unique existing contact reuse,
+  ambiguous endpoints and atomic approval/contact creation.
+- Audience tests cover each new predicate, mixed all/any rules, source
+  withdrawal, foreign source rejection and stable member pagination. Spend
+  tests cover time/currency/refund boundaries; static-list tests cover edits,
+  contact merges and cross-organizer denial. Automation tests cover duplicate
+  events, execution leases, permission revocation, source changes, public-HTTPS
+  validation, signatures, retry exhaustion and campaign dispatch handoff.
+- Flutter tests cover queue discovery, approval/customer navigation, audience
+  member inspection/edit/compose and filter authoring with server vocabulary.
+- Regenerate schema DTOs, validators, localization and affected feature/screen
+  contracts; run data-contract checks, focused analysis/tests and the registered
+  CRM boundary checks selected from the current impact plan.
+
+### CRM invariants and copy
+
+The data contracts and owning callables retain the implementation details:
+`docs/data_contracts.md` owns manual-tag limits, private notes excluded from
+contact export, organizer-scoped broadcast projections written at send time,
+and server ordering with ordering-bound cursors. Keep those sources current
+instead of copying phase checklists into this contract.
+
+- Inbox presents inbound WhatsApp as a channel facet with the reply-window
+  state visible before sending. The existing retention contract is time-based;
+  adding per-thread/contact deletion controls is a separate product decision.
+- The visible workspace is Sends; the compatibility wire value is
+  `workspace=campaigns`. Renaming that value is a route migration.
+- Merge review may show verified identity conflicts and proposed exact
+  phone/email pairs. `functions/src/organizers/organizerContactMergeReview.ts`
+  computes the evidence;
+  a proposed endpoint never becomes verified because it matches another row.
+  No name-only candidates or automatic merges are allowed. Durable
+  different-people decisions suppress a pair and only their authoring manager
+  may reopen them; unmerge is tied to a specific receipt on survivor detail.
+- Keep manual tags distinct from computed segments. “At risk” is presentation
+  copy for the versioned `lapsed_regular` rule. The directory's fixed spender
+  traits require their own indexed projection; this does not disable the
+  existing exact saved-audience spend predicate.
+- Use “people” in Host counts. Field titles are labels rather than instructions,
+  and disabled messaging actions explain the concrete blocker.
+
+## Host Tooling Decisions
+
+These are product decisions that remain open after the tooling consolidation.
+Current navigation and implementation references come from the generated Host
+feature READMEs. Close a decision by changing its policy and relevant source or
+tests; retain execution history in Git and CI.
+
+- Audience is the canonical Host destination at `/host/audience`. People, Audiences, Forms, and Responses are peer modes; legacy `/host/customers` and `/host/forms` paths redirect into Audience. The generated README is the source for routes, code owners, handoffs, and exclusions.
+- Host Event Manage remains the single per-event operations workspace for setup, live attendance/Event Success, report, cancellation, and unused-event deletion. Today and creation success are discovery/handoff surfaces; Event Detail does not grow a second Host operations section.
+- Organizer owns organizer identity, settings, team, and payment-account configuration. Use `lib/hosts/organizer/README.md` for current route and code ownership; keep these controls out of Audience and event-specific runtime screens.
+- The Host web target shares the Host Flutter product. Do not create a parallel React Host dashboard.
+- Source implementation, merged source, deployed Functions/Hosting, configured providers, released clients, and user availability are separate states. This tracker never treats a source or test receipt as deployment proof and never recreates retired audit registries.
+
+### Remaining decisions
+
+| Decision | Current source-backed boundary | Close when |
+| --- | --- | --- |
+| `HOST-PUBLISHED-EDIT-POLICY-001` — published-event media/title policy | The edit screen supports pre-activity event name and policy fields; photo replacement is not exposed. Decide whether post-publication title changes beyond that existing pre-activity path and photo replacement are allowed, with attendee notice, title history, moderation/storage, and participant-activity rules. | Product policy, copy, moderation/storage behavior, and focused/runtime proof agree. |
+| `HOST-EVENT-SUCCESS-SERVER-FREEZE-001` — post-activity setup freeze | The client repository rejects saving a non-`setup` or `frozenAt` plan, while live control sets `frozenAt` server-side. Decide whether server/rules enforcement must also block setup rewrites after bookings or other participant activity while continuing to permit live-step mutations. | A callable/rules boundary and tests prove the intended freeze and live-step exception. |
+| `HOST-MANAGE-UNSAVED-STARTED-EDITOR-001` — started event with no saved guide | Host Manage still keeps the disabled setup editor visible for inspection when an event has started without a saved guide. | Setup/live/report states have complete focused coverage and the UI is reduced to the locked notice plus attendance/report surfaces. |
+| Club archive/delete UX | `archiveOrganizer` and `deleteOrganizer` are implemented in `functions/src/organizers/mutateOrganizer.ts`; the Host-facing product policy remains to be decided. | Decide host visibility, archived browse/search behavior, never-used deletion guardrails, and exact owner/admin policy. |
+| Host-owned event tiles in non-Host contexts | Preserve a clear handoff into the canonical event-management route; decide the entry points for host-owned tiles outside the Host app. | Decide whether inline Manage is permitted or whether opening detail remains the only non-Host-context entry. |
+| Past-event navigation | Decide the boundary between the Today overview and durable past-event inventory in Events. | Decide the history volume, retention/filter model, and when a dedicated past-events destination is warranted. |
+
+Event creation and optional Event Success setup must remain atomic. The owner
+is `functions/src/events/mutateEvent.ts`; its focused test
+`createEventHandler creates event success plans atomically` protects that seam.
