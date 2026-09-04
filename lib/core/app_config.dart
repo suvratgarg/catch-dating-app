@@ -210,6 +210,10 @@ class AppConfig {
     'USE_FIREBASE_EMULATORS',
   );
 
+  static const String firebaseEmulatorProjectId = String.fromEnvironment(
+    'FIREBASE_EMULATOR_PROJECT_ID',
+  );
+
   // Default true so native push works in release builds without extra flags.
   // Web still requires a VAPID key — see firebaseWebVapidKey.
   static const bool enablePushMessaging = bool.fromEnvironment(
@@ -218,7 +222,7 @@ class AppConfig {
   );
 
   static bool get supportsPushMessagingOnCurrentPlatform {
-    if (!enablePushMessaging) return false;
+    if (useFirebaseEmulators || !enablePushMessaging) return false;
 
     if (kIsWeb) {
       return firebaseWebVapidKey.isNotEmpty;

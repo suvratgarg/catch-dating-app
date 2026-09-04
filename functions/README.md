@@ -252,6 +252,10 @@ each handler. The shared options declare this intent, and the default `npm test`
 suite includes a guard test that fails when an exported callable does not use
 the shared App Check options.
 
+The isolated `demo-catch` emulator suite omits App Check only when the
+Functions emulator flag and all three dependent loopback emulator addresses
+match. Deployed dev, staging, and production callables still enforce App Check.
+
 `tool/deploy_firebase_targets.sh` synchronizes callable invokers immediately
 after each successful Functions phase. The sync command discovers live Cloud
 Functions v2 endpoints labeled `deployment-callable=true`, follows pagination,
@@ -358,15 +362,41 @@ workflow is missing, not necessarily that the rules changed incorrectly.
 
 ## Commands
 
+Start local development without deploying Functions or using live Firebase:
+
+```bash
+npm --prefix functions ci
+npm --prefix functions run serve
+# In another terminal, from the repository root:
+./tool/flutter_with_env.sh local --role host run -d chrome
+./tool/flutter_with_env.sh local run -d chrome
+```
+
+`serve` builds Functions and starts Auth, Functions, Firestore, and Storage
+on the explicit `demo-catch` project. `start` is the same command. The wrapper
+uses temporary built code, the checked-in rules, and placeholder secrets from
+the existing environment-readiness inventory. It does not copy local secret
+files or reuse Google Application Default Credentials. External payments,
+messaging, search, and Google API integrations therefore need mocks or explicit
+live-dev testing. This is Firebase isolation, not a network sandbox.
+
+The Emulator UI is at `http://127.0.0.1:4000`. Local state is discarded when
+the suite stops; no cloud resources are created. Restart `serve` after changing
+Functions source. For a bounded local check, use
+`npm --prefix functions run serve -- --exec '<local test command>'`.
+The Flutter local target supports web and tests; native device and external
+integration checks continue to use the explicit `dev` target. See
+[`firebase/README.md`](../firebase/README.md) for environment selection.
+
 `npm --prefix functions test` builds TypeScript, then recursively discovers
 compiled `lib/**/*.test.js` and non-rules harness specs under
-`test/**/*.test.cjs`. New domain folders do not require a hand-maintained test
+`test/**/*.test.cjs` and `scripts/**/*.test.cjs`. New domain folders do not require a hand-maintained test
 script. Firestore and Storage rules stay in the emulator-owned lane below.
 
 ```bash
 npm --prefix functions run lint
 npm --prefix functions test
-firebase emulators:exec --only firestore,storage "npm --prefix functions run test:rules"
+firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
 ./tool/firebase_with_env.sh dev deploy --only functions
 ./tool/firebase_with_env.sh staging deploy --only functions
 ./tool/firebase_with_env.sh prod deploy --only functions
