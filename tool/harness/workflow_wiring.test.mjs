@@ -112,9 +112,23 @@ test("Flutter UI lint wiring uses one analyzer census and no legacy wrappers", (
     1,
   );
   assert.match(flutter, /check_catch_ui_lint_drift\.sh --check/u);
+  assert.match(namedStep(flutter, "Catch UI lint plugin smoke check"),
+    /if: \$\{\{ needs.test-plan.outputs.ui_lint_smoke == 'true' \}\}/u);
   for (const retired of retiredUiWrapperNames) {
     assert.doesNotMatch(flutter, new RegExp(retired.replace(".", "\\."), "u"));
   }
+});
+
+test("Flutter selection keeps full validation and bounds matrix outputs", () => {
+  const ci = workflow("ci.yml");
+  const flutter = workflow("flutter-ci.yml");
+  assert.match(ci, /uses: \.\/\.github\/workflows\/flutter-ci.yml[\s\S]*?full: \$\{\{ needs.plan.outputs.full == 'true' \}\}/u);
+  assert.match(flutter, /matrix: \$\{\{ fromJSON\(needs.test-plan.outputs.matrix\) \}\}/u);
+  assert.match(namedStep(flutter, "Verify test selection safety"), /dart test tool\/harness\/lib\/flutter_test_selection_test.dart/u);
+  assert.match(namedStep(flutter, "Select tests from committed dependency closures"), /--base "\$BASE_SHA" --head "\$SOURCE_SHA" --full "\$FULL"/u);
+  assert.match(flutter, /TEST_PLAN_RESULT: \$\{\{ needs\['test-plan'\].result \}\}/u);
+  assert.match(flutter, /"\$\{TEST_PLAN_RESULT\}" != "success"/u);
+  assert.match(namedStep(flutter, "Unit & widget tests"), /\.sourceSha == \$sha/u);
 });
 
 test("Flutter analysis covers every pubspec and empty test selections fail closed", () => {
@@ -134,12 +148,17 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
     /if \[\[ "\$\{count\}" == "0" \]\]; then\s+exit 0/u,
   );
 
-  const coverage = namedStep(
-    flutter,
-    "Run unit and widget tests with line coverage",
+  assert.match(shard, /flutter test[^\n]*--coverage/u);
+  const coverage = namedStep(flutter, "Merge coverage without rerunning tests");
+  assert.match(coverage, /--merge-shards coverage\/shards/u);
+  assert.match(coverage, /--expected-shards "\$SHARD_TOTAL"/u);
+  const coverageJob = flutter.slice(
+    flutter.indexOf("  flutter-coverage:"), flutter.indexOf("  app-package-tests:"),
   );
-  assert.match(coverage, /No test files were selected for Flutter coverage/u);
-  assert.match(coverage, /exit 1/u);
+  assert.match(coverageJob, /needs: \[test-plan, flutter-test-shards\]/u);
+  assert.doesNotMatch(coverageJob, /flutter test|setup-flutter/u);
+  assert.match(flutter, /name: flutter-coverage-shard-\$\{\{ github.run_id \}\}-\$\{\{ github.sha \}\}-\$\{\{ matrix.shard_index \}\}/u);
+  assert.match(coverageJob, /pattern: flutter-coverage-shard-\$\{\{ github.run_id \}\}-\$\{\{ github.sha \}\}-\*/u);
 });
 
 test("Flutter CI runs Consumer and Host package tests as aggregate gates", () => {
