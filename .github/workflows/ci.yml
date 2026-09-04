@@ -73,6 +73,8 @@ jobs:
             /tool/lib/repo_paths.mjs
             /tool/lib/tool_impact.mjs
             /tool/tools_manifest.json
+            /tool/design/build_host_feature_responsibilities.mjs
+            /design/features/host_feature_responsibilities.json
 
       - id: plan
         name: Resolve fail-closed impact plan
@@ -207,6 +209,32 @@ jobs:
           });
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `tools_owns_ui_lint_smoke=${owned}\n`);
           NODE
+
+      - name: Report Audience documentation impact
+        env:
+          BASE_SHA: ${{ steps.plan.outputs.base_sha }}
+        run: |
+          node tool/design/build_host_feature_responsibilities.mjs \
+            --affected audience --base "$BASE_SHA" --json \
+            > build/ci/audience-doc-impact.json
+          {
+            echo "## Audience documentation review"
+            jq -r '.coverage,
+              (.sections[] | "- " + .anchor + ": " + .status +
+                "; changed sources: " + (.changedSources | join(", "))),
+              (.changedReferenceSources[] | "- Regenerate schema reference: " + .),
+              (if .referenceDefinitionChanged then "- Schema reference selection changed." else empty end),
+              (if (.sections | length) == 0 then "No affected explanations in declared dependencies." else empty end)
+            ' build/ci/audience-doc-impact.json
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Audience documentation advice
+        uses: actions/upload-artifact@v7
+        with:
+          name: audience-doc-impact-${{ github.run_number }}-${{ github.run_id }}-${{ steps.plan.outputs.source_sha }}-${{ github.run_attempt }}
+          path: build/ci/audience-doc-impact.json
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Publish impact summary
         run: |

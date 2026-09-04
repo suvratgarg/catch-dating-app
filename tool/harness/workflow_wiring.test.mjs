@@ -435,11 +435,36 @@ test("planner and ordinary docs consume the graph-owned checkout closure", () =>
   );
 });
 
+test("planner reports Audience documentation impact before target fanout", () => {
+  const ci = workflow("ci.yml");
+  const report = namedStep(ci, "Report Audience documentation impact");
+  assert.match(report, /BASE_SHA: \$\{\{ steps\.plan\.outputs\.base_sha \}\}/u);
+  assert.match(report, /node tool\/design\/build_host_feature_responsibilities\.mjs\s*\\\n\s*--affected audience --base "\$BASE_SHA" --json/u);
+  assert.match(report, /> build\/ci\/audience-doc-impact\.json/u);
+  assert.match(report, /\$GITHUB_STEP_SUMMARY/u);
+  // Source-only changes must receive advice even when the docs target is off.
+  assert.doesNotMatch(report, /^\s+if:/mu);
+  assert.ok(ci.indexOf(report) < ci.indexOf("\n  tools:"));
+  const evidence = namedStep(ci, "Upload planner evidence");
+  // Backend and mobile consumers require a one-file delivery plan archive.
+  assert.match(evidence, /^\s+path: build\/ci\/impact-plan\.json$/mu);
+  assert.doesNotMatch(evidence, /audience-doc-impact/u);
+  assert.match(evidence, /retention-days: [1-9][0-9]*/u);
+  const advice = namedStep(ci, "Upload Audience documentation advice");
+  assert.match(advice, /name: audience-doc-impact-/u);
+  assert.match(advice, /^\s+path: build\/ci\/audience-doc-impact\.json$/mu);
+  assert.match(advice, /retention-days: 7/u);
+  assert.doesNotMatch(advice, /harness-plan-/u);
+});
+
 test("planner sparse checkout contains its recursive local module closure", () => {
   const declared = new Set(
     graph.ciCheckout.planner.paths.map((entry) => entry.replace(/^\//u, "")),
   );
-  const pending = ["tool/harness.mjs"];
+  const pending = [
+    "tool/harness.mjs",
+    "tool/design/build_host_feature_responsibilities.mjs",
+  ];
   const visited = new Set();
   while (pending.length > 0) {
     const modulePath = pending.pop();

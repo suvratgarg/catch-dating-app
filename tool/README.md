@@ -98,6 +98,28 @@ The authored graph and compile-codegen allowlist live in
 `tool/harness/component_graph.json`. Use the plan's check ids with the explicit
 `node tool/run.mjs check <id...>` runner. Harness commands are read-only.
 
+## Documentation Checks And Retrieval
+
+`docs:metadata` validates source-owned Markdown metadata. Its `--base` comparison
+also rejects surviving Markdown references to deleted or renamed documents;
+`--inventory [--query <text>] --json` prints owners, headings, word counts, and
+literal document references without writing a catalog. Fenced examples, code
+consumers, external links, and dynamic references are outside the retirement
+link check.
+
+The existing Host responsibility generator provides `--explain audience` for
+question-oriented answers and `--affected audience --base <ref> --json` for
+section-level review advice. The impact command needs only Node, Git, and its
+source contract. CI publishes that advice as a separate seven-day artifact in
+the planner job, including for source-only changes; the one-file delivery-plan
+artifact remains unchanged. The advice does not add a release gate or claim
+semantic freshness. Generation/`--check` still validates schema facts, source
+paths, named examples, and generated READMEs. Named examples are declarations;
+run their selected tests to verify behavior.
+
+See `docs/README.md` for document placement and retirement policy. Keep
+inventories and run evidence in temporary output or expiring CI artifacts.
+
 ## Build Versus Adopt
 
 Before adding a dependency, a general-purpose subsystem, or a substantial

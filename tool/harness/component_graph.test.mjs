@@ -106,6 +106,8 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/lib/repo_paths.mjs",
       "/tool/lib/tool_impact.mjs",
       "/tool/tools_manifest.json",
+      "/tool/design/build_host_feature_responsibilities.mjs",
+      "/design/features/host_feature_responsibilities.json",
     ],
   });
   assert.deepEqual(resolveTargetCheckout({graph, target: "docs"}), {

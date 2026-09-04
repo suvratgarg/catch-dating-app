@@ -4784,6 +4784,7 @@
       "category": "design",
       "path": "tool/design/build_host_feature_responsibilities.mjs",
       "impactPaths": [
+        "tool/design/build_host_feature_responsibilities.test.mjs",
         "design/features/host_feature_responsibilities.json",
         "design/features/host_feature_responsibilities.schema.json",
         "design/features/host_home.feature.json",
