@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_planning.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ced80bb2dc64948a90e2ef412e0d4b1ef61cc13358bd1fa52e688eb8ba843e27",
-  "resolvedDigest": "sha256:d0203136510753983a3424e208d8a2a1bdabbae5f6e6c77a4ec2ccda26baeee1",
+  "resolvedDigest": "sha256:52d0e2302330856879f925df9d7d80708c96eb27259937f635addda64a59c362",
   "feature": {
     "id": "feature.event_planning",
     "name": "Event Planning",
@@ -886,7 +886,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },

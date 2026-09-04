@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_success.feature.json",
   "generatedFor": "2026-08-11",
   "sourceDigest": "sha256:d5988cbdde4cb4237cef54f756e1b3d685fa80ac2cd7ec4ef96c88388357fc1e",
-  "resolvedDigest": "sha256:cc50d6aff71e13d73d315f248cba62340d141f2d2a5ddfefc05aae244fc7a403",
+  "resolvedDigest": "sha256:4fa6cc2bd3ce926697292d889a658a3004f8eb4bf979d5858654f3fc749bb6ba",
   "feature": {
     "id": "feature.event_success",
     "name": "Event Success",
@@ -2260,7 +2260,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },

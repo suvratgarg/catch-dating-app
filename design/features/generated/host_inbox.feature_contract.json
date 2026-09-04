@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:08dc2d4c652c574568b522aed78d2108c1cf696eedc8b1e950aa25788b730d71",
+  "resolvedDigest": "sha256:c7d51c1c53d5f7b3af01a1ac45156bca613cbedda70e0a27ab5905a1ee5a3252",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4683,7 +4683,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },

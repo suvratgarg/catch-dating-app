@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_public.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:712743d9c1ca230cfdb52a2366c0bccb239167eee7224eb1d1cc9f394fd79e89",
-  "resolvedDigest": "sha256:faa295938e1b010470d3bdf65a0e81e7714e1aba8091b2c77f4fc7c0cc4eaf28",
+  "resolvedDigest": "sha256:c940456b2277559c014203aadb2ac3b326edfd813fb4062592d14f25c0976e10",
   "feature": {
     "id": "feature.profile_public",
     "name": "Public Profile",
@@ -927,7 +927,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },
