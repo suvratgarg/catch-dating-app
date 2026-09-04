@@ -31,6 +31,36 @@ Flutter's normal master, test, isolated-diff, and masked-diff artifacts.
 
 Add coverage as components stabilize (ticket card, polaroid, profile sections, …).
 
+## Widgetbook reference slice
+
+The separate Widgetbook package executes ten existing L2/L3 catalog cases
+through `widgetbook_golden_test_core`'s generated-directory traversal and a
+Catch renderer adapter. Their state declarations remain in
+`widgetbook/lib/primitives/core_catalog_use_cases.dart`. The shared catalog
+frame and knob scope live in `widgetbook/lib/support/widgetbook_harness.dart`.
+
+```bash
+cd widgetbook
+flutter pub get
+flutter test test/primitive_goldens_test.dart
+flutter test test/primitive_goldens_test.dart # consecutive determinism check
+```
+
+These tests reuse `matchCatchGolden`, `loadCatchTestFonts`, and the unchanged
+0.30% comparator. Images live in `test/goldens/baseline/widgetbook/` in the
+app package: light/dark for all ten cases and a 2.0 text-scale pair for
+`CatchMonoLabel`. Run the same command with `--update-goldens` to regenerate
+and review these images. Gate registration belongs to Phase 1 proper.
+
+From the repository root, run
+`node tool/design/classify_widgetbook_use_cases.mjs --json` for on-demand
+four-class triage and `--self-test` for its seeded policy probes. Its Dart
+syntax inventory follows local helper/scope references, reconciles generated
+registrations with annotations, and also reports stacked annotations omitted
+by the existing Widgetbook generator. `prototype` requires an explicit
+proposal marker and is excluded from production golden coverage. Neither
+triage output nor prototype dispositions are tracked here.
+
 ## Adding a golden
 
 ```dart
