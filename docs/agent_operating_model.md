@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
 version: 3.0.5
-updated: 2026-08-27
+updated: 2026-09-05
 owner: agent_operating_model
 status: active
 ---
@@ -263,6 +263,8 @@ exact SHA instead of silently rebasing a live child.
 ### Ownership Rules
 
 - One file has one writer during a parallel batch.
+- Claim the paths a task will write, not every path it may read. Use a whole
+  feature-root claim only when the planned edits require that breadth.
 - Parent-owned by default: `AGENTS.md`, this document, canonical architecture
   docs, authored design contracts, shared manifests, and integration changes.
 - Children avoid generated output unless generation is their explicit task.
@@ -272,6 +274,33 @@ exact SHA instead of silently rebasing a live child.
 Assess delegation with ordinary task and PR wall time, merge conflict rate,
 escaped defects, and user rework. Keep that analysis in the task or CI system,
 not in repository telemetry.
+
+### Manual CLI Delegation Review
+
+The parent owns this review when using an external agent CLI; the Catch
+planner does not dispatch agents or certify their completion.
+
+- Inspect the installed CLI's version and help before relying on unfamiliar
+  model, sandbox, or output flags. Confirm the selected model can run under
+  the configured account; a remembered model name or configuration is not
+  proof of availability.
+- For JSONL runs, require a successful process exit and a terminal
+  `turn.completed` event. Treat `turn.failed`, a terminal error, or a missing
+  completion event as failure even if a result file exists or the process
+  exits zero. Inspect the reported diff and checks before accepting the work;
+  model completion alone does not prove the requested outcome.
+- Give read-only reviewers read-only access. Before assigning commits or
+  toolchain work, account for the linked worktree's common Git directory and
+  the required SDK/package caches. Those may sit outside the child's writable
+  directory. An `EPERM` or cache-lock failure is an environment constraint,
+  not evidence that the product check passed or the requested edit is wrong.
+- Keep permission changes explicit and narrow. The parent can own commits or
+  verification when a child's sandbox cannot support them. Preserve partial
+  work and report the limitation; do not disable the sandbox, share another
+  checkout's dependency tree, or skip a failed gate to manufacture success.
+
+Keep CLI event streams and review reports in temporary output or CI artifacts.
+Do not add a tracked delegation history or a second worktree registry.
 
 ## UI And Design Implementation
 
