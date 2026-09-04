@@ -9,26 +9,22 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -275,33 +271,12 @@ class _HostEventsRouteScaffoldState
   }
 
   Future<void> _openExternalEvent(Club club) async {
-    HostRosterTable? table;
-    try {
-      table = await ref
-          .read(createEventControllerProvider.notifier)
-          .pickRosterFile();
-    } on HostRosterImportException catch (error) {
-      if (mounted) {
-        showCatchSnackBar(
-          context,
-          hostRosterImportIssueCopy(context, error.issue),
-        );
-      }
-      return;
-    } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
-      return;
-    }
-    if (table == null || !mounted) return;
-    final rosterPlan = await showHostRosterMapping(context, table);
-    if (rosterPlan == null || !mounted) return;
     await context.pushNamed(
       Routes.hostCreateEventScreen.name,
       pathParameters: {'clubId': club.id},
       extra: HostCreateEventRouteArguments(
         initialClub: club,
         externalBookingMode: true,
-        initialRosterImportPlan: rosterPlan,
         promptForDrafts: false,
       ),
     );

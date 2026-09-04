@@ -1,23 +1,23 @@
 part of 'host_create_event_screen_test.dart';
 
 void runHostCreateEventFormatTests() {
-  testWidgets('event type previews the operating format Catch prepares', (
+  testWidgets('activity selection stays compact and changes the saved format', (
     tester,
   ) async {
     await _pumpCreateEventFlow(tester);
     await _openCreateEventFlow(tester);
-
-    expect(find.text('Pace pods · timed legs · finish sweep'), findsOneWidget);
-
-    await _tapActivityKind(tester, 'Pub quiz');
-
-    expect(find.text('Catch prepares'), findsOneWidget);
-    expect(
-      find.text('Teams · points by round · standings reveal'),
-      findsOneWidget,
-    );
     expect(
       find.byKey(const ValueKey('host.event_format_pack_preview')),
+      findsNothing,
+    );
+    await _tapActivityKind(tester, 'Pub quiz');
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is CatchField &&
+            w.title == 'Activity type' &&
+            w.body == 'Pub quiz',
+      ),
       findsOneWidget,
     );
   });
@@ -28,6 +28,7 @@ void runHostCreateEventFormatTests() {
       await _pumpCreateEventFlow(tester);
       await _openCreateEventFlow(tester);
 
+      await _openCatchField(tester, 'Route & itinerary · Optional');
       expect(find.text('Run · Pace groups · Continuous'), findsOneWidget);
       expect(
         find.byKey(
@@ -97,6 +98,7 @@ void runHostCreateEventFormatTests() {
     await _pumpCreateEventFlow(tester);
     await _openCreateEventFlow(tester);
 
+    await _openCatchField(tester, 'Route & itinerary · Optional');
     final addStep = find.byKey(
       const ValueKey('create-event-itinerary-add'),
       skipOffstage: false,

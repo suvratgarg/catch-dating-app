@@ -103,6 +103,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_guests_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
@@ -222,10 +223,8 @@ final _customActivityEventDraft = HostOperationsFixtures.eventDraft.copyWith(
 
 const _createEventSteps = <int, String>{
   0: 'Basics',
-  1: 'Location',
-  2: 'Photos',
-  3: 'Policy',
-  4: 'Review',
+  1: 'When & where',
+  2: 'Booking & live guide',
 };
 final _hostManageDisabledInviteLinks = <EventInviteLink>[
   HostOperationsFixtures.inviteLinks.first.copyWith(
@@ -3979,7 +3978,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
               child: CreateEventScreen(
                 club: _club,
                 initialDraft: HostOperationsFixtures.eventDraft,
-                initialStep: 4,
+                initialStep: 2,
                 loadMapTiles: false,
                 now: () => HostOperationsFixtures.now,
               ),
@@ -3996,7 +3995,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
               child: CreateEventScreen(
                 club: _club,
                 initialDraft: HostOperationsFixtures.eventDraft,
-                initialStep: 4,
+                initialStep: 2,
                 loadMapTiles: false,
                 now: () => HostOperationsFixtures.now,
               ),
@@ -4013,7 +4012,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
               child: CreateEventScreen(
                 club: _club,
                 initialDraft: HostOperationsFixtures.eventDraft,
-                initialStep: 4,
+                initialStep: 2,
                 loadMapTiles: false,
                 now: () => HostOperationsFixtures.now,
               ),
@@ -4030,6 +4029,24 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
                 club: _club,
                 initialDraft: HostOperationsFixtures.eventDraft,
                 initialStep: step.key,
+                loadMapTiles: false,
+                now: () => HostOperationsFixtures.now,
+              ),
+            ),
+          ),
+        ),
+      for (final step in _createEventSteps.keys)
+        _StateCard(
+          label: 'runtime only · stage ${step + 1}',
+          child: _DeviceFrame(
+            child: _HostCreateEventScope(
+              child: CreateEventScreen(
+                club: _club,
+                initialDraft: HostOperationsFixtures.eventDraft.copyWith(
+                  externalBookingMode: true,
+                  externalBookingProvider: ExternalBookingProvider.generic.name,
+                ),
+                initialStep: step,
                 loadMapTiles: false,
                 now: () => HostOperationsFixtures.now,
               ),
@@ -4077,7 +4094,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
             child: CreateEventScreen(
               club: _club,
               initialDraft: HostOperationsFixtures.eventDraft,
-              initialStep: 4,
+              initialStep: 2,
               loadMapTiles: false,
               now: () => HostOperationsFixtures.now,
             ),
@@ -5306,6 +5323,28 @@ Widget savedPlacesSectionCatalogStates(BuildContext context) =>
     whereStepCatalogStates(context);
 
 @widgetbook.UseCase(
+  name: 'Guest import states',
+  type: CreateEventGuestsSection,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget createEventGuestsSectionCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'CreateEventGuestsSection',
+    contractId: 'section.host.event_create_guests',
+    children: [
+      _StateCard(
+        label: 'import later',
+        child: _DeviceFrame(child: _CreateEventGuestsFrame()),
+      ),
+      _StateCard(
+        label: 'attached roster',
+        child: _DeviceFrame(child: _CreateEventGuestsFrame(attached: true)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Where step states',
   type: WhereStep,
   path: '[P1 product surfaces]/Host create event',
@@ -6332,6 +6371,46 @@ class _ClubEventSuccessDefaultsStepFrameState
       onChanged: (defaults) => setState(() => _defaults = defaults),
     );
   }
+}
+
+class _CreateEventGuestsFrame extends StatefulWidget {
+  const _CreateEventGuestsFrame({this.attached = false});
+  final bool attached;
+
+  @override
+  State<_CreateEventGuestsFrame> createState() =>
+      _CreateEventGuestsFrameState();
+}
+
+class _CreateEventGuestsFrameState extends State<_CreateEventGuestsFrame> {
+  final _url = TextEditingController();
+  final _id = TextEditingController();
+  var _provider = ExternalBookingProvider.generic;
+  var _walkIns = EventRuntimeWalkInPolicy.hostApproval;
+
+  @override
+  void dispose() {
+    _url.dispose();
+    _id.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => SingleChildScrollView(
+    child: CreateEventGuestsSection(
+      externalEventUrlController: _url,
+      externalEventIdController: _id,
+      externalBookingProvider: _provider,
+      runtimeWalkInPolicy: _walkIns,
+      onExternalBookingProviderChanged: (value) =>
+          setState(() => _provider = value),
+      onRuntimeWalkInPolicyChanged: (value) => setState(() => _walkIns = value),
+      rosterFileName: widget.attached ? 'dinner-guests.csv' : null,
+      rosterReadyCount: widget.attached ? 24 : null,
+      rosterAttached: widget.attached,
+      onPickRoster: () {},
+    ),
+  );
 }
 
 class _EventDetailsStepFrame extends StatefulWidget {

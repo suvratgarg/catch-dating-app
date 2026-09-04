@@ -1783,10 +1783,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'What should attendees expect? Any tips for the route or venue?';
 
   @override
-  String get hostsEventDetailsStepExternalIntro =>
-      'Keep taking bookings wherever you already do. Catch adds the guest-list, check-in, and Event Success layer without replacing your booking platform.';
-
-  @override
   String get hostsEventDetailsStepExternalProviderTitle => 'Booking platform';
 
   @override
@@ -1859,7 +1855,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEventPolicyStepExternalOperationsIntro =>
-      'Set the operational capacity, age range, and on-site pairing inventory. Bookings, payments, refunds, and cancellations stay with the external provider.';
+      'Set your capacity and guest access. Bookings stay with your provider.';
 
   @override
   String get hostsEventPolicyStepTitleMaxAttendees => 'Max attendees';
@@ -1907,10 +1903,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsEventPolicyStepTextHostPayoutIsReleased =>
       'Host payout is released after event completion. If the host cancels, attendees are made complete before any host payout.';
-
-  @override
-  String get hostsEventSuccessStepTextPrepareTheHostGuide =>
-      'Prepare the host guide for this event. You can adjust it again before Live mode starts.';
 
   @override
   String get hostsEventSuccessStepTitleLiveEventGuide => 'Live event guide';
@@ -3505,37 +3497,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEventDetailsStepLabelActivityType => 'Activity type';
-
-  @override
-  String get hostsEventDetailsStepFormatPackTitle => 'Catch prepares';
-
-  @override
-  String get hostsEventDetailsStepFormatPackPacePods =>
-      'Pace pods · timed legs · finish sweep';
-
-  @override
-  String get hostsEventDetailsStepFormatPackPairedRotations =>
-      'Pair assignments · timed rounds · ranked outcomes';
-
-  @override
-  String get hostsEventDetailsStepFormatPackTeamRotations =>
-      'Teams · points by round · standings reveal';
-
-  @override
-  String get hostsEventDetailsStepFormatPackSeatedTable =>
-      'Tables · course pacing · guided prompts';
-
-  @override
-  String get hostsEventDetailsStepFormatPackFreeFormMixer =>
-      'Social groups · guided rounds · reveal moments';
-
-  @override
-  String get hostsEventDetailsStepFormatPackHostLedProgram =>
-      'Host run-of-show · live prompts · event recap';
-
-  @override
-  String get hostsEventDetailsStepFormatPackOpenFormat =>
-      'Flexible run-of-show · optional groups · event recap';
 
   @override
   String get hostsRouteEventPlanSectionTitle => 'Route plan';
@@ -12312,7 +12273,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsCreateEventRosterChoose => 'Choose CSV or XLSX';
+  String get hostsCreateEventRosterChoose => 'Choose file';
 
   @override
   String get hostsCreateEventRosterReplace => 'Replace file';
@@ -16314,9 +16275,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCreateClubReviewTitle => 'Review organizer';
 
   @override
-  String get hostsCreateEventScheduleAction => 'Schedule event';
-
-  @override
   String get hostsCreateClubCreateAction => 'Create organizer';
 
   @override
@@ -17625,4 +17583,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAutomationConfigured => 'Configured';
+
+  @override
+  String get hostsCreateEventBasicsTitle => 'Event basics';
+
+  @override
+  String get hostsCreateEventWhenWhereTitle => 'When & where';
+
+  @override
+  String get hostsCreateEventGuestsGuideTitle => 'Guests & live guide';
+
+  @override
+  String get hostsCreateEventBookingGuideTitle => 'Booking & live guide';
+
+  @override
+  String get hostsCreateEventPresentationTitle =>
+      'Description & photos · Optional';
+
+  @override
+  String get hostsCreateEventItineraryTitle => 'Route & itinerary · Optional';
+
+  @override
+  String get hostsCreateEventExternalDetailsTitle =>
+      'Booking source · Optional details';
+
+  @override
+  String get hostsCreateEventShowDetails => 'Edit';
+
+  @override
+  String get hostsCreateEventHideDetails => 'Hide';
+
+  @override
+  String hostsCreateEventGuideReady({required String format}) {
+    return '$format guide is ready. You can adjust it before the event.';
+  }
+
+  @override
+  String get hostsCreateEventGuideOptional =>
+      'Optional host tools for running the event.';
+
+  @override
+  String get hostsCreateEventCustomizeGuide => 'Customize guide';
+
+  @override
+  String get hostsCreateEventHideGuide => 'Hide guide settings';
+
+  @override
+  String get hostsCreateEventRosterLater => 'Import now or later';
+
+  @override
+  String get hostsCreateEventCreateAction => 'Create event';
 }

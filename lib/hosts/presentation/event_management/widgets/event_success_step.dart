@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EventSuccessStep extends ConsumerWidget {
+class EventSuccessStep extends ConsumerStatefulWidget {
   const EventSuccessStep({
     super.key,
     required this.organizerId,
@@ -27,8 +27,12 @@ class EventSuccessStep extends ConsumerWidget {
     required this.targetAttendeeCount,
     required this.onEventSuccessDefaultsChanged,
     this.eventFormat,
+    this.embedded = false,
+    this.requiredForRuntime = false,
   });
 
+  final bool embedded;
+  final bool requiredForRuntime;
   final String organizerId;
   final ActivityKind activityKind;
   final EventFormatSnapshot? eventFormat;
@@ -37,11 +41,23 @@ class EventSuccessStep extends ConsumerWidget {
   final ValueChanged<EventSuccessDefaults> onEventSuccessDefaultsChanged;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
-    final layoutsAsync = ref.watch(
-      watchOrganizerEventSuccessLayoutsProvider(organizerId),
-    );
+  ConsumerState<EventSuccessStep> createState() => _EventSuccessStepState();
+}
+
+class _EventSuccessStepState extends ConsumerState<EventSuccessStep> {
+  bool _customizing = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final organizerId = widget.organizerId;
+    final activityKind = widget.activityKind;
+    final eventFormat = widget.eventFormat;
+    final eventSuccessDefaults = widget.eventSuccessDefaults;
+    final targetAttendeeCount = widget.targetAttendeeCount;
+    final onEventSuccessDefaultsChanged = widget.onEventSuccessDefaultsChanged;
+    final layoutsAsync = _customizing && eventSuccessDefaults.enabled
+        ? ref.watch(watchOrganizerEventSuccessLayoutsProvider(organizerId))
+        : const AsyncData<List<EventSuccessLayout>>([]);
     final layoutMutation = ref.watch(
       EventSuccessController.upsertLayoutMutation,
     );
@@ -57,47 +73,91 @@ class EventSuccessStep extends ConsumerWidget {
         eventSuccessDefaults.structureConfig.unitKind ==
         EventSuccessUnitKind.wholeGroup;
 
-    return ListView(
-      padding: CatchInsets.formStepBodyRelaxedWithBottomActions,
+    final content = CatchSectionList(
+      emptyStateOmitted: true,
       children: [
-        CatchSectionList(
-          emptyStateOmitted: true,
+        CatchSection.fieldRows(
           children: [
-            CatchSection.plain(
-              child: Text(
-                context.l10n.hostsEventSuccessStepTextPrepareTheHostGuide,
-                style: CatchTextStyles.supporting(context, color: t.primary),
-              ),
-            ),
-            EventSuccessDefaultsPanel(
-              defaults: eventSuccessDefaults,
-              activityKind: activityKind,
-              eventFormat: eventFormat,
-              targetAttendeeCount: targetAttendeeCount,
-              onChanged: (update) =>
-                  onEventSuccessDefaultsChanged(update(eventSuccessDefaults)),
-              title: context.l10n.hostsEventSuccessStepTitleLiveEventGuide,
-              subtitle:
-                  context.l10n.hostsEventSuccessStepSubtitleSaveASimplePlan,
-            ),
-            if (eventSuccessDefaults.enabled)
-              EventSuccessRoomSetupSection(
-                layoutsState: layoutsState,
-                selectedLayoutId: eventSuccessDefaults.layoutId,
-                usesWholeGroup: usesWholeGroup,
-                enabled: true,
-                isSavingLayout: layoutMutation.isPending,
-                saveError: layoutMutation.hasError
-                    ? (layoutMutation as MutationError).error
-                    : null,
-                onSelected: (layoutId) => onEventSuccessDefaultsChanged(
-                  eventSuccessDefaults.copyWith(layoutId: layoutId),
+            if (widget.requiredForRuntime)
+              CatchField.read(
+                title: context.l10n.hostsEventSuccessStepTitleLiveEventGuide,
+                body: context.l10n.hostsCreateEventGuideReady(
+                  format:
+                      (eventFormat ??
+                              EventFormatSnapshot.fromActivityKind(
+                                activityKind,
+                              ))
+                          .label,
                 ),
-                onSaveLayout: saveLayout,
+                bodyMaxLines: 4,
+              )
+            else
+              CatchField.toggle(
+                title: context.l10n.hostsEventSuccessStepTitleLiveEventGuide,
+                contract: CatchContractConstraints
+                    .createClubCallablePayloadHostDefaultsEventSuccessEnabled,
+                body: eventSuccessDefaults.enabled
+                    ? context.l10n.hostsCreateEventGuideReady(
+                        format:
+                            (eventFormat ??
+                                    EventFormatSnapshot.fromActivityKind(
+                                      activityKind,
+                                    ))
+                                .label,
+                      )
+                    : context.l10n.hostsCreateEventGuideOptional,
+                bodyMaxLines: 4,
+                value: eventSuccessDefaults.enabled,
+                onChanged: (enabled) => onEventSuccessDefaultsChanged(
+                  eventSuccessDefaults.copyWith(enabled: enabled),
+                ),
+              ),
+            if (eventSuccessDefaults.enabled)
+              Semantics(
+                expanded: _customizing,
+                child: CatchField.action(
+                  key: const ValueKey('host.create_event.customize_guide'),
+                  title: _customizing
+                      ? context.l10n.hostsCreateEventHideGuide
+                      : context.l10n.hostsCreateEventCustomizeGuide,
+                  onTap: () => setState(() => _customizing = !_customizing),
+                ),
               ),
           ],
         ),
+        if (_customizing && eventSuccessDefaults.enabled)
+          EventSuccessDefaultsPanel(
+            showEnableToggle: false,
+            defaults: eventSuccessDefaults,
+            activityKind: activityKind,
+            eventFormat: eventFormat,
+            targetAttendeeCount: targetAttendeeCount,
+            onChanged: (update) =>
+                onEventSuccessDefaultsChanged(update(eventSuccessDefaults)),
+            title: context.l10n.hostsEventSuccessStepTitleLiveEventGuide,
+            subtitle: context.l10n.hostsEventSuccessStepSubtitleSaveASimplePlan,
+          ),
+        if (_customizing && eventSuccessDefaults.enabled)
+          EventSuccessRoomSetupSection(
+            layoutsState: layoutsState,
+            selectedLayoutId: eventSuccessDefaults.layoutId,
+            usesWholeGroup: usesWholeGroup,
+            enabled: true,
+            isSavingLayout: layoutMutation.isPending,
+            saveError: layoutMutation.hasError
+                ? (layoutMutation as MutationError).error
+                : null,
+            onSelected: (layoutId) => onEventSuccessDefaultsChanged(
+              eventSuccessDefaults.copyWith(layoutId: layoutId),
+            ),
+            onSaveLayout: saveLayout,
+          ),
       ],
+    );
+    if (widget.embedded) return content;
+    return SingleChildScrollView(
+      padding: CatchInsets.formStepBodyRelaxedWithBottomActions,
+      child: content,
     );
   }
 }

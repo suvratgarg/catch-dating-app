@@ -3110,12 +3110,6 @@ abstract class AppLocalizations {
   /// **'What should attendees expect? Any tips for the route or venue?'**
   String get hostsEventDetailsStepPlaceholderWhatShouldAttendeesExpect;
 
-  /// Explains the external booking companion flow during event creation.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep taking bookings wherever you already do. Catch adds the guest-list, check-in, and Event Success layer without replacing your booking platform.'**
-  String get hostsEventDetailsStepExternalIntro;
-
   /// Field title for the event's external booking provider.
   ///
   /// In en, this message translates to:
@@ -3245,7 +3239,7 @@ abstract class AppLocalizations {
   /// Rules-step intro for externally booked events.
   ///
   /// In en, this message translates to:
-  /// **'Set the operational capacity, age range, and on-site pairing inventory. Bookings, payments, refunds, and cancellations stay with the external provider.'**
+  /// **'Set your capacity and guest access. Bookings stay with your provider.'**
   String get hostsEventPolicyStepExternalOperationsIntro;
 
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_policy_step.dart (title).
@@ -3331,12 +3325,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Host payout is released after event completion. If the host cancels, attendees are made complete before any host payout.'**
   String get hostsEventPolicyStepTextHostPayoutIsReleased;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_success_step.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Prepare the host guide for this event. You can adjust it again before Live mode starts.'**
-  String get hostsEventSuccessStepTextPrepareTheHostGuide;
 
   /// Title for the live event guide toggle in event creation.
   ///
@@ -6088,54 +6076,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Activity type'**
   String get hostsEventDetailsStepLabelActivityType;
-
-  /// Labels the operational runbook automatically selected from an event type.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch prepares'**
-  String get hostsEventDetailsStepFormatPackTitle;
-
-  /// Summarizes the pace-pod event format pack.
-  ///
-  /// In en, this message translates to:
-  /// **'Pace pods · timed legs · finish sweep'**
-  String get hostsEventDetailsStepFormatPackPacePods;
-
-  /// Summarizes the paired-rotation event format pack.
-  ///
-  /// In en, this message translates to:
-  /// **'Pair assignments · timed rounds · ranked outcomes'**
-  String get hostsEventDetailsStepFormatPackPairedRotations;
-
-  /// Summarizes the team-rotation event format pack.
-  ///
-  /// In en, this message translates to:
-  /// **'Teams · points by round · standings reveal'**
-  String get hostsEventDetailsStepFormatPackTeamRotations;
-
-  /// Summarizes the seated-table event format pack.
-  ///
-  /// In en, this message translates to:
-  /// **'Tables · course pacing · guided prompts'**
-  String get hostsEventDetailsStepFormatPackSeatedTable;
-
-  /// Summarizes the free-form mixer event format pack.
-  ///
-  /// In en, this message translates to:
-  /// **'Social groups · guided rounds · reveal moments'**
-  String get hostsEventDetailsStepFormatPackFreeFormMixer;
-
-  /// Summarizes the host-led event format pack.
-  ///
-  /// In en, this message translates to:
-  /// **'Host run-of-show · live prompts · event recap'**
-  String get hostsEventDetailsStepFormatPackHostLedProgram;
-
-  /// Summarizes the open event format pack.
-  ///
-  /// In en, this message translates to:
-  /// **'Flexible run-of-show · optional groups · event recap'**
-  String get hostsEventDetailsStepFormatPackOpenFormat;
 
   /// Labels the composable route operations section.
   ///
@@ -19251,7 +19191,7 @@ abstract class AppLocalizations {
   /// External event roster picker action.
   ///
   /// In en, this message translates to:
-  /// **'Choose CSV or XLSX'**
+  /// **'Choose file'**
   String get hostsCreateEventRosterChoose;
 
   /// External event roster replacement action.
@@ -25579,12 +25519,6 @@ abstract class AppLocalizations {
   /// **'Review organizer'**
   String get hostsCreateClubReviewTitle;
 
-  /// Publishes an event after the final creation review passes.
-  ///
-  /// In en, this message translates to:
-  /// **'Schedule event'**
-  String get hostsCreateEventScheduleAction;
-
   /// Creates an organizer after the final creation review passes.
   ///
   /// In en, this message translates to:
@@ -27792,6 +27726,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Configured'**
   String get hostAutomationConfigured;
+
+  /// Shared event creation: BasicsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Event basics'**
+  String get hostsCreateEventBasicsTitle;
+
+  /// Shared event creation: WhenWhereTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When & where'**
+  String get hostsCreateEventWhenWhereTitle;
+
+  /// Shared event creation: GuestsGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests & live guide'**
+  String get hostsCreateEventGuestsGuideTitle;
+
+  /// Shared event creation: BookingGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking & live guide'**
+  String get hostsCreateEventBookingGuideTitle;
+
+  /// Shared event creation: PresentationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Description & photos · Optional'**
+  String get hostsCreateEventPresentationTitle;
+
+  /// Shared event creation: ItineraryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Route & itinerary · Optional'**
+  String get hostsCreateEventItineraryTitle;
+
+  /// Shared event creation: ExternalDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking source · Optional details'**
+  String get hostsCreateEventExternalDetailsTitle;
+
+  /// Shared event creation: ShowDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get hostsCreateEventShowDetails;
+
+  /// Shared event creation: HideDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get hostsCreateEventHideDetails;
+
+  /// Shared event creation: GuideReady.
+  ///
+  /// In en, this message translates to:
+  /// **'{format} guide is ready. You can adjust it before the event.'**
+  String hostsCreateEventGuideReady({required String format});
+
+  /// Shared event creation: GuideOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional host tools for running the event.'**
+  String get hostsCreateEventGuideOptional;
+
+  /// Shared event creation: CustomizeGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize guide'**
+  String get hostsCreateEventCustomizeGuide;
+
+  /// Shared event creation: HideGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide guide settings'**
+  String get hostsCreateEventHideGuide;
+
+  /// Shared event creation: RosterLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Import now or later'**
+  String get hostsCreateEventRosterLater;
+
+  /// Shared event creation: CreateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Create event'**
+  String get hostsCreateEventCreateAction;
 }
 
 class _AppLocalizationsDelegate
