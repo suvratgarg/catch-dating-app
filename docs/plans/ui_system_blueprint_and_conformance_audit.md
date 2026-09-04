@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.1.0
+version: 1.2.0
 updated: 2026-09-04
 owner: app_architecture
 status: active
@@ -519,18 +519,14 @@ on 2026-09-04 (including the D3 catalog-charter amendment); spec registered
 in the docs index; execution-ownership note added to
 `docs/design_parity/composition_migration_spec.md`.
 
-**Phase 0b (immediately after that claim closes):**
+**Phase 0b (immediately after that claim closes):** apply the staged
+amendments in Appendix B verbatim — a mechanical copy-in that any agent may
+execute. Move, don't copy: delete Appendix B in the same PR, bump the target
+docs' versions, and run the doc metadata check.
 
-- Add to `docs/app_architecture.md`: the compact decision layer (≤120 lines:
-  ladder table, placement decision tree, naming grammar summary, Migration
-  Protocol v2 checklist) near the top; the full naming grammar as a durable
-  section (this spec's appendix then defers to it); Protocol v2 completion
-  language folded into the Migration Plan and Definition Of Done sections.
-- Update `docs/widget_catalog.md` maintenance contract to declare the
-  inventory tables generated-output-to-be (D4).
-
-DoD: doc metadata check green; no code changes; 0b lands before any Phase 2+
-slice starts. Phase 1 may proceed on 0a alone.
+DoD: doc metadata check green; no code changes; Appendix B removed from this
+spec; 0b lands before any Phase 2+ slice starts. Phase 1 may proceed on 0a
+alone.
 
 ### Phase 1 — Catalog becomes a test (goldens before any moves)
 
@@ -662,7 +658,7 @@ those are owner decisions, not implementation details.
 | `composition_migration_spec.md` | This program is the executor of its layer-model "needed work"; that spec stays the cross-tool contract owner. |
 | Host adaptive workspace slices | Unaffected; they consume patterns (L4) wherever those live. |
 
-## Appendix — Naming Grammar v1 (ratified 2026-09-04)
+## Appendix A — Naming Grammar v1 (ratified 2026-09-04)
 
 After Phase 0b the durable owner of this grammar is
 `docs/app_architecture.md`; this appendix remains the ratification record and
@@ -690,3 +686,138 @@ defers to that section on any conflict.
 - **State objects.** `<Surface>State` (provider-free), `<Surface>ViewModel`
   (provider-owned composition), `<Surface>Controller` (mutations/flows) — as
   already contracted.
+
+## Appendix B — Phase 0b Staged Amendments (apply verbatim, then delete)
+
+This appendix exists so Phase 0b is a mechanical copy-in the moment the
+`events-platform-integration-20260904` claim closes. Application procedure:
+claim `docs/app_architecture.md` and `docs/widget_catalog.md` through the
+worktree guard; insert blocks B1–B3 at the stated anchors; apply B4; bump both
+docs' minor versions with today's date; delete this appendix (B is moved, not
+copied); run `node tool/docs/check_doc_metadata.mjs --base origin/main`. If an
+anchor heading was renamed upstream, place the block at the nearest equivalent
+position and say so in the PR — do not skip a block.
+
+### B1. Insert into `docs/app_architecture.md` after the "Sources Consolidated" section
+
+```markdown
+## Quick Decision Layer
+
+Answer placement, naming, and completion questions here first; the rest of
+this document is the detailed contract behind each row. Ratified 2026-09-04 by
+`docs/plans/ui_system_blueprint_and_conformance_audit.md` (D1–D8), which owns
+the delivery program that moves L0–L4 into workspace packages. Keep this
+section under 120 lines.
+
+### Component ladder
+
+| Level | Name | Contents | Home today | Target home | May depend on |
+|---|---|---|---|---|---|
+| L0 | tokens | scale values, semantic roles | `lib/core/theme/**` | `packages/catch_tokens` | nothing |
+| L1 | foundations | theme wiring, typography, icons, motion | `lib/core/theme/**` | `packages/catch_ui` | L0 |
+| L2 | primitives | one visual job: text, surface, icon, gap, tap target | `lib/core/widgets/**` | `packages/catch_ui` | L0–L1 |
+| L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `lib/core/widgets/**`, `lib/core/forms/**` | `packages/catch_ui` | L0–L2 |
+| L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `lib/core/widgets/**` | `packages/catch_ui` | L0–L3 |
+| L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/widgets/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
+| L5 | feature UI | domain-aware compositions; private widgets legal here only | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
+| L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
+
+### Placement decision tree
+
+1. Reads providers, mutations, or routes? → L6 screen, or L4a when it is a
+   reusable Riverpod translation of an L2–L4 surface.
+2. API names a domain concept (event, organizer, profile, roster)? → L5 or
+   L6. Entity material with a presentation-neutral API (poster, polaroid,
+   ticket) is L3.
+3. Reusable across features under a feature-neutral name? → L3/L4 after
+   catalog registration; until a second unrelated consumer exists, keep it
+   L5 and public.
+4. Otherwise → the smallest layer that owns the visual job. Check
+   `docs/widget_catalog.md` and Widgetbook before creating anything.
+
+### Naming grammar (summary — the Naming Grammar section below is binding)
+
+- `Catch<RoleNoun>[<Variant>]` is reserved for L0–L4a; public feature widgets
+  are `<Feature><RoleNoun>`; `_Private` widgets only in L5.
+- Role nouns come from the closed lexicon; extending it is a registry review.
+- Variant axes are enums `<Component><Axis>` with axis vocabulary
+  `Variant|Size|Tone|Emphasis|Status|Placement|Mode`; a third boolean
+  constructor parameter forces an enum.
+- Files: snake case of the primary class, suffix vocabulary
+  `_screen|_controller|_view_model|_state|_repository|_service|_providers`
+  or a role-noun widget suffix; one primary public widget per shared-library
+  file.
+
+### Migration Protocol v2 (a slice is done only when all five hold)
+
+1. Inventory first: a deterministic scanner defines the call-site set before
+   work starts; its zero-count is part of the definition of done.
+2. The old thing is deleted in the same slice; workspace-wide analyze green
+   is the completion proof. Deprecation never crosses a slice boundary.
+3. Ratchets move in the same PR, never a follow-up.
+4. New rules ship with seeded probes; `info` staging only over a real
+   violation pile, promoted within the phase.
+5. The catalog moves with code: Widgetbook cases, goldens, and registry rows
+   for touched shared components update in the same PR.
+
+An `aligned` claim in `tool/architecture/pattern_adoption.json` must name its
+machine check or carry an explicit manual-review line with reviewer and date.
+```
+
+### B2. Insert into `docs/app_architecture.md` immediately after the "Widget Ownership" section
+
+```markdown
+## Naming Grammar
+
+Ratified 2026-09-04; this section is the durable owner (the blueprint spec's
+Appendix A is its ratification record). Phase 4 of the blueprint program makes
+role nouns registry data; until then this list is the closed vocabulary.
+
+- **Prefixes.** `Catch` is reserved for design-system symbols (L0–L4a).
+  Public feature widgets are `<Feature><RoleNoun>`. Private widget classes
+  are legal only at L5.
+- **Role nouns (closed; extend only via component-registry review):** Button,
+  IconAction, Field, FieldLanes, Section, SectionList, Tile, Row, RowList,
+  Chip, Badge, Banner, Sheet, Dialog, Notice, EmptyState, ErrorState,
+  Skeleton, Indicator, TopBar, Header, HeaderTitle, Scaffold, PageBody,
+  ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
+  Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
+  Overlay, Viewport.
+- **Files.** Snake case of the primary public class; suffix vocabulary
+  `_screen`, `_controller`, `_view_model`, `_state`, `_repository`,
+  `_service`, `_providers`, or a role-noun widget suffix. One primary public
+  widget per shared-library file, its parts private in-file.
+- **Variants.** Axes are enums named `<Component><Axis>` with axis vocabulary
+  `Variant`, `Size`, `Tone`, `Emphasis`, `Status`, `Placement`, `Mode`. At
+  most two booleans per public component constructor; a third forces an enum.
+- **Slots.** `leading`, `trailing`, `title`, `subtitle`, `kicker`, `meta`,
+  `body`, `footer`, `actions`, `media`, `mediaOverlay`, `child`, `children`;
+  builders end in `Builder`; callbacks start with `on`.
+- **State objects.** `<Surface>State` (provider-free), `<Surface>ViewModel`
+  (provider-owned composition), `<Surface>Controller` (mutations/flows), as
+  contracted elsewhere in this document.
+```
+
+### B3. Amend `docs/app_architecture.md` "Definition Of Done"
+
+Append one bullet to the existing list:
+
+```markdown
+- the slice satisfies Migration Protocol v2 (Quick Decision Layer): inventory
+  zero, old symbols deleted, ratchets lowered, probes seeded, catalog and
+  goldens updated in the same PR;
+```
+
+### B4. Amend `docs/widget_catalog.md` "Maintenance Contract"
+
+Append one paragraph:
+
+```markdown
+Under the ratified blueprint program
+(`docs/plans/ui_system_blueprint_and_conformance_audit.md`, D4), the
+inventory tables in this document become generated output in Phase 4 — from a
+source scan merged with `design/components/catch.components.json` — and
+hand-written content shrinks to the Canonical Usage Decisions. Until that
+generator lands, hand maintenance here remains authoritative; do not add new
+prose inventory conventions a generator could not reproduce.
+```
