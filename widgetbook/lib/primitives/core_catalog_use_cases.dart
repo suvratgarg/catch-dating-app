@@ -95,6 +95,7 @@ import 'package:go_router/go_router.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../preview_layout_contracts.dart';
+import '../support/widgetbook_harness.dart';
 
 const _choices = <_Choice>[
   _Choice('Social run'),
@@ -323,7 +324,7 @@ Widget catchMenuCatalogStates(BuildContext context) {
   path: '[Core catalog]/Menus',
 )
 Widget catchMenuRowCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchMenuRow',
     catalogId: 'core.widgets.catch_menu_row',
     children: [
@@ -391,7 +392,7 @@ Widget catchSearchFieldCatalogStates(BuildContext context) {
 )
 Widget catchMonoLabelCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchMonoLabel',
     catalogId: 'core.widgets.catch_mono_label',
     children: [
@@ -422,7 +423,7 @@ Widget catchMonoLabelCatalogStates(BuildContext context) {
 )
 Widget catchSectionLabelCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchSectionLabel',
     catalogId: 'core.widgets.catch_section_label',
     children: [
@@ -577,7 +578,7 @@ Widget catchControlShellCatalogStates(BuildContext context) {
     );
   }
 
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchControlShell',
     catalogId: 'core.widgets.catch_control_shell',
     children: [
@@ -1271,7 +1272,7 @@ Widget catchStepHeaderCatalogStates(BuildContext context) {
   path: '[Core catalog]/Navigation',
 )
 Widget catchStepProgressCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchStepProgress',
     catalogId: 'core.widgets.catch_step_progress',
     children: [
@@ -1309,7 +1310,7 @@ Widget catchTabDockCatalogStates(BuildContext context) {
   path: '[Core catalog]/Navigation',
 )
 Widget catchPageDotsCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchPageDots',
     catalogId: 'core.widgets.catch_page_dots',
     children: [
@@ -2943,7 +2944,7 @@ Widget eventVisualAtomsCatalogStates(BuildContext context) {
   path: '[Core catalog]/Data display',
 )
 Widget catchStatColumnCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchStatColumn',
     catalogId: 'core.widgets.catch_stat_column',
     children: [
@@ -2985,7 +2986,7 @@ Widget catchStatColumnCatalogStates(BuildContext context) {
   path: '[Core catalog]/Data display',
 )
 Widget catchMetaDotRowCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchMetaDotRow',
     catalogId: 'core.widgets.catch_meta_dot_row',
     children: [
@@ -3252,7 +3253,7 @@ Widget catchBottomActionContentCatalogStates(BuildContext context) {
   path: '[Core catalog]/Sheets and footers',
 )
 Widget catchBottomSheetGrabberCatalogStates(BuildContext context) {
-  return const _CatalogScreen(
+  return const WidgetbookCatalogFrame(
     title: 'CatchBottomSheetGrabber',
     catalogId: 'core.widgets.catch_bottom_sheet_grabber',
     children: [
@@ -3637,7 +3638,7 @@ Widget catchPersonAvatarStackCatalogStates(BuildContext context) {
 )
 Widget catchIconTileCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchIconTile',
     catalogId: 'core.widgets.catch_icon_tile',
     children: [
