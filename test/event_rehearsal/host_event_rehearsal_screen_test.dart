@@ -54,7 +54,7 @@ void main() {
       find.textContaining('No real guests, messages, payments'),
       findsOneWidget,
     );
-    expect(find.text('Smooth run'), findsOneWidget);
+    expect(find.text('Normal flow'), findsOneWidget);
     await tester.drag(
       find.byType(SingleChildScrollView),
       const Offset(0, -500),
