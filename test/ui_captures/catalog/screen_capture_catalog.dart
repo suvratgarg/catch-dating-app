@@ -94,6 +94,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_wingman_requ
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
@@ -3280,6 +3281,10 @@ Future<void> _driveCreateDisclosure(WidgetTester tester, String key) async {
   await tester.ensureVisible(target);
   await tester.tap(target);
   await pumpFeatureUi(tester);
+  if (key == 'host.create_event.customize_guide') {
+    await tester.ensureVisible(find.byType(EventSuccessDefaultsPanel));
+    await pumpFeatureUi(tester);
+  }
 }
 
 Widget _createEventCapture({
