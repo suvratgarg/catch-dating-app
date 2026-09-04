@@ -248,6 +248,7 @@ jobs:
     uses: ./.github/workflows/flutter-ci.yml
     with:
       base_sha: ${{ needs.plan.outputs.base_sha }}
+      full: ${{ needs.plan.outputs.full == 'true' }}
     secrets: inherit
 
   visual-integration:

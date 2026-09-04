@@ -29,6 +29,16 @@ export function buildCoverageReport(lcovSource) {
 }
 
 export function parseLcov(source) {
+  return [...parseLineHits(source).entries()]
+    .map(([filePath, lineHits]) => ({
+      path: filePath,
+      linesFound: lineHits.size,
+      linesHit: [...lineHits.values()].filter((hits) => hits > 0).length,
+    }))
+    .sort((a, b) => a.path.localeCompare(b.path));
+}
+
+function parseLineHits(source) {
   const byPath = new Map();
   let currentPath = null;
 
@@ -47,21 +57,39 @@ export function parseLcov(source) {
     const [lineNumberSource, hitsSource] = line.slice(3).split(",", 2);
     const lineNumber = Number(lineNumberSource);
     const hits = Number(hitsSource);
-    if (!Number.isInteger(lineNumber) || lineNumber <= 0 || !Number.isFinite(hits)) {
+    if (!Number.isInteger(lineNumber) || lineNumber <= 0 || !Number.isSafeInteger(hits) || hits < 0) {
       throw new Error(`Invalid LCOV line record: ${line}`);
     }
     const lineHits = byPath.get(currentPath);
     lineHits.set(lineNumber, Math.max(lineHits.get(lineNumber) ?? 0, hits));
   }
 
-  return [...byPath.entries()]
-    .filter(([filePath]) => filePath === "lib" || filePath.startsWith("lib/"))
-    .map(([filePath, lineHits]) => ({
-      path: filePath,
-      linesFound: lineHits.size,
-      linesHit: [...lineHits.values()].filter((hits) => hits > 0).length,
-    }))
-    .sort((a, b) => a.path.localeCompare(b.path));
+  return new Map([...byPath.entries()]
+    .filter(([filePath]) => filePath === "lib" || filePath.startsWith("lib/")));
+}
+
+// The report measures whether a line was hit, not invocation counts. Max keeps
+// repeated observations idempotent and makes the union independent of order.
+export function mergeCoverageShards(sources, expectedShards) {
+  if (!Number.isInteger(expectedShards) || expectedShards < 1 || sources.length !== expectedShards) {
+    throw new Error(`Expected ${expectedShards} coverage shards; received ${sources.length}.`);
+  }
+  for (const [index, source] of sources.entries()) {
+    if (typeof source !== "string") throw new Error(`Invalid coverage shard ${index}.`);
+    parseLineHits(source); // Validate even when a test-only shard observes no lib/ lines.
+  }
+  return [...parseLineHits(sources.join("\n")).entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([filePath, lines]) => {
+      const records = [...lines.entries()].sort(([a], [b]) => a - b);
+      return [
+        "TN:", `SF:${filePath}`,
+        ...records.map(([line, hits]) => `DA:${line},${hits}`),
+        `LF:${lines.size}`,
+        `LH:${records.filter(([, hits]) => hits > 0).length}`,
+        "end_of_record",
+      ].join("\n");
+    }).join("\n") + "\n";
 }
 
 export function renderCoverageMarkdown(report) {
@@ -85,6 +113,8 @@ This report is visibility-only. It intentionally does not impose an aggregate
 percentage threshold; feature-level gaps should drive focused test decisions.
 Files that the test process never loads are not represented in LCOV and are not
 silently counted as covered.
+Change-scoped runs include only selected tests; use nightly full-suite reports
+when comparing overall coverage over time.
 
 | Feature | Covered / observed lines | Coverage | Files |
 | --- | ---: | ---: | ---: |
@@ -160,6 +190,24 @@ function formatPercent(value) {
 
 function runCli(argv) {
   const args = parseArgs(argv);
+  if (args.mergeShards) {
+    if (!args.output) throw new Error("--merge-shards requires --output.");
+    const directory = path.resolve(fromRepo(), args.mergeShards);
+    const entries = fs.readdirSync(directory, {withFileTypes: true});
+    if (entries.some((entry) => !entry.isDirectory())) {
+      throw new Error("Coverage shard input must contain only artifact directories.");
+    }
+    const sources = entries.sort((a, b) => a.name.localeCompare(b.name)).map((entry) => {
+      const lcov = path.join(directory, entry.name, "lcov.info");
+      if (!fs.lstatSync(lcov).isFile()) throw new Error(`Invalid coverage shard: ${entry.name}`);
+      return fs.readFileSync(lcov, "utf8");
+    });
+    const output = path.resolve(fromRepo(), args.output);
+    fs.mkdirSync(path.dirname(output), {recursive: true});
+    fs.writeFileSync(output, mergeCoverageShards(sources, args.expectedShards));
+    console.log(`Merged ${sources.length} coverage shards into ${args.output}.`);
+    return;
+  }
   const lcovPath = path.resolve(fromRepo(), args.lcov);
   if (!fs.existsSync(lcovPath)) {
     throw new Error(
@@ -187,12 +235,16 @@ function parseArgs(argv) {
     lcov: "coverage/lcov.info",
     format: "markdown",
     output: null,
+    mergeShards: null,
+    expectedShards: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--lcov") args.lcov = requireValue(argv, ++index, arg);
     else if (arg === "--format") args.format = requireValue(argv, ++index, arg);
     else if (arg === "--output") args.output = requireValue(argv, ++index, arg);
+    else if (arg === "--merge-shards") args.mergeShards = requireValue(argv, ++index, arg);
+    else if (arg === "--expected-shards") args.expectedShards = Number(requireValue(argv, ++index, arg));
     else if (arg === "--help" || arg === "-h") {
       printHelp();
       process.exit(0);
@@ -221,5 +273,7 @@ Options:
   --lcov <path>       LCOV input (default: coverage/lcov.info)
   --format <format>   markdown or json (default: markdown)
   --output <path>     Write the rendered report instead of stdout
+  --merge-shards <directory>  Merge artifact subdirectories into LCOV at --output
+  --expected-shards <count>   Required exact shard count when merging
 `);
 }

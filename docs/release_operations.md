@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.5.0
-updated: 2026-09-04
+version: 2.6.0
+updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
 ---
@@ -246,6 +246,32 @@ nightly scheduled full run catches drift hidden by ordinary impact routing.
 Only direct component ownership may authorize Firebase deployment or a mobile
 release; dependency expansion can add validation but cannot authorize mutation.
 
+Root Flutter unit/widget tests are selected by
+`tool/harness/lib/flutter_test_selection.dart` from the exact base and head Git
+objects. Dart's parser follows imports, exports, conditional imports and parts
+in both snapshots, so deleted or moved dependencies remain covered. Tests that
+inspect files through `dart:io` remain selected. Assets, dependency manifests,
+test configuration, non-Dart changes, unsupported inputs, and changes with no
+provable dependent test retain the full suite. Nightly and explicit full runs
+also execute every test. Native, package, golden, integration, analyzer and
+contract checks retain their separate owners.
+
+The same planner follows the lint engine's seeded and generated probe imports.
+The expensive Catch UI plugin smoke check runs when its engine, configuration,
+corpus or transitive probe APIs change, and on full runs. The application
+analyzer and zero-diagnostic gate still run on every selected Flutter lane.
+Selector safety tests run before any selective job can proceed; planner failure
+fails the aggregate. The selected inventory and reasons are CI artifacts, not
+a tracked registry.
+
+Each selected test shard collects line coverage during its single test run.
+The coverage job requires all planned shard artifacts and merges their observed
+lines without rerunning tests or counting shared source files twice. Coverage
+is visibility-only; compare nightly reports for full-suite trends. A shard
+containing only repository probes can legitimately observe no product lines.
+The matrix contains at most four nonempty shards and the required aggregate
+rejects missing planner, test or coverage results.
+
 The orchestrator also owns cancellation. Reusable fanout workflows must not
 derive a concurrency group from `github.workflow`: inside a called workflow
 that value is the caller name, so sibling lanes would share one key and cancel
@@ -254,7 +280,8 @@ workflow-specific key, but normal CI fanout inherits the orchestrator boundary.
 
 The complete impact plan is written to `build/ci/impact-plan.json` and rendered
 from that file. Only bounded booleans and role arrays cross the GitHub step/job
-output boundary. Do not expand the per-file plan into an environment variable:
+output boundary, alongside bounded test-shard descriptors. Do not expand the
+per-file plan into an environment variable:
 large pull requests can exceed the operating system argument limit before the
 summary shell even starts.
 
