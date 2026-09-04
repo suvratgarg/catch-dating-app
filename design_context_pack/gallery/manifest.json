@@ -5044,6 +5044,91 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "host_create_runtime_basics",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_runtime_basics.png",
+        "dark": "dark/host_create_runtime_basics.png"
+      },
+      "whatItIs": "Host Create Runtime Basics",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_runtime_schedule",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_runtime_schedule.png",
+        "dark": "dark/host_create_runtime_schedule.png"
+      },
+      "whatItIs": "Host Create Runtime Schedule",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_runtime_guests",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_runtime_guests.png",
+        "dark": "dark/host_create_runtime_guests.png"
+      },
+      "whatItIs": "Host Create Runtime Guests",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_runtime_review",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_runtime_review.png",
+        "dark": "dark/host_create_runtime_review.png"
+      },
+      "whatItIs": "Host Create Runtime Review",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_create_runtime_customize",
+      "routes": [
+        "hostCreateEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_create_runtime_customize.png",
+        "dark": "dark/host_create_runtime_customize.png"
+      },
+      "whatItIs": "Host Create Runtime Customize",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "host_create_basics",
       "routes": [
         "hostCreateEventScreen"
