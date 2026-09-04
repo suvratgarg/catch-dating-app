@@ -1,7 +1,7 @@
 ---
 doc_id: composition_migration_spec
-version: 0.1.2
-updated: 2026-08-07
+version: 0.1.3
+updated: 2026-09-04
 owner: product_design_parity
 status: active
 ---
@@ -26,6 +26,15 @@ The end state is:
 
 This is not a visual audit checklist. Visual parity work starts after each
 component or screen slice has an explicit contract and review surface.
+
+## Execution Ownership
+
+Delivery of the layer-model end state (golden-asserted catalog, token and
+component package extraction, registry consolidation, binding naming grammar,
+migration protocol) is owned by the ratified program in
+`docs/plans/ui_system_blueprint_and_conformance_audit.md`. This spec remains
+the cross-tool contract owner; do not open a second delivery track for the
+same layers.
 
 ## Working Decision
 
