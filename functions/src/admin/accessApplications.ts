@@ -9,8 +9,10 @@ import type {AdminDecideAccessApplicationCallablePayload} from
   "../shared/generated/adminDecideAccessApplicationCallablePayload";
 import type {AdminDecideAccessApplicationCallableResponse} from
   "../shared/generated/adminDecideAccessApplicationCallableResponse";
-import {validateAdminDecideAccessApplicationCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateAdminDecideAccessApplicationCallablePayload,
+} from
+  "../shared/generated/validators/adminDecideAccessApplicationInput";
 import {validateCallableWithAjv} from "../shared/validation";
 
 const accessReviewRoles = ["admin", "adminOwner", "support"] as const;

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
+import type {
   UserProfileDocument,
 } from "./generated/firestoreAdminTypes";
 import {profilePromptCatalog} from "./generated/schemaRegistry";

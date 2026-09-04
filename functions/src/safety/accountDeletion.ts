@@ -5,7 +5,7 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {eventBroadcastDeliveryKey} from "../shared/eventBroadcasts";
-import {
+import type {
   ProfilePhoto,
   OrganizerFollowDocument,
   EventParticipationDocument,

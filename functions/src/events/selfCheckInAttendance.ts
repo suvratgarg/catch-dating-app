@@ -5,13 +5,14 @@ import {CallableRequest, HttpsError, onCall} from
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {requireAuth} from "../shared/auth";
-import {SelfCheckInAttendanceCallablePayload} from
+import type {SelfCheckInAttendanceCallablePayload} from
   "../shared/generated/selfCheckInAttendanceCallablePayload";
-import {validateSelfCheckInAttendanceCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateSelfCheckInAttendanceCallablePayload,
+} from "../shared/generated/validators/selfCheckInAttendanceInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {appCheckCallableOptionsWithSecrets} from
   "../shared/callableOptions";
 import {

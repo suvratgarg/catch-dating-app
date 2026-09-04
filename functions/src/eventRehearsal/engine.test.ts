@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
-import {EventRehearsalDocument} from
+import type {EventRehearsalDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {
   applyRehearsalBehavior,

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
-import {EventAttendeeDocument} from
+import type {EventAttendeeDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {LumaGuest} from "./organizerLumaProvider";
 import {organizerProviderCatalog} from "./organizerProviderCatalog";

@@ -2,10 +2,11 @@ import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {CreateOrganizerCallablePayload} from
+import type {CreateOrganizerCallablePayload} from
   "../shared/generated/createOrganizerCallablePayload";
-import {validateCreateOrganizerCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateCreateOrganizerCallablePayload,
+} from "../shared/generated/validators/createOrganizerInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
   normalizeOptionalUploadedPhotoForFirestore,

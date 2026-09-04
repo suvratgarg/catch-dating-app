@@ -1,5 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {OrganizerDocument} from "./generated/firestoreAdminTypes";
+import type {OrganizerDocument} from "./generated/firestoreAdminTypes";
 import {isOrganizerManager} from "./organizerHosts";
 import {requireDoc} from "./validation";
 

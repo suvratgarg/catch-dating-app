@@ -1,4 +1,4 @@
-import {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {
   cohortIds,

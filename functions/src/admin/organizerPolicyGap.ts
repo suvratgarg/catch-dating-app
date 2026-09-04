@@ -3,12 +3,14 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {AdminDecideOrganizerPolicyGapCallablePayload} from
+import type {AdminDecideOrganizerPolicyGapCallablePayload} from
   "../shared/generated/adminDecideOrganizerPolicyGapCallablePayload";
-import {OrganizerPolicyGapReviewDecisionDocument} from
+import type {OrganizerPolicyGapReviewDecisionDocument} from
   "../shared/generated/organizerPolicyGapReviewDecisionDocument";
-import {validateAdminDecideOrganizerPolicyGapCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateAdminDecideOrganizerPolicyGapCallablePayload,
+} from
+  "../shared/generated/validators/adminDecideOrganizerPolicyGapInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAdminRole} from "./adminAuth";

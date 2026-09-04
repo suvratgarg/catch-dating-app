@@ -9,7 +9,7 @@ import {
   publicRegistrationPermissionReceipt,
   unknownOrganizerCommunicationChannel,
 } from "./organizerCommunicationPreferences";
-import {OrganizerCommunicationPreferenceDocument} from
+import type {OrganizerCommunicationPreferenceDocument} from
   "./generated/firestoreAdminTypes";
 
 const now = admin.firestore.Timestamp.fromMillis(1_000);

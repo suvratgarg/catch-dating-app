@@ -4,7 +4,7 @@ import {
   onCall,
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {
+import type {
   EventDocument,
   OrganizerDocument,
   UserProfileDocument,
@@ -33,12 +33,13 @@ import {
 import {resolveInviteAttribution} from "../events/inviteLinks";
 import {requireActiveCrossPathsPairHold} from
   "../crossPaths/pairHoldValidation";
-import {
+import type {
   CreateStripeCheckoutSessionCallablePayload,
 } from "../shared/generated/createStripeCheckoutSessionCallablePayload";
 import {
   validateCreateStripeCheckoutSessionCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/createStripeCheckoutSessionInput";
 import {
   createStripeClient,
   stripeCheckoutCancelUrlValue,

@@ -4,13 +4,14 @@ import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
-import {AdminSetClubIndexStatusCallablePayload} from
+import type {AdminSetClubIndexStatusCallablePayload} from
   "../shared/generated/adminSetClubIndexStatusCallablePayload";
-import {validateAdminSetClubIndexStatusCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateAdminSetClubIndexStatusCallablePayload,
+} from "../shared/generated/validators/adminSetClubIndexStatusInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {ClubDocument} from "../shared/generated/firestoreAdminTypes";
+import type {ClubDocument} from "../shared/generated/firestoreAdminTypes";
 import {
   reserveOrganizerCanonicalRoute,
 } from "./organizerPublishingGuards";

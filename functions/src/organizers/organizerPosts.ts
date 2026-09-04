@@ -2,17 +2,18 @@ import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {
+import type {
   EventDocument,
   OrganizerDocument,
   OrganizerPostDeliveryOperationDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {CreateOrganizerPostCallablePayload} from
+import type {CreateOrganizerPostCallablePayload} from
   "../shared/generated/createOrganizerPostCallablePayload";
-import {CreateOrganizerPostCallableResponse} from
+import type {CreateOrganizerPostCallableResponse} from
   "../shared/generated/createOrganizerPostCallableResponse";
-import {validateCreateOrganizerPostCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateCreateOrganizerPostCallablePayload,
+} from "../shared/generated/validators/createOrganizerPostInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {

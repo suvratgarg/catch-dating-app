@@ -6,7 +6,7 @@ import {
   eventStaffGrantId,
   requireEventOperatorPermission,
 } from "./eventOperatorAuthority";
-import {
+import type {
   EventDocument,
   EventStaffGrantDocument,
   OrganizerDocument,

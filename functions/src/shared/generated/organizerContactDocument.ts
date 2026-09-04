@@ -2,7 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-import {OrganizerContactTraitDocument} from "./organizerContactTraitDocument";
+import type {OrganizerContactTraitDocument} from "./organizerContactTraitDocument";
 
 /**
  * Server-owned organizer-scoped contact projection. It is not a Consumer profile and may contain restricted operational contact data.

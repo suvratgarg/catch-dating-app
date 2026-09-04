@@ -1,7 +1,7 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {
+import type {
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {

@@ -21,9 +21,10 @@ import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {normalizePayloadStrings} from "../shared/callablePayloadNormalization";
-import {validateVerifyRazorpayPaymentCallablePayload} from
-  "../shared/generated/schemaValidators";
-import {VerifyRazorpayPaymentCallablePayload} from
+import {
+  validateVerifyRazorpayPaymentCallablePayload,
+} from "../shared/generated/validators/verifyRazorpayPaymentInput";
+import type {VerifyRazorpayPaymentCallablePayload} from
   "../shared/generated/verifyRazorpayPaymentCallablePayload";
 import {validateCallableWithAjv} from "../shared/validation";
 

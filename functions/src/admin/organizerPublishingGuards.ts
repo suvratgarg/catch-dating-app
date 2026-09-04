@@ -1,5 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {PublicRouteReservationDocument} from
+import type {PublicRouteReservationDocument} from
   "../shared/generated/firestoreAdminTypes";
 
 const organizerPathPattern =

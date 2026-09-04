@@ -1,13 +1,13 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import {computeAge} from "./dates";
-import {
+import type {
   Gender,
   UserProfileDocument,
 } from "./generated/firestoreAdminTypes";
 import {
   defaultProfilePromptIds,
-  profilePhotoPolicy,
-} from "./generated/schemaRegistry";
+} from "./generated/catalogs/defaultProfilePromptIds";
+import {profilePhotoPolicy} from "./generated/catalogs/profilePhotoPolicy";
 import {
   normalizeProfilePhotos,
   normalizeProfilePrompts,

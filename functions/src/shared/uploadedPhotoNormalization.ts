@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import {
+import type {
   UploadedPhoto,
 } from "./generated/firestoreAdminTypes";
 

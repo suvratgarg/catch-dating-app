@@ -4,10 +4,11 @@ import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {ReportUserCallablePayload} from
+import type {ReportUserCallablePayload} from
   "../shared/generated/reportUserCallablePayload";
-import {validateReportUserCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateReportUserCallablePayload,
+} from "../shared/generated/validators/reportUserInput";
 import {normalizePayloadStrings} from "../shared/callablePayloadNormalization";
 import {validateCallableWithAjv} from "../shared/validation";
 

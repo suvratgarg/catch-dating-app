@@ -3,20 +3,24 @@ import {CallableRequest, HttpsError, onCall} from
 import * as admin from "firebase-admin";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {
+import type {
   EventDocument,
   EventCrossPathsConsentDocument,
   EventParticipationDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {SetCrossPathsEventConsentCallablePayload} from
+import type {SetCrossPathsEventConsentCallablePayload} from
   "../shared/generated/setCrossPathsEventConsentCallablePayload";
-import {SetCrossPathsEventConsentCallableResponse} from
+import type {SetCrossPathsEventConsentCallableResponse} from
   "../shared/generated/setCrossPathsEventConsentCallableResponse";
 import {
   validateSetCrossPathsEventConsentCallablePayload,
+} from
+  "../shared/generated/validators/setCrossPathsEventConsentInput";
+import {
   validateSetCrossPathsEventConsentCallableResponse,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/setCrossPathsEventConsentOutput";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {normalizeEventIdPayload} from

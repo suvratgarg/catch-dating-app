@@ -2,18 +2,23 @@ import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
-import {AddOrganizerManagerCallablePayload} from
+import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
+import type {AddOrganizerManagerCallablePayload} from
   "../shared/generated/addOrganizerManagerCallablePayload";
-import {RemoveOrganizerManagerCallablePayload} from
+import type {RemoveOrganizerManagerCallablePayload} from
   "../shared/generated/removeOrganizerManagerCallablePayload";
-import {TransferOrganizerOwnershipCallablePayload} from
+import type {TransferOrganizerOwnershipCallablePayload} from
   "../shared/generated/transferOrganizerOwnershipCallablePayload";
 import {
   validateAddOrganizerManagerCallablePayload,
+} from "../shared/generated/validators/addOrganizerManagerInput";
+import {
   validateRemoveOrganizerManagerCallablePayload,
+} from "../shared/generated/validators/removeOrganizerManagerInput";
+import {
   validateTransferOrganizerOwnershipCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/transferOrganizerOwnershipInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {

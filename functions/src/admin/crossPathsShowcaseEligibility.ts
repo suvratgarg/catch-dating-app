@@ -3,23 +3,33 @@ import {CallableRequest, HttpsError, onCall} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {
+import type {
   CrossPathsShowcaseEligibilityDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {AdminListCrossPathsShowcaseCandidatesCallablePayload} from
+import type {AdminListCrossPathsShowcaseCandidatesCallablePayload} from
   "../shared/generated/adminListCrossPathsShowcaseCandidatesCallablePayload";
-import {AdminListCrossPathsShowcaseCandidatesCallableResponse} from
+import type {AdminListCrossPathsShowcaseCandidatesCallableResponse} from
   "../shared/generated/adminListCrossPathsShowcaseCandidatesCallableResponse";
-import {AdminSetCrossPathsShowcaseEligibilityCallablePayload} from
+import type {AdminSetCrossPathsShowcaseEligibilityCallablePayload} from
   "../shared/generated/adminSetCrossPathsShowcaseEligibilityCallablePayload";
-import {AdminSetCrossPathsShowcaseEligibilityCallableResponse} from
+import type {AdminSetCrossPathsShowcaseEligibilityCallableResponse} from
   "../shared/generated/adminSetCrossPathsShowcaseEligibilityCallableResponse";
 import {
   validateAdminListCrossPathsShowcaseCandidatesCallablePayload,
+} from
+  "../shared/generated/validators/adminListCrossPathsShowcaseCandidatesInput";
+import {
   validateAdminListCrossPathsShowcaseCandidatesCallableResponse,
+} from
+  "../shared/generated/validators/adminListCrossPathsShowcaseCandidatesOutput";
+import {
   validateAdminSetCrossPathsShowcaseEligibilityCallablePayload,
+} from
+  "../shared/generated/validators/adminSetCrossPathsShowcaseEligibilityInput";
+import {
   validateAdminSetCrossPathsShowcaseEligibilityCallableResponse,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/adminSetCrossPathsShowcaseEligibilityOutput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
   crossPathsShowcaseRuleVersion,

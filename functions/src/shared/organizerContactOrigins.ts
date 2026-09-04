@@ -1,5 +1,5 @@
 import {createHash} from "crypto";
-import {
+import type {
   EventAttendeeDocument,
   OrganizerContactOriginDocument,
 } from "./generated/firestoreAdminTypes";

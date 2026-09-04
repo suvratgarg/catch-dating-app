@@ -1,4 +1,4 @@
-import {OrganizerDocument} from "./generated/firestoreAdminTypes";
+import type {OrganizerDocument} from "./generated/firestoreAdminTypes";
 
 export type OrganizerTeamRole = "owner" | "manager";
 

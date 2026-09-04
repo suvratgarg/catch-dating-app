@@ -18,8 +18,12 @@ import type {AdminAssignSafetyTriageItemCallableResponse} from
   "../shared/generated/adminAssignSafetyTriageItemCallableResponse";
 import {
   validateAdminAssignSafetyTriageItemCallablePayload,
+} from
+  "../shared/generated/validators/adminAssignSafetyTriageItemInput";
+import {
   validateAdminDecideSafetyTriageItemCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/adminDecideSafetyTriageItemInput";
 import {validateCallableWithAjv} from "../shared/validation";
 
 const safetyDetailRoles = [

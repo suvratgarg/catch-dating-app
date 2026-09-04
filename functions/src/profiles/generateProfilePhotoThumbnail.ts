@@ -3,7 +3,9 @@ import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import sharp from "sharp";
 import {randomUUID} from "crypto";
-import {profilePhotoPolicy} from "../shared/generated/schemaRegistry";
+import {
+  profilePhotoPolicy,
+} from "../shared/generated/catalogs/profilePhotoPolicy";
 
 const THUMBNAIL_SIZE = profilePhotoPolicy.thumbnailSize;
 const JPEG_QUALITY = 72;

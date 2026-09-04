@@ -10,7 +10,7 @@ import {appCheckCallableOptionsWithSecrets} from
   "../shared/callableOptions";
 import {normalizePayloadStrings} from
   "../shared/callablePayloadNormalization";
-import {
+import type {
   CrossPathsInvitationDocument,
   CrossPathsPairHoldDocument,
   CrossPathsShowcaseEligibilityDocument,
@@ -20,26 +20,41 @@ import {
   PublicProfileDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {CancelCrossPathsInvitationOrPlanCallablePayload} from
+import type {CancelCrossPathsInvitationOrPlanCallablePayload} from
   "../shared/generated/cancelCrossPathsInvitationOrPlanCallablePayload";
-import {CancelCrossPathsInvitationOrPlanCallableResponse} from
+import type {CancelCrossPathsInvitationOrPlanCallableResponse} from
   "../shared/generated/cancelCrossPathsInvitationOrPlanCallableResponse";
-import {RespondCrossPathsInvitationCallablePayload} from
+import type {RespondCrossPathsInvitationCallablePayload} from
   "../shared/generated/respondCrossPathsInvitationCallablePayload";
-import {RespondCrossPathsInvitationCallableResponse} from
+import type {RespondCrossPathsInvitationCallableResponse} from
   "../shared/generated/respondCrossPathsInvitationCallableResponse";
-import {SendCrossPathsInvitationCallablePayload} from
+import type {SendCrossPathsInvitationCallablePayload} from
   "../shared/generated/sendCrossPathsInvitationCallablePayload";
-import {SendCrossPathsInvitationCallableResponse} from
+import type {SendCrossPathsInvitationCallableResponse} from
   "../shared/generated/sendCrossPathsInvitationCallableResponse";
 import {
   validateCancelCrossPathsInvitationOrPlanCallablePayload,
+} from
+  "../shared/generated/validators/cancelCrossPathsInvitationOrPlanInput";
+import {
   validateCancelCrossPathsInvitationOrPlanCallableResponse,
+} from
+  "../shared/generated/validators/cancelCrossPathsInvitationOrPlanOutput";
+import {
   validateRespondCrossPathsInvitationCallablePayload,
+} from
+  "../shared/generated/validators/respondCrossPathsInvitationInput";
+import {
   validateRespondCrossPathsInvitationCallableResponse,
+} from
+  "../shared/generated/validators/respondCrossPathsInvitationOutput";
+import {
   validateSendCrossPathsInvitationCallablePayload,
+} from "../shared/generated/validators/sendCrossPathsInvitationInput";
+import {
   validateSendCrossPathsInvitationCallableResponse,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/sendCrossPathsInvitationOutput";
 import {
   activityNotificationId,
   allowsPushPreference,

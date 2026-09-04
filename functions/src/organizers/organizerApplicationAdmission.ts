@@ -1,6 +1,6 @@
 import {createHash} from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
-import {
+import type {
   OrganizerApplicationDocument,
   OrganizerContactDocument,
   OrganizerContactOriginDocument,

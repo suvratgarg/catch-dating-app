@@ -2,43 +2,43 @@ import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
-import {BeginOrganizerFormResponseCallablePayload} from
+import type {BeginOrganizerFormResponseCallablePayload} from
   "../shared/generated/beginOrganizerFormResponseCallablePayload";
-import {BeginOrganizerFormResponseCallableResponse} from
+import type {BeginOrganizerFormResponseCallableResponse} from
   "../shared/generated/beginOrganizerFormResponseCallableResponse";
-import {CreateOrganizerFormAssetIntentCallablePayload} from
+import type {CreateOrganizerFormAssetIntentCallablePayload} from
   "../shared/generated/createOrganizerFormAssetIntentCallablePayload";
-import {CreateOrganizerFormAssetIntentCallableResponse} from
+import type {CreateOrganizerFormAssetIntentCallableResponse} from
   "../shared/generated/createOrganizerFormAssetIntentCallableResponse";
-import {CreateOrganizerFormShareLinkCallablePayload} from
+import type {CreateOrganizerFormShareLinkCallablePayload} from
   "../shared/generated/createOrganizerFormShareLinkCallablePayload";
-import {CreateOrganizerFormShareLinkCallableResponse} from
+import type {CreateOrganizerFormShareLinkCallableResponse} from
   "../shared/generated/createOrganizerFormShareLinkCallableResponse";
-import {GetOrganizerFormShareAssetsCallablePayload} from
+import type {GetOrganizerFormShareAssetsCallablePayload} from
   "../shared/generated/getOrganizerFormShareAssetsCallablePayload";
-import {GetOrganizerFormShareAssetsCallableResponse} from
+import type {GetOrganizerFormShareAssetsCallableResponse} from
   "../shared/generated/getOrganizerFormShareAssetsCallableResponse";
-import {GetPublicOrganizerFormCallablePayload} from
+import type {GetPublicOrganizerFormCallablePayload} from
   "../shared/generated/getPublicOrganizerFormCallablePayload";
-import {GetPublicOrganizerFormCallableResponse} from
+import type {GetPublicOrganizerFormCallableResponse} from
   "../shared/generated/getPublicOrganizerFormCallableResponse";
-import {FinalizeOrganizerFormAssetCallablePayload} from
+import type {FinalizeOrganizerFormAssetCallablePayload} from
   "../shared/generated/finalizeOrganizerFormAssetCallablePayload";
-import {FinalizeOrganizerFormAssetCallableResponse} from
+import type {FinalizeOrganizerFormAssetCallableResponse} from
   "../shared/generated/finalizeOrganizerFormAssetCallableResponse";
-import {SaveOrganizerFormResponseDraftCallablePayload} from
+import type {SaveOrganizerFormResponseDraftCallablePayload} from
   "../shared/generated/saveOrganizerFormResponseDraftCallablePayload";
-import {SaveOrganizerFormResponseDraftCallableResponse} from
+import type {SaveOrganizerFormResponseDraftCallableResponse} from
   "../shared/generated/saveOrganizerFormResponseDraftCallableResponse";
-import {SubmitOrganizerFormResponseCallablePayload} from
+import type {SubmitOrganizerFormResponseCallablePayload} from
   "../shared/generated/submitOrganizerFormResponseCallablePayload";
-import {SubmitOrganizerFormResponseCallableResponse} from
+import type {SubmitOrganizerFormResponseCallableResponse} from
   "../shared/generated/submitOrganizerFormResponseCallableResponse";
-import {WithdrawOrganizerFormResponseCallablePayload} from
+import type {WithdrawOrganizerFormResponseCallablePayload} from
   "../shared/generated/withdrawOrganizerFormResponseCallablePayload";
-import {WithdrawOrganizerFormResponseCallableResponse} from
+import type {WithdrawOrganizerFormResponseCallableResponse} from
   "../shared/generated/withdrawOrganizerFormResponseCallableResponse";
-import {
+import type {
   OrganizerDocument,
   OrganizerFormAssetDocument,
   OrganizerFormDocument,
@@ -49,15 +49,39 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 import {
   validateBeginOrganizerFormResponseCallablePayload,
+} from
+  "../shared/generated/validators/beginOrganizerFormResponseInput";
+import {
   validateCreateOrganizerFormAssetIntentCallablePayload,
+} from
+  "../shared/generated/validators/createOrganizerFormAssetIntentInput";
+import {
   validateCreateOrganizerFormShareLinkCallablePayload,
+} from
+  "../shared/generated/validators/createOrganizerFormShareLinkInput";
+import {
   validateGetOrganizerFormShareAssetsCallablePayload,
+} from
+  "../shared/generated/validators/getOrganizerFormShareAssetsInput";
+import {
   validateGetPublicOrganizerFormCallablePayload,
+} from "../shared/generated/validators/getPublicOrganizerFormInput";
+import {
   validateFinalizeOrganizerFormAssetCallablePayload,
+} from
+  "../shared/generated/validators/finalizeOrganizerFormAssetInput";
+import {
   validateSaveOrganizerFormResponseDraftCallablePayload,
+} from
+  "../shared/generated/validators/saveOrganizerFormResponseDraftInput";
+import {
   validateSubmitOrganizerFormResponseCallablePayload,
+} from
+  "../shared/generated/validators/submitOrganizerFormResponseInput";
+import {
   validateWithdrawOrganizerFormResponseCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/withdrawOrganizerFormResponseInput";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import {normalizePayloadStrings} from

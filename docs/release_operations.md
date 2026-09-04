@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.4.0
+version: 2.5.0
 updated: 2026-09-04
 owner: recursive_audit_loop
 status: active
@@ -794,6 +794,14 @@ retargeted entrypoint exports are included. Selection is at module granularity,
 so multiple functions implemented in one file move together. Test-only changes
 can produce a verified Functions no-op without invoking Firebase with an empty
 or broad selector. Every execution plan is recomputed before mutation.
+
+Whole-declaration `import type`, `export type`, and type-only import-equals
+edges are excluded because TypeScript erases them. Inline type specifiers stay
+conservative because compiler settings can preserve module evaluation.
+Generated Functions validators import individual schema modules; runtime
+imports of aggregate schema inventories are rejected by the contract boundary
+check. A schema change therefore selects its actual consuming modules. The
+shared validation engine remains a real dependency of all its consumers.
 
 Changes to runtime/dependency/build configuration, global initialization or its
 dependencies, runtime assets, and uncertain module analysis keep the full

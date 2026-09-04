@@ -2,14 +2,16 @@ import {onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {requireAuth} from "../shared/auth";
 import {normalizePayloadStrings} from "../shared/callablePayloadNormalization";
-import {PlaceDetailsCallablePayload} from
+import type {PlaceDetailsCallablePayload} from
   "../shared/generated/placeDetailsCallablePayload";
-import {PlacesAutocompleteCallablePayload} from
+import type {PlacesAutocompleteCallablePayload} from
   "../shared/generated/placesAutocompleteCallablePayload";
 import {
   validatePlaceDetailsCallablePayload,
+} from "../shared/generated/validators/placeDetailsInput";
+import {
   validatePlacesAutocompleteCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/placesAutocompleteInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";

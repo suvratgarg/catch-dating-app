@@ -6,7 +6,7 @@ import {
   projectedParticipationStatus,
 } from "./eventAttendeeProjection";
 import {eventAttendeeId} from "./eventAttendees";
-import {EventParticipationDocument} from
+import type {EventParticipationDocument} from
   "../shared/generated/firestoreAdminTypes";
 
 type FakeData = Record<string, unknown>;

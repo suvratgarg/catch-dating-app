@@ -1,19 +1,22 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {EventDocument} from "../shared/generated/firestoreAdminTypes";
-import {EventIdCallablePayload} from
+import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import type {EventIdCallablePayload} from
   "../shared/generated/eventIdCallablePayload";
-import {GetEventSuccessPresenceSummaryCallableResponse} from
+import type {GetEventSuccessPresenceSummaryCallableResponse} from
   "../shared/generated/getEventSuccessPresenceSummaryCallableResponse";
-import {HeartbeatEventSuccessPresenceCallablePayload} from
+import type {HeartbeatEventSuccessPresenceCallablePayload} from
   "../shared/generated/heartbeatEventSuccessPresenceCallablePayload";
-import {HeartbeatEventSuccessPresenceCallableResponse} from
+import type {HeartbeatEventSuccessPresenceCallableResponse} from
   "../shared/generated/heartbeatEventSuccessPresenceCallableResponse";
 import {
   validateEventIdCallablePayload,
+} from "../shared/generated/validators/eventIdInput";
+import {
   validateHeartbeatEventSuccessPresenceCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/heartbeatEventSuccessPresenceInput";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {

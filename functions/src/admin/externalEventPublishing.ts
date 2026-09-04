@@ -2,16 +2,19 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {AdminPublishExternalEventCallablePayload} from
+import type {AdminPublishExternalEventCallablePayload} from
   "../shared/generated/adminPublishExternalEventCallablePayload";
-import {ExternalEventDocument} from
+import type {ExternalEventDocument} from
   "../shared/generated/externalEventDocument";
-import {ExternalEventPublicationReceiptDocument} from
+import type {ExternalEventPublicationReceiptDocument} from
   "../shared/generated/externalEventPublicationReceiptDocument";
 import {
   validateAdminPublishExternalEventCallablePayload,
+} from
+  "../shared/generated/validators/adminPublishExternalEventInput";
+import {
   validateExternalEventDocument,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/externalEventDocument";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAdminRole} from "./adminAuth";

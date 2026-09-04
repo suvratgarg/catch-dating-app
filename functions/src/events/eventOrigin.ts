@@ -1,5 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 
 /** Prevents Catch booking flows from acting on companion-only events. */
 export function requireCatchBookingAuthority(event: EventDocument): void {

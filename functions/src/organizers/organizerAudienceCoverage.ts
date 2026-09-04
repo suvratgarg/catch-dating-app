@@ -1,4 +1,4 @@
-import {
+import type {
   OrganizerAudienceSummaryDocument,
 } from "../shared/generated/firestoreAdminTypes";
 

@@ -9,25 +9,29 @@ import {
   eventOperatorPermissions,
   requireEventOperatorPermission,
 } from "../shared/eventOperatorAuthority";
-import {
+import type {
   EventDocument,
   EventStaffGrantDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {EventOperatorAccessCallablePayload} from
+import type {EventOperatorAccessCallablePayload} from
   "../shared/generated/eventOperatorAccessCallablePayload";
-import {EventOperatorAccessCallableResponse} from
+import type {EventOperatorAccessCallableResponse} from
   "../shared/generated/eventOperatorAccessCallableResponse";
-import {EventStaffListCallableResponse} from
+import type {EventStaffListCallableResponse} from
   "../shared/generated/eventStaffListCallableResponse";
-import {GrantEventStaffCallablePayload} from
+import type {GrantEventStaffCallablePayload} from
   "../shared/generated/grantEventStaffCallablePayload";
-import {RevokeEventStaffCallablePayload} from
+import type {RevokeEventStaffCallablePayload} from
   "../shared/generated/revokeEventStaffCallablePayload";
 import {
   validateEventOperatorAccessCallablePayload,
+} from "../shared/generated/validators/eventOperatorAccessInput";
+import {
   validateGrantEventStaffCallablePayload,
+} from "../shared/generated/validators/grantEventStaffInput";
+import {
   validateRevokeEventStaffCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/revokeEventStaffInput";
 import {
   EventOrganizerDocument,
   eventOrganizerRef,

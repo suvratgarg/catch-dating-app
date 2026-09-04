@@ -2,21 +2,25 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {
+import type {
   EventDocument,
   EventAttendeeDocument,
   EventParticipationDocument,
   EventRuntimeParticipantDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
-import {StartEventSuccessFirstHelloMissionCallablePayload} from
+import type {StartEventSuccessFirstHelloMissionCallablePayload} from
   "../shared/generated/startEventSuccessFirstHelloMissionCallablePayload";
-import {CompleteEventSuccessFirstHelloMissionCallablePayload} from
+import type {CompleteEventSuccessFirstHelloMissionCallablePayload} from
   "../shared/generated/completeEventSuccessFirstHelloMissionCallablePayload";
 import {
   validateStartEventSuccessFirstHelloMissionCallablePayload,
+} from
+  "../shared/generated/validators/startEventSuccessFirstHelloMissionInput";
+import {
   validateCompleteEventSuccessFirstHelloMissionCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/completeEventSuccessFirstHelloMissionInput";
 import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {

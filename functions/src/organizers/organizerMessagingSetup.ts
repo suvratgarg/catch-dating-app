@@ -8,23 +8,30 @@ import {
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithSecrets} from
   "../shared/callableOptions";
-import {CompleteOrganizerWhatsappConnectionCallablePayload} from
+import type {CompleteOrganizerWhatsappConnectionCallablePayload} from
   "../shared/generated/completeOrganizerWhatsappConnectionCallablePayload";
-import {
+import type {
   OrganizerMessageTemplateDocument,
   OrganizerSenderConnectionDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {OrganizerMessagingSetupCallableResponse} from
+import type {OrganizerMessagingSetupCallableResponse} from
   "../shared/generated/organizerMessagingSetupCallableResponse";
-import {OrganizerSenderConnectionActionCallablePayload} from
+import type {OrganizerSenderConnectionActionCallablePayload} from
   "../shared/generated/organizerSenderConnectionActionCallablePayload";
-import {SendOrganizerWhatsappTestCallablePayload} from
+import type {SendOrganizerWhatsappTestCallablePayload} from
   "../shared/generated/sendOrganizerWhatsappTestCallablePayload";
 import {
   validateCompleteOrganizerWhatsappConnectionCallablePayload,
+} from
+  "../shared/generated/validators/completeOrganizerWhatsappConnectionInput";
+import {
   validateOrganizerSenderConnectionActionCallablePayload,
+} from
+  "../shared/generated/validators/organizerSenderConnectionActionInput";
+import {
   validateSendOrganizerWhatsappTestCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/sendOrganizerWhatsappTestInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

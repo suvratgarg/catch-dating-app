@@ -1,4 +1,4 @@
-import {OrganizerProviderSetupCallableResponse} from
+import type {OrganizerProviderSetupCallableResponse} from
   "../shared/generated/organizerProviderSetupCallableResponse";
 
 export type ProviderCatalogEntry =

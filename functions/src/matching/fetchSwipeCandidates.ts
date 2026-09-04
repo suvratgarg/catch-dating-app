@@ -1,19 +1,21 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {
+import type {
   EventDocument,
   EventParticipationDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {EventIdCallablePayload} from
+import type {EventIdCallablePayload} from
   "../shared/generated/eventIdCallablePayload";
-import {FetchSwipeCandidatesCallableResponse} from
+import type {FetchSwipeCandidatesCallableResponse} from
   "../shared/generated/fetchSwipeCandidatesCallableResponse";
 import {
   validateEventIdCallablePayload,
+} from "../shared/generated/validators/eventIdInput";
+import {
   validateFetchSwipeCandidatesCallableResponse,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/fetchSwipeCandidatesOutput";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {

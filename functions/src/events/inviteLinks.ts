@@ -6,38 +6,50 @@ import {
   HttpsError,
   onCall,
 } from "firebase-functions/v2/https";
-import {
+import type {
   EventDocument,
   EventAttendeeDocument,
   EventParticipationDocument,
   EventInviteLinkDocument,
   EventInviteLinkSecretDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {
+import type {
   CreateEventInviteLinkCallablePayload,
 } from "../shared/generated/createEventInviteLinkCallablePayload";
-import {
+import type {
   DisableEventInviteLinkCallablePayload,
 } from "../shared/generated/disableEventInviteLinkCallablePayload";
-import {
+import type {
   RecordEventInviteLinkOpenCallablePayload,
 } from "../shared/generated/recordEventInviteLinkOpenCallablePayload";
-import {GetEventInviteLinkTokenCallablePayload} from
+import type {GetEventInviteLinkTokenCallablePayload} from
   "../shared/generated/getEventInviteLinkTokenCallablePayload";
-import {RecordEventShareIntentCallablePayload} from
+import type {RecordEventShareIntentCallablePayload} from
   "../shared/generated/recordEventShareIntentCallablePayload";
-import {ResolveEventInviteLandingCallablePayload} from
+import type {ResolveEventInviteLandingCallablePayload} from
   "../shared/generated/resolveEventInviteLandingCallablePayload";
-import {ResolveEventInviteLandingCallableResponse} from
+import type {ResolveEventInviteLandingCallableResponse} from
   "../shared/generated/resolveEventInviteLandingCallableResponse";
 import {
   validateCreateEventInviteLinkCallablePayload,
+} from "../shared/generated/validators/createEventInviteLinkInput";
+import {
   validateDisableEventInviteLinkCallablePayload,
+} from "../shared/generated/validators/disableEventInviteLinkInput";
+import {
   validateGetEventInviteLinkTokenCallablePayload,
+} from "../shared/generated/validators/getEventInviteLinkTokenInput";
+import {
   validateRecordEventInviteLinkOpenCallablePayload,
+} from
+  "../shared/generated/validators/recordEventInviteLinkOpenInput";
+import {
   validateRecordEventShareIntentCallablePayload,
+} from "../shared/generated/validators/recordEventShareIntentInput";
+import {
   validateResolveEventInviteLandingCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/resolveEventInviteLandingInput";
 import {requireAuth} from "../shared/auth";
 import {
   eventOrganizerRef,

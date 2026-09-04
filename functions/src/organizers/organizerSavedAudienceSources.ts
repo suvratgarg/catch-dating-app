@@ -1,12 +1,12 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {
+import type {
   EventDocument, OrganizerApplicationDocument,
   OrganizerContactEventEdgeDocument, OrganizerContactOriginDocument,
   OrganizerContactTagVocabularyDocument, OrganizerFormDocument,
   OrganizerFormResponseDocument, OrganizerFormVersionDocument,
   OrganizerSavedAudienceDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ListOrganizerSavedAudiencesCallableResponse} from
+import type {ListOrganizerSavedAudiencesCallableResponse} from
   "../shared/generated/listOrganizerSavedAudiencesCallableResponse";
 import {savedAudienceSpendMatches, staticAudienceMembers} from
   "./organizerSavedAudienceMembership";

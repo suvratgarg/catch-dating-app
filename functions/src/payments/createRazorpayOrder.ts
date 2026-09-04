@@ -6,7 +6,7 @@ import {
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import Razorpay from "razorpay";
-import {
+import type {
   EventDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -22,11 +22,12 @@ import {hasBlockingRelationship} from "../safety/blocking";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {
+import type {
   CreateRazorpayOrderCallablePayload,
 } from "../shared/generated/createRazorpayOrderCallablePayload";
-import {validateCreateRazorpayOrderCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateCreateRazorpayOrderCallablePayload,
+} from "../shared/generated/validators/createRazorpayOrderInput";
 import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {assertNoUserEventScheduleConflict} from "../events/scheduleConflicts";

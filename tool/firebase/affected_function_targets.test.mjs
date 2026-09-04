@@ -156,3 +156,55 @@ test("missing commits and a non-ancestor base fail before target selection", (t)
     sourceRoot: f.root, baseSha: "f".repeat(40), sourceSha: source, authorizedTargets: targets,
   }));
 });
+
+test("whole type-only imports, exports and import-equals do not create runtime edges", (t) => {
+  const f = fixture(t);
+  f.write("functions/src/alpha.ts", 'import type {Shape} from "./types"; export const alpha = 1;');
+  f.write("functions/src/beta.ts", 'export type {Shape} from "./types"; export const beta = 1;');
+  f.write("functions/src/gamma.ts", 'import type Types = require("./types"); export const gamma = 1;');
+  f.write("functions/src/types.ts", 'export interface Shape {name: string}');
+  const base = f.commit();
+  f.write("functions/src/types.ts", 'export interface Shape {name: string; id: string}');
+  assert.deepEqual(f.select({baseSha: base}).targets, []);
+});
+
+test("mixed and inline type imports retain runtime evaluation dependencies", (t) => {
+  const f = fixture(t);
+  f.write("functions/src/alpha.ts", 'import {type Shape, value} from "./types"; export const alpha = value;');
+  f.write("functions/src/beta.ts", 'import {type Shape} from "./types"; export const beta = 1;');
+  f.write("functions/src/types.ts", 'export interface Shape {name: string}; export const value = 1;');
+  const base = f.commit();
+  f.write("functions/src/types.ts", 'export interface Shape {name: string}; export const value = 2;');
+  assert.deepEqual(f.select({baseSha: base}).targets, targets.slice(0, 3));
+});
+
+function modularSchemaFixture(t) {
+  const f = fixture(t);
+  for (const module of ["getOrganizerContactDetailInput", "createRazorpayOrderInput"]) {
+    for (const folder of ["schemas", "validators"]) {
+      const name = `functions/src/shared/generated/${folder}/${module}.ts`;
+      f.write(name, fs.readFileSync(new URL(`../../${name}`, import.meta.url), "utf8"));
+    }
+  }
+  const runtime = "functions/src/shared/generated/schemaValidationRuntime.ts";
+  f.write(runtime, fs.readFileSync(new URL(`../../${runtime}`, import.meta.url), "utf8"));
+  f.write("functions/src/alpha.ts", 'import {validateGetOrganizerContactDetailCallablePayload} from "./shared/generated/validators/getOrganizerContactDetailInput"; export const alpha = validateGetOrganizerContactDetailCallablePayload;');
+  f.write("functions/src/beta.ts", 'import {validateCreateRazorpayOrderCallablePayload} from "./shared/generated/validators/createRazorpayOrderInput"; export const beta = validateCreateRazorpayOrderCallablePayload;');
+  const base = f.commit();
+  return {...f, base, runtime};
+}
+
+test("real generated customer schema selects its consumers and excludes payment functions", (t) => {
+  const f = modularSchemaFixture(t);
+  const name = "functions/src/shared/generated/schemas/getOrganizerContactDetailInput.ts";
+  const text = fs.readFileSync(path.join(f.root, name), "utf8");
+  assert.match(text, /"contactId"/);
+  f.write(name, text.replace('"contactId": {', '"contactId": {"description": "Changed contact constraint",'));
+  assert.deepEqual(f.select({baseSha: f.base}).targets, targets.slice(0, 2));
+});
+
+test("shared validation runtime changes select customer and payment consumers", (t) => {
+  const f = modularSchemaFixture(t);
+  f.write(f.runtime, fs.readFileSync(path.join(f.root, f.runtime), "utf8") + '\n// Runtime revision\n');
+  assert.deepEqual(f.select({baseSha: f.base}).targets, targets.slice(0, 3));
+});

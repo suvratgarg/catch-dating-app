@@ -11,16 +11,17 @@ import * as admin from "firebase-admin";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithSecrets} from
   "../shared/callableOptions";
-import {
+import type {
   EventDocument,
   EventVenueSessionDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {CreateEventVenueSessionCallablePayload} from
+import type {CreateEventVenueSessionCallablePayload} from
   "../shared/generated/createEventVenueSessionCallablePayload";
-import {CreateEventVenueSessionCallableResponse} from
+import type {CreateEventVenueSessionCallableResponse} from
   "../shared/generated/createEventVenueSessionCallableResponse";
-import {validateCreateEventVenueSessionCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateCreateEventVenueSessionCallablePayload,
+} from "../shared/generated/validators/createEventVenueSessionInput";
 import {
   eventOrganizerRef,
   isEventOrganizerManager,

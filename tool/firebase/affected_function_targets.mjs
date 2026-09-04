@@ -102,9 +102,14 @@ function dependencies(ts, tree, source) {
   };
   const visit = (node) => {
     if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
-      if (node.moduleSpecifier) add(node.moduleSpecifier);
+      // Whole-declaration type imports/exports are always erased by TypeScript.
+      // Keep inline type specifiers conservative: some compiler configurations
+      // preserve their module evaluation even with no value bindings.
+      const typeOnly = ts.isImportDeclaration(node) ?
+        node.importClause?.isTypeOnly : node.isTypeOnly;
+      if (node.moduleSpecifier && !typeOnly) add(node.moduleSpecifier);
     } else if (ts.isImportEqualsDeclaration(node) &&
-        ts.isExternalModuleReference(node.moduleReference)) {
+        ts.isExternalModuleReference(node.moduleReference) && !node.isTypeOnly) {
       add(node.moduleReference.expression);
     } else if (ts.isCallExpression(node) &&
         (node.expression.kind === ts.SyntaxKind.ImportKeyword ||

@@ -6,22 +6,25 @@ import {
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {
+import type {
   EventDocument,
   EventParticipationDocument,
   EventWaitlistOfferDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {
+import type {
   CreateEventWaitlistOffersCallablePayload,
 } from "../shared/generated/createEventWaitlistOffersCallablePayload";
-import {
+import type {
   EventIdCallablePayload,
 } from "../shared/generated/eventIdCallablePayload";
 import {
   validateCreateEventWaitlistOffersCallablePayload,
+} from
+  "../shared/generated/validators/createEventWaitlistOffersInput";
+import {
   validateEventIdCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/eventIdInput";
 import {requireAuth} from "../shared/auth";
 import {
   eventOrganizerRef,

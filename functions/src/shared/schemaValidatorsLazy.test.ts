@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {createRequire} from "node:module";
 
 import Ajv, {AnySchema} from "ajv";
 
@@ -18,7 +19,20 @@ test(
     } as typeof originalCompile;
 
     try {
-      const validators = await import("./generated/schemaValidators.js");
+      const runtimeRequire = createRequire(__filename);
+      const before = new Set(Object.keys(runtimeRequire.cache));
+      const detail = await import(
+        "./generated/validators/getOrganizerContactDetailInput.js"
+      );
+      const loadedSchemas = Object.keys(runtimeRequire.cache).filter((file) =>
+        !before.has(file) && file.includes("/generated/schemas/")
+      );
+      assert.deepEqual(loadedSchemas, [runtimeRequire.resolve(
+        "./generated/schemas/getOrganizerContactDetailInput.js"
+      )], "loading one validator must load only its own schema");
+      assert.ok(!Object.keys(runtimeRequire.cache).some((file) =>
+        /\/generated\/schema(?:Registry|Validators)\.js$/.test(file)
+      ), "individual validators must not load aggregate registries");
 
       assert.equal(
         compileCount,
@@ -31,7 +45,7 @@ test(
         contactId: "contact-1",
       };
       assert.equal(
-        validators.validateGetOrganizerContactDetailCallablePayload(
+        detail.validateGetOrganizerContactDetailCallablePayload(
           validDetailPayload
         ),
         true
@@ -39,7 +53,7 @@ test(
       assert.equal(compileCount, 1);
 
       assert.equal(
-        validators.validateGetOrganizerContactDetailCallablePayload(
+        detail.validateGetOrganizerContactDetailCallablePayload(
           validDetailPayload
         ),
         true
@@ -47,17 +61,20 @@ test(
       assert.equal(compileCount, 1, "the same validator must be reused");
 
       assert.equal(
-        validators.validateGetOrganizerContactDetailCallablePayload({}),
+        detail.validateGetOrganizerContactDetailCallablePayload({}),
         false
       );
       assert.ok(
-        (validators.validateGetOrganizerContactDetailCallablePayload.errors
+        (detail.validateGetOrganizerContactDetailCallablePayload.errors
           ?.length ?? 0) > 0,
         "lazy validators must expose Ajv errors"
       );
 
+      const list = await import(
+        "./generated/validators/listOrganizerContactsInput.js"
+      );
       assert.equal(
-        validators.validateListOrganizerContactsCallablePayload({
+        list.validateListOrganizerContactsCallablePayload({
           organizerId: "organizer-1",
         }),
         true

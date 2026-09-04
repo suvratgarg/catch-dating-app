@@ -2,22 +2,26 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {
+import type {
   ClubDocument,
   EventDocument,
   EventFormatSnapshot,
 } from "../shared/generated/firestoreAdminTypes";
-import {AdminGetEventDetailsCallablePayload} from
+import type {AdminGetEventDetailsCallablePayload} from
   "../shared/generated/adminGetEventDetailsCallablePayload";
-import {AdminListEventDetailsCallablePayload} from
+import type {AdminListEventDetailsCallablePayload} from
   "../shared/generated/adminListEventDetailsCallablePayload";
-import {AdminUpdateEventDetailsCallablePayload} from
+import type {AdminUpdateEventDetailsCallablePayload} from
   "../shared/generated/adminUpdateEventDetailsCallablePayload";
 import {
   validateAdminGetEventDetailsCallablePayload,
+} from "../shared/generated/validators/adminGetEventDetailsInput";
+import {
   validateAdminListEventDetailsCallablePayload,
+} from "../shared/generated/validators/adminListEventDetailsInput";
+import {
   validateAdminUpdateEventDetailsCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/adminUpdateEventDetailsInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";

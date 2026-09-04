@@ -4000,6 +4000,19 @@ async function main() {
   }
 
   const staleFiles = [];
+  const expectedFiles = new Set(generatedFiles.map((file) => file.path));
+  for (const directory of ["schemas", "validators", "catalogs"]) {
+    const relativeDirectory = `functions/src/shared/generated/${directory}`;
+    const absoluteDirectory = path.join(repoRoot, relativeDirectory);
+    if (!fs.existsSync(absoluteDirectory)) continue;
+    for (const file of fs.readdirSync(absoluteDirectory, {recursive: true})) {
+      const relativeFile = `${relativeDirectory}/${file}`;
+      const absoluteFile = path.join(repoRoot, relativeFile);
+      if (!fs.statSync(absoluteFile).isFile() || expectedFiles.has(relativeFile)) continue;
+      if (checkOnly) staleFiles.push(relativeFile);
+      else fs.unlinkSync(absoluteFile);
+    }
+  }
   if (!checkOnly) {
     fs.rmSync(
       path.join(repoRoot, "lib/core/schema_contracts/generated/callables"),
@@ -4936,7 +4949,7 @@ async function renderTsFirestoreAdminTypes({schemaSpecs, profilePhotoPolicy}) {
   const externalImports = schemaSpecs
     .filter((spec) => !allAdminTypeNames.includes(spec.name))
     .filter((spec) => new RegExp(`\\b${spec.name}\\b`).test(sectionSource))
-    .map((spec) => `import {${spec.name}} from "${typeImportPath(spec)}";`)
+    .map((spec) => `import type {${spec.name}} from "${typeImportPath(spec)}";`)
     .join("\n");
   const importBlock = externalImports.length === 0 ?
     "" : `${externalImports}\n\n`;
@@ -5084,7 +5097,7 @@ function tsTypeImports(currentTypeName, source) {
     if (currentTypeName === spec.name) continue;
     const pattern = new RegExp(`\\b${spec.name}\\b`);
     if (!pattern.test(typeSource)) continue;
-    imports.push(`import {${spec.name}} from "${typeImportPath(spec)}";`);
+    imports.push(`import type {${spec.name}} from "${typeImportPath(spec)}";`);
   }
   return imports.length === 0 ? "" : `${imports.join("\n")}\n\n`;
 }
@@ -5112,6 +5125,12 @@ function typeImportPath(spec) {
   return `./${path.basename(spec.typeOutput, ".ts")}`;
 }
 
+function runtimeSchemaModuleName(spec) {
+  return path.basename(spec.typeOutput, ".ts")
+    .replace(/CallablePayload$/, "Input")
+    .replace(/CallableResponse$/, "Output");
+}
+
 function renderTsSchemaRegistry({
   schemaMap,
   profileCatalog,
@@ -5121,7 +5140,21 @@ function renderTsSchemaRegistry({
   photoCatalog,
   profilePhotoPolicy,
 }) {
-  const entries = schemaRegistryEntries(schemaMap);
+  const exports = [];
+  const moduleNames = new Set();
+  for (const spec of schemaSpecs) {
+    const key = runtimeSchemaModuleName(spec);
+    if (moduleNames.has(key)) throw new Error(`Duplicate runtime schema module: ${key}`);
+    moduleNames.add(key);
+    const name = schemaConstName(spec);
+    const module = runtimeSchemaModuleName(spec);
+    addTextOutput(
+      `functions/src/shared/generated/schemas/${module}.ts`,
+      `${tsGeneratedHeader()}export const ${name}: Record<string, unknown> = ` +
+        `${jsonForTs(schemaMap.get(spec.name))};\n`
+    );
+    exports.push(`export {${name}} from "./schemas/${module}";`);
+  }
   const catalogEntries = [
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
@@ -5133,34 +5166,53 @@ function renderTsSchemaRegistry({
     ["profilePhotoPolicy", profilePhotoPolicy],
     ["defaultProfilePromptIds", profileCatalog.defaultPromptIds],
   ];
-  return `${tsGeneratedHeader()}${entries.map(([name, schema]) =>
-    `export const ${name}: Record<string, unknown> = ${jsonForTs(schema)};\n`
-  ).join("\n")}\n${catalogEntries.map(([name, value]) =>
-    `export const ${name} = ${jsonForTs(value)};\n`
-  ).join("\n")}`;
+  for (const [name, value] of catalogEntries) {
+    addTextOutput(
+      `functions/src/shared/generated/catalogs/${name}.ts`,
+      `${tsGeneratedHeader()}export const ${name} = ${jsonForTs(value)};\n`
+    );
+    exports.push(`export {${name}} from "./catalogs/${name}";`);
+  }
+  return `${tsGeneratedHeader()}// Aggregate inventory for tests and tools only.\n` +
+    `// Runtime consumers import individual schemas or catalogs.\n\n` +
+    `${exports.join("\n")}\n`;
 }
 
 function renderTsValidators() {
-  const typeImports = schemaSpecs.map((spec) =>
-    `import {${spec.name}} from "${typeImportPath(spec)}";`
-  ).join("\n");
-  const schemaImports = schemaSpecs.map((spec) =>
-    `  ${schemaConstName(spec)},`
-  ).join("\n");
-  const validators = schemaSpecs.map((spec) => `export const ${validatorName(spec)} =
-  lazyValidator<${spec.name}>(${schemaConstName(spec)});`).join("\n");
+  const exports = [];
+  for (const spec of schemaSpecs) {
+    const module = runtimeSchemaModuleName(spec);
+    const schema = schemaConstName(spec);
+    const validator = validatorName(spec);
+    addTextOutput(
+      `functions/src/shared/generated/validators/${module}.ts`,
+      `${tsGeneratedHeader()}import type {${spec.name}} from ".${typeImportPath(spec)}";\n` +
+        `import {${schema}} from "../schemas/${module}";\n` +
+        `import {lazyValidator} from "../schemaValidationRuntime";\n\n` +
+        `export const ${validator} =\n` +
+        `  lazyValidator<${spec.name}>(${schema});\n`
+    );
+    exports.push(`export {${validator}} from "./validators/${module}";`);
+  }
+  addTextOutput(
+    "functions/src/shared/generated/schemaValidationRuntime.ts",
+    renderTsValidationRuntime()
+  );
+  return `${tsGeneratedHeader()}// Aggregate inventory for tests and tools only.\n` +
+    `// Runtime consumers import individual validators.\n\n` +
+    `${exports.join("\n")}\n\n` +
+    `export {schemaErrorMessages} from "./schemaValidationRuntime";\n`;
+}
 
-  return `${tsGeneratedHeader()}import Ajv, {ValidateFunction} from "ajv";
+function renderTsValidationRuntime() {
+  return `${tsGeneratedHeader()}import Ajv from "ajv";
+import type {ValidateFunction} from "ajv";
 import addFormats from "ajv-formats";
-${typeImports}
-import {
-${schemaImports}
-} from "./schemaRegistry";
 
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
-function lazyValidator<T>(
+export function lazyValidator<T>(
   schema: Record<string, unknown>
 ): ValidateFunction<T> {
   let compiled: ValidateFunction<T> | null = null;
@@ -5173,8 +5225,6 @@ function lazyValidator<T>(
   });
   return validate;
 }
-
-${validators}
 
 export function schemaErrorMessages(
   validator: ValidateFunction<unknown>

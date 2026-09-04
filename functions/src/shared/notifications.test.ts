@@ -6,7 +6,7 @@ import {
   buildFcmMessage,
   notificationProfileAvatar,
 } from "./notifications";
-import {PublicProfileDocument} from "./generated/firestoreAdminTypes";
+import type {PublicProfileDocument} from "./generated/firestoreAdminTypes";
 
 test("arrival wire preserves role, recipient, identity and ids", () => {
   const message = buildFcmMessage({

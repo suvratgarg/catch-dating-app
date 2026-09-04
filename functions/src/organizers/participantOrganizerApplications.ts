@@ -2,19 +2,19 @@ import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
-import {GetParticipantOrganizerApplicationFormCallablePayload} from
+import type {GetParticipantOrganizerApplicationFormCallablePayload} from
   "../shared/generated/getParticipantOrganizerApplicationFormCallablePayload";
-import {GetParticipantOrganizerApplicationFormCallableResponse} from
+import type {GetParticipantOrganizerApplicationFormCallableResponse} from
   "../shared/generated/getParticipantOrganizerApplicationFormCallableResponse";
-import {RevokeParticipantOrganizerDataGrantCallablePayload} from
+import type {RevokeParticipantOrganizerDataGrantCallablePayload} from
   "../shared/generated/revokeParticipantOrganizerDataGrantCallablePayload";
-import {RevokeParticipantOrganizerDataGrantCallableResponse} from
+import type {RevokeParticipantOrganizerDataGrantCallableResponse} from
   "../shared/generated/revokeParticipantOrganizerDataGrantCallableResponse";
-import {SubmitParticipantOrganizerApplicationCallablePayload} from
+import type {SubmitParticipantOrganizerApplicationCallablePayload} from
   "../shared/generated/submitParticipantOrganizerApplicationCallablePayload";
-import {SubmitParticipantOrganizerApplicationCallableResponse} from
+import type {SubmitParticipantOrganizerApplicationCallableResponse} from
   "../shared/generated/submitParticipantOrganizerApplicationCallableResponse";
-import {
+import type {
   OrganizerApplicationDocument,
   OrganizerApplicationAssetDocument,
   OrganizerApplicationFormDocument,
@@ -26,9 +26,16 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 import {
   validateGetParticipantOrganizerApplicationFormCallablePayload,
+} from
+  "../shared/generated/validators/getParticipantOrganizerApplicationFormInput";
+import {
   validateRevokeParticipantOrganizerDataGrantCallablePayload,
+} from
+  "../shared/generated/validators/revokeParticipantOrganizerDataGrantInput";
+import {
   validateSubmitParticipantOrganizerApplicationCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/submitParticipantOrganizerApplicationInput";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";

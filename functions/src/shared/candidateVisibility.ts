@@ -1,4 +1,4 @@
-import {PublicProfileDocument} from "./generated/firestoreAdminTypes";
+import type {PublicProfileDocument} from "./generated/firestoreAdminTypes";
 import {requireDoc} from "./validation";
 
 export type CandidatePublicProfile = PublicProfileDocument & {

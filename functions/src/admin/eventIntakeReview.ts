@@ -3,12 +3,14 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {AdminRecordEventIntakeReviewDecisionCallablePayload} from
+import type {AdminRecordEventIntakeReviewDecisionCallablePayload} from
   "../shared/generated/adminRecordEventIntakeReviewDecisionCallablePayload";
-import {EventIntakeReviewDecisionDocument} from
+import type {EventIntakeReviewDecisionDocument} from
   "../shared/generated/eventIntakeReviewDecisionDocument";
-import {validateAdminRecordEventIntakeReviewDecisionCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateAdminRecordEventIntakeReviewDecisionCallablePayload,
+} from
+  "../shared/generated/validators/adminRecordEventIntakeReviewDecisionInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAdminRole} from "./adminAuth";

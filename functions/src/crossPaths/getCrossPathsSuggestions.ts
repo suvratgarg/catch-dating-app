@@ -18,7 +18,7 @@ import {appCheckCallableOptionsWithSecrets} from
 import {
   fetchUidsBlockedWithViewer,
 } from "../shared/candidateVisibility";
-import {
+import type {
   CrossPathsShowcaseEligibilityDocument,
   EventCrossPathsConsentDocument,
   EventDocument,
@@ -26,14 +26,17 @@ import {
   PublicProfileDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {GetCrossPathsSuggestionsCallablePayload} from
+import type {GetCrossPathsSuggestionsCallablePayload} from
   "../shared/generated/getCrossPathsSuggestionsCallablePayload";
-import {GetCrossPathsSuggestionsCallableResponse} from
+import type {GetCrossPathsSuggestionsCallableResponse} from
   "../shared/generated/getCrossPathsSuggestionsCallableResponse";
 import {
   validateGetCrossPathsSuggestionsCallablePayload,
+} from "../shared/generated/validators/getCrossPathsSuggestionsInput";
+import {
   validateGetCrossPathsSuggestionsCallableResponse,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/getCrossPathsSuggestionsOutput";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {isReciprocallyEligible, ageAt} from
   "../shared/relationshipEligibility";

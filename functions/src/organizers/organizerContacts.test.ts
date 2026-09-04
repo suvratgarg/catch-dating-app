@@ -16,7 +16,7 @@ import {
   summarizeContactRevenue,
   summarizeContactRevenueFacts,
 } from "./organizerContacts";
-import {
+import type {
   OrganizerAudienceSummaryDocument,
   OrganizerContactTagVocabularyDocument,
   OrganizerManualSendTaskDocument,

@@ -1,4 +1,4 @@
-import {UserProfileDocument} from "./generated/firestoreAdminTypes";
+import type {UserProfileDocument} from "./generated/firestoreAdminTypes";
 
 /**
  * Returns whether two complete profiles satisfy each other's gender and age

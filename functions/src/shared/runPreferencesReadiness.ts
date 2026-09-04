@@ -1,5 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {
+import type {
   EventDocument,
   UserProfileDocument,
 } from "./generated/firestoreAdminTypes";

@@ -7,11 +7,11 @@ import {
   appCheckCallableOptionsWithLimits,
   appCheckCallableOptionsWithSecrets,
 } from "../shared/callableOptions";
-import {GetOrganizerWhatsappThreadCallablePayload} from
+import type {GetOrganizerWhatsappThreadCallablePayload} from
   "../shared/generated/getOrganizerWhatsappThreadCallablePayload";
-import {GetOrganizerWhatsappThreadCallableResponse} from
+import type {GetOrganizerWhatsappThreadCallableResponse} from
   "../shared/generated/getOrganizerWhatsappThreadCallableResponse";
-import {
+import type {
   OrganizerCampaignDocument,
   OrganizerCampaignRecipientDocument,
   OrganizerContactChannelStateDocument,
@@ -23,19 +23,26 @@ import {
   OrganizerWhatsappReplyOperationDocument,
   OrganizerWhatsappThreadDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ListOrganizerWhatsappThreadsCallablePayload} from
+import type {ListOrganizerWhatsappThreadsCallablePayload} from
   "../shared/generated/listOrganizerWhatsappThreadsCallablePayload";
-import {ListOrganizerWhatsappThreadsCallableResponse} from
+import type {ListOrganizerWhatsappThreadsCallableResponse} from
   "../shared/generated/listOrganizerWhatsappThreadsCallableResponse";
-import {SendOrganizerWhatsappReplyCallablePayload} from
+import type {SendOrganizerWhatsappReplyCallablePayload} from
   "../shared/generated/sendOrganizerWhatsappReplyCallablePayload";
-import {SendOrganizerWhatsappReplyCallableResponse} from
+import type {SendOrganizerWhatsappReplyCallableResponse} from
   "../shared/generated/sendOrganizerWhatsappReplyCallableResponse";
 import {
   validateGetOrganizerWhatsappThreadCallablePayload,
+} from
+  "../shared/generated/validators/getOrganizerWhatsappThreadInput";
+import {
   validateListOrganizerWhatsappThreadsCallablePayload,
+} from
+  "../shared/generated/validators/listOrganizerWhatsappThreadsInput";
+import {
   validateSendOrganizerWhatsappReplyCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/sendOrganizerWhatsappReplyInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

@@ -5,21 +5,24 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {requireAdminRole} from "../admin/adminAuth";
 import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
-import {
+import type {
   OrganizerClaimRequestDocument,
   OrganizerDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {RequestOrganizerClaimCallablePayload} from
+import type {RequestOrganizerClaimCallablePayload} from
   "../shared/generated/requestOrganizerClaimCallablePayload";
-import {RequestOrganizerClaimCallableResponse} from
+import type {RequestOrganizerClaimCallableResponse} from
   "../shared/generated/requestOrganizerClaimCallableResponse";
-import {AdminDecideOrganizerClaimCallablePayload} from
+import type {AdminDecideOrganizerClaimCallablePayload} from
   "../shared/generated/adminDecideOrganizerClaimCallablePayload";
 import {
   validateAdminDecideOrganizerClaimCallablePayload,
+} from
+  "../shared/generated/validators/adminDecideOrganizerClaimInput";
+import {
   validateRequestOrganizerClaimCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/requestOrganizerClaimInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {

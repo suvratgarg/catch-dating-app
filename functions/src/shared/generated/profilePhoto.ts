@@ -2,7 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-import {PhotoPromptAnswer} from "./photoPromptAnswer";
+import type {PhotoPromptAnswer} from "./photoPromptAnswer";
 
 /**
  * Future canonical profile-photo object that groups display URLs, Firebase Storage object paths, prompt metadata, moderation state, order, and lifecycle timestamps.

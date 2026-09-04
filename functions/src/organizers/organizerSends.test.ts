@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
-import {ListOrganizerCampaignsCallableResponse} from
+import type {ListOrganizerCampaignsCallableResponse} from
   "../shared/generated/listOrganizerCampaignsCallableResponse";
 import {
   decodeOrganizerSendCursor,

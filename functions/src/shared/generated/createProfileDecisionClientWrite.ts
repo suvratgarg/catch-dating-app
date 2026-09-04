@@ -2,7 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-import {SwipeDocument} from "./swipeDocument";
+import type {SwipeDocument} from "./swipeDocument";
 
 /**
  * Client-owned Firestore create operation for the current profileDecisions/{userId}/outgoing/{targetId} storage path.

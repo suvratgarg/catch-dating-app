@@ -6,8 +6,9 @@ import {writeAdminAuditLog} from "./adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {AdminGetOverviewCallableResponse} from
   "../shared/generated/adminGetOverviewCallableResponse";
-import {validateAdminGetOverviewCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateAdminGetOverviewCallablePayload,
+} from "../shared/generated/validators/adminGetOverviewInput";
 import {validateCallableWithAjv} from "../shared/validation";
 
 const authScanPageSize = 1000;

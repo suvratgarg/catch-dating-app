@@ -2,31 +2,31 @@ import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
-import {GetOrganizerApplicationDetailCallablePayload} from
+import type {GetOrganizerApplicationDetailCallablePayload} from
   "../shared/generated/getOrganizerApplicationDetailCallablePayload";
-import {GetOrganizerApplicationDetailCallableResponse} from
+import type {GetOrganizerApplicationDetailCallableResponse} from
   "../shared/generated/getOrganizerApplicationDetailCallableResponse";
-import {ImportOrganizerApplicationsCallablePayload} from
+import type {ImportOrganizerApplicationsCallablePayload} from
   "../shared/generated/importOrganizerApplicationsCallablePayload";
-import {ImportOrganizerApplicationsCallableResponse} from
+import type {ImportOrganizerApplicationsCallableResponse} from
   "../shared/generated/importOrganizerApplicationsCallableResponse";
-import {ListOrganizerApplicationsCallablePayload} from
+import type {ListOrganizerApplicationsCallablePayload} from
   "../shared/generated/listOrganizerApplicationsCallablePayload";
-import {ListOrganizerApplicationsCallableResponse} from
+import type {ListOrganizerApplicationsCallableResponse} from
   "../shared/generated/listOrganizerApplicationsCallableResponse";
-import {PreviewOrganizerApplicationImportCallablePayload} from
+import type {PreviewOrganizerApplicationImportCallablePayload} from
   "../shared/generated/previewOrganizerApplicationImportCallablePayload";
-import {PreviewOrganizerApplicationImportCallableResponse} from
+import type {PreviewOrganizerApplicationImportCallableResponse} from
   "../shared/generated/previewOrganizerApplicationImportCallableResponse";
-import {PublishOrganizerApplicationFormCallablePayload} from
+import type {PublishOrganizerApplicationFormCallablePayload} from
   "../shared/generated/publishOrganizerApplicationFormCallablePayload";
-import {PublishOrganizerApplicationFormCallableResponse} from
+import type {PublishOrganizerApplicationFormCallableResponse} from
   "../shared/generated/publishOrganizerApplicationFormCallableResponse";
-import {ReviewOrganizerApplicationCallablePayload} from
+import type {ReviewOrganizerApplicationCallablePayload} from
   "../shared/generated/reviewOrganizerApplicationCallablePayload";
-import {ReviewOrganizerApplicationCallableResponse} from
+import type {ReviewOrganizerApplicationCallableResponse} from
   "../shared/generated/reviewOrganizerApplicationCallableResponse";
-import {
+import type {
   OrganizerApplicationDocument,
   OrganizerApplicationFormDocument,
   OrganizerApplicationFormVersionDocument,
@@ -36,13 +36,31 @@ import {
 } from "../shared/generated/firestoreAdminTypes";
 import {
   validateGetOrganizerApplicationDetailCallablePayload,
+} from
+  "../shared/generated/validators/getOrganizerApplicationDetailInput";
+import {
   validateImportOrganizerApplicationsCallablePayload,
+} from
+  "../shared/generated/validators/importOrganizerApplicationsInput";
+import {
   validateListOrganizerApplicationsCallablePayload,
+} from
+  "../shared/generated/validators/listOrganizerApplicationsInput";
+import {
   validatePreviewOrganizerApplicationImportCallablePayload,
+} from
+  "../shared/generated/validators/previewOrganizerApplicationImportInput";
+import {
   validatePublishOrganizerApplicationFormCallablePayload,
+} from
+  "../shared/generated/validators/publishOrganizerApplicationFormInput";
+import {
   validateReviewOrganizerApplicationCallablePayload,
-} from "../shared/generated/schemaValidators";
-import {personFieldCatalog} from "../shared/generated/schemaRegistry";
+} from
+  "../shared/generated/validators/reviewOrganizerApplicationInput";
+import {
+  personFieldCatalog,
+} from "../shared/generated/catalogs/personFieldCatalog";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits,
   appCheckCallableOptionsWithSecrets} from

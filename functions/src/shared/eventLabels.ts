@@ -1,4 +1,4 @@
-import {
+import type {
   EventDocument,
   EventFormatSnapshot,
 } from "./generated/firestoreAdminTypes";

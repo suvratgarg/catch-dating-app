@@ -1,20 +1,22 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {
+import type {
   BlockDocument,
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
-import {EventIdCallablePayload} from
+import type {EventIdCallablePayload} from
   "../shared/generated/eventIdCallablePayload";
-import {OverrideEventSuccessGroupsCallablePayload} from
+import type {OverrideEventSuccessGroupsCallablePayload} from
   "../shared/generated/overrideEventSuccessGroupsCallablePayload";
 import {
   validateEventIdCallablePayload,
+} from "../shared/generated/validators/eventIdInput";
+import {
   validateOverrideEventSuccessGroupsCallablePayload,
 } from
-  "../shared/generated/schemaValidators";
+  "../shared/generated/validators/overrideEventSuccessGroupsInput";
 import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";

@@ -9,11 +9,11 @@ import {
 import {normalizePayloadStrings} from
   "../shared/callablePayloadNormalization";
 import {requireAuth} from "../shared/auth";
-import {ConvertOrganizerFormResponseCallablePayload} from
+import type {ConvertOrganizerFormResponseCallablePayload} from
   "../shared/generated/convertOrganizerFormResponseCallablePayload";
-import {ConvertOrganizerFormResponseCallableResponse} from
+import type {ConvertOrganizerFormResponseCallableResponse} from
   "../shared/generated/convertOrganizerFormResponseCallableResponse";
-import {
+import type {
   OrganizerApplicationDocument,
   OrganizerApplicationResponseDocument,
   OrganizerContactDocument,
@@ -22,14 +22,18 @@ import {
   OrganizerFormResponseDocument,
   OrganizerFormVersionDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {PreviewOrganizerFormConversionCallablePayload} from
+import type {PreviewOrganizerFormConversionCallablePayload} from
   "../shared/generated/previewOrganizerFormConversionCallablePayload";
-import {PreviewOrganizerFormConversionCallableResponse} from
+import type {PreviewOrganizerFormConversionCallableResponse} from
   "../shared/generated/previewOrganizerFormConversionCallableResponse";
 import {
   validateConvertOrganizerFormResponseCallablePayload,
+} from
+  "../shared/generated/validators/convertOrganizerFormResponseInput";
+import {
   validatePreviewOrganizerFormConversionCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/previewOrganizerFormConversionInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

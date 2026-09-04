@@ -7,7 +7,7 @@ import {
   appCheckCallableOptions,
   appCheckCallableOptionsWithSecrets,
 } from "../shared/callableOptions";
-import {
+import type {
   EventAttendeeDocument,
   EventDocument,
   EventLivePositionDocument,
@@ -18,33 +18,42 @@ import {
   OrganizerEventSuccessLayoutDocument,
   OnboardingDraftDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ApproveEventRuntimeClaimCallablePayload} from
+import type {ApproveEventRuntimeClaimCallablePayload} from
   "../shared/generated/approveEventRuntimeClaimCallablePayload";
-import {ApproveEventRuntimeClaimCallableResponse} from
+import type {ApproveEventRuntimeClaimCallableResponse} from
   "../shared/generated/approveEventRuntimeClaimCallableResponse";
-import {ClaimEventRuntimeAccessCallablePayload} from
+import type {ClaimEventRuntimeAccessCallablePayload} from
   "../shared/generated/claimEventRuntimeAccessCallablePayload";
-import {ClaimEventRuntimeAccessCallableResponse} from
+import type {ClaimEventRuntimeAccessCallableResponse} from
   "../shared/generated/claimEventRuntimeAccessCallableResponse";
-import {CheckInEventRuntimeCallablePayload} from
+import type {CheckInEventRuntimeCallablePayload} from
   "../shared/generated/checkInEventRuntimeCallablePayload";
-import {CheckInEventRuntimeCallableResponse} from
+import type {CheckInEventRuntimeCallableResponse} from
   "../shared/generated/checkInEventRuntimeCallableResponse";
-import {GetEventRuntimeBootstrapCallablePayload} from
+import type {GetEventRuntimeBootstrapCallablePayload} from
   "../shared/generated/getEventRuntimeBootstrapCallablePayload";
-import {GetEventRuntimeBootstrapCallableResponse} from
+import type {GetEventRuntimeBootstrapCallableResponse} from
   "../shared/generated/getEventRuntimeBootstrapCallableResponse";
-import {SubmitEventRuntimeProfileCallablePayload} from
+import type {SubmitEventRuntimeProfileCallablePayload} from
   "../shared/generated/submitEventRuntimeProfileCallablePayload";
-import {SubmitEventRuntimeProfileCallableResponse} from
+import type {SubmitEventRuntimeProfileCallableResponse} from
   "../shared/generated/submitEventRuntimeProfileCallableResponse";
 import {
   validateApproveEventRuntimeClaimCallablePayload,
+} from "../shared/generated/validators/approveEventRuntimeClaimInput";
+import {
   validateClaimEventRuntimeAccessCallablePayload,
+} from "../shared/generated/validators/claimEventRuntimeAccessInput";
+import {
   validateCheckInEventRuntimeCallablePayload,
+} from "../shared/generated/validators/checkInEventRuntimeInput";
+import {
   validateGetEventRuntimeBootstrapCallablePayload,
+} from "../shared/generated/validators/getEventRuntimeBootstrapInput";
+import {
   validateSubmitEventRuntimeProfileCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/submitEventRuntimeProfileInput";
 import {
   eventOrganizerRef,
   requireEventOrganizer,

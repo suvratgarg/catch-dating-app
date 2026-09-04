@@ -7,7 +7,7 @@ import {normalizePayloadStrings} from
   "../shared/callablePayloadNormalization";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
-import {
+import type {
   EventDocument,
   EventParticipationDocument,
   OrganizerApplicationDocument,
@@ -17,17 +17,22 @@ import {
   OrganizerFormAutomationRunDocument,
   ProviderSyncRunDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ListOrganizerAttentionItemsCallablePayload} from
+import type {ListOrganizerAttentionItemsCallablePayload} from
   "../shared/generated/listOrganizerAttentionItemsCallablePayload";
-import {ListOrganizerAttentionItemsCallableResponse} from
+import type {ListOrganizerAttentionItemsCallableResponse} from
   "../shared/generated/listOrganizerAttentionItemsCallableResponse";
-import {hostAttentionPolicyCatalog} from
-  "../shared/generated/schemaRegistry";
 import {
-  schemaErrorMessages,
+  hostAttentionPolicyCatalog,
+} from "../shared/generated/catalogs/hostAttentionPolicyCatalog";
+import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
+import {
   validateListOrganizerAttentionItemsCallablePayload,
+} from
+  "../shared/generated/validators/listOrganizerAttentionItemsInput";
+import {
   validateListOrganizerAttentionItemsCallableResponse,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/listOrganizerAttentionItemsOutput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

@@ -2,7 +2,7 @@ import {createHash, randomUUID} from "node:crypto";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {
+import type {
   OrganizerDocument,
   OrganizerFollowDocument,
   OrganizerPostDeliveryOperationDocument,
@@ -20,7 +20,7 @@ import {
   sendFcmNotification,
 } from "../shared/notifications";
 import {hasBlockingRelationship} from "../safety/blocking";
-import {CreateOrganizerPostCallableResponse} from
+import type {CreateOrganizerPostCallableResponse} from
   "../shared/generated/createOrganizerPostCallableResponse";
 
 const pageSize = 100;

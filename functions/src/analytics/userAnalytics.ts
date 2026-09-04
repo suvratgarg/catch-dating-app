@@ -7,16 +7,18 @@ import {requireAdminRole} from "../admin/adminAuth";
 import {writeAdminAuditLog} from "../admin/adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {
+import type {
   UserAnalyticsQueryCallablePayload,
 } from "../shared/generated/userAnalyticsQueryCallablePayload";
-import {
+import type {
   UserAnalyticsCallableResponse,
 } from "../shared/generated/userAnalyticsCallableResponse";
 import {
   validateUserAnalyticsCallableResponse,
+} from "../shared/generated/validators/userAnalyticsOutput";
+import {
   validateUserAnalyticsQueryCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/userAnalyticsQueryInput";
 import {
   defaultUserAnalyticsBigQuerySource,
   UserAnalyticsBigQuerySource,

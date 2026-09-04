@@ -4,14 +4,18 @@ import {CallableRequest, HttpsError, onCall} from
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {ADMIN_ACTION_CATALOG, AdminActionId} from
   "../shared/generated/adminActionCatalog";
-import {AdminListActionExecutionsCallablePayload} from
+import type {AdminListActionExecutionsCallablePayload} from
   "../shared/generated/adminListActionExecutionsCallablePayload";
-import {AdminRecordActionExecutionCallablePayload} from
+import type {AdminRecordActionExecutionCallablePayload} from
   "../shared/generated/adminRecordActionExecutionCallablePayload";
 import {
   validateAdminListActionExecutionsCallablePayload,
+} from
+  "../shared/generated/validators/adminListActionExecutionsInput";
+import {
   validateAdminRecordActionExecutionCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/adminRecordActionExecutionInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {

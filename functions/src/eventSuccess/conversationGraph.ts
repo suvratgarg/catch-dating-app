@@ -1,24 +1,27 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {
+import type {
   EventDocument,
   EventSuccessAssignmentDocument,
   EventSuccessConversationGraphDocument,
   EventSuccessPlanDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {EventIdCallablePayload} from
+import type {EventIdCallablePayload} from
   "../shared/generated/eventIdCallablePayload";
-import {GetEventSuccessConversationGraphCallableResponse} from
+import type {GetEventSuccessConversationGraphCallableResponse} from
   "../shared/generated/getEventSuccessConversationGraphCallableResponse";
-import {SubmitEventSuccessConversationGraphCallablePayload} from
+import type {SubmitEventSuccessConversationGraphCallablePayload} from
   "../shared/generated/submitEventSuccessConversationGraphCallablePayload";
-import {SubmitEventSuccessConversationGraphCallableResponse} from
+import type {SubmitEventSuccessConversationGraphCallableResponse} from
   "../shared/generated/submitEventSuccessConversationGraphCallableResponse";
 import {
   validateEventIdCallablePayload,
+} from "../shared/generated/validators/eventIdInput";
+import {
   validateSubmitEventSuccessConversationGraphCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/submitEventSuccessConversationGraphInput";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {fetchUidsBlockedWithViewer} from "../shared/candidateVisibility";

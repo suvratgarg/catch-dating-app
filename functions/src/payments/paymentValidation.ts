@@ -1,5 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {
+import type {
   PaymentStatus,
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";

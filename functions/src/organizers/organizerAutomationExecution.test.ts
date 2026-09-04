@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {CallableRequest} from "firebase-functions/v2/https";
-import {
+import type {
   OrganizerApplicationDocument,
   OrganizerFormResponseDocument,
   OrganizerContactEventEdgeDocument,

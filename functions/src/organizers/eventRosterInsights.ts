@@ -4,11 +4,11 @@ import {CallableRequest, HttpsError, onCall} from
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
-import {GetEventRosterInsightsCallablePayload} from
+import type {GetEventRosterInsightsCallablePayload} from
   "../shared/generated/getEventRosterInsightsCallablePayload";
-import {GetEventRosterInsightsCallableResponse} from
+import type {GetEventRosterInsightsCallableResponse} from
   "../shared/generated/getEventRosterInsightsCallableResponse";
-import {
+import type {
   EventAttendeeDocument,
   EventDocument,
   OrganizerContactDocument,
@@ -16,8 +16,9 @@ import {
   OrganizerContactTraitDocument,
   PaymentDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {validateGetEventRosterInsightsCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validateGetEventRosterInsightsCallablePayload,
+} from "../shared/generated/validators/getEventRosterInsightsInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

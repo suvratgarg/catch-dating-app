@@ -5,16 +5,17 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireEventOperatorPermission} from
   "../shared/eventOperatorAuthority";
-import {
+import type {
   EventDocument,
   EventLivePositionDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {PublishEventLivePositionCallablePayload} from
+import type {PublishEventLivePositionCallablePayload} from
   "../shared/generated/publishEventLivePositionCallablePayload";
-import {PublishEventLivePositionCallableResponse} from
+import type {PublishEventLivePositionCallableResponse} from
   "../shared/generated/publishEventLivePositionCallableResponse";
-import {validatePublishEventLivePositionCallablePayload} from
-  "../shared/generated/schemaValidators";
+import {
+  validatePublishEventLivePositionCallablePayload,
+} from "../shared/generated/validators/publishEventLivePositionInput";
 import {
   eventOrganizerRef,
   requireEventOrganizer,

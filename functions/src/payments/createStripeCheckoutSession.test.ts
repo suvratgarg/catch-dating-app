@@ -4,7 +4,7 @@ import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import {
   createStripeCheckoutSessionHandler,
 } from "./createStripeCheckoutSession";
-import {
+import type {
   EventDocument,
   HostPaymentAccountDocument,
   OrganizerDocument,

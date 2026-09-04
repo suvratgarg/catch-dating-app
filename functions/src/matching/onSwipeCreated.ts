@@ -2,7 +2,7 @@ import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {createHash} from "node:crypto";
-import {
+import type {
   MatchDocument,
   SwipeDocument,
 } from "../shared/generated/firestoreAdminTypes";

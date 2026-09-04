@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
-import {
+import type {
   EventAttendeeDocument,
   EventParticipationDocument,
   PublicProfileDocument,

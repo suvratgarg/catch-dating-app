@@ -8,21 +8,23 @@ import {requireAdminRole} from "../admin/adminAuth";
 import {writeAdminAuditLog} from "../admin/adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {
+import type {
   ClubDocument,
   EventAttendeeDocument,
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {
+import type {
   HostAnalyticsQueryCallablePayload,
 } from "../shared/generated/hostAnalyticsQueryCallablePayload";
-import {
+import type {
   HostAnalyticsCallableResponse,
 } from "../shared/generated/hostAnalyticsCallableResponse";
 import {
   validateHostAnalyticsCallableResponse,
+} from "../shared/generated/validators/hostAnalyticsOutput";
+import {
   validateHostAnalyticsQueryCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from "../shared/generated/validators/hostAnalyticsQueryInput";
 import {isClubHost} from "../shared/clubHosts";
 import {
   defaultHostAnalyticsBigQuerySource,

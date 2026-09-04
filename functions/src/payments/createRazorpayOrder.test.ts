@@ -3,7 +3,7 @@ import test from "node:test";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import Razorpay from "razorpay";
 import {createRazorpayOrderHandler} from "./createRazorpayOrder";
-import {
+import type {
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {catchNativeEventOrigin} from "../shared/testUtils";

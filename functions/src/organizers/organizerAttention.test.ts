@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
-import {
+import type {
   EventDocument,
   EventParticipationDocument,
   HostPaymentAccountDocument,

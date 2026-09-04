@@ -524,7 +524,10 @@ bound, current-main-only, and rejects older attempts at the same SHA.
 
 `tool/firebase/affected_function_targets.mjs` narrows a verified package for
 promotion from exact Git base/source objects and transitive TypeScript module
-dependencies. It retains all authorized functions for shared initialization,
+dependencies, excluding whole-declaration type-only imports and exports.
+Functions runtime imports use individual generated schemas, validators and
+catalogs; the schema/type boundary gate rejects aggregate runtime imports.
+It retains all authorized functions for shared initialization,
 runtime/dependency changes, snapshots, and uncertain analysis; a proven empty
 selection records a Functions no-op. It never rewrites package bytes or adds
 unauthorized targets. Its focused tests run with the delivery-package check.

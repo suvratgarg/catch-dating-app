@@ -6,7 +6,7 @@ import {
   participantOrganizerGrantId,
   prepareReviewedNativeAnswers,
 } from "./participantOrganizerApplications";
-import {
+import type {
   OrganizerApplicationFormVersionDocument,
   OrganizerApplicationResponseDocument,
   ParticipantOrganizerDataGrantDocument,

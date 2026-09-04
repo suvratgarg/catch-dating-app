@@ -12,37 +12,53 @@ import {
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
-import {
+import type {
   OrganizerContactChannelStateDocument,
   OrganizerContactDocument,
   OrganizerManualSendTaskDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {ListOrganizerManualSendTasksCallablePayload} from
+import type {ListOrganizerManualSendTasksCallablePayload} from
   "../shared/generated/listOrganizerManualSendTasksCallablePayload";
-import {ListOrganizerManualSendTasksCallableResponse} from
+import type {ListOrganizerManualSendTasksCallableResponse} from
   "../shared/generated/listOrganizerManualSendTasksCallableResponse";
-import {MarkOrganizerManualSendTaskCallablePayload} from
+import type {MarkOrganizerManualSendTaskCallablePayload} from
   "../shared/generated/markOrganizerManualSendTaskCallablePayload";
-import {OpenOrganizerManualSendTaskCallablePayload} from
+import type {OpenOrganizerManualSendTaskCallablePayload} from
   "../shared/generated/openOrganizerManualSendTaskCallablePayload";
-import {OrganizerManualSendTaskCallableResponse} from
+import type {OrganizerManualSendTaskCallableResponse} from
   "../shared/generated/organizerManualSendTaskCallableResponse";
-import {PrepareOrganizerManualSendTaskCallablePayload} from
+import type {PrepareOrganizerManualSendTaskCallablePayload} from
   "../shared/generated/prepareOrganizerManualSendTaskCallablePayload";
-import {ReplanOrganizerManualSendTasksCallablePayload} from
+import type {ReplanOrganizerManualSendTasksCallablePayload} from
   "../shared/generated/replanOrganizerManualSendTasksCallablePayload";
-import {ReplanOrganizerManualSendTasksCallableResponse} from
+import type {ReplanOrganizerManualSendTasksCallableResponse} from
   "../shared/generated/replanOrganizerManualSendTasksCallableResponse";
-import {ValidateOrganizerManualSendTaskLaunchCallablePayload} from
+import type {ValidateOrganizerManualSendTaskLaunchCallablePayload} from
   "../shared/generated/validateOrganizerManualSendTaskLaunchCallablePayload";
 import {
   validateListOrganizerManualSendTasksCallablePayload,
+} from
+  "../shared/generated/validators/listOrganizerManualSendTasksInput";
+import {
   validateMarkOrganizerManualSendTaskCallablePayload,
+} from
+  "../shared/generated/validators/markOrganizerManualSendTaskInput";
+import {
   validateOpenOrganizerManualSendTaskCallablePayload,
+} from
+  "../shared/generated/validators/openOrganizerManualSendTaskInput";
+import {
   validatePrepareOrganizerManualSendTaskCallablePayload,
+} from
+  "../shared/generated/validators/prepareOrganizerManualSendTaskInput";
+import {
   validateReplanOrganizerManualSendTasksCallablePayload,
+} from
+  "../shared/generated/validators/replanOrganizerManualSendTasksInput";
+import {
   validateValidateOrganizerManualSendTaskLaunchCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/validateOrganizerManualSendTaskLaunchInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";

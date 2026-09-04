@@ -1,4 +1,4 @@
-import {
+import type {
   HostPaymentAccountDocument,
 } from "../shared/generated/firestoreAdminTypes";
 

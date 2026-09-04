@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.42.0
-updated: 2026-09-03
+version: 1.43.0
+updated: 2026-09-04
 owner: recursive_audit_loop
 status: active
 ---
@@ -546,6 +546,31 @@ The contract layer owns:
   server-only, and read-only projection (see "Field Ownership Tags" below);
 - migration metadata for path/storage renames;
 - valid and invalid fixtures.
+
+### Functions Runtime Schema Modules
+
+The schema generator emits independent runtime modules under
+`functions/src/shared/generated/schemas/`, `validators/`, and `catalogs/`.
+Callable module names use `Input` and `Output` suffixes; exported schema,
+validator and TypeScript type names retain their contract-owned identities.
+Each validator imports its own schema and the small shared
+`schemaValidationRuntime.ts` engine. The engine owns Ajv options, formats,
+lazy per-schema compilation, caching, and error messages.
+
+Production Functions import these modules directly. `schemaRegistry.ts` and
+`schemaValidators.ts` are aggregate inventories for tests and tools, and must
+not be imported or re-exported by runtime modules. Admin SDK projections in
+`firestoreAdminTypes.ts` are compile-time types and consumers use explicit
+`import type` or `export type`. The schema/type boundary check enforces these
+rules; fixture and lazy-loading tests verify unchanged data validation.
+The generator removes orphaned runtime module outputs during regeneration and
+reports them as stale in `--check` mode.
+
+The deployment dependency graph excludes whole-declaration type-only edges,
+which TypeScript erases. Shared runtime/schema changes still select every real
+consumer. The Functions codebase and package remain the deployment artifact
+boundary; this module split enables narrower explicit targets, not separate
+Firebase packages.
 
 ### Optional, Nullable, And Patch Fields
 

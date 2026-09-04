@@ -1,6 +1,6 @@
 import {strict as assert} from "node:assert";
 import {describe, it} from "node:test";
-import {OrganizerApplicationFormVersionDocument} from
+import type {OrganizerApplicationFormVersionDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {
   applicationOutreach,

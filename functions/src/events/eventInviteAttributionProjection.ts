@@ -1,7 +1,7 @@
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
-import {
+import type {
   EventInviteAttributionDocument,
   EventInviteLinkDocument,
   OrganizerContactEventEdgeDocument,

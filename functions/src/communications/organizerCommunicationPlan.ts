@@ -1,4 +1,4 @@
-import {ResolveOrganizerCommunicationPlanCallableResponse} from
+import type {ResolveOrganizerCommunicationPlanCallableResponse} from
   "../shared/generated/resolveOrganizerCommunicationPlanCallableResponse";
 
 export const organizerCommunicationPlanCapabilityVersion = 1;

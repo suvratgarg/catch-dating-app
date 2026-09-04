@@ -1,8 +1,8 @@
 import crypto from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
-import {ExternalEventDocument} from
+import type {ExternalEventDocument} from
   "../shared/generated/externalEventDocument";
-import {ExternalEventPublicationReceiptDocument} from
+import type {ExternalEventPublicationReceiptDocument} from
   "../shared/generated/externalEventPublicationReceiptDocument";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {

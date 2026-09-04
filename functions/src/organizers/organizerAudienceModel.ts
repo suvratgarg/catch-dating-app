@@ -1,5 +1,5 @@
 import {createHash, createHmac} from "crypto";
-import {
+import type {
   EventAttendeeDocument,
   OrganizerContactDocument,
   OrganizerContactEventEdgeDocument,
