@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import {execFileSync} from "node:child_process";
+import {parseArgs} from "node:util";
 import {fileURLToPath} from "node:url";
 
 import Ajv2020 from "ajv/dist/2020.js";
@@ -45,19 +47,17 @@ if (isCli) {
 }
 
 async function runCli() {
-  const args = process.argv.slice(2);
-  const checkOnly = args.includes("--check");
-  const summaryOnly = args.includes("--summary");
-  const unknown = args.filter((arg) => arg !== "--check" && arg !== "--summary");
-  if (unknown.length > 0 || (checkOnly && summaryOnly)) {
-    if (unknown.length > 0) console.error(`Unknown argument: ${unknown[0]}`);
-    if (checkOnly && summaryOnly) {
-      console.error("Use only one of --check or --summary.");
-    }
+  let options;
+  try {
+    options = parseHostDocumentationArgs(process.argv.slice(2));
+  } catch (error) {
+    console.error(error.message);
     printHelp();
     process.exitCode = 64;
     return;
   }
+  const checkOnly = options.check;
+  const summaryOnly = options.summary;
 
   const contract = readJson(sourcePath);
   const schema = readJson(schemaPath);
@@ -69,6 +69,38 @@ async function runCli() {
           `host_feature_responsibilities.json${error.instancePath || "/"}: ${error.message}`,
       ),
     );
+  }
+
+  // Impact must remain readable when a referenced file was deleted or renamed.
+  // It deliberately runs before source-existence and symbol validation.
+  if (options.affected) {
+    const feature = findFeature(contract.features, options.affected, false);
+    const comparison = readDocumentationComparison(options.base);
+    const previousFeature = comparison.previousContract?.features?.find(
+      (candidate) => candidate.id === feature.id,
+    );
+    const report = hostDocumentationImpact({
+      feature, previousFeature, changedPaths: comparison.changedPaths,
+    });
+    report.base = comparison.base;
+    console.log(options.json ? JSON.stringify(report, null, 2) :
+      renderDocumentationImpact(report));
+    return;
+  }
+
+  if (options.explain) {
+    const feature = findFeature(contract.features, options.explain);
+    const errors = [];
+    const guide = resolveHostFeatureGuide({
+      feature, errors,
+      pathExists: (repoPath) => fs.existsSync(fromRepo(repoPath)),
+      readText: (repoPath) => fs.readFileSync(fromRepo(repoPath), "utf8"),
+    });
+    if (errors.length) throw new HostFeatureResponsibilityError(errors);
+    const explanation = hostFeatureExplanation({...feature, guide}, options.question);
+    console.log(options.json ? JSON.stringify(explanation, null, 2) :
+      renderHostFeatureGuide({...feature, guide: explanation.guide}).join("\n"));
+    return;
   }
 
   const resolved = validateAndResolveHostFeatureResponsibilities({
@@ -272,9 +304,11 @@ export function validateAndResolveHostFeatureResponsibilities({
     for (const testFile of feature.testFiles) {
       if (!pathExists(testFile)) errors.push(`${label}: missing test file ${testFile}.`);
     }
+    const guide = resolveHostFeatureGuide({feature, pathExists, readText, errors});
 
     resolved.push({
       ...feature,
+      guide,
       label: shellRoute?.label ?? titleCase(feature.id),
       primaryRoute,
       routes: resolvedRoutes,
@@ -335,12 +369,13 @@ export function renderHostFeatureReadme({contract, feature}) {
     "",
     feature.purpose,
     "",
+    ...renderHostFeatureGuide(feature),
     "## Ownership",
     "",
     `- Primary route: \`${feature.primaryRoute.id}\` (\`${feature.primaryRoute.path}\`)`,
     `- Target root: \`${feature.targetRoot}\``,
     `- Migration status: ${migrationStatusLabel(feature.migrationStatus)}`,
-    `- Responsibility contract updated: ${contract.updated}`,
+    `- Responsibility contract updated: ${feature.guide?.updated ?? contract.updated}`,
     "",
     "Current implementation roots:",
     "",
@@ -399,6 +434,7 @@ export function renderHostFeatureReadme({contract, feature}) {
     "",
     "The generator cross-checks the Host shell order, typed route contract, " +
       "feature-contract action owners, Dart symbols, data-contract paths, and focused tests.",
+    ...renderGuideMaintenance(feature),
   ];
   return `${lines.join("\n")}\n`;
 }
@@ -407,6 +443,244 @@ export function findStaleHostFeatureOutputs({outputs, readCurrent}) {
   return outputs
     .filter((output) => readCurrent(output.path) !== output.content)
     .map((output) => output.path);
+}
+
+export function parseHostDocumentationArgs(args) {
+  const {values} = parseArgs({args, options: {
+    check: {type: "boolean"}, summary: {type: "boolean"},
+    explain: {type: "string"}, affected: {type: "string"},
+    base: {type: "string"}, question: {type: "string"}, json: {type: "boolean"},
+  }});
+  for (const [name, value] of Object.entries(values)) {
+    if (typeof value === "string" && value.trim() === "") {
+      throw new Error(`--${name} must not be empty.`);
+    }
+  }
+  if ([values.check, values.summary, values.explain, values.affected]
+    .filter(Boolean).length > 1) throw new Error("Choose one documentation mode.");
+  if (Boolean(values.affected) !== Boolean(values.base)) {
+    throw new Error("--affected and --base must be supplied together.");
+  }
+  if (values.question && !values.explain) throw new Error("--question requires --explain.");
+  if (values.json && !values.explain && !values.affected) {
+    throw new Error("--json requires --explain or --affected.");
+  }
+  return values;
+}
+
+function findFeature(features, id, requireGuide = true) {
+  const feature = features.find((candidate) => candidate.id === id);
+  if (!feature) throw new Error(`Unknown Host feature: ${id}`);
+  if (requireGuide && !feature.guide) throw new Error(`No product guide is declared for ${id}.`);
+  return feature;
+}
+
+function validGuidePath(value) {
+  return typeof value === "string" &&
+    /^(lib|functions|contracts|test|tool|design)\//u.test(value) &&
+    !value.split("/").some((part) => ["", ".", ".."].includes(part)) &&
+    !/[\\\u0000-\u001f]/u.test(value);
+}
+
+export function readJsonPointer(value, pointer) {
+  if (!pointer.startsWith("/") || /~(?![01])/u.test(pointer)) {
+    throw new Error(`Invalid JSON pointer: ${pointer}`);
+  }
+  for (const encoded of pointer.slice(1).split("/")) {
+    const key = encoded.replaceAll("~1", "/").replaceAll("~0", "~");
+    if (value == null || !Object.hasOwn(value, key)) {
+      throw new Error(`Missing JSON pointer: ${pointer}`);
+    }
+    value = value[key];
+  }
+  const scalar = (item) => item === null ||
+    ["string", "number", "boolean"].includes(typeof item);
+  if (!scalar(value) && !(Array.isArray(value) && value.every(scalar))) {
+    throw new Error(`Reference fact must be a scalar or scalar array: ${pointer}`);
+  }
+  return value;
+}
+
+export function resolveHostFeatureGuide({feature, pathExists, readText, errors}) {
+  if (!feature.guide) return undefined;
+  const guide = feature.guide;
+  const ids = new Set();
+  const questions = new Set();
+  const checkPath = (repoPath) => {
+    if (!validGuidePath(repoPath)) {
+      errors.push(`${feature.id}: invalid guide path ${repoPath}.`);
+      return false;
+    }
+    if (!pathExists(repoPath)) {
+      errors.push(`${feature.id}: missing guide source ${repoPath}.`);
+      return false;
+    }
+    return true;
+  };
+  for (const section of guide.sections) {
+    if (ids.has(section.id)) errors.push(`${feature.id}: duplicate guide section ${section.id}.`);
+    ids.add(section.id);
+    for (const question of [section.question, ...section.aliases]) {
+      const normalized = question.trim().toLowerCase();
+      if (!normalized || questions.has(normalized)) {
+        errors.push(`${feature.id}: empty or duplicate guide question ${question}.`);
+      }
+      questions.add(normalized);
+    }
+    for (const source of section.sourcePaths) checkPath(source);
+    for (const example of section.examples) {
+      if (!checkPath(example.path)) continue;
+      // This checks a named declaration, not its outcome or the prose's truth.
+      const declaration = new RegExp(
+        `\\b(?:test|testWidgets|it)\\s*\\(\\s*(["'])${escapeRegExp(example.testName)}\\1\\s*,`, "u",
+      );
+      if (!declaration.test(readText(example.path))) {
+        errors.push(`${feature.id}.${section.id}: missing named example ${example.testName} in ${example.path}.`);
+      }
+    }
+  }
+  const facts = guide.facts.map((fact) => {
+    if (ids.has(fact.id)) errors.push(`${feature.id}: duplicate guide fact ${fact.id}.`);
+    ids.add(fact.id);
+    if (!checkPath(fact.path)) return fact;
+    try {
+      return {...fact, value: readJsonPointer(JSON.parse(readText(fact.path)), fact.pointer)};
+    } catch (error) {
+      errors.push(`${feature.id}.${fact.id}: ${error.message}`);
+      return fact;
+    }
+  });
+  return {...guide, facts};
+}
+
+export function hostFeatureExplanation(feature, question) {
+  const guide = feature.guide;
+  const query = question?.trim().toLowerCase();
+  const sections = query ? guide.sections.filter((section) =>
+    [section.id, section.question, ...section.aliases].some((text) =>
+      text.toLowerCase().includes(query))) : guide.sections;
+  if (sections.length === 0) throw new Error(`No documented question matches: ${question}`);
+  return {
+    feature: feature.id,
+    document: `${feature.targetRoot}/README.md`,
+    evidence: "Authored explanation with checked references; examples are not executed by this command.",
+    guide: {...guide, sections, facts: query ? [] : guide.facts},
+  };
+}
+
+function guideLink(feature, repoPath, label = repoPath) {
+  return `[${label}](${path.posix.relative(feature.targetRoot, repoPath)})`;
+}
+
+export function renderHostFeatureGuide(feature) {
+  if (!feature.guide) return [];
+  const {guide} = feature;
+  const lines = ["## Product guide", "",
+    "Authored explanations follow; the reference table is derived from schemas. " +
+      "Source links and named example declarations are checked, but this generator " +
+      "does not run the examples or establish deployment status.", ""];
+  for (const section of guide.sections) {
+    lines.push(`<a id="${section.id}"></a>`, "", `### ${section.question}`, "",
+      section.answer, "");
+  }
+  if (guide.facts.length) {
+    lines.push("### Schema reference", "", "| Declared constraint | Value | Source |",
+      "|---|---|---|");
+    for (const fact of guide.facts) {
+      lines.push(`| ${escapeTable(fact.label)} | \`${escapeTable(JSON.stringify(fact.value))}\` | ` +
+        `${guideLink(feature, fact.path, path.posix.basename(fact.path))} \`${fact.pointer}\` |`);
+    }
+    lines.push("", "These are schema declarations, not independent proof of runtime limits.", "");
+  }
+  lines.push("<details>", "<summary>Sources and named examples for each answer</summary>", "");
+  for (const section of guide.sections) {
+    lines.push(`**${section.question}**`, "",
+      ...section.sourcePaths.map((source) => `- Source: ${guideLink(feature, source)}`),
+      ...section.examples.map((example) =>
+        `- Example: ${guideLink(feature, example.path)} — ${example.testName}`), "");
+  }
+  lines.push("</details>", "");
+  return lines;
+}
+
+function renderGuideMaintenance(feature) {
+  if (!feature.guide) return [];
+  return ["", "Product answers live in this feature's `guide` in the same responsibility contract. " +
+    "Edit that source, never the generated README. Update the guide date when its " +
+    "explanation changes. To retrieve the guide or review change impact:", "", "```sh",
+  `node tool/design/build_host_feature_responsibilities.mjs --explain ${feature.id}`,
+  `node tool/design/build_host_feature_responsibilities.mjs --explain ${feature.id} --question membership --json`,
+  `node tool/design/build_host_feature_responsibilities.mjs --affected ${feature.id} --base origin/main --json`,
+  "node tool/run.mjs check design:host-feature-responsibilities audit:host-crm-boundaries",
+  "```", "",
+  "Impact is an explicit, read-only PR review command. It compares the base with " +
+    "the tracked working tree plus untracked non-ignored files, using section dependencies " +
+    "from both versions. It reports relevant changes even if a source or dependency " +
+    "was removed. It does not traverse every import or certify unchanged prose. " +
+    "The registered generator check blocks stale generated output and broken guide " +
+    "references; prose impact remains advisory. Review each affected answer against " +
+    "the change and update it, or explain why it remains accurate in the PR. " +
+    "Run the linked behavior suites when their implementation changes. " +
+    "No review stamps, generated history, or dependency snapshots are committed."];
+}
+
+export function hostDocumentationImpact({feature, previousFeature, changedPaths}) {
+  const current = feature.guide?.sections ?? [];
+  const previous = previousFeature?.guide?.sections ?? [];
+  const ids = [...new Set([...current, ...previous].map((section) => section.id))];
+  const sections = [];
+  for (const id of ids) {
+    const next = current.find((section) => section.id === id);
+    const old = previous.find((section) => section.id === id);
+    const dependencies = [...new Set([next, old].filter(Boolean).flatMap((section) =>
+      [...section.sourcePaths, ...section.examples.map((example) => example.path)]))];
+    const matches = [...new Set(changedPaths.filter((changed) => dependencies.some((dependency) =>
+      changed === dependency || changed.startsWith(`${dependency}/`))))].sort();
+    const explanationChanged = JSON.stringify(next) !== JSON.stringify(old);
+    if (matches.length || explanationChanged) sections.push({
+      id, question: (next ?? old).question,
+      anchor: `${feature.targetRoot}/README.md#${id}`,
+      status: next ? "review-needed" : "removed",
+      changedSources: matches, explanationChanged,
+    });
+  }
+  const facts = [...feature.guide?.facts ?? [], ...previousFeature?.guide?.facts ?? []];
+  const referenceSources = [...new Set(facts.map((fact) => fact.path))];
+  return {
+    feature: feature.id, document: `${feature.targetRoot}/README.md`, advisory: true,
+    coverage: "Explicit section sources and examples from both versions; no transitive import or semantic proof.",
+    sections,
+    changedReferenceSources: [...new Set(changedPaths.filter((item) => referenceSources.includes(item)))].sort(),
+    referenceDefinitionChanged: JSON.stringify(feature.guide?.facts) !==
+      JSON.stringify(previousFeature?.guide?.facts),
+  };
+}
+
+export function readDocumentationComparison(base, root = fromRepo(".")) {
+  const git = (args) => execFileSync("git", args, {
+    cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"],
+    maxBuffer: 16 * 1024 * 1024,
+  });
+  const sha = git(["rev-parse", "--verify", "--end-of-options", `${base}^{commit}`]).trim();
+  const contractPath = "design/features/host_feature_responsibilities.json";
+  const previousContract = git(["ls-tree", "--name-only", sha, "--", contractPath]).trim() ?
+    JSON.parse(git(["show", `${sha}:${contractPath}`])) : null;
+  const changedPaths = [...new Set([
+    ...git(["diff", "--name-only", "--no-renames", "-z", sha, "--"]).split("\0"),
+    ...git(["ls-files", "--others", "--exclude-standard", "-z"]).split("\0"),
+  ].filter(Boolean))].sort();
+  return {base: sha, previousContract, changedPaths};
+}
+
+function renderDocumentationImpact(report) {
+  return [`${report.feature}: advisory documentation impact against ${report.base}`,
+    report.coverage,
+    ...report.sections.map((section) =>
+      `- ${section.anchor}: ${section.status}; ${section.changedSources.join(", ") || "explanation changed"}`),
+    ...report.changedReferenceSources.map((source) => `- Regenerate schema reference: ${source}`),
+    ...(report.referenceDefinitionChanged ? ["- Schema reference selection changed."] : []),
+    ...(report.sections.length === 0 ? ["No affected explanations found in declared dependencies."] : []),
+  ].join("\n");
 }
 
 function loadFeatureContracts() {
@@ -462,8 +736,14 @@ function printHelp() {
   node tool/design/build_host_feature_responsibilities.mjs
   node tool/design/build_host_feature_responsibilities.mjs --check
   node tool/design/build_host_feature_responsibilities.mjs --summary
+  node tool/design/build_host_feature_responsibilities.mjs --explain audience [--question <text>] [--json]
+  node tool/design/build_host_feature_responsibilities.mjs --affected audience --base <git-ref> [--json]
 
 Validates the five ordered Host destination responsibilities against the shell,
 route contract, feature contracts, Dart symbols, data contracts, and tests, then
-generates one local README.md in each destination's target feature root.`);
+generates one local README.md in each destination's target feature root.
+Explain prints only the product guide and schema facts. Affected compares the
+base commit with tracked working changes and untracked, non-ignored files.
+Impact is advisory and covers explicit section dependencies at both versions;
+it does not certify prose, execute linked examples, or verify deployment.`);
 }
