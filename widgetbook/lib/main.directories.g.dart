@@ -777,7 +777,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventDetailCta',
+            name: 'EventBookingDock',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
