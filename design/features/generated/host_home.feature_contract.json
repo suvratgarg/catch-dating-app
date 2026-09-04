@@ -2,15 +2,15 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
-  "generatedFor": "2026-09-01",
-  "sourceDigest": "sha256:e4ec1f33c4c5cdba3e870095a192a21fda1f4606a271efb2be6f6636c3a18834",
-  "resolvedDigest": "sha256:511b05ab7b2cbe88a4b4de7f20baced8b2bc395c3b21aa7028592bcf8446bddf",
+  "generatedFor": "2026-09-04",
+  "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
+  "resolvedDigest": "sha256:2f32d77fc4a7430e28daf736b4f6a98ab1e7e6964027f2949c5f1fd8e1282ccc",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Contract covering the independently routed Host Today command centre and Host Events inventory. Today owns operational spotlight, attention policy, and Dress Rehearsal entry through its bounded feed controller; Events owns its route state, paginated schedule and history controller, create and repeat entry, and lifecycle-aware manage navigation."
+    "description": "Contract covering the independently routed Host Today command centre and Host Events inventory. Today owns operational spotlight, attention policy, and Dress Rehearsal entry through its bounded feed controller; Events owns sticky Upcoming/Past navigation, day-grouped upcoming and month-grouped past records, independently paginated lanes, create and repeat entry, and lifecycle-aware manage navigation."
   },
   "coverage": {
     "surfaces": 1,
@@ -18,9 +18,9 @@
     "scenarios": 22,
     "actionCases": 22,
     "actions": 14,
-    "captures": 16,
+    "captures": 17,
     "previews": 1,
-    "testFiles": 2,
+    "testFiles": 4,
     "evidenceExceptions": 22
   },
   "surfaces": [
@@ -110,6 +110,7 @@
           "catch.event_card",
           "catch.field",
           "catch.menu",
+          "catch.record_row",
           "catch.section",
           "catch.skeleton",
           "catch.surface",
@@ -132,9 +133,9 @@
         "scenarios": 22,
         "actionCases": 22,
         "actions": 14,
-        "captures": 16,
+        "captures": 17,
         "previews": 1,
-        "testFiles": 2,
+        "testFiles": 4,
         "evidenceExceptions": 22
       },
       "dimensions": {
@@ -368,7 +369,7 @@
               ]
             }
           ],
-          "description": "Retries the first completed-event history page while preserving the already loaded schedule.",
+          "description": "Retries the failed completed-event history cursor, or the initial page if no history has loaded, while preserving both lanes and concurrent schedule progress.",
           "implementationStatus": "implemented"
         },
         {
@@ -1199,13 +1200,16 @@
           "evidence": {
             "captureIds": [
               "host_home_dashboard",
-              "host_home_events_list"
+              "host_home_events_list",
+              "host_home_events_past"
             ],
             "previewIds": [
               "hostHomeRouteStates"
             ],
             "tests": [
-              "test/hosts/host_operations_screen_test.dart"
+              "test/hosts/host_operations_screen_test.dart",
+              "test/hosts/host_events_screen_state_test.dart",
+              "test/hosts/host_events_layout_test.dart"
             ]
           },
           "actionCases": [
@@ -1893,7 +1897,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },
@@ -1962,6 +1967,17 @@
               "file": "lib/core/widgets/catch_menu.dart",
               "constructors": [
                 "CatchMenu"
+              ]
+            }
+          },
+          {
+            "id": "catch.record_row",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchRecordRow",
+              "file": "lib/core/widgets/catch_record_row.dart",
+              "constructors": [
+                "CatchRecordRow"
               ]
             }
           },

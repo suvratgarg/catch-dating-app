@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -29,6 +30,8 @@ class CatchCountPill extends StatefulWidget {
 
   final IconData? icon;
   final String label;
+
+  /// Readable secondary control text; caller casing and wrapping are retained.
   final String? value;
   final int count;
   final VoidCallback onPressed;
@@ -52,21 +55,18 @@ class _CatchCountPillState extends State<CatchCountPill> {
       builder: (context, constraints) {
         final labelText = Text(
           label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.monoLabel(context, color: t.ink),
+          style: CatchTextStyles.control(context, color: t.ink),
         );
         final valueText = value == null || value.isEmpty
             ? null
             : Text(
-                value.toUpperCase(),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.monoCapsLabel(context, color: t.ink),
+                value,
+                style: CatchTextStyles.control(context, color: t.ink),
               );
         return ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: CatchIconButton.defaultSize,
+          constraints: BoxConstraints(
+            minHeight: CatchPlatformTokens.minimumInteractiveExtent,
+            minWidth: CatchPlatformTokens.minimumInteractiveExtent,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -128,6 +128,7 @@ class _CatchCountPillState extends State<CatchCountPill> {
       enabled: true,
       label: widget.semanticLabel,
       excludeSemantics: true,
+      onTap: widget.onPressed,
       child: countedPill,
     );
   }

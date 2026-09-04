@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:9144e9203377240a18827da4e9cefe96a2ec7f49cc3c202764df46cefff181cc",
-  "resolvedDigest": "sha256:db4e69c51cd62321b415d4d99aa5c1327cff2baf7cc26e9742497f64922c5b80",
+  "resolvedDigest": "sha256:745d73d767054534e972d2123c93a253560ef52d5d8e62bd43e710253aeb0f15",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -870,7 +870,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },

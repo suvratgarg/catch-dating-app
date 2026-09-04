@@ -10234,17 +10234,62 @@ abstract class AppLocalizations {
   /// **'TODAY'**
   String get hostsHostEventsListTextToday;
 
-  /// Heading for live and upcoming events in the unified Host Events timeline.
+  /// Peer view containing live and upcoming events.
   ///
   /// In en, this message translates to:
-  /// **'Schedule'**
-  String get hostEventsTimelineSchedule;
+  /// **'Upcoming'**
+  String get hostEventsUpcomingTab;
 
-  /// Heading for completed events in the unified Host Events timeline.
+  /// Peer view containing completed events.
   ///
   /// In en, this message translates to:
-  /// **'History'**
-  String get hostEventsTimelineHistory;
+  /// **'Past'**
+  String get hostEventsPastTab;
+
+  /// Empty completed event inventory title.
+  ///
+  /// In en, this message translates to:
+  /// **'No past events yet'**
+  String get hostEventsPastEmptyTitle;
+
+  /// Empty completed event inventory explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed events will appear here with their attendance history.'**
+  String get hostEventsPastEmptyBody;
+
+  /// Day section heading for events starting today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today · {date}'**
+  String hostEventsTodayDate({required String date});
+
+  /// Live event timing and meeting location.
+  ///
+  /// In en, this message translates to:
+  /// **'Live · {schedule}'**
+  String hostEventsLiveSchedule({required String schedule});
+
+  /// Actual attendance count for a completed event.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} attended'**
+  String hostEventsAttended({required int count});
+
+  /// Registrations relative to event capacity, not attendance.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {capacity} registered'**
+  String hostEventsRegisteredCapacity({
+    required int count,
+    required int capacity,
+  });
+
+  /// Registration count when an event has no positive capacity.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} registered'**
+  String hostEventsRegistered({required int count});
 
   /// Loads the next cursor page of live or upcoming Host events.
   ///

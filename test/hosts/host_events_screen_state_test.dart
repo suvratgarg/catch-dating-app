@@ -6,12 +6,14 @@ import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dar
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import '../clubs/clubs_test_helpers.dart' show buildEvent;
 
 final _l10n = AppLocalizationsEn();
 
 void main() {
+  setUpAll(() => initializeDateFormatting('en'));
   test('Host event entry resolves organizer capabilities once', () {
     final draft = EventDraft(
       id: 'draft-1',
@@ -106,10 +108,10 @@ void main() {
     );
 
     expect(state.status, HostEventsWorkspaceStatus.populated);
-    expect(state.activeSections.map((section) => section.label), [
-      'June',
-      'July',
-      'June 2027',
+    expect(state.activeSections.map((section) => section.label(_l10n)), [
+      'Today · Mon, 15 Jun',
+      'Thu, 2 Jul',
+      'Tue, 1 Jun 2027',
     ]);
     expect(
       state.activeSections
@@ -119,9 +121,14 @@ void main() {
     );
     final todayRow = state.activeSections.first.rows.single;
     expect(todayRow.isToday, isTrue);
-    expect(todayRow.metaLabel, 'Today · 24 going');
-    expect(todayRow.fillPercent, 80);
-    expect(state.activeSections[1].rows.single.fillRatio, 1);
+    expect(todayRow.facts(_l10n, time: '18:00').last, '24 of 30 registered');
+    expect(
+      state.activeSections.every(
+        (section) => section.grouping == HostEventsGrouping.day,
+      ),
+      isTrue,
+    );
+    expect(state.pastSections.single.label(_l10n), 'June 2026');
     expect(state.pastSections.single.rows.single.event, past);
     expect(state.repeatSource, past);
   });
@@ -149,10 +156,13 @@ void main() {
     expect(state.activeSections.single.rows.single.isLive, isTrue);
     expect(state.pastSections.single.rows.single.event, endsNow);
     expect(
-      state.pastSections.single.rows.single.metaLabel,
-      contains('12 attended'),
+      state.pastSections.single.rows.single.facts(_l10n, time: '11:00').last,
+      '12 attended',
     );
-    expect(state.pastSections.single.rows.single.metaLabel, contains('free'));
+    expect(
+      state.activeSections.single.rows.single.facts(_l10n, time: '12:00').first,
+      startsWith('Live · 12:00'),
+    );
   });
 
   test(

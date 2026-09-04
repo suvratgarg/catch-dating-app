@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:29134dd066b5ed235fe7aff133f5b85282a068017daa584fd195baa697922e40",
-  "resolvedDigest": "sha256:63be713ff47656552fcc9e785428b9407e8ada9f2fb47a043db8a6cf971cd701",
+  "resolvedDigest": "sha256:37896addf642d29713002d913bbc36c7285a4c35db12fb124ea031cbb489fb5d",
   "feature": {
     "id": "feature.member_chat",
     "name": "Chat Thread",
@@ -1661,7 +1661,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },
@@ -3940,7 +3941,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },

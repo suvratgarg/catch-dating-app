@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-09-01",
+  "updated": "2026-09-04",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -4733,6 +4733,7 @@
           "captureIds": [
             "host_home_dashboard",
             "host_home_events_list",
+            "host_home_events_past",
             "host_home_switcher_cohost",
             "host_home_long_club_names",
             "host_home_signed_out",
@@ -4877,7 +4878,7 @@
               "id": "club_events_error",
               "kind": "error",
               "status": "captured",
-              "notes": "HostEventsClubCard maps event errors into HostEventsWorkspaceState before HostEventsClubSection renders CatchInlineErrorState.fromError with AppErrorContext.event and a typed retry callback. Event-list error capture is registered.",
+              "notes": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelinePage renders CatchSliverErrorState.fromError in the canonical page viewport with AppErrorContext.event and a typed retry callback. Retained rows with a page failure use a scoped inline retry instead.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -4903,9 +4904,11 @@
               "kind": "populated",
               "status": "captured",
               "tests": [
-                "test/hosts/host_operations_screen_test.dart"
+                "test/hosts/host_operations_screen_test.dart",
+                "test/hosts/host_events_screen_state_test.dart",
+                "test/hosts/host_events_layout_test.dart"
               ],
-              "notes": "Host Events is the single production HostAppShell destination for operational and lifecycle work. HostEventsClubCard maps the paginated schedule/history timeline into a live-or-next operational spotlight, every truthful event-identified attention task, and grouped lifecycle rows while suppressing the featured event from duplicate rows. The existing Host Events visual-drift threshold is historical evidence only until an approved consolidated reference replaces the pre-merge composition.",
+              "notes": "Events owns durable event inventory independently of Today's operational spotlight. CatchRootScreenScaffold owns sticky Upcoming/Past navigation; Upcoming groups by day and Past by month/year. Both use activity-led CatchRecordRow instances with natural-height titles, schedule/place facts, and registration or attendance facts. New and exact-policy-gated Repeat remain available. The old Events pixel reference is historical evidence until replaced by an approved export of this composition.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates",
@@ -4913,7 +4916,8 @@
               ],
               "captureIds": [
                 "host_home_dashboard",
-                "host_home_events_list"
+                "host_home_events_list",
+                "host_home_events_past"
               ]
             },
             {
@@ -4923,7 +4927,7 @@
               "tests": [
                 "test/hosts/host_events_timeline_controller_test.dart"
               ],
-              "notes": "HostEventsTimelineController.loadMoreActive preserves visible schedule and history rows, disables duplicate requests, and appends an event-id-de-duplicated schedule page."
+              "notes": "HostEventsTimelineController.loadMoreActive preserves visible schedule and history rows, disables duplicate requests, and merges its event-id-de-duplicated page into the latest matching generation so concurrent history completion cannot be lost."
             },
             {
               "id": "event_history_paginating",
@@ -4932,7 +4936,7 @@
               "tests": [
                 "test/hosts/host_events_timeline_controller_test.dart"
               ],
-              "notes": "HostEventsTimelineController.loadMorePast preserves visible schedule and history rows, disables duplicate requests, and appends an event-id-de-duplicated history page."
+              "notes": "HostEventsTimelineController.loadMorePast preserves visible schedule and history rows, disables duplicate requests, and merges its event-id-de-duplicated page into the latest matching generation so concurrent schedule completion cannot be lost."
             },
             {
               "id": "event_history_error",
@@ -4941,7 +4945,7 @@
               "tests": [
                 "test/hosts/host_events_timeline_controller_test.dart"
               ],
-              "notes": "A history-page failure preserves the loaded schedule and history, renders a scoped inline error, and retries through HostEventsTimelineController.retryPast."
+              "notes": "A history-page failure preserves loaded schedule/history and its cursor. HostEventsTimelineController.retryPast retries that cursor; retained rows show a scoped inline error, while an empty Past page uses the canonical viewport error."
             },
             {
               "id": "empty_events",

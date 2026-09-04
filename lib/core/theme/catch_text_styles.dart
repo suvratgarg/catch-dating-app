@@ -115,8 +115,8 @@ abstract final class CatchTextStyles {
 
   /// Compact pushed-route title.
   ///
-  /// This keeps route chrome below the 32px root-screen headline while giving
-  /// every route the same Archivo voice. User-authored identity names remain
+  /// This keeps compact route chrome distinct from the functional root headline
+  /// while giving every route the same Archivo voice. User-authored names remain
   /// in the platform function family through [titleL].
   static TextStyle routeTitle(BuildContext context, {Color? color}) => _voice(
     context,
@@ -236,31 +236,25 @@ abstract final class CatchTextStyles {
       );
 
   /// Profile prompt answers — user-authored content, not brand voice.
-  static TextStyle profileAnswer(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 18,
-    weight: FontWeight.w600,
-    height: 1.28,
-    color: color,
-  );
+  static TextStyle profileAnswer(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.name,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
   /// Long-form app/user copy — bios, event descriptions, readable details.
-  static TextStyle proseL(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 16,
-    weight: FontWeight.w400,
-    height: 1.55,
-    color: color,
-  );
+  static TextStyle proseL(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.body,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
   /// Long-form app/user copy, smaller cut.
-  static TextStyle proseM(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 14,
-    weight: FontWeight.w400,
-    height: 1.55,
-    color: color,
-  );
+  static TextStyle proseM(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.secondary,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
   /// Host/person row name treatment (`.t-name`).
   static TextStyle name(BuildContext context, {Color? color}) =>
@@ -288,13 +282,11 @@ abstract final class CatchTextStyles {
       );
 
   /// Lead-in supporting copy (slightly heavier than [supporting]).
-  static TextStyle bodyLead(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 16,
-    weight: FontWeight.w500,
-    height: 1.42,
-    color: color ?? CatchTokens.of(context).ink2,
-  );
+  static TextStyle bodyLead(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.fieldValue,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
 
   static TextStyle bodyL(BuildContext context, {Color? color}) =>
       _functionProfile(
@@ -327,12 +319,9 @@ abstract final class CatchTextStyles {
 
   /// Supporting copy inside command and selection menus.
   static TextStyle menuSupporting(BuildContext context, {Color? color}) =>
-      _sans(
-        context,
-        size: 12,
-        weight: FontWeight.w400,
-        height: 1.4,
-        color: color ?? CatchTokens.of(context).ink3,
+      _functionProfile(
+        CatchPlatformTokens.typography.context,
+        color: color ?? CatchTokens.of(context).ink2,
       );
 
   static TextStyle labelL(BuildContext context, {Color? color}) =>
@@ -344,21 +333,17 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
-  static TextStyle labelM(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 11,
-    weight: FontWeight.w600,
-    height: 1.30,
-    color: color ?? CatchTokens.of(context).ink2,
-  );
+  static TextStyle labelM(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.status,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
 
-  static TextStyle labelS(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 10,
-    weight: FontWeight.w700,
-    height: 1.20,
-    color: color ?? CatchTokens.of(context).ink2,
-  );
+  static TextStyle labelS(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.status,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
 
   /// Readable sentence-case status label (sans).
   static TextStyle statusLabel(BuildContext context, {Color? color}) =>
@@ -367,39 +352,39 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
-  static TextStyle buttonSm(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 13,
-    weight: FontWeight.w600,
-    height: 1,
-    color: color ?? CatchTokens.of(context).ink,
-  );
+  /// Approved floating navigation label, independent of generic buttons.
+  static TextStyle navigationLabel(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.navigationLabel,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
-  static TextStyle buttonMd(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 15,
-    weight: FontWeight.w600,
-    height: 1,
-    color: color ?? CatchTokens.of(context).ink,
-  );
+  static TextStyle buttonSm(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.control,
+        color: color ?? CatchTokens.of(context).ink,
+      ).copyWith(fontWeight: FontWeight.w600);
 
-  static TextStyle buttonLg(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 16,
-    weight: FontWeight.w600,
-    height: 1,
-    color: color ?? CatchTokens.of(context).ink,
-  );
+  static TextStyle buttonMd(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.control,
+        color: color ?? CatchTokens.of(context).ink,
+      ).copyWith(fontWeight: FontWeight.w600);
+
+  static TextStyle buttonLg(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.body,
+        color: color ?? CatchTokens.of(context).ink,
+      ).copyWith(fontWeight: FontWeight.w600);
 
   /// Count badge on overlapping avatars (parametric size).
   static TextStyle avatarCount(
     BuildContext context, {
     required double size,
     Color? color,
-  }) => _sans(
-    context,
-    size: size,
-    weight: FontWeight.w800,
+  }) => CatchFonts.sans(
+    fontSize: size,
+    fontWeight: FontWeight.w800,
     height: 1,
     color: color ?? CatchTokens.of(context).surface,
   );
@@ -436,43 +421,33 @@ abstract final class CatchTextStyles {
   );
 
   /// Chat message body (sans, comfortable leading).
-  static TextStyle chatMessage(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 15,
-    weight: FontWeight.w400,
-    height: 1.40,
-    color: color,
-  );
+  static TextStyle chatMessage(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.body,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
   /// Chat inbox preview copy (`CatchPersonRow` chat-preview secondary line).
-  static TextStyle chatPreview(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 13,
-    weight: FontWeight.w400,
-    height: 1.45,
-    color: color ?? CatchTokens.of(context).ink2,
-  );
+  static TextStyle chatPreview(BuildContext context, {Color? color}) =>
+      _functionProfile(
+        CatchPlatformTokens.typography.secondary,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
 
   /// Chat thread event-context title (`ChatThreadHeader` secondary line).
   static TextStyle chatThreadContext(BuildContext context, {Color? color}) =>
-      _sans(
-        context,
-        size: 14,
-        weight: FontWeight.w600,
-        height: 1.35,
+      _functionProfile(
+        CatchPlatformTokens.typography.secondary,
         color: color ?? CatchTokens.of(context).ink,
-      );
+      ).copyWith(fontWeight: FontWeight.w600);
 
   /// Compact tabular stat figure (sans).
   static TextStyle statCompact(BuildContext context, {Color? color}) =>
       _tabular(
-        _sans(
-          context,
-          size: 14,
-          weight: FontWeight.w700,
-          height: 1.15,
-          color: color,
-        ),
+        _functionProfile(
+          CatchPlatformTokens.typography.secondary,
+          color: color ?? CatchTokens.of(context).ink,
+        ).copyWith(fontWeight: FontWeight.w700),
       );
 
   static TextStyle transparentInput() =>
@@ -652,34 +627,27 @@ abstract final class CatchTextStyles {
   /// These remain in the platform function family and live beside the semantic
   /// scale so ThemeData cannot become an independent typography source.
   static TextTheme materialTextTheme(TextTheme base, CatchTokens tokens) {
-    TextStyle style(
-      double size,
-      FontWeight weight,
-      double height,
-      Color color,
-    ) => CatchFonts.sans(
-      fontSize: size,
-      fontWeight: weight,
-      height: height,
-      color: color,
-    );
-
+    final profile = CatchPlatformTokens.typography;
+    TextStyle style(TextStyle metrics, {bool secondary = false}) =>
+        _functionProfile(metrics, color: secondary ? tokens.ink2 : tokens.ink);
     return base.copyWith(
-      displayLarge: style(40, FontWeight.w800, 1.02, tokens.ink),
-      displayMedium: style(32, FontWeight.w800, 1.04, tokens.ink),
-      displaySmall: style(26, FontWeight.w800, 1.08, tokens.ink),
-      headlineLarge: style(32, FontWeight.w800, 1.05, tokens.ink),
-      headlineMedium: style(28, FontWeight.w800, 1.10, tokens.ink),
-      headlineSmall: style(20, FontWeight.w800, 1.14, tokens.ink),
-      titleLarge: style(19, FontWeight.w700, 1.20, tokens.ink),
-      titleMedium: style(16, FontWeight.w700, 1.24, tokens.ink),
-      titleSmall: style(14, FontWeight.w700, 1.26, tokens.ink),
-      bodyLarge: style(16, FontWeight.w400, 1.50, tokens.ink),
-      bodyMedium: style(14, FontWeight.w400, 1.50, tokens.ink),
-      bodySmall: style(13, FontWeight.w400, 1.45, tokens.ink2),
-      labelLarge: style(13, FontWeight.w700, 1.24, tokens.ink),
-      labelMedium: style(11, FontWeight.w700, 1.24, tokens.ink2),
-      labelSmall: style(10, FontWeight.w800, 1.15, tokens.ink2),
+      displayLarge: style(profile.displayLarge),
+      displayMedium: style(profile.displayMedium),
+      displaySmall: style(profile.displaySmall),
+      headlineLarge: style(profile.displayMedium),
+      headlineMedium: style(profile.headline),
+      headlineSmall: style(profile.title),
+      titleLarge: style(profile.title),
+      titleMedium: style(profile.name),
+      titleSmall: style(
+        profile.secondary,
+      ).copyWith(fontWeight: FontWeight.w600),
+      bodyLarge: style(profile.body),
+      bodyMedium: style(profile.secondary),
+      bodySmall: style(profile.context, secondary: true),
+      labelLarge: style(profile.control),
+      labelMedium: style(profile.status, secondary: true),
+      labelSmall: style(profile.context, secondary: true),
     );
   }
 
@@ -699,13 +667,10 @@ abstract final class CatchTextStyles {
   );
 
   static TextStyle _functionStrong14(BuildContext context, {Color? color}) =>
-      _sans(
-        context,
-        size: 14,
-        weight: FontWeight.w700,
-        height: 1.24,
-        color: color,
-      );
+      _functionProfile(
+        CatchPlatformTokens.typography.secondary,
+        color: color ?? CatchTokens.of(context).ink,
+      ).copyWith(fontWeight: FontWeight.w700);
 
   static TextStyle _tabular(TextStyle style) =>
       style.copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
@@ -718,21 +683,6 @@ abstract final class CatchTextStyles {
     double letterSpacing = 0,
     Color? color,
   }) => CatchFonts.voice(
-    fontSize: size,
-    fontWeight: weight,
-    height: height,
-    letterSpacing: letterSpacing,
-    color: color ?? CatchTokens.of(context).ink,
-  );
-
-  static TextStyle _sans(
-    BuildContext context, {
-    required double size,
-    required FontWeight weight,
-    required double height,
-    double letterSpacing = 0,
-    Color? color,
-  }) => CatchFonts.sans(
     fontSize: size,
     fontWeight: weight,
     height: height,

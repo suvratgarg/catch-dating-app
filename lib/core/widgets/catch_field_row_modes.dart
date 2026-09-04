@@ -93,7 +93,13 @@ extension _CatchFieldRowModes on _CatchFieldState {
             ),
           );
     final rowContent = CatchFieldRow.standard(
-      constraints: _rowConstraints,
+      constraints: _usesPositionedClearTrailing
+          ? _rowConstraints.enforce(
+              BoxConstraints(
+                minHeight: CatchFieldTrailing.clearTargetConstraints.minHeight,
+              ),
+            )
+          : _rowConstraints,
       padding: _rowHeaderPadding,
       leading: _buildLeadingSlot(t),
       trailing: positionsTrailing ? null : trailingSlot,
@@ -111,17 +117,46 @@ extension _CatchFieldRowModes on _CatchFieldState {
         ? Stack(
             children: [
               rowContent,
-              PositionedDirectional(
-                top: _usesPositionedClearTrailing
-                    ? _rowHeaderPadding.top +
-                          CatchFieldTokens.captionExtent +
-                          (CatchFieldTokens.valueLineExtent - CatchSpacing.s6) /
+              if (_usesPositionedClearTrailing)
+                PositionedDirectional(
+                  top: 0,
+                  bottom: 0,
+                  end: _rowHeaderPadding.right,
+                  width: CatchFieldTrailing.clearTargetConstraints.maxWidth,
+                  child: LayoutBuilder(
+                    builder: (context, available) {
+                      final extent =
+                          CatchFieldTrailing.clearTargetConstraints.maxHeight;
+                      final scaler = MediaQuery.textScalerOf(context);
+                      final desiredTop =
+                          _rowHeaderPadding.top +
+                          scaler.scale(CatchFieldTokens.captionExtent) +
+                          (scaler.scale(CatchFieldTokens.valueLineExtent) -
+                                  extent) /
                               2 +
-                          CatchSpacing.micro3
-                    : _rowHeaderPadding.top,
-                end: _rowHeaderPadding.right,
-                child: trailingSlot,
-              ),
+                          CatchSpacing.micro3;
+                      // Keep the value-line alignment when it fits, while
+                      // preserving the complete target inside compact rows.
+                      final top = desiredTop.clamp(
+                        0.0,
+                        available.maxHeight - extent,
+                      );
+                      return Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: top),
+                          child: trailingSlot,
+                        ),
+                      );
+                    },
+                  ),
+                )
+              else
+                PositionedDirectional(
+                  top: _rowHeaderPadding.top,
+                  end: _rowHeaderPadding.right,
+                  child: trailingSlot,
+                ),
             ],
           )
         : rowContent;
@@ -462,12 +497,10 @@ extension _CatchFieldRowModes on _CatchFieldState {
 
   Widget? _buildTrailingGroup(CatchTokens t, {bool includeChevron = false}) {
     final children = <Widget>[];
-    final flexibleIndices = <int>{};
     final valueText = widget.valueText?.trim();
     if (!_stacksTrailingValueText &&
         valueText != null &&
         valueText.isNotEmpty) {
-      flexibleIndices.add(children.length);
       children.add(
         CatchFieldTrailing.valueText(
           text: valueText,
@@ -480,25 +513,30 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final custom = _buildCustomTrailingSlot(t, _action);
     if (custom != null) children.add(custom);
 
-    if (includeChevron) {
-      children.add(
-        CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0),
-      );
+    if (children.isEmpty) {
+      return includeChevron
+          ? CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0)
+          : null;
     }
 
-    if (children.isEmpty) return null;
-    if (children.length == 1) return children.single;
+    // Value and custom metadata share the lane without starving either of width.
+    final group = children.length == 1
+        ? children.single
+        : Wrap(
+            alignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s1,
+            children: children,
+          );
+    if (!includeChevron) return group;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        for (var i = 0; i < children.length; i++) ...[
-          if (i > 0) const SizedBox(width: CatchSpacing.s2),
-          if (flexibleIndices.contains(i))
-            Flexible(child: children[i])
-          else
-            children[i],
-        ],
+        Flexible(child: group),
+        const SizedBox(width: CatchSpacing.s2),
+        CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0),
       ],
     );
   }
@@ -742,7 +780,8 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final headerTrailingReserve = _hasControl
         ? CatchFieldTokens.trailingGap + CatchFieldTokens.disclosureGlyphExtent
         : _usesPositionedClearTrailing
-        ? CatchFieldTokens.trailingGap + CatchSpacing.s6
+        ? CatchFieldTokens.trailingGap +
+              CatchFieldTrailing.clearTargetConstraints.maxWidth
         : 0.0;
 
     if (!hasLabel && !hasValue && !hasSupport) {

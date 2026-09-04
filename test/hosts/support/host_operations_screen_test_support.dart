@@ -1,9 +1,14 @@
 part of '../host_operations_screen_test.dart';
 
-Finder _hostEventsScrollable() => find.descendant(
-  of: find.byKey(const ValueKey<String>('host-events-scroll-view')),
-  matching: find.byType(Scrollable),
-);
+Finder _hostEventsScrollable() => find
+    .descendant(
+      of: find.byType(HostEventsTimelinePage),
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is Scrollable && widget.axisDirection == AxisDirection.down,
+      ),
+    )
+    .hitTestable();
 
 void registerHostEventEntryTests() {
   testWidgets('Host Today delegates creation and opens event manage', (

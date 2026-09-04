@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 71,
-    "captures": 639,
+    "captures": 640,
     "statusCounts": {
       "excluded": 2,
       "captured": 44,
@@ -1804,6 +1804,23 @@
         "dark": "dark/host_home_events_list.png"
       },
       "whatItIs": "Host Home Events List",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_home_events_past",
+      "routes": [
+        "hostEventsScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_home_events_past.png",
+        "dark": "dark/host_home_events_past.png"
+      },
+      "whatItIs": "Host Home Events Past",
       "keepChangeNotes": ""
     },
     {

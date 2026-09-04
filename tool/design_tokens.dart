@@ -107,6 +107,9 @@ String _buildWebsiteCss({
   buffer.writeln(':root {');
 
   for (final token in registry.tokens.values) {
+    // Pinned native research is input to semantic decisions, not a second
+    // public stylesheet/API that feature code can use to bypass those decisions.
+    if (token.path.first == 'platformReference') continue;
     final cssName = _cssVariableName(token.path);
     final cssValue = registry.cssValue(token);
     if (cssValue == null) continue;
@@ -545,9 +548,14 @@ final class _TokenRegistry {
     return _rawCssValue(value);
   }
 
-  Object? _resolveValue(Object? value) {
+  Object? _resolveValue(Object? value, [Set<String>? visited]) {
     if (value is String && _isReference(value)) {
-      return _resolveValue(tokenForReference(value).value);
+      final path = _referencePath(value);
+      final chain = visited ?? <String>{};
+      if (!chain.add(path)) {
+        throw FormatException('Cyclic token reference: $path');
+      }
+      return _resolveValue(tokenForReference(value).value, chain);
     }
     return value;
   }
@@ -571,6 +579,15 @@ final class _TokenRegistry {
         return _rawCssValue(value);
       case 'fontFamily':
         return '"$value"';
+      case 'duration':
+        return _dimensionCssValue(_mapValue(value, 'duration value'));
+      case 'cubicBezier':
+        if (value is! List ||
+            value.length != 4 ||
+            value.any((v) => v is! num)) {
+          throw const FormatException('cubicBezier needs four numeric values.');
+        }
+        return 'cubic-bezier(${value.map((v) => _formatNumber(v as num)).join(', ')})';
       default:
         if (value is String || value is num) return _rawCssValue(value);
         return null;
@@ -782,6 +799,58 @@ void _writePlatformTokens(StringBuffer buffer, _TokenRegistry registry) {
   )) {
     buffer.writeln(
       '  static const double ${_camel(token.path.skip(1))} = ${_dartDimensionNumber(registry.resolvedValue(token))};',
+    );
+  }
+  buffer.writeln('}');
+  _writeFoundationTokens(buffer, registry);
+}
+
+/// Only semantic foundations are emitted into the runtime API. Platform
+/// reference tables remain authored source data; an explicit alias is required
+/// to promote one of them into a Catch component contract.
+void _writeFoundationTokens(StringBuffer buffer, _TokenRegistry registry) {
+  buffer
+    ..writeln()
+    ..writeln('abstract final class GeneratedCatchMotionTokens {');
+  for (final token in registry.tokens.values.where(
+    (t) => t.path.length == 2 && t.path[0] == 'motion',
+  )) {
+    final value = registry.resolvedValue(token);
+    if (token.type == 'duration') {
+      final duration = _mapValue(value, token.referencePath);
+      final ms = duration['value'];
+      if (duration['unit'] != 'ms' || ms is! int || ms < 0) {
+        throw FormatException('Invalid duration: ${token.referencePath}');
+      }
+      buffer.writeln(
+        '  static const Duration ${token.path.last} = Duration(milliseconds: $ms);',
+      );
+    } else if (token.type == 'cubicBezier') {
+      if (value is! List || value.length != 4 || value.any((v) => v is! num)) {
+        throw FormatException('Invalid curve: ${token.referencePath}');
+      }
+      buffer.writeln(
+        '  static const Curve ${token.path.last} = Cubic(${value.map((v) => _formatDartNumber(v as num)).join(', ')});',
+      );
+    } else {
+      throw FormatException('Unsupported motion token: ${token.referencePath}');
+    }
+  }
+  buffer
+    ..writeln('}')
+    ..writeln()
+    ..writeln('abstract final class GeneratedCatchAccessibilityTokens {');
+  for (final token in registry.tokens.values.where(
+    (t) => t.path.length == 2 && t.path[0] == 'accessibility',
+  )) {
+    final value = registry.resolvedValue(token);
+    if (value is! num || value <= 0) {
+      throw FormatException(
+        'Invalid accessibility floor: ${token.referencePath}',
+      );
+    }
+    buffer.writeln(
+      '  static const double ${token.path.last} = ${_formatDartNumber(value)};',
     );
   }
   buffer.writeln('}');

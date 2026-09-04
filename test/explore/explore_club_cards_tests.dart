@@ -54,7 +54,7 @@ void _registerExploreClubCardsTests() {
     );
     expect(
       tester.getSize(_topLevelSearchField()).height,
-      CatchIconButton.navSize,
+      CatchSearchField.heightFor(tester.element(_topLevelSearchField())),
     );
     expect(find.text(event.title), findsNothing);
   });
@@ -785,7 +785,9 @@ void _registerExploreClubCardsTests() {
     expect(_topLevelSearchField(), findsOneWidget);
     expect(
       tester.getSize(_topLevelSearchField()).width,
-      lessThanOrEqualTo(CatchIconButton.navSize),
+      lessThanOrEqualTo(
+        CatchIconButton.targetExtentFor(CatchIconButton.navSize),
+      ),
     );
     expect(find.byType(TextField), findsNothing);
 
@@ -797,7 +799,10 @@ void _registerExploreClubCardsTests() {
     await tester.pump(midSearchMorphFrame);
 
     final morphingSearchWidth = tester.getSize(_topLevelSearchField()).width;
-    expect(morphingSearchWidth, greaterThan(CatchIconButton.navSize));
+    expect(
+      morphingSearchWidth,
+      greaterThan(CatchIconButton.targetExtentFor(CatchIconButton.navSize)),
+    );
 
     await _pumpClubUi(tester);
 
@@ -805,7 +810,7 @@ void _registerExploreClubCardsTests() {
     expect(expandedSearchWidth, greaterThanOrEqualTo(morphingSearchWidth));
     expect(
       tester.getSize(_topLevelSearchField()).height,
-      CatchIconButton.navSize,
+      CatchSearchField.heightFor(tester.element(_topLevelSearchField())),
     );
     expect(find.byIcon(CatchIcons.arrowBackRounded), findsNothing);
     expect(find.byIcon(CatchIcons.keyboardHideRounded), findsNothing);
@@ -833,7 +838,9 @@ void _registerExploreClubCardsTests() {
     expect(_topLevelSearchField(), findsOneWidget);
     expect(
       tester.getSize(_topLevelSearchField()).width,
-      lessThanOrEqualTo(CatchIconButton.navSize),
+      lessThanOrEqualTo(
+        CatchIconButton.targetExtentFor(CatchIconButton.navSize),
+      ),
     );
     expect(find.byType(TextField), findsNothing);
   });

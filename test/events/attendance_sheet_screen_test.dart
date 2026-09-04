@@ -472,9 +472,14 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        body: HostEventParticipantsPanel(
-          eventId: event.id,
-          mode: HostEventParticipantsMode.setup,
+        // Embedded panels delegate scrolling to the roster drawer's ListView.
+        body: ListView(
+          children: [
+            HostEventParticipantsPanel(
+              eventId: event.id,
+              mode: HostEventParticipantsMode.setup,
+            ),
+          ],
         ),
       ),
       overrides: [
@@ -509,6 +514,7 @@ void main() {
     await _settleAttendanceSheet(tester);
 
     expect(find.text('Offer next 2'), findsOneWidget);
+    expect(tester.takeException(), isNull);
 
     await tester.tap(find.text('Offer next 2'));
     await tester.pump();

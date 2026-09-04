@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/catches_hub.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:75e85878dff27bfc6076a7e5bd50bacde175d27b4c8394ad90d0ca7495675bc9",
-  "resolvedDigest": "sha256:bfca58803d4014eee1c4691091f1e9b6b5826a300237ef8ae0a5f7fd8060e856",
+  "resolvedDigest": "sha256:0a89f028a52697f8608b6d224b6d00b283e044eebc59594458228974c4457a01",
   "feature": {
     "id": "feature.catches_hub",
     "name": "Catches Hub",
@@ -772,7 +772,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },

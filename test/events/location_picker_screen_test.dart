@@ -11,6 +11,7 @@ import 'package:catch_dating_app/events/presentation/location_picker_screen.dart
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,37 +29,52 @@ void main() {
       expect(screen.initialLocation, initialLocation);
     });
 
-    testWidgets('starts without a selection', (tester) async {
-      await pumpEventsTestApp(
-        tester,
-        const LocationPickerScreen(loadMapTiles: false),
-      );
+    testWidgets(
+      'starts without a selection',
+      (tester) async {
+        await pumpEventsTestApp(
+          tester,
+          const LocationPickerScreen(loadMapTiles: false),
+        );
 
-      expect(find.byType(CatchScreenScaffold), findsOneWidget);
-      expect(find.text('Pick starting point'), findsNothing);
-      expect(find.byTooltip('Back'), findsOneWidget);
-      expect(find.text('Choose meeting location'), findsNothing);
-      expect(find.text('No location selected'), findsOneWidget);
-      expect(
-        find.text(
-          'Search for a place or tap the map to set the meeting point.',
-        ),
-        findsOneWidget,
-      );
-      expect(find.byType(CatchField), findsOneWidget);
-      final backButtonSize = tester.getSize(find.byType(CatchIconButton));
-      final searchFieldSize = tester.getSize(find.byType(CatchField));
-      expect(searchFieldSize.height, CatchControlMetrics.floatingMinHeight);
-      expect(searchFieldSize.height, backButtonSize.height);
-      expect(
-        tester
-            .widget<CatchButton>(
-              find.widgetWithText(CatchButton, 'Confirm location'),
-            )
-            .onPressed,
-        isNull,
-      );
-    });
+        expect(find.byType(CatchScreenScaffold), findsOneWidget);
+        expect(find.text('Pick starting point'), findsNothing);
+        expect(find.byTooltip('Back'), findsOneWidget);
+        expect(find.text('Choose meeting location'), findsNothing);
+        expect(find.text('No location selected'), findsOneWidget);
+        expect(
+          find.text(
+            'Search for a place or tap the map to set the meeting point.',
+          ),
+          findsOneWidget,
+        );
+        expect(find.byType(CatchField), findsOneWidget);
+        final backButtonSize = tester.getSize(find.byType(CatchIconButton));
+        final searchFieldSize = tester.getSize(find.byType(CatchField));
+        final targetExtent = defaultTargetPlatform == TargetPlatform.iOS
+            ? 44.0
+            : 48.0;
+        expect(
+          CatchControlMetrics.minHeight(CatchControlSize.floating),
+          targetExtent,
+        );
+        expect(searchFieldSize.height, targetExtent);
+        expect(backButtonSize, Size.square(targetExtent));
+        expect(searchFieldSize.height, backButtonSize.height);
+        expect(
+          tester
+              .widget<CatchButton>(
+                find.widgetWithText(CatchButton, 'Confirm location'),
+              )
+              .onPressed,
+          isNull,
+        );
+      },
+      variant: const TargetPlatformVariant({
+        TargetPlatform.iOS,
+        TargetPlatform.android,
+      }),
+    );
 
     testWidgets('uses the shared muted Catch map styling', (tester) async {
       await tester.pumpWidget(

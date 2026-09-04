@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldVisibilityScope;
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_root_screen_body.dart';
 import 'package:catch_dating_app/core/widgets/catch_scaled_preferred_size.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -466,7 +467,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
         ],
       );
     } else {
-      _validatePrimaryRailGeometry();
+      _validatePrimaryRailGeometry(context);
       scrollView = NestedScrollView(
         key: scrollKey,
         controller: controller,
@@ -485,7 +486,11 @@ class CatchRootScreenScrollView extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
-                        height: CatchTabRail.heightFor(context),
+                        height: switch (primaryRail) {
+                          final CatchScaledPreferredSize scaled =>
+                            scaled.preferredSizeFor(context).height,
+                          _ => CatchTabRail.heightFor(context),
+                        },
                         child: primaryRail,
                       ),
                       CatchStatusStrip(statuses: statuses),
@@ -529,22 +534,38 @@ class CatchRootScreenScrollView extends StatelessWidget {
     );
   }
 
-  void _validatePrimaryRailGeometry() {
+  void _validatePrimaryRailGeometry(BuildContext context) {
     final declaredHeight = primaryRail!.preferredSize.height;
-    if (declaredHeight == CatchLayout.tabRailHeight) return;
+    // Canonical variants own their insets as well as their target floor.
+    // Feature adapters must forward the same unscaled minimum, never restate
+    // the old 44-point constant or substitute local geometry.
+    final variant = primaryRail is CatchTabRail
+        ? (primaryRail as CatchTabRail).variant
+        : CatchOptionGroupVariant.label;
+    final expectedMinimum = CatchTabRail.minimumHeightFor(variant);
+    final expectedScaled = CatchTabRail.heightFor(context, variant: variant);
+    final declaredScaled = switch (primaryRail) {
+      final CatchScaledPreferredSize scaled =>
+        scaled.preferredSizeFor(context).height,
+      _ => expectedScaled,
+    };
+    if (declaredHeight == expectedMinimum && declaredScaled == expectedScaled) {
+      return;
+    }
 
     throw FlutterError.fromParts([
       ErrorSummary(
         'CatchRootScreenScaffold requires a '
-        '${CatchLayout.tabRailHeight}-point primary rail.',
+        '$expectedMinimum-point primary rail.',
       ),
       ErrorDescription(
         '${primaryRail.runtimeType} declared a preferred height of '
-        '$declaredHeight points.',
+        '$declaredHeight points and a scaled height of $declaredScaled points '
+        '(expected $expectedScaled).',
       ),
       ErrorHint(
         'Use CatchTabRail or CatchTabControllerRail, or make the feature '
-        'adapter report CatchLayout.tabRailHeight. The root scaffold owns the '
+        'adapter report CatchTabRail.minimumHeight. The root scaffold owns the '
         'pinned extent; screens must not define local rail geometry.',
       ),
     ]);

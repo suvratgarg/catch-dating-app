@@ -365,8 +365,8 @@ void main() {
     );
 
     expect(find.byType(CatchDistanceRing), findsOneWidget);
-    expect(find.text('WITHIN 3 KM · TAP TO CHANGE'), findsOneWidget);
-    await tester.tap(find.text('WITHIN 3 KM · TAP TO CHANGE'));
+    expect(find.text('Within 3 km · tap to change'), findsOneWidget);
+    await tester.tap(find.text('Within 3 km · tap to change'));
     expect(ringTaps, 1);
   });
 

@@ -1,10 +1,12 @@
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-/// Handoff map radius ring with an optional tappable mono label.
+/// Map radius ring with an optional readable, wrapping control-role label.
 class CatchDistanceRing extends StatelessWidget {
   const CatchDistanceRing({
     super.key,
@@ -139,37 +141,31 @@ class CatchDistanceRingLabel extends StatelessWidget {
       button: onTap != null,
       label: semanticLabel ?? label,
       hint: semanticHint,
+      onTap: onTap,
       child: ExcludeSemantics(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
+        child: CatchSurface(
           onTap: onTap,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: t.surface.withValues(
-                alpha: CatchOpacity.distanceRingLabelFill,
-              ),
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-              border: Border.all(color: t.line2),
+          radius: CatchRadius.pill,
+          borderRole: CatchBorderRole.control,
+          backgroundColor: t.surface.withValues(
+            alpha: CatchOpacity.distanceRingLabelFill,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: CatchPlatformTokens.minimumInteractiveExtent,
+              minWidth: CatchPlatformTokens.minimumInteractiveExtent,
             ),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minHeight: CatchLayout.countPillMinExtent,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: CatchLayout.distanceRingLabelHorizontal,
+                vertical: CatchSpacing.s1,
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CatchLayout.distanceRingLabelHorizontal,
-                  vertical: CatchSpacing.s1,
-                ),
-                child: Center(
-                  child: Text(
-                    label.toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.monoCapsLabel(
-                      context,
-                      color: t.ink,
-                    ).copyWith(fontSize: CatchLayout.distanceRingLabelFontSize),
-                  ),
+              child: Center(
+                widthFactor: 1,
+                heightFactor: 1,
+                child: Text(
+                  label,
+                  style: CatchTextStyles.control(context, color: t.ink),
                 ),
               ),
             ),

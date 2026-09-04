@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizer_create.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:190dd525f390ba74cfc0ab466b7256becfb802634492655902dbaa78647e651f",
-  "resolvedDigest": "sha256:3c5ebafe9e3ffa29de5e318dc053cbda623f726f6bce535f9b654e746bb5359f",
+  "resolvedDigest": "sha256:a34b0269575f601606c7ae4f5f08e046636ca37dab3be8cb72cc054ca7d935f9",
   "feature": {
     "id": "feature.host_organizer_create",
     "name": "Host Organizer Create",
@@ -1553,7 +1553,8 @@
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
                 "CatchButton",
-                "CatchButton.command"
+                "CatchButton.command",
+                "CatchButton.selection"
               ]
             }
           },

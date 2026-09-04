@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
@@ -128,15 +130,11 @@ void main() {
       ),
     );
 
-    final chipTops = [
-      for (final label in const ['English', 'Hindi', 'Marathi', 'Gujarati'])
-        tester.getTopLeft(find.byKey(ValueKey('catch-field-choice-$label'))).dy,
-    ];
-    expect(chipTops.toSet().length, greaterThan(1));
     final chipRects = [
       for (final label in const ['English', 'Hindi', 'Marathi', 'Gujarati'])
         tester.getRect(find.byKey(ValueKey('catch-field-choice-$label'))),
     ];
+    expect(chipRects.map((rect) => rect.top).toSet().length, greaterThan(1));
     final firstRowTop = chipRects.map((rect) => rect.top).reduce(math.min);
     final firstRowBottom = chipRects
         .where((rect) => (rect.top - firstRowTop).abs() < 0.1)
@@ -150,9 +148,6 @@ void main() {
       secondRowTop - firstRowBottom,
       closeTo(CatchFieldTokens.chipRunSpacing, 0.1),
     );
-    final englishRect = tester.getRect(
-      find.byKey(const ValueKey('catch-field-choice-English')),
-    );
     final englishLabel = tester.widget<Text>(
       find.descendant(
         of: find.byKey(const ValueKey('catch-field-choice-English')),
@@ -160,10 +155,15 @@ void main() {
       ),
     );
     expect(
-      englishRect.height,
-      closeTo(CatchFieldTokens.chipVisualMinHeight, 2.1),
+      chipRects.first.height,
+      greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
     );
-    expect(englishLabel.style?.fontWeight, FontWeight.w600);
+    expect(
+      englishLabel.style?.fontWeight,
+      CatchTextStyles.labelL(
+        tester.element(find.byType(CatchField)),
+      ).fontWeight,
+    );
     expect(englishLabel.style?.color, CatchTokens.editorialLight.primaryInk);
     final fieldRect = tester.getRect(find.byType(CatchField));
     final controlRect = tester.getRect(
@@ -722,17 +722,17 @@ void main() {
       final clearableHeight = tester
           .getSize(find.byKey(const ValueKey('clearable-populated-field')))
           .height;
-      final clearableEditable = find.descendant(
-        of: find.byKey(const ValueKey('clearable-populated-field')),
-        matching: find.byType(EditableText),
-      );
-
       expect(clearableHeight, closeTo(plainHeight, 0.1));
-      expect(find.byTooltip('Clear Display name'), findsOneWidget);
-      expect(
-        tester.getCenter(find.byTooltip('Clear Display name')).dy,
-        closeTo(tester.getCenter(clearableEditable).dy, 0.5),
+      expectMinimumAccessibleTarget(
+        tester,
+        find.byTooltip('Clear Display name'),
       );
+      final clearRect = tester.getRect(find.byTooltip('Clear Display name'));
+      final rowRect = tester.getRect(
+        find.byKey(const ValueKey('clearable-populated-field')),
+      );
+      expect(clearRect.top, greaterThanOrEqualTo(rowRect.top));
+      expect(clearRect.bottom, lessThanOrEqualTo(rowRect.bottom));
     },
   );
 

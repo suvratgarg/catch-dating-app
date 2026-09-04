@@ -492,7 +492,7 @@ class _CatchTabBarGeometry {
     final labelPainter = TextPainter(
       text: TextSpan(
         text: selectedItem.label,
-        style: CatchTextStyles.buttonSm(context),
+        style: CatchTextStyles.navigationLabel(context),
       ),
       maxLines: 1,
       textDirection: textDirection,
@@ -686,7 +686,7 @@ class _CatchTabBarButtonState<T> extends State<CatchTabBarButton<T>> {
                             maxLines: 1,
                             softWrap: false,
                             overflow: TextOverflow.fade,
-                            style: CatchTextStyles.buttonSm(
+                            style: CatchTextStyles.navigationLabel(
                               context,
                               color: t.ink,
                             ),

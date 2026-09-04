@@ -99,7 +99,8 @@ void main() {
       );
       expect(selectedDecoration.boxShadow, isNotEmpty);
       expect(label.style?.color, tokens.onFill(accent));
-      expect(label.overflow, TextOverflow.ellipsis);
+      expect(label.overflow, isNull);
+      expect(label.maxLines, isNull);
       expect(
         scale.scale,
         1,

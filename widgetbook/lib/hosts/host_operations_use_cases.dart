@@ -1808,7 +1808,7 @@ Widget hostInsightsScorecardStates(BuildContext context) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host event section states',
-  type: HostEventLifecycleDateBlock,
+  type: HostEventsTimelinePage,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -5903,12 +5903,11 @@ Widget hostStrictHostEventLifecycleRowCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostEventLifecycleDateBlock,
+  type: HostEventsTimelinePage,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostEventLifecycleDateBlockCatalogStates(
-  BuildContext context,
-) => hostHomeEventSectionStates(context);
+Widget hostStrictHostEventsTimelinePageCatalogStates(BuildContext context) =>
+    hostHomeEventSectionStates(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

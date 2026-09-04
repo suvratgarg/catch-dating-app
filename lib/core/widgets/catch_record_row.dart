@@ -18,6 +18,7 @@ class CatchRecordRow extends StatelessWidget {
     required this.icon,
     this.color,
     this.metadata,
+    this.facts = const [],
     this.description,
     this.onTap,
   });
@@ -26,6 +27,10 @@ class CatchRecordRow extends StatelessWidget {
   final IconData icon;
   final Color? color;
   final String? metadata;
+
+  /// Short, equally important facts (for example time/place and attendance).
+  /// These use readable secondary text, not the smaller provenance caption.
+  final List<String> facts;
   final String? description;
   final VoidCallback? onTap;
 
@@ -61,6 +66,18 @@ class CatchRecordRow extends StatelessWidget {
                   if (metadata case final text? when text.isNotEmpty) ...[
                     const SizedBox(height: CatchRecordTokens.titleGap),
                     Text(text, style: CatchTextStyles.recordContext(context)),
+                  ],
+                  for (final fact in facts.where(
+                    (text) => text.isNotEmpty,
+                  )) ...[
+                    const SizedBox(height: CatchRecordTokens.titleGap),
+                    Text(
+                      fact,
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: CatchTokens.of(context).ink2,
+                      ),
+                    ),
                   ],
                   if (description case final text? when text.isNotEmpty) ...[
                     const SizedBox(height: CatchRecordTokens.bodyGap),

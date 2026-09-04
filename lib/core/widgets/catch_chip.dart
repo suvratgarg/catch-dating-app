@@ -2,6 +2,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
@@ -180,6 +181,7 @@ class _CatchChipState extends State<CatchChip> {
 
   bool _pressed = false;
   bool _focused = false;
+  bool _hovered = false;
 
   bool get _hasControlRole => switch (widget._variant) {
     _CatchChipVariant.selectable || _CatchChipVariant.removable => true,
@@ -293,10 +295,7 @@ class _CatchChipState extends State<CatchChip> {
         border = Colors.transparent;
         shadow = CatchElevation.none;
         leading = Icon(activity.glyph);
-        textStyle = CatchTextStyles.fieldRowTitle(
-          context,
-          color: foreground,
-        ).copyWith(height: 1);
+        textStyle = CatchTextStyles.fieldRowTitle(context, color: foreground);
         padding = const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s4,
           vertical: CatchSpacing.micro10,
@@ -344,14 +343,7 @@ class _CatchChipState extends State<CatchChip> {
             ),
             SizedBox(width: iconGap),
           ],
-          Flexible(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: textStyle,
-            ),
-          ),
+          Flexible(child: Text(label, style: textStyle)),
           if (trailing != null) ...[
             const SizedBox(width: CatchSpacing.s2),
             trailing,
@@ -365,7 +357,16 @@ class _CatchChipState extends State<CatchChip> {
       curve: CatchMotion.standardCurve,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: background,
+        color: _interactive && (_pressed || _hovered)
+            ? Color.alphaBlend(
+                foreground.withValues(
+                  alpha: _pressed
+                      ? CatchOpacity.controlOverlayPressed
+                      : CatchOpacity.controlOverlayHover,
+                ),
+                background,
+              )
+            : background,
         borderRadius: radius,
         boxShadow: _focused ? CatchElevation.focusRing(t) : shadow,
       ),
@@ -375,35 +376,7 @@ class _CatchChipState extends State<CatchChip> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(CatchStroke.hairline),
-        child: _hasControlRole
-            ? Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  excludeFromSemantics: true,
-                  onTap: _onPressed,
-                  onHighlightChanged: _setPressed,
-                  onFocusChange: (focused) {
-                    if (_focused != focused) {
-                      setState(() => _focused = focused);
-                    }
-                  },
-                  borderRadius: radius,
-                  hoverColor: foreground.withValues(
-                    alpha: CatchOpacity.controlOverlayHover,
-                  ),
-                  focusColor: foreground.withValues(
-                    alpha: CatchOpacity.controlOverlayHover,
-                  ),
-                  splashColor: foreground.withValues(
-                    alpha: CatchOpacity.controlOverlayPressed,
-                  ),
-                  highlightColor: foreground.withValues(
-                    alpha: CatchOpacity.controlOverlayPressed,
-                  ),
-                  child: content,
-                ),
-              )
-            : content,
+        child: content,
       ),
     );
 
@@ -435,7 +408,32 @@ class _CatchChipState extends State<CatchChip> {
       enabled: _hasControlRole ? widget._enabled : null,
       label: widget._semanticsLabel ?? defaultSemanticsLabel,
       onTap: _onPressed,
-      child: chip,
+      child: _hasControlRole
+          ? Material(
+              color: Colors.transparent,
+              child: InkWell(
+                excludeFromSemantics: true,
+                onTap: _onPressed,
+                onHover: (hovered) => setState(() => _hovered = hovered),
+                onHighlightChanged: _setPressed,
+                onFocusChange: (focused) {
+                  if (_focused != focused) setState(() => _focused = focused);
+                },
+                borderRadius: radius,
+                splashFactory: NoSplash.splashFactory,
+                hoverColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: CatchPlatformTokens.minimumInteractiveExtent,
+                    minWidth: CatchPlatformTokens.minimumInteractiveExtent,
+                  ),
+                  child: Align(widthFactor: 1, heightFactor: 1, child: chip),
+                ),
+              ),
+            )
+          : chip,
     );
   }
 }

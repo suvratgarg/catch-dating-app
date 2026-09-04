@@ -233,6 +233,10 @@ class CatchFieldRow extends StatelessWidget {
 }
 
 class CatchFieldTrailing extends StatelessWidget {
+  /// Shared clear-action allocation for the native target and its row slot.
+  static BoxConstraints get clearTargetConstraints =>
+      CatchControlMetrics.squareConstraints(CatchSpacing.s6);
+
   factory CatchFieldTrailing.custom({
     Key? key,
     required Widget child,
@@ -368,11 +372,11 @@ class CatchFieldTrailing extends StatelessWidget {
     topPadding: topPadding,
     builder: (context) => IconButton(
       tooltip: tooltip,
-      visualDensity: VisualDensity.compact,
+      visualDensity: VisualDensity.standard,
       padding: EdgeInsets.zero,
-      constraints: CatchControlMetrics.squareConstraints(CatchSpacing.s6),
+      constraints: clearTargetConstraints,
       style: IconButton.styleFrom(
-        minimumSize: Size.zero,
+        minimumSize: clearTargetConstraints.smallest,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       icon: Icon(
@@ -960,11 +964,7 @@ class _CatchFieldCommitButtonState extends State<CatchFieldCommitButton> {
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       side: BorderSide(color: widget.primary ? Colors.transparent : t.line2),
       shape: const StadiumBorder(),
-      textStyle: CatchTextStyles.fieldRowTitle(context).copyWith(
-        fontSize: CatchFieldTokens.actionButtonFontSize,
-        fontWeight: FontWeight.w600,
-        height: 1,
-      ),
+      textStyle: CatchTextStyles.control(context),
       leading: widget.loading
           ? ExcludeSemantics(
               child: SizedBox.square(
