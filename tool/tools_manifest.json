@@ -4802,6 +4802,13 @@
       "command": "node tool/design/build_host_feature_responsibilities.mjs --check",
       "safety": "local-writes-generated",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
       "description": "Validates the ordered Today, Events, Audience, Inbox, and Organizer responsibility boundaries against the Host shell, typed routes, existing feature-contract action owners, Dart symbols, data contracts, and focused tests, then generates one local overview in each destination root.",
       "checks": [
         "node --check tool/design/build_host_feature_responsibilities.mjs",
