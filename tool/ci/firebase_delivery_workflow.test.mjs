@@ -11,6 +11,29 @@ const workflow = (name) => fs.readFileSync(
   "utf8",
 );
 
+test("staging refresh is monthly or manual, validates its exact snapshot, and cannot advance production", () => {
+  const staging = workflow("backend-staging.yml");
+  assert.match(staging, /schedule:\s+- cron: '17 2 1 \* \*'/);
+  assert.match(staging, /workflow_dispatch:/);
+  assert.doesNotMatch(staging, /workflow_run:|\n  push:|\n  pull_request:/);
+  assert.match(staging, /if: github\.ref == 'refs\/heads\/main'/);
+  assert.match(staging, /group: backend-staging\n  cancel-in-progress: false/);
+  assert.match(staging, /test "\$CONTROL_PLANE_SHA" = "\$SOURCE_SHA"/);
+  assert.match(staging, /test "\$GITHUB_RUN_ATTEMPT" = "1"/);
+  assert.match(staging, /baseSha: \$sourceSha/);
+  assert.match(staging, /snapshot: \{[\s\S]*cumulativeSnapshot: true/);
+  for (const lane of ["functions", "contracts", "firestore-rules"]) {
+    assert.ok(staging.includes(`uses: ./.github/workflows/${lane}-ci.yml`));
+    assert.ok(staging.includes(`needs.${lane}.result == 'success'`));
+  }
+  assert.match(staging, /name: functions-lib-\$\{\{ needs\.authorize\.outputs\.source_sha \}\}-\$\{\{ github\.run_attempt \}\}/);
+  assert.match(staging, /--functions-lib-dir build\/staging\/tested-functions-lib/);
+  assert.match(staging, /name: firebase-delivery-\$\{\{ needs\.authorize\.outputs\.source_sha \}\}-\$\{\{ github\.run_attempt \}\}/);
+  assert.match(staging, /environment: staging/);
+  assert.doesNotMatch(staging, /environment: (?:dev|prod)|backend-delivery-cursor|backend-delivery-drain|contents: write/);
+  assert.equal((staging.match(/uses: \.\/\.github\/workflows\/_firebase-promote.yml/g) ?? []).length, 1);
+});
+
 test("main CI serializes planning and re-covers every failed validation window", () => {
   const ci = workflow("ci.yml");
   assert.match(ci, /group: ci-\$\{\{ github\.event_name \}\}-\$\{\{[\s\S]*github\.event_name == 'push'[\s\S]*github\.run_id/);
@@ -122,7 +145,7 @@ test("Delivery keeps the current immutable control plane separate from an older 
   assert.match(delivery, /test "\$\(git rev-parse HEAD\)" = "\$CONTROL_PLANE_SHA"/);
   assert.match(delivery, /git -C "\$SOURCE_CHECKOUT" merge-base --is-ancestor "\$SOURCE_SHA" refs\/remotes\/origin\/main/);
   assert.match(delivery, /package_firebase_delivery\.mjs verify[\s\S]*--source-root build\/delivery\/source-checkout/);
-  assert.equal((delivery.match(/control_plane_sha: \$\{\{ github\.workflow_sha \}\}/g) ?? []).length, 3);
+  assert.equal((delivery.match(/control_plane_sha: \$\{\{ github\.workflow_sha \}\}/g) ?? []).length, 2);
 
   assert.match(promotion, /control_plane_sha:[\s\S]*required: true/);
   assert.match(promotion, /timeout-minutes: 240/);
@@ -466,11 +489,11 @@ test("only the successful finalizer advances and drains the cursor", () => {
   assert.equal((delivery.match(/name: backend-delivery-cursor-v4-/g) ?? []).length, 1);
 });
 
-test("promotion is ordered dev to staging to protected prod", () => {
+test("promotion is ordered dev to protected prod", () => {
   const delivery = workflow("delivery.yml");
   assert.match(delivery, /dev:[\s\S]*environment: dev/);
-  assert.match(delivery, /staging:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: staging/);
-  assert.match(delivery, /prod:[\s\S]*needs: \[authorize, staging\][\s\S]*environment: prod/);
+  assert.doesNotMatch(delivery, /\n  staging:|environment: staging|needs\.staging/);
+  assert.match(delivery, /prod:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: prod/);
 
   const promotion = workflow("_firebase-promote.yml");
   const verifyOffset = promotion.indexOf("Verify artifact provenance");
@@ -507,6 +530,18 @@ test("promotion is ordered dev to staging to protected prod", () => {
     /Resume ordered backend stages[\s\S]*Verify active rules match the exact approved source[\s\S]*check_rules_deployment_drift\.mjs[\s\S]*--project "\$PROJECT_ID"[\s\S]*--repo-root build\/delivery\/source-checkout/,
   );
   assert.doesNotMatch(promotion, /npm (?:--prefix \S+ )?(?:test|run lint|run build)|emulators:exec/);
+});
+
+test("promotion executes the reverified subset and handles empty Functions as a checkpointed no-op", () => {
+  const promotion = workflow("_firebase-promote.yml");
+  assert.match(promotion, /npm ci --ignore-scripts --workspaces=false/);
+  assert.equal((promotion.match(/--affected-functions true/g) ?? []).length, 3);
+  assert.equal((promotion.match(/cmp build\/delivery\/execution-plan.json build\/delivery\/reverified-plan.json/g) ?? []).length, 2);
+  assert.match(promotion, /' build\/delivery\/execution-plan.json\)"/);
+  assert.doesNotMatch(promotion, /' "\$PACKAGE_DIR\/delivery-plan.json"\)"/);
+  assert.match(promotion, /if \[\[ "\$stage" == "functions" && -z "\$target" \]\]; then[\s\S]*verified no-op stage[\s\S]*else[\s\S]*\.\/tool\/deploy_firebase_targets.sh/);
+  assert.match(promotion, /if: \$\{\{ steps.verify.outputs.has_targets == 'true' \}\}/);
+  assert.match(promotion, /\.targets \| any\(startswith\("functions:"\)\)/);
 });
 
 test("promotion keeps the verified package immutable and reverifies its deploy copy", () => {
@@ -611,9 +646,9 @@ test("Backend Rebaseline authorizes one exact all-backend snapshot", () => {
 test("Backend Rebaseline promotes in order and advances only a successful current-main prod", () => {
   const rebaseline = workflow("backend-rebaseline.yml");
   assert.match(rebaseline, /dev:[\s\S]*needs: \[authorize, package\][\s\S]*environment: dev/);
-  assert.match(rebaseline, /staging:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: staging/);
-  assert.match(rebaseline, /prod:[\s\S]*needs: \[authorize, staging\][\s\S]*environment: prod/);
-  assert.equal((rebaseline.match(/require_current_main: true/g) ?? []).length, 3);
+  assert.doesNotMatch(rebaseline, /\n  staging:|environment: staging|needs\.staging/);
+  assert.match(rebaseline, /prod:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: prod/);
+  assert.equal((rebaseline.match(/require_current_main: true/g) ?? []).length, 2);
   const finalizer = rebaseline.slice(rebaseline.indexOf("  finalize:"));
   assert.match(finalizer, /needs\.prod\.result == 'success'/);
   assert.match(finalizer, /test "\$GITHUB_RUN_ATTEMPT" = "1"/);

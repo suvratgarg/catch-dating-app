@@ -491,8 +491,15 @@ node tool/firebase/check_environment_readiness.mjs \
 ```
 
 The reusable Firebase promotion workflow runs this gate after the downloaded
-package is verified and before runtime setup, dependency installation, Firebase
-CLI installation, or remote mutation.
+package and affected target selection are verified and before Functions runtime
+dependency installation, Firebase CLI installation, or remote mutation. The
+pinned source-analysis parser is installed without lifecycle scripts before
+artifact verification and before cloud authentication.
+
+Routine backend promotion is dev → protected production.
+`backend-staging.yml` separately validates and refreshes a full staging snapshot
+on the first day of each month at 02:17 UTC, with a main-only manual trigger.
+Staging never advances the production queue cursor.
 
 Backend queue selection is artifact-authority based. `Required CI` publishes a
 `catch.ci-delivery-authority/v3` document only after the current main attempt
@@ -514,6 +521,13 @@ before credentials and again immediately before mutation. It installs only the
 pinned Firebase CLI before credentials; it never installs source dependencies,
 rebuilds frontend bytes, or rematerializes organizer data. Recovery is terminal-source-
 bound, current-main-only, and rejects older attempts at the same SHA.
+
+`tool/firebase/affected_function_targets.mjs` narrows a verified package for
+promotion from exact Git base/source objects and transitive TypeScript module
+dependencies. It retains all authorized functions for shared initialization,
+runtime/dependency changes, snapshots, and uncertain analysis; a proven empty
+selection records a Functions no-op. It never rewrites package bytes or adds
+unauthorized targets. Its focused tests run with the delivery-package check.
 
 `tool/firebase/plan_firebase_deploy_targets.mjs` is the pure planner behind
 `tool/deploy_firebase_targets.sh`. It validates target syntax, expands logical

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -132,6 +133,50 @@ function verify(work, provenanceManifestPath, overrides = {}) {
     ...overrides,
   });
 }
+
+test("affected execution narrows a verified historical package without changing its bytes or stages", (t) => {
+  const work = fixture();
+  t.after(() => fs.rmSync(work.root, {recursive: true, force: true}));
+  const git = (...args) => execFileSync("git", ["-C", work.source, ...args], {encoding: "utf8"}).trim();
+  git("init", "-q");
+  git("config", "user.name", "Delivery test");
+  git("config", "user.email", "delivery-test@example.invalid");
+  fs.writeFileSync(path.join(work.source, "functions/tsconfig.json"), '{"compilerOptions":{"rootDir":"src"}}');
+  fs.writeFileSync(path.join(work.source, "functions/src/index.ts"),
+    'export {alpha} from "./alpha"; export {beta} from "./beta";');
+  for (const name of ["alpha", "beta"]) {
+    fs.writeFileSync(path.join(work.source, `functions/src/${name}.ts`), `export const ${name} = 1;`);
+  }
+  git("add", ".");
+  git("commit", "-qm", "base", "--no-verify");
+  const actualBase = git("rev-parse", "HEAD");
+  fs.writeFileSync(path.join(work.source, "functions/src/alpha.ts"), "export const alpha = 2;");
+  git("add", ".");
+  git("commit", "-qm", "alpha update", "--no-verify");
+  const actualSource = git("rev-parse", "HEAD");
+  const impact = JSON.parse(fs.readFileSync(work.impactPlanPath, "utf8"));
+  impact.baseSha = actualBase;
+  impact.sourceSha = actualSource;
+  fs.writeFileSync(work.impactPlanPath, JSON.stringify(impact));
+  const binding = {baseSha: actualBase, sourceSha: actualSource};
+  const {plan, provenanceManifestPath} = prepare(work, binding);
+  const provenance = JSON.parse(fs.readFileSync(provenanceManifestPath, "utf8"));
+  provenance.sourceSha = actualSource;
+  fs.writeFileSync(provenanceManifestPath, JSON.stringify(provenance));
+  const inventoryBefore = fs.readFileSync(path.join(work.output, "delivery-inventory.json"));
+  const planBefore = fs.readFileSync(path.join(work.output, "delivery-plan.json"));
+  const result = verify(work, provenanceManifestPath, {...binding, selectAffectedFunctions: true});
+  assert.equal(result.functionSelection.mode, "affected");
+  assert.deepEqual(result.targets, ["firestore:indexes", "functions:alpha"]);
+  assert.deepEqual(result.stages, plan.stages);
+  assert.deepEqual(fs.readFileSync(path.join(work.output, "delivery-inventory.json")), inventoryBefore);
+  assert.deepEqual(fs.readFileSync(path.join(work.output, "delivery-plan.json")), planBefore);
+  assert.deepEqual(verify(work, provenanceManifestPath, binding).targets, plan.targets);
+  fs.appendFileSync(path.join(work.output, "functions/lib/index.js"), "\ntampered()");
+  assert.throws(() => verify(work, provenanceManifestPath, {
+    ...binding, selectAffectedFunctions: true,
+  }), /inventory/);
+});
 
 test("creates a canonical bounded no-predeploy Firebase configuration", () => {
   const config = createBoundedFirebaseConfig({

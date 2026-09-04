@@ -884,8 +884,8 @@ jobs:
       resume_delivery_attempt: ${{ inputs.resume_delivery_attempt }}
     secrets: inherit
 
-  staging:
-    name: Promote backend to staging
+  prod:
+    name: Promote backend to prod
     needs: [authorize, dev]
     if: >-
       always() &&
@@ -893,27 +893,6 @@ jobs:
       needs.authorize.outputs.work_required == 'true' &&
       needs.authorize.outputs.deploy_required == 'true' &&
       needs.dev.result == 'success'
-    uses: ./.github/workflows/_firebase-promote.yml
-    with:
-      environment: staging
-      control_plane_sha: ${{ github.workflow_sha }}
-      base_sha: ${{ needs.authorize.outputs.base_sha }}
-      source_ci_run_attempt: ${{ needs.authorize.outputs.source_ci_run_attempt }}
-      source_ci_run_id: ${{ needs.authorize.outputs.source_ci_run_id }}
-      source_sha: ${{ needs.authorize.outputs.source_sha }}
-      resume_delivery_run_id: ${{ inputs.resume_delivery_run_id }}
-      resume_delivery_attempt: ${{ inputs.resume_delivery_attempt }}
-    secrets: inherit
-
-  prod:
-    name: Promote backend to prod
-    needs: [authorize, staging]
-    if: >-
-      always() &&
-      needs.authorize.result == 'success' &&
-      needs.authorize.outputs.work_required == 'true' &&
-      needs.authorize.outputs.deploy_required == 'true' &&
-      needs.staging.result == 'success'
     uses: ./.github/workflows/_firebase-promote.yml
     with:
       environment: prod
@@ -928,7 +907,7 @@ jobs:
 
   finalize:
     name: Advance the successful delivery cursor
-    needs: [authorize, dev, staging, prod]
+    needs: [authorize, dev, prod]
     if: >-
       always() &&
       needs.authorize.result == 'success' &&

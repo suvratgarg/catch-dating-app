@@ -468,25 +468,10 @@ jobs:
       require_current_main: true
     secrets: inherit
 
-  staging:
-    name: Rebaseline backend in staging
-    needs: [authorize, dev]
-    if: ${{ always() && needs.authorize.result == 'success' && needs.dev.result == 'success' }}
-    uses: ./.github/workflows/_firebase-promote.yml
-    with:
-      environment: staging
-      control_plane_sha: ${{ github.workflow_sha }}
-      base_sha: ${{ needs.authorize.outputs.base_sha }}
-      source_ci_run_attempt: ${{ github.run_attempt }}
-      source_ci_run_id: ${{ github.run_id }}
-      source_sha: ${{ needs.authorize.outputs.source_sha }}
-      require_current_main: true
-    secrets: inherit
-
   prod:
     name: Rebaseline backend in prod
-    needs: [authorize, staging]
-    if: ${{ always() && needs.authorize.result == 'success' && needs.staging.result == 'success' }}
+    needs: [authorize, dev]
+    if: ${{ always() && needs.authorize.result == 'success' && needs.dev.result == 'success' }}
     uses: ./.github/workflows/_firebase-promote.yml
     with:
       environment: prod
@@ -500,7 +485,7 @@ jobs:
 
   finalize:
     name: Advance the delivery cursor only after prod
-    needs: [authorize, dev, staging, prod]
+    needs: [authorize, dev, prod]
     if: ${{ always() && needs.authorize.result == 'success' && needs.prod.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10

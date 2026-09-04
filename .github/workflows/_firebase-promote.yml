@@ -117,6 +117,18 @@ jobs:
           name: firebase-delivery-${{ inputs.source_sha }}-${{ inputs.source_ci_run_attempt }}
           path: build/delivery/source
 
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install the pinned source-analysis parser
+        run: npm ci --ignore-scripts --workspaces=false
+
       - id: verify
         name: Verify artifact provenance and packaged CI plan before mutation
         env:
@@ -145,15 +157,19 @@ jobs:
             --base-sha "$BASE_SHA" \
             --ci-run-id "$SOURCE_CI_RUN_ID" \
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
-            --provenance-manifest build/delivery/source/firebase-provenance.json)"
+            --provenance-manifest build/delivery/source/firebase-provenance.json \
+            --affected-functions true)"
           project_id="$(jq -er --arg environment "$DEPLOY_ENVIRONMENT" \
             '.projects[$environment]' build/delivery/package/.firebaserc)"
           control_project_id="$(jq -er --arg environment "$DEPLOY_ENVIRONMENT" \
             '.projects[$environment]' .firebaserc)"
           [[ "$project_id" =~ ^[a-z][a-z0-9-]{4,28}[a-z0-9]$ ]]
           test "$control_project_id" = "$project_id"
-          echo "targets=$(jq -er '.targets | join(",")' <<< "$result")" >> "$GITHUB_OUTPUT"
-          echo "has_functions=$(jq -er '.stages | contains(["functions"])' <<< "$result")" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$result" > build/delivery/execution-plan.json
+          jq '{stages, targets, functionSelection}' <<< "$result"
+          echo "targets=$(jq -r '.targets | map(select(length > 0)) | join(",")' <<< "$result")" >> "$GITHUB_OUTPUT"
+          echo "has_targets=$(jq -r '.targets | any(length > 0)' <<< "$result")" >> "$GITHUB_OUTPUT"
+          echo "has_functions=$(jq -r '.targets | any(startswith("functions:"))' <<< "$result")" >> "$GITHUB_OUTPUT"
           echo "project_id=$project_id" >> "$GITHUB_OUTPUT"
           echo "checkpoint_scope=firebase:${DEPLOY_ENVIRONMENT}:${project_id}" >> "$GITHUB_OUTPUT"
 
@@ -240,6 +256,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v3
 
       - name: Verify environment prerequisites for the approved targets
+        if: ${{ steps.verify.outputs.has_targets == 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           DEPLOY_TARGETS: ${{ steps.verify.outputs.targets }}
@@ -247,15 +264,6 @@ jobs:
           node tool/firebase/check_environment_readiness.mjs
           --env "$DEPLOY_ENVIRONMENT"
           --targets "$DEPLOY_TARGETS"
-
-      - id: toolchain
-        uses: ./.github/actions/load-toolchain
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ steps.toolchain.outputs.node-version }}
-          cache: npm
-          cache-dependency-path: functions/package-lock.json
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
@@ -292,7 +300,9 @@ jobs:
             --base-sha "$BASE_SHA" \
             --ci-run-id "$SOURCE_CI_RUN_ID" \
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
-            --provenance-manifest build/delivery/source/firebase-provenance.json
+            --provenance-manifest build/delivery/source/firebase-provenance.json \
+            --affected-functions true > build/delivery/reverified-plan.json
+          cmp build/delivery/execution-plan.json build/delivery/reverified-plan.json
           node tool/ci/package_firebase_delivery.mjs verify \
             --source-root build/delivery/source-checkout \
             --package-dir build/delivery/deploy-tree \
@@ -302,7 +312,9 @@ jobs:
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
             --provenance-manifest build/delivery/source/firebase-provenance.json \
             --allow-runtime-dependencies true \
-            --trusted-package-dir build/delivery/package
+            --trusted-package-dir build/delivery/package \
+            --affected-functions true > build/delivery/reverified-plan.json
+          cmp build/delivery/execution-plan.json build/delivery/reverified-plan.json
 
       - name: Remove only obsolete non-deployable indexes from the deploy copy
         run: |
@@ -368,7 +380,7 @@ jobs:
               ($stages | index($stage)) as $index |
               select($index != null) |
               $targets[$index]
-            ' "$PACKAGE_DIR/delivery-plan.json")"
+            ' build/delivery/execution-plan.json)"
             case "$stage" in
               firestore-indexes|functions|firestore-rules|storage-rules) ;;
               *) echo "Refusing unknown delivery stage: $stage"; exit 64 ;;
@@ -376,7 +388,7 @@ jobs:
             stage_status=0
             failure_detail="Firebase CLI stage failed; safe to resume this stage."
             deploy_args=(--config "$PACKAGE_DIR/firebase.json")
-            if [[ "$stage" == "functions" ]]; then
+            if [[ "$stage" == "functions" && -n "$target" ]]; then
               IFS=',' read -r -a explicit_function_targets <<< "$target"
               (( "${#explicit_function_targets[@]}" > 0 ))
               for function_target in "${explicit_function_targets[@]}"; do
@@ -390,11 +402,15 @@ jobs:
               # and environment-only Functions outside the mutation set.
               deploy_args+=(--force)
             fi
-            CATCH_DELIVERY_FUNCTIONS_DIR="$DELIVERY_FUNCTIONS_DIR" \
-              CATCH_FIREBASE_SOURCE_ROOT="$SOURCE_CHECKOUT" \
-              ./tool/deploy_firebase_targets.sh \
-                "$DEPLOY_ENVIRONMENT" "$target" \
-                "${deploy_args[@]}" || stage_status=$?
+            if [[ "$stage" == "functions" && -z "$target" ]]; then
+              echo "No Functions runtime dependency changed; recording the verified no-op stage."
+            else
+              CATCH_DELIVERY_FUNCTIONS_DIR="$DELIVERY_FUNCTIONS_DIR" \
+                CATCH_FIREBASE_SOURCE_ROOT="$SOURCE_CHECKOUT" \
+                ./tool/deploy_firebase_targets.sh \
+                  "$DEPLOY_ENVIRONMENT" "$target" \
+                  "${deploy_args[@]}" || stage_status=$?
+            fi
             if [[ "$stage_status" == "0" && "$stage" == "firestore-indexes" ]]; then
               node tool/firebase/wait_firestore_indexes_ready.mjs \
                 --indexes "$PACKAGE_DIR/firestore.indexes.json" \
