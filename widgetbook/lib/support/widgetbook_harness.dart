@@ -7,6 +7,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:widgetbook/widgetbook.dart';
 
+const widgetbookCatalogScrollKey = ValueKey<String>(
+  'widgetbook-catalog-scroll',
+);
+const widgetbookCatalogContentKey = ValueKey<String>(
+  'widgetbook-catalog-content',
+);
+
 /// Shared catalog canvas. The reference cases retain their production widgets
 /// and state cards; only their repeated outer frame moves here.
 class WidgetbookCatalogFrame extends StatelessWidget {
@@ -27,22 +34,26 @@ class WidgetbookCatalogFrame extends StatelessWidget {
     return ColoredBox(
       color: tokens.bg,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(CatchSpacing.s5),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 760),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(title, style: CatchTextStyles.headline(context)),
-                gapH4,
-                CatchMonoLabel(catalogId, color: tokens.ink3),
-                gapH20,
-                for (final child in children) ...[
-                  child,
-                  if (child != children.last) gapH16,
+        key: widgetbookCatalogScrollKey,
+        child: Padding(
+          key: widgetbookCatalogContentKey,
+          padding: const EdgeInsets.all(CatchSpacing.s5),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 760),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(title, style: CatchTextStyles.headline(context)),
+                  gapH4,
+                  CatchMonoLabel(catalogId, color: tokens.ink3),
+                  gapH20,
+                  for (final child in children) ...[
+                    child,
+                    if (child != children.last) gapH16,
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

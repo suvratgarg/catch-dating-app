@@ -11,6 +11,7 @@ import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart';
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 import '../../test/goldens/support/golden_pump.dart';
+import 'support/triage_inventory.dart';
 
 // These ids select generated use cases; they do not redeclare component states.
 const _referenceCases = <String, String>{
@@ -27,8 +28,56 @@ const _referenceCases = <String, String>{
   'Core catalog/Icon atoms/CatchIconTile/Catalog states': 'icon_tile',
 };
 
+String _annotationKey(Map<String, Object?> row) {
+  final type = (row['type'] as String).replaceFirst(RegExp(r'<.*>'), '');
+  return [row['file'], row['builder'], type, row['name']].join(':');
+}
+
+List<Map<String, Object?>> _inventoryRows(Object? value) {
+  return (value! as List<Object?>)
+      .map((row) => (row! as Map<Object?, Object?>).cast<String, Object?>())
+      .toList();
+}
+
+Map<String, bool> _coreGoldenDesignations() {
+  final fromWidgetbook = File('lib/main.directories.g.dart').existsSync();
+  final inventory = readWidgetbookInventory(
+    repoRoot: fromWidgetbook ? '..' : '.',
+  );
+  final registrations = {
+    for (final row in _inventoryRows(inventory['generated']))
+      _annotationKey(row): '${row['path']}/${row['name']}',
+  };
+  return {
+    for (final row in _inventoryRows(inventory['cases']))
+      if (row['typeFile'] is String &&
+          ((row['typeFile'] as String).startsWith('lib/core/widgets/')) &&
+          registrations.containsKey(_annotationKey(row)))
+        registrations[_annotationKey(row)]!:
+            (row['file'] as String).startsWith('widgetbook/lib/primitives/') ||
+            (row['file'] as String).startsWith('widgetbook/lib/geometry/'),
+  };
+}
+
+String _corpusStem(String id) {
+  final legacy = _referenceCases[id];
+  if (legacy != null) return legacy;
+  var hash = 0x811c9dc5;
+  for (final unit in id.codeUnits) {
+    hash = ((hash ^ unit) * 0x01000193) & 0xffffffff;
+  }
+  final slug = id
+      .toLowerCase()
+      .replaceAll(RegExp('[^a-z0-9]+'), '_')
+      .replaceAll(RegExp(r'^_+|_+$'), '');
+  final tail = slug.length <= 96 ? slug : slug.substring(slug.length - 96);
+  return 'corpus/${tail}_${hash.toRadixString(16).padLeft(8, '0')}';
+}
+
 void main() {
-  final renderer = _CatchGoldenRenderer();
+  final coreGoldenDesignations = _coreGoldenDesignations();
+  final coreGoldenIds = coreGoldenDesignations.keys.toSet();
+  final renderer = _CatchGoldenRenderer(coreGoldenDesignations);
   WidgetbookGoldenTestGenerator(
     properties: WidgetbookGoldenTestsProperties(),
     renderer: renderer,
@@ -42,7 +91,12 @@ void main() {
     expect(registered, greaterThan(0));
     expect(renderer.visited.length, registered);
     expect(renderer.visited.toSet().length, registered);
-    expect(renderer.selected, unorderedEquals(_referenceCases.keys));
+    expect(coreGoldenIds, hasLength(249));
+    expect(renderer.selected, unorderedEquals(coreGoldenIds));
+    expect(
+      coreGoldenIds.map(_corpusStem).toSet(),
+      hasLength(coreGoldenIds.length),
+    );
   });
 
   testWidgets('booking dock catalog mounts the production state surface', (
@@ -103,6 +157,10 @@ void main() {
 /// Adopt the maintained traversal/generator, adapting only rendering to Catch.
 /// Every designated case is rebuilt under each theme by matchCatchGolden.
 class _CatchGoldenRenderer implements WidgetbookGoldenRenderer {
+  _CatchGoldenRenderer(this.designations);
+
+  final Map<String, bool> designations;
+  Set<String> get designatedIds => designations.keys.toSet();
   final visited = <String>[];
   final selected = <String>[];
 
@@ -116,27 +174,38 @@ class _CatchGoldenRenderer implements WidgetbookGoldenRenderer {
   }) {
     final id = '$goldenPath/${useCase.name}'.replaceFirst(RegExp(r'^/'), '');
     visited.add(id);
-    final stem = _referenceCases[id];
-    if (stem == null) return;
+    if (!designatedIds.contains(id)) return;
+    final stem = _corpusStem(id);
     if (skip || goldenTestBuilder != null) {
       throw StateError(
         'Designated case needs explicit Catch rendering support: $id',
       );
     }
     selected.add(id);
-    for (final scale in [1.0, if (stem == 'mono_label') 2.0]) {
-      testWidgets('$id at scale $scale', tags: ['golden'], (tester) async {
-        await matchCatchGolden(
-          tester,
-          'widgetbook/$stem${scale == 1 ? '' : '@2.0'}',
-          size: const Size(440, 1000),
-          textScale: scale,
-          builder: (_) => WidgetbookFixtureScope(
-            overrides: const [],
-            child: WidgetbookCaseScope(
-              // A fresh scope for each light/dark render resets knob state.
-              key: UniqueKey(),
-              builder: useCase.builder,
+    final scales = designations[id]! ? const [1.0, 2.0] : const [1.0];
+    for (final scale in scales) {
+      testWidgets('$id at scale $scale', (tester) async {
+        final preservesReference =
+            _referenceCases.containsKey(id) &&
+            (scale == 1 || stem == 'mono_label');
+        await goldenTestZoneRunner(
+          properties: properties,
+          testBody: () => matchCatchGolden(
+            tester,
+            'widgetbook/$stem${scale == 1 ? '' : '@2.0'}',
+            size: Size(440, preservesReference ? 1000 : 1400),
+            textScale: scale,
+            fitContentKey: preservesReference
+                ? null
+                : widgetbookCatalogContentKey,
+            fitFirstScrollable: !preservesReference,
+            builder: (_) => WidgetbookFixtureScope(
+              overrides: const [],
+              child: WidgetbookCaseScope(
+                // A fresh scope for each light/dark render resets knob state.
+                key: UniqueKey(),
+                builder: useCase.builder,
+              ),
             ),
           ),
         );
@@ -153,7 +222,7 @@ class _CatchGoldenRenderer implements WidgetbookGoldenRenderer {
     required bool skip,
     WidgetbookGoldenTestBuilder? goldenTestBuilder,
   }) {
-    if (_referenceCases.containsKey(
+    if (designatedIds.contains(
       '$goldenPath/${useCase.name}'.replaceFirst(RegExp(r'^/'), ''),
     )) {
       throw UnsupportedError(

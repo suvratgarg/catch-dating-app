@@ -2816,6 +2816,8 @@ Widget catchFieldExplicitSaveControlContractStates(BuildContext context) {
   path: '[Core primitives]/Inputs',
 )
 Widget catchFieldActionBarContractStates(BuildContext context) {
+  final textScale = MediaQuery.textScalerOf(context).scale(1);
+
   return _ContractScreen(
     title: 'CatchFieldActionBar',
     contractId: 'catch.field.action_bar',
@@ -2844,7 +2846,9 @@ Widget catchFieldActionBarContractStates(BuildContext context) {
       _StateCard(
         label: 'wrapped',
         child: SizedBox(
-          width: WidgetbookPreviewLayout.fieldActionBarWrapWidth,
+          width: textScale >= 2
+              ? WidgetbookPreviewLayout.standardContractWidth
+              : WidgetbookPreviewLayout.fieldActionBarWrapWidth,
           child: CatchFieldActionBar(
             actionLeading: const Text('19 / 300'),
             onCancel: _noop,
@@ -4705,7 +4709,11 @@ Widget catchTopBarContractStates(BuildContext context) {
       _StateCard(
         label: 'compact',
         child: const _TopBarFrame(
-          child: CatchTopBar(title: 'Events', subtitle: 'Tonight nearby'),
+          child: CatchTopBar(
+            title: 'Events',
+            subtitle: 'Tonight nearby',
+            allowContentHeightExpansion: true,
+          ),
         ),
       ),
       _StateCard(
@@ -4715,6 +4723,7 @@ Widget catchTopBarContractStates(BuildContext context) {
             kicker: 'HOST MODE',
             title: 'Upcoming events',
             subtitle: 'Review requests and keep the room balanced.',
+            allowContentHeightExpansion: true,
           ),
         ),
       ),
@@ -4723,6 +4732,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Event details',
+            allowContentHeightExpansion: true,
             leadingType: CatchTopBarLeading.back,
             onBack: _noop,
           ),
@@ -4733,6 +4743,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Form builder',
+            allowContentHeightExpansion: true,
             leadingType: CatchTopBarLeading.back,
             leadingActionVariant: CatchIconButtonVariant.plain,
             onBack: _noop,
@@ -4754,6 +4765,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Chats',
+            allowContentHeightExpansion: true,
             actions: [
               CatchIconAction(
                 icon: CatchIcons.moreHorizRounded,
@@ -4769,6 +4781,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Preview',
+            allowContentHeightExpansion: true,
             actions: [CatchTopBarTextAction(label: 'Done', onPressed: _noop)],
           ),
         ),
@@ -4779,6 +4792,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Clubs',
+            allowContentHeightExpansion: true,
             search: CatchTopBarSearch(
               value: 'run',
               placeholder: 'Search clubs',
@@ -4793,6 +4807,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar.identity(
             identityName: 'Taylor from Sunday Social',
+            allowContentHeightExpansion: true,
             identityPhotoUrl: null,
             onIdentityTap: _noop,
             surface: true,
@@ -4829,13 +4844,21 @@ Widget catchTopBarContractStates(BuildContext context) {
       _StateCard(
         label: 'surface',
         child: const _TopBarFrame(
-          child: CatchTopBar(title: 'Surface', surface: true),
+          child: CatchTopBar(
+            title: 'Surface',
+            surface: true,
+            allowContentHeightExpansion: true,
+          ),
         ),
       ),
       _StateCard(
         label: 'divider',
         child: const _TopBarFrame(
-          child: CatchTopBar(title: 'Divider', divider: true),
+          child: CatchTopBar(
+            title: 'Divider',
+            divider: true,
+            allowContentHeightExpansion: true,
+          ),
         ),
       ),
     ],
@@ -9570,21 +9593,14 @@ class _StateCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CatchBadge.functional(label: label),
-              if (description != null) ...[
-                const SizedBox(width: CatchSpacing.s3),
-                Expanded(
-                  child: Text(
-                    description!,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
-                  ),
-                ),
-              ],
-            ],
-          ),
+          Text(label, style: CatchTextStyles.labelM(context, color: t.primary)),
+          if (description != null) ...[
+            const SizedBox(height: CatchSpacing.s2),
+            Text(
+              description!,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+          ],
           const SizedBox(height: CatchSpacing.s4),
           child,
         ],
@@ -9744,7 +9760,9 @@ class _PhotoLikePanel extends StatelessWidget {
 
     return Container(
       width: WidgetbookPreviewLayout.compactComponentWidth,
-      height: WidgetbookPreviewLayout.photoLikePanelHeight,
+      height: MediaQuery.textScalerOf(context).scale(1) >= 2
+          ? WidgetbookPreviewLayout.tallNarrowPanelHeight
+          : WidgetbookPreviewLayout.photoLikePanelHeight,
       padding: CatchInsets.content,
       alignment: Alignment.topRight,
       decoration: BoxDecoration(
@@ -10191,7 +10209,9 @@ class _SurfaceSpec extends StatelessWidget {
       elevation: elevation,
       borderColor: borderColor ?? t.line,
       onTap: onTap,
-      width: WidgetbookPreviewLayout.surfaceSpecWidth,
+      width: MediaQuery.textScalerOf(context).scale(1) >= 2
+          ? WidgetbookPreviewLayout.mediumComponentWidth
+          : WidgetbookPreviewLayout.surfaceSpecWidth,
       padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
