@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.3.0
+version: 1.4.0
 updated: 2026-09-04
 owner: app_architecture
 status: active
@@ -425,6 +425,12 @@ that.
   - **L6 screens under provider scopes:** lowest value, highest harness tax,
     and redundant with the UI capture pipeline. Each existing case either
     migrates to that pipeline or records an explicit keep reason.
+  - **Prototypes:** Widgetbook-defined compositions proposing future UI must
+    carry an explicit proposal marker in the case name (for example,
+    `· proposed`). They are excluded from production golden coverage. Their
+    keep/promote/delete disposition stays with the owning feature review;
+    the three `EventSuccessModuleConsolidationPrototype` cases belong to the
+    Event Success consolidation review.
   A shared frame/scope harness library and knob-driven state matrices replace
   hand-enumerated permutations; hand-built harness volume becomes a tracked
   measure of remaining provider coupling.
@@ -545,10 +551,16 @@ Scope:
    registered in the tool manifest and the visual-integration lane.
 4. Seed baseline images; wire failed-image artifact retention (exists).
 5. Use-case triage: a deterministic classifier assigns every registered use
-   case to `component-mount`, `body-mount`, or `screen-scope`. Generated
-   output stays on demand (no tracked ledger); the authored disposition of
-   `screen-scope` cases (migrate to the UI capture pipeline vs a named keep
-   reason) is a small reviewed source file.
+   case to `component-mount`, `body-mount`, `screen-scope`, or `prototype`.
+   A `prototype` is a Widgetbook-defined composition proposing future UI,
+   requires an explicit proposal marker in its case name (the `· proposed`
+   suffix qualifies), and is excluded from the golden-coverage requirement.
+   Prototype keep/promote/delete decisions belong to the owning feature
+   review; the three Event Success proposals stay with that consolidation
+   review and are not edited or deleted by this spike. Generated output stays
+   on demand (no tracked ledger); the authored disposition of `screen-scope`
+   cases (migrate to the UI capture pipeline vs a named keep reason) is a small
+   reviewed source file in Phase 1 proper.
 6. Shared harness library: one frame/scope utility set replacing the repeated
    `_DeviceFrame`/`_SheetFrame`/provider-scope shapes, adopted by the
    reference golden slice; knob/matrix-driven state enumeration for L2–L4
@@ -558,8 +570,12 @@ Scope:
 DoD (mechanical): coverage gate green with waivers ≤ 20; golden suite green
 twice consecutively in CI (flake check); a deliberately broken spacing token
 in a scratch branch produces a visible golden diff (known-bad proof); the
-triage classifier covers every registered use case with zero unclassified,
-and every `screen-scope` case carries a disposition.
+triage classifier covers every registered use case with zero unclassified
+across `component-mount | body-mount | screen-scope | prototype`, every
+prototype has an explicit proposal marker, and every `screen-scope` case
+carries a disposition. Importing the production package is only a proxy for
+production mounting: the three Event Success prototypes are identified
+exceptions, despite importing production primitives.
 
 ### Phase 2 — `packages/catch_tokens`
 
