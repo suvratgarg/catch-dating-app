@@ -20,6 +20,13 @@ const _outputDirArg = String.fromEnvironment(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('page spacing resolves generated semantic layout aliases', () {
+    final pack = _ContextPackBuilder(Directory.systemTemp)._tokensJson();
+    final spacing = pack['space']! as Map<String, Object?>;
+    expect((spacing['screenPx']! as Map)[r'$value'], '20px');
+    expect((spacing['screenPt']! as Map)[r'$value'], '16px');
+  });
+
   testWidgets('writes the design context pack', (tester) async {
     final builder = _ContextPackBuilder(Directory(_outputDirArg));
     await builder.write(tester);
@@ -115,9 +122,16 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
       'GeneratedCatchRadiusTokens',
       sourcePath: 'lib/core/theme/generated/catch_design_tokens.g.dart',
     );
+    final generatedLayout = _doubleConstants(
+      'GeneratedCatchLayoutTokens',
+      sourcePath: 'lib/core/theme/generated/catch_design_tokens.g.dart',
+    );
     final spacing = _doubleConstants(
       'CatchSpacing',
-      refs: {'GeneratedCatchSpacingTokens': generatedSpacing},
+      refs: {
+        'GeneratedCatchSpacingTokens': generatedSpacing,
+        'GeneratedCatchLayoutTokens': generatedLayout,
+      },
     );
     final radius = _doubleConstants(
       'CatchRadius',

@@ -354,8 +354,8 @@ abstract final class CatchSpacing {
   static const double micro18 = GeneratedCatchSpacingTokens.micro18;
 
   /// App-wide page gutter and body padding from the design handoff.
-  static const double screenPx = CatchSpacing.s5;
-  static const double screenPt = CatchSpacing.s4;
+  static const double screenPx = GeneratedCatchLayoutTokens.pageGutter;
+  static const double screenPt = GeneratedCatchLayoutTokens.pageBodyStart;
   static const double screenPb = CatchSpacing.s5;
 }
 
@@ -1999,13 +1999,14 @@ abstract final class CatchBorder {
 /// celebratory success moments.
 abstract final class CatchMotion {
   static const Duration none = Duration.zero;
-  static const Duration fast = Duration(milliseconds: 120);
-  static const Duration micro = Duration(milliseconds: 180);
-  static const Duration chatScroll = Duration(milliseconds: 200);
-  static const Duration base = Duration(milliseconds: 220);
+  static const Duration fast = GeneratedCatchMotionTokens.fast;
+  static const Duration micro = GeneratedCatchMotionTokens.micro;
+  static const Duration chatScroll = GeneratedCatchMotionTokens.chatScroll;
+  static const Duration base = GeneratedCatchMotionTokens.base;
   static const Duration standard = base;
-  static const Duration pageStep = Duration(milliseconds: 280);
-  static const Duration calendarScroll = Duration(milliseconds: 320);
+  static const Duration pageStep = GeneratedCatchMotionTokens.pageStep;
+  static const Duration calendarScroll =
+      GeneratedCatchMotionTokens.calendarScroll;
   static const Duration mediaReorderDebounce = Duration(milliseconds: 400);
   static const Duration searchDebounce = Duration(milliseconds: 300);
   static const Duration eventSuccessActionDebounce = Duration(
@@ -2013,7 +2014,7 @@ abstract final class CatchMotion {
   );
   static const Duration eventSuccessThresholdTick = Duration(milliseconds: 1);
   static const Duration eventSuccessCeremonyTick = Duration(milliseconds: 100);
-  static const Duration slow = Duration(milliseconds: 420);
+  static const Duration slow = GeneratedCatchMotionTokens.slow;
   static const Duration afterglowBeatEntry = Duration(milliseconds: 480);
   static const Duration afterglowCountUp = Duration(milliseconds: 600);
   static const Duration arrivalCelebration = Duration(milliseconds: 800);
@@ -2049,7 +2050,7 @@ abstract final class CatchMotion {
   static const double welcomeSpinCurvePower = 3.0;
   static const Curve welcomeRevealCurve = Curves.easeOutCubic;
 
-  static const Curve standardCurve = Cubic(0.2, 0.0, 0.0, 1.0);
+  static const Curve standardCurve = GeneratedCatchMotionTokens.standardCurve;
   static const Curve linearCurve = Curves.linear;
   static const Curve easeCurve = Curves.ease;
   static const Curve easeInCubicCurve = Curves.easeInCubic;
@@ -2662,6 +2663,7 @@ abstract final class CatchLayout {
   static const double menuItemHeight = CatchSpacing.s12;
   static const double noticeMaxWidth = 520.0;
   static const double noticeIconExtent = CatchSpacing.s9;
+
   /// Available strip width (after page gutters) needed for inline actions.
   static const double statusStripInlineMinWidth = 320;
   static const double otpDigitHeight = CatchSpacing.s16;
