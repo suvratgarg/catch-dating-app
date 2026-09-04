@@ -611,20 +611,25 @@ test("manifest accepts only terminal prerequisite states", () => {
   );
 });
 
-test("backend promotion runs readiness before dependency installation", () => {
+test("backend promotion selects targets before credentials and checks readiness before runtime installation", () => {
   for (const workflowPath of [".github/workflows/_firebase-promote.yml"]) {
     const source = fs.readFileSync(path.join(repoRoot, workflowPath), "utf8");
     const auth = source.indexOf("name: Authenticate to Google Cloud");
+    const parser = source.indexOf("name: Install the pinned source-analysis parser");
+    const selection = source.indexOf("--affected-functions true");
     const readiness = source.indexOf(
       "name: Verify environment prerequisites for the approved targets",
     );
     assert.ok(auth >= 0, `${workflowPath} authenticates before probing`);
+    assert.ok(parser >= 0 && selection > parser && auth > selection,
+      `${workflowPath} resolves affected targets before credentials`);
+    const parserStep = source.slice(parser, source.indexOf("\n      - ", parser));
+    assert.match(parserStep, /npm ci --ignore-scripts --workspaces=false/);
     assert.ok(readiness > auth, `${workflowPath} probes after authentication`);
     for (const expensiveStep of [
-      "id: toolchain",
-      "uses: actions/setup-node@v6",
       "run: npm install -g firebase-tools@",
       "npm --prefix build/delivery/deploy-tree/functions ci",
+      "./tool/deploy_firebase_targets.sh",
     ]) {
       const expensiveIndex = source.indexOf(expensiveStep);
       assert.ok(

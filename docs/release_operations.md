@@ -37,9 +37,11 @@ visual-smoke workflows use `macos-26`.
 
 ## Firebase Environment Readiness
 
-The reusable backend Firebase promotion workflow runs the target-aware metadata
-preflight after OIDC authentication and before Node/Java setup, dependency
-installation, Firebase CLI installation, or repeated backend validation.
+The reusable backend Firebase promotion workflow installs its pinned source
+parser without lifecycle scripts and verifies affected targets before cloud
+authentication. The target-aware metadata preflight then runs after OIDC
+authentication and before Functions runtime dependency installation, Firebase
+CLI installation, or any backend mutation.
 Hosting and explicit Remote Config/Extensions operations have separate owners:
 
 ```sh
@@ -61,8 +63,8 @@ Confirmed missing state exits `1`; authentication, authorization, unavailable
 tooling, or malformed metadata exits `2`; invalid invocation exits `64`. All
 non-zero results block deployment. Add a requirement in the same change that
 introduces a new `defineSecret`, TTL-dependent capability, or deploy-time
-project prerequisite. A missing prerequisite must fail before dependency
-installation; do not move this gate into Firebase predeploy hooks.
+project prerequisite. A missing prerequisite must fail before Functions runtime
+dependency installation; do not move this gate into Firebase predeploy hooks.
 
 ## Firebase Functions Deployment Parity
 
