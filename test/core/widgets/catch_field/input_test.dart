@@ -130,15 +130,11 @@ void main() {
       ),
     );
 
-    final chipTops = [
-      for (final label in const ['English', 'Hindi', 'Marathi', 'Gujarati'])
-        tester.getTopLeft(find.byKey(ValueKey('catch-field-choice-$label'))).dy,
-    ];
-    expect(chipTops.toSet().length, greaterThan(1));
     final chipRects = [
       for (final label in const ['English', 'Hindi', 'Marathi', 'Gujarati'])
         tester.getRect(find.byKey(ValueKey('catch-field-choice-$label'))),
     ];
+    expect(chipRects.map((rect) => rect.top).toSet().length, greaterThan(1));
     final firstRowTop = chipRects.map((rect) => rect.top).reduce(math.min);
     final firstRowBottom = chipRects
         .where((rect) => (rect.top - firstRowTop).abs() < 0.1)
@@ -152,9 +148,6 @@ void main() {
       secondRowTop - firstRowBottom,
       closeTo(CatchFieldTokens.chipRunSpacing, 0.1),
     );
-    final englishRect = tester.getRect(
-      find.byKey(const ValueKey('catch-field-choice-English')),
-    );
     final englishLabel = tester.widget<Text>(
       find.descendant(
         of: find.byKey(const ValueKey('catch-field-choice-English')),
@@ -162,7 +155,7 @@ void main() {
       ),
     );
     expect(
-      englishRect.height,
+      chipRects.first.height,
       greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
     );
     expect(
