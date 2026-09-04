@@ -1,19 +1,19 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-19",
+  "updated": "2026-09-04",
   "id": "feature.event_rehearsal",
   "name": "Event Dress Rehearsal",
   "owner": "event_rehearsal",
   "status": "active",
-  "description": "Orchestrates a deterministic, synthetic-only Host practice room and anonymous guest phone across preparation, virtual live operations, issue simulation, completion, replay, and reproduction export without mutating the production event domain.",
+  "description": "Orchestrates an isolated Host practice copy and anonymous guest phone across preparation, virtual live operations, issue simulation, completion, replay, and reproduction export without mutating the production event domain.",
   "surfaces": [
     {
       "id": "host_flutter",
       "runtime": "flutter",
       "authority": {"registry": "flutter_screens", "id": "screen.host.event.rehearsal"},
       "actionScope": {
-        "included": "Creating a safe sample or source-event snapshot, editing setup before start, controlling virtual time and lifecycle, simulating actor behavior and gated internal faults, rotating and sharing the guest link, resetting or forking a deterministic run, and exporting a reproduction.",
+        "included": "Creating from organizer defaults or an upcoming event with an explicit guest source, optional configuration before starting, controlling virtual time and lifecycle, simulating actor behavior and gated internal faults, rotating and sharing the guest link, resetting or forking a deterministic run, and exporting a reproduction.",
         "excluded": [
           "Production event editing, attendance, messaging, payments, matching, booking, and Event Success writes remain outside the rehearsal domain.",
           "Selecting a menu row, scrolling the roster, and expanding field affordances are UI mechanics rather than additional product actions.",
@@ -83,8 +83,8 @@
           "codeValue": "create",
           "cardinality": "singleton",
           "scopeKeys": ["organizerId", "sourceEventId", "seed"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["host_event_rehearsal_setup"]}],
-          "description": "Creates one isolated deterministic practice room and navigates to its opaque session id."
+          "outcomes": [{"kind": "surface_state", "stateIds": ["host_event_rehearsal_setup", "host_event_rehearsal_running"]}],
+          "description": "Creates the configured practice copy and opens the existing runtime directly; legacy clients may still create a draft."
         },
         {
           "id": "retry_rehearsal_projection",

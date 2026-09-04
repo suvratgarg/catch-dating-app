@@ -1,6 +1,9 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -136,78 +139,108 @@ void main() {
     expect(EventRehearsalBehavior.arriveLate.wireValue, 'arriveLate');
   });
 
-  test('projects rehearsal state into the canonical Host runtime', () {
-    final rehearsal = EventRehearsalBootstrap.fromCallableData({
-      'session': {
-        'id': 'session-runtime',
-        'organizerId': 'organizer-1',
-        'sourceEventId': null,
-        'scenarioId': 'lateAndNoShow',
-        'seed': 7,
-        'actorCount': 8,
-        'actionCount': 1,
-        'status': 'running',
-        'setup': {
-          'title': 'Sunday mixer',
-          'locationName': 'Courtyard',
-          'durationMinutes': 90,
-          'hostGoal': 'Learn the runtime',
-          'attendeePrompt': 'Meet someone new',
-          'moduleIds': ['arrival', 'rotations'],
+  test(
+    'projects selected format, structure and copied roster into Host runtime',
+    () {
+      final rehearsal = EventRehearsalBootstrap.fromCallableData({
+        'session': {
+          'id': 'session-runtime',
+          'guestSource': 'event',
+          'organizerId': 'organizer-1',
+          'sourceEventId': null,
+          'scenarioId': 'lateAndNoShow',
+          'seed': 7,
+          'actorCount': 8,
+          'actionCount': 1,
+          'status': 'running',
+          'setup': {
+            'title': 'Sunday run',
+            'eventFormat': EventFormatSnapshot.fromActivityKind(
+              ActivityKind.socialRun,
+            ).toJson(),
+            'successDefaults':
+                EventSuccessDefaults.recommendedForActivity(
+                      ActivityKind.socialRun,
+                      targetAttendeeCount: 8,
+                    )
+                    .copyWith(
+                      structureConfig:
+                          const EventSuccessStructureConfig.legacyDefault()
+                              .copyWith(
+                                unitKind: EventSuccessUnitKind.teams,
+                                unitSize: 3,
+                                unitCount: 3,
+                              ),
+                    )
+                    .toJson(),
+            'locationName': 'Courtyard',
+            'durationMinutes': 90,
+            'hostGoal': 'Learn the runtime',
+            'attendeePrompt': 'Meet someone new',
+            'moduleIds': ['arrival', 'rotations'],
+          },
+          'setupRevision': 1,
+          'runtimeRevision': 4,
+          'activeStepIndex': 1,
+          'virtualNowMillis': 100000,
+          'faultId': 'none',
+          'expiresAtMillis': 900000,
         },
-        'setupRevision': 1,
-        'runtimeRevision': 4,
-        'activeStepIndex': 1,
-        'virtualNowMillis': 100000,
-        'faultId': 'none',
-        'expiresAtMillis': 900000,
-      },
-      'actors': [
-        {
-          'actorId': 'actor-present',
-          'displayName': 'Maya',
-          'persona': 'firstTimer',
-          'status': 'present',
-          'guestMoment': 'assignment',
-          'optedOut': false,
-          'keepApartActorIds': <String>[],
-          'helpRequested': false,
-          'promptCompleted': false,
-          'layoutUnitId': 'table-2',
-          'confirmedLayoutUnitId': 'table-2',
-        },
-        {
-          'actorId': 'actor-late',
-          'displayName': 'Jordan',
-          'persona': 'lateArrival',
-          'status': 'late',
-          'guestMoment': 'assignment',
-          'optedOut': false,
-          'keepApartActorIds': <String>[],
-          'helpRequested': false,
-          'promptCompleted': false,
-        },
-      ],
-      'actions': <Map<String, Object?>>[],
-      'guestUrl': 'https://catchdates.com/rehearse/public-runtime',
-      'canUseInternalFaults': true,
-    });
+        'actors': [
+          {
+            'actorId': 'actor-present',
+            'displayName': 'Maya',
+            'persona': 'firstTimer',
+            'status': 'present',
+            'guestMoment': 'assignment',
+            'optedOut': false,
+            'keepApartActorIds': <String>[],
+            'helpRequested': false,
+            'promptCompleted': false,
+            'layoutUnitId': 'table-2',
+            'confirmedLayoutUnitId': 'table-2',
+          },
+          {
+            'actorId': 'actor-late',
+            'displayName': 'Jordan',
+            'persona': 'lateArrival',
+            'status': 'late',
+            'guestMoment': 'assignment',
+            'optedOut': false,
+            'keepApartActorIds': <String>[],
+            'helpRequested': false,
+            'promptCompleted': false,
+          },
+        ],
+        'actions': <Map<String, Object?>>[],
+        'guestUrl': 'https://catchdates.com/rehearse/public-runtime',
+        'canUseInternalFaults': true,
+      });
 
-    final runtime = buildEventRehearsalRuntimeProjection(
-      rehearsal,
-      practiceGuestLabel: 'Practice guest',
-      latePracticeGuestLabel: 'Late arrival · Practice guest',
-    );
+      final runtime = buildEventRehearsalRuntimeProjection(
+        rehearsal,
+        practiceGuestLabel: 'Practice guest',
+        latePracticeGuestLabel: 'Late arrival · Practice guest',
+      );
 
-    expect(runtime.event.synthetic, isTrue);
-    expect(runtime.plan.status, EventSuccessPlanStatus.live);
-    expect(runtime.plan.liveControlRevision, 4);
-    expect(runtime.roster.checkedInIds, ['actor-present', 'actor-late']);
-    expect(runtime.layout.units, hasLength(2));
-    expect(runtime.assignments, hasLength(2));
-    expect(runtime.assignments.first.confirmedLayoutUnitId, isNotNull);
-    expect(runtime.assignments.first.layoutUnitId, 'table-2');
-    expect(runtime.assignments.last.confirmedLayoutUnitId, isNull);
-    expect(runtime.presence.lateArrivals.single.uid, 'actor-late');
-  });
+      expect(runtime.event.synthetic, isTrue);
+      expect(runtime.plan.status, EventSuccessPlanStatus.live);
+      expect(runtime.plan.liveControlRevision, 4);
+      expect(runtime.roster.checkedInIds, ['actor-present', 'actor-late']);
+      expect(runtime.event.title, 'Sunday run');
+      expect(runtime.event.eventFormat.activityKind, ActivityKind.socialRun);
+      expect(runtime.plan.structureConfig.unitKind, EventSuccessUnitKind.teams);
+      expect(runtime.plan.structureConfig.unitSize, 3);
+      expect(runtime.layout.units, hasLength(3));
+      expect(runtime.layout.units.first.capacity, 3);
+      expect(runtime.profiles, isEmpty);
+      expect(runtime.presence.entries.first.displayName, 'Maya');
+      expect(runtime.assignments.first.displayTitle, 'Maya');
+      expect(runtime.assignments, hasLength(2));
+      expect(runtime.assignments.first.confirmedLayoutUnitId, isNotNull);
+      expect(runtime.assignments.first.layoutUnitId, 'table-2');
+      expect(runtime.assignments.last.confirmedLayoutUnitId, isNull);
+      expect(runtime.presence.lateArrivals.single.uid, 'actor-late');
+    },
+  );
 }

@@ -8921,6 +8921,12 @@ abstract final class CatchContractConstraints {
     maximum: 50,
   );
 
+  static const createEventRehearsalCallablePayloadGuestSource = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.guestSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['simulated', 'event'],
+  );
+
   static const createEventRehearsalCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'createEventRehearsalCallablePayload.organizerId',
     maxLength: 180,
@@ -8944,10 +8950,870 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const createEventRehearsalCallablePayloadSetupAttendeePrompt = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.attendeePrompt',
+    maxLength: 320,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupDurationMinutes = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.durationMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 360,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPath = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityKind = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatCustomActivityLabel = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.customActivityLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatDefaultModuleIds = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.defaultModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 30,
+    uniqueItems: true,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatDefaultModuleIdsItems = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.defaultModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatDefaultPlaybookId = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.defaultPlaybookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesAccountability = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.accountability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'rollCall', 'sweep'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesAssignmentAlgorithm = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.assignmentAlgorithm',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'pacePods', 'socialPods', 'pairRotations', 'teamBalancer', 'tableSeating'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesCompatibilityPolicy = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.compatibilityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesDurationShape = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.durationShape',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'rounds', 'courses', 'segments'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.phoneAvailability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'plannedPauses', 'arrivalAndPostEventOnly', 'hostOnlyLive', 'noneDuringActivity'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesRotationSuitability = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.rotationSuitability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatInteractionModel = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.interactionModel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pacePods', 'pairedRotations', 'teamRotations', 'seatedTable', 'freeFormMixer', 'hostLedProgram', 'openFormat'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatVersion = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupHostGoal = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.hostGoal',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupLocationName = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.locationName',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupModuleIds = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.moduleIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['arrival', 'firstHello', 'pods', 'rotations', 'conversationCues', 'reveal', 'afterglow', 'accountability'],
+    minItems: 1,
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupModuleIdsItems = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.moduleIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['arrival', 'firstHello', 'pods', 'rotations', 'conversationCues', 'reveal', 'afterglow', 'accountability'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItinerary = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsId = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationLateArrivalGuidance = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.lateArrivalGuidance',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationLivePositions = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.livePositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationLivePositionsItemsLatitude = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.livePositions.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationLivePositionsItemsLongitude = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.livePositions.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationLivePositionsItemsRecordedOffsetMinutes = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.livePositions.items.recordedOffsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 360,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationLivePositionsItemsRole = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.livePositions.items.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'operator'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPath = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsAttendeePrompt = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.attendeePrompt',
+    maxLength: 300,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsCompatibilityAffectsRanking = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.compatibilityAffectsRanking',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsContextualOpenersEnabled = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.contextualOpenersEnabled',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsEnabled = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.enabled',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsHostGoal = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.hostGoal',
+    maxLength: 300,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsLayoutId = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsModuleSelectionConfigured = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.moduleSelectionConfigured',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsPlaybookId = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.playbookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestions = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsId = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptions = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 5,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsId = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsPrompt = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.prompt',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomTitle = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customTitle',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigTemplateId = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.templateId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsSelectedModuleIds = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.selectedModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 24,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsSelectedModuleIdsItems = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.selectedModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigBalanceActivityAttributes = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.balanceActivityAttributes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigBalanceActivityAttributesItems = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.balanceActivityAttributes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigClusterActivityAttributes = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.clusterActivityAttributes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigClusterActivityAttributesItems = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.clusterActivityAttributes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigMaxPairMeetings = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.maxPairMeetings',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.revealCountdownSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 60,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigRotationIntervalMinutes = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.rotationIntervalMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 180,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigRotationRepeatStrategy = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.rotationRepeatStrategy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigUnitCount = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.unitCount',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigUnitKind = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.unitKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigUnitSize = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.unitSize',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupSuccessDefaultsWingmanRequestsEnabled = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.successDefaults.wingmanRequestsEnabled',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupTitle = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const createEventRehearsalCallablePayloadSourceEventId = CatchContractFieldConstraints(
     path: 'createEventRehearsalCallablePayload.sourceEventId',
     maxLength: 180,
     valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadStartImmediately = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.startImmediately',
+    valueTypes: <String>['boolean'],
   );
 
   static const createEventRehearsalCallableResponseGuestUrl = CatchContractFieldConstraints(
@@ -15581,7 +16447,7 @@ abstract final class CatchContractConstraints {
 
   static const eventRehearsalActorDocumentDisplayName = CatchContractFieldConstraints(
     path: 'eventRehearsalActorDocument.displayName',
-    maxLength: 80,
+    maxLength: 120,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -15857,6 +16723,12 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['none', 'latency', 'oneShotFailure', 'listenerDisconnect', 'staleRevision', 'duplicateDelivery', 'legacyFixture', 'reducedMotion', 'lowBandwidth'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseSessionGuestSource = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.guestSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['simulated', 'event'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseSessionId = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.session.id',
     required: true,
@@ -15904,9 +16776,265 @@ abstract final class CatchContractConstraints {
     maximum: 360,
   );
 
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPath = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatCustomActivityLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.customActivityLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatDefaultModuleIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.defaultModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 30,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatDefaultModuleIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.defaultModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatDefaultPlaybookId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.defaultPlaybookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesAccountability = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.accountability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'rollCall', 'sweep'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesAssignmentAlgorithm = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.assignmentAlgorithm',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'pacePods', 'socialPods', 'pairRotations', 'teamBalancer', 'tableSeating'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesCompatibilityPolicy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.compatibilityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesDurationShape = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.durationShape',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'rounds', 'courses', 'segments'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.phoneAvailability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'plannedPauses', 'arrivalAndPostEventOnly', 'hostOnlyLive', 'noneDuringActivity'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesRotationSuitability = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.rotationSuitability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatInteractionModel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.interactionModel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pacePods', 'pairedRotations', 'teamRotations', 'seatedTable', 'freeFormMixer', 'hostLedProgram', 'openFormat'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseSessionSetupHostGoal = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.session.setup.hostGoal',
-    maxLength: 240,
+    maxLength: 300,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -16242,6 +17370,243 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsAttendeePrompt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.attendeePrompt',
+    maxLength: 300,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsCompatibilityAffectsRanking = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.compatibilityAffectsRanking',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsContextualOpenersEnabled = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.contextualOpenersEnabled',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsEnabled = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.enabled',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsHostGoal = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.hostGoal',
+    maxLength: 300,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsLayoutId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsModuleSelectionConfigured = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.moduleSelectionConfigured',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsPlaybookId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.playbookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestions = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptions = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions.items.options',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 5,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsPrompt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions.items.prompt',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomTitle = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customTitle',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigTemplateId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.templateId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsSelectedModuleIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.selectedModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 24,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsSelectedModuleIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.selectedModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigBalanceActivityAttributes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.balanceActivityAttributes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigBalanceActivityAttributesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.balanceActivityAttributes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigClusterActivityAttributes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.clusterActivityAttributes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigClusterActivityAttributesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.clusterActivityAttributes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigMaxPairMeetings = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.maxPairMeetings',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.revealCountdownSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 60,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigRotationIntervalMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.rotationIntervalMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 180,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigRotationRepeatStrategy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.rotationRepeatStrategy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigUnitCount = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.unitCount',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigUnitKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.unitKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigUnitSize = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.unitSize',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsWingmanRequestsEnabled = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.wingmanRequestsEnabled',
+    valueTypes: <String>['boolean'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseSessionSetupTitle = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.session.setup.title',
     maxLength: 120,
@@ -16361,6 +17726,12 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['none', 'latency', 'oneShotFailure', 'listenerDisconnect', 'staleRevision', 'duplicateDelivery', 'legacyFixture', 'reducedMotion', 'lowBandwidth'],
   );
 
+  static const eventRehearsalDocumentGuestSource = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.guestSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['simulated', 'event'],
+  );
+
   static const eventRehearsalDocumentOrganizerId = CatchContractFieldConstraints(
     path: 'eventRehearsalDocument.organizerId',
     maxLength: 180,
@@ -16382,6 +17753,29 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const eventRehearsalDocumentRosterSnapshot = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterSnapshot',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 50,
+  );
+
+  static const eventRehearsalDocumentRosterSnapshotItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterSnapshot.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentRosterSnapshotItemsStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterSnapshot.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['expected', 'present'],
   );
 
   static const eventRehearsalDocumentRuntimeRevision = CatchContractFieldConstraints(
@@ -16423,9 +17817,265 @@ abstract final class CatchContractConstraints {
     maximum: 360,
   );
 
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPath = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatCustomActivityLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.customActivityLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatDefaultModuleIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.defaultModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 30,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatDefaultModuleIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.defaultModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatDefaultPlaybookId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.defaultPlaybookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesAccountability = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.accountability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'rollCall', 'sweep'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesAssignmentAlgorithm = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.assignmentAlgorithm',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'pacePods', 'socialPods', 'pairRotations', 'teamBalancer', 'tableSeating'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesCompatibilityPolicy = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.compatibilityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesDurationShape = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.durationShape',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'rounds', 'courses', 'segments'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.phoneAvailability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'plannedPauses', 'arrivalAndPostEventOnly', 'hostOnlyLive', 'noneDuringActivity'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesRotationSuitability = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.rotationSuitability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatInteractionModel = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.interactionModel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pacePods', 'pairedRotations', 'teamRotations', 'seatedTable', 'freeFormMixer', 'hostLedProgram', 'openFormat'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventRehearsalDocumentSetupHostGoal = CatchContractFieldConstraints(
     path: 'eventRehearsalDocument.setup.hostGoal',
-    maxLength: 240,
+    maxLength: 300,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -16759,6 +18409,243 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalDocument.setup.movementSimulation.routePlan.version',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsAttendeePrompt = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.attendeePrompt',
+    maxLength: 300,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsCompatibilityAffectsRanking = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.compatibilityAffectsRanking',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsContextualOpenersEnabled = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.contextualOpenersEnabled',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsEnabled = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.enabled',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsHostGoal = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.hostGoal',
+    maxLength: 300,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsLayoutId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsModuleSelectionConfigured = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.moduleSelectionConfigured',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsPlaybookId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.playbookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestions = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptions = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions.items.options',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 5,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsPrompt = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions.items.prompt',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomTitle = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customTitle',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigTemplateId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.templateId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsSelectedModuleIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.selectedModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 24,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsSelectedModuleIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.selectedModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigBalanceActivityAttributes = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.balanceActivityAttributes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigBalanceActivityAttributesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.balanceActivityAttributes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigClusterActivityAttributes = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.clusterActivityAttributes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigClusterActivityAttributesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.clusterActivityAttributes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigMaxPairMeetings = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.maxPairMeetings',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.revealCountdownSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 60,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigRotationIntervalMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.rotationIntervalMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 180,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigRotationRepeatStrategy = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.rotationRepeatStrategy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigUnitCount = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.unitCount',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigUnitKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.unitKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsStructureConfigUnitSize = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.structureConfig.unitSize',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalDocumentSetupSuccessDefaultsWingmanRequestsEnabled = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.successDefaults.wingmanRequestsEnabled',
+    valueTypes: <String>['boolean'],
   );
 
   static const eventRehearsalDocumentSetupTitle = CatchContractFieldConstraints(
@@ -17398,9 +19285,265 @@ abstract final class CatchContractConstraints {
     maximum: 360,
   );
 
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPath = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatCustomActivityLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.customActivityLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatDefaultModuleIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.defaultModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 30,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatDefaultModuleIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.defaultModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatDefaultPlaybookId = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.defaultPlaybookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesAccountability = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.accountability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'rollCall', 'sweep'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesAssignmentAlgorithm = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.assignmentAlgorithm',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'pacePods', 'socialPods', 'pairRotations', 'teamBalancer', 'tableSeating'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesCompatibilityPolicy = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.compatibilityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesDurationShape = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.durationShape',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'rounds', 'courses', 'segments'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.phoneAvailability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'plannedPauses', 'arrivalAndPostEventOnly', 'hostOnlyLive', 'noneDuringActivity'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesRotationSuitability = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.rotationSuitability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatInteractionModel = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.interactionModel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pacePods', 'pairedRotations', 'teamRotations', 'seatedTable', 'freeFormMixer', 'hostLedProgram', 'openFormat'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventRehearsalReproductionCallableResponseSetupHostGoal = CatchContractFieldConstraints(
     path: 'eventRehearsalReproductionCallableResponse.setup.hostGoal',
-    maxLength: 240,
+    maxLength: 300,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -17734,6 +19877,243 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.version',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsAttendeePrompt = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.attendeePrompt',
+    maxLength: 300,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsCompatibilityAffectsRanking = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.compatibilityAffectsRanking',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsContextualOpenersEnabled = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.contextualOpenersEnabled',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsEnabled = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.enabled',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsHostGoal = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.hostGoal',
+    maxLength: 300,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsLayoutId = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsModuleSelectionConfigured = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.moduleSelectionConfigured',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsPlaybookId = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.playbookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestions = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptions = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions.items.options',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 5,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsId = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsPrompt = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions.items.prompt',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomTitle = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customTitle',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigTemplateId = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.templateId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsSelectedModuleIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.selectedModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 24,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsSelectedModuleIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.selectedModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigBalanceActivityAttributes = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.balanceActivityAttributes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigBalanceActivityAttributesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.balanceActivityAttributes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigClusterActivityAttributes = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.clusterActivityAttributes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigClusterActivityAttributesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.clusterActivityAttributes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigMaxPairMeetings = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.maxPairMeetings',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.revealCountdownSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 60,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigRotationIntervalMinutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.rotationIntervalMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 180,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigRotationRepeatStrategy = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.rotationRepeatStrategy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigUnitCount = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.unitCount',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigUnitKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.unitKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigUnitSize = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.unitSize',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupSuccessDefaultsWingmanRequestsEnabled = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.successDefaults.wingmanRequestsEnabled',
+    valueTypes: <String>['boolean'],
   );
 
   static const eventRehearsalReproductionCallableResponseSetupTitle = CatchContractFieldConstraints(
@@ -57663,9 +60043,265 @@ abstract final class CatchContractConstraints {
     maximum: 360,
   );
 
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPath = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityKind = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatCustomActivityLabel = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.customActivityLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatDefaultModuleIds = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.defaultModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 30,
+    uniqueItems: true,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatDefaultModuleIdsItems = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.defaultModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatDefaultPlaybookId = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.defaultPlaybookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesAccountability = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.accountability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'rollCall', 'sweep'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesAssignmentAlgorithm = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.assignmentAlgorithm',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'pacePods', 'socialPods', 'pairRotations', 'teamBalancer', 'tableSeating'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesCompatibilityPolicy = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.compatibilityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesDurationShape = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.durationShape',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'rounds', 'courses', 'segments'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.phoneAvailability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'plannedPauses', 'arrivalAndPostEventOnly', 'hostOnlyLive', 'noneDuringActivity'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesRotationSuitability = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.rotationSuitability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatInteractionModel = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.interactionModel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pacePods', 'pairedRotations', 'teamRotations', 'seatedTable', 'freeFormMixer', 'hostLedProgram', 'openFormat'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatVersion = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const updateEventRehearsalSetupCallablePayloadSetupHostGoal = CatchContractFieldConstraints(
     path: 'updateEventRehearsalSetupCallablePayload.setup.hostGoal',
-    maxLength: 240,
+    maxLength: 300,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -57999,6 +60635,243 @@ abstract final class CatchContractConstraints {
     path: 'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.version',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsAttendeePrompt = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.attendeePrompt',
+    maxLength: 300,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsCompatibilityAffectsRanking = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.compatibilityAffectsRanking',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsContextualOpenersEnabled = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.contextualOpenersEnabled',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsEnabled = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.enabled',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsHostGoal = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.hostGoal',
+    maxLength: 300,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsLayoutId = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.layoutId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsModuleSelectionConfigured = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.moduleSelectionConfigured',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsPlaybookId = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.playbookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestions = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsId = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptions = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 5,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsId = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsPrompt = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.prompt',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomTitle = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customTitle',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigTemplateId = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.templateId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsSelectedModuleIds = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.selectedModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 24,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsSelectedModuleIdsItems = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.selectedModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigBalanceActivityAttributes = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.balanceActivityAttributes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigBalanceActivityAttributesItems = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.balanceActivityAttributes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigClusterActivityAttributes = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.clusterActivityAttributes',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigClusterActivityAttributesItems = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.clusterActivityAttributes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['paceBand', 'skillBand', 'roleBand'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigMaxPairMeetings = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.maxPairMeetings',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.concurrentUnits',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacityResourceLabelId = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.resourceLabelId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['court', 'table', 'lane', 'board'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.seatsPerUnit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.revealCountdownSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 60,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigRotationIntervalMinutes = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.rotationIntervalMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 180,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigRotationRepeatStrategy = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.rotationRepeatStrategy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigTopology = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.topology',
+    valueTypes: <String>['string'],
+    enumValues: <String>['set', 'sequence', 'adjacency'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigUnitCount = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.unitCount',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigUnitKind = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.unitKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigUnitSize = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.unitSize',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsWingmanRequestsEnabled = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.successDefaults.wingmanRequestsEnabled',
+    valueTypes: <String>['boolean'],
   );
 
   static const updateEventRehearsalSetupCallablePayloadSetupTitle = CatchContractFieldConstraints(
@@ -64345,10 +67218,128 @@ abstract final class CatchContractConstraints {
     'createEventInviteLinkCallablePayload.linkKind': createEventInviteLinkCallablePayloadLinkKind,
     'createEventInviteLinkCallablePayload.source': createEventInviteLinkCallablePayloadSource,
     'createEventRehearsalCallablePayload.actorCount': createEventRehearsalCallablePayloadActorCount,
+    'createEventRehearsalCallablePayload.guestSource': createEventRehearsalCallablePayloadGuestSource,
     'createEventRehearsalCallablePayload.organizerId': createEventRehearsalCallablePayloadOrganizerId,
     'createEventRehearsalCallablePayload.scenarioId': createEventRehearsalCallablePayloadScenarioId,
     'createEventRehearsalCallablePayload.seed': createEventRehearsalCallablePayloadSeed,
+    'createEventRehearsalCallablePayload.setup.attendeePrompt': createEventRehearsalCallablePayloadSetupAttendeePrompt,
+    'createEventRehearsalCallablePayload.setup.durationMinutes': createEventRehearsalCallablePayloadSetupDurationMinutes,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.groupStrategy': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.movementMode': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanMovementMode,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroups,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.id': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsId,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.label': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.path': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPath,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.path.items.latitude': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPathItemsLatitude,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.path.items.longitude': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanPathItemsLongitude,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.roleKinds': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanRoleKinds,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.roleKinds.items': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanRoleKindsItems,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.routeShape': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanRouteShape,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.stopCadence': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopCadence,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.stopKinds': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopKinds,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.stopKinds.items': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopKindsItems,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.version': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanVersion,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityKind': createEventRehearsalCallablePayloadSetupEventFormatActivityKind,
+    'createEventRehearsalCallablePayload.setup.eventFormat.customActivityLabel': createEventRehearsalCallablePayloadSetupEventFormatCustomActivityLabel,
+    'createEventRehearsalCallablePayload.setup.eventFormat.defaultModuleIds': createEventRehearsalCallablePayloadSetupEventFormatDefaultModuleIds,
+    'createEventRehearsalCallablePayload.setup.eventFormat.defaultModuleIds.items': createEventRehearsalCallablePayloadSetupEventFormatDefaultModuleIdsItems,
+    'createEventRehearsalCallablePayload.setup.eventFormat.defaultPlaybookId': createEventRehearsalCallablePayloadSetupEventFormatDefaultPlaybookId,
+    'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.accountability': createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesAccountability,
+    'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
+    'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.compatibilityPolicy': createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.durationShape': createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesDurationShape,
+    'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.matchingObjective': createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesMatchingObjective,
+    'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.phoneAvailability': createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesPhoneAvailability,
+    'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.rotationSuitability': createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesRotationSuitability,
+    'createEventRehearsalCallablePayload.setup.eventFormat.eventSuccessPrimitives.unitOutcome': createEventRehearsalCallablePayloadSetupEventFormatEventSuccessPrimitivesUnitOutcome,
+    'createEventRehearsalCallablePayload.setup.eventFormat.interactionModel': createEventRehearsalCallablePayloadSetupEventFormatInteractionModel,
+    'createEventRehearsalCallablePayload.setup.eventFormat.version': createEventRehearsalCallablePayloadSetupEventFormatVersion,
+    'createEventRehearsalCallablePayload.setup.hostGoal': createEventRehearsalCallablePayloadSetupHostGoal,
+    'createEventRehearsalCallablePayload.setup.locationName': createEventRehearsalCallablePayloadSetupLocationName,
+    'createEventRehearsalCallablePayload.setup.moduleIds': createEventRehearsalCallablePayloadSetupModuleIds,
+    'createEventRehearsalCallablePayload.setup.moduleIds.items': createEventRehearsalCallablePayloadSetupModuleIdsItems,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary': createEventRehearsalCallablePayloadSetupMovementSimulationItinerary,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.description': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsDescription,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.durationMinutes': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsDurationMinutes,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.id': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsId,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.kind': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsKind,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.address': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationAddress,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.latitude': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationLatitude,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.longitude': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationLongitude,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.name': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationName,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.notes': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationNotes,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.location.placeId': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsLocationPlaceId,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.offsetMinutes': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsOffsetMinutes,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.routeDistanceMeters': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsRouteDistanceMeters,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.itinerary.items.title': createEventRehearsalCallablePayloadSetupMovementSimulationItineraryItemsTitle,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.lateArrivalGuidance': createEventRehearsalCallablePayloadSetupMovementSimulationLateArrivalGuidance,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.livePositions': createEventRehearsalCallablePayloadSetupMovementSimulationLivePositions,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.livePositions.items.latitude': createEventRehearsalCallablePayloadSetupMovementSimulationLivePositionsItemsLatitude,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.livePositions.items.longitude': createEventRehearsalCallablePayloadSetupMovementSimulationLivePositionsItemsLongitude,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.livePositions.items.recordedOffsetMinutes': createEventRehearsalCallablePayloadSetupMovementSimulationLivePositionsItemsRecordedOffsetMinutes,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.livePositions.items.role': createEventRehearsalCallablePayloadSetupMovementSimulationLivePositionsItemsRole,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.groupStrategy': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanGroupStrategy,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.mode': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyMode,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.retentionMinutes': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.liveTrackingPolicy.staleAfterSeconds': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.movementMode': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanMovementMode,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.paceGroups': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPaceGroups,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.id': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsId,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.label': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsLabel,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.sortOrder': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsSortOrder,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.paceGroups.items.targetPaceSecondsPerKm': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.path': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPath,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.path.items.latitude': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPathItemsLatitude,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.path.items.longitude': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanPathItemsLongitude,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.roleKinds': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanRoleKinds,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.roleKinds.items': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanRoleKindsItems,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.routeShape': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanRouteShape,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.stopCadence': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanStopCadence,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.stopKinds': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanStopKinds,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.stopKinds.items': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanStopKindsItems,
+    'createEventRehearsalCallablePayload.setup.movementSimulation.routePlan.version': createEventRehearsalCallablePayloadSetupMovementSimulationRoutePlanVersion,
+    'createEventRehearsalCallablePayload.setup.successDefaults.attendeePrompt': createEventRehearsalCallablePayloadSetupSuccessDefaultsAttendeePrompt,
+    'createEventRehearsalCallablePayload.setup.successDefaults.compatibilityAffectsRanking': createEventRehearsalCallablePayloadSetupSuccessDefaultsCompatibilityAffectsRanking,
+    'createEventRehearsalCallablePayload.setup.successDefaults.contextualOpenersEnabled': createEventRehearsalCallablePayloadSetupSuccessDefaultsContextualOpenersEnabled,
+    'createEventRehearsalCallablePayload.setup.successDefaults.enabled': createEventRehearsalCallablePayloadSetupSuccessDefaultsEnabled,
+    'createEventRehearsalCallablePayload.setup.successDefaults.hostGoal': createEventRehearsalCallablePayloadSetupSuccessDefaultsHostGoal,
+    'createEventRehearsalCallablePayload.setup.successDefaults.layoutId': createEventRehearsalCallablePayloadSetupSuccessDefaultsLayoutId,
+    'createEventRehearsalCallablePayload.setup.successDefaults.moduleSelectionConfigured': createEventRehearsalCallablePayloadSetupSuccessDefaultsModuleSelectionConfigured,
+    'createEventRehearsalCallablePayload.setup.successDefaults.playbookId': createEventRehearsalCallablePayloadSetupSuccessDefaultsPlaybookId,
+    'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions': createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestions,
+    'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.id': createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsId,
+    'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options': createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptions,
+    'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.id': createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsId,
+    'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.label': createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
+    'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.prompt': createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsPrompt,
+    'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.customTitle': createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomTitle,
+    'createEventRehearsalCallablePayload.setup.successDefaults.questionnaireConfig.templateId': createEventRehearsalCallablePayloadSetupSuccessDefaultsQuestionnaireConfigTemplateId,
+    'createEventRehearsalCallablePayload.setup.successDefaults.selectedModuleIds': createEventRehearsalCallablePayloadSetupSuccessDefaultsSelectedModuleIds,
+    'createEventRehearsalCallablePayload.setup.successDefaults.selectedModuleIds.items': createEventRehearsalCallablePayloadSetupSuccessDefaultsSelectedModuleIdsItems,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.balanceActivityAttributes': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigBalanceActivityAttributes,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.balanceActivityAttributes.items': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigBalanceActivityAttributesItems,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.clusterActivityAttributes': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigClusterActivityAttributes,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.clusterActivityAttributes.items': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigClusterActivityAttributesItems,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.maxPairMeetings': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigMaxPairMeetings,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.concurrentUnits': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.resourceLabelId': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacityResourceLabelId,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.seatsPerUnit': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.revealCountdownSeconds': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigRevealCountdownSeconds,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.rotationIntervalMinutes': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigRotationIntervalMinutes,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.rotationRepeatStrategy': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigRotationRepeatStrategy,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.topology': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigTopology,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.unitCount': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigUnitCount,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.unitKind': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigUnitKind,
+    'createEventRehearsalCallablePayload.setup.successDefaults.structureConfig.unitSize': createEventRehearsalCallablePayloadSetupSuccessDefaultsStructureConfigUnitSize,
+    'createEventRehearsalCallablePayload.setup.successDefaults.wingmanRequestsEnabled': createEventRehearsalCallablePayloadSetupSuccessDefaultsWingmanRequestsEnabled,
+    'createEventRehearsalCallablePayload.setup.title': createEventRehearsalCallablePayloadSetupTitle,
     'createEventRehearsalCallablePayload.sourceEventId': createEventRehearsalCallablePayloadSourceEventId,
+    'createEventRehearsalCallablePayload.startImmediately': createEventRehearsalCallablePayloadStartImmediately,
     'createEventRehearsalCallableResponse.guestUrl': createEventRehearsalCallableResponseGuestUrl,
     'createEventRehearsalCallableResponse.runtimeRevision': createEventRehearsalCallableResponseRuntimeRevision,
     'createEventRehearsalCallableResponse.sessionId': createEventRehearsalCallableResponseSessionId,
@@ -65310,6 +68301,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.session.actorCount': eventRehearsalBootstrapCallableResponseSessionActorCount,
     'eventRehearsalBootstrapCallableResponse.session.expiresAtMillis': eventRehearsalBootstrapCallableResponseSessionExpiresAtMillis,
     'eventRehearsalBootstrapCallableResponse.session.faultId': eventRehearsalBootstrapCallableResponseSessionFaultId,
+    'eventRehearsalBootstrapCallableResponse.session.guestSource': eventRehearsalBootstrapCallableResponseSessionGuestSource,
     'eventRehearsalBootstrapCallableResponse.session.id': eventRehearsalBootstrapCallableResponseSessionId,
     'eventRehearsalBootstrapCallableResponse.session.organizerId': eventRehearsalBootstrapCallableResponseSessionOrganizerId,
     'eventRehearsalBootstrapCallableResponse.session.runtimeRevision': eventRehearsalBootstrapCallableResponseSessionRuntimeRevision,
@@ -65317,6 +68309,41 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.session.seed': eventRehearsalBootstrapCallableResponseSessionSeed,
     'eventRehearsalBootstrapCallableResponse.session.setup.attendeePrompt': eventRehearsalBootstrapCallableResponseSessionSetupAttendeePrompt,
     'eventRehearsalBootstrapCallableResponse.session.setup.durationMinutes': eventRehearsalBootstrapCallableResponseSessionSetupDurationMinutes,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.groupStrategy': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.movementMode': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanMovementMode,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.paceGroups': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPaceGroups,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.paceGroups.items.id': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsId,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.paceGroups.items.label': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.path': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPath,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.path.items.latitude': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPathItemsLatitude,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.path.items.longitude': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanPathItemsLongitude,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.roleKinds': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanRoleKinds,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.roleKinds.items': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanRoleKindsItems,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.routeShape': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanRouteShape,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.stopCadence': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanStopCadence,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.stopKinds': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanStopKinds,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.stopKinds.items': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanStopKindsItems,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.version': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanVersion,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityKind': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityKind,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.customActivityLabel': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatCustomActivityLabel,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.defaultModuleIds': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatDefaultModuleIds,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.defaultModuleIds.items': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatDefaultModuleIdsItems,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.defaultPlaybookId': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatDefaultPlaybookId,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.accountability': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesAccountability,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.compatibilityPolicy': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.durationShape': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesDurationShape,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.matchingObjective': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesMatchingObjective,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.phoneAvailability': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesPhoneAvailability,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.rotationSuitability': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesRotationSuitability,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.eventSuccessPrimitives.unitOutcome': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatEventSuccessPrimitivesUnitOutcome,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.interactionModel': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatInteractionModel,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.version': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatVersion,
     'eventRehearsalBootstrapCallableResponse.session.setup.hostGoal': eventRehearsalBootstrapCallableResponseSessionSetupHostGoal,
     'eventRehearsalBootstrapCallableResponse.session.setup.locationName': eventRehearsalBootstrapCallableResponseSessionSetupLocationName,
     'eventRehearsalBootstrapCallableResponse.session.setup.moduleIds': eventRehearsalBootstrapCallableResponseSessionSetupModuleIds,
@@ -65361,6 +68388,40 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.stopKinds': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanStopKinds,
     'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.stopKinds.items': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanStopKindsItems,
     'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.version': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanVersion,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.attendeePrompt': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsAttendeePrompt,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.compatibilityAffectsRanking': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsCompatibilityAffectsRanking,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.contextualOpenersEnabled': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsContextualOpenersEnabled,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.enabled': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsEnabled,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.hostGoal': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsHostGoal,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.layoutId': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsLayoutId,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.moduleSelectionConfigured': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsModuleSelectionConfigured,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.playbookId': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsPlaybookId,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestions,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions.items.id': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsId,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions.items.options': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptions,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.id': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsId,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.label': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customQuestions.items.prompt': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsPrompt,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.customTitle': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigCustomTitle,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.questionnaireConfig.templateId': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsQuestionnaireConfigTemplateId,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.selectedModuleIds': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsSelectedModuleIds,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.selectedModuleIds.items': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsSelectedModuleIdsItems,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.balanceActivityAttributes': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigBalanceActivityAttributes,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.balanceActivityAttributes.items': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigBalanceActivityAttributesItems,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.clusterActivityAttributes': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigClusterActivityAttributes,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.clusterActivityAttributes.items': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigClusterActivityAttributesItems,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.maxPairMeetings': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigMaxPairMeetings,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.resourceCapacity.concurrentUnits': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.resourceCapacity.resourceLabelId': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigResourceCapacityResourceLabelId,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.resourceCapacity.seatsPerUnit': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.revealCountdownSeconds': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigRevealCountdownSeconds,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.rotationIntervalMinutes': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigRotationIntervalMinutes,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.rotationRepeatStrategy': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigRotationRepeatStrategy,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.topology': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigTopology,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.unitCount': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigUnitCount,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.unitKind': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigUnitKind,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.structureConfig.unitSize': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsStructureConfigUnitSize,
+    'eventRehearsalBootstrapCallableResponse.session.setup.successDefaults.wingmanRequestsEnabled': eventRehearsalBootstrapCallableResponseSessionSetupSuccessDefaultsWingmanRequestsEnabled,
     'eventRehearsalBootstrapCallableResponse.session.setup.title': eventRehearsalBootstrapCallableResponseSessionSetupTitle,
     'eventRehearsalBootstrapCallableResponse.session.setupRevision': eventRehearsalBootstrapCallableResponseSessionSetupRevision,
     'eventRehearsalBootstrapCallableResponse.session.sourceEventId': eventRehearsalBootstrapCallableResponseSessionSourceEventId,
@@ -65378,14 +68439,53 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.expiresAt._seconds': eventRehearsalDocumentExpiresAtSeconds,
     'eventRehearsalDocument.faultConsumed': eventRehearsalDocumentFaultConsumed,
     'eventRehearsalDocument.faultId': eventRehearsalDocumentFaultId,
+    'eventRehearsalDocument.guestSource': eventRehearsalDocumentGuestSource,
     'eventRehearsalDocument.organizerId': eventRehearsalDocumentOrganizerId,
     'eventRehearsalDocument.ownerUid': eventRehearsalDocumentOwnerUid,
     'eventRehearsalDocument.publicRehearsalId': eventRehearsalDocumentPublicRehearsalId,
+    'eventRehearsalDocument.rosterSnapshot': eventRehearsalDocumentRosterSnapshot,
+    'eventRehearsalDocument.rosterSnapshot.items.displayName': eventRehearsalDocumentRosterSnapshotItemsDisplayName,
+    'eventRehearsalDocument.rosterSnapshot.items.status': eventRehearsalDocumentRosterSnapshotItemsStatus,
     'eventRehearsalDocument.runtimeRevision': eventRehearsalDocumentRuntimeRevision,
     'eventRehearsalDocument.scenarioId': eventRehearsalDocumentScenarioId,
     'eventRehearsalDocument.seed': eventRehearsalDocumentSeed,
     'eventRehearsalDocument.setup.attendeePrompt': eventRehearsalDocumentSetupAttendeePrompt,
     'eventRehearsalDocument.setup.durationMinutes': eventRehearsalDocumentSetupDurationMinutes,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.groupStrategy': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.movementMode': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanMovementMode,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.paceGroups': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPaceGroups,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.paceGroups.items.id': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsId,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.paceGroups.items.label': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.path': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPath,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.path.items.latitude': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPathItemsLatitude,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.path.items.longitude': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanPathItemsLongitude,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.roleKinds': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanRoleKinds,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.roleKinds.items': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanRoleKindsItems,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.routeShape': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanRouteShape,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.stopCadence': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanStopCadence,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.stopKinds': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanStopKinds,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.stopKinds.items': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanStopKindsItems,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.version': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanVersion,
+    'eventRehearsalDocument.setup.eventFormat.activityKind': eventRehearsalDocumentSetupEventFormatActivityKind,
+    'eventRehearsalDocument.setup.eventFormat.customActivityLabel': eventRehearsalDocumentSetupEventFormatCustomActivityLabel,
+    'eventRehearsalDocument.setup.eventFormat.defaultModuleIds': eventRehearsalDocumentSetupEventFormatDefaultModuleIds,
+    'eventRehearsalDocument.setup.eventFormat.defaultModuleIds.items': eventRehearsalDocumentSetupEventFormatDefaultModuleIdsItems,
+    'eventRehearsalDocument.setup.eventFormat.defaultPlaybookId': eventRehearsalDocumentSetupEventFormatDefaultPlaybookId,
+    'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.accountability': eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesAccountability,
+    'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
+    'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.compatibilityPolicy': eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.durationShape': eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesDurationShape,
+    'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.matchingObjective': eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesMatchingObjective,
+    'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.phoneAvailability': eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesPhoneAvailability,
+    'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.rotationSuitability': eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesRotationSuitability,
+    'eventRehearsalDocument.setup.eventFormat.eventSuccessPrimitives.unitOutcome': eventRehearsalDocumentSetupEventFormatEventSuccessPrimitivesUnitOutcome,
+    'eventRehearsalDocument.setup.eventFormat.interactionModel': eventRehearsalDocumentSetupEventFormatInteractionModel,
+    'eventRehearsalDocument.setup.eventFormat.version': eventRehearsalDocumentSetupEventFormatVersion,
     'eventRehearsalDocument.setup.hostGoal': eventRehearsalDocumentSetupHostGoal,
     'eventRehearsalDocument.setup.locationName': eventRehearsalDocumentSetupLocationName,
     'eventRehearsalDocument.setup.moduleIds': eventRehearsalDocumentSetupModuleIds,
@@ -65430,6 +68530,40 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.setup.movementSimulation.routePlan.stopKinds': eventRehearsalDocumentSetupMovementSimulationRoutePlanStopKinds,
     'eventRehearsalDocument.setup.movementSimulation.routePlan.stopKinds.items': eventRehearsalDocumentSetupMovementSimulationRoutePlanStopKindsItems,
     'eventRehearsalDocument.setup.movementSimulation.routePlan.version': eventRehearsalDocumentSetupMovementSimulationRoutePlanVersion,
+    'eventRehearsalDocument.setup.successDefaults.attendeePrompt': eventRehearsalDocumentSetupSuccessDefaultsAttendeePrompt,
+    'eventRehearsalDocument.setup.successDefaults.compatibilityAffectsRanking': eventRehearsalDocumentSetupSuccessDefaultsCompatibilityAffectsRanking,
+    'eventRehearsalDocument.setup.successDefaults.contextualOpenersEnabled': eventRehearsalDocumentSetupSuccessDefaultsContextualOpenersEnabled,
+    'eventRehearsalDocument.setup.successDefaults.enabled': eventRehearsalDocumentSetupSuccessDefaultsEnabled,
+    'eventRehearsalDocument.setup.successDefaults.hostGoal': eventRehearsalDocumentSetupSuccessDefaultsHostGoal,
+    'eventRehearsalDocument.setup.successDefaults.layoutId': eventRehearsalDocumentSetupSuccessDefaultsLayoutId,
+    'eventRehearsalDocument.setup.successDefaults.moduleSelectionConfigured': eventRehearsalDocumentSetupSuccessDefaultsModuleSelectionConfigured,
+    'eventRehearsalDocument.setup.successDefaults.playbookId': eventRehearsalDocumentSetupSuccessDefaultsPlaybookId,
+    'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions': eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestions,
+    'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions.items.id': eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsId,
+    'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions.items.options': eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptions,
+    'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.id': eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsId,
+    'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.label': eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
+    'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customQuestions.items.prompt': eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsPrompt,
+    'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.customTitle': eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigCustomTitle,
+    'eventRehearsalDocument.setup.successDefaults.questionnaireConfig.templateId': eventRehearsalDocumentSetupSuccessDefaultsQuestionnaireConfigTemplateId,
+    'eventRehearsalDocument.setup.successDefaults.selectedModuleIds': eventRehearsalDocumentSetupSuccessDefaultsSelectedModuleIds,
+    'eventRehearsalDocument.setup.successDefaults.selectedModuleIds.items': eventRehearsalDocumentSetupSuccessDefaultsSelectedModuleIdsItems,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.balanceActivityAttributes': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigBalanceActivityAttributes,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.balanceActivityAttributes.items': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigBalanceActivityAttributesItems,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.clusterActivityAttributes': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigClusterActivityAttributes,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.clusterActivityAttributes.items': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigClusterActivityAttributesItems,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.maxPairMeetings': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigMaxPairMeetings,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.resourceCapacity.concurrentUnits': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.resourceCapacity.resourceLabelId': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigResourceCapacityResourceLabelId,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.resourceCapacity.seatsPerUnit': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.revealCountdownSeconds': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigRevealCountdownSeconds,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.rotationIntervalMinutes': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigRotationIntervalMinutes,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.rotationRepeatStrategy': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigRotationRepeatStrategy,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.topology': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigTopology,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.unitCount': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigUnitCount,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.unitKind': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigUnitKind,
+    'eventRehearsalDocument.setup.successDefaults.structureConfig.unitSize': eventRehearsalDocumentSetupSuccessDefaultsStructureConfigUnitSize,
+    'eventRehearsalDocument.setup.successDefaults.wingmanRequestsEnabled': eventRehearsalDocumentSetupSuccessDefaultsWingmanRequestsEnabled,
     'eventRehearsalDocument.setup.title': eventRehearsalDocumentSetupTitle,
     'eventRehearsalDocument.setupRevision': eventRehearsalDocumentSetupRevision,
     'eventRehearsalDocument.sourceEventId': eventRehearsalDocumentSourceEventId,
@@ -65519,6 +68653,41 @@ abstract final class CatchContractConstraints {
     'eventRehearsalReproductionCallableResponse.sessionId': eventRehearsalReproductionCallableResponseSessionId,
     'eventRehearsalReproductionCallableResponse.setup.attendeePrompt': eventRehearsalReproductionCallableResponseSetupAttendeePrompt,
     'eventRehearsalReproductionCallableResponse.setup.durationMinutes': eventRehearsalReproductionCallableResponseSetupDurationMinutes,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.groupStrategy': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.movementMode': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanMovementMode,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.paceGroups': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPaceGroups,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.paceGroups.items.id': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsId,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.paceGroups.items.label': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.path': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPath,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.path.items.latitude': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPathItemsLatitude,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.path.items.longitude': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanPathItemsLongitude,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.roleKinds': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanRoleKinds,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.roleKinds.items': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanRoleKindsItems,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.routeShape': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanRouteShape,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.stopCadence': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanStopCadence,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.stopKinds': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanStopKinds,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.stopKinds.items': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanStopKindsItems,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.version': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanVersion,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityKind': eventRehearsalReproductionCallableResponseSetupEventFormatActivityKind,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.customActivityLabel': eventRehearsalReproductionCallableResponseSetupEventFormatCustomActivityLabel,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.defaultModuleIds': eventRehearsalReproductionCallableResponseSetupEventFormatDefaultModuleIds,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.defaultModuleIds.items': eventRehearsalReproductionCallableResponseSetupEventFormatDefaultModuleIdsItems,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.defaultPlaybookId': eventRehearsalReproductionCallableResponseSetupEventFormatDefaultPlaybookId,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.accountability': eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesAccountability,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.compatibilityPolicy': eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.durationShape': eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesDurationShape,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.matchingObjective': eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesMatchingObjective,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.phoneAvailability': eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesPhoneAvailability,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.rotationSuitability': eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesRotationSuitability,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.eventSuccessPrimitives.unitOutcome': eventRehearsalReproductionCallableResponseSetupEventFormatEventSuccessPrimitivesUnitOutcome,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.interactionModel': eventRehearsalReproductionCallableResponseSetupEventFormatInteractionModel,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.version': eventRehearsalReproductionCallableResponseSetupEventFormatVersion,
     'eventRehearsalReproductionCallableResponse.setup.hostGoal': eventRehearsalReproductionCallableResponseSetupHostGoal,
     'eventRehearsalReproductionCallableResponse.setup.locationName': eventRehearsalReproductionCallableResponseSetupLocationName,
     'eventRehearsalReproductionCallableResponse.setup.moduleIds': eventRehearsalReproductionCallableResponseSetupModuleIds,
@@ -65563,6 +68732,40 @@ abstract final class CatchContractConstraints {
     'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.stopKinds': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanStopKinds,
     'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.stopKinds.items': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanStopKindsItems,
     'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.version': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanVersion,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.attendeePrompt': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsAttendeePrompt,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.compatibilityAffectsRanking': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsCompatibilityAffectsRanking,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.contextualOpenersEnabled': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsContextualOpenersEnabled,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.enabled': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsEnabled,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.hostGoal': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsHostGoal,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.layoutId': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsLayoutId,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.moduleSelectionConfigured': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsModuleSelectionConfigured,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.playbookId': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsPlaybookId,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestions,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions.items.id': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsId,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions.items.options': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptions,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.id': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsId,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.label': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customQuestions.items.prompt': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsPrompt,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.customTitle': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigCustomTitle,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.questionnaireConfig.templateId': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsQuestionnaireConfigTemplateId,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.selectedModuleIds': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsSelectedModuleIds,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.selectedModuleIds.items': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsSelectedModuleIdsItems,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.balanceActivityAttributes': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigBalanceActivityAttributes,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.balanceActivityAttributes.items': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigBalanceActivityAttributesItems,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.clusterActivityAttributes': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigClusterActivityAttributes,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.clusterActivityAttributes.items': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigClusterActivityAttributesItems,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.maxPairMeetings': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigMaxPairMeetings,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.resourceCapacity.concurrentUnits': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.resourceCapacity.resourceLabelId': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigResourceCapacityResourceLabelId,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.resourceCapacity.seatsPerUnit': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.revealCountdownSeconds': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigRevealCountdownSeconds,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.rotationIntervalMinutes': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigRotationIntervalMinutes,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.rotationRepeatStrategy': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigRotationRepeatStrategy,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.topology': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigTopology,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.unitCount': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigUnitCount,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.unitKind': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigUnitKind,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.structureConfig.unitSize': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsStructureConfigUnitSize,
+    'eventRehearsalReproductionCallableResponse.setup.successDefaults.wingmanRequestsEnabled': eventRehearsalReproductionCallableResponseSetupSuccessDefaultsWingmanRequestsEnabled,
     'eventRehearsalReproductionCallableResponse.setup.title': eventRehearsalReproductionCallableResponseSetupTitle,
     'eventRosterHandoffDocument.clubId': eventRosterHandoffDocumentClubId,
     'eventRosterHandoffDocument.createdAt._nanoseconds': eventRosterHandoffDocumentCreatedAtNanoseconds,
@@ -71063,6 +74266,41 @@ abstract final class CatchContractConstraints {
     'updateEventRehearsalSetupCallablePayload.sessionId': updateEventRehearsalSetupCallablePayloadSessionId,
     'updateEventRehearsalSetupCallablePayload.setup.attendeePrompt': updateEventRehearsalSetupCallablePayloadSetupAttendeePrompt,
     'updateEventRehearsalSetupCallablePayload.setup.durationMinutes': updateEventRehearsalSetupCallablePayloadSetupDurationMinutes,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.groupStrategy': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.movementMode': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanMovementMode,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroups,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.id': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsId,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.label': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.path': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPath,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.path.items.latitude': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPathItemsLatitude,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.path.items.longitude': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanPathItemsLongitude,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.roleKinds': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanRoleKinds,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.roleKinds.items': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanRoleKindsItems,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.routeShape': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanRouteShape,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.stopCadence': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopCadence,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.stopKinds': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopKinds,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.stopKinds.items': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanStopKindsItems,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.version': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanVersion,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityKind': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityKind,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.customActivityLabel': updateEventRehearsalSetupCallablePayloadSetupEventFormatCustomActivityLabel,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.defaultModuleIds': updateEventRehearsalSetupCallablePayloadSetupEventFormatDefaultModuleIds,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.defaultModuleIds.items': updateEventRehearsalSetupCallablePayloadSetupEventFormatDefaultModuleIdsItems,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.defaultPlaybookId': updateEventRehearsalSetupCallablePayloadSetupEventFormatDefaultPlaybookId,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.accountability': updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesAccountability,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.compatibilityPolicy': updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.durationShape': updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesDurationShape,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.matchingObjective': updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesMatchingObjective,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.phoneAvailability': updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesPhoneAvailability,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.rotationSuitability': updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesRotationSuitability,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.eventSuccessPrimitives.unitOutcome': updateEventRehearsalSetupCallablePayloadSetupEventFormatEventSuccessPrimitivesUnitOutcome,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.interactionModel': updateEventRehearsalSetupCallablePayloadSetupEventFormatInteractionModel,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.version': updateEventRehearsalSetupCallablePayloadSetupEventFormatVersion,
     'updateEventRehearsalSetupCallablePayload.setup.hostGoal': updateEventRehearsalSetupCallablePayloadSetupHostGoal,
     'updateEventRehearsalSetupCallablePayload.setup.locationName': updateEventRehearsalSetupCallablePayloadSetupLocationName,
     'updateEventRehearsalSetupCallablePayload.setup.moduleIds': updateEventRehearsalSetupCallablePayloadSetupModuleIds,
@@ -71107,6 +74345,40 @@ abstract final class CatchContractConstraints {
     'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.stopKinds': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanStopKinds,
     'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.stopKinds.items': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanStopKindsItems,
     'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.version': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanVersion,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.attendeePrompt': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsAttendeePrompt,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.compatibilityAffectsRanking': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsCompatibilityAffectsRanking,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.contextualOpenersEnabled': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsContextualOpenersEnabled,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.enabled': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsEnabled,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.hostGoal': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsHostGoal,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.layoutId': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsLayoutId,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.moduleSelectionConfigured': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsModuleSelectionConfigured,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.playbookId': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsPlaybookId,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestions,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.id': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsId,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptions,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.id': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsId,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.options.items.label': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customQuestions.items.prompt': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomQuestionsItemsPrompt,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.customTitle': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigCustomTitle,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.questionnaireConfig.templateId': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsQuestionnaireConfigTemplateId,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.selectedModuleIds': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsSelectedModuleIds,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.selectedModuleIds.items': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsSelectedModuleIdsItems,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.balanceActivityAttributes': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigBalanceActivityAttributes,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.balanceActivityAttributes.items': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigBalanceActivityAttributesItems,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.clusterActivityAttributes': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigClusterActivityAttributes,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.clusterActivityAttributes.items': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigClusterActivityAttributesItems,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.maxPairMeetings': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigMaxPairMeetings,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.concurrentUnits': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacityConcurrentUnits,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.resourceLabelId': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacityResourceLabelId,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.resourceCapacity.seatsPerUnit': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigResourceCapacitySeatsPerUnit,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.revealCountdownSeconds': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigRevealCountdownSeconds,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.rotationIntervalMinutes': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigRotationIntervalMinutes,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.rotationRepeatStrategy': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigRotationRepeatStrategy,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.topology': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigTopology,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.unitCount': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigUnitCount,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.unitKind': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigUnitKind,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.structureConfig.unitSize': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsStructureConfigUnitSize,
+    'updateEventRehearsalSetupCallablePayload.setup.successDefaults.wingmanRequestsEnabled': updateEventRehearsalSetupCallablePayloadSetupSuccessDefaultsWingmanRequestsEnabled,
     'updateEventRehearsalSetupCallablePayload.setup.title': updateEventRehearsalSetupCallablePayloadSetupTitle,
     'updateEventReviewCallablePayload.comment': updateEventReviewCallablePayloadComment,
     'updateEventReviewCallablePayload.rating': updateEventReviewCallablePayloadRating,

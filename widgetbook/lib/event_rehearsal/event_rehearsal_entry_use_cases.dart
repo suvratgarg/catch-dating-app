@@ -1,0 +1,197 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_copy.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_choice.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_content.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_view.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_source_sheet.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:flutter/material.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+
+@widgetbook.UseCase(
+  name: 'Upcoming event and optional settings',
+  type: EventRehearsalEntryView,
+  path: '[P1 product surfaces]/Dress rehearsal',
+)
+Widget rehearsalUpcomingEntry(BuildContext context) =>
+    const _EntryPreview(sample: false);
+
+@widgetbook.UseCase(
+  name: 'Organizer defaults and optional settings',
+  type: EventRehearsalEntryView,
+  path: '[P1 product surfaces]/Dress rehearsal',
+)
+Widget rehearsalSampleEntry(BuildContext context) =>
+    const _EntryPreview(sample: true);
+
+class _EntryPreview extends StatefulWidget {
+  const _EntryPreview({required this.sample});
+  final bool sample;
+  @override
+  State<_EntryPreview> createState() => _EntryPreviewState();
+}
+
+class _EntryPreviewState extends State<_EntryPreview> {
+  static const defaults = ClubHostDefaults(
+    primaryActivityKind: ActivityKind.socialRun,
+    supportedActivityKinds: [ActivityKind.socialRun, ActivityKind.singlesMixer],
+  );
+  late final event = Event(
+    id: 'preview-event',
+    clubId: 'preview-organizer',
+    name: 'Saturday singles mixer',
+    startTime: DateTime(2026, 9, 5, 19),
+    endTime: DateTime(2026, 9, 5, 20, 30),
+    meetingPoint: 'The Courtyard',
+    eventFormat: EventFormatSnapshot.fromActivityKind(
+      ActivityKind.singlesMixer,
+    ),
+    distanceKm: 0,
+    pace: PaceLevel.easy,
+    capacityLimit: 30,
+    bookedCount: 24,
+    description: '',
+    priceInPaise: 0,
+  );
+  late EventRehearsalConfiguration configuration =
+      EventRehearsalConfiguration.defaults(
+        organizerDefaults: defaults,
+        event: widget.sample ? null : event,
+      );
+
+  @override
+  Widget build(BuildContext context) => EventRehearsalEntryView(
+    configuration: configuration,
+    onStart: () {},
+    onCustomise: () async {
+      final next = await showCatchBottomSheet<EventRehearsalConfiguration>(
+        context: context,
+        builder: (_) =>
+            EventRehearsalCustomiseSheet(configuration: configuration),
+      );
+      if (next != null && mounted) setState(() => configuration = next);
+    },
+    onChooseSource: () async {
+      final next = await showCatchBottomSheet<EventRehearsalSourceChoice>(
+        context: context,
+        builder: (_) => EventRehearsalSourceSheet(
+          events: [event],
+          configuration: configuration,
+        ),
+      );
+      if (next != null && mounted) {
+        setState(
+          () => configuration = EventRehearsalConfiguration.defaults(
+            organizerDefaults: defaults,
+            event: next.eventId == null ? null : event,
+            activityKind: next.activityKind,
+            scenario: configuration.scenario,
+          ),
+        );
+      }
+    },
+    onChooseScenario: () async {
+      final next = await showCatchSelectionSheet<EventRehearsalScenario>(
+        context: context,
+        title: context.l10n.hostEventRehearsalScenario,
+        value: configuration.scenario,
+        items: [
+          for (final value in EventRehearsalScenario.values)
+            CatchSelectionMenuItem(
+              value: value,
+              label: eventRehearsalScenarioTitle(context.l10n, value),
+              sublabel: eventRehearsalScenarioBody(context.l10n, value),
+            ),
+        ],
+      );
+      if (next != null && mounted) {
+        setState(() => configuration = configuration.changeScenario(next));
+      }
+    },
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Loading source defaults',
+  type: EventRehearsalEntryLoadState,
+  path: '[P1 product surfaces]/Dress rehearsal',
+)
+Widget rehearsalLoadingEntry(BuildContext context) =>
+    const EventRehearsalEntryLoadState(child: CatchLoadingIndicator());
+
+@widgetbook.UseCase(
+  name: 'Configuration sheet',
+  type: EventRehearsalCustomiseSheet,
+  path: '[P1 product surfaces]/Dress rehearsal',
+)
+Widget rehearsalCustomisePreview(BuildContext context) =>
+    _rehearsalEditorLauncher(context);
+
+@widgetbook.UseCase(
+  name: 'Event detail inputs in configuration',
+  type: EventRehearsalConfigInput,
+  path: '[P1 product surfaces]/Dress rehearsal',
+)
+Widget rehearsalConfigInputPreview(BuildContext context) =>
+    _rehearsalEditorLauncher(context);
+
+Widget _rehearsalEditorLauncher(BuildContext context) => Scaffold(
+  body: EventRehearsalChoice(
+    title: context.l10n.hostRehearsalCustomise,
+    description: context.l10n.hostRehearsalCustomiseSummary,
+    onTap: () => showCatchBottomSheet<EventRehearsalConfiguration>(
+      context: context,
+      builder: (_) => EventRehearsalCustomiseSheet(
+        configuration: EventRehearsalConfiguration.defaults(
+          organizerDefaults: const ClubHostDefaults(),
+        ),
+      ),
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Wrapping choice explanation',
+  type: EventRehearsalChoice,
+  path: '[P1 product surfaces]/Dress rehearsal',
+)
+Widget rehearsalChoicePreview(BuildContext context) =>
+    _rehearsalEditorLauncher(context);
+
+@widgetbook.UseCase(
+  name: 'Content with organizer defaults',
+  type: EventRehearsalEntryContent,
+  path: '[P1 product surfaces]/Dress rehearsal',
+)
+Widget rehearsalContentPreview(BuildContext context) =>
+    const _EntryPreview(sample: true);
+
+@widgetbook.UseCase(
+  name: 'Source and event type picker',
+  type: EventRehearsalSourceSheet,
+  path: '[P1 product surfaces]/Dress rehearsal',
+)
+Widget rehearsalSourcePreview(BuildContext context) => Scaffold(
+  body: EventRehearsalChoice(
+    title: context.l10n.hostRehearsalSampleTitle(activity: 'Social run'),
+    description: context.l10n.hostRehearsalSampleDescription,
+    onTap: () => showCatchBottomSheet<EventRehearsalSourceChoice>(
+      context: context,
+      builder: (_) => EventRehearsalSourceSheet(
+        events: const [],
+        configuration: EventRehearsalConfiguration.defaults(
+          organizerDefaults: _EntryPreviewState.defaults,
+        ),
+      ),
+    ),
+  ),
+);

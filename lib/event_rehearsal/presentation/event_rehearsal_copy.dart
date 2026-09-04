@@ -2,6 +2,28 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 
+EventRehearsalSetup eventRehearsalConfigurationSetup(
+  AppLocalizations l10n,
+  EventRehearsalConfiguration configuration,
+) {
+  final goal =
+      (configuration.hostGoal ?? configuration.successDefaults.hostGoal).trim();
+  final prompt = eventRehearsalConfigurationPrompt(l10n, configuration).trim();
+  return EventRehearsalSetup(
+    title: eventRehearsalConfigurationTitle(l10n, configuration).trim(),
+    locationName: eventRehearsalConfigurationVenue(l10n, configuration).trim(),
+    durationMinutes: configuration.effectiveDurationMinutes,
+    hostGoal: goal,
+    attendeePrompt: prompt,
+    modules: configuration.selectedModules.toList(),
+    eventFormat: configuration.format,
+    successDefaults: configuration.configuredSuccessDefaults.copyWith(
+      hostGoal: goal,
+      attendeePrompt: prompt,
+    ),
+  );
+}
+
 String eventRehearsalConfigurationTitle(
   AppLocalizations l10n,
   EventRehearsalConfiguration configuration,

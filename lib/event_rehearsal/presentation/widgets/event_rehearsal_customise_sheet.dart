@@ -8,7 +8,6 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_copy.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_choice.dart';
@@ -117,7 +116,9 @@ class _EventRehearsalCustomiseSheetState
               if (_draft.sourceEvent case final event?) ...[
                 gapH8,
                 Text(
-                  l10n.hostRehearsalCopiedGuests(count: event.signedUpCount),
+                  l10n.hostRehearsalCopiedGuests(
+                    count: _draft.sourceGuestCount ?? event.signedUpCount,
+                  ),
                   style: CatchTextStyles.recordContext(context),
                 ),
                 CatchFieldLanes.single(
@@ -235,7 +236,7 @@ class _EventRehearsalCustomiseSheetState
                 CatchSection.fieldRows(
                   first: true,
                   children: [
-                    for (final module in EventRehearsalModule.values)
+                    for (final module in _draft.availableModules)
                       CatchField.toggle(
                         titleMaxLines: 3,
                         title: eventRehearsalConfigurationModuleLabel(
@@ -244,15 +245,20 @@ class _EventRehearsalCustomiseSheetState
                         ),
                         contractExemption:
                             'One item in the rehearsal setup moduleIds collection.',
+                        body: _draft.canConfigureModule(module)
+                            ? null
+                            : l10n.hostRehearsalRequiredModule,
                         value: _draft.selectedModules.contains(module),
-                        onChanged: (selected) => setState(
-                          () => _draft = _draft.copyWith(
-                            moduleOverrides: {
-                              ..._draft.moduleOverrides,
-                              module: selected,
-                            },
-                          ),
-                        ),
+                        onChanged: !_draft.canConfigureModule(module)
+                            ? null
+                            : (selected) => setState(
+                                () => _draft = _draft.copyWith(
+                                  moduleOverrides: {
+                                    ..._draft.moduleOverrides,
+                                    module: selected,
+                                  },
+                                ),
+                              ),
                       ),
                   ],
                 ),

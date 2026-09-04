@@ -19,6 +19,8 @@ import 'package:widgetbook_workspace/consumer/p2_consumer_use_cases.dart'
     as _widgetbook_workspace_consumer_p2_consumer_use_cases;
 import 'package:widgetbook_workspace/dashboard/dashboard_use_cases.dart'
     as _widgetbook_workspace_dashboard_dashboard_use_cases;
+import 'package:widgetbook_workspace/event_rehearsal/event_rehearsal_entry_use_cases.dart'
+    as _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases;
 import 'package:widgetbook_workspace/event_success/event_success_companion_use_cases.dart'
     as _widgetbook_workspace_event_success_event_success_companion_use_cases;
 import 'package:widgetbook_workspace/event_success/event_success_module_consolidation_prototypes.dart'
@@ -5557,6 +5559,94 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Counted notification action',
                 builder: _widgetbook_workspace_dashboard_dashboard_use_cases
                     .dashboardCountedNotificationActionReviewStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Dress rehearsal',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalChoice',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Wrapping choice explanation',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalChoicePreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalConfigInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Event detail inputs in configuration',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalConfigInputPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalCustomiseSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Configuration sheet',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalCustomisePreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalEntryContent',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Content with organizer defaults',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalContentPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalEntryLoadState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Loading source defaults',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalLoadingEntry,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalEntryView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Organizer defaults and optional settings',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalSampleEntry,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Upcoming event and optional settings',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalUpcomingEntry,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalSourceSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Source and event type picker',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalSourcePreview,
               ),
             ],
           ),

@@ -52,13 +52,12 @@ class EventRehearsalSourceSheet extends StatelessWidget {
                             item: CatchMenuItem(
                               value: (eventId: event.id, activityKind: null),
                               label: event.title,
-                              sublabel: l10n.hostRehearsalSourceDetails(
+                              sublabel: l10n.hostRehearsalSourceWhenWhere(
                                 date: AppTimeFormatters.shortDate(
                                   event.startTime,
                                 ),
                                 time: AppTimeFormatters.time(event.startTime),
                                 venue: event.locationName,
-                                count: event.signedUpCount,
                               ),
                               selected:
                                   configuration.sourceEvent?.id == event.id,

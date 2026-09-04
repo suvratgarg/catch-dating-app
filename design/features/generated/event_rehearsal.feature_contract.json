@@ -2,15 +2,15 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/event_rehearsal.feature.json",
-  "generatedFor": "2026-08-19",
-  "sourceDigest": "sha256:88e9f47505f58b7d44075ab377990a0100f96ce1ba505bcdeb9dc4fc6940ce0a",
+  "generatedFor": "2026-09-04",
+  "sourceDigest": "sha256:d184b45ebf36a9bb0030bf07501b3c874c45f363fd6a5a846f4f3d315dbeb33d",
   "resolvedDigest": "sha256:c744f084625e64bc22f43c42a07aaf499b45ad44d8a974b01d2352b8c9076e2c",
   "feature": {
     "id": "feature.event_rehearsal",
     "name": "Event Dress Rehearsal",
     "owner": "event_rehearsal",
     "status": "active",
-    "description": "Orchestrates a deterministic, synthetic-only Host practice room and anonymous guest phone across preparation, virtual live operations, issue simulation, completion, replay, and reproduction export without mutating the production event domain."
+    "description": "Orchestrates an isolated Host practice copy and anonymous guest phone across preparation, virtual live operations, issue simulation, completion, replay, and reproduction export without mutating the production event domain."
   },
   "coverage": {
     "surfaces": 2,
@@ -32,7 +32,7 @@
         "id": "screen.host.event.rehearsal"
       },
       "actionScope": {
-        "included": "Creating a safe sample or source-event snapshot, editing setup before start, controlling virtual time and lifecycle, simulating actor behavior and gated internal faults, rotating and sharing the guest link, resetting or forking a deterministic run, and exporting a reproduction.",
+        "included": "Creating from organizer defaults or an upcoming event with an explicit guest source, optional configuration before starting, controlling virtual time and lifecycle, simulating actor behavior and gated internal faults, rotating and sharing the guest link, resetting or forking a deterministic run, and exporting a reproduction.",
         "excluded": [
           "Production event editing, attendance, messaging, payments, matching, booking, and Event Success writes remain outside the rehearsal domain.",
           "Selecting a menu row, scrolling the roster, and expanding field affordances are UI mechanics rather than additional product actions.",
@@ -159,11 +159,12 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "host_event_rehearsal_setup"
+                "host_event_rehearsal_setup",
+                "host_event_rehearsal_running"
               ]
             }
           ],
-          "description": "Creates one isolated deterministic practice room and navigates to its opaque session id.",
+          "description": "Creates the configured practice copy and opens the existing runtime directly; legacy clients may still create a draft.",
           "implementationStatus": "implemented"
         },
         {

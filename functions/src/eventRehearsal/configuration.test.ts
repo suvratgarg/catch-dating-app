@@ -1,0 +1,352 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import * as admin from "firebase-admin";
+import {CallableRequest} from "firebase-functions/v2/https";
+import {
+  CreateEventRehearsalCallablePayload,
+} from "../shared/generated/createEventRehearsalCallablePayload";
+import {
+  EventRehearsalDocument,
+  EventRehearsalActorDocument,
+} from "../shared/generated/firestoreAdminTypes";
+import {
+  createEventRehearsalHandler,
+  resetEventRehearsalHandler,
+  updateEventRehearsalSetupHandler,
+  rehearsalGuestProjection,
+} from "./handlers";
+
+type Data = Record<string, unknown>;
+class Store {
+  readonly writes: string[] = [];
+  constructor(readonly docs: Record<string, Data>) {}
+  collection(name: string) {
+    return new Query(this, name);
+  }
+  batch() {
+    return new Batch(this);
+  }
+  async runTransaction<T>(fn: (tx: Batch) => Promise<T>) {
+    const tx = this.batch();
+    const result = await fn(tx);
+    await tx.commit();
+    return result;
+  }
+  asFirestore() {
+    return this as unknown as FirebaseFirestore.Firestore;
+  }
+}
+class Ref {
+  constructor(
+    readonly store: Store,
+    readonly path: string,
+  ) {}
+  get id() {
+    return this.path.split("/").at(-1)!;
+  }
+  async get() {
+    return new Snap(this);
+  }
+  async update(value: Data) {
+    this.store.writes.push(this.path);
+    this.store.docs[this.path] = {
+      ...this.store.docs[this.path],
+      ...value,
+    };
+  }
+}
+class Snap {
+  constructor(readonly ref: Ref) {}
+  get id() {
+    return this.ref.id;
+  }
+  get exists() {
+    return this.ref.store.docs[this.ref.path] !== undefined;
+  }
+  data() {
+    return this.ref.store.docs[this.ref.path];
+  }
+}
+class Query {
+  constructor(
+    readonly store: Store,
+    readonly name: string,
+    readonly filters: Array<[string, string, unknown]> = [],
+    readonly max = Infinity,
+  ) {}
+  doc(id: string) {
+    return new Ref(this.store, `${this.name}/${id}`);
+  }
+  where(field: string, op: string, value: unknown) {
+    return new Query(
+      this.store,
+      this.name,
+      [...this.filters, [field, op, value]],
+      this.max,
+    );
+  }
+  limit(max: number) {
+    return new Query(this.store, this.name, this.filters, max);
+  }
+  async get() {
+    const docs = Object.entries(this.store.docs)
+      .filter(
+        ([key, value]) =>
+          key.startsWith(`${this.name}/`) &&
+          this.filters.every(([field, op, expected]) =>
+            op === "in" ?
+              (expected as unknown[]).includes(value[field]) :
+              value[field] === expected,
+          ),
+      )
+      .slice(0, this.max)
+      .map(([key]) => new Snap(new Ref(this.store, key)));
+    return {docs, size: docs.length, empty: docs.length === 0};
+  }
+}
+class Batch {
+  readonly pending: Array<() => void> = [];
+  constructor(readonly store: Store) {}
+  async get(ref: Ref | Query) {
+    return ref.get();
+  }
+  set(ref: Ref, value: Data) {
+    this.pending.push(() => {
+      this.store.docs[ref.path] = value;
+      this.store.writes.push(ref.path);
+    });
+  }
+  create(ref: Ref, value: Data) {
+    this.set(ref, value);
+  }
+  update(ref: Ref, value: Data) {
+    this.set(ref, {...this.store.docs[ref.path], ...value});
+  }
+  delete(ref: Ref) {
+    this.pending.push(() => {
+      delete this.store.docs[ref.path];
+      this.store.writes.push(ref.path);
+    });
+  }
+  async commit() {
+    for (const write of this.pending) write();
+  }
+}
+function request(data: unknown) {
+  return {
+    auth: {uid: "host-1", token: {}},
+    data,
+  } as CallableRequest<unknown>;
+}
+const setup: NonNullable<CreateEventRehearsalCallablePayload["setup"]> = {
+  title: "My practice",
+  locationName: "Courtyard",
+  durationMinutes: 90,
+  hostGoal: "Welcome each team",
+  attendeePrompt: "Say hello",
+  moduleIds: ["arrival", "pods"],
+  eventFormat: {
+    version: 1,
+    activityKind: "pubQuiz",
+    interactionModel: "teamRotations",
+  },
+  successDefaults: {
+    playbookId: "pub_quiz_teams",
+    layoutId: "real-layout",
+    selectedModuleIds: ["check_in", "micro_pods"],
+    moduleSelectionConfigured: true,
+    structureConfig: {
+      unitKind: "teams",
+      unitSize: 6,
+      revealCountdownSeconds: 10,
+    },
+  },
+};
+function storeWithRoster(count = 2) {
+  const start = admin.firestore.Timestamp.fromMillis(Date.now());
+  return new Store({
+    "organizers/org-1": {
+      ownerUserId: "host-1",
+      hostUserIds: [],
+      hostProfiles: [],
+    },
+    "events/event-1": {
+      organizerId: "org-1",
+      clubId: "org-1",
+      name: "Real event",
+      startTime: start,
+      endTime: admin.firestore.Timestamp.fromMillis(
+        start.toMillis() + 5400000,
+      ),
+      meetingPoint: "Courtyard",
+      meetingLocation: {name: "Courtyard"},
+      eventFormat: setup.eventFormat,
+    },
+    ...Object.fromEntries(
+      Array.from({length: count}, (_, index) => [
+        `eventAttendees/private-${index}`,
+        {
+          eventId: "event-1",
+          organizerId: "org-1",
+          displayName: `Actual guest ${index}`,
+          status: index === 0 ? "checkedIn" : "registered",
+          linkedUid: `real-user-${index}`,
+          email: "private@example.com",
+          phoneE164: "+919999999999",
+        },
+      ]),
+    ),
+    "eventAttendees/cancelled": {
+      eventId: "event-1",
+      organizerId: "org-1",
+      displayName: "Cancelled",
+      status: "cancelled",
+    },
+  });
+}
+const payload = {
+  organizerId: "org-1",
+  sourceEventId: "event-1",
+  seed: 8,
+  actorCount: 12,
+  scenarioId: "smoothRun",
+  guestSource: "event",
+  startImmediately: true,
+  setup,
+};
+
+test("creation freezes setup and roster without live writes", async () => {
+  const db = storeWithRoster();
+  const production = JSON.stringify(db.docs);
+  const created = await createEventRehearsalHandler(
+    request(payload),
+    db.asFirestore(),
+  );
+  const session = db.docs[
+    `eventRehearsals/${created.sessionId}`
+  ] as unknown as EventRehearsalDocument;
+  assert.equal(session.status, "running");
+  assert.equal(session.actorCount, 2);
+  assert.equal(session.setup.eventFormat?.activityKind, "pubQuiz");
+  assert.equal(session.setup.successDefaults?.layoutId, null);
+  assert.equal(session.setup.successDefaults?.structureConfig?.unitSize, 6);
+  assert.equal(session.setup.title, "My practice");
+  const actors = Object.values(db.docs).filter(
+    (d) => d.sessionId === created.sessionId,
+  ) as unknown as EventRehearsalActorDocument[];
+  assert.deepEqual(
+    actors.map((a) => a.displayName),
+    ["Actual guest 0", "Actual guest 1"],
+  );
+  assert.deepEqual(
+    actors.map((a) => a.status),
+    ["present", "expected"],
+  );
+  assert.ok(
+    actors.every(
+      (a) =>
+        a.actorId.startsWith("actor-") &&
+        !("linkedUid" in a) &&
+        !("email" in a),
+    ),
+  );
+  const publicGuest = rehearsalGuestProjection(session, actors[0], "token");
+  assert.equal(publicGuest.actor.displayName, "Practice guest 01");
+  assert.ok(!JSON.stringify(publicGuest).includes("Actual guest"));
+  assert.ok(
+    db.writes.every(
+      (p) => p.startsWith("eventRehearsal") || p.startsWith("rateLimits/"),
+    ),
+  );
+  assert.equal(
+    JSON.stringify(
+      Object.fromEntries(
+        Object.entries(db.docs).filter(([key]) => !db.writes.includes(key)),
+      ),
+    ),
+    production,
+  );
+});
+
+test("reset and fork preserve the frozen roster", async () => {
+  const db = storeWithRoster();
+  const created = await createEventRehearsalHandler(
+    request(payload),
+    db.asFirestore(),
+  );
+  db.docs["eventAttendees/private-0"].displayName = "Changed after copy";
+  delete db.docs["events/event-1"];
+  const reset = await resetEventRehearsalHandler(
+    request({sessionId: created.sessionId, fork: false, seed: null}),
+    db.asFirestore(),
+  );
+  assert.ok("actors" in reset);
+  assert.equal(reset.actors[0].displayName, "Actual guest 0");
+  assert.equal(reset.actors[0].status, "present");
+  const fork = await resetEventRehearsalHandler(
+    request({sessionId: created.sessionId, fork: true, seed: null}),
+    db.asFirestore(),
+  );
+  assert.ok("sessionId" in fork);
+  const forkSession = db.docs[
+    `eventRehearsals/${fork.sessionId}`
+  ] as unknown as EventRehearsalDocument;
+  assert.deepEqual(forkSession.rosterSnapshot, [
+    {displayName: "Actual guest 0", status: "present"},
+    {displayName: "Actual guest 1", status: "expected"},
+  ]);
+  await assert.rejects(
+    updateEventRehearsalSetupHandler(
+      request({
+        sessionId: created.sessionId,
+        expectedRevision: 1,
+        actorCount: 3,
+        scenarioId: "smoothRun",
+        setup,
+      }),
+      db.asFirestore(),
+    ),
+    /cannot be resized/,
+  );
+});
+
+test("copied roster limits reject truncation or padding", async () => {
+  for (const count of [0, 1, 51]) {
+    const db = storeWithRoster(count);
+    await assert.rejects(
+      createEventRehearsalHandler(request(payload), db.asFirestore()),
+      /between 2 and 50/,
+    );
+    assert.ok(!db.writes.some((p) => p.startsWith("eventRehearsals/")));
+  }
+  const db = storeWithRoster(51);
+  const created = await createEventRehearsalHandler(
+    request({...payload, guestSource: "simulated", actorCount: 8}),
+    db.asFirestore(),
+  );
+  const session = db.docs[
+    `eventRehearsals/${created.sessionId}`
+  ] as unknown as EventRehearsalDocument;
+  assert.equal(session.actorCount, 8);
+  assert.equal(session.rosterSnapshot, undefined);
+});
+
+test("source ownership and host authorization are required", async () => {
+  const db = storeWithRoster();
+  db.docs["events/event-1"].organizerId = "another-organizer";
+  await assert.rejects(
+    createEventRehearsalHandler(request(payload), db.asFirestore()),
+    /does not belong/,
+  );
+  await assert.rejects(
+    createEventRehearsalHandler(
+      {
+        ...request(payload),
+        auth: {uid: "stranger", token: {}},
+      } as CallableRequest<unknown>,
+      db.asFirestore(),
+    ),
+    /owners and managers/,
+  );
+  assert.ok(!db.writes.some((p) => p.startsWith("eventRehearsals/")));
+});

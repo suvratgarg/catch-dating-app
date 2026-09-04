@@ -1,8 +1,8 @@
 import 'dart:math' as math;
-
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
@@ -18,6 +18,7 @@ final class EventRehearsalConfiguration {
     required this.actorCount,
     this.sourceEvent,
     this.sourcePlan,
+    this.sourceGuestCount,
     this.sampleActivityKind,
     this.scenario = EventRehearsalScenario.smoothRun,
     this.useSimulatedGuests = true,
@@ -35,6 +36,7 @@ final class EventRehearsalConfiguration {
     required ClubHostDefaults organizerDefaults,
     Event? event,
     EventSuccessPlan? plan,
+    int? sourceGuestCount,
     ActivityKind? activityKind,
     EventRehearsalScenario scenario = EventRehearsalScenario.smoothRun,
   }) {
@@ -44,7 +46,9 @@ final class EventRehearsalConfiguration {
           activityKind ?? organizerDefaults.primaryActivityKind,
         );
     final count =
-        event?.signedUpCount ?? recommendedGuestCount(format, scenario);
+        sourceGuestCount ??
+        event?.signedUpCount ??
+        recommendedGuestCount(format, scenario);
     final defaults = plan == null
         ? organizerDefaults.eventSuccessForFormat(
             format,
@@ -58,6 +62,7 @@ final class EventRehearsalConfiguration {
       organizerDefaults: organizerDefaults,
       sourceEvent: event,
       sourcePlan: plan,
+      sourceGuestCount: event == null ? null : count,
       sampleActivityKind: event == null ? format.activityKind : null,
       format: format,
       successDefaults: defaults,
@@ -70,6 +75,7 @@ final class EventRehearsalConfiguration {
   final ClubHostDefaults organizerDefaults;
   final Event? sourceEvent;
   final EventSuccessPlan? sourcePlan;
+  final int? sourceGuestCount;
   final ActivityKind? sampleActivityKind;
   final EventFormatSnapshot format;
   final EventSuccessDefaults successDefaults;
@@ -99,9 +105,18 @@ final class EventRehearsalConfiguration {
     organizerDefaults: organizerDefaults,
     event: sourceEvent,
     plan: sourcePlan,
+    sourceGuestCount: sourceGuestCount,
     activityKind: sampleActivityKind,
     scenario: scenario,
   );
+
+  int get effectiveDurationMinutes =>
+      durationMinutes ??
+      sourceEvent?.endTime.difference(sourceEvent!.startTime).inMinutes ??
+      90;
+
+  bool get hasValidDuration =>
+      effectiveDurationMinutes >= 30 && effectiveDurationMinutes <= 360;
 
   bool get isCustom =>
       format !=
@@ -149,21 +164,73 @@ final class EventRehearsalConfiguration {
               (customActorCount
                   ? actorCount
                   : math
-                        .max(2, sourceEvent?.signedUpCount ?? actorCount)
+                        .max(
+                          2,
+                          sourceGuestCount ??
+                              sourceEvent?.signedUpCount ??
+                              actorCount,
+                        )
                         .clamp(2, 50)))
-        : sourceEvent!.signedUpCount,
+        : sourceGuestCount ?? sourceEvent!.signedUpCount,
   );
 
   Set<EventRehearsalModule> get selectedModules {
-    final selected = successDefaults
-        .toDraft(targetAttendeeCount: actorCount)
-        .selectedModuleIds;
+    final draft = successDefaults.toDraft(targetAttendeeCount: actorCount);
+    final selected = draft.playbook.effectiveModuleSelection(
+      {
+        ...draft.selectedModuleIds,
+        for (final entry in moduleOverrides.entries)
+          if (entry.value && canConfigureModule(entry.key))
+            eventRehearsalSuccessModuleId(entry.key),
+      }.difference({
+        for (final entry in moduleOverrides.entries)
+          if (!entry.value && canConfigureModule(entry.key))
+            eventRehearsalSuccessModuleId(entry.key),
+      }),
+    );
     return {
       for (final module in EventRehearsalModule.values)
-        if (moduleOverrides[module] ??
-            selected.contains(eventRehearsalSuccessModuleId(module)))
-          module,
+        if (selected.contains(eventRehearsalSuccessModuleId(module))) module,
     };
+  }
+
+  Iterable<EventRehearsalModule> get availableModules =>
+      EventRehearsalModule.values.where(
+        (module) => successDefaults
+            .toDraft(targetAttendeeCount: actorCount)
+            .playbook
+            .moduleIds
+            .contains(eventRehearsalSuccessModuleId(module)),
+      );
+
+  bool canConfigureModule(EventRehearsalModule module) {
+    final playbook = successDefaults
+        .toDraft(targetAttendeeCount: actorCount)
+        .playbook;
+    final id = eventRehearsalSuccessModuleId(module);
+    return playbook.moduleIds.contains(id) &&
+        !playbook.nonConfigurableModuleIds.contains(id) &&
+        EventSuccessActivityProfile.forFormat(
+          format,
+          targetAttendeeCount: actorCount,
+        ).isSelectable(id);
+  }
+
+  EventSuccessDefaults get configuredSuccessDefaults {
+    final mapped = EventRehearsalModule.values
+        .map(eventRehearsalSuccessModuleId)
+        .toSet();
+    return successDefaults.copyWith(
+      layoutId: null,
+      moduleSelectionConfigured: true,
+      selectedModuleIds: {
+        ...successDefaults
+            .toDraft(targetAttendeeCount: actorCount)
+            .selectedModuleIds
+            .difference(mapped),
+        ...selectedModules.map(eventRehearsalSuccessModuleId),
+      }.toList()..sort(),
+    );
   }
 
   EventRehearsalConfiguration copyWith({
@@ -184,6 +251,7 @@ final class EventRehearsalConfiguration {
     organizerDefaults: organizerDefaults,
     sourceEvent: sourceEvent,
     sourcePlan: sourcePlan,
+    sourceGuestCount: sourceGuestCount,
     sampleActivityKind: sampleActivityKind,
     format: format ?? this.format,
     successDefaults: successDefaults ?? this.successDefaults,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -9,6 +10,8 @@ import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_entry_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
@@ -27,10 +30,24 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _app(const HostEventRehearsalStartScreen(clubId: 'club-1')),
+      _app(
+        const HostEventRehearsalStartScreen(clubId: 'club-1'),
+        overrides: [
+          eventRehearsalEntryProvider('club-1', null).overrideWith(
+            (ref) async => EventRehearsalEntryData(
+              organizerDefaults: const ClubHostDefaults(),
+              events: const [],
+              initialConfiguration: EventRehearsalConfiguration.defaults(
+                organizerDefaults: const ClubHostDefaults(),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
     await tester.pump();
 
+    await pumpFeatureUi(tester);
     expect(find.text('Dress rehearsal'), findsWidgets);
     expect(find.byType(CatchTopBar), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
@@ -51,7 +68,7 @@ void main() {
     expect(find.byType(CatchScreenHeaderTitle), findsNothing);
     expect(find.byType(CatchResponsiveSectionPage), findsOneWidget);
     expect(
-      find.textContaining('No real guests, messages, payments'),
+      find.text('Your real event and attendees stay unchanged.'),
       findsOneWidget,
     );
     expect(find.text('Normal flow'), findsOneWidget);
@@ -60,7 +77,7 @@ void main() {
       const Offset(0, -500),
     );
     await tester.pump();
-    expect(find.text('Create rehearsal'), findsOneWidget);
+    expect(find.text('Start rehearsal'), findsOneWidget);
   });
 
   testWidgets('host console renders an isolated live rehearsal projection', (
@@ -87,7 +104,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Courtyard practice'), findsOneWidget);
+    expect(find.text('Courtyard practice'), findsWidgets);
     expect(find.text('REHEARSAL'), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Courtyard practice');
@@ -104,7 +121,7 @@ void main() {
         color: CatchTokens.of(titleContext).ink,
       ),
     );
-    expect(find.text('Synthetic guests'), findsOneWidget);
+    expect(find.text('Practice guests'), findsOneWidget);
     final strip = tester.widget<CatchStatusStrip>(
       find.byType(CatchStatusStrip),
     );
@@ -182,7 +199,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.text('Sunday Morning Singles Mixer'), findsOneWidget);
+    expect(find.text('Sunday Morning Singles Mixer'), findsWidgets);
     expect(find.text('REHEARSAL'), findsOneWidget);
     expect(find.text('Room'), findsOneWidget);
     expect(find.text('Show Coach'), findsOneWidget);

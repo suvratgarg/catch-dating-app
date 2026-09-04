@@ -7,6 +7,9 @@
   "x-firestore-collection": "eventRehearsals", "x-firestore-path": "eventRehearsals/{sessionId}", "x-document-id-field": "id", "x-owner": "event rehearsal callables",
   "required": ["organizerId", "clubId", "ownerUid", "sourceEventId", "sourceEventRevision", "publicRehearsalId", "viewerTokenHash", "scenarioId", "seed", "actorCount", "actionCount", "status", "setup", "setupRevision", "runtimeRevision", "activeStepIndex", "virtualStartedAt", "virtualNow", "faultId", "faultConsumed", "createdAt", "updatedAt", "expiresAt", "completedAt"],
   "properties": {
+    "guestSource": {"$ref":"../shared/event_rehearsal_common.schema.json#/definitions/guestSource","x-catch-ownership":"callable-owned"},
+    "rosterSnapshot": {"$ref":"../shared/event_rehearsal_common.schema.json#/definitions/rosterSnapshot","x-catch-ownership":"callable-owned"},
+
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
     "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
     "ownerUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},

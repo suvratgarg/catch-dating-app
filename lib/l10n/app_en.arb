@@ -23271,13 +23271,11 @@
   "@hostEventRehearsalEntryBody": {"description": "Explains rehearsal isolation in the Host entry sheet.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalTitle": "Dress rehearsal",
   "@hostEventRehearsalTitle": {"description": "Event rehearsal route title.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalPracticeBanner": "Practice mode · No real guests, messages, payments, matches, or event records are changed",
-  "@hostEventRehearsalPracticeBanner": {"description": "Persistent rehearsal safety banner.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalManageSubtitle": "Host · Manage",
   "@hostEventRehearsalManageSubtitle": {"description": "Canonical Host Manage route subtitle while rehearsing.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalBadge": "Rehearsal",
   "@hostEventRehearsalBadge": {"description": "Persistent rehearsal mode badge.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalSyntheticGuests": "Synthetic guests",
+  "hostEventRehearsalSyntheticGuests": "Practice guests",
   "@hostEventRehearsalSyntheticGuests": {"description": "Rehearsal data identity shown beside the mode badge.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalPracticeGuest": "Practice guest",
   "@hostEventRehearsalPracticeGuest": {"description": "Synthetic guest subtitle in the canonical Host runtime.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
@@ -23333,22 +23331,10 @@
   "@hostEventRehearsalLeaveBody": {"description": "Explains rehearsal persistence when leaving.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalLeaveAction": "Leave rehearsal",
   "@hostEventRehearsalLeaveAction": {"description": "Leaves an active rehearsal after confirmation.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalStartSubtitle": "Choose a room to practice. You can change the rehearsal copy and playbook before starting.",
-  "@hostEventRehearsalStartSubtitle": {"description": "Rehearsal creation guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalSourceEvent": "Practice this event",
-  "@hostEventRehearsalSourceEvent": {"description": "Existing-event rehearsal source label.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalSourceSample": "Catch sample event",
-  "@hostEventRehearsalSourceSample": {"description": "Sample-template rehearsal source label.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalScenario": "Practice scenario",
   "@hostEventRehearsalScenario": {"description": "Rehearsal scenario field label.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalActorCount": "{count, plural, =1{1 synthetic guest} other{{count} synthetic guests}}",
   "@hostEventRehearsalActorCount": {"description": "Synthetic rehearsal guest count.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalActorCountBody": "Use a realistic roster. Rehearsals are capped at 50 synthetic guests.",
-  "@hostEventRehearsalActorCountBody": {"description": "Explains actor-count bounds.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCreate": "Create rehearsal",
-  "@hostEventRehearsalCreate": {"description": "Creates an isolated rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalExpiry": "This rehearsal and its guest link expire after 24 hours.",
-  "@hostEventRehearsalExpiry": {"description": "Rehearsal retention notice.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalScenarioSmoothRun": "Normal flow",
   "@hostEventRehearsalScenarioSmoothRun": {"description": "Happy-path rehearsal scenario title.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalScenarioSmoothRunBody": "No added disruptions.",
@@ -24250,6 +24236,8 @@
   "@hostRehearsalGuestCount": {"description": "Dress rehearsal entry and optional configuration: GuestCount.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostRehearsalGuestCountRange": "Choose between 2 and 50 guests.",
   "@hostRehearsalGuestCountRange": {"description": "Dress rehearsal entry and optional configuration: GuestCountRange.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
+  "hostRehearsalDurationLimit": "Rehearsals run for 30 minutes to 6 hours. Open Customise rehearsal to adjust the duration of this practice copy.",
+  "@hostRehearsalDurationLimit": {"description": "Explains the rehearsal duration bound without silently changing the source event", "x-audience": "host", "x-owner": "event_rehearsal", "x-surface": "rehearsal entry"},
   "hostRehearsalRosterLimit": "This event has {count} attendees. Rehearsals support 2–50 guests. Choose simulated guests to practise this event.",
   "@hostRehearsalRosterLimit": {"description": "Dress rehearsal entry and optional configuration: RosterLimit.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation", "placeholders": {"count": {"type": "int"}}},
   "hostRehearsalEventDetails": "Event details",
@@ -24299,5 +24287,30 @@
   "hostRehearsalModuleAfterglow": "After-event follow-up",
   "@hostRehearsalModuleAfterglow": {"description": "Dress rehearsal entry and optional configuration: ModuleAfterglow.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostRehearsalModuleAccountability": "Guest accountability",
-  "@hostRehearsalModuleAccountability": {"description": "Dress rehearsal entry and optional configuration: ModuleAccountability.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"}
+  "@hostRehearsalModuleAccountability": {"description": "Dress rehearsal entry and optional configuration: ModuleAccountability.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
+  "hostRehearsalSourceWhenWhere": "{date} · {time}\n{venue}",
+  "@hostRehearsalSourceWhenWhere": {
+    "description": "Dress rehearsal source and configuration supporting copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_rehearsal.presentation",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      },
+      "venue": {
+        "type": "String"
+      }
+    }
+  },
+  "hostRehearsalRequiredModule": "Included in this event type",
+  "@hostRehearsalRequiredModule": {
+    "description": "Dress rehearsal source and configuration supporting copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_rehearsal.presentation"
+  }
 }

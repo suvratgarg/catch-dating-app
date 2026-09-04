@@ -16353,17 +16353,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventRehearsalTitle => 'Dress rehearsal';
 
   @override
-  String get hostEventRehearsalPracticeBanner =>
-      'Practice mode · No real guests, messages, payments, matches, or event records are changed';
-
-  @override
   String get hostEventRehearsalManageSubtitle => 'Host · Manage';
 
   @override
   String get hostEventRehearsalBadge => 'Rehearsal';
 
   @override
-  String get hostEventRehearsalSyntheticGuests => 'Synthetic guests';
+  String get hostEventRehearsalSyntheticGuests => 'Practice guests';
 
   @override
   String get hostEventRehearsalPracticeGuest => 'Practice guest';
@@ -16470,16 +16466,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventRehearsalLeaveAction => 'Leave rehearsal';
 
   @override
-  String get hostEventRehearsalStartSubtitle =>
-      'Choose a room to practice. You can change the rehearsal copy and playbook before starting.';
-
-  @override
-  String get hostEventRehearsalSourceEvent => 'Practice this event';
-
-  @override
-  String get hostEventRehearsalSourceSample => 'Catch sample event';
-
-  @override
   String get hostEventRehearsalScenario => 'Practice scenario';
 
   @override
@@ -16492,17 +16478,6 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get hostEventRehearsalActorCountBody =>
-      'Use a realistic roster. Rehearsals are capped at 50 synthetic guests.';
-
-  @override
-  String get hostEventRehearsalCreate => 'Create rehearsal';
-
-  @override
-  String get hostEventRehearsalExpiry =>
-      'This rehearsal and its guest link expire after 24 hours.';
 
   @override
   String get hostEventRehearsalScenarioSmoothRun => 'Normal flow';
@@ -17708,6 +17683,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostRehearsalGuestCountRange => 'Choose between 2 and 50 guests.';
 
   @override
+  String get hostRehearsalDurationLimit =>
+      'Rehearsals run for 30 minutes to 6 hours. Open Customise rehearsal to adjust the duration of this practice copy.';
+
+  @override
   String hostRehearsalRosterLimit({required int count}) {
     return 'This event has $count attendees. Rehearsals support 2–50 guests. Choose simulated guests to practise this event.';
   }
@@ -17794,4 +17773,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostRehearsalModuleAccountability => 'Guest accountability';
+
+  @override
+  String hostRehearsalSourceWhenWhere({
+    required String date,
+    required String time,
+    required String venue,
+  }) {
+    return '$date · $time\n$venue';
+  }
+
+  @override
+  String get hostRehearsalRequiredModule => 'Included in this event type';
 }

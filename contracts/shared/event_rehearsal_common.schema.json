@@ -3,6 +3,9 @@
   "$id": "https://catch.app/contracts/shared/event_rehearsal_common.schema.json",
   "title": "Event rehearsal common definitions",
   "definitions": {
+    "guestSource": {"type":"string","enum":["simulated","event"]},
+    "rosterSnapshot": {"type":"array","minItems":2,"maxItems":50,"description":"Private frozen roster names and attendance only. No production identity or contact fields.","items":{"type":"object","additionalProperties":false,"required":["displayName","status"],"properties":{"displayName":{"type":"string","minLength":1,"maxLength":120},"status":{"type":"string","enum":["expected","present"]}}}},
+
     "scenarioId": {"type": "string", "enum": ["smoothRun", "lateAndNoShow", "earlyExitAndReturn", "rosterAndCapacity", "walkInAndAmbiguousClaim", "privacyAndKeepApart", "lowConnectivity", "concurrentHosts", "revealInterrupted", "externalProfiles", "accountabilitySweep"]},
     "status": {"type": "string", "enum": ["draft", "ready", "running", "paused", "complete", "expired"]},
     "actorStatus": {"type": "string", "enum": ["expected", "present", "late", "noShow", "departed", "returned", "disconnected", "walkIn", "ambiguousClaim"]},
@@ -19,9 +22,11 @@
         "title": {"type": "string", "minLength": 1, "maxLength": 120},
         "locationName": {"type": "string", "minLength": 1, "maxLength": 180},
         "durationMinutes": {"type": "integer", "minimum": 30, "maximum": 360},
-        "hostGoal": {"type": "string", "minLength": 1, "maxLength": 240},
+        "hostGoal": {"type": "string", "minLength": 1, "maxLength": 300},
         "attendeePrompt": {"type": "string", "minLength": 1, "maxLength": 320},
         "moduleIds": {"type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/definitions/moduleId"}},
+        "eventFormat": {"$ref":"event_common.schema.json#/definitions/eventFormatSnapshot"},
+        "successDefaults": {"$ref":"event_common.schema.json#/definitions/eventSuccessDefaults"},
         "movementSimulation": {
           "type": "object",
           "additionalProperties": false,

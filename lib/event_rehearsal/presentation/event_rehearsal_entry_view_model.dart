@@ -1,13 +1,27 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_source_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_rehearsal_entry_view_model.g.dart';
+
+@riverpod
+Future<({EventSuccessPlan? plan, int guestCount})> eventRehearsalSourcePlan(
+  Ref ref,
+  String eventId,
+) async {
+  final (plan, count) = await (
+    ref.watch(eventSuccessRepositoryProvider).fetchPlan(eventId),
+    ref.watch(eventRehearsalSourceRepositoryProvider).fetchGuestCount(eventId),
+  ).wait;
+  return (plan: plan, guestCount: count);
+}
 
 final class EventRehearsalEntryData {
   const EventRehearsalEntryData({
@@ -31,7 +45,6 @@ Future<EventRehearsalEntryData> eventRehearsalEntry(
 ) async {
   final clubs = ref.watch(clubsRepositoryProvider);
   final eventsRepository = ref.watch(eventRepositoryProvider);
-  final plans = ref.watch(eventSuccessRepositoryProvider);
   final clubFuture = clubs.fetchClub(organizerId);
   final upcomingFuture = eventsRepository.fetchUpcomingEventsForClubs([
     organizerId,
@@ -56,7 +69,9 @@ Future<EventRehearsalEntryData> eventRehearsalEntry(
       'This event does not belong to the rehearsal organizer.',
     );
   }
-  final plan = source == null ? null : await plans.fetchPlan(source.id);
+  final sourceData = source == null
+      ? null
+      : await ref.watch(eventRehearsalSourcePlanProvider(source.id).future);
   return EventRehearsalEntryData(
     organizerDefaults: club.hostDefaults,
     events: List.unmodifiable([
@@ -68,7 +83,8 @@ Future<EventRehearsalEntryData> eventRehearsalEntry(
     initialConfiguration: EventRehearsalConfiguration.defaults(
       organizerDefaults: club.hostDefaults,
       event: source,
-      plan: plan,
+      plan: sourceData?.plan,
+      sourceGuestCount: sourceData?.guestCount,
     ),
   );
 }

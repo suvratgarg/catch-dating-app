@@ -21,6 +21,9 @@ class EventRehearsalRepository {
     required EventRehearsalScenario scenario,
     required int seed,
     required int actorCount,
+    EventRehearsalSetup? setup,
+    String guestSource = 'simulated',
+    bool startImmediately = false,
   }) => _call(
     name: 'createEventRehearsal',
     payload: CreateEventRehearsalCallableRequest(
@@ -29,6 +32,9 @@ class EventRehearsalRepository {
       scenarioId: scenario.name,
       seed: seed,
       actorCount: actorCount,
+      setup: setup?.toJson(),
+      guestSource: guestSource,
+      startImmediately: startImmediately,
     ).toJson(),
     action: 'create an event dress rehearsal',
     parse: EventRehearsalCreated.fromCallableData,

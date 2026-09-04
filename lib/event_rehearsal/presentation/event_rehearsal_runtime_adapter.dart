@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -47,9 +48,17 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     Duration(minutes: math.max(10, session.activeStepIndex * 12)),
   );
   final movementSimulation = session.setup.movementSimulation;
-  final tableCount = math.max(1, (session.actorCount / 4).ceil());
+  final structure = session.setup.successDefaults?.structureConfig;
+  final unitKind = structure?.unitKind ?? EventSuccessUnitKind.tables;
+  final unitSize = unitKind == EventSuccessUnitKind.wholeGroup
+      ? math.max(1, session.actorCount)
+      : math.max(1, structure?.unitSize ?? 4);
+  final tableCount = math.max(
+    structure?.unitCount ?? 1,
+    (session.actorCount / unitSize).ceil(),
+  );
   final selectedModuleIds = session.setup.modules
-      .expand(_eventSuccessModuleIds)
+      .map(eventRehearsalSuccessModuleId)
       .toSet()
       .toList(growable: false);
   final event = Event(
@@ -57,19 +66,22 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     synthetic: true,
     seedPrefix: session.seed.toString(),
     clubId: session.organizerId,
+    name: session.setup.title,
     startTime: eventStart,
     endTime: eventStart.add(Duration(minutes: session.setup.durationMinutes)),
     meetingPoint: session.setup.locationName,
-    eventFormat: EventFormatSnapshot(
-      activityKind: ActivityKind.singlesMixer,
-      interactionModel: EventInteractionModel.seatedTable,
-      defaultPlaybookId: 'algorithmic_mixer_reveal',
-      defaultModuleIds: selectedModuleIds,
-      activityDetails: {
-        if (movementSimulation?.routePlan != null)
-          'routePlan': movementSimulation!.routePlan!.toJson(),
-      },
-    ),
+    eventFormat:
+        session.setup.eventFormat ??
+        EventFormatSnapshot(
+          activityKind: ActivityKind.singlesMixer,
+          interactionModel: EventInteractionModel.seatedTable,
+          defaultPlaybookId: 'algorithmic_mixer_reveal',
+          defaultModuleIds: selectedModuleIds,
+          activityDetails: {
+            if (movementSimulation?.routePlan != null)
+              'routePlan': movementSimulation!.routePlan!.toJson(),
+          },
+        ),
     itinerary: movementSimulation?.itinerary ?? const [],
     distanceKm: 0,
     pace: PaceLevel.easy,
@@ -79,16 +91,28 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     bookedCount: rehearsal.actors.length,
     checkedInCount: rehearsal.actors.where(_isCheckedIn).length,
   );
-  final basePlan = EventSuccessPlan.defaultForEvent(event, now: virtualNow);
+  final defaults = session.setup.successDefaults;
+  final basePlan = defaults == null
+      ? EventSuccessPlan.defaultForEvent(event, now: virtualNow)
+      : EventSuccessPlan.fromDraft(
+          id: eventId,
+          eventId: eventId,
+          clubId: session.organizerId,
+          draft: defaults.toDraft(targetAttendeeCount: session.actorCount),
+          createdAt: virtualNow,
+          updatedAt: virtualNow,
+        );
   final plan = basePlan.copyWith(
-    selectedModuleIds: selectedModuleIds,
+    selectedModuleIds: defaults?.selectedModuleIds ?? selectedModuleIds,
     targetAttendeeCount: math.max(1, session.actorCount),
-    structureConfig: basePlan.structureConfig.copyWith(
-      unitKind: EventSuccessUnitKind.tables,
-      unitSize: 4,
-      unitCount: tableCount,
-      rotationIntervalMinutes: 12,
-    ),
+    structureConfig:
+        structure ??
+        basePlan.structureConfig.copyWith(
+          unitKind: EventSuccessUnitKind.tables,
+          unitSize: 4,
+          unitCount: tableCount,
+          rotationIntervalMinutes: 12,
+        ),
     hostGoal: session.setup.hostGoal,
     attendeePrompt: session.setup.attendeePrompt,
     activeStepIndex: session.activeStepIndex,
@@ -114,9 +138,9 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
       for (var index = 0; index < tableCount; index++)
         EventSuccessLayoutUnit(
           id: 'table-${index + 1}',
-          label: _tableLabelForIndex(index),
+          label: _unitLabelForIndex(index, unitKind),
           shape: EventSuccessLayoutShape.round,
-          capacity: 4,
+          capacity: unitSize,
           gridX: index % 2,
           gridY: index ~/ 2,
           order: index + 1,
@@ -130,6 +154,7 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
         actor: indexed.$2,
         index: indexed.$1,
         tableCount: tableCount,
+        unitKind: unitKind,
         eventId: eventId,
         clubId: session.organizerId,
         now: virtualNow,
@@ -150,7 +175,12 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     },
   );
   final profiles = <PublicProfile>[
-    for (final indexed in rehearsal.actors.indexed)
+    // Copied operational rows have names and attendance, not dating profiles.
+    // Their names remain available on assignments and presence entries.
+    for (final indexed
+        in session.guestSource == 'event'
+            ? <EventRehearsalActor>[].indexed
+            : rehearsal.actors.indexed)
       PublicProfile(
         uid: indexed.$2.actorId,
         name: indexed.$2.displayName,
@@ -199,28 +229,6 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
   );
 }
 
-Iterable<String> _eventSuccessModuleIds(EventRehearsalModule module) =>
-    switch (module) {
-      EventRehearsalModule.arrival => [EventSuccessModuleCatalog.checkIn.id],
-      EventRehearsalModule.firstHello => [
-        EventSuccessModuleCatalog.firstHelloCheckIn.id,
-      ],
-      EventRehearsalModule.pods => [EventSuccessModuleCatalog.microPods.id],
-      EventRehearsalModule.rotations => [
-        EventSuccessModuleCatalog.guidedRotations.id,
-      ],
-      EventRehearsalModule.conversationCues => [
-        EventSuccessModuleCatalog.socialMissions.id,
-      ],
-      EventRehearsalModule.reveal => [EventSuccessModuleCatalog.liveReveal.id],
-      EventRehearsalModule.afterglow => [
-        EventSuccessModuleCatalog.hostAnalytics.id,
-      ],
-      EventRehearsalModule.accountability => [
-        EventSuccessModuleCatalog.safetyControls.id,
-      ],
-    };
-
 bool _isCheckedIn(EventRehearsalActor actor) => switch (actor.status) {
   EventRehearsalActorStatus.present ||
   EventRehearsalActorStatus.late ||
@@ -252,6 +260,7 @@ EventSuccessAssignment _assignmentFor({
   required EventRehearsalActor actor,
   required int index,
   required int tableCount,
+  required EventSuccessUnitKind unitKind,
   required String eventId,
   required String clubId,
   required DateTime now,
@@ -264,7 +273,7 @@ EventSuccessAssignment _assignmentFor({
   final tableIndex = parsedTableIndex == null
       ? index % tableCount
       : (parsedTableIndex - 1).clamp(0, tableCount - 1);
-  final tableLabel = _tableLabelForIndex(tableIndex);
+  final tableLabel = _unitLabelForIndex(tableIndex, unitKind);
   final legacyConfirmed =
       actor.layoutUnitId == null &&
       (actor.status == EventRehearsalActorStatus.present ||
@@ -281,7 +290,7 @@ EventSuccessAssignment _assignmentFor({
         ? latePracticeGuestLabel
         : practiceGuestLabel,
     peerUids: const [],
-    unitKind: 'table',
+    unitKind: unitKind.singularLabel.toLowerCase(),
     unitIndex: tableIndex,
     unitLabel: tableLabel,
     layoutUnitId: layoutUnitId,
@@ -293,8 +302,8 @@ EventSuccessAssignment _assignmentFor({
   );
 }
 
-String _tableLabelForIndex(int index) {
-  final noun = EventSuccessUnitKind.tables.singularLabel;
+String _unitLabelForIndex(int index, EventSuccessUnitKind kind) {
+  final noun = kind.singularLabel;
   final titleNoun = noun.isEmpty
       ? noun
       : '${noun[0].toUpperCase()}${noun.substring(1)}';

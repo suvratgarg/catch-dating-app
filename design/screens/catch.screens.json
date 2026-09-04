@@ -266,7 +266,8 @@
     },
     "screen.host.event.rehearsal": {
       "owners": [
-        {"routes": ["hostEventRehearsalStartScreen"], "file": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart", "symbol": "_HostEventRehearsalStartScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostEventRehearsalStartScreen"], "file": "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_view.dart", "symbol": "EventRehearsalEntryView", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "mixed", "topEdge": "route-chrome"},
+        {"routes": ["hostEventRehearsalStartScreen"], "file": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart", "symbol": "EventRehearsalEntryLoadState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostEventRehearsalScreen"], "file": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart", "symbol": "_HostEventRehearsalScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "mixed", "topEdge": "route-chrome"}
       ],
       "reason": "Rehearsal setup and live rehearsal are canonical pushed routes with shared title treatment."
@@ -25618,9 +25619,9 @@
           "id": "host_event_rehearsal_start",
           "kind": "populated",
           "status": "tested",
-          "source": "HostEventRehearsalStartScreen sample or source-event setup",
+          "source": "HostEventRehearsalStartScreen with organizer or upcoming-event defaults, source/scenario choices and optional Customise sheet",
           "tests": ["test/event_rehearsal/host_event_rehearsal_screen_test.dart"],
-          "nextAction": "Keep sample and source-event creation choices synchronized with the callable schema."
+          "nextAction": "Create the selected frozen configuration once and enter the existing rehearsal runtime directly."
         },
         {
           "id": "host_event_rehearsal_loading",

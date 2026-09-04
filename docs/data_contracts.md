@@ -112,23 +112,33 @@ server-only collections:
 | Collection | Purpose | Limits and authority |
 |---|---|---|
 | `eventRehearsals/{sessionId}` | Frozen source snapshot, editable pre-start setup, scenario/seed, virtual clock, lifecycle and revisions | Organizer manager reads through Host callables only; 24-hour expiry; at most five active sessions per owner |
-| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, status, guest moment, Room placement/confirmation, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no UID, phone, email, booking, payment, match, chat, or production attendee id |
+| `eventRehearsalActors/{sessionId_actorId}` | Practice actors from generated guests or a private frozen roster, status, guest moment, Room placement/confirmation, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no UID, phone, email, booking, payment, match, chat, or production attendee id |
 | `eventRehearsalActions/{sessionId_actionKey}` | Idempotent Host/guest controls and deterministic replay history | At most 500 actions; a stable hash of session plus client action id deduplicates delivery |
 | `eventRehearsalGuestViews/{sessionId_slotId}` | One browser-instance-to-actor lease with hashed bearer token state | Created only by the public guest bootstrap callable; link rotation invalidates prior slots |
 
 The schemas under `contracts/firestore/event_rehearsal_*.schema.json` and
 `contracts/callables/*event_rehearsal*.schema.json` are authoritative.
-Functions may read `events/{sourceEventId}` exactly once during creation to
-copy a bounded title, location, duration, and supported playbook shape after
-verifying organizer authority. No rehearsal handler may write a production
+Creation verifies organizer authority before reading `events/{sourceEventId}`
+and, when explicitly selected, registered and checked-in `eventAttendees`.
+The roster read is capped at 51 rows to reject a source above the 50-actor
+limit without silently truncating it. Only display names and attendance are
+frozen in the private session; contact fields and production identities are
+never retained. Hosts may instead choose a synthetic roster of 2–50 guests.
+The selected event format, Event Success defaults, and rehearsal-only edits
+are persisted together with creation. Production layout references and
+arbitrary activity metadata are removed; route movement stays synthetic.
+`startImmediately` enters the existing runtime directly, while older callers
+continue to create a draft. No rehearsal handler may write a production
 collection. Firestore rules deny every direct client read and write to the four
 collections; App-Check-protected callables own all Host access.
 
 Host writes carry the expected setup or runtime revision. Mutating controls and
 guest actions carry a bounded client action id, exact replays return the same
 projection, and stale revisions fail closed. Setup freezes at start. Reset
-regenerates actors from the same seed and clears action count; fork creates a
-new session. Room moves, confirmation, and pin release use the same revision
+restores the frozen roster (or regenerates synthetic actors from the seed) and
+clears action count. Fork carries the same frozen setup and roster into a new
+session without rereading the source event. Room moves, confirmation, and pin
+release use the same revision
 and idempotency boundary and may target only deterministic tables owned by the
 rehearsal. The scheduled expiry handler deletes the bounded child set after
 24 hours. Advanced latency/failure/disconnect/stale/duplicate/legacy/reduced-
@@ -136,7 +146,9 @@ motion/low-bandwidth faults require internal/admin authorization; behavioral
 scenarios remain available to an ordinary organizer manager.
 
 The public guest response contains only a practice banner, safe session fields,
-one synthetic actor, and a slot token. `clientInstanceId` stabilizes retries in
+one practice actor, and a slot token. Copied attendee names are replaced with
+practice aliases in the public response; the private roster snapshot is also
+excluded from reproduction exports. `clientInstanceId` stabilizes retries in
 one browser; the server derives and stores only deterministic hashes. It never
 uses Firebase Auth, OTP, attendee claims, or a production roster.
 
@@ -1844,7 +1856,7 @@ cursor before expanding their product surface:
 | Exception id | Reads | Bound / review trigger |
 |---|---|---|
 | `READ-EXCEPTION-ACTIVE-EDGES` | active memberships, saved events, blocks, event participations | At most one active edge per deterministic entity pair; paginate if inactive/history states join the query. |
-| `READ-EXCEPTION-EVENT-ROSTER` | active event roster and host event report | Bounded by the event admission capacity; exports remain explicit one-shot operations. |
+| `READ-EXCEPTION-EVENT-ROSTER` | active event roster, rehearsal source aggregate count, and host event report | Bounded by the event admission capacity; exports remain explicit one-shot operations. |
 | `READ-EXCEPTION-HOST-CLUBS` | hosted/owned clubs for one user | Small authorization working set; paginate if surfaced as an organization history. |
 | `READ-EXCEPTION-CLUB-EVENT-SCHEDULE` | one club's event schedule and invite-link set | Operational club/event working sets; history/archive experiences require cursor pages. |
 | `READ-EXCEPTION-RECENT-CLUB-POSTS` | seven-day club post quota window | Server-enforced three-active-post quota; the bounded read exists only to calculate remaining quota. |

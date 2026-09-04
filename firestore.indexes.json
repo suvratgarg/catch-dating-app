@@ -1,6 +1,14 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventAttendees",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "crossPathsPairHolds",
       "queryScope": "COLLECTION",
       "fields": [

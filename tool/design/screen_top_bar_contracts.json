@@ -122,6 +122,14 @@
       "reason": "The rehearsal runtime owns a responsive operational workspace header."
     },
     {
+      "path": "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_view.dart",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
       "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",

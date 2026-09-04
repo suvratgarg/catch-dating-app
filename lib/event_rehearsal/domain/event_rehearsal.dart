@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 
@@ -112,6 +114,8 @@ class EventRehearsalSetup {
     required this.attendeePrompt,
     required this.modules,
     this.movementSimulation,
+    this.eventFormat,
+    this.successDefaults,
   });
 
   factory EventRehearsalSetup.fromMap(Map<Object?, Object?> map) =>
@@ -124,6 +128,18 @@ class EventRehearsalSetup {
         modules: _stringList(map['moduleIds'])
             .map((value) => EventRehearsalModule.values.byName(value))
             .toList(growable: false),
+        eventFormat: map['eventFormat'] == null
+            ? null
+            : EventFormatSnapshot.fromJson(
+                _stringMap(_requiredMap(map['eventFormat'], 'eventFormat')),
+              ),
+        successDefaults: map['successDefaults'] == null
+            ? null
+            : EventSuccessDefaults.fromJson(
+                _stringMap(
+                  _requiredMap(map['successDefaults'], 'successDefaults'),
+                ),
+              ),
         movementSimulation: map['movementSimulation'] == null
             ? null
             : EventRehearsalMovementSimulation.fromMap(
@@ -138,6 +154,8 @@ class EventRehearsalSetup {
   final String attendeePrompt;
   final List<EventRehearsalModule> modules;
   final EventRehearsalMovementSimulation? movementSimulation;
+  final EventFormatSnapshot? eventFormat;
+  final EventSuccessDefaults? successDefaults;
 
   Map<String, Object?> toJson() => {
     'title': title,
@@ -146,6 +164,8 @@ class EventRehearsalSetup {
     'hostGoal': hostGoal,
     'attendeePrompt': attendeePrompt,
     'moduleIds': modules.map((module) => module.name).toList(growable: false),
+    if (eventFormat != null) 'eventFormat': eventFormat!.toJson(),
+    if (successDefaults != null) 'successDefaults': successDefaults!.toJson(),
     if (movementSimulation != null)
       'movementSimulation': movementSimulation!.toJson(),
   };
@@ -158,6 +178,8 @@ class EventRehearsalSetup {
     String? attendeePrompt,
     List<EventRehearsalModule>? modules,
     EventRehearsalMovementSimulation? movementSimulation,
+    EventFormatSnapshot? eventFormat,
+    EventSuccessDefaults? successDefaults,
   }) => EventRehearsalSetup(
     title: title ?? this.title,
     locationName: locationName ?? this.locationName,
@@ -166,6 +188,8 @@ class EventRehearsalSetup {
     attendeePrompt: attendeePrompt ?? this.attendeePrompt,
     modules: modules ?? this.modules,
     movementSimulation: movementSimulation ?? this.movementSimulation,
+    eventFormat: eventFormat ?? this.eventFormat,
+    successDefaults: successDefaults ?? this.successDefaults,
   );
 }
 
@@ -251,6 +275,7 @@ class EventRehearsalSession {
     required this.virtualNow,
     required this.fault,
     required this.expiresAt,
+    this.guestSource = 'simulated',
   });
 
   factory EventRehearsalSession.fromMap(
@@ -259,6 +284,7 @@ class EventRehearsalSession {
     id: _requiredString(map, 'id'),
     organizerId: _requiredString(map, 'organizerId'),
     sourceEventId: map['sourceEventId'] as String?,
+    guestSource: map['guestSource'] as String? ?? 'simulated',
     scenario: EventRehearsalScenario.fromWire(
       _requiredString(map, 'scenarioId'),
     ),
@@ -282,6 +308,7 @@ class EventRehearsalSession {
   final String id;
   final String organizerId;
   final String? sourceEventId;
+  final String guestSource;
   final EventRehearsalScenario scenario;
   final int seed;
   final int actorCount;

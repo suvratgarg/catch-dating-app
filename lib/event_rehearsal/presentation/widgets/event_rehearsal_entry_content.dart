@@ -58,7 +58,7 @@ class EventRehearsalEntryContent extends StatelessWidget {
             title: eventRehearsalConfigurationTitle(l10n, configuration),
             description: source == null
                 ? sourceDescription
-                : '${l10n.hostRehearsalSourceDetails(date: AppTimeFormatters.shortDate(source.startTime), time: AppTimeFormatters.time(source.startTime), venue: source.locationName, count: source.signedUpCount)}\n\n$sourceDescription',
+                : '${l10n.hostRehearsalSourceDetails(date: AppTimeFormatters.shortDate(source.startTime), time: AppTimeFormatters.time(source.startTime), venue: source.locationName, count: configuration.sourceGuestCount ?? source.signedUpCount)}\n\n$sourceDescription',
             onTap: onChooseSource,
           ),
         ),
@@ -83,6 +83,13 @@ class EventRehearsalEntryContent extends StatelessWidget {
               : l10n.hostRehearsalCustomiseSummary,
           onTap: onCustomise,
         ),
+        if (!configuration.hasValidDuration) ...[
+          gapH16,
+          Text(
+            l10n.hostRehearsalDurationLimit,
+            style: CatchTextStyles.supporting(context),
+          ),
+        ],
         if (!configuration.useSimulatedGuests &&
             (configuration.actorCount < 2 ||
                 configuration.actorCount > 50)) ...[

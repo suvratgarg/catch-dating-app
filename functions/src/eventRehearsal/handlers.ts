@@ -85,11 +85,16 @@ import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
+  buildConfiguredRehearsalActors,
+  freezeRehearsalSetup,
+  loadRehearsalRosterSnapshot,
+  rehearsalUnitCount,
+} from "./configuration";
+import {
   actorAtMoment,
   applyRehearsalBehavior,
   applyRehearsalGuestAction,
   applyRehearsalSpatialAction,
-  buildRehearsalActors,
   cuesBetween,
   eventRehearsalActionDocumentId,
   momentForStep,
@@ -112,18 +117,20 @@ type Firestore = FirebaseFirestore.Firestore;
 interface CreateOverrides {
   setup?: RehearsalSetup;
   sourceEventRevision?: string | null;
+  clubId?: string;
+  rosterSnapshot?: EventRehearsalDocument["rosterSnapshot"];
 }
 
 /** Creates an isolated rehearsal and its deterministic synthetic roster. */
 export async function createEventRehearsalHandler(
-  request: CallableRequest<unknown>
+  request: CallableRequest<unknown>,
+  db: Firestore = admin.firestore()
 ): Promise<CreateEventRehearsalCallableResponse> {
   const uid = requireAuth(request);
   const data = validateCallableWithAjv<CreateEventRehearsalCallablePayload>(
     request,
     validateCreateEventRehearsalCallablePayload
   );
-  const db = admin.firestore();
   await checkRateLimit(db, uid, "createEventRehearsal");
   await requireOrganizerManager({
     db,
@@ -154,7 +161,8 @@ export async function getEventRehearsalBootstrapHandler(
 
 /** Updates the frozen safe snapshot while the rehearsal is not running. */
 export async function updateEventRehearsalSetupHandler(
-  request: CallableRequest<unknown>
+  request: CallableRequest<unknown>,
+  db: Firestore = admin.firestore()
 ): Promise<EventRehearsalBootstrapCallableResponse> {
   const uid = requireAuth(request);
   const data = validateCallableWithAjv<
@@ -163,7 +171,6 @@ export async function updateEventRehearsalSetupHandler(
     request,
     validateUpdateEventRehearsalSetupCallablePayload
   );
-  const db = admin.firestore();
   await checkRateLimit(db, uid, "updateEventRehearsalSetup");
   await requireHostSession(db, data.sessionId, uid);
   const sessionRef = db.collection(sessions).doc(data.sessionId);
@@ -188,23 +195,33 @@ export async function updateEventRehearsalSetupHandler(
       throw staleRevision(session.setupRevision);
     }
     const now = admin.firestore.Timestamp.now();
-    const nextActors = buildRehearsalActors(
+    if (session.guestSource === "event" &&
+        data.actorCount !== session.actorCount) {
+      throw new HttpsError(
+        "failed-precondition", "A copied roster cannot be resized."
+      );
+    }
+    const nextSetup = freezeRehearsalSetup({
+      ...session.setup,
+      ...data.setup,
+      ...(session.setup.movementSimulation &&
+            !data.setup.movementSimulation ? {
+          movementSimulation: session.setup.movementSimulation,
+        } : {}),
+    });
+    const nextActors = buildConfiguredRehearsalActors(
       data.sessionId,
       data.actorCount,
       session.seed,
-      now
+      now,
+      session.rosterSnapshot,
+      nextSetup
     );
     const nextActorDocumentIds = new Set(nextActors.map((actor) =>
       actorDocumentId(data.sessionId, actor.actorId)
     ));
     tx.update(sessionRef, {
-      setup: {
-        ...data.setup,
-        ...(session.setup.movementSimulation &&
-            !data.setup.movementSimulation ? {
-            movementSimulation: session.setup.movementSimulation,
-          } : {}),
-      },
+      setup: nextSetup,
       scenarioId: data.scenarioId,
       actorCount: data.actorCount,
       setupRevision: session.setupRevision + 1,
@@ -500,7 +517,7 @@ export async function controlEventRehearsalSpatialHandler(
         data.action,
         data.destinationUnitId,
         data.scope,
-        Math.max(1, Math.ceil(session.actorCount / 4)),
+        rehearsalUnitCount(session),
         now
       );
     } catch (error) {
@@ -539,7 +556,8 @@ export async function controlEventRehearsalSpatialHandler(
 
 /** Resets the current run or forks the frozen setup to a new session. */
 export async function resetEventRehearsalHandler(
-  request: CallableRequest<unknown>
+  request: CallableRequest<unknown>,
+  db: Firestore = admin.firestore()
 ): Promise<
   CreateEventRehearsalCallableResponse |
   EventRehearsalBootstrapCallableResponse
@@ -549,7 +567,6 @@ export async function resetEventRehearsalHandler(
     request,
     validateResetEventRehearsalCallablePayload
   );
-  const db = admin.firestore();
   await checkRateLimit(db, uid, "resetEventRehearsal");
   const session = await requireHostSession(db, data.sessionId, uid);
   if (data.fork) {
@@ -560,9 +577,12 @@ export async function resetEventRehearsalHandler(
       scenarioId: session.scenarioId,
       seed: data.seed ?? session.seed,
       actorCount: session.actorCount,
+      guestSource: session.guestSource ?? "simulated",
     }, {
       setup: session.setup,
       sourceEventRevision: session.sourceEventRevision,
+      clubId: session.clubId,
+      rosterSnapshot: session.rosterSnapshot,
     });
   }
   await deleteSessionChildren(db, data.sessionId);
@@ -587,11 +607,13 @@ export async function resetEventRehearsalHandler(
   await writeActors(
     db,
     data.sessionId,
-    buildRehearsalActors(
+    buildConfiguredRehearsalActors(
       data.sessionId,
       session.actorCount,
       data.seed ?? session.seed,
-      now
+      now,
+      session.rosterSnapshot,
+      session.setup
     )
   );
   return hostProjection(
@@ -913,12 +935,32 @@ async function createSession(
   const now = admin.firestore.Timestamp.now();
   const sessionId = randomToken(18);
   const publicRehearsalId = randomToken(24);
-  const source = data.sourceEventId ?
+  const source = data.sourceEventId && !overrides.setup ?
     await sourceSetup(db, data.organizerId, data.sourceEventId) : null;
-  const setup = overrides.setup ?? source?.setup ?? sampleSetup();
+  const guestSource = data.guestSource ?? "simulated";
+  if (guestSource === "event" && !data.sourceEventId) {
+    throw new HttpsError("invalid-argument", "Choose an event to copy guests.");
+  }
+  const rosterSnapshot = overrides.rosterSnapshot ??
+    (guestSource === "event" ? await loadRehearsalRosterSnapshot(
+      db, data.sourceEventId!, data.organizerId
+    ) : undefined);
+  const requestedSetup = overrides.setup ?? data.setup ??
+    source?.setup ?? sampleSetup();
+  const setup = freezeRehearsalSetup({
+    ...requestedSetup,
+    ...(source?.setup.movementSimulation &&
+        (!requestedSetup.eventFormat ||
+        requestedSetup.eventFormat.activityKind ===
+        source.setup.eventFormat?.activityKind) ? {
+        movementSimulation: source.setup.movementSimulation,
+      } : {}),
+  });
+  const actorCount = rosterSnapshot?.length ?? data.actorCount;
+  const running = data.startImmediately === true;
   const session: EventRehearsalDocument = {
     organizerId: data.organizerId,
-    clubId: source?.clubId ?? data.organizerId,
+    clubId: overrides.clubId ?? source?.clubId ?? data.organizerId,
     ownerUid: uid,
     sourceEventId: data.sourceEventId,
     sourceEventRevision: overrides.sourceEventRevision ??
@@ -927,13 +969,15 @@ async function createSession(
     viewerTokenHash: sha256(publicRehearsalId),
     scenarioId: data.scenarioId,
     seed: data.seed,
-    actorCount: data.actorCount,
+    actorCount,
+    guestSource,
+    ...(rosterSnapshot ? {rosterSnapshot} : {}),
     actionCount: 0,
-    status: "draft",
+    status: running ? "running" : "draft",
     setup,
     setupRevision: 0,
     runtimeRevision: 0,
-    activeStepIndex: 0,
+    activeStepIndex: running ? 1 : 0,
     virtualStartedAt: now,
     virtualNow: now,
     faultId: "none",
@@ -945,12 +989,14 @@ async function createSession(
     ),
     completedAt: null,
   };
-  const syntheticActors = buildRehearsalActors(
+  const syntheticActors = buildConfiguredRehearsalActors(
     sessionId,
-    data.actorCount,
+    actorCount,
     data.seed,
-    now
-  );
+    now,
+    rosterSnapshot,
+    setup
+  ).map((actor) => running ? actorAtMoment(actor, "checkIn", now) : actor);
   const batch = db.batch();
   batch.create(db.collection(sessions).doc(sessionId), session);
   for (const actor of syntheticActors) {
@@ -1031,6 +1077,7 @@ export function rehearsalSetupFromEvent(event: EventDocument): RehearsalSetup {
     item.kind === "stop" || item.kind === "finish" || Boolean(item.location)
   );
   return {
+    eventFormat: {...event.eventFormat, version: 1},
     title: event.name?.trim() ||
       `${activityLabel(event.eventFormat.activityKind)} dress rehearsal`,
     locationName: event.meetingLocation.name || event.meetingPoint,
@@ -1137,6 +1184,7 @@ async function hostProjection(
       id: sessionId,
       organizerId: session.organizerId,
       sourceEventId: session.sourceEventId,
+      guestSource: session.guestSource ?? "simulated",
       scenarioId: session.scenarioId,
       seed: session.seed,
       actorCount: session.actorCount,
@@ -1218,7 +1266,9 @@ export function rehearsalGuestProjection(
     },
     actor: {
       actorId: actor.actorId,
-      displayName: actor.displayName,
+      displayName: session.guestSource === "event" ?
+        `Practice guest ${actor.actorId.replace("actor-", "")}` :
+        actor.displayName,
       status: actor.status,
       guestMoment: actor.guestMoment,
       optedOut: actor.optedOut,
@@ -1618,7 +1668,7 @@ function delay(milliseconds: number): Promise<void> {
 
 export const createEventRehearsal = onCall(
   appCheckCallableOptions,
-  createEventRehearsalHandler
+  (request) => createEventRehearsalHandler(request)
 );
 export const getEventRehearsalBootstrap = onCall(
   appCheckCallableOptionsWithLimits({memory: "512MiB"}),
@@ -1626,7 +1676,7 @@ export const getEventRehearsalBootstrap = onCall(
 );
 export const updateEventRehearsalSetup = onCall(
   appCheckCallableOptions,
-  updateEventRehearsalSetupHandler
+  (request) => updateEventRehearsalSetupHandler(request)
 );
 export const controlEventRehearsal = onCall(
   appCheckCallableOptions,
@@ -1642,7 +1692,7 @@ export const controlEventRehearsalSpatial = onCall(
 );
 export const resetEventRehearsal = onCall(
   appCheckCallableOptions,
-  resetEventRehearsalHandler
+  (request) => resetEventRehearsalHandler(request)
 );
 export const rotateEventRehearsalGuestLink = onCall(
   appCheckCallableOptions,

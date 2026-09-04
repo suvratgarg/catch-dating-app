@@ -46,7 +46,7 @@ export const eventRehearsalActorDocumentSchema: Record<string, unknown> = {
     "displayName": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 80,
+      "maxLength": 120,
       "x-catch-ownership": "callable-owned"
     },
     "persona": {

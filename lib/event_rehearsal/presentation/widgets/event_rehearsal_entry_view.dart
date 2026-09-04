@@ -10,7 +10,7 @@ import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehe
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
-/// The proposed route view, with a single start action and optional editors.
+/// The rehearsal entry view, with a single start action and optional editors.
 /// The route controller supplies source loading, persistence and navigation.
 class EventRehearsalEntryView extends StatelessWidget {
   const EventRehearsalEntryView({
@@ -36,7 +36,7 @@ class EventRehearsalEntryView extends StatelessWidget {
     child: CatchRouteScaffold(
       topBarBuilder: (context, scrolled) => CatchTopBar(
         title: context.l10n.hostEventRehearsalTitle,
-        showBackButton: !isPending,
+        showBackButton: true,
         divider: scrolled,
       ),
       // The action overlay owns the edge-to-edge plane. Its body delegates the
@@ -59,12 +59,15 @@ class EventRehearsalEntryView extends StatelessWidget {
               ),
             ],
           ),
-          notice: Padding(
-            padding: CatchInsets.content,
-            child: Text(
-              context.l10n.hostRehearsalSafety,
-              textAlign: TextAlign.center,
-              style: CatchTextStyles.recordContext(context),
+          notice: ColoredBox(
+            color: CatchTokens.of(context).bg,
+            child: Padding(
+              padding: CatchInsets.content,
+              child: Text(
+                context.l10n.hostRehearsalSafety,
+                textAlign: TextAlign.center,
+                style: CatchTextStyles.recordContext(context),
+              ),
             ),
           ),
           actions: Center(
@@ -80,7 +83,8 @@ class EventRehearsalEntryView extends StatelessWidget {
                 onPressed:
                     isPending ||
                         configuration.actorCount < 2 ||
-                        configuration.actorCount > 50
+                        configuration.actorCount > 50 ||
+                        !configuration.hasValidDuration
                     ? null
                     : onStart,
               ),

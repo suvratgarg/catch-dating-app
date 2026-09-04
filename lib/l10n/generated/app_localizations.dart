@@ -25648,12 +25648,6 @@ abstract class AppLocalizations {
   /// **'Dress rehearsal'**
   String get hostEventRehearsalTitle;
 
-  /// Persistent rehearsal safety banner.
-  ///
-  /// In en, this message translates to:
-  /// **'Practice mode · No real guests, messages, payments, matches, or event records are changed'**
-  String get hostEventRehearsalPracticeBanner;
-
   /// Canonical Host Manage route subtitle while rehearsing.
   ///
   /// In en, this message translates to:
@@ -25669,7 +25663,7 @@ abstract class AppLocalizations {
   /// Rehearsal data identity shown beside the mode badge.
   ///
   /// In en, this message translates to:
-  /// **'Synthetic guests'**
+  /// **'Practice guests'**
   String get hostEventRehearsalSyntheticGuests;
 
   /// Synthetic guest subtitle in the canonical Host runtime.
@@ -25837,24 +25831,6 @@ abstract class AppLocalizations {
   /// **'Leave rehearsal'**
   String get hostEventRehearsalLeaveAction;
 
-  /// Rehearsal creation guidance.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose a room to practice. You can change the rehearsal copy and playbook before starting.'**
-  String get hostEventRehearsalStartSubtitle;
-
-  /// Existing-event rehearsal source label.
-  ///
-  /// In en, this message translates to:
-  /// **'Practice this event'**
-  String get hostEventRehearsalSourceEvent;
-
-  /// Sample-template rehearsal source label.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch sample event'**
-  String get hostEventRehearsalSourceSample;
-
   /// Rehearsal scenario field label.
   ///
   /// In en, this message translates to:
@@ -25866,24 +25842,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 synthetic guest} other{{count} synthetic guests}}'**
   String hostEventRehearsalActorCount({required int count});
-
-  /// Explains actor-count bounds.
-  ///
-  /// In en, this message translates to:
-  /// **'Use a realistic roster. Rehearsals are capped at 50 synthetic guests.'**
-  String get hostEventRehearsalActorCountBody;
-
-  /// Creates an isolated rehearsal.
-  ///
-  /// In en, this message translates to:
-  /// **'Create rehearsal'**
-  String get hostEventRehearsalCreate;
-
-  /// Rehearsal retention notice.
-  ///
-  /// In en, this message translates to:
-  /// **'This rehearsal and its guest link expire after 24 hours.'**
-  String get hostEventRehearsalExpiry;
 
   /// Happy-path rehearsal scenario title.
   ///
@@ -27931,6 +27889,12 @@ abstract class AppLocalizations {
   /// **'Choose between 2 and 50 guests.'**
   String get hostRehearsalGuestCountRange;
 
+  /// Explains the rehearsal duration bound without silently changing the source event
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearsals run for 30 minutes to 6 hours. Open Customise rehearsal to adjust the duration of this practice copy.'**
+  String get hostRehearsalDurationLimit;
+
   /// Dress rehearsal entry and optional configuration: RosterLimit.
   ///
   /// In en, this message translates to:
@@ -28085,6 +28049,22 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Guest accountability'**
   String get hostRehearsalModuleAccountability;
+
+  /// Dress rehearsal source and configuration supporting copy.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {time}\n{venue}'**
+  String hostRehearsalSourceWhenWhere({
+    required String date,
+    required String time,
+    required String venue,
+  });
+
+  /// Dress rehearsal source and configuration supporting copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Included in this event type'**
+  String get hostRehearsalRequiredModule;
 }
 
 class _AppLocalizationsDelegate
