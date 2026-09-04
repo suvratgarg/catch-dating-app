@@ -4549,6 +4549,73 @@
       ]
     },
     {
+      "id": "design:platform-token-coverage",
+      "category": "design",
+      "path": "tool/design/check_platform_token_coverage.mjs",
+      "impactPaths": [
+        "design/tokens/**",
+        "lib/core/theme/**",
+        "tool/design_tokens.dart",
+        "tool/design/test/platform_token_coverage.test.mjs",
+        "test/core/catch_platform_tokens_test.dart",
+        "test/core/platform_typography_test.dart"
+      ],
+      "command": "node tool/design/check_platform_token_coverage.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Independently resolves pinned iOS/Android source constants, requires explicit semantic/runtime decisions, rejects incomplete native imports and competing raw functional typography.",
+      "checks": [
+        "node --check tool/design/check_platform_token_coverage.mjs",
+        "node --test tool/design/test/platform_token_coverage.test.mjs",
+        "node tool/design/check_platform_token_coverage.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
+      "role": "gate",
+      "rules": ["UI-LINT-001"],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/test/platform_token_coverage.test.mjs",
+        "contains": [
+          "normal CI rejects arbitrary native deletions and value changes without the external inventory",
+          "the independent source dependency set, hashes and provenance cannot be vacuous"
+        ]
+      }
+    },
+    {
+      "id": "design:platform-control-behavior",
+      "category": "design",
+      "path": "test/core/widgets/platform_control_targets_test.dart",
+      "impactPaths": [
+        "design/tokens/**",
+        "lib/core/theme/**",
+        "lib/core/widgets/**",
+        "test/core/widgets/platform_control_targets_test.dart",
+        "test/core/platform_typography_test.dart",
+        "test/core/widgets/catch_tab_bar_test.dart"
+      ],
+      "command": "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart",
+      "safety": "local-build-test",
+      "status": "active",
+      "description": "Measures platform targets, disjoint edge taps, keyboard and disabled semantics, text reflow, scaled ancestors and pinned floating-navigation typography using production widgets.",
+      "checks": [
+        "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart"
+      ],
+      "role": "gate",
+      "rules": ["UI-LINT-001"],
+      "vacuityProof": {
+        "type": "test",
+        "path": "test/core/widgets/platform_control_targets_test.dart",
+        "contains": [
+          "small siblings have disjoint touch targets",
+          "range render target is not only semantic",
+          "top-bar does not compress multiple action targets"
+        ]
+      }
+    },
+    {
       "id": "design:tokens",
       "category": "design",
       "path": "tool/design_tokens.dart",

@@ -135,6 +135,7 @@ void main() {
             ),
           ),
         );
+        debugDefaultTargetPlatformOverride = null;
       },
     );
 

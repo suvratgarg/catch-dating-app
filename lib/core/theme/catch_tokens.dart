@@ -2803,6 +2803,9 @@ abstract final class CatchLayout {
   static const double appShellRailItemMinHeight = 64.0;
   static const double appShellSidebarItemMinHeight = 48.0;
   static const double tabRailHeight = 44.0;
+
+  /// Leading glyph plus its readable separation inside an option label.
+  static double get optionGroupIconSlotExtent => CatchIcon.sm + CatchSpacing.s2;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;
   static const double topBarLargeTextActionReserve =

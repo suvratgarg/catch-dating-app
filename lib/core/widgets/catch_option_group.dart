@@ -229,7 +229,7 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
           final iconWidth =
               option.icon != null &&
                   MediaQuery.textScalerOf(context).scale(1) < 1.4
-              ? CatchIcon.sm + CatchSpacing.s2
+              ? CatchLayout.optionGroupIconSlotExtent
               : 0;
           final contentWidth = painter.width + horizontalPadding + iconWidth;
           painter.dispose();

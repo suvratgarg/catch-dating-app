@@ -857,6 +857,11 @@ final _styleRegistry = <_StyleEntry>[
   ),
   _StyleEntry.single('metric', 'function', CatchTextStyles.metric),
   _StyleEntry.single('tabLabel', 'function', CatchTextStyles.tabLabel),
+  _StyleEntry.single(
+    'navigationLabel',
+    'function',
+    CatchTextStyles.navigationLabel,
+  ),
   _StyleEntry.single('recordTitle', 'function', CatchTextStyles.recordTitle),
   _StyleEntry.single(
     'recordContext',
