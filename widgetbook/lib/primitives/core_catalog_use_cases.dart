@@ -182,7 +182,7 @@ List<UploadedPhoto> _eventDetailPhotos(int count) {
   path: '[Core catalog]/Menus',
 )
 Widget catchActionMenuCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchActionMenu',
     catalogId: 'core.widgets.catch_action_menu',
     children: [
@@ -246,7 +246,7 @@ Widget catchSelectionMenuCatalogStates(BuildContext context) {
     ),
     const CatchSelectionMenuItem(value: 'name', label: 'Name'),
   ];
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchSelectionMenu',
     catalogId: 'core.widgets.catch_selection_menu',
     children: [
@@ -276,7 +276,7 @@ Widget catchSelectionMenuCatalogStates(BuildContext context) {
   path: '[Core catalog]/Menus',
 )
 Widget catchMenuCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchMenu',
     catalogId: 'core.widgets.catch_menu',
     children: [
@@ -374,7 +374,7 @@ Widget catchMenuRowCatalogStates(BuildContext context) {
 }
 
 Widget catchSearchFieldCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchSearchField',
     catalogId: 'core.widgets.catch_search_field',
     children: const [
@@ -462,7 +462,7 @@ Widget catchSectionLabelCatalogStates(BuildContext context) {
   path: '[Core catalog]/Actions',
 )
 Widget catchTextButtonCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchTextButton',
     catalogId: 'core.widgets.catch_text_button',
     children: [
@@ -495,7 +495,7 @@ Widget catchTextButtonCatalogStates(BuildContext context) {
   path: '[Core catalog]/Inputs',
 )
 Widget catchOtpCodeFieldCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchOtpCodeField',
     catalogId: 'core.widgets.catch_otp_code_field',
     children: const [
@@ -505,7 +505,7 @@ Widget catchOtpCodeFieldCatalogStates(BuildContext context) {
 }
 
 Widget catchRangeSliderCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchRangeSlider',
     catalogId: 'core.widgets.catch_range_slider',
     children: const [
@@ -520,7 +520,7 @@ Widget catchRangeSliderCatalogStates(BuildContext context) {
   path: '[Core catalog]/Inputs',
 )
 Widget catchFormFieldLabelCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchFormFieldLabel',
     catalogId: 'core.widgets.catch_form_field_label',
     children: [
@@ -643,8 +643,11 @@ Widget catchFormReviewBodyCatalogStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'summary / step statuses',
-        child: SizedBox(
-          height: WidgetbookPreviewLayout.stateViewportHeight,
+        child: WidgetbookViewportFrame.device(
+          size: const Size(
+            WidgetbookPreviewLayout.phoneChromeWidth,
+            WidgetbookPreviewLayout.paperScaffoldViewportHeight,
+          ),
           child: CatchFormReviewBody(
             message: 'Review the event before publishing.',
             onStepSelected: _ignoreInt,
@@ -676,7 +679,7 @@ Widget catchFormReviewBodyCatalogStates(BuildContext context) {
   path: '[Core catalog]/Layout',
 )
 Widget catchPageBodyCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchPageBody',
     catalogId: 'core.widgets.catch_page_body',
     children: [
@@ -700,7 +703,7 @@ Widget catchPageBodyCatalogStates(BuildContext context) {
   path: '[Core catalog]/Layout',
 )
 Widget catchFormStepBodyCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchFormStepBody',
     catalogId: 'core.widgets.catch_form_step_body',
     children: [
@@ -724,7 +727,7 @@ Widget catchFormStepBodyCatalogStates(BuildContext context) {
   path: '[Core catalog]/Layout',
 )
 Widget catchSliverPageBodyCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchSliverPageBody',
     catalogId: 'core.widgets.catch_sliver_page_body',
     children: [
@@ -803,7 +806,7 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
     );
   }
 
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchScrollTerminalPadding',
     catalogId: 'catch.scroll_terminal_padding',
     children: [
@@ -880,7 +883,7 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
   path: '[Core catalog]/Motion',
 )
 Widget catchTicketHeroCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchTicketHero',
     catalogId: 'core.motion.catch_ticket_hero',
     children: [
@@ -907,7 +910,7 @@ Widget catchTicketHeroCatalogStates(BuildContext context) {
   path: '[Core catalog]/Motion',
 )
 Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchMapRevealTransition',
     catalogId: 'core.motion.catch_map_reveal_transition',
     children: [
@@ -934,7 +937,7 @@ Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
 }
 
 Widget catchOptionGroupCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchOptionGroup',
     catalogId: 'core.widgets.catch_option_group',
     children: const [
@@ -949,7 +952,7 @@ Widget catchOptionGroupCatalogStates(BuildContext context) {
   path: '[Core catalog]/Selection',
 )
 Widget catchChipFieldCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchChipField',
     catalogId: 'core.widgets.catch_chip_field',
     children: const [
@@ -962,7 +965,7 @@ Widget catchChipFieldCatalogStates(BuildContext context) {
 }
 
 Widget catchToggleCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchToggle',
     catalogId: 'core.widgets.catch_toggle',
     children: const [
@@ -977,7 +980,7 @@ Widget catchToggleCatalogStates(BuildContext context) {
   path: '[Core catalog]/Navigation',
 )
 Widget catchScreenTopBarCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchScreenTopBar',
     catalogId: 'core.widgets.catch_screen_top_bar',
     children: [
@@ -1024,7 +1027,7 @@ Widget catchScreenTopBarCatalogStates(BuildContext context) {
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarTabBarCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchTopBarTabBar',
     catalogId: 'core.widgets.catch_top_bar_tab_bar',
     children: [
@@ -1056,7 +1059,7 @@ Widget catchTopBarTabBarCatalogStates(BuildContext context) {
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarActionsCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchTopBar actions',
     catalogId: 'core.widgets.catch_top_bar_actions',
     children: [
@@ -1095,7 +1098,7 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchTopBarActionGroup',
     catalogId: 'core.widgets.catch_top_bar_action_group',
     children: [
@@ -1154,7 +1157,7 @@ Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
 )
 Widget catchTopBarPrimaryActionCatalogStates(BuildContext context) {
   final mediaQuery = MediaQuery.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchTopBarPrimaryAction',
     catalogId: 'core.widgets.catch_top_bar_primary_action',
     children: [
@@ -1190,7 +1193,7 @@ Widget catchTopBarPrimaryActionCatalogStates(BuildContext context) {
   path: '[Core catalog]/Navigation',
 )
 Widget catchIconActionCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchIconAction',
     catalogId: 'core.widgets.catch_icon_action',
     children: [
@@ -1228,7 +1231,7 @@ Widget catchIconActionCatalogStates(BuildContext context) {
 )
 Widget catchTopBarTextActionCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchTopBarTextAction',
     catalogId: 'core.widgets.catch_top_bar_text_action',
     children: [
@@ -1280,7 +1283,7 @@ Widget catchSliverHeaderCatalogStates(BuildContext context) {
       child: CatchSearchField(value: 'Dinner'),
     ),
   );
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchSliverHeader',
     catalogId: 'core.widgets.catch_sliver_header',
     children: [
@@ -1310,7 +1313,7 @@ Widget catchSliverHeaderCatalogStates(BuildContext context) {
 }
 
 Widget catchStepHeaderCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchStepHeader',
     catalogId: 'core.widgets.catch_step_header',
     children: [
@@ -1362,7 +1365,7 @@ Widget catchStepProgressCatalogStates(BuildContext context) {
 }
 
 Widget catchTabDockCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchTabBar',
     catalogId: 'core.widgets.catch_tab_bar',
     children: const [
@@ -1401,7 +1404,7 @@ Widget catchPageDotsCatalogStates(BuildContext context) {
   path: '[Core catalog]/Loading',
 )
 Widget catchSkeletonListCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchSkeletonList',
     catalogId: 'core.widgets.catch_skeleton_list',
     children: [
@@ -1423,7 +1426,7 @@ Widget catchSkeletonListCatalogStates(BuildContext context) {
 )
 Widget catchLoadingIndicatorCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchLoadingIndicator',
     catalogId: 'core.widgets.catch_loading_indicator',
     children: [
@@ -1456,7 +1459,7 @@ Widget catchLoadingIndicatorCatalogStates(BuildContext context) {
   path: '[Core catalog]/Loading',
 )
 Widget catchStartupLoadingScreenCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchStartupLoadingScreen',
     catalogId: 'core.widgets.catch_startup_loading_screen',
     children: const [
@@ -1477,7 +1480,7 @@ Widget catchStartupLoadingScreenCatalogStates(BuildContext context) {
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncValueViewCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchAsyncValueView',
     catalogId: 'core.widgets.catch_async_value_view',
     children: [
@@ -1523,7 +1526,7 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchAsyncValueSliver',
     catalogId: 'core.widgets.catch_async_value_sliver',
     children: [
@@ -1569,7 +1572,7 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncScreenLoadingCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchAsyncScreenLoading',
     catalogId: 'core.widgets.catch_async_screen_loading',
     children: const [
@@ -1593,7 +1596,7 @@ Widget catchAsyncScreenLoadingCatalogStates(BuildContext context) {
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncSliverLoadingCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchAsyncSliverLoading',
     catalogId: 'core.widgets.catch_async_sliver_loading',
     children: const [
@@ -1621,7 +1624,7 @@ Widget catchAsyncSliverLoadingCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchErrorScaffoldCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchErrorScaffold',
     catalogId: 'core.widgets.catch_error_scaffold',
     children: [
@@ -1646,7 +1649,7 @@ Widget catchErrorScaffoldCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchSliverErrorStateCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchSliverErrorState',
     catalogId: 'core.widgets.catch_sliver_error_state',
     children: [
@@ -1683,7 +1686,7 @@ Widget catchSliverErrorStateCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchStateViewportCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchStateViewport',
     catalogId: 'core.widgets.catch_state_viewport',
     children: [
@@ -1715,7 +1718,7 @@ Widget catchStateViewportCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchSliverStateViewportCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchSliverStateViewport',
     catalogId: 'core.widgets.catch_sliver_state_viewport',
     children: [
@@ -1751,7 +1754,7 @@ Widget catchSliverStateViewportCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchSliverEmptyStateCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchSliverEmptyState',
     catalogId: 'core.widgets.catch_sliver_empty_state',
     children: [
@@ -1781,7 +1784,7 @@ Widget catchSliverEmptyStateCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchInlineErrorStateCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchInlineErrorState',
     catalogId: 'core.widgets.catch_inline_error_state',
     children: [
@@ -1813,7 +1816,7 @@ Widget catchInlineErrorStateCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchErrorBannerCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'Mutation error banner',
     catalogId: 'core.widgets.catch_error_banner',
     children: [
@@ -1840,7 +1843,7 @@ Widget catchErrorBannerCatalogStates(BuildContext context) {
 )
 Widget catchMutationErrorBannerCatalogStates(BuildContext context) {
   final mutation = Mutation<void>();
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchMutationErrorBanner',
     catalogId: 'core.widgets.catch_mutation_error_banner',
     children: [
@@ -1879,7 +1882,7 @@ Widget catchMutationErrorBannerCatalogStates(BuildContext context) {
 )
 Widget catchInlineMessageSurfaceCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchInlineMessageSurface',
     catalogId: 'core.widgets.catch_inline_message_surface',
     children: [
@@ -1915,7 +1918,7 @@ Widget catchInlineMessageSurfaceCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchMutationErrorListenerCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'Action error snackbar',
     catalogId: 'core.widgets.catch_mutation_error_listener',
     children: [
@@ -1945,7 +1948,7 @@ Widget catchMutationErrorListenerCatalogStates(BuildContext context) {
 Widget catchMutationErrorListenersCatalogStates(BuildContext context) {
   final saveMutation = Mutation<void>();
   final deleteMutation = Mutation<void>();
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchMutationErrorListeners',
     catalogId: 'core.widgets.catch_mutation_error_listeners',
     children: [
@@ -1991,7 +1994,7 @@ Widget catchMutationErrorListenersCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchFrameworkErrorView',
     catalogId: 'core.widgets.catch_framework_error_view',
     children: [
@@ -2017,7 +2020,7 @@ Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchFrameworkErrorDebugDetailsCatalogStates(BuildContext context) {
-  return const _CatalogScreen(
+  return const WidgetbookCatalogFrame(
     title: 'CatchFrameworkErrorDebugDetails',
     catalogId: 'core.widgets.catch_framework_error_debug_details',
     children: [
@@ -2044,7 +2047,7 @@ Widget catchFrameworkErrorDebugDetailsCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchNoticeHostCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchNoticeHost',
     catalogId: 'core.widgets.catch_notice_host',
     children: [
@@ -2170,7 +2173,7 @@ class _ArrivalPreviewState extends ConsumerState<_ArrivalPreview> {
   path: '[Core catalog]/Feedback',
 )
 Widget catchStatusStripScopeCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchStatusStripScope',
     catalogId: 'core.widgets.catch_status_strip_scope',
     children: [
@@ -2204,7 +2207,7 @@ Widget catchStatusStripScopeCatalogStates(BuildContext context) {
   path: '[Core catalog]/Activity',
 )
 Widget catchActivityMapPinCatalogStates(BuildContext context) {
-  return const _CatalogScreen(
+  return const WidgetbookCatalogFrame(
     title: 'CatchActivityMapPin',
     catalogId: 'core.widgets.catch_activity_map_pin',
     children: [
@@ -2232,7 +2235,7 @@ Widget catchActivityMapPinCatalogStates(BuildContext context) {
 }
 
 Widget catchDistanceRingCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchDistanceRing',
     catalogId: 'core.widgets.catch_distance_ring',
     children: [
@@ -2255,7 +2258,7 @@ Widget catchDistanceRingCatalogStates(BuildContext context) {
   path: '[Core catalog]/Activity',
 )
 Widget catchDistanceRingLabelCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchDistanceRingLabel',
     catalogId: 'core.widgets.catch_distance_ring_label',
     children: [
@@ -2278,7 +2281,7 @@ Widget catchDistanceRingLabelCatalogStates(BuildContext context) {
   path: '[Core catalog]/Media',
 )
 Widget catchDetailHeroBackdropCatalogStates(BuildContext context) {
-  return const _CatalogScreen(
+  return const WidgetbookCatalogFrame(
     title: 'CatchDetailHeroBackdrop',
     catalogId: 'core.widgets.catch_detail_hero_backdrop',
     children: [
@@ -2316,7 +2319,7 @@ Widget catchDetailHeroBackdropCatalogStates(BuildContext context) {
   path: '[Core catalog]/Media',
 )
 Widget catchEventThumbnailCatalogStates(BuildContext context) {
-  return const _CatalogScreen(
+  return const WidgetbookCatalogFrame(
     title: 'CatchEventThumbnail',
     catalogId: 'core.widgets.catch_event_thumbnail',
     children: [
@@ -2361,7 +2364,7 @@ Widget catchEventThumbnailCatalogStates(BuildContext context) {
   path: '[Core catalog]/Media',
 )
 Widget catchGradedImageCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchGradedImage / CatchGrade',
     catalogId: 'core.widgets.catch_graded_image',
     children: [
@@ -2385,7 +2388,7 @@ Widget catchGradedImageCatalogStates(BuildContext context) {
   path: '[Core catalog]/Event cards',
 )
 Widget eventActivityBackdropCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'EventActivityVisualSpec / EventActivityBackdrop',
     catalogId: 'events.presentation.event_activity_visuals',
     children: [
@@ -2422,7 +2425,7 @@ Widget eventActivityBackdropCatalogStates(BuildContext context) {
   path: '[Core catalog]/Event cards',
 )
 Widget catchEventCardCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchEventCard',
     catalogId: 'core.widgets.catch_event_card',
     children: [
@@ -2468,7 +2471,7 @@ Widget catchEventCardCatalogStates(BuildContext context) {
 )
 Widget eventTicketSurfaceCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'Event ticket surface atoms',
     catalogId: 'events.widgets.event_ticket_surface',
     children: [
@@ -2523,7 +2526,7 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
 )
 Widget eventDetailHeroCatalogStates(BuildContext context) {
   final event = _eventDetailEvent();
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'EventDetailHeroAppBar',
     catalogId: 'events.widgets.event_detail_hero_app_bar',
     children: [
@@ -2617,7 +2620,7 @@ Widget eventDetailHeroCatalogStates(BuildContext context) {
 )
 Widget eventDetailTicketStubCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'EventDetailTicketStubBand',
     catalogId: 'events.widgets.event_detail_ticket_stub',
     children: [
@@ -2654,7 +2657,7 @@ Widget eventDetailTicketStubCatalogStates(BuildContext context) {
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailHintListCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'EventDetailHintList',
     catalogId: 'events.widgets.event_detail_hint_list',
     children: [
@@ -2693,7 +2696,7 @@ Widget eventDetailHintListCatalogStates(BuildContext context) {
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailItineraryCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'EventDetailItinerary',
     catalogId: 'events.widgets.event_detail_itinerary',
     children: [
@@ -2730,7 +2733,7 @@ Widget eventDetailItineraryCatalogStates(BuildContext context) {
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailPhotoStripCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'EventDetailPhotoStrip',
     catalogId: 'events.widgets.event_detail_photo_strip',
     children: [
@@ -2764,7 +2767,7 @@ Widget eventDetailPhotoStripCatalogStates(BuildContext context) {
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailMapCardCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'EventDetailMapCard',
     catalogId: 'events.widgets.event_detail_map_card',
     children: [
@@ -2813,7 +2816,7 @@ Widget eventDetailMechanismListCatalogStates(BuildContext context) {
     );
   }
 
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'EventDetailMechanismList',
     catalogId: 'events.widgets.event_detail_mechanism_list',
     children: [
@@ -2866,7 +2869,7 @@ Widget eventDetailMechanismListCatalogStates(BuildContext context) {
 )
 Widget eventDetailHostCardCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchHostRow',
     catalogId: 'core.widgets.catch_host_row',
     children: [
@@ -2921,7 +2924,7 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
 )
 Widget eventDetailBookingDockCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'EventBookingDock states',
     catalogId: 'events.widgets.event_detail_booking_dock',
     children: [
@@ -2977,7 +2980,7 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
 )
 Widget eventVisualAtomsCatalogStates(BuildContext context) {
   final visual = eventActivityVisual(ActivityKind.pickleball, context: context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'Event visual atoms',
     catalogId: 'events.widgets.event_visual_atoms',
     children: [
@@ -3084,7 +3087,7 @@ Widget catchMetaDotRowCatalogStates(BuildContext context) {
   path: '[Core catalog]/Data display',
 )
 Widget catchMetaEntryFlowCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchMetaEntryFlow',
     catalogId: 'core.widgets.catch_meta_dot_row.flow',
     children: [
@@ -3116,7 +3119,7 @@ Widget catchMetaEntryFlowCatalogStates(BuildContext context) {
 Widget catchMetaEntryViewCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchMetaEntryView',
     catalogId: 'core.widgets.catch_meta_dot_row.entry',
     children: [
@@ -3152,7 +3155,7 @@ Widget catchMetaEntryViewCatalogStates(BuildContext context) {
   path: '[Core catalog]/Sheets and footers',
 )
 Widget catchBottomDockCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchBottomDock',
     catalogId: 'core.widgets.catch_bottom_dock',
     children: [
@@ -3195,7 +3198,7 @@ Widget catchBottomDockCatalogStates(BuildContext context) {
 )
 Widget catchBottomActionCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchBottomAction',
     catalogId: 'core.widgets.catch_bottom_action',
     children: [
@@ -3270,7 +3273,7 @@ Widget catchBottomActionCatalogStates(BuildContext context) {
 )
 Widget catchBottomActionContentCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchBottomActionContent',
     catalogId: 'core.widgets.catch_bottom_action_content',
     children: [
@@ -3347,7 +3350,7 @@ Widget catchBottomSheetGrabberCatalogStates(BuildContext context) {
   path: '[Core catalog]/Sheets and footers',
 )
 Widget catchDraggableSheetShellCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchDraggableSheetShell',
     catalogId: 'core.widgets.catch_draggable_sheet_shell',
     children: [
@@ -3379,7 +3382,7 @@ Widget catchDraggableSheetShellCatalogStates(BuildContext context) {
   path: '[Core catalog]/Sheets and footers',
 )
 Widget catchShareCardSheetCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchShareCardSheet',
     catalogId: 'core.widgets.catch_share_card_sheet',
     children: [
@@ -3418,7 +3421,7 @@ Widget catchShareCardSheetCatalogStates(BuildContext context) {
   path: '[Core catalog]/Sheets and footers',
 )
 Widget catchShareCardFooterCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchShareCardFooter',
     catalogId: 'core.widgets.catch_share_card_footer',
     children: const [
@@ -3442,7 +3445,7 @@ Widget catchShareCardFooterCatalogStates(BuildContext context) {
   path: '[Core catalog]/Sections',
 )
 Widget catchHorizontalRailCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchHorizontalRail',
     catalogId: 'core.widgets.catch_horizontal_rail',
     children: [
@@ -3483,7 +3486,7 @@ Widget catchHorizontalRailCatalogStates(BuildContext context) {
   path: '[Core catalog]/Sections',
 )
 Widget catchVerticalSectionCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchVerticalSection',
     catalogId: 'core.widgets.catch_vertical_section',
     children: [
@@ -3506,7 +3509,7 @@ Widget catchVerticalSectionCatalogStates(BuildContext context) {
   path: '[Core catalog]/Sections',
 )
 Widget catchSectionHeaderCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchSectionHeader',
     catalogId: 'core.widgets.catch_section_header',
     children: [
@@ -3541,7 +3544,7 @@ Widget catchSectionHeaderCatalogStates(BuildContext context) {
   path: '[Core catalog]/Sections',
 )
 Widget catchDaySectionHeaderCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchDaySectionHeader',
     catalogId: 'core.widgets.catch_day_section_header',
     children: [
@@ -3591,7 +3594,7 @@ Widget catchDaySectionHeaderCatalogStates(BuildContext context) {
 Widget catchDaySectionHeaderCountCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchDaySectionHeaderCount',
     catalogId: 'core.widgets.catch_day_section_header.count',
     children: [
@@ -3612,7 +3615,7 @@ Widget catchDaySectionHeaderCountCatalogStates(BuildContext context) {
 
 Widget catchPersonAvatarCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchPersonAvatar',
     catalogId: 'core.widgets.catch_person_avatar',
     children: [
@@ -3669,7 +3672,7 @@ Widget catchPersonAvatarCatalogStates(BuildContext context) {
   path: '[Core catalog]/People',
 )
 Widget catchPersonAvatarStackCatalogStates(BuildContext context) {
-  return const _CatalogScreen(
+  return const WidgetbookCatalogFrame(
     title: 'CatchPersonAvatarStack',
     catalogId: 'core.widgets.catch_person_avatar_stack',
     children: [
@@ -3739,7 +3742,7 @@ Widget catchIconTileCatalogStates(BuildContext context) {
   path: '[Core catalog]/Moments',
 )
 Widget catchCelebrationScreenCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CatchCelebrationScreen',
     catalogId: 'core.celebration.catch_celebration_screen',
     children: [
@@ -3836,7 +3839,7 @@ Widget catchCelebrationScreenCatalogStates(BuildContext context) {
   path: '[Core catalog]/Moments',
 )
 Widget paperCelebrationScaffoldCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'PaperCelebrationScaffold',
     catalogId: 'core.celebration.paper_scaffold',
     children: [
@@ -3875,7 +3878,7 @@ Widget paperCelebrationScaffoldCatalogStates(BuildContext context) {
   path: '[Core catalog]/Moments',
 )
 Widget paperCelebrationIconCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'PaperCelebrationIcon',
     catalogId: 'core.celebration.paper_icon',
     children: [
@@ -3895,7 +3898,7 @@ Widget paperCelebrationIconCatalogStates(BuildContext context) {
   path: '[Core catalog]/Moments',
 )
 Widget paperCelebrationDetailsCardCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'PaperCelebrationDetailsCard',
     catalogId: 'core.celebration.paper_details_card',
     children: [
@@ -3913,7 +3916,7 @@ Widget paperCelebrationDetailsCardCatalogStates(BuildContext context) {
   path: '[Core catalog]/Moments',
 )
 Widget paperCelebrationDetailRowCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'PaperCelebrationDetailRow',
     catalogId: 'core.celebration.paper_detail_row',
     children: [
@@ -3935,7 +3938,7 @@ Widget paperCelebrationDetailRowCatalogStates(BuildContext context) {
   path: '[Core catalog]/Moments',
 )
 Widget celebrationIconCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CelebrationIcon',
     catalogId: 'core.celebration.immersive_icon',
     children: [
@@ -3955,7 +3958,7 @@ Widget celebrationIconCatalogStates(BuildContext context) {
   path: '[Core catalog]/Moments',
 )
 Widget celebrationDetailsCardCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CelebrationDetailsCard',
     catalogId: 'core.celebration.immersive_details_card',
     children: [
@@ -3975,7 +3978,7 @@ Widget celebrationDetailsCardCatalogStates(BuildContext context) {
   path: '[Core catalog]/Moments',
 )
 Widget celebrationDetailRowCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CelebrationDetailRow',
     catalogId: 'core.celebration.immersive_detail_row',
     children: [
@@ -4001,7 +4004,7 @@ Widget celebrationDetailRowCatalogStates(BuildContext context) {
   path: '[Core catalog]/Moments',
 )
 Widget celebrationNoteCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'CelebrationNote',
     catalogId: 'core.celebration.immersive_note',
     children: [
@@ -4021,7 +4024,7 @@ Widget celebrationNoteCatalogStates(BuildContext context) {
   path: '[Core catalog]/Layout',
 )
 Widget responsiveBuilderCatalogStates(BuildContext context) {
-  return _CatalogScreen(
+  return WidgetbookCatalogFrame(
     title: 'ResponsiveBuilder',
     catalogId: 'core.responsive.responsive_builder',
     children: [
@@ -4041,47 +4044,6 @@ Widget responsiveBuilderCatalogStates(BuildContext context) {
       ),
     ],
   );
-}
-
-class _CatalogScreen extends StatelessWidget {
-  const _CatalogScreen({
-    required this.title,
-    required this.catalogId,
-    required this.children,
-  });
-
-  final String title;
-  final String catalogId;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return ColoredBox(
-      color: t.bg,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(CatchSpacing.s5),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 760),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(title, style: CatchTextStyles.headline(context)),
-                gapH4,
-                CatchMonoLabel(catalogId, color: t.ink3),
-                gapH20,
-                for (final child in children) ...[
-                  child,
-                  if (child != children.last) gapH16,
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _StateCard extends StatelessWidget {

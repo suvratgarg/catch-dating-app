@@ -131,10 +131,13 @@ class _CatchGoldenRenderer implements WidgetbookGoldenRenderer {
           'widgetbook/$stem${scale == 1 ? '' : '@2.0'}',
           size: const Size(440, 1000),
           textScale: scale,
-          builder: (_) => WidgetbookCaseScope(
-            // A fresh scope for each light/dark render resets knob state.
-            key: UniqueKey(),
-            builder: useCase.builder,
+          builder: (_) => WidgetbookFixtureScope(
+            overrides: const [],
+            child: WidgetbookCaseScope(
+              // A fresh scope for each light/dark render resets knob state.
+              key: UniqueKey(),
+              builder: useCase.builder,
+            ),
           ),
         );
       });
