@@ -28,17 +28,21 @@ npm --prefix functions ci
 cp .env.example .env.local
 ```
 
-Firebase defaults to the development project. Every deployment or remote log command must still name an environment explicitly through `tool/firebase_with_env.sh`; see [firebase/README.md](firebase/README.md).
+For routine local web development, start `npm --prefix functions run serve`,
+then use the `local` Flutter commands below in another terminal. This runs
+against the isolated `demo-catch` emulator suite. Use `dev` explicitly for native
+devices and live integrations. Every deployment or remote log command must name
+an environment through `tool/firebase_with_env.sh`; see [firebase/README.md](firebase/README.md).
 
 ## Main surfaces
 
 | Surface | Source | Typical local command |
 |---|---|---|
-| Flutter consumer app | `apps/consumer/` + shared `lib/` | `./tool/flutter_with_env.sh dev --role consumer run -d chrome` |
-| Flutter host app | `apps/host/` + `lib/hosts/` | `./tool/flutter_with_env.sh dev --role host run -d chrome` |
+| Flutter consumer app | `apps/consumer/` + shared `lib/` | `./tool/flutter_with_env.sh local --role consumer run -d chrome` |
+| Flutter host app | `apps/host/` + `lib/hosts/` | `./tool/flutter_with_env.sh local --role host run -d chrome` |
 | Marketing website | `website/` | `npm run web:marketing:dev` |
 | Admin console | `admin/` | `npm run web:admin:dev` |
-| Cloud Functions | `functions/` | `npm --prefix functions run build` |
+| Cloud Functions | `functions/` | `npm --prefix functions run serve` |
 | Widgetbook | `widgetbook/` | `cd widgetbook && flutter run -d chrome` |
 
 The folders separate runtime code from its contracts and tooling:
