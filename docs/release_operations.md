@@ -286,8 +286,13 @@ contract checks retain their separate owners.
 
 The same planner follows the lint engine's seeded and generated probe imports.
 The expensive Catch UI plugin smoke check runs when its engine, configuration,
-corpus or transitive probe APIs change, and on full runs. The application
-analyzer and zero-diagnostic gate still run on every selected Flutter lane.
+corpus or transitive probe APIs change, and on full runs. When the actual Tools
+plan already selects that registered check, Flutter consumes the same CI run's
+required Tools result and omits its duplicate invocation. Standalone Flutter
+runs retain their own engine check. The application analyzer and zero-diagnostic
+gate still run on every selected Flutter lane. The workspace analyzer saves its
+root diagnostics once; the lint gate and report reuse that output instead of
+launching a second root analysis.
 Selector safety tests run before any selective job can proceed; planner failure
 fails the aggregate. The selected inventory and reasons are CI artifacts, not
 a tracked registry.
@@ -305,6 +310,13 @@ derive a concurrency group from `github.workflow`: inside a called workflow
 that value is the caller name, so sibling lanes would share one key and cancel
 one another. Standalone/manual workflow dispatches may add a distinct
 workflow-specific key, but normal CI fanout inherits the orchestrator boundary.
+
+Local `node tool/harness/verify_local.mjs --base origin/main --list` resolves
+Tools checks through the same affected-tool planner and registered runner as CI,
+including full fallback. Literal package working directories are preserved;
+commands with unresolved environment or Actions context remain explicit gaps.
+Identical registered commands execute once per runner invocation. Local checks
+stop on shell pipeline failures and incomplete ownership cannot report success.
 
 The complete impact plan is written to `build/ci/impact-plan.json` and rendered
 from that file. Only bounded booleans and role arrays cross the GitHub step/job
@@ -475,7 +487,9 @@ manual dispatch remains a recovery surface. `prod-backend` is main-only and
 accepts only the reusable Firebase promoter called by the automatic Delivery
 workflow. Its OIDC provider binds repository, ref, environment, caller workflow,
 reusable workflow, and automatic event type. It reuses the existing deployment
-identity; it does not add project permissions. The older production provider
+identity; it does not add project permissions. That identity's federation grant
+is restricted to the exact `prod`, `prod-hosting`, and `prod-backend` subjects,
+replacing its former repository-wide grant. The older production provider
 accepts only main jobs in `prod`, `prod-hosting`, or `prod-mobile`.
 
 Keep required reviewers on shared `prod` for production data operations and

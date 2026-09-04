@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import {buildWorkspaceAnalysisPlan, runWorkspaceAnalysis} from "./check_flutter_workspace_analysis.mjs";
 
 function snapshot(pubspecs) {
@@ -68,4 +71,33 @@ test("workspace runner stops at the first nonzero package analysis", () => {
     /analyze failed for apps\/host with status 2/u,
   );
   assert.equal(calls.at(-1).cwd, "/repo/apps/host");
+});
+
+
+test("root diagnostics are captured from the only root analysis invocation", (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-root-analysis-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  let rootCalls = 0;
+  runWorkspaceAnalysis({snapshot: snapshot(repositoryPubspecs), rootDiagnosticsDir: directory,
+    runner(command, args, options) {
+      if (command === "dart" && args[0] === "analyze") {
+        rootCalls += 1;
+        assert.deepEqual(options.stdio, ["inherit", "pipe", "pipe"]);
+        return {status: 0, stdout: "", stderr: ""};
+      }
+      return {status: 0};
+    },
+  });
+  assert.equal(rootCalls, 1);
+  assert.equal(fs.readFileSync(path.join(directory, "analyze.status"), "utf8"), "0\n");
+  assert.equal(fs.readFileSync(path.join(directory, "analyze.machine"), "utf8"), "");
+});
+
+test("analyzer plugin crashes cannot be reused as successful diagnostics", (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-root-analysis-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  assert.throws(() => runWorkspaceAnalysis({snapshot: snapshot(repositoryPubspecs), rootDiagnosticsDir: directory,
+    runner(command) {return {status: 0, stdout: command === "dart" ? "An error occurred while executing an analyzer plugin" : ""};},
+  }), /plugin failed/);
+  assert.equal(fs.readFileSync(path.join(directory, "analyze.status"), "utf8"), "1\n");
 });

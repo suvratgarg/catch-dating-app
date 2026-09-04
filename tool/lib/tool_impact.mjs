@@ -343,3 +343,32 @@ export function formatAffectedToolGithubOutputs(plan) {
     `setup_requirements=${JSON.stringify(plan.setupRequirements)}`,
   ].map((line) => `${line}\n`).join("");
 }
+
+
+// Share execution evidence only when the actual Tools plan owns this check.
+// Standalone Flutter runs keep ownership through their default workflow input.
+export function toolsOwnUiLintSmoke({plan, manifest, componentGraph}) {
+  if (plan.complete !== true) throw new Error("Cannot share checks from an incomplete plan.");
+  if (!plan.operations.ciTargets.includes("tools")) return false;
+  const id = "lint:catch-ui-plugin-smoke";
+  const owner = manifest.tools.find((tool) => tool.id === id && tool.status === "active");
+  if (!owner?.checks?.includes("bash tool/check_catch_ui_lints.sh")) {
+    throw new Error("Tools no longer provides the shared UI lint engine check.");
+  }
+  const tools = planAffectedToolChecks({
+    changedPaths: plan.changedPaths, manifest, componentGraph,
+    mode: plan.mode, full: plan.full,
+  });
+  return tools.mode === "full" || tools.toolIds.includes(id);
+}
+
+// Registered checks run in the same repository, environment and invocation.
+// Preserve the first owner's order while avoiding identical repeated commands.
+export function uniqueToolChecks(tools) {
+  const seen = new Set();
+  return tools.flatMap((tool) => (tool.checks ?? []).flatMap((command) => {
+    if (seen.has(command)) return [];
+    seen.add(command);
+    return [{toolId: tool.id, command}];
+  }));
+}

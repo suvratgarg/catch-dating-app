@@ -56,6 +56,7 @@ jobs:
       deploy_required: ${{ steps.plan.outputs.deploy_required }}
       mode: ${{ steps.plan.outputs.mode }}
       full: ${{ steps.plan.outputs.full }}
+      tools_owns_ui_lint_smoke: ${{ steps.plan.outputs.tools_owns_ui_lint_smoke }}
 
     steps:
       - name: Checkout planner closure
@@ -195,6 +196,17 @@ jobs:
           rm build/ci/impact-plan.unbound.json
           echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
           echo "source_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {toolsOwnUiLintSmoke} from './tool/lib/tool_impact.mjs';
+          const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
+          const owned = toolsOwnUiLintSmoke({
+            plan: read('build/ci/impact-plan.json'),
+            manifest: read('tool/tools_manifest.json'),
+            componentGraph: read('tool/harness/component_graph.json'),
+          });
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `tools_owns_ui_lint_smoke=${owned}\n`);
+          NODE
 
       - name: Publish impact summary
         run: |
@@ -249,6 +261,7 @@ jobs:
     with:
       base_sha: ${{ needs.plan.outputs.base_sha }}
       full: ${{ needs.plan.outputs.full == 'true' }}
+      ui_lint_smoke_in_tools: ${{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' }}
     secrets: inherit
 
   visual-integration:

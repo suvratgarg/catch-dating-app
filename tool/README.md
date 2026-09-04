@@ -39,7 +39,8 @@ path, or an explicit full run fails closed to the unchanged six-bucket matrix.
 CI passes the same PR, merge-queue, main, or nightly mode into both planners.
 Companion files owned exclusively by Docs, Policy, or another Harness lane are
 ignored by this inner planner instead of broadening a valid Tools selection.
-Active tools must define non-empty checks. This prevents a non-tool contract
+Identical check commands run once per invocation, preserving their first owner's
+order. Active tools must define non-empty checks. This prevents a non-tool contract
 that selects the Tools lane from silently receiving guard checks only and
 prevents full mode from succeeding through a vacuous tool entry. The affected
 tool's `safety` describes its command. A remote-write tool may separately set
@@ -210,6 +211,12 @@ sequential command—not another package task graph—and the product applicatio
 still lives primarily in the root package. The small repository-specific
 orchestrator therefore has less configuration and no additional bootstrap
 dependency while its plan and nonzero-stop behavior remain unit tested.
+
+Pass `--root-diagnostics-dir <directory>` to retain the root analyzer's machine
+output and exit status from that same invocation. Flutter CI uses this output
+for its all-rules lint gate and report; it never launches another root analyzer
+just to collect diagnostic evidence. Plugin crashes and nonzero analysis still
+fail before the output can authorize a successful gate.
 
 The old UI/design shell scanners and their compatibility wrapper names are
 retired. Matching policy lives in `packages/catch_ui_lints`; CI collects one

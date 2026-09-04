@@ -13,6 +13,7 @@ import {
   formatAffectedToolGithubOutputs,
   hasExecutableChecks,
   planAffectedToolChecks,
+  uniqueToolChecks,
   validateToolCheckSafety,
   validateToolCiRequirements,
 } from "./lib/tool_impact.mjs";
@@ -103,28 +104,26 @@ async function checkTools(args) {
 }
 
 async function runChecks(tools) {
-  for (const tool of tools) {
-    if (!toolSupportsPlatform(tool)) {
-      console.log(
-        `==> ${tool.id}: skipped on ${process.platform}; ` +
-        `supported platforms: ${tool.platforms.join(", ")}`,
-      );
-      continue;
-    }
-    for (const check of tool.checks ?? []) {
-      console.log(`==> ${tool.id}: ${check}`);
-      const result = spawnSync(check, {
-        cwd: repoRoot,
-        shell: true,
-        stdio: "inherit",
-      });
-      if (result.status !== 0) {
-        process.exitCode = result.status ?? 1;
-        return;
-      }
+  const compatible = tools.filter((tool) => {
+    if (toolSupportsPlatform(tool)) return true;
+    console.log(
+      `==> ${tool.id}: skipped on ${process.platform}; ` +
+      `supported platforms: ${tool.platforms.join(", ")}`,
+    );
+    return false;
+  });
+  for (const {toolId, command} of uniqueToolChecks(compatible)) {
+    console.log(`==> ${toolId}: ${command}`);
+    const result = spawnSync(command, {
+      cwd: repoRoot,
+      shell: true,
+      stdio: "inherit",
+    });
+    if (result.status !== 0) {
+      process.exitCode = result.status ?? 1;
+      return;
     }
   }
-
   console.log("Tool checks passed.");
 }
 

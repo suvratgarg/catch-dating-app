@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
+import {spawnSync} from "node:child_process";
 
 import {
   deriveTargetWorkflows,
@@ -174,5 +175,54 @@ test("no extracted command spans lines unless it came from a literal block", () 
         `workflow declares no literal block`,
       );
     }
+  }
+});
+
+
+test("a final literal block stops before the next job and preserves blank lines", () => {
+  const steps = extractSteps(`jobs:
+  first:
+    steps:
+      - name: First
+        run: |
+          echo first
+
+          echo second
+  next:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Next
+        run: echo next
+`);
+  assert.equal(steps[0].run, "echo first\n\necho second");
+  assert.equal(steps[1].run, "echo next");
+});
+
+test("literal working directories survive extraction and unresolved step context is explicit", () => {
+  const steps = extractSteps(`jobs:
+  first:
+    steps:
+      - name: Host tests
+        working-directory: apps/host
+        run: flutter test
+      - name: Environment required
+        env:
+          MODE: test
+        run: echo "$MODE"
+`);
+  assert.equal(steps[0].workingDirectory, "apps/host");
+  assert.equal(steps[0].runnable, true);
+  assert.equal(steps[1].runnable, false);
+  assert.match(steps[1].skipReason, /explicit environment/);
+});
+
+test("local verification resolves Tools matrix checks and preserves package test directories", () => {
+  const result = spawnSync("node", ["tool/harness/verify_local.mjs", "--target", "tools", "--target", "flutter", "--json"], {encoding: "utf8"});
+  assert.equal(result.status, 0, result.stderr);
+  const plan = JSON.parse(result.stdout);
+  assert.equal(plan.gates.find((gate) => gate.target === "tools").command, "node tool/run.mjs check");
+  assert.equal(plan.skipped.some((step) => step.workflow === "tools-ci.yml"), false);
+  for (const directory of ["apps/consumer", "apps/host"]) {
+    assert.ok(plan.gates.some((gate) => gate.workingDirectory === directory && gate.command.includes("flutter test")), directory);
   }
 });
