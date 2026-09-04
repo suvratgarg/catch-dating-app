@@ -17,9 +17,6 @@ const proposalMarker = /(?:^|[\s·([])proposed(?:$|[\s)\]])/iu;
 // runtime provider values; that remains the capture pipeline's responsibility.
 export function classify(row, routeTargets = new Set()) {
   if (!row.typeFile) return {classification: null, reason: "Unresolved annotated type"};
-  if (!row.productionReferences.length) {
-    return {classification: null, reason: "No production declarations reachable from builder"};
-  }
   if (row.typeFile.startsWith("widgetbook/")) {
     // These marker types name token specimens, not alternative product UI.
     if (row.typeFile === "widgetbook/lib/foundation/foundation_token_use_cases.dart" &&
@@ -32,16 +29,24 @@ export function classify(row, routeTargets = new Set()) {
     }
     return {classification: "prototype", reason: "Marked proposal; review disposition stays with its feature owner"};
   }
+  if (!row.productionReferences.length) {
+    return {classification: null, reason: "No production declarations reachable from builder"};
+  }
   const route = row.productionReferences.find((ref) => routeTargets.has(ref.symbol));
   const providerFeature = row.productionReferences.find((ref) =>
     !ref.file.startsWith("lib/core/") && /^Consumer(?:Stateful)?Widget$/u.test(ref.base ?? ""));
+  const featureUi = row.productionReferences.find((ref) =>
+    ref.ui && !ref.file.startsWith("lib/core/"));
   if (route || providerFeature) {
     return {classification: "screen-scope", reason: route
       ? `Mount dependency includes route target ${route.symbol}`
       : `Mount dependency includes provider-owned feature ${providerFeature.symbol}`};
   }
-  if (row.typeFile.startsWith("lib/core/")) {
+  if (!featureUi && row.typeFile.startsWith("lib/core/")) {
     return {classification: "component-mount", reason: "Production shared component/pattern or adapter"};
+  }
+  if (!featureUi) {
+    return {classification: null, reason: "Feature annotation has no reachable production feature UI mount"};
   }
   if (row.wrappers.length) {
     return {classification: "screen-scope", reason: `Feature mount requires ${row.wrappers.join(", ")}`};
@@ -105,16 +110,20 @@ function selfTest() {
   const component = {
     file: "widgetbook/lib/primitives/sample.dart", builder: "sample",
     type: "CatchButton", name: "Default", typeFile: "lib/core/widgets/catch_button.dart",
-    productionReferences: [{symbol: "CatchButton", file: "lib/core/widgets/catch_button.dart", base: "StatelessWidget"}],
+    productionReferences: [{symbol: "CatchButton", file: "lib/core/widgets/catch_button.dart", base: "StatelessWidget", ui: true}],
     wrappers: [],
   };
-  const body = {...component, typeFile: "lib/example/presentation/widgets/example_body.dart"};
+  const body = {...component, type: "ExampleBody", typeFile: "lib/example/presentation/widgets/example_body.dart",
+    productionReferences: [{symbol: "ExampleBody", file: "lib/example/presentation/widgets/example_body.dart", base: "StatelessWidget", ui: true}]};
   const prototype = {...component, typeFile: "widgetbook/lib/example/prototype.dart", name: "Option · proposed"};
   assert.equal(classify(component).classification, "component-mount");
   assert.equal(classify(body).classification, "body-mount");
+  assert.equal(classify({...body, productionReferences: component.productionReferences}).classification, null);
+  assert.equal(classify({...body, typeFile: component.typeFile}).classification, "body-mount");
   assert.equal(classify({...body, wrappers: ["ProviderScope"]}).classification, "screen-scope");
   assert.equal(classify(component, new Set(["CatchButton"])).classification, "screen-scope");
   assert.equal(classify(prototype).classification, "prototype");
+  assert.equal(classify({...prototype, productionReferences: []}).classification, "prototype");
   assert.equal(classify({...prototype, name: "Option"}).classification, null);
   assert.equal(classify({...prototype, name: "Unproposed"}).classification, null);
   assert.equal(classify({...body, name: "Typed descriptor prototype"}).classification, "body-mount");

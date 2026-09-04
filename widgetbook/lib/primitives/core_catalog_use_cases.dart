@@ -2849,22 +2849,22 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: EventDetailCta,
+  type: EventBookingDock,
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailBookingDockCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return _CatalogScreen(
-    title: 'EventDetailCta / BookingDock states',
+    title: 'EventBookingDock states',
     catalogId: 'events.widgets.event_detail_booking_dock',
     children: [
       _StateCard(
         label: 'bookable / booked / waitlist / attended',
         description:
-            'Representative dock states built from the lower-level dock primitive until EventDetailCta is split into a provider-free BookingDock adapter.',
+            'Production booking dock with fixed bookable, booked, waitlist and attended inputs.',
         child: Column(
           children: [
-            CatchBottomAction(
+            EventBookingDock(
               label: 'Join event - 3 spots left',
               onPressed: _noop,
               leadingContent: const PriceLeading(
@@ -2877,7 +2877,7 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
               catchLineAccent: t.primary,
             ),
             gapH12,
-            CatchBottomAction(
+            EventBookingDock(
               label: 'Cancel booking',
               onPressed: _noop,
               leadingContent: EventCtaStatusLeading(
@@ -2886,9 +2886,9 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
               ),
             ),
             gapH12,
-            CatchBottomAction(label: 'Join waitlist', onPressed: _noop),
+            EventBookingDock(label: 'Join waitlist', onPressed: _noop),
             gapH12,
-            CatchBottomAction(
+            EventBookingDock(
               label: 'You attended this event',
               onPressed: null,
               leadingContent: EventCtaStatusLeading(
