@@ -121,7 +121,8 @@ These are schema declarations, not independent proof of runtime limits.
 - Primary route: `hostAudienceScreen` (`/host/audience`)
 - Target root: `lib/hosts/audience`
 - Migration status: target boundary defined; implementation still lives in listed legacy Host roots
-- Responsibility contract updated: 2026-09-05
+- Responsibility contract updated: 2026-09-02
+- Product guide updated: 2026-09-05
 
 Current implementation roots:
 

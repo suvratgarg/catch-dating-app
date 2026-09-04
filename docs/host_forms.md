@@ -1,7 +1,7 @@
 ---
 doc_id: host_forms_product_spec
 version: 1.0.0
-updated: 2026-08-18
+updated: 2026-09-05
 owner: host_tooling
 status: active
 ---
@@ -10,7 +10,7 @@ status: active
 
 ## Decision
 
-Catch Forms is a standalone Host product surface for collecting structured
+Catch Forms is an Audience-owned Host capability for collecting structured
 information before, during, and after an event. A Host can create, publish,
 share, embed, pause, duplicate, and analyze a form without requiring the
 respondent to install Catch or complete a Consumer profile.
@@ -19,13 +19,23 @@ Forms is a platform primitive. Applications are one form purpose with an
 additional review workflow; registrations, waivers, feedback, surveys, and
 general intake must not be forced into application-review state.
 
+## Audience ownership and source status
+
+Forms is an Audience-owned navigation and source capability. The canonical Host
+destination is `/host/audience`, where Forms and Responses are peer modes; legacy
+`/host/forms` links redirect into that destination. The generated [Audience
+responsibility README](../lib/hosts/audience/README.md) owns route composition,
+source roots, and handoffs. This document remains the sole Forms product and
+implementation contract.
+
 This specification extends
-`docs/plans/standalone_host_product_and_crm_delivery_plan.md`. It is the only
-active product and implementation owner for Host Forms. Data authority remains
-owned by `docs/data_contracts.md`, client architecture by
+`docs/host_product.md`. Data authority
+remains owned by `docs/data_contracts.md`, client architecture by
 `docs/app_architecture.md`, and public route architecture by
 `docs/web_surface_architecture.md` and
-`docs/marketing_website_architecture.md`.
+`docs/marketing_website_architecture.md`. Source implementation does not by
+itself establish deployment, configured provider state, runtime availability, or
+released-client availability.
 
 ## Outcome
 
@@ -458,107 +468,45 @@ id validation, rate limits, and response-shape redaction.
 - Phone width, keyboard, text-scale 2.0, screen reader, reduced motion, high
   contrast, and light/dark policy are acceptance states, not deferred polish.
 
-## Delivery Tranches
+## Source implementation and remaining gates
 
-### Tranche 0 — specification and migration boundary
+The old delivery tranches are reduced to status because the repository now has
+source seams for the complete Forms lifecycle. This is not a claim of deployment
+or user availability.
 
-Deliver this specification, reconcile it with the standalone Host owner, and
-define compatibility from application collections to the generic Forms core.
+| Capability | Source evidence | Current status |
+| --- | --- | --- |
+| Audience navigation and Host Forms UI | [Audience README](../lib/hosts/audience/README.md), [router](../lib/routing/go_router.dart), `lib/hosts/presentation/forms/` | Audience-owned source implementation; route/state capture and release proof remain separate. |
+| Management, lifecycle, builder, validation, publication | [Functions inventory](../functions/README.md) management entries and `lib/hosts/presentation/forms/` | Source seams are present for draft/editor/lifecycle operations; exact released-client coverage remains a gate. |
+| Public respondent and distribution | Functions respondent/distribution entries, website `/f/` route metadata, and the `/f/:publicFormId/` contract above | Source route and callable seams are present; mobile/desktop runtime, environment, abuse, and deployment proof remain open. |
+| Responses, analytics, exports, automations, and conversion | [Functions inventory](../functions/README.md) operations entries and `functions/src/organizers/organizerForm*.ts` | Source seams are present; aggregate/export/automation replay and downstream receipt proof remain open. |
 
-Acceptance:
+The product contract above remains authoritative for lifecycle, safety, consent,
+public respondent privacy, identity policy, uploads, analytics, automations, and
+conversion behavior. No delivery status may weaken those requirements.
 
-- one durable Forms owner exists;
-- every previously missing product capability is assigned to a tranche; and
-- application review is explicitly a downstream projection.
+## Remaining release, runtime, and commercial gates
 
-### Tranche 1 — library, lifecycle, templates, and basic builder
-
-Deliver generic contracts, lifecycle callables, template catalog, Host form
-library, blank/template creation, section/question editing, validation, preview,
-publish, pause/resume, duplicate, archive, and eligible draft deletion.
-
-Advanced logic, public submission, analytics, and automations may be disabled in
-this tranche, but their schema seams must not be contradicted.
-
-Acceptance:
-
-- Host can create and publish a basic multi-section form from the app;
-- immutable version and optimistic draft conflicts are proven;
-- library pagination and lifecycle actions are tested; and
-- preview uses the same renderer/validator package intended for respondents.
-
-### Tranche 2 — standalone respondent runtime and distribution
-
-Deliver `/f/:publicFormId/`, public bootstrap, configured auth modes, autosave,
-review/submit/withdraw, QR/link/embed assets, source attribution, uploads, and
-confirmation.
-
-Acceptance:
-
-- a respondent completes a form on mobile web without installing Catch;
-- public projection reveals no organizer-private or respondent-private data;
-- duplicate submit, pause, version replacement, auth expiry, refresh, and file
-  failure recover safely; and
-- link/QR/embed smoke tests resolve the exact published version.
-
-### Tranche 3 — advanced composition and presentation
-
-Deliver conditional visibility/routing, complete validation catalog,
-acknowledgement/signature, appearance presets, logo/cover, completion actions,
-logic simulation, accessibility, and branching diagnostics.
-
-Acceptance:
-
-- client and server evaluate the same versioned logic contract;
-- invalid/cyclic/unreachable definitions cannot publish; and
-- deterministic previews cover every supported question and logic state.
-
-### Tranche 4 — response operations and compounding workflows
-
-Deliver response inbox/detail, aggregates, exports, automation rules/runs,
-application projection, CRM/event conversion, webhook action, and permissioned
-messaging handoff.
-
-Acceptance:
-
-- Host sees aggregates without per-screen response scans;
-- exports are asynchronous, scoped, expiring, and receipted;
-- all automation actions are idempotent and permission-aware; and
-- conversion preview and receipt prove exactly what changed.
-
-### Tranche 5 — release and commercial readiness
-
-Deploy contracts, indexes, rules, Functions, Hosting, and app builds in order.
-Run cross-environment smoke tests, visual/accessibility review, load/abuse tests,
-template copy review, support runbooks, and first-Host manual onboarding.
-
-Acceptance:
-
-- dev, staging, and production expose the same approved contract versions;
-- exact production routes and callable revisions are verified;
-- the released Host client can complete the publish/share/respond/review loop;
-- monitoring covers public availability, submission errors, automation failures,
-  export failures, and abuse thresholds; and
-- no launch claim exceeds the deployed, configured, and released state.
-
-## Verification Matrix
-
-| Surface | Required proof |
-| --- | --- |
-| Contracts | schema generation/validation, valid and invalid fixtures, migration compatibility |
-| Functions | authorization, App Check, rate limits, idempotency, conflict, redaction, emulator integration |
-| Firestore/Storage | rules tests, index parity, scoped asset access, retention/delete behavior |
-| Flutter | controller/domain tests, focused widget tests, analyzer, route and design checks |
-| Website | controller tests, typecheck, route/component contracts, Storybook/a11y, production build |
-| Runtime | mobile/desktop public completion, refresh/retry, OTP/email, upload, pause, duplicate submit |
-| Operations | aggregate projection, export expiry, automation replay, conversion receipt and safe undo |
-| Release | exact-SHA deploy receipts, deployed callable inventory, Hosting probes, released-client proof |
-
-## Commercial Readiness Gate
-
-Forms becomes a sellable acquisition wedge only when a pilot Host can publish a
-useful template and share a working app-free link during one guided session.
-For the first 100 Hosts, onboarding should remain manual and instrumented. The
-team must measure time to publish, share-to-start rate, completion rate, failed
-question rate, review turnaround, downstream conversion, and repeat form use.
-Feature count is not evidence of distribution.
+- Prove contract generation, valid/invalid fixtures, migration compatibility,
+  authorization, App Check, rate limits, idempotency, revision conflicts,
+  redaction, emulator integration, Firestore/Storage rules, index parity,
+  scoped asset access, retention, and deletion behavior.
+- Prove Flutter controller/domain/widget/analyzer/route/design checks and
+  deterministic captures for library, builder, preview, share, analytics,
+  automations, response detail, loading, empty, error, pagination, text scale,
+  keyboard, reduced motion, high contrast, and light/dark states. The current
+  screen registry contracts these Audience-owned routes under
+  `screen.host.customers`; automation visual capture is still pending.
+- Prove the public React respondent loop on mobile and desktop, including
+  bootstrap, configured identity modes, autosave, review/submit/withdraw,
+  refresh, duplicate submit, pause/version replacement, auth expiry, upload
+  failure, completion, QR/link/embed resolution, and no private-data leakage.
+- Verify dev/staging/production contract versions, exact deployed callable
+  revisions, Hosting probes, released-client behavior, public availability,
+  submission/automation/export failures, load/abuse thresholds, and support
+  runbooks. Source or test presence is not deployment evidence.
+- Keep first-100-Host onboarding manual and instrumented until a pilot can publish
+  a useful template and share a working app-free link in one guided session.
+  Measure time to publish, share-to-start, completion, failed-question rate,
+  review turnaround, downstream conversion, and repeat use. Feature count is not
+  distribution evidence.

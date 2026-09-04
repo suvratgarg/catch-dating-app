@@ -5,8 +5,6 @@ import {execFileSync} from "node:child_process";
 import {parseArgs} from "node:util";
 import {fileURLToPath} from "node:url";
 
-import Ajv2020 from "ajv/dist/2020.js";
-
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const sourcePath = fromRepo(
@@ -60,19 +58,10 @@ async function runCli() {
   const summaryOnly = options.summary;
 
   const contract = readJson(sourcePath);
-  const schema = readJson(schemaPath);
-  const validate = new Ajv2020({allErrors: true, strict: false}).compile(schema);
-  if (!validate(contract)) {
-    throw new HostFeatureResponsibilityError(
-      (validate.errors ?? []).map(
-        (error) =>
-          `host_feature_responsibilities.json${error.instancePath || "/"}: ${error.message}`,
-      ),
-    );
-  }
-
   // Impact must remain readable when a referenced file was deleted or renamed.
-  // It deliberately runs before source-existence and symbol validation.
+  // It needs only Node, Git, and the mapping so the existing CI planner can
+  // report advice without installing dependencies or checking out product code.
+  // Full schema/source validation remains owned by generation and --check.
   if (options.affected) {
     const feature = findFeature(contract.features, options.affected, false);
     const comparison = readDocumentationComparison(options.base);
@@ -86,6 +75,18 @@ async function runCli() {
     console.log(options.json ? JSON.stringify(report, null, 2) :
       renderDocumentationImpact(report));
     return;
+  }
+
+  const {default: Ajv2020} = await import("ajv/dist/2020.js");
+  const schema = readJson(schemaPath);
+  const validate = new Ajv2020({allErrors: true, strict: false}).compile(schema);
+  if (!validate(contract)) {
+    throw new HostFeatureResponsibilityError(
+      (validate.errors ?? []).map(
+        (error) =>
+          `host_feature_responsibilities.json${error.instancePath || "/"}: ${error.message}`,
+      ),
+    );
   }
 
   if (options.explain) {
@@ -375,7 +376,8 @@ export function renderHostFeatureReadme({contract, feature}) {
     `- Primary route: \`${feature.primaryRoute.id}\` (\`${feature.primaryRoute.path}\`)`,
     `- Target root: \`${feature.targetRoot}\``,
     `- Migration status: ${migrationStatusLabel(feature.migrationStatus)}`,
-    `- Responsibility contract updated: ${feature.guide?.updated ?? contract.updated}`,
+    `- Responsibility contract updated: ${contract.updated}`,
+    ...(feature.guide ? [`- Product guide updated: ${feature.guide.updated}`] : []),
     "",
     "Current implementation roots:",
     "",
