@@ -135,6 +135,8 @@ class CatchSearchField extends StatefulWidget {
   final VoidCallback? onOpenSearch;
   final VoidCallback? onCloseSearch;
   final String? tooltip;
+
+  /// Visual trigger request, clamped to the platform target when allocated.
   final double collapsedExtent;
   final Color? backgroundColor;
   final Color? borderColor;

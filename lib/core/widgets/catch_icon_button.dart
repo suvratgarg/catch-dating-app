@@ -10,10 +10,11 @@ enum CatchIconButtonVariant { bordered, float, plain }
 
 /// Handoff `IconButton`: a Phosphor glyph in a circular target.
 ///
-/// Defaults to the 44px bordered inline control. Top bars use [navSize] for the
-/// handoff's 40px back/action rule, and photo/map overlays use
-/// [CatchIconButtonVariant.float]. Counted icon actions use [counted] so callers
-/// provide a typed count instead of composing a string badge around the button.
+/// Defaults to the 44-point bordered visual. Top bars use [navSize], while
+/// [targetExtentFor] separately owns the platform-sized hit/focus allocation.
+/// Photo/map overlays use [CatchIconButtonVariant.float]. Counted actions use
+/// [counted] so callers provide a typed count instead of composing a string
+/// badge around the button.
 ///
 /// Usage:
 /// ```dart

@@ -16,6 +16,8 @@ enum CatchButtonShape { pill, rounded }
 ///
 /// Use [variant] for visual hierarchy and [size] for density. Screens should
 /// configure this widget rather than creating bespoke Material button styles.
+/// Interactive targets retain the platform minimum around compact visuals;
+/// labels reflow naturally in both width modes without shrinking their text.
 class CatchButton extends StatefulWidget {
   const CatchButton({
     super.key,
