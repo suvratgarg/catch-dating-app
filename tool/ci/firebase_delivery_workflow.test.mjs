@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
@@ -542,6 +543,84 @@ test("promotion executes the reverified subset and handles empty Functions as a 
   assert.match(promotion, /if \[\[ "\$stage" == "functions" && -z "\$target" \]\]; then[\s\S]*verified no-op stage[\s\S]*else[\s\S]*\.\/tool\/deploy_firebase_targets.sh/);
   assert.match(promotion, /if: \$\{\{ steps.verify.outputs.has_targets == 'true' \}\}/);
   assert.match(promotion, /\.targets \| any\(startswith\("functions:"\)\)/);
+});
+
+test("ordered artifacts survive main advancing but preserve exact-source and snapshot guards at every stage", () => {
+  const promotion = workflow("_firebase-promote.yml");
+  const loop = promotion.slice(promotion.indexOf("          while true; do"));
+  const boundary = loop.slice(0, loop.indexOf('            deploy_args='));
+  for (const assertion of [
+    'test "$(git rev-parse HEAD)" = "$CONTROL_PLANE_SHA"',
+    'test "$(git -C "$SOURCE_CHECKOUT" rev-parse HEAD)" = "$SOURCE_SHA"',
+    'git -C "$SOURCE_CHECKOUT" fetch origin refs/heads/main:refs/remotes/origin/main --no-tags',
+    'git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$CONTROL_PLANE_SHA" refs/remotes/origin/main',
+    'git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main',
+  ]) assert.ok(boundary.includes(assertion), assertion);
+  assert.match(boundary, /if \[\[ "\$REQUIRE_CURRENT_MAIN" == "true" \]\]; then[\s\S]*test "\$\(git -C "\$SOURCE_CHECKOUT" rev-parse refs\/remotes\/origin\/main\)" = "\$SOURCE_SHA"[\s\S]*export CATCH_DEPLOY_ALLOW_BEHIND=0[\s\S]*else\s+export CATCH_DEPLOY_ALLOW_BEHIND=1/);
+  assert.match(promotion, /REQUIRE_CURRENT_MAIN: \$\{\{ inputs.require_current_main \}\}/);
+  const executor = fs.readFileSync(path.join(repoRoot, "tool/deploy_firebase_targets.sh"), "utf8");
+  assert.match(executor, /CATCH_DEPLOY_ALLOW_BEHIND:-0/);
+  assert.match(executor, /check_deploy_ref.mjs/);
+});
+
+test("the stage guard accepts an advancing main and rejects changed pins or a stale rebaseline", (t) => {
+  const directory = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), "delivery-stage-guard-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const control = path.join(directory, "control");
+  const source = path.join(directory, "source");
+  const remote = path.join(directory, "remote.git");
+  const git = (cwd, ...args) => {
+    const result = spawnSync("git", args, {cwd, encoding: "utf8"});
+    assert.equal(result.status, 0, result.stderr);
+    return result.stdout.trim();
+  };
+  fs.mkdirSync(control);
+  git(control, "init", "-q", "-b", "main");
+  git(control, "config", "user.name", "Delivery test");
+  git(control, "config", "user.email", "delivery-test@example.invalid");
+  fs.writeFileSync(path.join(control, "README"), "approved\n");
+  git(control, "add", ".");
+  git(control, "commit", "-qm", "approved", "--no-verify");
+  const approved = git(control, "rev-parse", "HEAD");
+  git(directory, "clone", "--bare", control, remote);
+  git(control, "remote", "add", "origin", remote);
+  git(directory, "clone", remote, source);
+  git(source, "config", "fetch.prune", "true");
+  const promotion = workflow("_firebase-promote.yml");
+  const loop = promotion.slice(promotion.indexOf("          while true; do"));
+  const guard = loop.slice(
+    loop.indexOf('            test "$(git rev-parse HEAD)"'),
+    loop.indexOf('            deploy_args='),
+  );
+  assert.ok(guard.includes("merge-base --is-ancestor"));
+  const run = (overrides = {}) => spawnSync("bash", ["-c",
+    'set -euo pipefail\n' + guard + '\nprintf "%s" "$CATCH_DEPLOY_ALLOW_BEHIND"\n',
+  ], {
+    cwd: control, encoding: "utf8",
+    env: {...process.env, CONTROL_PLANE_SHA: approved, SOURCE_SHA: approved,
+      SOURCE_CHECKOUT: source, REQUIRE_CURRENT_MAIN: "true", ...overrides},
+  });
+  const initial = run();
+  assert.equal(initial.status, 0, initial.stderr);
+  assert.equal(initial.stdout, "0");
+  fs.writeFileSync(path.join(control, "README"), "unrelated newer UI\n");
+  git(control, "add", ".");
+  git(control, "commit", "-qm", "new UI", "--no-verify");
+  const newer = git(control, "rev-parse", "HEAD");
+  git(control, "push", "origin", "main");
+  git(control, "checkout", "--detach", approved);
+  const ordered = run({REQUIRE_CURRENT_MAIN: "false"});
+  assert.equal(ordered.status, 0, ordered.stderr);
+  assert.equal(ordered.stdout, "1");
+  assert.notEqual(run().status, 0, "rebaseline must remain exactly current main");
+  assert.notEqual(run({REQUIRE_CURRENT_MAIN: "false", CONTROL_PLANE_SHA: newer}).status, 0);
+  assert.notEqual(run({REQUIRE_CURRENT_MAIN: "false", SOURCE_SHA: newer}).status, 0);
+  fs.writeFileSync(path.join(control, "README"), "unmerged workflow\n");
+  git(control, "add", ".");
+  git(control, "commit", "-qm", "unmerged", "--no-verify");
+  const unmerged = git(control, "rev-parse", "HEAD");
+  assert.notEqual(run({REQUIRE_CURRENT_MAIN: "false", CONTROL_PLANE_SHA: unmerged}).status, 0,
+    "a matching checkout pin outside main history must still fail");
 });
 
 test("promotion keeps the verified package immutable and reverifies its deploy copy", () => {

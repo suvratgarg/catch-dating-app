@@ -827,6 +827,15 @@ normalization changes no query capability because Firestore's built-in
 single-field index already owns the shape; all other packaged bytes and stages
 remain bound to the original CI authority.
 
+Before each stage, artifact promotion refreshes main and verifies both the
+pinned control-plane commit and package source remain ancestors of it. Ordinary
+ordered artifacts and independent staging snapshots then use the executor's
+explicit older-ref option: an unrelated newer main commit must not interrupt
+an already authorized immutable package. Rebaseline additionally requires exact
+current-main equality at every stage and does not enable that option. Direct
+local deployment keeps the default stale-checkout refusal. This does not permit
+queue skipping, package substitution, or source outside main history.
+
 `Backend Rebaseline` is the exceptional cumulative-snapshot lane for an
 explicitly approved stale-queue recovery. It is manual-only, shares the
 `backend-delivery` concurrency key, and accepts only the exact current `main`

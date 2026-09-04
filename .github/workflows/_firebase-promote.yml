@@ -103,7 +103,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$CONTROL_PLANE_SHA"
           test "$(git -C "$SOURCE_CHECKOUT" rev-parse HEAD)" = "$SOURCE_SHA"
-          git -C "$SOURCE_CHECKOUT" fetch origin main:refs/remotes/origin/main --no-tags
+          git -C "$SOURCE_CHECKOUT" fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
           git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
           if [[ "$REQUIRE_CURRENT_MAIN" == "true" ]]; then
             test "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
@@ -350,10 +350,12 @@ jobs:
         env:
           CHECKPOINT: build/delivery/checkpoint/checkpoint.json
           CHECKPOINT_SCOPE: ${{ steps.verify.outputs.checkpoint_scope }}
+          CONTROL_PLANE_SHA: ${{ inputs.control_plane_sha }}
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           DELIVERY_FUNCTIONS_DIR: build/delivery/deploy-tree/functions
           PACKAGE_DIR: build/delivery/deploy-tree
           PROJECT_ID: ${{ steps.verify.outputs.project_id }}
+          REQUIRE_CURRENT_MAIN: ${{ inputs.require_current_main }}
           SOURCE_CHECKOUT: build/delivery/source-checkout
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
@@ -387,6 +389,20 @@ jobs:
             esac
             stage_status=0
             failure_detail="Firebase CLI stage failed; safe to resume this stage."
+            # The local-checkout guard cannot define freshness for an immutable
+            # ordered artifact. Revalidate both pinned ancestors at every stage;
+            # current-main snapshot recovery retains its stricter equality gate.
+            test "$(git rev-parse HEAD)" = "$CONTROL_PLANE_SHA"
+            test "$(git -C "$SOURCE_CHECKOUT" rev-parse HEAD)" = "$SOURCE_SHA"
+            git -C "$SOURCE_CHECKOUT" fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
+            git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$CONTROL_PLANE_SHA" refs/remotes/origin/main
+            git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
+            if [[ "$REQUIRE_CURRENT_MAIN" == "true" ]]; then
+              test "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
+              export CATCH_DEPLOY_ALLOW_BEHIND=0
+            else
+              export CATCH_DEPLOY_ALLOW_BEHIND=1
+            fi
             deploy_args=(--config "$PACKAGE_DIR/firebase.json")
             if [[ "$stage" == "functions" && -n "$target" ]]; then
               IFS=',' read -r -a explicit_function_targets <<< "$target"
