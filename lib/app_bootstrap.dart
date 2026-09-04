@@ -298,8 +298,9 @@ Future<void> _initializeDefaultFirebaseApp() async {
     if (error.code == 'duplicate-app' &&
         _hasDefaultFirebaseApp() &&
         (demoProject.isEmpty ||
-            Firebase.app().options.projectId == demoProject))
+            Firebase.app().options.projectId == demoProject)) {
       return;
+    }
     rethrow;
   }
 }
@@ -365,8 +366,9 @@ Future<(Object, StackTrace)?> _initializeRemoteConfig() async {
 
 Future<void> _activateFirebaseAppCheck() async {
   if (AppConfig.useFirebaseEmulators &&
-      AppConfig.firebaseEmulatorProjectId.isNotEmpty)
+      AppConfig.firebaseEmulatorProjectId.isNotEmpty) {
     return;
+  }
   final debugToken = AppConfig.firebaseAppCheckDebugToken.trim();
   final debugTokenOrNull = debugToken.isEmpty ? null : debugToken;
   final useDebugProvider =
