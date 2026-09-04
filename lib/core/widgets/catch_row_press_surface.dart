@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -46,7 +47,21 @@ class _CatchRowPressSurfaceState extends State<CatchRowPressSurface> {
           fit: StackFit.passthrough,
           clipBehavior: Clip.none,
           children: [
-            child,
+            if (_enabled)
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: CatchPlatformTokens.minimumInteractiveExtent,
+                  minWidth: CatchPlatformTokens.minimumInteractiveExtent,
+                ),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  heightFactor: 1,
+                  widthFactor: 1,
+                  child: child,
+                ),
+              )
+            else
+              child,
             Positioned.fill(
               child: IgnorePointer(
                 child: ColoredBox(

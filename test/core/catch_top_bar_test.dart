@@ -407,7 +407,7 @@ void main() {
 
     expect(
       tester.getSize(find.byType(CatchIconButton)),
-      const Size.square(CatchIconButton.navSize),
+      Size.square(CatchIconButton.targetExtentFor(CatchIconButton.navSize)),
     );
     expect(
       tester.widget<Icon>(find.byIcon(CatchIcons.settingsOutlined)).size,
@@ -444,7 +444,7 @@ void main() {
       expect(find.byType(CatchButton), findsNothing);
       expect(
         tester.getSize(find.byType(CatchIconButton)),
-        const Size.square(CatchIconButton.navSize),
+        Size.square(CatchIconButton.targetExtentFor(CatchIconButton.navSize)),
       );
       expect(find.byTooltip('Create event'), findsOneWidget);
       await tester.tap(find.byType(CatchIconAction));

@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -16,23 +19,25 @@ abstract final class CatchControlMetrics {
   static const double mdIconExtent = mdMinHeight;
   static const double stepperIconExtent = CatchSpacing.s11;
 
-  static double minHeight(CatchControlSize size) => switch (size) {
-    CatchControlSize.floating => floatingMinHeight,
-    CatchControlSize.compact => compactMinHeight,
-    CatchControlSize.md => mdMinHeight,
-  };
+  static double minHeight(CatchControlSize size) =>
+      math.max(CatchPlatformTokens.minimumInteractiveExtent, switch (size) {
+        CatchControlSize.floating => floatingMinHeight,
+        CatchControlSize.compact => compactMinHeight,
+        CatchControlSize.md => mdMinHeight,
+      });
 
-  static double iconExtent(CatchControlSize size) => switch (size) {
-    CatchControlSize.floating => floatingIconExtent,
-    CatchControlSize.compact => compactIconExtent,
-    CatchControlSize.md => mdIconExtent,
-  };
+  static double iconExtent(CatchControlSize size) =>
+      math.max(CatchPlatformTokens.minimumInteractiveExtent, switch (size) {
+        CatchControlSize.floating => floatingIconExtent,
+        CatchControlSize.compact => compactIconExtent,
+        CatchControlSize.md => mdIconExtent,
+      });
 
   static BoxConstraints squareConstraints(double extent) => BoxConstraints(
-    minWidth: extent,
-    maxWidth: extent,
-    minHeight: extent,
-    maxHeight: extent,
+    minWidth: math.max(extent, CatchPlatformTokens.minimumInteractiveExtent),
+    maxWidth: math.max(extent, CatchPlatformTokens.minimumInteractiveExtent),
+    minHeight: math.max(extent, CatchPlatformTokens.minimumInteractiveExtent),
+    maxHeight: math.max(extent, CatchPlatformTokens.minimumInteractiveExtent),
   );
 
   static double radius(CatchControlShape shape) => switch (shape) {
@@ -114,6 +119,7 @@ class CatchControlShell extends StatelessWidget {
       curve: CatchMotion.standardCurve,
       constraints: BoxConstraints(
         minHeight: CatchControlMetrics.minHeight(size),
+        minWidth: CatchPlatformTokens.minimumInteractiveExtent,
       ),
       // Reserve a stable emphasis-stroke footprint. The semantic border paints
       // in the foreground, so rest/error/focus widths never change layout.

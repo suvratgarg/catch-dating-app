@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
@@ -55,8 +58,7 @@ class CatchTextButton extends StatelessWidget {
     final effectiveTextStyle = textStyle ?? CatchTextStyles.labelL(context);
     final labelText = Text(
       label,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
       style: effectiveTextStyle.copyWith(color: effectiveColor),
     );
 
@@ -68,7 +70,18 @@ class CatchTextButton extends StatelessWidget {
         backgroundColor: backgroundColor,
         disabledForegroundColor: effectiveDisabledColor,
         disabledBackgroundColor: disabledBackgroundColor,
-        minimumSize: minimumSize,
+        minimumSize: Size(
+          math.max(
+            minimumSize.width,
+            CatchPlatformTokens.minimumInteractiveExtent,
+          ),
+          math.max(
+            minimumSize.height,
+            CatchPlatformTokens.minimumInteractiveExtent,
+          ),
+        ),
+        // Compact density must not subtract pixels from the platform floor.
+        visualDensity: VisualDensity.standard,
         padding: padding,
         tapTargetSize: tapTargetSize,
         side: side,

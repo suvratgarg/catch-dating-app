@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -119,8 +122,11 @@ class _CatchToggleState extends State<CatchToggle> {
             opacity: enabled ? CatchOpacity.visible : disabledOpacity,
             child: SizedBox(
               key: widget._field ? const ValueKey('catch-field-toggle') : null,
-              width: trackWidth,
-              height: widget._field ? CatchSpacing.s11 : trackHeight,
+              width: math.max(
+                trackWidth,
+                CatchPlatformTokens.minimumInteractiveExtent,
+              ),
+              height: CatchPlatformTokens.minimumInteractiveExtent,
               child: Center(
                 child: SizedBox(
                   width: trackWidth,

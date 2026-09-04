@@ -278,13 +278,16 @@ class _CatchFieldDisclosureClipper extends CustomClipper<Rect> {
 }
 
 class _CatchFieldChoiceChipState extends State<CatchFieldChoiceChip> {
-  bool _pressed = false;
-  bool _showFocusHighlight = false;
-
   @override
-  Widget build(BuildContext context) {
-    if (widget.accent != null) {
-      return CatchChip.selectable(
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    enabled: widget.enabled,
+    checked: widget.selected,
+    inMutuallyExclusiveGroup: !widget.multi,
+    label: widget.label,
+    onTap: widget.enabled ? widget.onPressed : null,
+    child: ExcludeSemantics(
+      child: CatchChip.selectable(
         key: ValueKey('catch-field-choice-${widget.label}'),
         label: widget.label,
         selected: widget.selected,
@@ -298,127 +301,9 @@ class _CatchFieldChoiceChipState extends State<CatchFieldChoiceChip> {
             : null,
         semanticsLabel: widget.label,
         onChanged: (_) => widget.onPressed(),
-      );
-    }
-    final t = CatchTokens.of(context);
-    final foreground = widget.selected ? t.primaryInk : t.ink;
-    final background = widget.selected ? t.ink : t.surface;
-    final border = CatchBorder.interactive(
-      t,
-      widget.selected
-          ? CatchInteractiveBorderState.selected
-          : _pressed
-          ? CatchInteractiveBorderState.pressed
-          : CatchInteractiveBorderState.resting,
-    );
-    final visual = AnimatedScale(
-      duration: _fieldDuration(
-        context,
-        _pressed ? CatchFieldTokens.pressIn : CatchFieldTokens.pressOut,
       ),
-      curve: CatchFieldTokens.curve,
-      scale: _pressed ? CatchFieldTokens.chipPressedScale : 1,
-      child: AnimatedContainer(
-        key: ValueKey('catch-field-choice-${widget.label}'),
-        duration: _fieldDuration(context, CatchFieldTokens.fast),
-        curve: CatchFieldTokens.curve,
-        constraints: const BoxConstraints(
-          minHeight: CatchFieldTokens.chipVisualMinHeight,
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchFieldTokens.chipHorizontalPadding,
-          vertical: CatchFieldTokens.chipVerticalPadding,
-        ),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(CatchRadius.pill),
-        ),
-        // Paint stateful strokes above the fill so selected/focus emphasis can
-        // change width without changing the chip's measured height or wrap.
-        foregroundDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(CatchRadius.pill),
-          border: border.all,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.multi && widget.selected) ...[
-              Icon(
-                CatchIcons.checkRounded,
-                size: CatchFieldTokens.chipSelectedGlyphExtent,
-                color: foreground,
-              ),
-              const SizedBox(width: CatchFieldTokens.chipSelectedGlyphGap),
-            ],
-            Flexible(
-              child: Text(
-                widget.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.fieldRowTitle(context, color: foreground)
-                    .copyWith(
-                      fontSize: CatchFieldTokens.chipFontSize,
-                      fontWeight: FontWeight.w600,
-                      height: 1,
-                    ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-    return Semantics(
-      button: true,
-      enabled: widget.enabled,
-      checked: widget.selected,
-      inMutuallyExclusiveGroup: !widget.multi,
-      label: widget.label,
-      child: FocusableActionDetector(
-        enabled: widget.enabled,
-        shortcuts: const <ShortcutActivator, Intent>{
-          SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
-          SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
-        },
-        actions: <Type, Action<Intent>>{
-          ActivateIntent: CallbackAction<ActivateIntent>(
-            onInvoke: (_) {
-              widget.onPressed();
-              return null;
-            },
-          ),
-        },
-        onShowFocusHighlight: (show) {
-          if (_showFocusHighlight != show) {
-            setState(() => _showFocusHighlight = show);
-          }
-        },
-        child: Opacity(
-          opacity: widget.enabled ? 1 : CatchFieldTokens.disabledOpacity,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: widget.enabled ? widget.onPressed : null,
-            onTapDown: widget.enabled
-                ? (_) => setState(() => _pressed = true)
-                : null,
-            onTapUp: widget.enabled
-                ? (_) => setState(() => _pressed = false)
-                : null,
-            onTapCancel: widget.enabled
-                ? () => setState(() => _pressed = false)
-                : null,
-            child: CatchFieldFocusOutline(
-              debugKey: ValueKey(
-                'catch-field-choice-${widget.label}-focus-outline',
-              ),
-              show: _showFocusHighlight,
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-              child: visual,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+    ),
+  );
 }
 
 /// Exact numeric control used by [CatchField.stepper].
@@ -466,7 +351,7 @@ class CatchFieldStepper extends StatelessWidget {
                 enabled && onChanged != null && (min == null || value > min!),
             onStep: () => onChanged?.call(_nextValue(-step)),
           ),
-          const SizedBox(width: CatchFieldTokens.stepperLayoutGap),
+          SizedBox(width: CatchFieldRepeatButton.layoutGap),
           ConstrainedBox(
             constraints: const BoxConstraints(
               minWidth: CatchFieldTokens.stepperValueMinWidth,
@@ -476,15 +361,10 @@ class CatchFieldStepper extends StatelessWidget {
               key: const ValueKey('catch-field-stepper-value'),
               maxLines: 1,
               textAlign: TextAlign.center,
-              style: CatchTextStyles.fieldRowTitle(context, color: t.ink)
-                  .copyWith(
-                    fontSize: CatchFieldTokens.stepperValueFontSize,
-                    fontWeight: FontWeight.w700,
-                    height: CatchFieldTokens.valueLineHeight,
-                  ),
+              style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
             ),
           ),
-          const SizedBox(width: CatchFieldTokens.stepperLayoutGap),
+          SizedBox(width: CatchFieldRepeatButton.layoutGap),
           CatchFieldRepeatButton(
             icon: CatchIcons.addRounded,
             semanticLabel: increaseSemanticLabel,
@@ -509,8 +389,16 @@ class CatchFieldStepper extends StatelessWidget {
   }
 }
 
-/// Hold-to-repeat 44px stepper target used by [CatchFieldStepper].
+/// Hold-to-repeat platform-sized target used by [CatchFieldStepper].
 class CatchFieldRepeatButton extends StatefulWidget {
+  static double get hitExtent => CatchControlMetrics.squareConstraints(
+    CatchFieldTokens.stepperHitExtent,
+  ).minHeight;
+
+  /// Keep the same visual text-to-circle gap as the hit target grows.
+  static double get layoutGap =>
+      CatchFieldTokens.stepperGap -
+      (hitExtent - CatchFieldTokens.stepperVisualExtent) / 2;
   const CatchFieldRepeatButton({
     super.key,
     required this.icon,
@@ -572,8 +460,7 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
 
   void _handlePointerMove(PointerMoveEvent event) {
     if (_pressedPointer != event.pointer) return;
-    final bounds =
-        Offset.zero & const Size.square(CatchFieldTokens.stepperHitExtent);
+    final bounds = Offset.zero & Size.square(CatchFieldRepeatButton.hitExtent);
     if (!bounds.contains(event.localPosition)) {
       _pressedPointer = null;
       _stop();
@@ -687,7 +574,7 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
                   show: _showFocusHighlight,
                   borderRadius: BorderRadius.circular(CatchRadius.pill),
                   child: SizedBox.square(
-                    dimension: CatchFieldTokens.stepperHitExtent,
+                    dimension: CatchFieldRepeatButton.hitExtent,
                     child: Align(
                       alignment: widget.visualAlignment,
                       child: visual,
