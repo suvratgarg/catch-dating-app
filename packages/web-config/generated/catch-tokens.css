@@ -216,6 +216,10 @@
   --catch-typography-ios-display-small-line-height: 28px;
   --catch-typography-ios-display-small-weight: 400;
   --catch-typography-ios-display-small-tracking: 0px;
+  --catch-typography-ios-navigation-label-size: 13px;
+  --catch-typography-ios-navigation-label-line-height: 13px;
+  --catch-typography-ios-navigation-label-weight: 600;
+  --catch-typography-ios-navigation-label-tracking: 0px;
   --catch-typography-android-headline-size: 24px;
   --catch-typography-android-headline-line-height: 32px;
   --catch-typography-android-headline-weight: 600;
@@ -272,6 +276,10 @@
   --catch-typography-android-display-small-line-height: 44px;
   --catch-typography-android-display-small-weight: 400;
   --catch-typography-android-display-small-tracking: 0px;
+  --catch-typography-android-navigation-label-size: 13px;
+  --catch-typography-android-navigation-label-line-height: 13px;
+  --catch-typography-android-navigation-label-weight: 600;
+  --catch-typography-android-navigation-label-tracking: 0px;
   --catch-interaction-ios-minimum-extent: 44px;
   --catch-interaction-android-minimum-extent: 48px;
   --catch-motion-fast: 120ms;

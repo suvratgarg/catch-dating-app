@@ -48,6 +48,11 @@ void main() {
                   ('labelM', CatchTextStyles.labelM(context), profile.status),
                   ('labelS', CatchTextStyles.labelS(context), profile.status),
                   (
+                    'navigationLabel',
+                    CatchTextStyles.navigationLabel(context),
+                    profile.navigationLabel,
+                  ),
+                  (
                     'buttonSm',
                     CatchTextStyles.buttonSm(context),
                     profile.control,
@@ -84,7 +89,7 @@ void main() {
             ),
           ),
         );
-        expect(pairs, hasLength(14));
+        expect(pairs, hasLength(15));
         for (final (name, actual, expected) in pairs) {
           expect(actual.fontSize, expected.fontSize, reason: name);
           expect(actual.height, expected.height, reason: name);
@@ -99,6 +104,37 @@ void main() {
           );
         }
         debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets(
+      'floating navigation keeps its approved typography on $platform',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = platform;
+        addTearDown(() => debugDefaultTargetPlatformOverride = null);
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: Builder(
+              builder: (context) {
+                final style = CatchTextStyles.navigationLabel(context);
+                expect(style.fontSize, 13);
+                expect(style.height, 1);
+                expect(style.fontWeight, FontWeight.w600);
+                expect(style.letterSpacing, 0);
+                expect(
+                  style.fontFamily,
+                  CatchFonts.functionFamilyForPlatform(platform, fontSize: 13),
+                );
+                expect(
+                  CatchTextStyles.buttonSm(context).fontSize,
+                  platform == TargetPlatform.iOS ? 15 : 14,
+                );
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
       },
     );
 

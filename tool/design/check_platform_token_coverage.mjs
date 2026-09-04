@@ -7,7 +7,7 @@ import crypto from 'node:crypto';
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const iosRoles = ['body', 'callout', 'caption1', 'caption2', 'footnote', 'headline', 'largeTitle', 'subhead', 'title1', 'title2', 'title3'];
 const androidRoles = ['bodyLarge', 'bodyMedium', 'bodySmall', 'displayLarge', 'displayMedium', 'displaySmall', 'headlineLarge', 'headlineMedium', 'headlineSmall', 'labelLarge', 'labelMedium', 'labelSmall', 'titleLarge', 'titleMedium', 'titleSmall'];
-const semanticRoles = ['headline', 'title', 'name', 'body', 'secondary', 'context', 'control', 'status', 'metric', 'fieldValue', 'fieldLabel', 'displayLarge', 'displayMedium', 'displaySmall'];
+const semanticRoles = ['headline', 'title', 'name', 'body', 'secondary', 'context', 'control', 'status', 'metric', 'fieldValue', 'fieldLabel', 'displayLarge', 'displayMedium', 'displaySmall', 'navigationLabel'];
 export const requiredDomains = ['Typography', 'Typography tracking', 'Accessibility', 'Layout & device metrics', 'Components — Material', 'Components — UIKit snapshot', 'Components — Apple guidance', 'Shape', 'Colors', 'Colors — UIKit snapshot', 'Elevation', 'Interaction states', 'Motion', 'Materials', 'Assets & system surfaces'];
 const dispositions = new Set(['semantic-and-runtime', 'runtime-and-brand', 'runtime', 'custom-component', 'reference-and-runtime', 'custom-theme', 'platform-assets']);
 
@@ -117,6 +117,11 @@ export function auditPlatformTokens(document, { inventory, textStyles } = {}) {
   if (scalar('accessibility.minimumTextContrast') < 4.5 || scalar('accessibility.largeTextContrast') < 3 || scalar('accessibility.minimumTextScaleTest') < 2) fail('Accessibility acceptance floors cannot be lowered.');
   if (scalar('platformReference.ios.typography.body.size') !== 17 || scalar('platformReference.ios.typography.body.lineHeight') !== 22) fail('Native iOS Body is17/22; Catch16/24 must remain a separate decision.');
   if (scalar('platformReference.ios.typography.caption1.size') !== 12 || scalar('platformReference.ios.typography.footnote.size') !== 13) fail('Do not mislabel Footnote as Caption1.');
+  for (const platform of ['ios', 'android']) {
+    const role = `typography.${platform}.navigationLabel`;
+    const exception = at(document, role)?.$extensions?.['org.catch']?.exception;
+    if (scalar(`${role}.size`) !== 13 || scalar(`${role}.lineHeight`) !== 13 || scalar(`${role}.weight`) !== 600 || scalar(`${role}.tracking`) !== 0 || exception !== 'floatingNavigation') fail(`Approved floating navigation typography must remain 13/13, weight 600, zero tracking: ${platform}`);
+  }
 
   if (inventory) {
     if (!Array.isArray(inventory.rows) || inventory.rows.length === 0) fail('Source inventory must not be empty.');
