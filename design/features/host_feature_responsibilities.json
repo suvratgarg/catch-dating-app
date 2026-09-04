@@ -170,6 +170,187 @@
       "targetRoot": "lib/hosts/audience",
       "migrationStatus": "targetDefinedLegacyImplementation",
       "purpose": "Own the participant relationship system as one destination: People, saved Audiences, Forms, Responses, and organizer Applications, with shared organizer scope and deliberate handoff to Inbox for delivery.",
+      "guide": {
+        "updated": "2026-09-05",
+        "sections": [
+          {
+            "id": "overview",
+            "question": "What does Audience do?",
+            "aliases": [
+              "overview",
+              "host audience screen",
+              "customers"
+            ],
+            "answer": "Audience is the Host workspace for understanding and organizing an organizer’s relationships with people. Its four peer modes are People (the contact directory), Audiences (reusable groups), Forms (intake design and publication), and Responses (submitted answers and review). Organizer applications belong to this intake workflow. Hosts select the organizer whose records they want to work with; event operations remain in Events and communication delivery moves to Inbox. The implementation still lives across the listed customers, forms, and applications folders; this README is the entry point for the whole destination.",
+            "sourcePaths": [
+              "lib/hosts/presentation/host_audience_view.dart",
+              "lib/hosts/presentation/customers/host_customers_screen.dart",
+              "lib/hosts/presentation/forms/host_forms_screen.dart",
+              "lib/routing/go_router.dart",
+              "lib/core/presentation/host_app_shell.dart"
+            ],
+            "examples": []
+          },
+          {
+            "id": "people",
+            "question": "What can a host do with People?",
+            "aliases": [
+              "contacts",
+              "manual contact",
+              "customer directory"
+            ],
+            "answer": "People provides organizer-scoped search, filters, sorting, and paginated contact browsing. A contact detail brings together identity, organizer tags and private notes, attendance and revenue context, and contact administration or duplicate review where available. Manual creation requires a name and at least one phone or email endpoint. Entering those details does not verify identity, create a Consumer profile, admit someone to an event, or grant marketing permission. Existing legacy name-only contacts can still be read. A contact is a relationship record; it is not the same thing as a verified account or a communication grant.",
+            "sourcePaths": [
+              "lib/hosts/presentation/customers",
+              "functions/src/organizers/organizerContacts.ts",
+              "contracts/callables/create_organizer_contact_payload.schema.json",
+              "functions/src/shared/organizerContactOrigins.ts"
+            ],
+            "examples": [
+              {
+                "path": "functions/src/organizers/organizerContacts.test.ts",
+                "testName": "manual contacts require at least one identity endpoint"
+              }
+            ]
+          },
+          {
+            "id": "membership",
+            "question": "How is saved-audience membership decided?",
+            "aliases": [
+              "membership",
+              "saved audiences",
+              "static lists",
+              "spending"
+            ],
+            "answer": "A saved audience is a named, reusable organizer CRM group. Hosts can select people explicitly for a static list, or combine reviewed rules using all/any matching. Rules cover computed segments, tags, attendance counts and named events, recency, communication reachability, application status, versioned form answers, and spending. The server validates and evaluates definitions; Inbox consumes a saved audience rather than rebuilding its rules. Static lists follow contact merges and exclude unavailable people, and cannot be mixed with rule predicates. Spending uses bounded canonical Catch payment data, currency and time-window rules, current refund status, and unique verified identities; it does not establish complete spending across external providers.",
+            "sourcePaths": [
+              "contracts/firestore/organizer_saved_audiences.schema.json",
+              "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
+              "functions/src/organizers/organizerSavedAudiences.ts",
+              "functions/src/organizers/organizerSavedAudienceSources.ts",
+              "functions/src/organizers/organizerSavedAudienceMembership.ts",
+              "functions/src/organizers/eventRosterInsights.ts"
+            ],
+            "examples": [
+              {
+                "path": "functions/src/organizers/organizerSavedAudienceMembership.test.ts",
+                "testName": "spend uses completion time, current refunds, currency and ownership"
+              },
+              {
+                "path": "functions/src/organizers/organizerSavedAudienceMembership.test.ts",
+                "testName": "static lists follow merges, exclude deleted people and keep empty lists"
+              }
+            ]
+          },
+          {
+            "id": "preview",
+            "question": "Are audience counts and member lists live?",
+            "aliases": [
+              "counts",
+              "preview",
+              "pagination"
+            ],
+            "answer": "A preview evaluates current source data on the server. It returns an exact result or an explicit failure when source coverage is incomplete or evaluation limits are exceeded. Stored preview counts describe the last evaluation and must not be presented as continuously live. Member-page cursors bind organizer, audience revision and membership; changed membership requires a refresh. Editing a definition clears its stored preview, and stale revisions or archived audiences can block later operations. A matching contact is not necessarily reachable: the reach summary comes from the shared communication plan.",
+            "sourcePaths": [
+              "functions/src/organizers/organizerSavedAudiences.ts",
+              "functions/src/organizers/organizerSavedAudienceMembers.ts",
+              "functions/src/organizers/organizerAudienceCoverage.ts",
+              "lib/hosts/presentation/customers/host_saved_audience_members_controller.dart",
+              "lib/hosts/presentation/customers/host_saved_audience_overview.dart"
+            ],
+            "examples": [
+              {
+                "path": "functions/src/organizers/organizerSavedAudienceMembers.test.ts",
+                "testName": "changed members, rule revision and foreign scope invalidate the cursor"
+              }
+            ]
+          },
+          {
+            "id": "intake",
+            "question": "How do Forms, Responses and applications fit together?",
+            "aliases": [
+              "forms",
+              "responses",
+              "applications",
+              "intake"
+            ],
+            "answer": "Forms owns templates, drafts, the builder, publication, preview and sharing. Responses owns submitted-answer browsing and detail; application review is part of the same Audience intake boundary. Published form versions and response provenance preserve which questions someone answered. Analytics, exports and configured automation actions belong to the form workflow. A response, a contact conversion, and an application decision are separate records or actions. Ordinary form consent authorizes use of submitted answers for that form; it does not by itself grant marketing permission or event admission.",
+            "sourcePaths": [
+              "lib/hosts/presentation/forms",
+              "lib/hosts/presentation/applications",
+              "functions/src/organizers/organizerForms.ts",
+              "contracts/shared/organizer_form_common.schema.json",
+              "contracts/shared/organizer_form_response_common.schema.json"
+            ],
+            "examples": [
+              {
+                "path": "test/hosts/forms/host_form_test.dart",
+                "testName": "response pages preserve provenance, pagination, and conversions"
+              }
+            ]
+          },
+          {
+            "id": "delivery",
+            "question": "Who enforces access, and where does messaging happen?",
+            "aliases": [
+              "permissions",
+              "authorization",
+              "messaging",
+              "inbox"
+            ],
+            "answer": "Server callables enforce organizer authorization; selecting an organizer in the UI is not an authorization boundary. Saved-audience operations require an authenticated organizer manager. Participant-controlled communication permission, verified identity, and organizer suppression remain separate authorities. Audience hands a saved audience or eligible contact context to Inbox, which owns composition, sender setup and delivery. Membership alone does not grant permission to send. The People-to-Inbox segment shortcut requires a scoped eligible selection; a generic all-contacts view or live search is not a substitute for a saved audience.",
+            "sourcePaths": [
+              "functions/src/organizers/organizerSavedAudiences.ts",
+              "functions/src/shared/organizerCommunicationPreferences.ts",
+              "lib/hosts/presentation/customers/host_customers_screen_state.dart",
+              "lib/hosts/presentation/customers/host_customers_screen.dart",
+              "tool/architecture/check_host_crm_boundaries.mjs"
+            ],
+            "examples": [
+              {
+                "path": "functions/src/organizers/organizerSavedAudienceMembership.test.ts",
+                "testName": "selected resolution authorizes and hides missing data"
+              },
+              {
+                "path": "test/hosts/host_customers_screen_state_test.dart",
+                "testName": "campaign bridge stays hidden for all customers and live search"
+              }
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "id": "matching-operators",
+            "label": "Rule matching operators",
+            "path": "contracts/firestore/organizer_saved_audiences.schema.json",
+            "pointer": "/definitions/definition/properties/join/enum"
+          },
+          {
+            "id": "rule-limit",
+            "label": "Maximum predicates per definition",
+            "path": "contracts/firestore/organizer_saved_audiences.schema.json",
+            "pointer": "/definitions/definition/properties/predicates/maxItems"
+          },
+          {
+            "id": "static-limit",
+            "label": "Maximum explicitly selected contact IDs",
+            "path": "contracts/firestore/organizer_saved_audiences.schema.json",
+            "pointer": "/definitions/staticMembersPredicate/properties/contactIds/maxItems"
+          },
+          {
+            "id": "name-limit",
+            "label": "Maximum saved-audience name length",
+            "path": "contracts/firestore/organizer_saved_audiences.schema.json",
+            "pointer": "/properties/name/maxLength"
+          },
+          {
+            "id": "sample-limit",
+            "label": "Maximum preview page size",
+            "path": "contracts/callables/preview_organizer_saved_audience_payload.schema.json",
+            "pointer": "/properties/sampleLimit/maximum"
+          }
+        ]
+      },
       "responsibilities": [
         "Own the /host/audience destination and its People, Audiences, Forms, and Responses peer modes; Forms must not return as a global tab.",
         "Own customer directory, identity, private memory, tags, notes, attendance history, merge review, and contact administration.",
@@ -181,7 +362,7 @@
       "doesNotOwn": [
         "Conversation threads, campaign delivery, provider send adapters, or sender onboarding; those belong to Inbox.",
         "Event inventory, event-management mutations, organizer profile settings, or payout setup.",
-        "High-spender segmentation until canonical completed non-refunded payment totals are projected into indexed contact traits."
+        "Inferred marketing permission or claims of complete external-provider spending from CRM membership or canonical Catch payments."
       ],
       "currentRoots": [
         "lib/hosts/presentation/customers",

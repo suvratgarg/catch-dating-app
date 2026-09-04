@@ -56,6 +56,26 @@ generic audit trackers:
 | `lib/user_profile/README.md` | Changing private profile identity fields, profile edit UI, public projection inputs, or profile schema migration. |
 | `lib/hosts/{today,events,audience,inbox,organizer}/README.md` | Changing a top-level Host destination, its route ownership, code-owner seams, cross-feature handoffs, or migration boundary. These five files are generated from `design/features/host_feature_responsibilities.json`; never edit them directly. |
 
+## Audience documentation pilot
+
+Read [Host Audience](hosts/audience/README.md#product-guide) to answer product
+questions about People, saved audiences, Forms, Responses, access, and Inbox
+handoffs before expanding into implementation files. Its short answers and
+source dependencies are authored in the existing Host responsibility contract;
+the reference constraints are selected directly from JSON schemas.
+
+```sh
+node tool/design/build_host_feature_responsibilities.mjs --explain audience
+node tool/design/build_host_feature_responsibilities.mjs --explain audience --question membership --json
+node tool/design/build_host_feature_responsibilities.mjs --affected audience --base origin/main --json
+```
+
+The first two commands retrieve the guide without an LLM or a generated search
+index. The third reports advisory section impact from both versions of the
+explicit dependencies, including working changes. Existing registered generator
+checks enforce reference validity and generated-output freshness. They do not
+certify the prose, execute linked behavioral examples, or prove deployment.
+
 ## Cross-Cutting Docs
 
 - `docs/app_architecture.md`: **canonical Flutter app architecture spec** —
