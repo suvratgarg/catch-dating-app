@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.24.0
+version: 1.25.0
 updated: 2026-09-04
 owner: app_architecture
 status: active
@@ -38,6 +38,68 @@ This spec consolidates and normalizes guidance from:
   `ERROR-UI-001`, `MUTATION-ERROR-SURFACE-001`, `PENDING-SNAPSHOT-001`,
   `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and
   `WIDGET-CATALOG-001`.
+
+## Quick Decision Layer
+
+Answer placement, naming, and completion questions here first; the rest of
+this document is the detailed contract behind each row. Ratified 2026-09-04 by
+`docs/plans/ui_system_blueprint_and_conformance_audit.md` (D1–D8), which owns
+the delivery program that moves L0–L4 into workspace packages. Keep this
+section under 120 lines.
+
+### Component ladder
+
+| Level | Name | Contents | Home today | Target home | May depend on |
+|---|---|---|---|---|---|
+| L0 | tokens | scale values, semantic roles | `lib/core/theme/**` | `packages/catch_tokens` | nothing |
+| L1 | foundations | theme wiring, typography, icons, motion | `lib/core/theme/**` | `packages/catch_ui` | L0 |
+| L2 | primitives | one visual job: text, surface, icon, gap, tap target | `lib/core/widgets/**` | `packages/catch_ui` | L0–L1 |
+| L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `lib/core/widgets/**`, `lib/core/forms/**` | `packages/catch_ui` | L0–L2 |
+| L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `lib/core/widgets/**` | `packages/catch_ui` | L0–L3 |
+| L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/widgets/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
+| L5 | feature UI | domain-aware compositions; private widgets legal here only | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
+| L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
+
+### Placement decision tree
+
+1. Reads providers, mutations, or routes? → L6 screen, or L4a when it is a
+   reusable Riverpod translation of an L2–L4 surface.
+2. API names a domain concept (event, organizer, profile, roster)? → L5 or
+   L6. Entity material with a presentation-neutral API (poster, polaroid,
+   ticket) is L3.
+3. Reusable across features under a feature-neutral name? → L3/L4 after
+   catalog registration; until a second unrelated consumer exists, keep it
+   L5 and public.
+4. Otherwise → the smallest layer that owns the visual job. Check
+   `docs/widget_catalog.md` and Widgetbook before creating anything.
+
+### Naming grammar (summary — the Naming Grammar section below is binding)
+
+- `Catch<RoleNoun>[<Variant>]` is reserved for L0–L4a; public feature widgets
+  are `<Feature><RoleNoun>`; `_Private` widgets only in L5.
+- Role nouns come from the closed lexicon; extending it is a registry review.
+- Variant axes are enums `<Component><Axis>` with axis vocabulary
+  `Variant|Size|Tone|Emphasis|Status|Placement|Mode`; a third boolean
+  constructor parameter forces an enum.
+- Files: snake case of the primary class, suffix vocabulary
+  `_screen|_controller|_view_model|_state|_repository|_service|_providers`
+  or a role-noun widget suffix; one primary public widget per shared-library
+  file.
+
+### Migration Protocol v2 (a slice is done only when all five hold)
+
+1. Inventory first: a deterministic scanner defines the call-site set before
+   work starts; its zero-count is part of the definition of done.
+2. The old thing is deleted in the same slice; workspace-wide analyze green
+   is the completion proof. Deprecation never crosses a slice boundary.
+3. Ratchets move in the same PR, never a follow-up.
+4. New rules ship with seeded probes; `info` staging only over a real
+   violation pile, promoted within the phase.
+5. The catalog moves with code: Widgetbook cases, goldens, and registry rows
+   for touched shared components update in the same PR.
+
+An `aligned` claim in `tool/architecture/pattern_adoption.json` must name its
+machine check or carry an explicit manual-review line with reviewer and date.
 
 ## Canonical Decisions And Overrides
 
@@ -2128,6 +2190,36 @@ Do not promote a widget just to avoid duplication if the concepts are actually
 different. Do not leave duplicate feature-local widgets when they are the same
 concept under different names.
 
+## Naming Grammar
+
+Ratified 2026-09-04; this section is the durable owner (the blueprint spec's
+Appendix A is its ratification record). Phase 4 of the blueprint program makes
+role nouns registry data; until then this list is the closed vocabulary.
+
+- **Prefixes.** `Catch` is reserved for design-system symbols (L0–L4a).
+  Public feature widgets are `<Feature><RoleNoun>`. Private widget classes
+  are legal only at L5.
+- **Role nouns (closed; extend only via component-registry review):** Button,
+  IconAction, Field, FieldLanes, Section, SectionList, Tile, Row, RowList,
+  Chip, Badge, Banner, Sheet, Dialog, Notice, EmptyState, ErrorState,
+  Skeleton, Indicator, TopBar, Header, HeaderTitle, Scaffold, PageBody,
+  ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
+  Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
+  Overlay, Viewport.
+- **Files.** Snake case of the primary public class; suffix vocabulary
+  `_screen`, `_controller`, `_view_model`, `_state`, `_repository`,
+  `_service`, `_providers`, or a role-noun widget suffix. One primary public
+  widget per shared-library file, its parts private in-file.
+- **Variants.** Axes are enums named `<Component><Axis>` with axis vocabulary
+  `Variant`, `Size`, `Tone`, `Emphasis`, `Status`, `Placement`, `Mode`. At
+  most two booleans per public component constructor; a third forces an enum.
+- **Slots.** `leading`, `trailing`, `title`, `subtitle`, `kicker`, `meta`,
+  `body`, `footer`, `actions`, `media`, `mediaOverlay`, `child`, `children`;
+  builders end in `Builder`; callbacks start with `on`.
+- **State objects.** `<Surface>State` (provider-free), `<Surface>ViewModel`
+  (provider-owned composition), `<Surface>Controller` (mutations/flows), as
+  contracted elsewhere in this document.
+
 ## Cross-Feature Behavior
 
 Some actions affect multiple features. Choose the owner by product truth, not
@@ -4191,7 +4283,10 @@ An architecture migration slice is done when:
 - focused analyzer/tests pass;
 - relevant scanners are clean, reduced, or have documented debt;
 - owner docs are updated when behavior or ownership changes, with no generated
-  governance evidence churn.
+  governance evidence churn;
+- the slice satisfies Migration Protocol v2 (Quick Decision Layer): inventory
+  zero, old symbols deleted, ratchets lowered, probes seeded, catalog and
+  goldens updated in the same PR.
 
 ## Implementation Notes For New Features
 

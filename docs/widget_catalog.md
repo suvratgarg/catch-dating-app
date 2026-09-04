@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.10.0
+version: 3.11.0
 updated: 2026-09-04
 owner: recursive_audit_loop
 status: active
@@ -32,6 +32,14 @@ members of one concept family.
 Architecture lives in `docs/app_architecture.md`; active consolidation work
 lives in `docs/design_parity/widget_consolidation/codex_worklog.md`. Routine
 inventory edits do not increment this document contract version.
+
+Under the ratified blueprint program
+(`docs/plans/ui_system_blueprint_and_conformance_audit.md`, D4), the
+inventory tables in this document become generated output in Phase 4 — from a
+source scan merged with `design/components/catch.components.json` — and
+hand-written content shrinks to the Canonical Usage Decisions. Until that
+generator lands, hand maintenance here remains authoritative; do not add new
+prose inventory conventions a generator could not reproduce.
 
 ## Canonical Usage Decisions
 
