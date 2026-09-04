@@ -737,8 +737,8 @@ void _registerCatchPrimitivesCompositionTests() {
       ),
     );
 
-    expect(find.text('WITHIN 5 KM · TAP TO CHANGE'), findsOneWidget);
-    await tester.tap(find.text('WITHIN 5 KM · TAP TO CHANGE'));
+    expect(find.text('Within 5 km · tap to change'), findsOneWidget);
+    await tester.tap(find.text('Within 5 km · tap to change'));
     expect(taps, 1);
   });
 

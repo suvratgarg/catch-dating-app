@@ -35,8 +35,35 @@ class CatchButton extends StatefulWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.borderColor,
-  }) : _command = false,
+  }) : _selectionTooltip = null,
+       _selection = false,
+       _command = false,
        iconAtEnd = false;
+
+  /// A bounded current-value trigger for compact chrome, not a command/CTA.
+  /// Keeps the platform text size, ellipsizes only the visible selection, and
+  /// exposes the full value through the button semantics and tooltip.
+  const CatchButton.selection({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.icon,
+    this.semanticsLabel,
+    String? tooltip,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
+  }) : _selectionTooltip = tooltip,
+       _selection = true,
+       _command = false,
+       iconAtEnd = false,
+       variant = CatchButtonVariant.secondary,
+       size = CatchButtonSize.sm,
+       shape = CatchButtonShape.pill,
+       isLoading = false,
+       fullWidth = false,
+       isInteractive = true,
+       accentColor = null;
 
   /// Unboxed toolbar command with natural-height text and a platform-sized
   /// hit area. Useful for paired sort/filter commands and inline record actions.
@@ -47,7 +74,9 @@ class CatchButton extends StatefulWidget {
     this.icon,
     this.iconAtEnd = false,
     this.semanticsLabel,
-  }) : _command = true,
+  }) : _selectionTooltip = null,
+       _selection = false,
+       _command = true,
        variant = CatchButtonVariant.ghost,
        size = CatchButtonSize.md,
        shape = CatchButtonShape.rounded,
@@ -59,6 +88,8 @@ class CatchButton extends StatefulWidget {
        foregroundColor = null,
        borderColor = null;
 
+  final String? _selectionTooltip;
+  final bool _selection;
   final bool _command;
   final bool iconAtEnd;
 
@@ -213,7 +244,7 @@ class _CatchButtonState extends State<CatchButton> {
                     icon: widget.icon,
                     gap: spec.gap,
                     fullWidth: widget.fullWidth,
-                    allowMultiline: true,
+                    allowMultiline: !widget._selection,
                     textStyle: spec.textStyle(context),
                   ),
           ),
@@ -249,7 +280,7 @@ class _CatchButtonState extends State<CatchButton> {
       ),
     );
 
-    return Semantics(
+    final interactive = Semantics(
       button: widget.isInteractive,
       enabled: widget.isInteractive ? _enabled : null,
       label: widget.semanticsLabel ?? widget.label,
@@ -288,6 +319,13 @@ class _CatchButtonState extends State<CatchButton> {
           ? SizedBox(width: double.infinity, child: child)
           : child,
     );
+    return widget._selection
+        ? Tooltip(
+            message: widget._selectionTooltip ?? widget.label,
+            excludeFromSemantics: true,
+            child: interactive,
+          )
+        : interactive;
   }
 }
 
@@ -334,18 +372,11 @@ class CatchButtonLabel extends StatelessWidget {
           ),
           SizedBox(width: gap),
         ],
-        if (allowMultiline) Flexible(child: labelWidget) else labelWidget,
+        Flexible(child: labelWidget),
       ],
     );
 
-    if (allowMultiline) return content;
-    if (fullWidth) {
-      return Center(
-        child: FittedBox(fit: BoxFit.scaleDown, child: content),
-      );
-    }
-
-    return FittedBox(fit: BoxFit.scaleDown, child: content);
+    return content;
   }
 }
 

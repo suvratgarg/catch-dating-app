@@ -508,6 +508,15 @@ void _registerCatchPrimitivesControlsTests() {
 
     expect(
       tester.getSize(borderedFinder),
+      Size.square(CatchIconButton.targetExtentFor(CatchLayout.iconButtonSize)),
+    );
+    expect(
+      tester.getSize(
+        find.descendant(
+          of: borderedFinder,
+          matching: find.byType(CatchSurface),
+        ),
+      ),
       const Size.square(CatchLayout.iconButtonSize),
     );
     expect(borderedSurface.backgroundColor, tokens.surface);
@@ -607,7 +616,9 @@ void _registerCatchPrimitivesControlsTests() {
       expect(find.text('99+'), findsOneWidget);
       expect(
         tester.getSize(counted),
-        const Size.square(CatchIconButton.defaultSize),
+        Size.square(
+          CatchIconButton.targetExtentFor(CatchIconButton.defaultSize),
+        ),
       );
       expect(semantics.properties.button, isTrue);
       expect(semantics.properties.enabled, isTrue);
@@ -1078,12 +1089,20 @@ void _registerCatchPrimitivesControlsTests() {
     );
     expect(
       tester.widget<Text>(find.text(plainLabel)).overflow,
-      TextOverflow.ellipsis,
+      isNot(TextOverflow.ellipsis),
     );
     expect(
       tester.widget<Text>(find.text(leadingLabel)).overflow,
-      TextOverflow.ellipsis,
+      isNot(TextOverflow.ellipsis),
     );
+    for (final label in [plainLabel, leadingLabel]) {
+      final text = tester.widget<Text>(find.text(label));
+      expect(text.maxLines, isNull);
+      expect(
+        tester.getSize(find.text(label)).height,
+        greaterThan(text.style!.fontSize! * (text.style!.height ?? 1)),
+      );
+    }
   });
 
   testWidgets('CatchToggle emits the next value on tap', (tester) async {

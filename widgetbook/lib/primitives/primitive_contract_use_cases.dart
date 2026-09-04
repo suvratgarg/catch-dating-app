@@ -1655,8 +1655,20 @@ Widget catchButtonContractStates(BuildContext context) {
       'large-text',
       'reduced-motion',
       'command',
+      'selection',
     ],
     children: [
+      _StateCard(
+        label: 'selection',
+        child: SizedBox(
+          width: 132,
+          child: CatchButton.selection(
+            label: 'Thiruvananthapuram',
+            icon: Icon(CatchIcons.locationOnOutlined),
+            onPressed: _noop,
+          ),
+        ),
+      ),
       _StateCard(
         label: 'command',
         child: CatchButton.command(
@@ -1794,7 +1806,7 @@ Widget catchButtonLabelContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'full-width fit',
+        label: 'full-width bounded label',
         child: SizedBox(
           width: WidgetbookPreviewLayout.fullWidthButtonWidth,
           child: CatchButtonLabel(

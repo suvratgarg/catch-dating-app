@@ -767,7 +767,10 @@ void _registerExploreMapTests() {
       ExploreDistanceFilter.any,
     );
     expect(find.text('Distance'), findsOneWidget);
-    expect(find.text('ANY'), findsOneWidget);
+    expect(
+      find.text(_l10n.exploreExploreMapScreenValueAnyDistance),
+      findsOneWidget,
+    );
     expect(find.byType(CatchDistanceRing), findsNothing);
 
     await tester.tap(find.text('Distance'));
@@ -776,40 +779,84 @@ void _registerExploreMapTests() {
       container.read(exploreFiltersProvider).distanceFilter,
       ExploreDistanceFilter.oneKm,
     );
-    expect(find.text('WITHIN 1 KM'), findsOneWidget);
+    expect(
+      find.text(
+        _l10n.exploreExploreMapScreenLabelWithinDistance(distanceKm: 1),
+      ),
+      findsOneWidget,
+    );
 
-    await tester.tap(find.text('WITHIN 1 KM'));
+    await tester.tap(
+      find.text(
+        _l10n.exploreExploreMapScreenLabelWithinDistance(distanceKm: 1),
+      ),
+    );
     await tester.pump();
     expect(
       container.read(exploreFiltersProvider).distanceFilter,
       ExploreDistanceFilter.threeKm,
     );
-    expect(find.text('WITHIN 3 KM'), findsOneWidget);
+    expect(
+      find.text(
+        _l10n.exploreExploreMapScreenLabelWithinDistance(distanceKm: 3),
+      ),
+      findsOneWidget,
+    );
 
-    await tester.tap(find.text('WITHIN 3 KM'));
+    await tester.tap(
+      find.text(
+        _l10n.exploreExploreMapScreenLabelWithinDistance(distanceKm: 3),
+      ),
+    );
     await tester.pump();
     expect(
       container.read(exploreFiltersProvider).distanceFilter,
       ExploreDistanceFilter.fiveKm,
     );
-    expect(find.text('WITHIN 5 KM'), findsOneWidget);
+    expect(
+      find.text(
+        _l10n.exploreExploreMapScreenLabelWithinDistance(distanceKm: 5),
+      ),
+      findsOneWidget,
+    );
 
-    await tester.tap(find.text('WITHIN 5 KM'));
+    await tester.tap(
+      find.text(
+        _l10n.exploreExploreMapScreenLabelWithinDistance(distanceKm: 5),
+      ),
+    );
     await tester.pump();
     expect(
       container.read(exploreFiltersProvider).distanceFilter,
       ExploreDistanceFilter.tenKm,
     );
-    expect(find.text('WITHIN 10 KM'), findsOneWidget);
+    expect(
+      find.text(
+        _l10n.exploreExploreMapScreenLabelWithinDistance(distanceKm: 10),
+      ),
+      findsOneWidget,
+    );
 
-    await tester.tap(find.text('WITHIN 10 KM'));
+    await tester.tap(
+      find.text(
+        _l10n.exploreExploreMapScreenLabelWithinDistance(distanceKm: 10),
+      ),
+    );
     await tester.pump();
     expect(
       container.read(exploreFiltersProvider).distanceFilter,
       ExploreDistanceFilter.any,
     );
-    expect(find.text('WITHIN 10 KM'), findsNothing);
-    expect(find.text('ANY'), findsOneWidget);
+    expect(
+      find.text(
+        _l10n.exploreExploreMapScreenLabelWithinDistance(distanceKm: 10),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.text(_l10n.exploreExploreMapScreenValueAnyDistance),
+      findsOneWidget,
+    );
   });
 
   testWidgets(

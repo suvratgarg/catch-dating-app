@@ -81,6 +81,11 @@ void main() {
     ),
     'command': (activate) =>
         CatchButton.command(key: _controlKey, label: 'Go', onPressed: activate),
+    'selection trigger': (activate) => CatchButton.selection(
+      key: _controlKey,
+      label: 'Go',
+      onPressed: activate,
+    ),
     'explicit small icon': (activate) => CatchIconButton(
       key: _controlKey,
       size: 20,

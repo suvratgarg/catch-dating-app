@@ -525,7 +525,8 @@
         "file": "lib/core/widgets/catch_button.dart",
         "constructors": [
           "CatchButton",
-          "CatchButton.command"
+          "CatchButton.command",
+          "CatchButton.selection"
         ]
       },
       "design": {
@@ -651,7 +652,8 @@
           "rounded",
           "large-text",
           "reduced-motion",
-          "command"
+          "command",
+          "selection"
         ],
         "slots": [
           {
@@ -770,7 +772,7 @@
           "Every product action still needs action cardinality and controller ownership outside this visual contract.",
           "Use accentColor only for activity-scoped primary actions.",
           "Use CatchTextButton for text-only actions; do not create separate inline-action wrappers.",
-          "Canonical button sizes and width modes reflow labels without a two-line cap or FittedBox shrinking. One outer gesture/focus owner reserves the platform target around the compact visual; hover/press feedback is painted inside that visual."
+          "Command and CTA sizes and width modes reflow labels without a two-line cap or FittedBox shrinking. CatchButton.selection is only for a bounded current-value trigger in compact chrome: one visible line with ellipsis, full semantics and tooltip, and unchanged platform typography. One outer gesture/focus owner reserves the platform target around the compact visual; hover/press feedback is painted inside that visual."
         ]
       },
       "governance": {

@@ -497,12 +497,10 @@ extension _CatchFieldRowModes on _CatchFieldState {
 
   Widget? _buildTrailingGroup(CatchTokens t, {bool includeChevron = false}) {
     final children = <Widget>[];
-    final flexibleIndices = <int>{};
     final valueText = widget.valueText?.trim();
     if (!_stacksTrailingValueText &&
         valueText != null &&
         valueText.isNotEmpty) {
-      flexibleIndices.add(children.length);
       children.add(
         CatchFieldTrailing.valueText(
           text: valueText,
@@ -515,25 +513,30 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final custom = _buildCustomTrailingSlot(t, _action);
     if (custom != null) children.add(custom);
 
-    if (includeChevron) {
-      children.add(
-        CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0),
-      );
+    if (children.isEmpty) {
+      return includeChevron
+          ? CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0)
+          : null;
     }
 
-    if (children.isEmpty) return null;
-    if (children.length == 1) return children.single;
+    // Value and custom metadata share the lane without starving either of width.
+    final group = children.length == 1
+        ? children.single
+        : Wrap(
+            alignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s1,
+            children: children,
+          );
+    if (!includeChevron) return group;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        for (var i = 0; i < children.length; i++) ...[
-          if (i > 0) const SizedBox(width: CatchSpacing.s2),
-          if (flexibleIndices.contains(i))
-            Flexible(child: children[i])
-          else
-            children[i],
-        ],
+        Flexible(child: group),
+        const SizedBox(width: CatchSpacing.s2),
+        CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0),
       ],
     );
   }

@@ -223,6 +223,14 @@ sort/filter action treatment. Color communicates positive, attention, or affinit
 meaning and does not introduce a brand accent. These recipes supersede the
 feature-local Audience preview typography and palette.
 
+Action and CTA labels wrap naturally at the selected platform font size.
+`CatchButton.selection` is the explicit compact-chrome exception for a current
+value (for example, the selected city): one visible line with ellipsis, full
+value in semantics and tooltip, and the same native target minimum. It never
+shrinks text. Do not use this constructor to truncate commands or form labels.
+Field trailing value plus custom metadata wraps inside its allocated lane;
+disclosure glyphs remain fixed and custom actions retain their full hit targets.
+
 ### 5.2 Native reference and Catch adoption boundary
 
 `design/tokens/catch.tokens.json` separates three authorities:
