@@ -7,7 +7,6 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -170,7 +169,6 @@ class NotificationsAction extends ConsumerWidget {
           ? CatchIcons.notificationsRounded
           : CatchIcons.notificationsNoneRounded,
       count: unreadCount,
-      size: CatchIconButton.navSize,
       tooltip: context.l10n.dashboardDashboardScreenTooltipNotifications,
       onTap: () {
         ref

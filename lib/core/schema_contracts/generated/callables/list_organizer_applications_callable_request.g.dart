@@ -9,6 +9,7 @@
 final class ListOrganizerApplicationsCallableRequest {
   const ListOrganizerApplicationsCallableRequest({
     required this.organizerId,
+    this.contactId,
     this.formId,
     this.targetId,
     this.reviewStatus,
@@ -19,6 +20,7 @@ final class ListOrganizerApplicationsCallableRequest {
   });
 
   final String organizerId;
+  final String? contactId;
   final String? formId;
   final String? targetId;
   final String? reviewStatus;
@@ -29,6 +31,7 @@ final class ListOrganizerApplicationsCallableRequest {
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
+    'contactId': ?contactId,
     'formId': ?formId,
     'targetId': ?targetId,
     'reviewStatus': ?reviewStatus,

@@ -4,9 +4,18 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {repoRoot} from "../lib/repo_paths.mjs";
 
-const defaultManifestPath = "tool/design/tab_root_scroll_contracts.json";
+const defaultManifestPath = "tool/design/root_screen_composition_contracts.json";
 const branchKeyPattern =
   /StatefulShellBranch\s*\(\s*navigatorKey\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)/gu;
+const legacyRootSymbols = [
+  "CatchTabbedScreenScaffold",
+  "CatchTabbedScreenBody",
+  "CatchTabbedPageSpec",
+  "CatchTabbedPageOwner",
+  "CatchTabbedPageScrollView",
+  "CatchTabbedPageScrollController",
+  "catch_tabbed_screen.dart",
+];
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -14,7 +23,7 @@ const isCliEntrypoint =
 
 if (isCliEntrypoint) runCli();
 
-export function checkTabRootScrollContracts({
+export function checkRootScreenCompositionContracts({
   root = repoRoot,
   manifestPath = defaultManifestPath,
 } = {}) {
@@ -24,7 +33,7 @@ export function checkTabRootScrollContracts({
     return resultWith(findings, {
       code: "missing-manifest",
       path: manifestPath,
-      message: "Tab-root scroll contract manifest does not exist.",
+      message: "Root-screen composition contract manifest does not exist.",
     });
   }
 
@@ -70,11 +79,11 @@ export function checkTabRootScrollContracts({
     });
   }
 
-  const checkedOwners = new Set();
+  const checkedShells = new Set();
   for (const shell of manifest.shells ?? []) {
     const shellKey = JSON.stringify(shell);
-    if (checkedOwners.has(shellKey)) continue;
-    checkedOwners.add(shellKey);
+    if (checkedShells.has(shellKey)) continue;
+    checkedShells.add(shellKey);
     checkOwner({root, owner: shell, findings, ownerKind: "shell contract"});
   }
   for (const branch of manifest.branches ?? []) {
@@ -88,18 +97,31 @@ export function checkTabRootScrollContracts({
         message: `${branch.branchKey} route marker ${branch.routeName} is absent.`,
       });
     }
-
-    for (const owner of branch.owners ?? []) {
-      const ownerKey = JSON.stringify(owner);
-      if (checkedOwners.has(ownerKey)) continue;
-      checkedOwners.add(ownerKey);
-      checkOwner({root, owner, findings, ownerKind: "scroll owner"});
-    }
   }
 
+  checkLegacyRootSymbols({root, findings});
   checkStateViewportOwnership({root, findings});
 
   return summarize(manifest, findings);
+}
+
+function checkLegacyRootSymbols({root, findings}) {
+  const libRoot = path.join(root, "lib");
+  if (!fs.existsSync(libRoot)) return;
+  for (const absolutePath of dartFiles(libRoot)) {
+    const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
+    const source = fs.readFileSync(absolutePath, "utf8");
+    for (const symbol of legacyRootSymbols) {
+      if (!source.includes(symbol)) continue;
+      findings.push({
+        code: "legacy-root-layout-symbol",
+        path: relativePath,
+        message:
+          `${symbol} was replaced by the single CatchRootScreenScaffold ` +
+          "family. Use the ordinary constructor or withPrimaryRail.",
+      });
+    }
+  }
 }
 
 function checkStateViewportOwnership({root, findings}) {
@@ -161,7 +183,7 @@ function checkOwner({root, owner, findings, ownerKind}) {
     findings.push({
       code: "missing-owner",
       path: relativePath,
-      message: `Declared tab-root ${ownerKind} does not exist.`,
+      message: `Declared root-screen ${ownerKind} does not exist.`,
     });
     return;
   }
@@ -194,11 +216,11 @@ function checkOwner({root, owner, findings, ownerKind}) {
 }
 
 function validateManifest(manifest, findings, manifestPath) {
-  if (manifest.schemaVersion !== 2) {
+  if (manifest.schemaVersion !== 3) {
     findings.push({
       code: "invalid-schema-version",
       path: manifestPath,
-      message: "schemaVersion must be 2.",
+      message: "schemaVersion must be 3.",
     });
   }
   if (!Array.isArray(manifest.shells) || manifest.shells.length === 0) {
@@ -250,13 +272,6 @@ function validateManifest(manifest, findings, manifestPath) {
       });
     }
     branchKeys.add(branch.branchKey);
-    if (!Array.isArray(branch.owners) || branch.owners.length === 0) {
-      findings.push({
-        code: "missing-owners",
-        path: manifestPath,
-        message: `${branch.branchKey ?? "unknown branch"} requires an owner.`,
-      });
-    }
   }
 }
 
@@ -270,20 +285,14 @@ function resultWith(findings, finding) {
   return {
     shellCount: 0,
     branchCount: 0,
-    ownerCount: 0,
     findings,
   };
 }
 
 function summarize(manifest, findings) {
-  const ownerPaths = new Set();
-  for (const branch of manifest.branches ?? []) {
-    for (const owner of branch.owners ?? []) ownerPaths.add(owner.path);
-  }
   return {
     shellCount: manifest.shells?.length ?? 0,
     branchCount: manifest.branches?.length ?? 0,
-    ownerCount: ownerPaths.size,
     findings,
   };
 }
@@ -291,24 +300,24 @@ function summarize(manifest, findings) {
 function runCli() {
   const args = process.argv.slice(2);
   if (args.includes("--help") || args.includes("-h")) {
-    console.log(`Usage: node tool/design/check_tab_root_scroll_contracts.mjs [--check|--json]
+    console.log(`Usage: node tool/design/check_root_screen_composition_contracts.mjs [--check|--json]
 
-Checks every StatefulShellBranch against the versioned screen-composition
-manifest, verifies semantic body and terminal ownership, and rejects raw
-empty/error SliverFillRemaining composition in presentation code.`);
+Checks every StatefulShellBranch against the versioned shell-branch manifest,
+verifies adaptive shell adoption, rejects superseded root APIs, and rejects
+raw empty/error SliverFillRemaining composition in presentation code. Semantic
+screen layout roles are owned by check_ui_composition_contracts.dart.`);
     return;
   }
 
   const rootIndex = args.indexOf("--root");
   const root = rootIndex >= 0 ? args[rootIndex + 1] : repoRoot;
-  const result = checkTabRootScrollContracts({root});
+  const result = checkRootScreenCompositionContracts({root});
   if (args.includes("--json")) {
     console.log(JSON.stringify(result, null, 2));
   } else if (result.findings.length === 0) {
     console.log(
-      `Tab-root scroll contracts: ${result.shellCount} shells, ` +
-        `${result.branchCount} branches, ` +
-        `${result.ownerCount} owner files, 0 findings.`,
+      `Root-screen composition contracts: ${result.shellCount} shells, ` +
+        `${result.branchCount} branches, 0 findings.`,
     );
   } else {
     for (const finding of result.findings) {

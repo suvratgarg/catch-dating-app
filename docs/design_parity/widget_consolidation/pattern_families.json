@@ -2,6 +2,43 @@
   "schemaVersion": 1,
   "families": [
     {
+      "id": "persistent-header-context",
+      "title": "Persistent header context",
+      "intent": "Keep durable offline and rehearsal context separate from transient notifications, local errors and navigation chrome.",
+      "priority": "P0",
+      "status": "implemented",
+      "targetContract": "catch.status_strip",
+      "qualityReference": "CatchStatusStrip",
+      "decisionSource": "user-approved:2026-09-03 below-primary-tab-strip",
+      "acceptedVisualDelta": [
+        "Full-width square-edged bands below the complete primary tab rail, never between title and tabs; pin rail and statuses together.",
+        "Shared label-over-detail anatomy, 20 pt gutters, 64 pt minimum height and 44 pt action targets; allow wrapping and action reflow.",
+        "Replace the private rehearsal band renderer and floating offline card while preserving localized copy, semantic colors and separate clock/tools actions.",
+        "Keep the floating bottom navigation and transient notice family unchanged."
+      ],
+      "members": [
+        {
+          "symbol": "CatchStatusStrip",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One data-configured persistent context renderer; canonical screen owners alone control placement."
+        },
+        {
+          "symbol": "CatchStatusStripScope",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Publication member of the status-strip concept, with no independent paint or business state."
+        },
+        {
+          "symbol": "_RehearsalBand",
+          "disposition": "unify",
+          "target": "CatchStatusStrip",
+          "preview": "not-applicable",
+          "rationale": "Rehearsal retains the session/actions but supplies typed status data instead of feature-owned geometry."
+        }
+      ]
+    },
+    {
       "id": "chip-core",
       "title": "Core chip family",
       "intent": "One ergonomic contract for quiet tags, selectable choices, and activity-typed chips. Compact status metadata belongs to badge-status, pressable floating counters belong to floating-compact-controls, identity switching belongs to identity-switchers, and temporal or sequence state belongs to progress-cues. Event Detail symbols are excluded while the parallel Event Detail change is in flight.",

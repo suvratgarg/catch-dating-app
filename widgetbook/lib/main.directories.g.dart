@@ -39,6 +39,8 @@ import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
 import 'package:widgetbook_workspace/hosts/host_operations_use_cases.dart'
     as _widgetbook_workspace_hosts_host_operations_use_cases;
+import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
 import 'package:widgetbook_workspace/matches/matches_chat_use_cases.dart'
     as _widgetbook_workspace_matches_matches_chat_use_cases;
 import 'package:widgetbook_workspace/onboarding/onboarding_use_cases.dart'
@@ -999,6 +1001,26 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchStatusStripScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchStatusStripScopeCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ForegroundNotificationListener',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Validated arrival interaction',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .foregroundNotificationListenerPreview,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
@@ -1862,6 +1884,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Content',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRecordRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchRecordRowContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Data display',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -2041,6 +2079,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchNoticeContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchStatusStrip',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchStatusStripContractStates,
               ),
             ],
           ),
@@ -2661,6 +2710,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchRootScreenPageScrollView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Root page with primary rail',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchRootScreenPageContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRootScreenScaffold',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchRootScreenPrimaryRailContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchSliverContentWidth',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2723,28 +2794,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchTabControllerRailContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTabbedPageScrollView',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Shared tabbed page',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTabbedPageContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTabbedScreenScaffold',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTabbedScreenContractStates,
               ),
             ],
           ),
@@ -4515,6 +4564,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Activity skeleton states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .eventTypeBrowseSkeletonStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ExploreAppliedFilterChips',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Applied filter states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreAppliedFilterChipsStates,
               ),
             ],
           ),
@@ -7731,6 +7790,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerHistoryPanel',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loaded history',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerHistoryPanelStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostEventManageScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7793,6 +7863,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostOrganizerSwitcherSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostSavedPlacesSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Covered by meeting-location step',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .savedPlacesSectionCatalogStates,
                   ),
                 ],
               ),
@@ -7945,6 +8026,50 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostAudienceSourceRuleFields',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Published source filters',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostAudienceSourceRuleStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostAutomationRuleEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Acceptance automation editor',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostAutomationEditorState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerApplicationSnapshot',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerApplicationSnapshotComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerApplicationsPanel',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerApplicationsPanelComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerAttendanceCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7967,6 +8092,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDetailOverview',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerDetailOverviewComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerDetailScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7978,6 +8114,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDetailTabs',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerDetailTabsComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDetailsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerDetailsSectionComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerDirectoryControls',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7985,6 +8143,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostCustomerDirectoryControlsStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerHistoryFilters',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerHistoryFiltersComponentStates,
                   ),
                 ],
               ),
@@ -8011,6 +8180,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerMemoryPreview',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerMemoryPreviewComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerReachSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8018,6 +8198,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostCustomerConversationStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerRecentEvents',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerRecentEventsComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerRevenueBreakdown',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerRevenueBreakdownComponentStates,
                   ),
                 ],
               ),
@@ -8040,6 +8242,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostCustomerDirectoryRowStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerTimelineRecord',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerTimelineRecordComponentStates,
                   ),
                 ],
               ),
@@ -8099,6 +8312,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormAutomationsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Organizer automations empty',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostAutomationsEmptyState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostSavedAudienceOverview',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Members, rules and evaluated reach',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostSavedAudienceOverviewOnlyState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostSavedAudienceWorkspace',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Overview and explicit editing',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostSavedAudienceOverviewState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostSavedAudiencesWorkspace',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8106,6 +8352,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostSavedAudiencesStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostStaticAudienceMembersEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Selected and unavailable people',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostStaticAudienceMembersState,
                   ),
                 ],
               ),

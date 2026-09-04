@@ -241,6 +241,30 @@
             "components": [0.7882352941, 0.6352941176, 0.2901960784],
             "hex": "#C9A24A"
           }
+        },
+        "positiveText": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.13725490196078433, 0.4196078431372549, 0.27058823529411763],
+            "hex": "#236B45"
+          }
+        },
+        "attentionText": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.592156862745098, 0.27058823529411763, 0.10980392156862745],
+            "hex": "#97451C"
+          }
+        },
+        "affinityText": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.4666666666666667, 0.3215686274509804, 0.615686274509804],
+            "hex": "#77529D"
+          }
         }
       },
       "gradient": {
@@ -418,6 +442,30 @@
             "colorSpace": "srgb",
             "components": [0.8784313725, 0.7058823529, 0.368627451],
             "hex": "#E0B45E"
+          }
+        },
+        "positiveText": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.3568627450980392, 0.7529411764705882, 0.48627450980392156],
+            "hex": "#5BC07C"
+          }
+        },
+        "attentionText": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.9411764705882353, 0.6862745098039216, 0.5019607843137255],
+            "hex": "#F0AF80"
+          }
+        },
+        "affinityText": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.7725490196078432, 0.6509803921568628, 0.9058823529411765],
+            "hex": "#C5A6E7"
           }
         }
       },
@@ -792,6 +840,69 @@
         "value": 2,
         "unit": "px"
       }
+    },
+    "recordAvatarExtent": {
+      "$type": "dimension",
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      }
+    },
+    "recordLeadingGap": {
+      "$type": "dimension",
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      }
+    },
+    "recordVerticalPadding": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "recordTitleGap": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "recordBodyGap": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "selectionHorizontalPadding": {
+      "$type": "dimension",
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      }
+    },
+    "selectionVerticalPadding": {
+      "$type": "dimension",
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      }
+    },
+    "statusHorizontalPadding": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "statusVerticalPadding": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
     }
   },
   "opacity": {
@@ -841,6 +952,628 @@
       "height": {
         "$value": {
           "value": 76,
+          "unit": "px"
+        }
+      }
+    }
+  },
+  "typography": {
+    "$description": "Catch function scale selected through Audience review. Compact names and 16/24 body are Catch composition choices, not a claim of native defaults. iOS context follows Caption 1; Android name/context follow Material title-medium/body-small geometry. Source inventory snapshot: 2026-09-03, UIKit iOS 26.5 and Material tokens 6_1_0. Platform system families and zero tracking remain owned by CatchFonts.",
+    "ios": {
+      "headline": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 30,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "title": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 25,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "name": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "body": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "secondary": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 14,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "context": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 18,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "control": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 15,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "status": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "metric": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 30,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "fieldValue": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "fieldLabel": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 18,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    "android": {
+      "headline": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "title": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 28,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "name": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "body": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "secondary": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 14,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "context": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "control": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 14,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "status": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "metric": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "fieldValue": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "fieldLabel": {
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      }
+    }
+  },
+  "interaction": {
+    "$description": "Minimum interactive extent; native iOS 44pt and Material Android 48dp. Logical units in Flutter.",
+    "ios": {
+      "minimumExtent": {
+        "$type": "dimension",
+        "$value": {
+          "value": 44,
+          "unit": "px"
+        }
+      }
+    },
+    "android": {
+      "minimumExtent": {
+        "$type": "dimension",
+        "$value": {
+          "value": 48,
           "unit": "px"
         }
       }

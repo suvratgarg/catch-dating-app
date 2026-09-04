@@ -1,0 +1,204 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math' as math;
+
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'catalog/screen_capture_catalog.dart';
+import 'support/capture_device.dart';
+import 'support/capture_pump.dart';
+
+const _output = String.fromEnvironment(
+  'CAPTURE_OUTPUT_DIR',
+  defaultValue: 'artifacts/ui-captures/audience-values-preview',
+);
+
+void main() {
+  testWidgets(
+    'captures Audience using selected platform typography',
+    (tester) async {
+      final semantics = tester.ensureSemantics();
+      final measurements = <Map<String, Object>>[];
+      final textScale = double.parse(
+        const String.fromEnvironment('CAPTURE_TEXT_SCALE', defaultValue: '1'),
+      );
+      try {
+        final entry = findScreenCapture('host_customers_populated');
+        final artifacts = await captureCatchWidget(
+          tester,
+          id: entry.id,
+          builder: entry.builder,
+          providerOverrides: entry.providerOverrides,
+          device: CaptureDevice.iphone17Pro,
+          textScale: textScale,
+          pixelRatio: 2,
+          outputDirectory: Directory(_output),
+          drive: (tester) async {
+            Finder summaryChoice(String name) => find.byWidgetPredicate(
+              (widget) =>
+                  widget is CatchOptionGroupItem<HostCustomerFilter> &&
+                  widget.option.value.name == name,
+            );
+
+            Map<String, double> rect(Finder finder) {
+              final bounds = tester.getRect(finder);
+              return {
+                'x': bounds.left,
+                'y': bounds.top,
+                'width': bounds.width,
+                'height': bounds.height,
+              };
+            }
+
+            final rowContext = tester.element(
+              find.byWidgetPredicate(
+                (widget) =>
+                    widget is HostCustomerRow &&
+                    widget.contact.displayName == 'Ananya Rao',
+              ),
+            );
+            final tokens = CatchTokens.of(rowContext);
+            for (final foreground in [
+              tokens.affinityText,
+              tokens.positiveText,
+              tokens.attentionText,
+            ]) {
+              final background = Color.alphaBlend(
+                foreground.withValues(alpha: CatchOpacity.subtleFill),
+                tokens.bg,
+              );
+              final a = foreground.computeLuminance();
+              final b = background.computeLuminance();
+              final contrast = (math.max(a, b) + .05) / (math.min(a, b) + .05);
+              expect(
+                contrast,
+                greaterThanOrEqualTo(4.5),
+                reason: 'Small status labels require readable contrast',
+              );
+            }
+
+            final rowMetrics = <Map<String, Object>>[];
+            for (final element in find.byType(HostCustomerRow).evaluate()) {
+              final finder = find.byWidget(element.widget);
+              final row = element.widget as HostCustomerRow;
+              final bounds = tester.getRect(finder);
+              final paragraph = tester.renderObject<RenderParagraph>(
+                find.byKey(
+                  ValueKey('host-customer-activity-${row.contact.contactId}'),
+                ),
+              );
+              expect(
+                paragraph.didExceedMaxLines,
+                isFalse,
+                reason: 'Activity/date metadata must remain readable',
+              );
+              if (textScale == 1) {
+                expect(
+                  bounds.height,
+                  closeTo(
+                    CatchRecordTokens.verticalPadding * 2 +
+                        CatchPlatformTokens.typography.name.fontSize! *
+                            CatchPlatformTokens.typography.name.height! +
+                        CatchRecordTokens.titleGap * 2 +
+                        CatchPlatformTokens.typography.secondary.fontSize! *
+                            CatchPlatformTokens.typography.secondary.height! +
+                        CatchPlatformTokens.typography.context.fontSize! *
+                            CatchPlatformTokens.typography.context.height!,
+                    0.1,
+                  ),
+                  reason: 'Badges must not change the fourth-option row rhythm',
+                );
+              }
+              rowMetrics.add({
+                'name': row.contact.displayName,
+                'row': rect(finder),
+                'avatar': rect(
+                  find.descendant(
+                    of: finder,
+                    matching: find.byType(CatchPersonAvatar),
+                  ),
+                ),
+                'nameLine': rect(
+                  find.descendant(
+                    of: finder,
+                    matching: find.text(row.contact.displayName),
+                  ),
+                ),
+              });
+            }
+            final rail = tester.getRect(find.byType(HostAudienceTabRail));
+            final tabLabel = tester.getRect(
+              find.descendant(
+                of: find.byType(HostAudienceTabRail),
+                matching: find.text('People'),
+              ),
+            );
+            expect(tabLabel.top, greaterThanOrEqualTo(rail.top));
+            expect(
+              tabLabel.bottom,
+              lessThanOrEqualTo(rail.bottom),
+              reason: 'The pinned rail must contain the enlarged label',
+            );
+            measurements.add({
+              'textScale': textScale,
+              'title': rect(
+                find.descendant(
+                  of: find.byType(CatchTopBar),
+                  matching: find.text('Audience'),
+                ),
+              ),
+              'tabRail': rect(find.byType(HostAudienceTabRail)),
+              'groups': {
+                for (final filter in ['all', 'repeat', 'newToOrganizer'])
+                  filter: rect(summaryChoice(filter)),
+              },
+              'sort': rect(find.byKey(const ValueKey('host-customers-sort'))),
+              'filters': rect(
+                find.byKey(const ValueKey('host-customers-filters')),
+              ),
+              'rows': rowMetrics,
+            });
+            for (final filter in ['all', 'repeat', 'newToOrganizer']) {
+              expect(
+                tester.getSize(summaryChoice(filter)).height,
+                greaterThanOrEqualTo(
+                  CatchPlatformTokens.minimumInteractiveExtent,
+                ),
+              );
+              final node = tester.getSemantics(summaryChoice(filter));
+              expect(
+                node.getSemanticsData().hasAction(SemanticsAction.tap),
+                isTrue,
+                reason: '$filter must expose its selection action',
+              );
+            }
+          },
+        );
+        expect(artifacts, hasLength(2));
+        expect(tester.takeException(), isNull);
+        await tester.runAsync(() async {
+          await File('$_output/geometry.json').writeAsString(
+            const JsonEncoder.withIndent('  ').convert(measurements),
+          );
+        });
+      } finally {
+        semantics.dispose();
+      }
+    },
+    variant: TargetPlatformVariant.only(
+      const String.fromEnvironment('CAPTURE_PLATFORM') == 'android'
+          ? TargetPlatform.android
+          : TargetPlatform.iOS,
+    ),
+  );
+}

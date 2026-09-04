@@ -247,7 +247,6 @@ class CoverStoryChrome extends StatelessWidget {
               borderColor: paper.withValues(
                 alpha: CatchOpacity.coverStorySearchBorder,
               ),
-              size: CatchLayout.coverStorySearchExtent,
               tooltip: context.l10n.exploreCatchCoverStoryTooltipSearch,
               child: Icon(
                 CatchIcons.searchRounded,

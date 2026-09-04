@@ -10,6 +10,22 @@
     "response": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/responseRow"},
     "answers": {"type": "array", "maxItems": 200, "items": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/answerDetail"}},
     "consentVersion": {"type": "string", "minLength": 1, "maxLength": 80},
-    "completionMillis": {"type": "integer", "minimum": 0, "maximum": 604800000}
+    "completionMillis": {"type": "integer", "minimum": 0, "maximum": 604800000},
+    "applicationId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    }
   }
 }

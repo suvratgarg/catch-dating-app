@@ -169,4 +169,4 @@ final class HostApplicationsControllerProvider
 }
 
 String _$hostApplicationsControllerHash() =>
-    r'6bd9823ca821cf953b519c1d7ab648334bde7446';
+    r'95f4a3200feb9155cc88d98f4ec5e15656bec531';

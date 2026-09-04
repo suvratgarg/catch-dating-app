@@ -1926,6 +1926,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsWhenStepPlaceholderSelectStartTime => 'Select start time';
 
   @override
+  String get hostsWhereStepSavedPlacesTitle => 'Saved places';
+
+  @override
+  String get hostsWhereStepSavedPlacesSubtitle =>
+      'Choose a team-saved place to fill the location, or save the current place for next time.';
+
+  @override
+  String get hostsWhereStepSavedPlaceSelected => 'Selected';
+
+  @override
+  String get hostsWhereStepSaveCurrentPlace => 'Save current place';
+
+  @override
+  String get hostsWhereStepUpdateSavedPlace => 'Update saved place';
+
+  @override
   String get hostsWhereStepTitleLocationName => 'Location name';
 
   @override
@@ -4173,6 +4189,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String coreCatchFormFieldLabelLabelLabelOptional({required Object label}) {
     return '$label, optional';
   }
+
+  @override
+  String get notificationArrivalMatchTitle => 'It\'s a catch';
+
+  @override
+  String get notificationArrivalMessageTitle => 'New message';
 
   @override
   String get coreCatchNoticeTooltipDismiss => 'Dismiss';
@@ -12543,13 +12565,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Disable website sign-up';
 
   @override
-  String get hostsHostAudienceContacts => 'Contacts';
-
-  @override
   String get hostsHostAudienceAttended => 'Attended';
-
-  @override
-  String get hostsHostAudienceRepeat => 'Repeat';
 
   @override
   String get hostsHostAudienceSearch => 'Search by name';
@@ -12796,13 +12812,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostAudienceSenderNeedsAttention => 'Reconnect required';
 
   @override
-  String hostsHostAudienceEventsAttended({required int count}) {
+  String hostCustomersCompactEventCount({required int count}) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count events attended',
-      one: '1 event attended',
-      zero: 'No check-ins yet',
+      other: '$count events',
+      one: '1 event',
+      zero: 'No events',
     );
     return '$_temp0';
   }
@@ -12811,9 +12827,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostsHostAudienceLastSeen({required String date}) {
     return 'Last seen $date';
   }
-
-  @override
-  String get hostsHostAudienceWhatsappOptedIn => 'WhatsApp opted in';
 
   @override
   String get hostsHostAudienceWebSignupOpened =>
@@ -14181,7 +14194,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersAttendanceRate => 'Attendance rate';
 
   @override
-  String get hostCustomersDetailRevenue => 'Revenue';
+  String get hostCustomersDetailRevenue => 'Recorded spend';
 
   @override
   String get hostCustomersDetailNoRevenue =>
@@ -14200,8 +14213,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count revenue facts',
-      one: '1 revenue fact',
+      other: '$count spend records',
+      one: '1 spend record',
     );
     return '$_temp0';
   }
@@ -14295,9 +14308,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Resolve this customer’s identity before starting a conversation.';
 
   @override
-  String get hostCustomersReachAndProvenance => 'Reach and provenance';
-
-  @override
   String hostCustomersMessagePerson({required String name}) {
     return 'Message $name';
   }
@@ -14315,6 +14325,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostCustomersWhatsappPermissionUnknown =>
       'No participant permission is recorded.';
+
+  @override
+  String get hostCustomersWhatsappPermissionGrantedUndated =>
+      'Participant granted permission.';
+
+  @override
+  String get hostCustomersWhatsappPermissionRevokedUndated =>
+      'Participant withdrew permission.';
 
   @override
   String hostCustomersWhatsappPermissionGrantedByForm({
@@ -14383,7 +14401,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersPauseWhatsappHandoffsBody =>
-      'This is your team’s suppression. It does not change the participant’s permission record.';
+      'Stops your team from starting personal WhatsApp messages to this customer. Their permission stays unchanged.';
 
   @override
   String get hostCustomersTimeline => 'History';
@@ -14407,10 +14425,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersTimelineFormFallback => 'Form response';
 
   @override
-  String hostCustomersTimelineFormSubmitted({
-    required int answerCount,
-    required String date,
-  }) {
+  String hostCustomersTimelineFormSubmitted({required int answerCount}) {
     String _temp0 = intl.Intl.pluralLogic(
       answerCount,
       locale: localeName,
@@ -14418,7 +14433,7 @@ class AppLocalizationsEn extends AppLocalizations {
       one: '1 answer',
       zero: 'no recorded answers',
     );
-    return 'Submitted · $_temp0 · $date';
+    return 'Submitted · $_temp0';
   }
 
   @override
@@ -14433,6 +14448,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'registered': 'Registered',
       'waitlisted': 'Waitlisted',
       'checkedIn': 'Checked in',
+      'attended': 'Attended',
+      'noShow': 'Did not attend',
       'cancelled': 'Cancelled',
       'other': 'Event activity',
     });
@@ -14475,16 +14492,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersTimelineManagedWhatsapp => 'Managed WhatsApp message';
 
   @override
-  String hostCustomersTimelineDirection({
-    required String direction,
-    required String date,
-  }) {
+  String hostCustomersTimelineDirection({required String direction}) {
     String _temp0 = intl.Intl.selectLogic(direction, {
-      'inbound': 'From customer',
-      'outbound': 'From your team',
+      'inbound': 'Message received',
+      'outbound': 'Message sent',
       'other': 'Message',
     });
-    return '$_temp0 · $date';
+    return '$_temp0';
   }
 
   @override
@@ -14496,6 +14510,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersMemory => 'Memory';
+
+  @override
+  String get hostCustomersOverview => 'Overview';
+
+  @override
+  String get hostCustomersRecentEvents => 'Recent events attended';
 
   @override
   String get hostCustomersMemoryHelp =>
@@ -14577,9 +14597,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'The customer details are available. Try reloading to restore note history.';
 
   @override
-  String get hostCustomersControls => 'Controls';
-
-  @override
   String get hostCustomersSort => 'Sort customers';
 
   @override
@@ -14602,37 +14619,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersMoreActions => 'More customer actions';
-
-  @override
-  String hostCustomersWhatsappReadyCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count WhatsApp-ready contacts',
-      one: '1 WhatsApp-ready contact',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String hostCustomersSourceSummary({
-    required int importedCount,
-    required int linkedCount,
-  }) {
-    String _temp0 = intl.Intl.pluralLogic(
-      importedCount,
-      locale: localeName,
-      other: '$importedCount imported or added by your team',
-      one: '1 imported or added by your team',
-    );
-    String _temp1 = intl.Intl.pluralLogic(
-      linkedCount,
-      locale: localeName,
-      other: '$linkedCount linked Catch accounts',
-      one: '1 linked Catch account',
-    );
-    return '$_temp0 · $_temp1';
-  }
 
   @override
   String get eventSuccessAccountabilityTitle => 'Return sweep';
@@ -15001,7 +14987,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationMarkInReview => 'Mark in review';
 
   @override
-  String get hostApplicationApprove => 'Approve';
+  String get hostApplicationApprove => 'Accept and add to People';
 
   @override
   String get hostApplicationWaitlist => 'Waitlist';
@@ -16056,10 +16042,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormAutomationsTitle => 'Automations';
 
   @override
-  String get hostFormAutomationsSubtitle =>
-      'Run explicit, observable actions after a response changes. You can disable any rule instantly.';
-
-  @override
   String get hostFormAutomationsRules => 'Rules';
 
   @override
@@ -16070,7 +16052,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormAutomationsEmptyBody =>
-      'Start with a safe preset. Every run is recorded and can be disabled.';
+      'Create a rule for future activity. Review its actions, enable it when ready, and follow each run here.';
 
   @override
   String get hostFormAutomationNotifyPreset => 'Notify my team';
@@ -17240,4 +17222,372 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessRoomWorkspaceNeedsAttention => 'Needs attention';
+
+  @override
+  String get hostCustomersDetails => 'Details';
+
+  @override
+  String get hostCustomersContactMethods => 'Contact methods';
+
+  @override
+  String get hostCustomersSubmittedInformation => 'Form responses';
+
+  @override
+  String get hostCustomersNoSubmittedInformation =>
+      'No form responses appear in the loaded history.';
+
+  @override
+  String hostCustomersViewAnswers({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count answers',
+      one: '1 answer',
+    );
+    return 'View $_temp0';
+  }
+
+  @override
+  String get hostCustomersNoApplications =>
+      'No applications are linked to this customer.';
+
+  @override
+  String get hostCustomersLatestSubmittedDetails => 'Latest submitted details';
+
+  @override
+  String hostCustomersSubmittedOn({required String date}) {
+    return 'From the application submitted $date. Open the application for all answers and their context.';
+  }
+
+  @override
+  String get hostCustomersAllActivity => 'All activity';
+
+  @override
+  String get hostCustomersMessageHistory => 'Messages';
+
+  @override
+  String get hostCustomersViewBreakdown => 'View breakdown';
+
+  @override
+  String get hostCustomersSpendByEvent => 'By event';
+
+  @override
+  String get hostCustomersSharedOrder => 'Shared order';
+
+  @override
+  String get hostCustomersSpendBreakdownUnavailable =>
+      'No event breakdown is available for these recorded totals.';
+
+  @override
+  String get hostCustomersOpenApplication => 'Open application';
+
+  @override
+  String get hostCustomersSubmittedAnswersUnavailable =>
+      'Submitted answers are unavailable. Open the application to review its status.';
+
+  @override
+  String get hostCustomersMessaging => 'Messaging';
+
+  @override
+  String get hostCustomersCheckMessaging => 'Check again';
+
+  @override
+  String get hostCustomersSourceUnavailable => 'Source not recorded';
+
+  @override
+  String get hostCustomersSourcesTruncated =>
+      'More source records exist. Only the loaded records are shown.';
+
+  @override
+  String get hostApplicationsReviewQueue => 'Review applications';
+
+  @override
+  String get hostApplicationsReviewQueueBody =>
+      'Review submissions, accept people, or keep them on your waitlist.';
+
+  @override
+  String get hostApplicationOpenPerson => 'Open person in People';
+
+  @override
+  String get hostApplicationOpenResponse => 'Open original response';
+
+  @override
+  String get hostSavedAudienceEditRules => 'Edit audience';
+
+  @override
+  String get hostSavedAudienceEvaluated => 'Last evaluated';
+
+  @override
+  String get hostSavedAudienceMessage => 'Message this audience';
+
+  @override
+  String get hostSavedAudienceMembers => 'People in this audience';
+
+  @override
+  String get hostSavedAudienceNoMembers => 'No people in this audience';
+
+  @override
+  String get hostAudienceRuleApplication => 'Application status';
+
+  @override
+  String get hostAudienceRuleFormAnswer => 'Form answer';
+
+  @override
+  String get hostAudienceRuleNamedEvent => 'Attended event';
+
+  @override
+  String get hostAudienceChooseForm => 'Choose a form';
+
+  @override
+  String get hostAudienceChooseEvent => 'Choose an event';
+
+  @override
+  String get hostAudienceChooseQuestion => 'Choose a published question';
+
+  @override
+  String get hostAudienceChooseAnswer => 'Answer contains or equals';
+
+  @override
+  String get hostAudienceSourceUnavailable => 'Source unavailable';
+
+  @override
+  String get hostAudienceFilterableQuestionsHelp =>
+      'Only choice and yes/no questions marked filterable appear here. Each rule uses the selected published version.';
+
+  @override
+  String hostAudienceSelectedCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count selected people',
+      one: '1 selected person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostAudienceStaticHelp =>
+      'Choose up to 2,500 people. Membership stays as selected until you edit it. Messaging permission is checked separately.';
+
+  @override
+  String get hostAudienceUnavailablePerson => 'Unavailable person';
+
+  @override
+  String get hostAudienceRemoveSelected => 'Remove from this audience';
+
+  @override
+  String get hostAudiencePreviousPeople => 'Previous people';
+
+  @override
+  String get hostAudienceNextPeople => 'Next people';
+
+  @override
+  String get hostAudienceChoosePeople => 'Choose people';
+
+  @override
+  String get hostAudienceSearchPeople => 'Search by name';
+
+  @override
+  String get hostAudienceAvailablePeople => 'People you can select';
+
+  @override
+  String get hostAudienceNoPeopleFound => 'No people found';
+
+  @override
+  String get hostAudienceNoSelectedPeople => 'No people selected yet';
+
+  @override
+  String get hostAudienceSelectionLimit =>
+      'You have selected the maximum of 2,500 people.';
+
+  @override
+  String get hostAudienceMembershipMode => 'Audience membership';
+
+  @override
+  String get hostAudienceRuleMembership => 'Match conditions automatically';
+
+  @override
+  String get hostAudienceStaticMembership => 'Choose people manually';
+
+  @override
+  String get hostAudienceSpend => 'Catch spend';
+
+  @override
+  String get hostAudienceSpendHelp =>
+      'Uses completed Catch payments for your events, excluding refunds. Only uniquely verified Catch accounts are included. Currencies are counted separately; changing currency resets the amount.';
+
+  @override
+  String get hostAudienceSpendCurrency => 'Currency';
+
+  @override
+  String get hostAudienceSpendAmount => 'Amount';
+
+  @override
+  String get hostAudienceSpendAmountInvalid =>
+      'Enter a valid amount within 10 billion minor currency units.';
+
+  @override
+  String get hostAudienceSpendDays => 'Past number of days';
+
+  @override
+  String get hostAudienceSpendDaysHelp =>
+      'Leave blank to include all recorded Catch payments.';
+
+  @override
+  String get hostAudienceSpendDaysInvalid =>
+      'Enter a whole number from 1 to 3,650, or leave blank.';
+
+  @override
+  String get hostAudienceSpendLifetime => 'All recorded payments';
+
+  @override
+  String hostAudienceSpendWindow({required int days}) {
+    return 'Past $days days';
+  }
+
+  @override
+  String get hostAutomationNew => 'New automation';
+
+  @override
+  String get hostAutomationEdit => 'Edit automation';
+
+  @override
+  String get hostAutomationName => 'Automation name';
+
+  @override
+  String get hostAutomationTrigger => 'When';
+
+  @override
+  String get hostAutomationAccepted => 'When an application is accepted';
+
+  @override
+  String get hostAutomationAttended => 'After a person attends an event';
+
+  @override
+  String get hostAutomationAnyForm => 'Any application form';
+
+  @override
+  String get hostAutomationAnyEvent => 'Any event';
+
+  @override
+  String get hostAutomationForm => 'Form';
+
+  @override
+  String get hostAutomationEvent => 'Event';
+
+  @override
+  String get hostAutomationDelay => 'Delay in minutes';
+
+  @override
+  String get hostAutomationDelayHelp =>
+      '0 runs as soon as eligible. Attendance follow-ups wait until the event ends, then apply this delay. Maximum: 10,080 minutes (7 days).';
+
+  @override
+  String get hostAutomationDelayInvalid =>
+      'Enter a whole number from 0 to 10,080.';
+
+  @override
+  String get hostAutomationAnswer => 'Answer includes';
+
+  @override
+  String get hostAutomationQuestion => 'Published question';
+
+  @override
+  String get hostAutomationQuestionHelp =>
+      'Choose a filterable choice or yes/no question from the current published form. Publishing a new version requires reviewing the condition again.';
+
+  @override
+  String get hostAutomationAction => 'Action';
+
+  @override
+  String get hostAutomationAddAction => 'Add action';
+
+  @override
+  String get hostAutomationRemoveAction => 'Remove action';
+
+  @override
+  String get hostAutomationTag => 'Add organizer tag';
+
+  @override
+  String get hostAutomationQueue => 'Add to application review';
+
+  @override
+  String get hostAutomationAttendee => 'Propose event attendee';
+
+  @override
+  String get hostAutomationWebhook => 'Send signed webhook';
+
+  @override
+  String get hostAutomationMessage => 'Send WhatsApp message';
+
+  @override
+  String get hostAutomationWebhookUrl => 'Webhook URL';
+
+  @override
+  String get hostAutomationWebhookSecret => 'Signing secret';
+
+  @override
+  String get hostAutomationWebhookHelp =>
+      'Send event identifiers to your HTTPS endpoint. Verify the HMAC SHA-256 signature and deduplicate X-Catch-Delivery-Id. Answers and contact details are excluded.';
+
+  @override
+  String get hostAutomationSecretHelp =>
+      'Use 32–256 characters. An existing secret stays unchanged when left blank and the URL stays the same.';
+
+  @override
+  String get hostAutomationSecretInvalid =>
+      'Enter a signing secret of 32–256 characters.';
+
+  @override
+  String get hostAutomationUrlInvalid =>
+      'Enter a public HTTPS URL using port 443.';
+
+  @override
+  String get hostAutomationDraft => 'Message draft';
+
+  @override
+  String get hostAutomationDraftHelp =>
+      'Create an unscheduled WhatsApp draft in Messaging, with a saved audience. Only the triggering person is targeted, if they match that audience and can receive the message. Select the draft again after editing it.';
+
+  @override
+  String get hostAutomationDraftsMore => 'Load more message drafts';
+
+  @override
+  String get hostAutomationDraftsEmpty =>
+      'No message drafts on this page. Create a draft in Messaging or load more.';
+
+  @override
+  String get hostAutomationEnabled => 'Enabled';
+
+  @override
+  String get hostAutomationEnableHelp =>
+      'Enabling approves these actions for future matching events. Pausing stops queued actions at their next check; completed actions remain in history.';
+
+  @override
+  String get hostAutomationSave => 'Save automation';
+
+  @override
+  String get hostAutomationRequired =>
+      'Complete the trigger, condition and action settings.';
+
+  @override
+  String get hostAutomationOverview =>
+      'Welcome accepted applicants, follow up after attendance, and connect form activity to your team and tools.';
+
+  @override
+  String get hostAutomationRunHelp =>
+      'A successful message action means the send was queued. Check its delivery in Messaging. Temporary failures retry up to five times; successful actions are retained.';
+
+  @override
+  String get hostAutomationDue => 'Next check';
+
+  @override
+  String get hostAutomationCurrentDraft => 'Selected draft';
+
+  @override
+  String get hostAutomationNoForm =>
+      'No published form is available for this trigger.';
+
+  @override
+  String get hostAutomationConfigured => 'Configured';
 }

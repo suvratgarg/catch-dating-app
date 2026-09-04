@@ -312,6 +312,13 @@
       "screenId": "screen.host.customers"
     },
     {
+      "routeId": "hostAudienceAutomationsScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Audience-owned organizer automation configuration and run history; visual capture remains pending.",
+      "screenId": "screen.host.customers"
+    },
+    {
       "routeId": "hostFormAutomationsScreen",
       "status": "contracted",
       "priority": "P2",

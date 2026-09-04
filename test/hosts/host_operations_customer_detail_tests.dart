@@ -1,6 +1,48 @@
 part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsCustomerDetailTests() {
+  testWidgets('customer operational history loads only when its tab opens', (
+    tester,
+  ) async {
+    var requests = 0;
+    final pending = Completer<HostAudienceContactDetail>();
+    await _pumpHostScreen(
+      tester,
+      const HostCustomerDetailScreen(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      ),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        hostAudienceContactDetailProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(_customerDetail(historyLoaded: false))),
+        hostCommunicationPlanProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
+        hostAudienceContactHistoryProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWith((ref) {
+          requests++;
+          return pending.future;
+        }),
+      ],
+    );
+    expect(requests, 0);
+    expect(find.byType(HostCustomerRevenueCard), findsOneWidget);
+    await tester.tap(find.text('History'));
+    await tester.pump();
+    expect(requests, 1);
+    expect(find.byType(HostCustomerTimelineSection), findsNothing);
+    pending.complete(_customerDetail());
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostCustomerTimelineSection), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('customer detail failure names the customer, not organizer', (
     tester,
   ) async {
@@ -32,10 +74,13 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.text('Reload customer'), findsOneWidget);
     expect(find.text('Organizer unavailable'), findsNothing);
     expect(
-      tester.widget<CatchScreenTopBar>(find.byType(CatchScreenTopBar)).title,
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).title,
       'Ananya Rao',
     );
-    expect(find.byType(CatchScreenHeaderTitle), findsOneWidget);
+    expect(
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).titleRole,
+      CatchTopBarTitleRole.identity,
+    );
   });
 
   testWidgets('customer overview groups status and directory controls', (
@@ -59,24 +104,14 @@ void _registerHostOperationsCustomerDetailTests() {
 
     final summary = find.byType(HostCustomersSummary);
     expect(
-      find.descendant(of: summary, matching: find.byType(CatchStatColumn)),
+      find.descendant(
+        of: summary,
+        matching: find.byType(CatchOptionGroupItem<HostCustomerFilter>),
+      ),
       findsNWidgets(3),
     );
-    expect(
-      find.text(
-        'Everyone who has attended, registered, been imported, or been added by your team.',
-      ),
-      findsOneWidget,
-    );
-    expect(find.text('0 WhatsApp-ready contacts'), findsOneWidget);
-    expect(
-      find.text('0 imported or added by your team · 0 linked Catch accounts'),
-      findsOneWidget,
-    );
-    final activeView = find.byType(HostCustomerFilterSummary);
-    expect(find.ancestor(of: activeView, matching: summary), findsNothing);
-    expect(find.text('All · 0 people'), findsOneWidget);
-    expect(find.text('Message these 0'), findsNothing);
+    expect(find.text('All  0'), findsOneWidget);
+    expect(find.text('Returning  0'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-customers-messaging-action')),
       findsNothing,
@@ -98,16 +133,14 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.byTooltip('More customer actions'), findsOneWidget);
     expect(find.byTooltip('Export this audience'), findsNothing);
 
-    await tester.tap(
-      find.byKey(const ValueKey('host-customers-summary-attended')),
-    );
+    await tester.tap(_customerSummaryChoice(HostCustomerFilter.repeat));
     await pumpFeatureUi(tester);
-    expect(requests.last.filter, HostCustomerFilter.attended);
-    expect(find.text('Attended · 0 people'), findsOneWidget);
+    expect(requests.last.filter, HostCustomerFilter.repeat);
+    expect(find.textContaining('Repeat attendees'), findsWidgets);
     final attendedSemantics = tester.getSemantics(
-      find.byKey(const ValueKey('host-customers-summary-attended')),
+      _customerSummaryChoice(HostCustomerFilter.repeat),
     );
-    expect(attendedSemantics.label, 'Attended, 0');
+    expect(attendedSemantics.label, 'Returning  0');
     expect(attendedSemantics.flagsCollection.isButton, isTrue);
     expect(attendedSemantics.flagsCollection.isSelected, ui.Tristate.isTrue);
     expect(
@@ -115,12 +148,10 @@ void _registerHostOperationsCustomerDetailTests() {
       isTrue,
     );
 
-    await tester.tap(
-      find.byKey(const ValueKey('host-customers-summary-attended')),
-    );
+    await tester.tap(_customerSummaryChoice(HostCustomerFilter.repeat));
     await pumpFeatureUi(tester);
     expect(requests.last.filter, HostCustomerFilter.all);
-    expect(find.text('All · 0 people'), findsOneWidget);
+    expect(find.text('All  0'), findsOneWidget);
 
     await tester.tap(find.text('Filters'));
     await pumpFeatureUi(tester);
@@ -176,20 +207,17 @@ void _registerHostOperationsCustomerDetailTests() {
     final sortRect = tester.getRect(
       find.byKey(const ValueKey('host-customers-sort')),
     );
-    expect(
-      filtersRect.center.dy,
-      closeTo(sortRect.center.dy, 0.5),
-      reason: 'Filters $filtersRect and Sort $sortRect must share one row.',
-    );
-
-    expect(find.text('Last seen'), findsOneWidget);
+    expect(filtersRect.overlaps(sortRect), isFalse);
+    expect(filtersRect.right, lessThanOrEqualTo(390));
+    expect(sortRect.right, lessThanOrEqualTo(390));
+    expect(find.text('Sort: Last seen'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('host-customers-sort')));
     await pumpFeatureUi(tester);
     expect(find.byType(CatchSelectionSheet<HostCustomerSort>), findsOneWidget);
 
     await tester.tap(find.text('Most attended'));
     await pumpFeatureUi(tester);
-    expect(find.text('Most attended'), findsOneWidget);
+    expect(find.text('Sort: Most attended'), findsOneWidget);
     expect(requests.last.sort, HostCustomerSort.mostAttended);
   });
 
@@ -235,29 +263,33 @@ void _registerHostOperationsCustomerDetailTests() {
       isTrue,
     );
 
-    final countRect = tester.getRect(find.text('All · 1 person'));
     final filtersRect = tester.getRect(
       find.byKey(const ValueKey('host-customers-filters')),
     );
     final sortRect = tester.getRect(
       find.byKey(const ValueKey('host-customers-sort')),
     );
-    expect(
-      (countRect.center.dy - filtersRect.center.dy).abs(),
-      lessThanOrEqualTo(CatchSpacing.s10),
-    );
-    expect(filtersRect.center.dy, closeTo(sortRect.center.dy, 0.5));
+    expect(sortRect.top, greaterThanOrEqualTo(summaryRect.bottom));
+    expect(filtersRect.overlaps(sortRect), isFalse);
     expect(
       find.ancestor(
         of: find.byKey(const ValueKey('host-customers-filters')),
-        matching: find.byType(HostCustomerFilterSummary),
+        matching: find.byType(HostCustomerDirectoryControls),
       ),
       findsOneWidget,
     );
 
     final customerRow = find.byType(HostCustomerRow);
-    expect(tester.getTopLeft(customerRow).dy, lessThanOrEqualTo(380));
-    expect(tester.getSize(customerRow).height, greaterThanOrEqualTo(72));
+    expect(
+      tester.getTopLeft(customerRow).dy,
+      greaterThanOrEqualTo(filtersRect.bottom),
+    );
+    expect(
+      tester.getSize(customerRow).height,
+      greaterThanOrEqualTo(
+        CatchRecordTokens.avatarExtent + CatchRecordTokens.verticalPadding * 2,
+      ),
+    );
   });
 
   testWidgets('sender recovery opens dedicated WhatsApp Business setup', (
@@ -286,7 +318,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
 
-    expect(find.text('All · 1 person'), findsOneWidget);
+    expect(_customerSummaryChoice(HostCustomerFilter.all), findsOneWidget);
     expect(find.text('Open messaging'), findsNothing);
 
     await tester.tap(find.byKey(const ValueKey('host-customers-filters')));
@@ -466,14 +498,14 @@ void _registerHostOperationsCustomerDetailTests() {
     final manualTagsField = tester.widget<CatchField>(
       find.byKey(const ValueKey('host-customer-edit-tags')),
     );
-    expect(manualTagsField.body, 'Brings friends');
+    expect(manualTagsField.title, 'Brings friends');
     expect(manualTagsField.onTap, isNotNull);
     expect(find.text('Introduced three friends.'), findsOneWidget);
     expect(find.textContaining('You ·'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('host-customer-edit-tags')));
     await tester.tap(find.byKey(const ValueKey('host-customer-add-note')));
-    await tester.tap(find.byTooltip('Edit note'));
+    await tester.tap(find.byKey(const ValueKey('host-customer-note-note-1')));
     expect(tagEdits, 1);
     expect(noteAdds, 1);
     expect(editedNote?.noteId, 'note-1');
@@ -504,14 +536,12 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.byType(CatchSkeletonized), findsOneWidget);
     expect(find.byType(CatchSkeletonRows), findsNothing);
     expect(find.byType(HostCustomerIdentityCard), findsOneWidget);
-    expect(find.byType(HostCustomerMemorySection), findsOneWidget);
+    expect(find.byType(HostCustomerMemoryPreview), findsOneWidget);
     expect(find.byType(HostCustomerAttendanceCard), findsOneWidget);
     expect(find.byType(HostCustomerReachSection), findsOneWidget);
-    expect(find.byType(HostCustomerTimelineSection), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('host-customer-controls')),
-      findsOneWidget,
-    );
+    expect(find.byType(HostCustomerRecentEvents), findsOneWidget);
+    expect(find.byType(HostCustomerTimelineSection), findsNothing);
+    expect(find.byKey(const ValueKey('host-customer-controls')), findsNothing);
   });
 }
 
@@ -520,8 +550,8 @@ void _expectAudienceStateOwner(
   required HostAudienceView selected,
 }) {
   expect(find.byType(HostAudienceStateScaffold), findsOneWidget);
-  expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
-  expect(find.byType(CatchTabbedPageScrollView), findsOneWidget);
+  expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
+  expect(find.byType(CatchRootScreenPageScrollView), findsOneWidget);
   expect(find.byType(HostAudienceTabRail), findsOneWidget);
   expect(find.byType(CatchErrorScaffold), findsNothing);
   expect(find.byType(HostLoadingScreen), findsNothing);
@@ -533,8 +563,8 @@ void _expectAudienceStateOwner(
   );
   expect(
     tester
-        .widget<CatchTabbedPageScrollView>(
-          find.byType(CatchTabbedPageScrollView),
+        .widget<CatchRootScreenPageScrollView>(
+          find.byType(CatchRootScreenPageScrollView),
         )
         .bodyLayout,
     CatchScreenBodyLayout.standard,

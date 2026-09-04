@@ -32,9 +32,16 @@ const schemaOrganizerFormAutomationRuleDocumentSchema = <String, Object?>{
       'maxLength': 180,
     },
     'formId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
     'name': <String, Object?>{
       'type': 'string',
@@ -55,6 +62,8 @@ const schemaOrganizerFormAutomationRuleDocumentSchema = <String, Object?>{
         'responseSubmitted',
         'responseWithdrawn',
         'answerMatches',
+        'applicationAccepted',
+        'eventAttended',
       ],
     },
     'condition': <String, Object?>{
@@ -184,6 +193,26 @@ const schemaOrganizerFormAutomationRuleDocumentSchema = <String, Object?>{
               'email',
             ],
           },
+          'campaignId': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'campaignRevision': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 1,
+            'maximum': 9007199254740991,
+          },
         },
       },
     },
@@ -236,6 +265,35 @@ const schemaOrganizerFormAutomationRuleDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+    },
+    'triggerEventId': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'delayMinutes': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 10080,
+    },
+    'conditionVersionId': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
   },
   'x-firestore-collection': 'organizerFormAutomationRules',

@@ -1808,7 +1808,8 @@ export interface OrganizerContactOriginDocument {
     | "hostFormResponse"
     | "providerRecord"
     | "importBatch"
-    | "webRegistration";
+    | "webRegistration"
+    | "hostApplicationResponse";
   sourceEntityId: string;
   eventId: string | null;
   formId: string | null;
@@ -1900,6 +1901,42 @@ export interface OrganizerSavedAudienceDocument {
       | {
           kind: "reachableForIntent";
           intent: "organizerWhatsappCampaign";
+        }
+      | {
+          kind: "applicationStatus";
+          formId: string;
+          reviewStatus:
+            | "submitted"
+            | "inReview"
+            | "approved"
+            | "waitlisted"
+            | "declined";
+        }
+      | {
+          kind: "formAnswer";
+          formId: string;
+          versionId: string;
+          questionId: string;
+          value: string | boolean;
+        }
+      | {
+          kind: "attendedEvent";
+          eventId: string;
+        }
+      | {
+          kind: "spend";
+          operator: "atLeast" | "atMost";
+          currency: string;
+          amountMinor: number;
+          withinDays: number | null;
+        }
+      | {
+          kind: "staticMembers";
+          /**
+           * @minItems 0
+           * @maxItems 2500
+           */
+          contactIds: string[];
         }
     )[];
   };
@@ -3130,11 +3167,16 @@ export interface OrganizerFormExportDocument {
  */
 export interface OrganizerFormAutomationRuleDocument {
   organizerId: string;
-  formId: string;
+  formId: string | null;
   name: string;
   enabled: boolean;
   revision: number;
-  trigger: "responseSubmitted" | "responseWithdrawn" | "answerMatches";
+  trigger:
+    | "responseSubmitted"
+    | "responseWithdrawn"
+    | "answerMatches"
+    | "applicationAccepted"
+    | "eventAttended";
   condition: {
     questionId: string;
     operator:
@@ -3170,11 +3212,16 @@ export interface OrganizerFormAutomationRuleDocument {
     webhookUrl: string | null;
     webhookSecret: string | null;
     channel: null | "whatsapp" | "email";
+    campaignId?: string | null;
+    campaignRevision?: number | null;
   }[];
   createdByUid: string;
   updatedByUid: string;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+  triggerEventId?: string | null;
+  delayMinutes?: number;
+  conditionVersionId?: string | null;
 }
 
 /**
@@ -3182,11 +3229,15 @@ export interface OrganizerFormAutomationRuleDocument {
  */
 export interface OrganizerFormAutomationRunDocument {
   organizerId: string;
-  formId: string;
+  formId: string | null;
   ruleId: string;
   ruleRevision: number;
-  responseId: string;
-  eventKind: "submitted" | "withdrawn";
+  responseId: string | null;
+  eventKind:
+    | "submitted"
+    | "withdrawn"
+    | "applicationAccepted"
+    | "eventAttended";
   status:
     | "pending"
     | "running"
@@ -3217,6 +3268,11 @@ export interface OrganizerFormAutomationRunDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   completedAt: FirebaseFirestore.Timestamp | null;
+  sourceId?: string;
+  sourceOccurredAt?: FirebaseFirestore.Timestamp;
+  dueAt?: FirebaseFirestore.Timestamp | null;
+  leaseOwner?: string | null;
+  leaseExpiresAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -3813,6 +3869,18 @@ export interface OrganizerCampaignDocument {
   dispatchedAt: FirebaseFirestore.Timestamp | null;
   completedAt: FirebaseFirestore.Timestamp | null;
   cancelledAt: FirebaseFirestore.Timestamp | null;
+  automationOrigin?: {
+    ruleId: string;
+    ruleRevision: number;
+    actionId: string;
+    sourceId: string;
+    eventKind:
+      | "submitted"
+      | "withdrawn"
+      | "applicationAccepted"
+      | "eventAttended";
+    contactId: string;
+  };
 }
 
 /**
@@ -4137,6 +4205,10 @@ export interface EventDocument {
   name?: string;
   clubId: string;
   organizerId?: string;
+  /**
+   * Optional organizer venue used to prefill this event. Meeting location and capacity remain event-local snapshots.
+   */
+  sourceVenueId?: string | null;
   eventOrigin?: EventOrigin;
   runtimeAccess?: EventRuntimeAccess;
   startTime: FirebaseFirestore.Timestamp;
@@ -5525,6 +5597,30 @@ export interface OrganizerEventSuccessLayoutDocument {
     gridY: number;
     order: number;
   }[];
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Reusable organizer-owned event venue stored at organizerEventVenues/{organizerId_venueId}. Events copy the meeting location and capacity so later venue edits never rewrite event history.
+ */
+export interface OrganizerEventVenueDocument {
+  organizerId: string;
+  venueId: string;
+  label: string;
+  /**
+   * Canonical meeting location selected from Google Places or a manually pinned map coordinate.
+   */
+  meetingLocation: {
+    name: string;
+    address?: string | null;
+    placeId?: string | null;
+    latitude: number;
+    longitude: number;
+    notes?: string | null;
+  };
+  defaultEventCapacity?: number | null;
+  status: "active" | "archived";
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }

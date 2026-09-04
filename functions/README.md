@@ -22,6 +22,7 @@ options when specific functions need higher or lower limits.
 | `createStripeCheckoutSession` | `src/payments/createStripeCheckoutSession.ts` | Create a non-INR Stripe destination checkout for an enabled host account |
 | `verifyRazorpayPayment` | `src/payments/` | Verify payment signature + sign up |
 | `createEvent` / `updateEvent` / `cancelEvent` / `deleteEvent` | `src/events/` | Host-owned event mutation surface |
+| `upsertOrganizerEventVenue` | `src/events/organizerEventVenues.ts` | Create, update, archive, or restore one organizer-owned reusable event venue |
 | `publishEventLivePosition` | `src/events/eventLivePositions.ts` | Publish or clear a short-lived foreground Host/operator position when the event route policy and exact operator grant allow it |
 | `signUpForFreeEvent` | `src/events/` | Book a free event |
 | `cancelEventSignUp` | `src/events/` | Cancel booking (refunds paid events) |
@@ -61,7 +62,7 @@ options when specific functions need higher or lower limits.
 | `createOrganizerFormShareLink` / `getOrganizerFormShareAssets` | `src/organizers/organizerFormDistribution.ts` | Create opaque attributed links and return canonical link, QR, print, and embed assets for a published form |
 | `listOrganizerFormResponses` / `getOrganizerFormResponseDetail` / `getOrganizerFormAnalytics` | `src/organizers/organizerFormOperations.ts` | Page, inspect, and aggregate immutable form responses through organizer-authorized projections without screen-time response scans |
 | `requestOrganizerFormExport` | `src/organizers/organizerFormExports.ts` | Create an auditable asynchronous CSV or XLSX export request with a bounded, expiring result |
-| `createOrganizerFormAutomation` / `setOrganizerFormAutomationState` / `listOrganizerFormAutomationRuns` | `src/organizers/organizerFormAutomations.ts` | Configure explicit revisioned automation rules, enable or disable them, and page through idempotent run receipts |
+| `createOrganizerFormAutomation` / `setOrganizerFormAutomationState` / `listOrganizerFormAutomationRuns` | `src/organizers/organizerFormAutomations.ts` | Create or edit organizer-wide or form-scoped revisioned rules, delays, signed webhooks and approved message recipes; pause rules and page through sanitized run receipts |
 | `previewOrganizerFormConversion` / `convertOrganizerFormResponse` | `src/organizers/organizerFormConversions.ts` | Preview and apply reviewed, idempotent response conversions into authorized application, CRM, or event-roster records |
 | `getEventRosterInsights` | `src/organizers/eventRosterInsights.ts` | Manager-only, event-relative customer labels for the live operational roster; incomplete identity/history fails closed and spend is limited to completed Catch payments |
 | `listOrganizerContacts` / `getOrganizerContactDetail` / `createOrganizerContact` / `mutateOrganizerContact` / `createOrganizerContactNote` / `mutateOrganizerContactNote` / `exportOrganizerContacts` | `src/organizers/organizerContacts.ts` | Search, inspect, manually add, safely update, append/edit author-stamped notes, and export the organizer-owned audience directory; notes never enter exports |
@@ -70,7 +71,7 @@ options when specific functions need higher or lower limits.
 | `mergeOrganizerContacts` / `unmergeOrganizerContacts` | `src/organizers/organizerContactMerges.ts` | Reversible manager-reviewed contact identity reconciliation |
 | `listOrganizerContactMergeCandidates` / `reviewOrganizerContactMergeCandidate` | `src/organizers/organizerContactMergeReview.ts` | Review verified or proposed identity evidence, durably dismiss distinct people, and reopen only the reviewing manager's decision |
 | `getOrganizerMessagingSetup` / `completeOrganizerWhatsappConnection` / `syncOrganizerWhatsappTemplates` / `sendOrganizerWhatsappTest` / `disconnectOrganizerWhatsappConnection` | `src/organizers/organizerMessagingSetup.ts` | Connect and verify an organizer-owned Meta WhatsApp sender and synchronize approved templates |
-| `upsertOrganizerSavedAudience` / `listOrganizerSavedAudiences` / `previewOrganizerSavedAudience` / `archiveOrganizerSavedAudience` | `src/organizers/organizerSavedAudiences.ts` | Persist and exactly evaluate Customers-owned reusable CRM audiences through the closed typed predicate vocabulary |
+| `resolveOrganizerAudienceMembers` / `upsertOrganizerSavedAudience` / `listOrganizerSavedAudiences` / `previewOrganizerSavedAudience` / `archiveOrganizerSavedAudience` | `src/organizers/organizerSavedAudiences.ts` | Persist and exactly evaluate Customers-owned reusable CRM audiences through the closed typed predicate vocabulary |
 | `prepareOrganizerManualSendTask` / `listOrganizerManualSendTasks` / `validateOrganizerManualSendTaskLaunch` / `openOrganizerManualSendTask` / `markOrganizerManualSendTask` / `replanOrganizerManualSendTasks` | `src/organizers/organizerManualSendTasks.ts` | Persist and page host-performed WhatsApp handoffs, revalidate current authority before every external launch, record only device-open and explicit host assertions, and recheck routes without auto-dispatching or clearing work |
 | `upsertOrganizerCampaign` / `previewOrganizerCampaign` / `approveOrganizerCampaign` / `cancelOrganizerCampaign` / `getOrganizerCampaignReport` | `src/organizers/organizerCampaigns.ts` | Draft, exactly preview, freeze, approve, cancel, and report consent-gated organizer campaigns that reference one saved audience id |
 | `listOrganizerCampaigns` | `src/organizers/organizerSends.ts` | Page through the organizer's reverse-chronological Campaign, Announcement and Follower update Sends history |
@@ -154,6 +155,7 @@ options when specific functions need higher or lower limits.
 | `onOrganizerCommunicationPreferenceAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Organizer communication preferences update consent-safe audience reachability |
 | `onOrganizerContactEventEdgeInviteAttributed` | `src/events/eventInviteAttributionProjection.ts` | Verified invite outcomes update contact advocacy evidence |
 | `onOrganizerFormResponseAggregated` | `src/organizers/organizerFormOperations.ts` | Projects submitted and withdrawn response transitions into precomputed form, source, and question aggregates |
+| `onOrganizerApplicationAutomated` / `onOrganizerAttendanceAutomated` | `src/organizers/organizerFormAutomations.ts` | Queues future acceptance and attendance actions from current authorized sources; attendance follow-ups wait for the event end |
 | `onOrganizerFormResponseAutomated` | `src/organizers/organizerFormAutomations.ts` | Evaluates enabled versioned form rules once for each submitted or withdrawn response transition and records sanitized action results |
 | `onOrganizerFormExportRequested` | `src/organizers/organizerFormExports.ts` | Materializes an authorized asynchronous form export and stores a time-bounded download receipt |
 | `onOrganizerMessagingWebhookEventCreated` | `src/organizers/organizerWhatsappWebhook.ts` | Authenticated provider receipts update campaign delivery projections without retaining message bodies |
@@ -166,6 +168,7 @@ options when specific functions need higher or lower limits.
 | `sendEventReminders` | `src/events/` | Every 15 minutes — writes reminder activity and push notifications |
 | `expireCrossPathsInvitations` | `src/crossPaths/` | Every 15 minutes — expires stale pending Cross Paths invitations |
 | `expireCrossPathsPairHolds` | `src/crossPaths/` | Every 5 minutes — releases expired companion reservations and invalidates their invitation receipt |
+| `retryOrganizerAutomations` | `src/organizers/organizerFormAutomations.ts` | Every minute — resumes due automation runs and expired leases with bounded retries and per-action deduplication |
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |
 | `expireEventRehearsals` | `src/eventRehearsal/` | Hourly deletion of expired rehearsal sessions and isolated child projections |

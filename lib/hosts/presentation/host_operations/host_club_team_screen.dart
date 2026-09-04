@@ -47,8 +47,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: CatchRouteBody.standard(
-          scrollable: false,
+        body: CatchRouteBody.standardViewport(
           child: CatchErrorState.fromError(
             uidState.error!,
             context: AppErrorContext.auth,
@@ -69,8 +68,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: CatchRouteBody.standard(
-          scrollable: false,
+        body: CatchRouteBody.standardViewport(
           child: CatchErrorBody(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
@@ -94,8 +92,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: CatchRouteBody.standard(
-          scrollable: false,
+        body: CatchRouteBody.standardViewport(
           child: CatchErrorState.fromError(
             clubsState.error!,
             context: AppErrorContext.club,
@@ -116,8 +113,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        body: CatchRouteBody.standard(
-          scrollable: false,
+        body: CatchRouteBody.standardViewport(
           child: CatchErrorState.fromError(
             StateError('Organizer unavailable'),
             context: AppErrorContext.club,
@@ -174,8 +170,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
         body: CatchRouteBody.paged(
           controller: _tabController,
           pages: [
-            CatchRouteBody.standard(
-              constrainToContentWidth: true,
+            CatchRouteBody.standardConstrained(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -212,8 +207,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
                 ],
               ),
             ),
-            CatchRouteBody.standard(
-              constrainToContentWidth: true,
+            CatchRouteBody.standardConstrained(
               child: HostTeamProfessionalProfilePreview(
                 state: state.profile,
                 clubs: clubs,

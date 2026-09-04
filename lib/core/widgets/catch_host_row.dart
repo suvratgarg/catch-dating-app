@@ -117,7 +117,6 @@ class CatchHostRow extends StatelessWidget {
               onTap: onMessage,
               tooltip: messageTooltip,
               variant: CatchIconButtonVariant.plain,
-              size: CatchIconButton.navSize,
               active: true,
               fill: false,
               accent: effectiveActionColor,

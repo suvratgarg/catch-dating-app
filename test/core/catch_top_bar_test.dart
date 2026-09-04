@@ -22,7 +22,7 @@ void main() {
         const CatchTopBar(
           title: 'Settings',
           showBackButton: false,
-          border: true,
+          divider: true,
         ),
       ),
     );
@@ -46,6 +46,24 @@ void main() {
       _topBarMaterial(tester).color,
       AppTheme.light.scaffoldBackgroundColor,
     );
+    expect(_topBarBorder(tester).bottom.style, BorderStyle.solid);
+  });
+
+  testWidgets('CatchTopBar surface selection does not imply a divider', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchTopBar(
+          title: 'Settings',
+          showBackButton: false,
+          surface: true,
+        ),
+      ),
+    );
+
+    expect(_topBarMaterial(tester).color, CatchTokens.editorialLight.surface);
+    expect(_topBarBorder(tester).bottom.style, BorderStyle.none);
   });
 
   testWidgets('CatchTopBar keeps identity-name titles in the function family', (
@@ -899,5 +917,5 @@ Border _topBarBorder(WidgetTester tester) {
   final frame = containers.firstWhere(
     (container) => container.constraints?.maxHeight == CatchLayout.topBarHeight,
   );
-  return (frame.decoration! as BoxDecoration).border! as Border;
+  return (frame.foregroundDecoration! as BoxDecoration).border! as Border;
 }

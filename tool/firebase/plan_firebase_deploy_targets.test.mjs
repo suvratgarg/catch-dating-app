@@ -126,6 +126,32 @@ test("dormant scheduled Functions cannot enter logical or exact deploy plans", (
   );
 });
 
+test("historical delivery may remove only known dormant exact targets", () => {
+  const enabledTargets = ["functions:createEvent", "functions:updateEvent"];
+  const [plan] = planFirebaseDeployTargets([
+    "functions:createEvent",
+    "functions:sendEventReminders",
+    "functions:updateEvent",
+  ].join(","), {
+    filterDormantExactTargets: true,
+    functionTargets: enabledTargets,
+  });
+  assert.equal(
+    plan.deployOnly,
+    "functions:createEvent,functions:updateEvent",
+  );
+  assert.throws(
+    () => planFirebaseDeployTargets(
+      "functions:createEvent,functions:notInSource",
+      {
+        filterDormantExactTargets: true,
+        functionTargets: enabledTargets,
+      },
+    ),
+    /not enabled by source policy/u,
+  );
+});
+
 test("large Function deployments are split into quota-safe exact batches", (t) => {
   const targets = Array.from(
     {length: firebaseFunctionDeployBatchSize * 2 + 1},

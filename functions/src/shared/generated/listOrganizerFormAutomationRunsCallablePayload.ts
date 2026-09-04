@@ -7,7 +7,7 @@
  */
 export interface ListOrganizerFormAutomationRunsCallablePayload {
   organizerId: string;
-  formId: string;
+  formId: string | null;
   ruleId: string | null;
   cursor: string | null;
   limit: number;

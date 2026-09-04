@@ -25,9 +25,16 @@ const schemaListOrganizerFormAutomationRunsCallablePayloadSchema = <String, Obje
       'maxLength': 180,
     },
     'formId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
     'ruleId': <String, Object?>{
       'anyOf': <Object?>[

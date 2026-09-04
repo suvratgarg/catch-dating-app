@@ -128,18 +128,12 @@ void _registerHostOperationsCustomersTests() {
       findsOne,
     );
     expect(
-      find.descendant(
-        of: row,
-        matching: find.textContaining('8 events attended'),
-      ),
+      find.descendant(of: row, matching: find.textContaining('8 events')),
       findsOne,
     );
+    expect(find.descendant(of: row, matching: find.text('Regular')), findsOne);
     expect(
-      find.descendant(of: row, matching: find.textContaining('Regulars')),
-      findsOne,
-    );
-    expect(
-      find.descendant(of: row, matching: find.byType(CatchField)),
+      find.descendant(of: row, matching: find.byType(CatchPersonRow)),
       findsOneWidget,
     );
     expect(
@@ -151,17 +145,17 @@ void _registerHostOperationsCustomersTests() {
     );
 
     final name = tester.widget<Text>(find.text('Ananya Rao'));
-    final metadata = tester.widget<Text>(
-      find.textContaining('8 events attended'),
-    );
+    final metadata = tester.widget<Text>(find.textContaining('8 events'));
     final avatar = tester.widget<CatchPersonAvatar>(
       find.descendant(of: row, matching: find.byType(CatchPersonAvatar)),
     );
     expect(avatar.size, CatchSpacing.s10);
     expect(tester.getSize(row).height, greaterThanOrEqualTo(72));
     expect(
-      name.style!.fontWeight!.value,
-      greaterThan(metadata.style!.fontWeight!.value),
+      name.style!.fontSize!,
+      greaterThan(
+        (metadata.textSpan! as TextSpan).children!.first.style!.fontSize!,
+      ),
     );
 
     await tester.tap(row);
@@ -200,15 +194,11 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const _CustomersTestPrimaryRail(),
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -236,15 +226,11 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const _CustomersTestPrimaryRail(),
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -266,15 +252,11 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const _CustomersTestPrimaryRail(),
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -321,7 +303,7 @@ void _registerHostOperationsCustomersTests() {
     );
   });
 
-  testWidgets('customer directory uses canonical field-row feedback', (
+  testWidgets('customer directory uses shared person-row feedback', (
     tester,
   ) async {
     await _pumpHostScreen(
@@ -351,64 +333,37 @@ void _registerHostOperationsCustomersTests() {
 
     final frame = find.byKey(const ValueKey('host-customers-directory-list'));
     expect(
-      find.descendant(of: frame, matching: find.byType(CatchRowPressSurface)),
-      findsNothing,
+      find.descendant(of: frame, matching: find.byType(CatchPersonRow)),
+      findsNWidgets(2),
     );
     expect(
-      find.descendant(
-        of: frame,
-        matching: find.byKey(CatchSectionFocusSurface.rowGroupClipKey),
-      ),
+      find.descendant(of: frame, matching: find.byType(CatchRowPressSurface)),
+      findsNWidgets(2),
+    );
+    expect(
+      find.descendant(of: frame, matching: find.byType(CatchField)),
       findsNothing,
     );
     expect(
       find.descendant(of: frame, matching: find.byType(CatchDivider)),
-      findsNWidgets(2),
+      findsOneWidget,
     );
-
     final row = find.byType(HostCustomerRow).first;
-    final pressOverlayFinder = find.descendant(
+    final overlayFinder = find.descendant(
       of: row,
-      matching: find.byKey(CatchField.pressOverlayKey),
+      matching: find.byKey(CatchRowPressSurface.overlayKey),
     );
-    final activeOverlayFinder = find.descendant(
-      of: row,
-      matching: find.byKey(const ValueKey('catch-field-active-overlay')),
-    );
-    final mouse = await tester.createGesture(kind: ui.PointerDeviceKind.mouse);
-    await mouse.addPointer(location: tester.getCenter(row));
-    addTearDown(mouse.removePointer);
-    await mouse.moveTo(tester.getCenter(row));
-    await tester.pump();
-    final hoveredPressDecoration =
-        tester.widget<AnimatedContainer>(pressOverlayFinder).decoration!
-            as BoxDecoration;
-    final hoveredActiveDecoration =
-        tester.widget<AnimatedContainer>(activeOverlayFinder).decoration!
-            as BoxDecoration;
-    expect(hoveredPressDecoration.color, Colors.transparent);
-    expect(hoveredActiveDecoration.color, Colors.transparent);
-    expect(hoveredActiveDecoration.boxShadow, CatchElevation.none);
-
+    expect(tester.widget<ColoredBox>(overlayFinder).color, Colors.transparent);
     final gesture = await tester.startGesture(tester.getCenter(row));
     await tester.pump();
-    final overlay = tester.widget<AnimatedContainer>(pressOverlayFinder);
-    final decoration = overlay.decoration! as BoxDecoration;
-    expect(decoration.color, isNot(Colors.transparent));
-    expect(decoration.borderRadius, BorderRadius.zero);
-    expect(decoration.border, isNull);
-    expect(decoration.boxShadow, isNull);
-    final pageWidth = tester.getSize(find.byType(Scaffold).first).width;
-    final overlayRect = tester.getRect(pressOverlayFinder);
-    expect(overlayRect.left, closeTo(0, 0.001));
-    expect(overlayRect.right, closeTo(pageWidth, 0.001));
+    expect(
+      tester.widget<ColoredBox>(overlayFinder).color,
+      isNot(Colors.transparent),
+    );
+    expect(tester.getRect(overlayFinder), tester.getRect(row));
     await gesture.up();
     await tester.pump();
-    await tester.pump(CatchFieldTokens.pressOut);
-    final releasedDecoration =
-        tester.widget<AnimatedContainer>(pressOverlayFinder).decoration!
-            as BoxDecoration;
-    expect(releasedDecoration.color, Colors.transparent);
+    expect(tester.widget<ColoredBox>(overlayFinder).color, Colors.transparent);
   });
 
   testWidgets('incomplete customer history is honest and can be rechecked', (
@@ -592,10 +547,10 @@ void _registerHostOperationsCustomersTests() {
         find.byType(HostCustomerDetailScreen),
       );
       expect(detail.embedded, isTrue);
-      final detailTopBar = tester.widget<CatchScreenTopBar>(
+      final detailTopBar = tester.widget<CatchTopBar>(
         find.descendant(
           of: find.byType(HostCustomerDetailScreen),
-          matching: find.byType(CatchScreenTopBar),
+          matching: find.byType(CatchTopBar),
         ),
       );
       expect(detailTopBar.leadingType, CatchTopBarLeading.none);
@@ -751,15 +706,11 @@ void _registerHostOperationsCustomersTests() {
 
     await _pumpHostScreen(
       tester,
-      CatchTabbedScreenScaffold(
-        title: 'Customers',
-        tabRail: const PreferredSize(
-          preferredSize: Size.fromHeight(CatchLayout.tabRailHeight),
-          child: SizedBox(height: CatchLayout.tabRailHeight),
-        ),
-        body: CatchTabbedScreenBody.single(
-          page: CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
+      CatchRootScreenScaffold.withPrimaryRail(
+        header: const CatchRootScreenHeader.title(title: 'Customers'),
+        primaryRail: const _CustomersTestPrimaryRail(),
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
@@ -820,6 +771,9 @@ void _registerHostOperationsCustomersTests() {
       tester,
       const HostSavedAudienceEditorScreen(organizerId: organizerId),
       overrides: [
+        hostSavedAudienceFilterOptionsProvider(organizerId).overrideWith(
+          (_) async => const HostSavedAudienceFilterOptions.empty(),
+        ),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             [],
@@ -845,6 +799,9 @@ void _registerHostOperationsCustomersTests() {
         initialAudience: audience,
       ),
       overrides: [
+        hostSavedAudienceFilterOptionsProvider(organizerId).overrideWith(
+          (_) async => const HostSavedAudienceFilterOptions.empty(),
+        ),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
             [],
@@ -855,9 +812,27 @@ void _registerHostOperationsCustomersTests() {
     );
 
     expect(find.text('Repeat runners'), findsWidgets);
+    expect(
+      find.byKey(const ValueKey('host-saved-audience-edit')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('host-saved-audience-edit')));
+    await pumpFeatureUi(tester);
     expect(find.text('Save changes'), findsOneWidget);
     expect(find.text('CURRENT PREVIEW'), findsOneWidget);
     expect(find.text('Refresh exact preview'), findsOneWidget);
     expect(find.text('Archive'), findsOneWidget);
   });
+}
+
+class _CustomersTestPrimaryRail extends StatelessWidget
+    implements CatchPrimaryRail {
+  const _CustomersTestPrimaryRail();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+
+  @override
+  Widget build(BuildContext context) =>
+      const SizedBox(height: CatchLayout.tabRailHeight);
 }

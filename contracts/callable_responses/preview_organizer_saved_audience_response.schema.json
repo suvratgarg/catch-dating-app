@@ -24,6 +24,13 @@
         }
       }
     },
-    "evaluatedAtMillis": {"type": "integer", "minimum": 0}
+    "evaluatedAtMillis": {"type": "integer", "minimum": 0},
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    }
   }
 }

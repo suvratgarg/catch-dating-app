@@ -54,6 +54,7 @@ class CatchBottomSheetScaffold extends StatelessWidget {
     this.trailing,
     this.grabber = true,
     this.keyboardSafe = false,
+    this.scrollable = false,
     this.padding,
   });
 
@@ -69,6 +70,9 @@ class CatchBottomSheetScaffold extends StatelessWidget {
 
   /// Lets a larger keyboard inset replace the device bottom obstruction.
   final bool keyboardSafe;
+
+  /// Scrolls the whole sheet when its natural content exceeds the viewport.
+  final bool scrollable;
 
   /// Requested content insets.
   ///
@@ -105,7 +109,7 @@ class CatchBottomSheetScaffold extends StatelessWidget {
         : trailing;
     final hasHeader = _hasText(title) || glyph != null || right != null;
 
-    return DecoratedBox(
+    final content = DecoratedBox(
       decoration: BoxDecoration(
         color: t.surface,
         borderRadius: const BorderRadius.only(
@@ -148,6 +152,7 @@ class CatchBottomSheetScaffold extends StatelessWidget {
         ),
       ),
     );
+    return scrollable ? SingleChildScrollView(child: content) : content;
   }
 }
 

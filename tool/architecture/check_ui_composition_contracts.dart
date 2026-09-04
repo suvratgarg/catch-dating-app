@@ -15,23 +15,103 @@ const screenTopBarConformanceCode = 'catch_screen_top_bar_conformance';
 const screenLayoutFamilyCode = 'catch_screen_layout_family_conformance';
 const screenRouteOwnerBindingCode = 'catch_screen_route_owner_binding';
 const screenScaffoldOwnershipCode = 'catch_screen_scaffold_ownership';
+const screenLayoutConstructorVocabularyCode =
+    'catch_screen_layout_constructor_vocabulary';
 
 const _registryPath = 'design/screens/catch.screens.json';
 const _screenCoveragePath = 'design/screens/screen_coverage.json';
 const _routeInventoryPath = 'tool/ui_capture/route_inventory.json';
 const _topBarRegistryPath = 'tool/design/screen_top_bar_contracts.json';
 const _canonicalScaffoldPath = 'lib/core/widgets/catch_screen_scaffold.dart';
-const _canonicalTabbedScreenPath = 'lib/core/widgets/catch_tabbed_screen.dart';
+const _canonicalRouteScaffoldPath =
+    'lib/core/widgets/catch_route_scaffold.dart';
+const _canonicalRootScreenBodyPath =
+    'lib/core/widgets/catch_root_screen_body.dart';
+
+const _rootScaffoldExpressions = <String>{
+  'CatchRootScreenScaffold.standard',
+  'CatchRootScreenScaffold.fullBleed',
+  'CatchRootScreenScaffold.withPrimaryRail',
+};
+
+const _rootScrollExpressions = <String>{
+  'CatchRootScreenScrollView.standard',
+  'CatchRootScreenScrollView.fullBleed',
+  'CatchRootScreenScrollView.withPrimaryRail',
+};
+
+const _screenScaffoldExpressions = <String>{
+  'CatchScreenScaffold.standalone',
+  'CatchScreenScaffold.stepFlow',
+  'CatchScreenScaffold.workspace',
+};
+
+const catchRootScreenPageScrollExpressions = <String>{
+  'CatchRootScreenPageScrollView.standard',
+  'CatchRootScreenPageScrollView.fullBleed',
+  'CatchRootScreenPageScrollView.embeddedViewport',
+};
+
+const catchRootScreenBodyExpressions = <String>{
+  'CatchRootScreenBody.single',
+  'CatchRootScreenBody.paged',
+};
+
+const catchRootScreenPageSpecExpressions = <String>{
+  'CatchRootScreenPageSpec.scroll',
+  'CatchRootScreenPageSpec.surface',
+  'CatchRootScreenPageSpec.masterDetail',
+};
+
+/// Closed vocabulary shared with the screen-contract schema.
+///
+/// [test/tool/ui_composition_contracts_test.dart] rejects drift between this
+/// executable analyzer vocabulary and the JSON schema accepted by CI.
+const catchScreenLayoutOwnerExpressions = <String>{
+  ..._rootScaffoldExpressions,
+  ..._rootScrollExpressions,
+  'CatchRouteScaffold',
+  ..._screenScaffoldExpressions,
+};
+
+const _canonicalLayoutConstructorsByPath = <String, Map<String, Set<String>>>{
+  _canonicalScaffoldPath: <String, Set<String>>{
+    'CatchScreenScaffold': _screenScaffoldExpressions,
+    'CatchRootScreenScaffold': _rootScaffoldExpressions,
+    'CatchRootScreenScrollView': _rootScrollExpressions,
+  },
+  _canonicalRootScreenBodyPath: <String, Set<String>>{
+    'CatchRootScreenPageScrollView': catchRootScreenPageScrollExpressions,
+    'CatchRootScreenBody': catchRootScreenBodyExpressions,
+    'CatchRootScreenPageSpec': catchRootScreenPageSpecExpressions,
+  },
+  _canonicalRouteScaffoldPath: <String, Set<String>>{
+    'CatchRouteScaffold': <String>{'CatchRouteScaffold'},
+  },
+};
+
+const _rootPageScrollRoles = <String, String>{
+  'CatchRootScreenPageScrollView.standard': 'CatchScreenBodyLayout.standard',
+  'CatchRootScreenPageScrollView.fullBleed': 'CatchScreenBodyLayout.fullBleed',
+  'CatchRootScreenPageScrollView.embeddedViewport':
+      'CatchScreenBodyLayout.fullBleed',
+};
+
+const _rootScreenRoles = <String, String>{
+  'CatchRootScreenScaffold.standard': 'CatchScreenBodyLayout.standard',
+  'CatchRootScreenScaffold.fullBleed': 'CatchScreenBodyLayout.fullBleed',
+  'CatchRootScreenScrollView.standard': 'CatchScreenBodyLayout.standard',
+  'CatchRootScreenScrollView.fullBleed': 'CatchScreenBodyLayout.fullBleed',
+};
 
 const _familyExpressions = <String, Set<String>>{
-  'root': <String>{'CatchRootScreenScaffold', 'CatchRootScreenScrollView'},
-  'tabbed-root': <String>{'CatchTabbedScreenScaffold'},
+  'root': <String>{..._rootScaffoldExpressions, ..._rootScrollExpressions},
   'pushed-route': <String>{'CatchRouteScaffold'},
   'media-hero': <String>{'CatchScreenScaffold.workspace'},
   'immersive': <String>{'CatchScreenScaffold.workspace'},
   'adaptive-workspace': <String>{
     'CatchScreenScaffold.workspace',
-    'CatchRootScreenScrollView',
+    ..._rootScrollExpressions,
   },
   'standalone': <String>{'CatchScreenScaffold.standalone'},
   'step-flow': <String>{'CatchScreenScaffold.stepFlow'},
@@ -81,10 +161,11 @@ Future<void> main(List<String> arguments) async {
     root: root,
     collection: collection,
   );
-  final semanticTabbedPageOwnerRoles = await _productionTabbedPageOwnerRoles(
+  final semanticRootPageOwnerRoles = await _productionRootPageOwnerRoles(
     productionAnalysis,
   );
   final hardFailures = <String>[];
+  hardFailures.addAll(canonicalLayoutConstructorVocabularyFailures(root: root));
 
   _validateLayoutRegistryCoverage(
     screens,
@@ -138,7 +219,7 @@ Future<void> main(List<String> arguments) async {
         owner: owner,
         terminalOwnerDelegates: _sameFamilyOwnerDelegates(owners, owner),
         terminalOwnerBindings: _sameFamilyOwnerBindings(owners, owner),
-        semanticTabbedPageOwnerRoles: semanticTabbedPageOwnerRoles,
+        semanticRootPageOwnerRoles: semanticRootPageOwnerRoles,
         hardFailures: hardFailures,
       );
     }
@@ -155,7 +236,7 @@ Future<void> main(List<String> arguments) async {
         owner: owner,
         terminalOwnerDelegates: _sameFamilyOwnerDelegates(owners, owner),
         terminalOwnerBindings: _sameFamilyOwnerBindings(owners, owner),
-        semanticTabbedPageOwnerRoles: semanticTabbedPageOwnerRoles,
+        semanticRootPageOwnerRoles: semanticRootPageOwnerRoles,
         hardFailures: hardFailures,
       );
     }
@@ -172,14 +253,14 @@ Future<void> main(List<String> arguments) async {
         owner: owner,
         terminalOwnerDelegates: _sameFamilyOwnerDelegates(owners, owner),
         terminalOwnerBindings: _sameFamilyOwnerBindings(owners, owner),
-        semanticTabbedPageOwnerRoles: semanticTabbedPageOwnerRoles,
+        semanticRootPageOwnerRoles: semanticRootPageOwnerRoles,
         hardFailures: hardFailures,
       );
     }
   }
 
   await _validateProductionScaffoldOwnership(productionAnalysis, hardFailures);
-  await _validateProductionTabbedPageOwners(productionAnalysis, hardFailures);
+  await _validateProductionRootPageOwners(productionAnalysis, hardFailures);
   _validateMediaHeroes(root, screens, topBarRegistry, hardFailures);
 
   final report = <String, Object?>{
@@ -220,6 +301,58 @@ Future<void> main(List<String> arguments) async {
   if (!check) {
     stdout.writeln('Run with --check to use this as a blocking gate.');
   }
+}
+
+List<String> canonicalLayoutConstructorVocabularyFailures({
+  required String root,
+}) {
+  final failures = <String>[];
+  for (final pathEntry in _canonicalLayoutConstructorsByPath.entries) {
+    final relativePath = pathEntry.key;
+    final absolutePath = _fromRoot(root, relativePath);
+    final file = File(absolutePath);
+    if (!file.existsSync()) {
+      failures.add(
+        '$screenLayoutConstructorVocabularyCode: missing canonical source $relativePath',
+      );
+      continue;
+    }
+    final unit = parseString(
+      content: file.readAsStringSync(),
+      path: absolutePath,
+      throwIfDiagnostics: false,
+    ).unit;
+    final classes = <String, ClassDeclaration>{
+      for (final declaration in unit.declarations.whereType<ClassDeclaration>())
+        declaration.namePart.typeName.lexeme: declaration,
+    };
+    for (final classEntry in pathEntry.value.entries) {
+      final className = classEntry.key;
+      final declaration = classes[className];
+      if (declaration == null) {
+        failures.add(
+          '$screenLayoutConstructorVocabularyCode: $className is not declared in $relativePath',
+        );
+        continue;
+      }
+      final actual = declaration.body.members
+          .whereType<ConstructorDeclaration>()
+          .map((constructor) => constructor.name?.lexeme)
+          .where((name) => name == null || !name.startsWith('_'))
+          .map((name) => name == null ? className : '$className.$name')
+          .toSet();
+      final expected = classEntry.value;
+      final missing = expected.difference(actual).toList()..sort();
+      final unexpected = actual.difference(expected).toList()..sort();
+      if (missing.isEmpty && unexpected.isEmpty) continue;
+      failures.add(
+        '$screenLayoutConstructorVocabularyCode: $className public constructors in $relativePath drifted'
+        '${missing.isEmpty ? '' : '; missing ${missing.join(', ')}'}'
+        '${unexpected.isEmpty ? '' : '; unregistered ${unexpected.join(', ')}'}',
+      );
+    }
+  }
+  return failures;
 }
 
 List<String> evaluateSourceContract(
@@ -341,7 +474,7 @@ List<String> evaluateLayoutOwnerContract({
   required Map<String, Object?> owner,
   required String declarationSource,
   Set<String> terminalOwnerDelegates = const <String>{},
-  Map<String, String> semanticTabbedPageOwnerRoles = const <String, String>{},
+  Map<String, String> semanticRootPageOwnerRoles = const <String, String>{},
   bool resolvedTerminalOwnerProof = false,
 }) {
   final failures = <String>[];
@@ -387,7 +520,7 @@ List<String> evaluateLayoutOwnerContract({
       declarationSource: declarationSource,
       instantiations: matchingInstantiations,
       reachableInstantiations: instantiations,
-      semanticTabbedPageOwnerRoles: semanticTabbedPageOwnerRoles,
+      semanticRootPageOwnerRoles: semanticRootPageOwnerRoles,
     ),
   );
 
@@ -414,7 +547,7 @@ List<String> _evaluateBodyGeometryContract({
   required String declarationSource,
   required List<LayoutOwnerInstantiation> instantiations,
   required List<LayoutOwnerInstantiation> reachableInstantiations,
-  required Map<String, String> semanticTabbedPageOwnerRoles,
+  required Map<String, String> semanticRootPageOwnerRoles,
 }) {
   if (instantiations.isEmpty) return const <String>[];
   final failures = <String>[];
@@ -451,100 +584,65 @@ List<String> _evaluateBodyGeometryContract({
     return failures;
   }
 
-  if (expression == 'CatchTabbedScreenScaffold') {
-    const typedBodySignatures = <String>{
-      'CatchTabbedScreenBody.single',
-      'CatchTabbedScreenBody.paged',
-    };
+  if (expression == 'CatchRootScreenScaffold.withPrimaryRail' ||
+      expression == 'CatchRootScreenScrollView.withPrimaryRail') {
     final typed = instantiations.every((instantiation) {
       final body = instantiation.namedArguments['body'];
       return body != null &&
           terminalExpressionUsesInDeclaration(
             declarationSource: declarationSource,
             expressionSource: body,
-            acceptedSignatures: typedBodySignatures,
+            acceptedSignatures: catchRootScreenBodyExpressions,
           );
     });
     if (!typed) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: tabbed-root bodies must use CatchTabbedScreenBody.single or CatchTabbedScreenBody.paged on every build/return terminal',
+        '$screenLayoutFamilyCode $screenId: root primary-rail bodies must use CatchRootScreenBody.single or CatchRootScreenBody.paged on every build/return terminal',
       );
       return failures;
     }
     final pageSpecs = reachableInstantiations
         .where(
-          (instantiation) => const <String>{
-            'CatchTabbedPageSpec.scroll',
-            'CatchTabbedPageSpec.surface',
-            'CatchTabbedPageSpec.masterDetail',
-          }.contains(instantiation.signature),
+          (instantiation) => catchRootScreenPageSpecExpressions.contains(
+            instantiation.signature,
+          ),
         )
         .toList();
-    final roles = pageSpecs
-        .map((spec) => spec.namedArguments['bodyLayout'])
-        .toList();
-    if (pageSpecs.isEmpty || roles.any((role) => role == null)) {
-      failures.add(
-        '$screenLayoutFamilyCode $screenId: every typed tab page must declare an explicit bodyLayout role',
-      );
-      return failures;
-    }
-    final inlineRoleMismatch = pageSpecs.any((spec) {
-      final pageArgument = spec.signature == 'CatchTabbedPageSpec.masterDetail'
+    String? resolvePageOwnerRole(LayoutOwnerInstantiation spec) {
+      final pageArgument =
+          spec.signature == 'CatchRootScreenPageSpec.masterDetail'
           ? spec.namedArguments['master']
           : spec.namedArguments['page'];
-      if (pageArgument == null) return true;
+      if (pageArgument == null) return null;
+      final ownerSignature = _rootConstructorSignature(pageArgument);
+      if (!_rootPageScrollRoles.containsKey(ownerSignature)) {
+        return semanticRootPageOwnerRoles[ownerSignature];
+      }
       final inlineOwners =
           layoutOwnerInstantiations('Object _page() => $pageArgument;').where(
             (instantiation) =>
-                instantiation.signature == 'CatchTabbedPageScrollView',
+                _rootPageScrollRoles.containsKey(instantiation.signature),
           );
-      return inlineOwners.any(
-        (page) =>
-            page.namedArguments['bodyLayout'] !=
-            spec.namedArguments['bodyLayout'],
-      );
-    });
-    if (inlineRoleMismatch) {
-      failures.add(
-        '$screenLayoutFamilyCode $screenId: every inline CatchTabbedPageScrollView must match its CatchTabbedPageSpec bodyLayout',
-      );
+      final inlineRoles = inlineOwners
+          .map((owner) => _rootPageScrollRoles[owner.signature])
+          .whereType<String>()
+          .toSet();
+      return inlineRoles.length == 1 ? inlineRoles.single : null;
     }
-    final unresolvedPageOwner = pageSpecs.any((spec) {
-      final pageArgument = spec.signature == 'CatchTabbedPageSpec.masterDetail'
-          ? spec.namedArguments['master']
-          : spec.namedArguments['page'];
-      if (pageArgument == null) return true;
-      final ownerSignature = _rootConstructorSignature(pageArgument);
-      return ownerSignature != 'CatchTabbedPageScrollView' &&
-          !semanticTabbedPageOwnerRoles.containsKey(ownerSignature);
-    });
-    if (unresolvedPageOwner) {
+
+    final roles = pageSpecs.map(resolvePageOwnerRole).toList();
+    if (pageSpecs.isEmpty || roles.any((role) => role == null)) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: every typed tab page must resolve directly to CatchTabbedPageScrollView or a known semantic CatchTabbedPageOwner',
+        '$screenLayoutFamilyCode $screenId: every typed root page must resolve directly to one semantic CatchRootScreenPageScrollView geometry constructor or a known semantic CatchRootScreenPageOwner',
       );
-    }
-    final semanticOwnerRoleMismatch = pageSpecs.any((spec) {
-      final pageArgument = spec.signature == 'CatchTabbedPageSpec.masterDetail'
-          ? spec.namedArguments['master']
-          : spec.namedArguments['page'];
-      if (pageArgument == null) return true;
-      final ownerSignature = _rootConstructorSignature(pageArgument);
-      final ownerRole = semanticTabbedPageOwnerRoles[ownerSignature];
-      return ownerRole != null &&
-          ownerRole != spec.namedArguments['bodyLayout'];
-    });
-    if (semanticOwnerRoleMismatch) {
-      failures.add(
-        '$screenLayoutFamilyCode $screenId: every semantic CatchTabbedPageOwner must match its CatchTabbedPageSpec bodyLayout',
-      );
+      return failures;
     }
     final competingGeometry = terminalStandardBodyGeometryConflicts(
       declarationSource,
     );
     if (competingGeometry.isNotEmpty) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: standard tab page content must not nest competing page geometry (${competingGeometry.join(', ')}); CatchTabbedPageScrollView owns the 20-point horizontal gutter and 24-point top rhythm',
+        '$screenLayoutFamilyCode $screenId: standard root page content must not nest competing page geometry (${competingGeometry.join(', ')}); CatchRootScreenPageScrollView owns the 20-point horizontal gutter and 24-point top rhythm',
       );
     }
     final hasStandard = roles.contains('CatchScreenBodyLayout.standard');
@@ -557,37 +655,40 @@ List<String> _evaluateBodyGeometryContract({
     );
     if (bodyGeometry == 'standard' && !onlyStandard) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: standard tabbed-root bodies must select only CatchScreenBodyLayout.standard pages at the typed body terminal',
+        '$screenLayoutFamilyCode $screenId: standard root primary-rail bodies must select only CatchScreenBodyLayout.standard pages at the typed body terminal',
       );
     } else if (bodyGeometry == 'full-bleed' && !onlyFullBleed) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: full-bleed tabbed-root bodies must select only CatchScreenBodyLayout.fullBleed pages at the typed body terminal',
+        '$screenLayoutFamilyCode $screenId: full-bleed root primary-rail bodies must select only CatchScreenBodyLayout.fullBleed pages at the typed body terminal',
       );
     } else if (bodyGeometry == 'mixed' && (!hasStandard || !hasFullBleed)) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: mixed tabbed-root bodies must expose both standard and full-bleed page roles at the typed body terminal',
+        '$screenLayoutFamilyCode $screenId: mixed root primary-rail bodies must expose both standard and full-bleed page roles at the typed body terminal',
       );
     }
     return failures;
   }
 
-  if (<String>{
-    'CatchRootScreenScaffold',
-    'CatchRootScreenScrollView',
-  }.contains(expression)) {
+  if (_rootScreenRoles.containsKey(expression)) {
     final requiredRole = switch (bodyGeometry) {
       'standard' => 'CatchScreenBodyLayout.standard',
       'full-bleed' => 'CatchScreenBodyLayout.fullBleed',
       _ => null,
     };
-    if (requiredRole != null &&
-        !instantiations.every(
-          (instantiation) =>
-              instantiation.namedArguments['bodyLayout'] == requiredRole,
-        )) {
+    if (requiredRole != null && _rootScreenRoles[expression] != requiredRole) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: $bodyGeometry $family bodies must explicitly select $requiredRole on every build/return terminal',
+        '$screenLayoutFamilyCode $screenId: $bodyGeometry $family bodies must select the matching closed root-screen constructor',
       );
+    }
+    if (bodyGeometry == 'standard') {
+      final competingGeometry = terminalStandardBodyGeometryConflicts(
+        declarationSource,
+      );
+      if (competingGeometry.isNotEmpty) {
+        failures.add(
+          '$screenLayoutFamilyCode $screenId: standard root content must not nest competing page geometry (${competingGeometry.join(', ')}); CatchRootScreenScrollView owns the 20-point horizontal gutter and 24-point top rhythm',
+        );
+      }
     }
     return failures;
   }
@@ -604,7 +705,10 @@ List<String> _evaluateBodyGeometryContract({
 
 bool _isTypedRouteBody(String body) => const <String>{
   'CatchRouteBody.standard',
+  'CatchRouteBody.standardViewport',
+  'CatchRouteBody.standardConstrained',
   'CatchRouteBody.standardSlivers',
+  'CatchRouteBody.standardConstrainedSlivers',
   'CatchRouteBody.standardSections',
   'CatchRouteBody.paged',
   'CatchRouteBody.fullBleed',
@@ -612,7 +716,10 @@ bool _isTypedRouteBody(String body) => const <String>{
 
 bool _isStandardRouteBody(String body) {
   if (_hasConstructor(body, 'CatchRouteBody.standard') ||
+      _hasConstructor(body, 'CatchRouteBody.standardViewport') ||
+      _hasConstructor(body, 'CatchRouteBody.standardConstrained') ||
       _hasConstructor(body, 'CatchRouteBody.standardSlivers') ||
+      _hasConstructor(body, 'CatchRouteBody.standardConstrainedSlivers') ||
       _hasConstructor(body, 'CatchRouteBody.standardSections')) {
     return !body.contains('CatchRouteBody.fullBleed');
   }
@@ -621,7 +728,10 @@ bool _isStandardRouteBody(String body) {
     return false;
   }
   return body.contains('CatchRouteBody.standard(') ||
+      body.contains('CatchRouteBody.standardViewport(') ||
+      body.contains('CatchRouteBody.standardConstrained(') ||
       body.contains('CatchRouteBody.standardSlivers(') ||
+      body.contains('CatchRouteBody.standardConstrainedSlivers(') ||
       body.contains('CatchRouteBody.standardSections(');
 }
 
@@ -671,7 +781,7 @@ const _competingPageInsetNames = <String>{
 /// insets such as `CatchInsets.content` are deliberately not page owners.
 List<String> terminalStandardBodyGeometryConflicts(
   String declarationSource, {
-  String? semanticTabbedPageOwnerRole,
+  String? semanticRootPageOwnerRole,
 }) {
   final unit = parseString(
     content: declarationSource,
@@ -681,7 +791,7 @@ List<String> terminalStandardBodyGeometryConflicts(
   final graph = _LayoutOwnerTerminalGraph(unit.declarations.first);
   final traversal = _StandardBodyGeometryTraversal(
     graph,
-    semanticTabbedPageOwnerRole: semanticTabbedPageOwnerRole,
+    semanticRootPageOwnerRole: semanticRootPageOwnerRole,
   );
   for (final root in graph.reachableRoots()) {
     traversal.walk(root, withinStandardContent: false);
@@ -798,7 +908,7 @@ bool terminalExpressionUsesInDeclaration({
   ).expressionEveryTerminalUses(body.expression, acceptedSignatures);
 }
 
-List<String> evaluateTabbedPageOwnerContract({
+List<String> evaluateRootPageOwnerContract({
   required String symbol,
   required String declarationSource,
 }) {
@@ -809,76 +919,46 @@ List<String> evaluateTabbedPageOwnerContract({
   final firstDeclaration = unit.declarations.firstOrNull;
   if (firstDeclaration is! ClassDeclaration) {
     return <String>[
-      '$screenLayoutFamilyCode $symbol: semantic tab page owner is not a class declaration',
+      '$screenLayoutFamilyCode $symbol: semantic root page owner is not a class declaration',
     ];
   }
-  final declaration = firstDeclaration;
-  final declaredRole = _declaredTabbedPageOwnerRole(declaration);
   final pageScrollOwners = terminalLayoutOwnerInstantiations(declarationSource)
       .where(
         (instantiation) =>
-            instantiation.signature == 'CatchTabbedPageScrollView',
+            _rootPageScrollRoles.containsKey(instantiation.signature),
       )
       .toList();
   final everyTerminalOwnsPageScroll = terminalLayoutOwnerOnEveryBranch(
     declarationSource,
-    const <String>{'CatchTabbedPageScrollView'},
+    _rootPageScrollRoles.keys.toSet(),
   );
+  final roles = pageScrollOwners
+      .map((owner) => _rootPageScrollRoles[owner.signature])
+      .whereType<String>()
+      .toSet();
+  final resolvedRole = roles.length == 1 ? roles.single : null;
   final failures = <String>[];
-  if (declaredRole != 'CatchScreenBodyLayout.standard' &&
-      declaredRole != 'CatchScreenBodyLayout.fullBleed') {
-    failures.add(
-      '$screenLayoutFamilyCode $symbol: semantic tab page owner must declare an explicit bodyLayout getter',
-    );
-  }
   if (pageScrollOwners.isEmpty || !everyTerminalOwnsPageScroll) {
     failures.add(
-      '$screenLayoutFamilyCode $symbol: every semantic tab page owner build/return terminal must terminate in CatchTabbedPageScrollView',
+      '$screenLayoutFamilyCode $symbol: every semantic root page owner build/return terminal must terminate in CatchRootScreenPageScrollView',
     );
-  } else if (declaredRole != null &&
-      pageScrollOwners.any(
-        (owner) =>
-            owner.namedArguments['bodyLayout'] != declaredRole &&
-            owner.namedArguments['bodyLayout'] != 'bodyLayout',
-      )) {
+  } else if (resolvedRole == null) {
     failures.add(
-      '$screenLayoutFamilyCode $symbol: semantic tab page owner must forward its declared bodyLayout to every CatchTabbedPageScrollView terminal',
+      '$screenLayoutFamilyCode $symbol: every semantic root page owner terminal must select one consistent CatchRootScreenPageScrollView geometry constructor',
     );
   }
-  if (declaredRole == 'CatchScreenBodyLayout.standard') {
+  if (resolvedRole == 'CatchScreenBodyLayout.standard') {
     final competingGeometry = terminalStandardBodyGeometryConflicts(
       declarationSource,
-      semanticTabbedPageOwnerRole: declaredRole,
+      semanticRootPageOwnerRole: resolvedRole,
     );
     if (competingGeometry.isNotEmpty) {
       failures.add(
-        '$screenLayoutFamilyCode $symbol: standard semantic tab page content must not nest competing page geometry (${competingGeometry.join(', ')}); CatchTabbedPageScrollView owns the page gutter and top rhythm',
+        '$screenLayoutFamilyCode $symbol: standard semantic root page content must not nest competing page geometry (${competingGeometry.join(', ')}); CatchRootScreenPageScrollView owns the page gutter and top rhythm',
       );
     }
   }
   return failures;
-}
-
-String? _declaredTabbedPageOwnerRole(ClassDeclaration declaration) {
-  final bodyLayoutMember = declaration.body.members
-      .whereType<MethodDeclaration>()
-      .where((method) => method.isGetter && method.name.lexeme == 'bodyLayout')
-      .firstOrNull;
-  return bodyLayoutMember == null
-      ? null
-      : _singleReturnExpression(bodyLayoutMember.body)?.toSource();
-}
-
-Expression? _singleReturnExpression(FunctionBody body) {
-  if (body case final ExpressionFunctionBody expressionBody) {
-    return expressionBody.expression;
-  }
-  final visitor = _DirectReturnExpressionVisitor();
-  body.accept(visitor);
-  return visitor.expressions.length == 1 &&
-          visitor.expressions.single is Expression
-      ? visitor.expressions.single as Expression
-      : null;
 }
 
 const _transparentWidgetArgumentNames = <String>{
@@ -1261,11 +1341,11 @@ final class _LayoutOwnerTerminalGraph {
 final class _StandardBodyGeometryTraversal {
   _StandardBodyGeometryTraversal(
     this.graph, {
-    required this.semanticTabbedPageOwnerRole,
+    required this.semanticRootPageOwnerRole,
   });
 
   final _LayoutOwnerTerminalGraph graph;
-  final String? semanticTabbedPageOwnerRole;
+  final String? semanticRootPageOwnerRole;
   final Set<String> conflicts = <String>{};
   final Set<AstNode> _outerVisited = <AstNode>{};
   final Set<AstNode> _contentVisited = <AstNode>{};
@@ -1300,7 +1380,10 @@ final class _StandardBodyGeometryTraversal {
 
     final standardContentName = switch (signature) {
       'CatchRouteBody.standard' => 'child',
+      'CatchRouteBody.standardViewport' => 'child',
+      'CatchRouteBody.standardConstrained' => 'child',
       'CatchRouteBody.standardSlivers' => 'slivers',
+      'CatchRouteBody.standardConstrainedSlivers' => 'slivers',
       'CatchRouteBody.standardSections' => 'sections',
       _ => null,
     };
@@ -1312,21 +1395,25 @@ final class _StandardBodyGeometryTraversal {
       return;
     }
 
-    if (const <String>{
-          'CatchTabbedPageSpec.scroll',
-          'CatchTabbedPageSpec.surface',
-          'CatchTabbedPageSpec.masterDetail',
-        }.contains(signature) &&
-        _namedArgumentExpression(arguments, 'bodyLayout')?.toSource() ==
-            'CatchScreenBodyLayout.standard') {
-      final pageName = signature == 'CatchTabbedPageSpec.masterDetail'
+    if (_rootScreenRoles[signature] == 'CatchScreenBodyLayout.standard') {
+      if (_namedArgumentExpression(arguments, 'slivers') case final slivers?) {
+        walk(slivers, withinStandardContent: true);
+      }
+      return;
+    }
+
+    if (catchRootScreenPageSpecExpressions.contains(signature)) {
+      final pageName = signature == 'CatchRootScreenPageSpec.masterDetail'
           ? 'master'
           : 'page';
       final page = _namedArgumentExpression(arguments, pageName);
       final pageArguments = page == null ? null : _rootArgumentList(page);
+      final pageSignature = page == null
+          ? null
+          : _rootConstructorSignature(page.toSource());
       if (pageArguments != null &&
-          _rootConstructorSignature(page!.toSource()) ==
-              'CatchTabbedPageScrollView') {
+          _rootPageScrollRoles[pageSignature] ==
+              'CatchScreenBodyLayout.standard') {
         if (_namedArgumentExpression(pageArguments, 'slivers')
             case final slivers?) {
           walk(slivers, withinStandardContent: true);
@@ -1335,8 +1422,8 @@ final class _StandardBodyGeometryTraversal {
       return;
     }
 
-    if (signature == 'CatchTabbedPageScrollView' &&
-        semanticTabbedPageOwnerRole == 'CatchScreenBodyLayout.standard') {
+    if (_rootPageScrollRoles.containsKey(signature) &&
+        semanticRootPageOwnerRole == 'CatchScreenBodyLayout.standard') {
       if (_namedArgumentExpression(arguments, 'slivers') case final slivers?) {
         walk(slivers, withinStandardContent: true);
       }
@@ -2319,7 +2406,7 @@ Future<void> _validateLayoutOwner({
   required Map<String, Object?> owner,
   required Set<String> terminalOwnerDelegates,
   required Set<DeclarationBinding> terminalOwnerBindings,
-  required Map<String, String> semanticTabbedPageOwnerRoles,
+  required Map<String, String> semanticRootPageOwnerRoles,
   required List<String> hardFailures,
 }) async {
   final relativePath = owner['file'] as String? ?? '';
@@ -2343,9 +2430,9 @@ Future<void> _validateLayoutOwner({
     declaration.offset,
     declaration.end,
   );
-  final referencedSemanticOwnerRoles = _resolvedSemanticTabbedPageOwnerRoles(
+  final referencedSemanticOwnerRoles = _resolvedSemanticRootPageOwnerRoles(
     declaration,
-    semanticTabbedPageOwnerRoles,
+    semanticRootPageOwnerRoles,
   );
   final expression = owner['expression'] as String? ?? '';
   final resolvedTerminalOwnerProof = await _ResolvedLayoutOwnerTerminalProof(
@@ -2360,7 +2447,7 @@ Future<void> _validateLayoutOwner({
       owner: owner,
       declarationSource: declarationSource,
       terminalOwnerDelegates: terminalOwnerDelegates,
-      semanticTabbedPageOwnerRoles: referencedSemanticOwnerRoles,
+      semanticRootPageOwnerRoles: referencedSemanticOwnerRoles,
       resolvedTerminalOwnerProof: resolvedTerminalOwnerProof,
     ),
   );
@@ -2380,7 +2467,7 @@ Future<void> _validateProductionScaffoldOwnership(
   }
 }
 
-Future<Map<String, String>> _productionTabbedPageOwnerRoles(
+Future<Map<String, String>> _productionRootPageOwnerRoles(
   _ProductionAnalysis productionAnalysis,
 ) async {
   final roles = <String, String>{};
@@ -2388,27 +2475,30 @@ Future<Map<String, String>> _productionTabbedPageOwnerRoles(
     for (final declaration in unit.result.unit.declarations) {
       if (declaration is! ClassDeclaration) continue;
       final element = declaration.declaredFragment?.element;
-      if (element == null || !_implementsCatchTabbedPageOwner(element)) {
+      if (element == null || !_implementsCatchRootScreenPageOwner(element)) {
         continue;
       }
-      final role = _declaredTabbedPageOwnerRole(declaration);
-      if (role != null &&
-          const <String>{
-            'CatchScreenBodyLayout.standard',
-            'CatchScreenBodyLayout.fullBleed',
-          }.contains(role)) {
-        roles[_interfaceElementKey(element)] = role;
+      final declarationSource = unit.result.content.substring(
+        declaration.offset,
+        declaration.end,
+      );
+      final ownerRoles = terminalLayoutOwnerInstantiations(declarationSource)
+          .map((owner) => _rootPageScrollRoles[owner.signature])
+          .whereType<String>()
+          .toSet();
+      if (ownerRoles.length == 1) {
+        roles[_interfaceElementKey(element)] = ownerRoles.single;
       }
     }
   }
   return roles;
 }
 
-Map<String, String> _resolvedSemanticTabbedPageOwnerRoles(
+Map<String, String> _resolvedSemanticRootPageOwnerRoles(
   CompilationUnitMember declaration,
   Map<String, String> rolesByElement,
 ) {
-  final visitor = _ResolvedSemanticTabbedPageOwnerVisitor(rolesByElement);
+  final visitor = _ResolvedSemanticRootPageOwnerVisitor(rolesByElement);
   declaration.accept(visitor);
   return visitor.rolesBySourceSignature;
 }
@@ -2421,7 +2511,7 @@ String _interfaceElementKey(InterfaceElement element) {
   return '$source#${element.displayName}';
 }
 
-Future<void> _validateProductionTabbedPageOwners(
+Future<void> _validateProductionRootPageOwners(
   _ProductionAnalysis productionAnalysis,
   List<String> hardFailures,
 ) async {
@@ -2429,19 +2519,19 @@ Future<void> _validateProductionTabbedPageOwners(
     for (final declaration in unit.result.unit.declarations) {
       if (declaration is! ClassDeclaration) continue;
       final element = declaration.declaredFragment?.element;
-      if (element == null || !_implementsCatchTabbedPageOwner(element)) {
+      if (element == null || !_implementsCatchRootScreenPageOwner(element)) {
         continue;
       }
       final symbol = declaration.namePart.typeName.lexeme;
-      if (unit.relativePath == _canonicalTabbedScreenPath &&
-          symbol == 'CatchTabbedPageScrollView') {
+      if (unit.relativePath == _canonicalRootScreenBodyPath &&
+          symbol == 'CatchRootScreenPageScrollView') {
         continue;
       }
       final declarationSource = unit.result.content.substring(
         declaration.offset,
         declaration.end,
       );
-      for (final failure in evaluateTabbedPageOwnerContract(
+      for (final failure in evaluateRootPageOwnerContract(
         symbol: symbol,
         declarationSource: declarationSource,
       )) {
@@ -2451,15 +2541,15 @@ Future<void> _validateProductionTabbedPageOwners(
   }
 }
 
-bool _implementsCatchTabbedPageOwner(InterfaceElement element) =>
+bool _implementsCatchRootScreenPageOwner(InterfaceElement element) =>
     element.allSupertypes.any((type) {
       final candidate = type.element;
-      if (candidate.displayName != 'CatchTabbedPageOwner') return false;
+      if (candidate.displayName != 'CatchRootScreenPageOwner') return false;
       final source = candidate.library.firstFragment.source.fullName.replaceAll(
         '\\',
         '/',
       );
-      return source.endsWith('/$_canonicalTabbedScreenPath');
+      return source.endsWith('/$_canonicalRootScreenBodyPath');
     });
 
 List<String> resolvedScaffoldOwnershipFailures({
@@ -3870,9 +3960,9 @@ final class _LayoutOwnerInstantiationVisitor extends RecursiveAstVisitor<void> {
   }
 }
 
-final class _ResolvedSemanticTabbedPageOwnerVisitor
+final class _ResolvedSemanticRootPageOwnerVisitor
     extends RecursiveAstVisitor<void> {
-  _ResolvedSemanticTabbedPageOwnerVisitor(this.rolesByElement);
+  _ResolvedSemanticRootPageOwnerVisitor(this.rolesByElement);
 
   final Map<String, String> rolesByElement;
   final Map<String, String> rolesBySourceSignature = <String, String>{};

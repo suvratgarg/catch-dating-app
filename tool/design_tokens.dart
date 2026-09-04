@@ -222,6 +222,7 @@ String _buildDartTokens(_TokenRegistry registry) {
   }
 
   buffer.writeln('}');
+  _writePlatformTokens(buffer, registry);
 
   return buffer.toString();
 }
@@ -685,3 +686,103 @@ bool _isReference(String value) =>
     value.startsWith('{') && value.endsWith('}') && value.length > 2;
 
 String _referencePath(String value) => value.substring(1, value.length - 1);
+
+/// Emit immutable profiles; the shared platform selector chooses one profile.
+/// Fail generation on a missing role or invalid metric instead of silently
+/// exporting an incomplete platform scale.
+void _writePlatformTokens(StringBuffer buffer, _TokenRegistry registry) {
+  final roles = registry.tokens.values
+      .where(
+        (t) =>
+            t.path.length == 4 &&
+            t.path[0] == 'typography' &&
+            t.path[1] == 'ios',
+      )
+      .map((t) => t.path[2])
+      .toSet();
+  if (roles.isEmpty) {
+    throw const FormatException('Missing typography profiles.');
+  }
+  final androidRoles = registry.tokens.values
+      .where(
+        (t) =>
+            t.path.length == 4 &&
+            t.path[0] == 'typography' &&
+            t.path[1] == 'android',
+      )
+      .map((t) => t.path[2])
+      .toSet();
+  if (roles.length != androidRoles.length || !roles.containsAll(androidRoles)) {
+    throw const FormatException('Typography platform roles must match.');
+  }
+  buffer
+    ..writeln()
+    ..writeln('@immutable')
+    ..writeln('class GeneratedCatchTypographyProfile {')
+    ..writeln('  const GeneratedCatchTypographyProfile({');
+  for (final role in roles) {
+    buffer.writeln('    required this.$role,');
+  }
+  buffer.writeln('  });');
+  for (final role in roles) {
+    buffer.writeln('  final TextStyle $role;');
+  }
+  buffer
+    ..writeln('}')
+    ..writeln()
+    ..writeln('abstract final class GeneratedCatchTypographyTokens {');
+  for (final platform in ['ios', 'android']) {
+    buffer.writeln(
+      '  static const $platform = GeneratedCatchTypographyProfile(',
+    );
+    for (final role in roles) {
+      Object? metric(String key) {
+        final path = 'typography.$platform.$role.$key';
+        final token = registry.tokens[path];
+        if (token == null) throw FormatException('Missing $path.');
+        return registry.resolvedValue(token);
+      }
+
+      final size = _dartDimensionNumber(metric('size'));
+      final line = _dartDimensionNumber(metric('lineHeight'));
+      final tracking = _dartDimensionNumber(metric('tracking'));
+      final weight = metric('weight');
+      if (double.parse(size) <= 0 ||
+          double.parse(line) < double.parse(size) ||
+          weight is! int ||
+          weight < 100 ||
+          weight > 900 ||
+          weight % 100 != 0) {
+        throw FormatException('Invalid typography metrics: $platform.$role.');
+      }
+      buffer.writeln(
+        '    $role: TextStyle(fontSize: $size, height: $line / $size, '
+        'fontWeight: FontWeight.w$weight, letterSpacing: $tracking),',
+      );
+    }
+    buffer.writeln('  );');
+  }
+  buffer
+    ..writeln('}')
+    ..writeln()
+    ..writeln('abstract final class GeneratedCatchLayoutTokens {');
+  for (final token in registry.tokens.values.where(
+    (t) => t.path.length == 2 && t.path[0] == 'layout',
+  )) {
+    buffer.writeln(
+      '  static const double ${token.path.last} = ${_dartDimensionNumber(registry.resolvedValue(token))};',
+    );
+  }
+  buffer
+    ..writeln('}')
+    ..writeln()
+    ..writeln('abstract final class GeneratedCatchInteractionTokens {');
+  for (final token in registry.tokens.values.where(
+    (t) => t.path.length == 3 && t.path[0] == 'interaction',
+  )) {
+    buffer.writeln(
+      '  static const double ${_camel(token.path.skip(1))} = ${_dartDimensionNumber(registry.resolvedValue(token))};',
+    );
+  }
+  buffer.writeln('}');
+}

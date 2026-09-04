@@ -31,9 +31,16 @@ void registerFirebaseMessagingBackgroundHandler() {
 
 String? chatRouteFromMessageData(Map<String, Object?> data) {
   final matchId = data['matchId'];
-  if (matchId is! String || matchId.isEmpty) return null;
-  if (AppConfig.appRole.isHost) return '/host/inbox/$matchId';
-  return '/chats/$matchId';
+  if (matchId is! String ||
+      matchId.trim().isEmpty ||
+      matchId.contains('/') ||
+      matchId == '.' ||
+      matchId == '..') {
+    return null;
+  }
+  final id = Uri.encodeComponent(matchId);
+  if (AppConfig.appRole.isHost) return '/host/inbox/$id';
+  return '/chats/$id';
 }
 
 String? hostEventManageRouteFromMessageData(Map<String, Object?> data) {
@@ -103,17 +110,35 @@ void navigateToMessageRoute(GoRouter router, Map<String, Object?> data) {
 }
 
 class FcmService {
-  FcmService(this._db, this._errorLogger);
+  FcmService(
+    this._db,
+    this._errorLogger, {
+    FirebaseMessaging? messaging,
+    Stream<RemoteMessage>? foregroundMessages,
+    Stream<RemoteMessage>? openedMessages,
+  }) : _messagingOverride = messaging,
+       _foregroundMessagesOverride = foregroundMessages,
+       _openedMessagesOverride = openedMessages;
 
   static const _installationIdPreferenceKey = 'catch.pushInstallationId';
+  static const _tokenOwnerPreferenceKey = 'catch.pushTokenOwner';
+  static const _revokeTokenPreferenceKey = 'catch.pushTokenNeedsRevocation';
 
   final FirebaseFirestore _db;
   final ErrorLogger _errorLogger;
+  final FirebaseMessaging? _messagingOverride;
+  final Stream<RemoteMessage>? _foregroundMessagesOverride;
+  final Stream<RemoteMessage>? _openedMessagesOverride;
+  FirebaseMessaging get _messaging =>
+      _messagingOverride ?? FirebaseMessaging.instance;
   Future<void>? _initialization;
   Future<String>? _installationId;
   String? _initializedUid;
   StreamSubscription<String>? _tokenRefreshSubscription;
   StreamSubscription<RemoteMessage>? _messageOpenedSubscription;
+  StreamSubscription<RemoteMessage>? _foregroundSubscription;
+  int _generation = 0;
+  String? _registeredToken;
 
   bool get isSupportedPlatform =>
       AppConfig.supportsPushMessagingOnCurrentPlatform;
@@ -122,6 +147,7 @@ class FcmService {
   Future<void> initialize({
     required String uid,
     required GoRouter router,
+    void Function(RemoteMessage message)? onForegroundMessage,
   }) async {
     if (!isSupportedPlatform) return;
     final currentInitialization = _initialization;
@@ -129,9 +155,15 @@ class FcmService {
       return currentInitialization;
     }
 
+    final generation = ++_generation;
     _initializedUid = uid;
     final initialization = withBackendErrorContext(
-      () => _initialize(uid: uid, router: router),
+      () => _initialize(
+        uid: uid,
+        router: router,
+        generation: generation,
+        onForegroundMessage: onForegroundMessage,
+      ),
       context: const BackendErrorContext(
         service: BackendService.messaging,
         action: 'initialize push notifications',
@@ -152,41 +184,151 @@ class FcmService {
   }
 
   Future<void> reset() async {
+    ++_generation;
     _initialization = null;
     _initializedUid = null;
-    await _tokenRefreshSubscription?.cancel();
-    await _messageOpenedSubscription?.cancel();
+    await _cancelSubscriptions();
+  }
+
+  /// Best-effort remote cleanup must never trap sign-out while offline. A
+  /// persisted revocation flag prevents reusing this address at the next login.
+  Future<void> unregisterCurrentInstallation() async {
+    if (!isSupportedPlatform) return;
+    final uid = _initializedUid;
+    final token = _registeredToken;
+    await reset();
+    Future<void> attempt(
+      Future<void> Function() operation,
+      String resource,
+    ) async {
+      try {
+        await operation().timeout(const Duration(seconds: 3));
+      } catch (error, stackTrace) {
+        _logError(
+          error,
+          stackTrace,
+          resource: resource,
+          action: 'unregister push token',
+        );
+      }
+    }
+
+    await attempt(() async {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_revokeTokenPreferenceKey, true);
+    }, 'push_installations');
+    await Future.wait([
+      attempt(() async {
+        await _messaging.deleteToken();
+        // Leave the flag set: a delayed SDK completion must not clear a newer
+        // session's flag. The next initialization completes rotation itself.
+      }, 'push_notifications'),
+      if (uid != null)
+        attempt(() async {
+          final id = await _pushInstallationId();
+          final user = _db.collection('users').doc(uid);
+          await user.collection('pushInstallations').doc(id).delete();
+          if (!AppConfig.appRole.isHost && token != null) {
+            await withBackendErrorContext(
+              () => _db.runTransaction((tx) async {
+                final snapshot = await tx.get(user);
+                if (snapshot.data()?['fcmToken'] == token) {
+                  tx.update(user, {'fcmToken': FieldValue.delete()});
+                }
+              }),
+              context: const BackendErrorContext(
+                service: BackendService.firestore,
+                action: 'clear legacy push registration',
+                resource: 'push_installations',
+              ),
+            );
+          }
+        }, 'push_installations'),
+    ]);
+    _registeredToken = null;
+  }
+
+  Future<void> _cancelSubscriptions() async {
+    final cancellations = [
+      _tokenRefreshSubscription?.cancel(),
+      _messageOpenedSubscription?.cancel(),
+      _foregroundSubscription?.cancel(),
+    ];
     _tokenRefreshSubscription = null;
     _messageOpenedSubscription = null;
+    _foregroundSubscription = null;
+    await Future.wait(cancellations.whereType<Future<void>>());
   }
 
   Future<void> _initialize({
     required String uid,
     required GoRouter router,
+    required int generation,
+    void Function(RemoteMessage message)? onForegroundMessage,
   }) async {
-    await reset();
-    _initializedUid = uid;
+    await _cancelSubscriptions();
+    bool isCurrent() => generation == _generation && _initializedUid == uid;
+    if (!isCurrent()) return;
+
+    final preferences = await SharedPreferences.getInstance();
+    if (!isCurrent()) return;
+    final previousOwner = preferences.getString(_tokenOwnerPreferenceKey);
+    final needsLegacyRotation =
+        previousOwner == null &&
+        preferences.containsKey(_installationIdPreferenceKey);
+    if (preferences.getBool(_revokeTokenPreferenceKey) == true ||
+        needsLegacyRotation ||
+        (previousOwner != null && previousOwner != uid)) {
+      await _messaging.deleteToken();
+      if (!isCurrent()) return;
+      await preferences.remove(_revokeTokenPreferenceKey);
+    }
+    await preferences.setString(_tokenOwnerPreferenceKey, uid);
+    if (!isCurrent()) return;
+
+    _foregroundSubscription =
+        (_foregroundMessagesOverride ?? FirebaseMessaging.onMessage).listen((
+          message,
+        ) {
+          if (isCurrent() && _isForSession(message, uid)) {
+            onForegroundMessage?.call(message);
+          }
+        });
+    _messageOpenedSubscription =
+        (_openedMessagesOverride ?? FirebaseMessaging.onMessageOpenedApp)
+            .listen((message) {
+              if (isCurrent() && _isForSession(message, uid)) {
+                _handleTap(router, message);
+              }
+            });
 
     // Request permission (no-op on Android < 13, required on iOS).
-    await FirebaseMessaging.instance.requestPermission();
+    await _messaging.requestPermission();
+    if (!isCurrent()) return;
+    // Catch owns foreground visuals. Do not show a second native iOS banner.
+    await _messaging.setForegroundNotificationPresentationOptions();
+    if (!isCurrent()) return;
 
-    _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh
-        .listen((token) => unawaited(_saveToken(uid, token)));
+    _tokenRefreshSubscription = _messaging.onTokenRefresh.listen((token) {
+      if (isCurrent()) unawaited(_saveToken(uid, token, generation));
+    });
     final token = await _currentToken();
-    if (token != null) await _saveToken(uid, token);
-
-    // Foreground: the real-time Firestore stream updates the UI automatically.
-    // We don't display an OS notification while the app is open, so no handler needed.
-
-    // Background tap: app was open in background, user tapped notification.
-    _messageOpenedSubscription = FirebaseMessaging.onMessageOpenedApp.listen(
-      (msg) => _handleTap(router, msg),
-    );
+    if (!isCurrent()) return;
+    if (token != null) await _saveToken(uid, token, generation);
+    if (!isCurrent()) return;
 
     // Terminated tap: app was closed, user tapped notification.
-    final initial = await FirebaseMessaging.instance.getInitialMessage();
-    if (initial != null) _handleTap(router, initial);
+    final initial = await _messaging.getInitialMessage();
+    if (isCurrent() && initial != null && _isForSession(initial, uid)) {
+      _handleTap(router, initial);
+    }
   }
+
+  bool _isForSession(RemoteMessage message, String uid) =>
+      (message.data['recipientUid'] == null ||
+          message.data['recipientUid'] == uid) &&
+      (message.data['appRole'] == null ||
+          message.data['appRole'] == AppConfig.appRoleName);
 
   void _handleTap(GoRouter router, RemoteMessage message) {
     navigateToMessageRoute(router, message.data);
@@ -194,18 +336,16 @@ class FcmService {
 
   Future<String?> _currentToken() async {
     if (kIsWeb) {
-      return FirebaseMessaging.instance.getToken(
-        vapidKey: AppConfig.firebaseWebVapidKey,
-      );
+      return _messaging.getToken(vapidKey: AppConfig.firebaseWebVapidKey);
     }
 
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       final apnsToken = await _waitForApnsToken();
       if (apnsToken == null) return null;
-      await FirebaseMessaging.instance.setAutoInitEnabled(true);
+      await _messaging.setAutoInitEnabled(true);
     }
 
-    return FirebaseMessaging.instance.getToken();
+    return _messaging.getToken();
   }
 
   Future<String?> _waitForApnsToken({
@@ -213,14 +353,17 @@ class FcmService {
   }) async {
     final deadline = DateTime.now().add(timeout);
     while (DateTime.now().isBefore(deadline)) {
-      final token = await FirebaseMessaging.instance.getAPNSToken();
+      final token = await _messaging.getAPNSToken();
       if (token != null) return token;
       await Future<void>.delayed(const Duration(milliseconds: 250));
     }
-    return FirebaseMessaging.instance.getAPNSToken();
+    return _messaging.getAPNSToken();
   }
 
-  Future<void> _saveToken(String uid, String token) async {
+  Future<void> _saveToken(String uid, String token, int generation) async {
+    bool isCurrent() => generation == _generation && _initializedUid == uid;
+    if (!isCurrent()) return;
+    _registeredToken = token;
     final userRef = _db.collection('users').doc(uid);
 
     // Keep the legacy consumer field working while older production rules and
@@ -237,6 +380,7 @@ class FcmService {
     try {
       final installationId = await _pushInstallationId();
       final packageInfo = await PackageInfo.fromPlatform();
+      if (!isCurrent()) return;
       await userRef.collection('pushInstallations').doc(installationId).set({
         'token': token,
         'appRole': AppConfig.appRoleName,
@@ -249,11 +393,7 @@ class FcmService {
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (error, stackTrace) {
-      _logError(
-        error,
-        stackTrace,
-        resource: 'push_installations',
-      );
+      _logError(error, stackTrace, resource: 'push_installations');
     }
   }
 
@@ -261,14 +401,17 @@ class FcmService {
     Object error,
     StackTrace stackTrace, {
     required String resource,
+    String action = 'save push token',
   }) {
     _errorLogger.logAppException(
       normalizeBackendError(
         error,
         stackTrace: stackTrace,
         context: BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'save push token',
+          service: resource == 'push_notifications'
+              ? BackendService.messaging
+              : BackendService.firestore,
+          action: action,
           resource: resource,
         ),
       ),

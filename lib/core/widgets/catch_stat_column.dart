@@ -32,7 +32,7 @@ class CatchStatColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final valueColor = highlight ? t.primary : t.ink;
-    final labelColor = highlight ? t.primary : t.ink3;
+    final labelColor = highlight ? t.primary : t.ink2;
     final align = center ? CrossAxisAlignment.center : CrossAxisAlignment.start;
 
     final content = Column(
@@ -48,17 +48,13 @@ class CatchStatColumn extends StatelessWidget {
             value!,
             style: monoValue
                 ? CatchTextStyles.mono(context, color: valueColor)
-                : CatchTextStyles.sectionTitle(context, color: valueColor),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+                : CatchTextStyles.metric(context, color: valueColor),
             textAlign: center ? TextAlign.center : null,
           ),
-        gapH2,
+        gapH4,
         Text(
           label,
           style: CatchTextStyles.supporting(context, color: labelColor),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
           textAlign: center ? TextAlign.center : null,
         ),
       ],

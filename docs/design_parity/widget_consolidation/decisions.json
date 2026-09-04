@@ -5811,7 +5811,7 @@
           "action": "keep"
         },
         {
-          "name": "CatchTabbedPageScrollView",
+          "name": "CatchRootScreenPageScrollView",
           "action": "keep"
         }
       ],

@@ -232,7 +232,7 @@ class CatchSliverScreenBody extends StatelessWidget {
     required this.layout,
     required this.slivers,
     this.constrainToContentWidth = false,
-    this.maxContentExtent = CatchLayout.tabbedPageMaxExtent,
+    this.maxContentExtent = CatchLayout.screenPageMaxExtent,
   }) : assert(maxContentExtent > 0);
 
   final CatchScreenBodyLayout layout;
@@ -269,7 +269,7 @@ class CatchSliverContentWidth extends StatelessWidget {
   const CatchSliverContentWidth({
     super.key,
     required this.sliver,
-    this.maxExtent = CatchLayout.tabbedPageMaxExtent,
+    this.maxExtent = CatchLayout.screenPageMaxExtent,
   }) : assert(maxExtent > 0);
 
   final Widget sliver;
@@ -1279,7 +1279,9 @@ class CatchSection extends StatelessWidget {
     if (!hasTitle && !hasSubtitle && trailing == null) return null;
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: hasSubtitle
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
       children: [
         if (hasTitle || hasSubtitle)
           Expanded(

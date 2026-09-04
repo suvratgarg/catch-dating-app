@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_scaled_preferred_size.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -250,7 +251,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
   }
 }
 
-/// App-bar wrapper for static/root screens that use the tab-screen title voice.
+/// App-bar wrapper for static/root screens that use the root-title voice.
 ///
 /// The factory requires [BuildContext] because [preferredSize] must be resolved
 /// synchronously from the caller's text scaler and direction before this
@@ -271,8 +272,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     CrossAxisAlignment rowCrossAxisAlignment = CrossAxisAlignment.center,
     Color? backgroundColor,
     bool surface = false,
-    bool border = false,
-    bool? divider,
+    bool divider = false,
     bool gutter = false,
     bool applySafeArea = true,
     PreferredSizeWidget? bottom,
@@ -299,7 +299,6 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     rowCrossAxisAlignment: rowCrossAxisAlignment,
     backgroundColor: backgroundColor,
     surface: surface,
-    border: border,
     divider: divider,
     gutter: gutter,
     applySafeArea: applySafeArea,
@@ -309,12 +308,12 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     search: search,
   );
 
-  /// Root-title chrome embedded in [CatchTabbedScreenScaffold].
+  /// Root-title chrome embedded in [CatchRootScreenScaffold].
   ///
-  /// The tabbed owner supplies the safe area and pinned rail, so this variant
+  /// The root owner supplies the safe area and pinned rail, so this variant
   /// uses the same content-sized title band and 4 pt rail handoff as the
   /// non-search title path instead of inheriting the 56 pt app-bar minimum.
-  factory CatchScreenTopBar.tabbed({
+  factory CatchScreenTopBar.primaryRail({
     Key? key,
     required BuildContext context,
     required String title,
@@ -332,7 +331,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       hasSubtitle: subtitle?.isNotEmpty ?? false,
       titleMaxLines: titleMaxLines,
       hasActions: actions.isNotEmpty,
-      contentPadding: CatchInsets.tabbedScreenTitleBlock,
+      contentPadding: CatchInsets.primaryRailTitleBlock,
       minimumHeight: 0,
     ),
     key: key,
@@ -347,11 +346,10 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     rowCrossAxisAlignment: rowCrossAxisAlignment,
     backgroundColor: null,
     surface: false,
-    border: false,
     divider: false,
     gutter: false,
     applySafeArea: false,
-    contentPadding: CatchInsets.tabbedScreenTitleBlock,
+    contentPadding: CatchInsets.primaryRailTitleBlock,
     bottom: null,
     trailing: null,
     search: search,
@@ -371,7 +369,6 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     required this.rowCrossAxisAlignment,
     required this.backgroundColor,
     required this.surface,
-    required this.border,
     required this.divider,
     required this.gutter,
     required this.applySafeArea,
@@ -392,8 +389,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
   final CrossAxisAlignment rowCrossAxisAlignment;
   final Color? backgroundColor;
   final bool surface;
-  final bool border;
-  final bool? divider;
+  final bool divider;
   final bool gutter;
   final bool applySafeArea;
   final EdgeInsetsGeometry? contentPadding;
@@ -489,7 +485,6 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       actions: largeText ? const <Widget>[] : actions,
       backgroundColor: backgroundColor,
       surface: surface,
-      border: border,
       divider: divider,
       gutter: gutter,
       applySafeArea: applySafeArea,
@@ -508,7 +503,7 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
 /// Mirrors the design handoff's `AppBar`: compact or large title chrome,
 /// standard back/close [CatchIconButton] composition, optional trailing action, and
 /// declarative expanding search.
-class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
+class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
   const CatchTopBar({
     super.key,
     this.title,
@@ -528,8 +523,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.onBack,
     this.backgroundColor,
     this.surface = false,
-    this.border = false,
-    this.divider,
+    this.divider = false,
     this.gutter = true,
     this.applySafeArea = true,
     this.contentPadding,
@@ -558,8 +552,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.onBack,
     this.backgroundColor,
     this.surface = false,
-    this.border = false,
-    this.divider,
+    this.divider = false,
     this.gutter = true,
     this.applySafeArea = true,
     this.contentPadding,
@@ -600,8 +593,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onBack;
   final Color? backgroundColor;
   final bool surface;
-  final bool border;
-  final bool? divider;
+  final bool divider;
   final bool gutter;
   final bool applySafeArea;
   final EdgeInsetsGeometry? contentPadding;
@@ -617,6 +609,17 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   Size get preferredSize => Size.fromHeight(
     (isLarge ? largeHeight : height) + (bottom?.preferredSize.height ?? 0),
   );
+
+  @override
+  Size preferredSizeFor(BuildContext context) {
+    final bottomHeight = switch (bottom) {
+      final CatchScaledPreferredSize scaled =>
+        scaled.preferredSizeFor(context).height,
+      final bar? => bar.preferredSize.height,
+      null => 0.0,
+    };
+    return Size.fromHeight((isLarge ? largeHeight : height) + bottomHeight);
+  }
 
   bool get isLarge => large ?? (kicker != null && kicker!.isNotEmpty);
 
@@ -664,7 +667,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final showDivider = widget.divider ?? (widget.border || widget.surface);
+    final showDivider = widget.divider;
     final background =
         widget.backgroundColor ?? (widget.surface ? t.surface : t.bg);
 
@@ -909,7 +912,8 @@ Widget _buildCompactTopBarFrame(
         EdgeInsets.symmetric(
           horizontal: gutter ? CatchSpacing.screenPx : CatchSpacing.s0,
         ),
-    decoration: BoxDecoration(
+    // The scroll divider paints inside the frame without reducing its title lane.
+    foregroundDecoration: BoxDecoration(
       border: showDivider
           ? Border(bottom: BorderSide(color: t.line))
           : const Border(),
@@ -971,7 +975,8 @@ Widget _buildLargeTopBarFrame(
           gutter ? CatchSpacing.screenPx : CatchSpacing.s0,
           CatchSpacing.s0,
         ),
-    decoration: BoxDecoration(
+    // The scroll divider paints inside the frame without reducing its title lane.
+    foregroundDecoration: BoxDecoration(
       border: showDivider
           ? Border(bottom: BorderSide(color: t.line))
           : const Border(),

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/generated/catch_design_tokens.g.dart';
 import 'package:flutter/material.dart';
 
@@ -31,6 +32,9 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     required this.danger,
     required this.like,
     required this.pass,
+    required this.positiveText,
+    required this.attentionText,
+    required this.affinityText,
     required this.gold,
     required this.heroGrad,
   });
@@ -95,6 +99,15 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   final Color pass;
 
   /// Gold / highlight colour (streak, achievement).
+  /// Readable categorical status foreground, paired with a subtle fill.
+  final Color positiveText;
+
+  /// Readable categorical status foreground, paired with a subtle fill.
+  final Color attentionText;
+
+  /// Readable categorical status foreground, paired with a subtle fill.
+  final Color affinityText;
+
   final Color gold;
 
   /// Deprecated compatibility gradient for older surfaces. New event/club hero
@@ -171,6 +184,9 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     danger: GeneratedCatchColorTokens.lightDanger,
     like: GeneratedCatchColorTokens.lightLike,
     pass: GeneratedCatchColorTokens.lightPass,
+    positiveText: GeneratedCatchColorTokens.lightPositiveText,
+    attentionText: GeneratedCatchColorTokens.lightAttentionText,
+    affinityText: GeneratedCatchColorTokens.lightAffinityText,
     gold: GeneratedCatchColorTokens.lightGold,
     // deprecated: hero gradients now derive from ActivityPalette
     heroGrad: GeneratedCatchGradientTokens.lightHeroGrad,
@@ -200,6 +216,9 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     danger: GeneratedCatchColorTokens.darkDanger,
     like: GeneratedCatchColorTokens.darkLike,
     pass: GeneratedCatchColorTokens.darkPass,
+    positiveText: GeneratedCatchColorTokens.darkPositiveText,
+    attentionText: GeneratedCatchColorTokens.darkAttentionText,
+    affinityText: GeneratedCatchColorTokens.darkAffinityText,
     gold: GeneratedCatchColorTokens.darkGold,
     heroGrad: GeneratedCatchGradientTokens.darkHeroGrad,
   );
@@ -241,6 +260,9 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     Color? danger,
     Color? like,
     Color? pass,
+    Color? positiveText,
+    Color? attentionText,
+    Color? affinityText,
     Color? gold,
     Gradient? heroGrad,
   }) => CatchTokens(
@@ -263,6 +285,9 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     danger: danger ?? this.danger,
     like: like ?? this.like,
     pass: pass ?? this.pass,
+    positiveText: positiveText ?? this.positiveText,
+    attentionText: attentionText ?? this.attentionText,
+    affinityText: affinityText ?? this.affinityText,
     gold: gold ?? this.gold,
     heroGrad: heroGrad ?? this.heroGrad,
   );
@@ -290,6 +315,9 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
       danger: Color.lerp(danger, other.danger, t)!,
       like: Color.lerp(like, other.like, t)!,
       pass: Color.lerp(pass, other.pass, t)!,
+      positiveText: Color.lerp(positiveText, other.positiveText, t)!,
+      attentionText: Color.lerp(attentionText, other.attentionText, t)!,
+      affinityText: Color.lerp(affinityText, other.affinityText, t)!,
       gold: Color.lerp(gold, other.gold, t)!,
       heroGrad: Gradient.lerp(heroGrad, other.heroGrad, t)!,
     );
@@ -327,7 +355,7 @@ abstract final class CatchSpacing {
 
   /// App-wide page gutter and body padding from the design handoff.
   static const double screenPx = CatchSpacing.s5;
-  static const double screenPt = CatchSpacing.s6;
+  static const double screenPt = CatchSpacing.s4;
   static const double screenPb = CatchSpacing.s5;
 }
 
@@ -342,7 +370,7 @@ abstract final class CatchGaps {
 
   /// Gap between a screen-header title and the kicker/subtitle paired with it
   /// (browse-header title→subtitle, Home dashboard eyebrow→title). Centralises
-  /// the subtitle-to-title relationship of the shared tab-screen header rhythm.
+  /// the subtitle-to-title relationship of the shared root-screen header rhythm.
   static const double headerTitleToSubtitle = CatchSpacing.s1;
 
   /// Distance between closely related rows inside the same content cluster.
@@ -520,11 +548,11 @@ abstract final class CatchInsets {
     CatchSpacing.s3,
   );
 
-  // ── Shared tab-screen header rhythm ─────────────────────────────────────────
+  // ── Shared root-screen header rhythm ────────────────────────────────────────
   //
-  // The five top-level tab screens (Home, Clubs, Catches, Chats, Profile) share
-  // one spacing contract for the band between their title block, any pinned
-  // search/filter/tab control, and the first content row. These role tokens
+  // Root destinations share one spacing contract for the band between their
+  // title block, an optional pinned primary rail, and the first content row.
+  // These role tokens
   // centralise that rhythm so screens stop tuning their own raw EdgeInsets.
   // The horizontal page gutter stays [CatchSpacing.screenPx] (s5) everywhere.
 
@@ -539,14 +567,14 @@ abstract final class CatchInsets {
 
   /// Title block for a pinned peer-tab destination. The rail owns its full
   /// interactive height; this is the small visual handoff into that rail.
-  static const EdgeInsets tabbedScreenTitleBlock = EdgeInsets.fromLTRB(
+  static const EdgeInsets primaryRailTitleBlock = EdgeInsets.fromLTRB(
     CatchSpacing.s5,
     CatchSpacing.s0,
     CatchSpacing.s5,
-    CatchSpacing.s1,
+    CatchSpacing.s2,
   );
 
-  /// (1) Title block padding for tab screens whose header is a compact
+  /// (1) Title block padding for root screens whose header is a compact
   /// eyebrow/title or title-only row (Home dashboard, Profile-style headers).
   /// Canonical = [pageHeaderCompact].
   static const EdgeInsets screenTitleBlockCompact = pageHeaderCompact;
@@ -2042,9 +2070,9 @@ abstract final class CatchMotion {
 /// Layout constants for constraint-based sizing.
 /// Exact component tokens for the canonical Field + FieldSection system.
 ///
-/// These values mirror revision `field-sys-20260714-195933-640b9906`. Keep
-/// field-specific geometry here rather than spreading raw values through the
-/// renderer or feature adapters.
+/// Field geometry retains the shared row/lane owner. Text metrics resolve from
+/// the canonical platform function scale; value/caption extents derive from
+/// those metrics so typography changes also update alignment.
 abstract final class CatchFieldTokens {
   static const double rowHorizontalPadding = CatchSpacing.s4;
   static const double dividedRowBleed = CatchSpacing.micro10;
@@ -2052,8 +2080,8 @@ abstract final class CatchFieldTokens {
   static const double leadingIconExtent = CatchIcon.md;
   static const double leadingGap = CatchSpacing.micro14;
   static const double textLaneInset = leadingIconExtent + leadingGap;
-  static const double captionExtent = CatchSpacing.micro18;
-  static const double valueLineExtent = 18.9;
+  static double get captionExtent => captionFontSize * supportLineHeight;
+  static double get valueLineExtent => valueFontSize * valueLineHeight;
   static const double supportingTopGap = CatchSpacing.micro6;
 
   static const double trailingGap = CatchSpacing.s2;
@@ -2104,20 +2132,29 @@ abstract final class CatchFieldTokens {
   static const double sectionKickerFontSize = 11;
   static const double sectionKickerLetterSpacing = 1.43;
 
-  static const double valueFontSize = 14;
-  static const double captionFontSize = 11.5;
-  static const double contentBodyFontSize = 13;
-  static const double counterFontSize = 10.5;
-  static const double chipFontSize = 14;
-  static const double actionButtonFontSize = 14;
-  static const double valueLineHeight = 1.35;
-  static const double multilineValueLineHeight = 1.5;
-  static const double contentBodyLineHeight = 1.45;
+  static double get valueFontSize =>
+      CatchPlatformTokens.typography.fieldValue.fontSize!;
+  static double get captionFontSize =>
+      CatchPlatformTokens.typography.fieldLabel.fontSize!;
+  static double get contentBodyFontSize =>
+      CatchPlatformTokens.typography.secondary.fontSize!;
+  static double get counterFontSize =>
+      CatchPlatformTokens.typography.context.fontSize!;
+  static double get chipFontSize =>
+      CatchPlatformTokens.typography.control.fontSize!;
+  static double get actionButtonFontSize =>
+      CatchPlatformTokens.typography.control.fontSize!;
+  static double get valueLineHeight =>
+      CatchPlatformTokens.typography.fieldValue.height!;
+  static double get multilineValueLineHeight => valueLineHeight;
+  static double get contentBodyLineHeight =>
+      CatchPlatformTokens.typography.secondary.height!;
   static const double contentBodyTopGap = CatchSpacing.micro3;
-  static const double supportLineHeight = 1.45;
+  static double get supportLineHeight =>
+      CatchPlatformTokens.typography.fieldLabel.height!;
   static const double supportingCounterGap = CatchSpacing.s3;
   static const double errorGlyphGap = CatchSpacing.micro6;
-  static const double errorGlyphExtent = captionFontSize;
+  static double get errorGlyphExtent => captionFontSize;
 
   static const double spinnerExtent = CatchSpacing.s4;
   static const double actionSpinnerExtent = 13;
@@ -2171,7 +2208,7 @@ abstract final class CatchLayout {
   static const double maxContentWithDockHeight =
       maxContentWidth + CatchSpacing.s16;
   static const double pageBodyHorizontalGutters = CatchSpacing.screenPx * 2;
-  static const double tabbedPageMaxExtent =
+  static const double screenPageMaxExtent =
       maxContentWidth + pageBodyHorizontalGutters;
 
   /// Reading lane for the Host Forms directory on capable widths. Forms rows
@@ -2195,6 +2232,8 @@ abstract final class CatchLayout {
 
   /// Bounded command-centre workspace for Today on tablet and desktop.
   static const double hostTodayWorkspaceMaxContentWidth = 1120;
+  static const double hostTodayWorkspacePageMaxExtent =
+      hostTodayWorkspaceMaxContentWidth + pageBodyHorizontalGutters;
 
   /// Supporting attention lane beside Today's current-event workspace.
   static const double hostTodayAttentionPaneWidth = 360;
@@ -2419,6 +2458,16 @@ abstract final class CatchLayout {
   static const double personUnreadBadgeHorizontalPadding =
       CatchSpacing.micro6 + CatchStroke.hairline;
   static const double countBadgeMinExtent = 17.0;
+  static const double countBadgeHorizontalPadding = CatchSpacing.s1;
+  static const double countBadgeVerticalPadding = CatchStroke.hairline;
+  static const double countBadgeBorderWidth = CatchStroke.underline;
+
+  static double countBadgeWidth(double textWidth) {
+    final padded = textWidth + countBadgeHorizontalPadding * 2;
+    return (padded < countBadgeMinExtent ? countBadgeMinExtent : padded) +
+        countBadgeBorderWidth * 2;
+  }
+
   static const double countPillIconSize = CatchIcon.sm + CatchSpacing.micro2;
   static const double countPillMinExtent = CatchSpacing.s11;
   static const double countPillLabelVerticalPadding =
@@ -2604,7 +2653,7 @@ abstract final class CatchLayout {
   static const double errorIconExtent = CatchSpacing.s16;
   static const double errorIconSize = 30.0;
   static const double iconButtonSize = CatchSpacing.s11;
-  static const double iconButtonNavSize = CatchSpacing.s10;
+  static const double iconButtonNavSize = CatchSpacing.s11;
   static const double iconButtonGlyphScale = 0.44;
   static const double iosPickerHeight = 216.0;
   static const double iosPickerToolbarHeight = 52.0;
@@ -2613,6 +2662,8 @@ abstract final class CatchLayout {
   static const double menuItemHeight = CatchSpacing.s12;
   static const double noticeMaxWidth = 520.0;
   static const double noticeIconExtent = CatchSpacing.s9;
+  /// Available strip width (after page gutters) needed for inline actions.
+  static const double statusStripInlineMinWidth = 320;
   static const double otpDigitHeight = CatchSpacing.s16;
   static const double otpDigitGap = CatchSpacing.micro10;
   static const double otpCaretWidth = 2.0;
@@ -3120,4 +3171,25 @@ abstract final class CatchCelebrationColors {
   static const Color ink = Color(0xFFFFFFFF);
   static const Color cream = Color(0xFFFFFFFF);
   static const Color actionInk = Color(0xFF24110A);
+}
+
+/// Shared rhythm for readable identity and evidence rows. The section owns
+/// outer gutters and separators; each row owns its local vertical breathing room.
+abstract final class CatchRecordTokens {
+  static const avatarExtent = GeneratedCatchLayoutTokens.recordAvatarExtent;
+  static const leadingGap = GeneratedCatchLayoutTokens.recordLeadingGap;
+  static const verticalPadding =
+      GeneratedCatchLayoutTokens.recordVerticalPadding;
+  static const titleGap = GeneratedCatchLayoutTokens.recordTitleGap;
+  static const bodyGap = GeneratedCatchLayoutTokens.recordBodyGap;
+  static const largeTextBreakpoint = 1.5;
+  static const statusMaxWidthFraction = 0.45;
+  static const statusHorizontalPadding =
+      GeneratedCatchLayoutTokens.statusHorizontalPadding;
+  static const statusVerticalPadding =
+      GeneratedCatchLayoutTokens.statusVerticalPadding;
+  static const selectionHorizontalPadding =
+      GeneratedCatchLayoutTokens.selectionHorizontalPadding;
+  static const selectionVerticalPadding =
+      GeneratedCatchLayoutTokens.selectionVerticalPadding;
 }

@@ -51,6 +51,7 @@ import 'package:catch_dating_app/core/widgets/catch_mini_bar_chart.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
@@ -62,10 +63,10 @@ import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -77,7 +78,7 @@ import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart'
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
-import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -221,8 +222,19 @@ Widget catchBadgeContractStates(BuildContext context) {
       'on-dark',
       'privacy',
       'truncated',
+      'readable-status',
     ],
     children: [
+      const _StateCard(
+        label: 'readable-status',
+        child: _InlineWrap(
+          children: [
+            CatchBadge.status(label: 'Regular', tone: CatchBadgeTone.affinity),
+            CatchBadge.status(label: 'New', tone: CatchBadgeTone.success),
+            CatchBadge.status(label: 'At risk', tone: CatchBadgeTone.warning),
+          ],
+        ),
+      ),
       _StateCard(
         label: 'metadata / sentence case',
         child: _InlineWrap(
@@ -1438,8 +1450,10 @@ Widget catchNoticeContractStates(BuildContext context) {
       'danger',
       'event',
       'with-action',
-      'persistent-offline',
       'dismissible',
+      'arrival-tap-to-open',
+      'arrival-swipe-to-dismiss',
+      'arrival-reduced-motion',
     ],
     children: [
       const _StateCard(
@@ -1462,9 +1476,15 @@ Widget catchNoticeContractStates(BuildContext context) {
           ),
         ),
       ),
-      _StateCard(
+      const _StateCard(
         label: 'warning',
-        child: CatchNotice(notice: CatchNoticeData.offline(context.l10n)),
+        child: CatchNotice(
+          notice: CatchNoticeData(
+            id: 'warning',
+            title: 'Update paused',
+            tone: CatchNoticeTone.warning,
+          ),
+        ),
       ),
       const _StateCard(
         label: 'danger',
@@ -1501,10 +1521,6 @@ Widget catchNoticeContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'persistent-offline',
-        child: CatchNotice(notice: CatchNoticeData.offline(context.l10n)),
-      ),
-      _StateCard(
         label: 'dismissible',
         child: CatchNotice(
           notice: const CatchNoticeData(
@@ -1514,6 +1530,102 @@ Widget catchNoticeContractStates(BuildContext context) {
           ),
           onDismiss: _noop,
         ),
+      ),
+      _StateCard(
+        label: 'arrival-tap-to-open',
+        child: CatchNotice(
+          notice: CatchNoticeData.arrival(
+            id: 'arrival-open',
+            title: 'Ananya Rao',
+            message: 'I’ll bring two friends next Sunday.',
+            onOpen: _noop,
+          ),
+          onDismiss: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'arrival-swipe-to-dismiss',
+        child: CatchNotice(
+          notice: CatchNoticeData.arrival(
+            id: 'arrival-dismiss',
+            title: 'New message',
+            message: 'Swipe this notice to dismiss it.',
+            onOpen: _noop,
+          ),
+          onDismiss: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'arrival-reduced-motion',
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: CatchNotice(
+            notice: CatchNoticeData.arrival(
+              id: 'arrival-reduced-motion',
+              title: 'New message',
+              message: 'Reduced motion uses the same accessible actions.',
+              onOpen: _noop,
+            ),
+            onDismiss: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchStatusStrip,
+  path: '[Core primitives]/Feedback',
+)
+Widget catchStatusStripContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  final offline = CatchStatusStripData(
+    id: 'offline',
+    label: context.l10n.sharedOfflineTitle,
+    message: context.l10n.sharedOfflineBody,
+    icon: CatchIcons.cloudOffRounded,
+    color: t.warning,
+  );
+  final rehearsal = CatchStatusStripData(
+    id: 'rehearsal',
+    label: context.l10n.hostEventRehearsalBadge,
+    message: context.l10n.hostEventRehearsalSyntheticGuests,
+    icon: CatchIcons.groupsOutlined,
+    color: t.danger,
+    actions: [
+      CatchStatusStripAction(
+        label: context.l10n.hostEventRehearsalClockPill(time: '5:00 PM'),
+        onPressed: _noop,
+      ),
+      CatchStatusStripAction(
+        label: context.l10n.hostEventRehearsalPracticeTools,
+        icon: CatchIcons.more,
+        onPressed: _noop,
+      ),
+    ],
+  );
+  return _ContractScreen(
+    title: 'CatchStatusStrip',
+    contractId: 'catch.status_strip',
+    states: const ['offline', 'rehearsal', 'stacked', 'empty'],
+    children: [
+      _StateCard(
+        label: 'offline',
+        child: CatchStatusStrip(statuses: [offline]),
+      ),
+      _StateCard(
+        label: 'rehearsal',
+        child: CatchStatusStrip(statuses: [rehearsal]),
+      ),
+      _StateCard(
+        label: 'stacked',
+        child: CatchStatusStrip(statuses: [rehearsal, offline]),
+      ),
+      const _StateCard(
+        label: 'empty',
+        child: CatchStatusStrip(statuses: []),
       ),
     ],
   );
@@ -1542,8 +1654,18 @@ Widget catchButtonContractStates(BuildContext context) {
       'rounded',
       'large-text',
       'reduced-motion',
+      'command',
     ],
     children: [
+      _StateCard(
+        label: 'command',
+        child: CatchButton.command(
+          label: 'Sort: Last seen',
+          icon: Icon(CatchIcons.expandMoreRounded),
+          iconAtEnd: true,
+          onPressed: () {},
+        ),
+      ),
       _StateCard(
         label: 'default',
         child: _InlineWrap(
@@ -1887,6 +2009,46 @@ Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchRecordRow,
+  path: '[Core primitives]/Content',
+)
+Widget catchRecordRowContractStates(BuildContext context) => _ContractScreen(
+  title: 'CatchRecordRow',
+  contractId: 'catch.record_row',
+  states: const ['read-only', 'navigable', 'multiline'],
+  children: [
+    _StateCard(
+      label: 'read-only',
+      child: CatchRecordRow(
+        title: 'WhatsApp permission',
+        description: 'No participant permission is recorded.',
+        icon: CatchIcons.verifiedUserOutlined,
+      ),
+    ),
+    _StateCard(
+      label: 'navigable',
+      child: CatchRecordRow(
+        title: 'Sunday Run sign-up',
+        metadata: 'Form response · 20 May 2026',
+        icon: CatchIcons.descriptionOutlined,
+        onTap: _noop,
+      ),
+    ),
+    _StateCard(
+      label: 'multiline',
+      child: CatchRecordRow(
+        title: 'Message received',
+        metadata: 'Catch · 18 June 2026',
+        description:
+            'I’ll bring two friends next week. We would prefer the smaller weekend event, if there is space.',
+        icon: CatchIcons.tabChats,
+      ),
+    ),
+  ],
+);
 
 @widgetbook.UseCase(
   name: 'Contract states',
@@ -4515,7 +4677,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       'with-search',
       'conversation-title',
       'surface',
-      'bordered',
+      'divider',
       'plain-actions',
     ],
     children: [
@@ -4613,7 +4775,7 @@ Widget catchTopBarContractStates(BuildContext context) {
             identityPhotoUrl: null,
             onIdentityTap: _noop,
             surface: true,
-            border: true,
+            divider: true,
             actions: [
               CatchTopBarMenuAction<String>(
                 tooltip: 'Chat actions',
@@ -4650,9 +4812,9 @@ Widget catchTopBarContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'bordered',
+        label: 'divider',
         child: const _TopBarFrame(
-          child: CatchTopBar(title: 'Bordered', border: true),
+          child: CatchTopBar(title: 'Divider', divider: true),
         ),
       ),
     ],
@@ -5966,8 +6128,23 @@ Widget catchOptionGroupContractStates(BuildContext context) {
       'accented',
       'trailing',
       'overflow',
+      'summary',
     ],
     children: [
+      _StateCard(
+        label: 'summary',
+        child: CatchOptionGroup<int>(
+          options: const [
+            CatchOption(value: 0, label: 'All 214'),
+            CatchOption(value: 1, label: 'Returning 148'),
+            CatchOption(value: 2, label: 'New 19'),
+          ],
+          selected: 0,
+          variant: CatchOptionGroupVariant.summary,
+          contractExemption: 'Local Widgetbook scope preview.',
+          onChanged: (_) {},
+        ),
+      ),
       _StateCard(
         label: 'label',
         child: _FieldWidth(
@@ -6084,8 +6261,17 @@ Widget catchOptionGroupItemContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchOptionGroupItem',
     contractId: 'catch.option_group.item',
-    states: const ['selected', 'unselected', 'mono', 'operational'],
+    states: const ['selected', 'unselected', 'mono', 'operational', 'summary'],
     children: [
+      _StateCard(
+        label: 'summary',
+        child: CatchOptionGroupItem<int>(
+          option: const CatchOption(value: 1, label: 'Returning 148'),
+          selected: true,
+          variant: CatchOptionGroupVariant.summary,
+          onTap: () {},
+        ),
+      ),
       _StateCard(
         label: 'selected',
         child: CatchOptionGroupItem<String>(
@@ -6554,6 +6740,7 @@ Widget catchSheetContractStates(BuildContext context) {
       'badge',
       'action',
       'keyboard-safe',
+      'scrollable',
       'without-grabber',
     ],
     children: [
@@ -6611,6 +6798,25 @@ Widget catchSheetContractStates(BuildContext context) {
           title: 'Embedded sheet',
           grabber: false,
           child: Text('Used when a parent already owns the grab handle.'),
+        ),
+      ),
+      _StateCard(
+        label: 'scrollable',
+        child: SizedBox(
+          height: WidgetbookPreviewLayout.stateViewportHeight,
+          child: CatchBottomSheetScaffold(
+            title: 'Review answers',
+            scrollable: true,
+            child: Column(
+              children: [
+                for (var i = 0; i < 12; i++)
+                  CatchField.read(
+                    title: 'Question ${i + 1}',
+                    body: 'Submitted answer',
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     ],
@@ -7346,20 +7552,20 @@ Widget chatInputBarFocusedDraft(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchTabbedScreenScaffold,
+  type: CatchRootScreenScaffold,
   path: '[Core primitives]/Navigation',
 )
-Widget catchTabbedScreenContractStates(BuildContext context) {
-  return const _TabbedScreenContractUseCase();
+Widget catchRootScreenPrimaryRailContractStates(BuildContext context) {
+  return const _RootScreenContractUseCase();
 }
 
 @widgetbook.UseCase(
-  name: 'Shared tabbed page',
-  type: CatchTabbedPageScrollView,
+  name: 'Root page with primary rail',
+  type: CatchRootScreenPageScrollView,
   path: '[Core primitives]/Navigation',
 )
-Widget catchTabbedPageContractStates(BuildContext context) {
-  return const _TabbedScreenContractUseCase();
+Widget catchRootScreenPageContractStates(BuildContext context) {
+  return const _RootScreenContractUseCase();
 }
 
 @widgetbook.UseCase(
@@ -7368,7 +7574,7 @@ Widget catchTabbedPageContractStates(BuildContext context) {
   path: '[Core primitives]/Navigation',
 )
 Widget catchSliverContentWidthContractStates(BuildContext context) {
-  return const _TabbedScreenContractUseCase();
+  return const _RootScreenContractUseCase();
 }
 
 @widgetbook.UseCase(
@@ -7377,29 +7583,32 @@ Widget catchSliverContentWidthContractStates(BuildContext context) {
   path: '[Core primitives]/Navigation',
 )
 Widget catchTabControllerRailContractStates(BuildContext context) {
-  return const _TabbedScreenContractUseCase();
+  return const _RootScreenContractUseCase();
 }
 
-class _TabbedScreenContractUseCase extends StatelessWidget {
-  const _TabbedScreenContractUseCase();
+class _RootScreenContractUseCase extends StatelessWidget {
+  const _RootScreenContractUseCase();
 
   @override
   Widget build(BuildContext context) {
     return const _ContractScreen(
-      title: 'CatchTabbedScreenScaffold',
-      contractId: 'catch.tabbed_screen',
+      title: 'CatchRootScreenScaffold',
+      contractId: 'catch.screen_body.root_screen_scaffold',
       states: [
-        'title-expanded',
-        'title-collapsed',
-        'tab-rail-pinned',
-        'tab-page-restored',
+        'standard',
+        'full-bleed',
+        'primary-rail',
+        'paged-primary-rail',
+        'responsive-width',
+        'floating-bottom-navigation',
+        'side-navigation',
       ],
       children: [
         _StateCard(
           label: 'shared shell',
           child: AspectRatio(
             aspectRatio: 9 / 16,
-            child: _TabbedScreenContractDemo(),
+            child: _RootScreenPrimaryRailContractDemo(),
           ),
         ),
       ],
@@ -8533,8 +8742,45 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
       'chat-preview-square-avatar',
       'divider',
       'long-copy',
+      'directory',
+      'directory-large-text',
     ],
     children: [
+      _StateCard(
+        label: 'directory',
+        child: CatchPersonRow.directory(
+          data: const CatchPersonRowData(name: 'Ananya Rao'),
+          metadata: const Text('8 events · Last seen 18 June'),
+          contextContent: const Text('Returning customer'),
+          status: const CatchBadge.status(
+            label: 'Regular',
+            tone: CatchBadgeTone.affinity,
+          ),
+          onTap: () {},
+        ),
+      ),
+      _StateCard(
+        label: 'directory-large-text',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: CatchPersonRow.directory(
+            data: const CatchPersonRowData(
+              name: 'Ananya Rao with a longer family name',
+            ),
+            metadata: const Text('8 events · Last seen 18 June'),
+            contextContent: const Text(
+              'Returning customer with complete contextual information',
+            ),
+            status: const CatchBadge.status(
+              label: 'Needs identity review',
+              tone: CatchBadgeTone.warning,
+            ),
+            onTap: () {},
+          ),
+        ),
+      ),
       _StateCard(
         label: 'roster',
         child: _ChatTileFrame(
@@ -9833,15 +10079,16 @@ class _ChatComposerContractPreviewState
   }
 }
 
-class _TabbedScreenContractDemo extends StatefulWidget {
-  const _TabbedScreenContractDemo();
+class _RootScreenPrimaryRailContractDemo extends StatefulWidget {
+  const _RootScreenPrimaryRailContractDemo();
 
   @override
-  State<_TabbedScreenContractDemo> createState() =>
-      _TabbedScreenContractDemoState();
+  State<_RootScreenPrimaryRailContractDemo> createState() =>
+      _RootScreenPrimaryRailContractDemoState();
 }
 
-class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
+class _RootScreenPrimaryRailContractDemoState
+    extends State<_RootScreenPrimaryRailContractDemo>
     with SingleTickerProviderStateMixin {
   late final TabController _controller = TabController(length: 2, vsync: this);
 
@@ -9853,26 +10100,26 @@ class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabbedScreenScaffold(
-      eyebrow: 'YOUR SPACE',
-      title: 'Tabbed workspace',
-      subtitle: 'Independent page scroll state',
-      semanticsLabel: 'Tabbed screen contract preview',
-      tabRail: CatchTabControllerRail<String>(
+    return CatchRootScreenScaffold.withPrimaryRail(
+      header: const CatchRootScreenHeader.title(
+        eyebrow: 'YOUR SPACE',
+        title: 'Root workspace',
+        subtitle: 'Independent page scroll state',
+      ),
+      semanticsLabel: 'Root primary-rail contract preview',
+      primaryRail: CatchTabControllerRail<String>(
         controller: _controller,
         options: const [
           CatchOption(value: 'edit', label: 'Edit'),
           CatchOption(value: 'preview', label: 'Preview'),
         ],
       ),
-      body: CatchTabbedScreenBody.paged(
+      body: CatchRootScreenBody.paged(
         controller: _controller,
         pages: const [
-          CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
-            page: CatchTabbedPageScrollView(
+          CatchRootScreenPageSpec.scroll(
+            page: CatchRootScreenPageScrollView.standard(
               scrollKey: PageStorageKey<String>('contract-tab-edit'),
-              bodyLayout: CatchScreenBodyLayout.standard,
               slivers: [
                 SliverToBoxAdapter(
                   child: Text('Edit owns this scroll position.'),
@@ -9880,11 +10127,9 @@ class _TabbedScreenContractDemoState extends State<_TabbedScreenContractDemo>
               ],
             ),
           ),
-          CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
-            page: CatchTabbedPageScrollView(
+          CatchRootScreenPageSpec.scroll(
+            page: CatchRootScreenPageScrollView.standard(
               scrollKey: PageStorageKey<String>('contract-tab-preview'),
-              bodyLayout: CatchScreenBodyLayout.standard,
               slivers: [
                 SliverToBoxAdapter(
                   child: Text('Preview owns a separate scroll position.'),

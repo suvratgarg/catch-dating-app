@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import {checkScreenTopBarContracts} from "./check_screen_top_bar_contracts.mjs";
 
-test("accepts registered app-bar, tab-root, geometry, and hero contracts", () => {
+test("accepts registered app-bar, root-screen, geometry, and hero contracts", () => {
   const root = fixtureRoot({
     source: "Scaffold(appBar: CatchScreenTopBar(title: 'July 2026'));",
     contract: screenContract(),
@@ -248,16 +248,16 @@ test("resolves canonical root chrome owned by a StatefulWidget state", () => {
   assert.deepEqual(result.findings, []);
 });
 
-test("accepts the shared tabbed scaffold as a canonical root-header owner", () => {
+test("accepts the typed root header as the canonical title owner", () => {
   const root = fixtureRoot({
     source: "Scaffold(appBar: CatchScreenTopBar(title: 'Fallback'));",
     contract: screenContract(),
-    rootSurface: rootSurface({owner: "CatchTabbedScreenScaffold"}),
+    rootSurface: rootSurface({owner: "CatchRootScreenHeader.title"}),
     rootSource: `
       class RootHeader {
-        Widget build() => CatchTabbedScreenScaffold(
-          title: 'Profile',
-          tabRail: rail,
+        Widget build() => CatchRootScreenScaffold.withPrimaryRail(
+          header: const CatchRootScreenHeader.title(title: 'Profile'),
+          primaryRail: rail,
           body: body,
         );
       }
@@ -459,7 +459,7 @@ test("does not count a canonical call outside a helper-owned appBar", () => {
   assert.ok(hasFinding(result, "missing-canonical-owner"));
 });
 
-test("flags every tab-root branch that lacks a root-header contract", () => {
+test("flags every root-screen branch that lacks a root-header contract", () => {
   const root = fixtureRoot({
     source: "Scaffold(appBar: CatchScreenTopBar(title: 'Calendar'));",
     contract: screenContract(),
@@ -472,7 +472,7 @@ test("flags every tab-root branch that lacks a root-header contract", () => {
   assert.ok(hasFinding(result, "unregistered-root-header"));
 });
 
-test("flags a custom tab-root header that does not delegate to the canonical owner", () => {
+test("flags a custom root-screen header that does not delegate to the canonical owner", () => {
   const root = fixtureRoot({
     source: "Scaffold(appBar: CatchScreenTopBar(title: 'Calendar'));",
     contract: screenContract(),
@@ -929,6 +929,36 @@ test("fails closed when the canonical app-bar forwarder drifts", () => {
   );
 });
 
+for (const [label, height, child, fallback, valid] of [
+  ["canonical scaled forwarding", "scaled.preferredSizeFor(context)", "scaled", "bar", true],
+  ["replacement child", "scaled.preferredSizeFor(context)", "rogueBar", "bar", false],
+  ["fixed scaled height", "const Size.fromHeight(44)", "scaled", "bar", false],
+  ["replacement fallback", "scaled.preferredSizeFor(context)", "scaled", "rogueBar", false],
+]) {
+  test(`scaled scaffold app-bar boundary: ${label}`, () => {
+    const root = fixtureRoot({
+      source: "Scaffold(appBar: CatchTopBar(title: 'Details'));",
+      contract: compactContract(),
+      includeRootContracts: false,
+      canonicalScaffoldSource: `
+        class CatchScreenScaffold extends StatelessWidget {
+          final PreferredSizeWidget? appBar;
+          Widget build(BuildContext context) {
+            return Scaffold(appBar: switch (appBar) {
+              final CatchScaledPreferredSize scaled => PreferredSize(
+                preferredSize: ${height}, child: ${child},
+              ),
+              final bar => ${fallback},
+            });
+          }
+        }
+      `,
+    });
+    const result = checkScreenTopBarContracts({root});
+    assert.equal(hasFinding(result, "canonical-screen-scaffold-app-bar-drift"), !valid);
+  });
+}
+
 function hasFinding(result, code) {
   return result.findings.some((finding) => finding.code === code);
 }
@@ -1080,7 +1110,7 @@ function fixtureRoot({
   if (includeRootContracts) {
     write(
       root,
-      "tool/design/tab_root_scroll_contracts.json",
+      "tool/design/root_screen_composition_contracts.json",
       JSON.stringify({
         schemaVersion: 1,
         branches: [
@@ -1102,8 +1132,8 @@ function fixtureRoot({
     manualHeaders,
   };
   if (includeRootContracts) {
-    manifest.tabRootManifestPath =
-      "tool/design/tab_root_scroll_contracts.json";
+    manifest.rootScreenManifestPath =
+      "tool/design/root_screen_composition_contracts.json";
     manifest.screenGeometry = {
       tokenPath: "lib/core/theme/catch_tokens.dart",
       token: "screenTitleBlock",

@@ -194,6 +194,9 @@ export {
   createOrganizerFormAutomation,
   listOrganizerFormAutomationRuns,
   onOrganizerFormResponseAutomated,
+  onOrganizerApplicationAutomated,
+  onOrganizerAttendanceAutomated,
+  retryOrganizerAutomations,
   setOrganizerFormAutomationState,
 } from "./organizers/organizerFormAutomations";
 export {
@@ -210,6 +213,7 @@ export {
   reviewOrganizerContactMergeCandidate,
 } from "./organizers/organizerContactMergeReview";
 export {
+  resolveOrganizerAudienceMembers,
   archiveOrganizerSavedAudience,
   listOrganizerSavedAudiences,
   previewOrganizerSavedAudience,
@@ -311,6 +315,7 @@ export {
   getEventSuccessSpatialLayout,
   upsertEventSuccessLayout,
 } from "./eventSuccess/layoutAssets";
+export {upsertOrganizerEventVenue} from "./events/organizerEventVenues";
 export {
   fetchEventSuccessWingmanCandidates,
   submitEventSuccessWingmanRequest,

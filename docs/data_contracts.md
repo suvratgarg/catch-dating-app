@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.41.0
-updated: 2026-09-01
+version: 1.42.0
+updated: 2026-09-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -290,6 +290,21 @@ all five shapes and normalized grid-cell rendering. Unit proximity is a
 complete Euclidean graph derived from the stored grid with no cutoff. A
 `wholeGroup` structure suppresses layout projection even if a legacy plan or
 assignment contains stale spatial fields.
+
+### Organizer Saved Event Venues
+
+`contracts/firestore/organizer_event_venues.schema.json` owns reusable meeting
+places at `organizerEventVenues/{organizerId_venueId}`. Each asset contains a
+team-facing label, the canonical exact `meetingLocation`, an optional default
+event capacity, active/archived status, and server timestamps. Organizer
+managers may query their assets directly; `upsertOrganizerEventVenue` owns all
+creates, edits, archival, and restoration.
+
+Create Event copies the selected venue's location into the event and treats its
+capacity only as a suggestion when the draft capacity is empty. The resulting
+event may retain `sourceVenueId` as provenance, but `meetingLocation` and
+`capacityLimit` remain event-local snapshots. Moving the pin clears the source
+link, and later venue edits or archival never rewrite existing events.
 
 ### Event Success Sequence Capacity Boundary
 
@@ -920,7 +935,18 @@ diagnostics and never replace the legacy cards. It never returns attendee
 identity or contact fields. `listOrganizerContacts` and
 `getOrganizerContactDetail` are separate manager-authorized, server-paginated
 boundaries. They return only organizer-owned endpoints plus explainable
-attendance/reachability facts; no Event Success private input is a CRM field.
+attendance/reachability facts; no Event Success private input is a CRM field. The
+current detail UI requests `includeHistory: false`: attendance, revenue, memory,
+permission, and source provenance remain available, while campaign, broadcast,
+manual-send, reply, form-response timeline, and merge-history reads are deferred
+until History opens. `historyLoaded: false` and unavailable timeline coverage
+keep an unrequested history distinct from no activity. Omission of the request
+flag preserves the full response for older clients. A new client retries without
+the flag only for the old server's exact `includeHistory: must NOT have
+additional properties` diagnostic; other validation and access failures are
+not retried. Loading all tabs can add a
+second invocation and repeat core reads; overview-only visits omit operational
+queries. No minimum instances or new persistent listeners are introduced.
 The directory accepts `lastSeen`, `mostAttended`, or `name`; every opaque cursor
 is versioned and bound to its query plan, filters, and ordering. Filtered sorts
 are computed over a bounded complete candidate set rather than sorting one
@@ -960,12 +986,34 @@ feature requires a backfill.
 `organizerSavedAudiences/{audienceId}` owns reusable Customers-authored CRM
 audiences. A definition contains one to eight predicates joined by `all` or
 `any` over the reviewed computed-segment, organizer-tag, attendance-count,
-last-seen recency, and named-intent reach vocabulary. Arbitrary collection
+last-seen recency, named-intent reach, application status by form, immutable
+filterable choice/boolean answers, named-event attendance, and Catch spend.
+Spend specifies a currency, a minimum/maximum minor-unit amount and an optional
+trailing-day window. Only unique verified Catch identities qualify; totals use
+current completed payments, exclude refunds and failed sign-ups, and check
+canonical event ownership. Exact evaluation stops at 1,000 events and 5,000
+payments. Different currencies are never added or converted.
+A static list instead uses one `staticMembers` predicate with up to 2,500
+explicit contact ids and `join: all`. It cannot mix automatic conditions.
+`resolveOrganizerAudienceMembers` resolves selected labels in bounded batches
+for the manager-only editor. Merges follow the surviving contact; hidden or
+deleted records are excluded during evaluation and must be removed on save.
+Selecting a person never grants communication permission.
+Form-answer predicates carry form, version, question and a validated value;
+only non-sensitive questions marked `filterable` can be selected. Current
+submitted responses join People through deterministic source origins; merges
+follow `currentContactId`, and withdrawals exclude the evidence. Attendance
+requires a checked-in, non-cancelled edge for that organizer and event.
+Arbitrary collection
 paths and raw Firestore queries are forbidden. The server canonicalizes and
 hashes definitions, validates organizer-owned tags, and applies optimistic
 revisions. Preview returns exact coverage or an explicit incomplete/over-limit
 failure; the bounded evaluator refuses organizers above 2,500 active contacts
-instead of truncating. Event-scoped Booked/Prospective audiences remain event
+instead of truncating. Preview pages bind their cursor to the organizer,
+audience revision and full ordered membership; changed membership fails closed.
+Source reads stop at 5,000; authoring catalogs stop at 200 records per category
+and 100 filterable versioned questions, with explicit over-limit errors.
+Event-scoped Booked/Prospective audiences remain event
 authority and
 are referenced directly by event-announcement sends rather than copied into a
 CRM audience. Campaign approval freezes resolved recipient ids and revisions;
@@ -1171,7 +1219,14 @@ snapshot and per-question consent evidence. Canonical contact fields and
 organizer-only custom answers remain distinct even when they arrived in the
 same spreadsheet row. An application is not the Consumer launch-access
 `accessApplications/{uid}` document, a CRM contact, an event booking, or a
-public dating profile. Review status alone creates none of those entities.
+public dating profile. The manager accept operation now atomically approves
+and creates or links an organizer contact through the shared contact writer.
+It resolves a unique active contact by provenance or exact endpoint/linked-UID
+candidates; conflicts require duplicate review. An exact retry reuses the
+completed result. The contact remains unverified unless already verified and
+receives no event booking or marketing permission. Source origins retain the
+application-response kind for legacy imports and the generic form-response
+kind for generic forms, so contact merges preserve the current People link.
 
 Portable participant prefill belongs in private
 `participantIntakeProfiles/{uid}` only after an authenticated participant has
@@ -1191,11 +1246,25 @@ The native submission callable creates the response and grant atomically.
 Revocation stamps only `revokedAt`, withdraws the review row, and immediately
 makes manager list/detail projections mask the participant name and return no
 answers or outreach actions; the immutable platform audit snapshot is retained.
+Generic Host Form applications are deterministic projections of their exact
+submitted `organizerFormResponses` and immutable `organizerFormVersions`.
+They use that submission authority and do not fabricate a legacy grant; a
+withdrawn, foreign or mismatched source is redacted and cannot be accepted.
 Imported/connector data remains organizer-acquired and is labeled separately
 instead of receiving a fictional participant grant. Field visibility is not
 messaging permission: WhatsApp/SMS opt-in remains
 exclusively in `organizerCommunicationPreferences`, and an application grant
 cannot create or broaden it.
+
+Customer Details can pass `contactId` to `listOrganizerApplications`. The
+callable validates the contact's organizer and availability, then selects
+explicit application/contact links plus account links only when the customer
+identity is verified. It never matches names or raw phone/email values. The
+customer scope is included in its pagination cursor. Listing an application
+does not bypass its existing grant checks: the customer page reads the same
+permission-filtered detail projection and presents answers as a dated
+submission, without copying them into editable CRM fields. Approval still
+changes review state only; it does not implicitly create a customer.
 
 The provider-neutral import runtime accepts locally decoded CSV/XLSX tables, requires an
 explicit mapping for every source column, imports at most 200 rows atomically,
@@ -1893,3 +1962,14 @@ the canonical `events` and `organizers` collections.
 Detailed phase logs and old proof commands were removed from active Markdown.
 Use Git history when exact historical wording or retired command output
 matters.
+
+### Audience automation ownership
+
+`organizer_form_automation_rules` and `organizer_form_automation_runs` remain
+server-only. The existing create callable edits with an expected revision;
+nullable form scope enables organizer-wide acceptance and attendance rules.
+Published answer conditions carry a server-owned version binding. Runs carry
+source identity, original occurrence time, due time and fenced lease fields.
+Message actions pin a draft campaign revision and generated campaigns carry
+server-only `automationOrigin`; client campaign upserts cannot forge or remove it.
+The backend operation catalog owns execution, retry and signed-webhook semantics.

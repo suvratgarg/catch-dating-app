@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldVisibilityScope;
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:flutter/material.dart';
 
 typedef CatchRouteTopBarBuilder =
@@ -21,18 +22,64 @@ enum _CatchRouteBodyKind {
 
 /// Closed body specification for [CatchRouteScaffold].
 ///
-/// Standard variants own the canonical 20 point horizontal gutter and 24
+/// Standard variants own the canonical 20 point horizontal gutter and 16
 /// point top rhythm. The explicit full-bleed variant preserves intrinsically
 /// edge-owned canvases. Route features provide content, never local padding.
 final class CatchRouteBody {
   const CatchRouteBody.standard({
     required Widget child,
-    bool scrollable = true,
-    bool constrainToContentWidth = false,
+    ScrollController? controller,
+    ScrollPhysics? physics,
+    bool? primary,
+  }) : this._standard(
+         child: child,
+         scrollable: true,
+         constrainToContentWidth: false,
+         maxContentExtent: CatchLayout.maxContentWidth,
+         controller: controller,
+         physics: physics,
+         primary: primary,
+       );
+
+  const CatchRouteBody.standardViewport({
+    required Widget child,
+    ScrollController? controller,
+    ScrollPhysics? physics,
+    bool? primary,
+  }) : this._standard(
+         child: child,
+         scrollable: false,
+         constrainToContentWidth: false,
+         maxContentExtent: CatchLayout.maxContentWidth,
+         controller: controller,
+         physics: physics,
+         primary: primary,
+       );
+
+  const CatchRouteBody.standardConstrained({
+    required Widget child,
     double maxContentExtent = CatchLayout.maxContentWidth,
     ScrollController? controller,
     ScrollPhysics? physics,
     bool? primary,
+  }) : this._standard(
+         child: child,
+         scrollable: true,
+         constrainToContentWidth: true,
+         maxContentExtent: maxContentExtent,
+         controller: controller,
+         physics: physics,
+         primary: primary,
+       );
+
+  const CatchRouteBody._standard({
+    required Widget child,
+    required bool scrollable,
+    required bool constrainToContentWidth,
+    required double maxContentExtent,
+    required ScrollController? controller,
+    required ScrollPhysics? physics,
+    required bool? primary,
   }) : assert(maxContentExtent > 0),
        _kind = _CatchRouteBodyKind.standard,
        _child = child,
@@ -54,13 +101,45 @@ final class CatchRouteBody {
 
   const CatchRouteBody.standardSlivers({
     required List<Widget> slivers,
-    bool constrainToContentWidth = false,
-    double maxContentExtent = CatchLayout.tabbedPageMaxExtent,
     ScrollController? controller,
     ScrollPhysics? physics,
     bool? primary,
-    bool includeTerminalPadding = true,
     Future<void> Function()? onRefresh,
+  }) : this._standardSlivers(
+         slivers: slivers,
+         constrainToContentWidth: false,
+         maxContentExtent: CatchLayout.screenPageMaxExtent,
+         controller: controller,
+         physics: physics,
+         primary: primary,
+         onRefresh: onRefresh,
+       );
+
+  const CatchRouteBody.standardConstrainedSlivers({
+    required List<Widget> slivers,
+    double maxContentExtent = CatchLayout.screenPageMaxExtent,
+    ScrollController? controller,
+    ScrollPhysics? physics,
+    bool? primary,
+    Future<void> Function()? onRefresh,
+  }) : this._standardSlivers(
+         slivers: slivers,
+         constrainToContentWidth: true,
+         maxContentExtent: maxContentExtent,
+         controller: controller,
+         physics: physics,
+         primary: primary,
+         onRefresh: onRefresh,
+       );
+
+  const CatchRouteBody._standardSlivers({
+    required List<Widget> slivers,
+    required bool constrainToContentWidth,
+    required double maxContentExtent,
+    required ScrollController? controller,
+    required ScrollPhysics? physics,
+    required bool? primary,
+    required Future<void> Function()? onRefresh,
   }) : assert(maxContentExtent > 0),
        _kind = _CatchRouteBodyKind.standardSlivers,
        _child = null,
@@ -74,7 +153,7 @@ final class CatchRouteBody {
        _controller = controller,
        _physics = physics,
        _primary = primary,
-       _includeTerminalPadding = includeTerminalPadding,
+       _includeTerminalPadding = true,
        _onRefresh = onRefresh,
        _sectionGap = CatchGaps.section,
        _columnGap = CatchGaps.section,
@@ -254,7 +333,10 @@ final class CatchRouteBody {
         child: scrollView,
       );
     }
-    return SafeArea(top: false, bottom: false, child: scrollView);
+    return CatchFieldVisibilityScope(
+      bottomObstruction: AppShellActiveTab.bottomOverlayInsetOf(context),
+      child: SafeArea(top: false, bottom: false, child: scrollView),
+    );
   }
 }
 
@@ -268,6 +350,7 @@ class CatchRouteScaffold extends StatefulWidget {
     super.key,
     required this.topBarBuilder,
     required this.body,
+    this.statuses = const [],
     this.bottomNavigationBar,
     this.backgroundColor,
     this.resizeToAvoidBottomInset,
@@ -275,6 +358,7 @@ class CatchRouteScaffold extends StatefulWidget {
 
   final CatchRouteTopBarBuilder topBarBuilder;
   final CatchRouteBody body;
+  final List<CatchStatusStripData> statuses;
   final Widget? bottomNavigationBar;
   final Color? backgroundColor;
   final bool? resizeToAvoidBottomInset;
@@ -300,14 +384,23 @@ class _CatchRouteScaffoldState extends State<CatchRouteScaffold> {
   @override
   Widget build(BuildContext context) {
     final background = widget.backgroundColor ?? CatchTokens.of(context).bg;
-    return CatchScreenScaffold.workspace(
-      backgroundColor: background,
-      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-      appBar: widget.topBarBuilder(context, _scrolledUnder),
-      bottomNavigationBar: widget.bottomNavigationBar,
-      body: NotificationListener<ScrollNotification>(
-        onNotification: _handleScroll,
-        child: widget.body._build(context),
+    final statuses = [...widget.statuses, ...CatchStatusStripScope.of(context)];
+    return CatchStatusStripScope(
+      statuses: const [],
+      child: CatchScreenScaffold.workspace(
+        backgroundColor: background,
+        resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+        appBar: widget.topBarBuilder(context, _scrolledUnder),
+        bottomNavigationBar: widget.bottomNavigationBar,
+        body: NotificationListener<ScrollNotification>(
+          onNotification: _handleScroll,
+          child: Column(
+            children: [
+              CatchStatusStrip(statuses: statuses),
+              Expanded(child: widget.body._build(context)),
+            ],
+          ),
+        ),
       ),
     );
   }

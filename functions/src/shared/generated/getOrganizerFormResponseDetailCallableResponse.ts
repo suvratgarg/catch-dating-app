@@ -86,4 +86,6 @@ export interface GetOrganizerFormResponseDetailCallableResponse {
   }[];
   consentVersion: string;
   completionMillis: number;
+  applicationId?: string | null;
+  contactId?: string | null;
 }

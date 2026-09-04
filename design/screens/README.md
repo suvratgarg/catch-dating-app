@@ -33,17 +33,17 @@ all three enforcement columns in the same change.
 For each registered layout owner, `family` plus `bodyGeometry` deterministically
 selects the body boundary; there is no second body-owner field to drift. Root
 owners explicitly select `CatchScreenBodyLayout`, pushed routes select the
-matching `CatchRouteBody` variant, and tabbed roots select
-`CatchTabbedScreenBody` with an explicit `bodyLayout` on every
-`CatchTabbedPageSpec`. The analyzer follows the owner declaration's actual
+matching `CatchRouteBody` variant, and roots with a primary rail select
+`CatchRootScreenBody` with an explicit `bodyLayout` on every
+`CatchRootScreenPageSpec`. The analyzer follows the owner declaration's actual
 build/return tree and requires branch-universal static proof across every
 statically reachable widget-producing terminal. It treats every reachable
 conditional or switch arm as possible, follows approved builder callbacks and
 local helpers/values, and accepts only registered same-family delegates. A
 canonical scaffold or page hidden in an unused helper cannot satisfy the
 contract, and a behavior callback cannot disguise a rogue branch. Semantic
-tab-page wrappers must expose and forward the same body role to
-`CatchTabbedPageScrollView`.
+root-page wrappers must expose and forward the same body role to
+`CatchRootScreenPageScrollView`.
 
 The complementary widget-classification and new-widget gates scan `lib/**`,
 `apps/consumer/lib/**`, and `apps/host/lib/**` as one production namespace.

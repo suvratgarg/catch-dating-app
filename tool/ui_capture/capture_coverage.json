@@ -736,6 +736,12 @@
       "reason": "The precomputed analytics and asynchronous export workspace is implemented; populated, sparse, loading, failure, and export captures remain planned."
     },
     {
+      "routeId": "hostAudienceAutomationsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Organizer-wide automation configuration and history are implemented; runtime visual captures remain planned."
+    },
+    {
       "routeId": "hostFormAutomationsScreen",
       "status": "planned",
       "priority": "P2",

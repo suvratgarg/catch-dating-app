@@ -8,11 +8,16 @@
 export type CreateOrganizerFormAutomationCallableResponse = {
   ruleId: string;
   organizerId: string;
-  formId: string;
+  formId: string | null;
   name: string;
   enabled: boolean;
   revision: number;
-  trigger: "responseSubmitted" | "responseWithdrawn" | "answerMatches";
+  trigger:
+    | "responseSubmitted"
+    | "responseWithdrawn"
+    | "answerMatches"
+    | "applicationAccepted"
+    | "eventAttended";
   condition: {
     questionId: string;
     operator:
@@ -48,6 +53,10 @@ export type CreateOrganizerFormAutomationCallableResponse = {
     webhookUrl: string | null;
     webhookSecretConfigured: boolean;
     channel: null | "whatsapp" | "email";
+    campaignId?: string | null;
+    campaignRevision?: number | null;
   }[];
   updatedAtMillis: number;
+  triggerEventId?: string | null;
+  delayMinutes?: number;
 };

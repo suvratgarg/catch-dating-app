@@ -20,6 +20,7 @@ Color _rosterToneColor(CatchTokens t, CatchBadgeTone tone) => switch (tone) {
   CatchBadgeTone.warning => t.warning,
   CatchBadgeTone.danger => t.danger,
   CatchBadgeTone.gold => t.gold,
+  CatchBadgeTone.affinity => t.affinityText,
   CatchBadgeTone.neutral || CatchBadgeTone.brand => t.ink2,
 };
 

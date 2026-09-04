@@ -10,4 +10,5 @@ export interface ListOrganizerSavedAudiencesCallablePayload {
   status?: "active" | "archived";
   limit?: number;
   cursor?: string | null;
+  includeFilterOptions?: boolean;
 }

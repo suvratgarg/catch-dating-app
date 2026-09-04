@@ -24,6 +24,8 @@ import {GetOrganizerFormAnalyticsCallablePayload} from
 import {GetOrganizerFormAnalyticsCallableResponse} from
   "../shared/generated/getOrganizerFormAnalyticsCallableResponse";
 import {
+  OrganizerApplicationDocument,
+  OrganizerContactOriginDocument,
   OrganizerFormAggregateDocument,
   OrganizerFormAssetDocument,
   OrganizerFormConversionReceiptDocument,
@@ -37,6 +39,9 @@ import {
   validateGetOrganizerFormResponseDetailCallablePayload,
   validateListOrganizerFormResponsesCallablePayload,
 } from "../shared/generated/schemaValidators";
+
+import {genericFormApplicationId} from "./organizerApplicationAccess";
+import {organizerContactOriginId} from "../shared/organizerContactOrigins";
 
 type ResponseRow = ListOrganizerFormResponsesCallableResponse["items"][number];
 
@@ -227,7 +232,23 @@ export async function getOrganizerFormResponseDetailHandler(
       .getSignedUrl({action: "read", expires: expiresAtMillis});
     signedUrls.set(assetId, url);
   }));
+  const applicationId = genericFormApplicationId(data.responseId);
+  const [applicationSnap, originSnap] = await Promise.all([
+    db.collection("organizerApplications").doc(applicationId).get(),
+    db.collection("organizerContactOrigins").doc(organizerContactOriginId({
+      organizerId: data.organizerId, sourceKind: "hostForm",
+      sourceEntityKind: "hostFormResponse", sourceEntityId: data.responseId,
+    })).get(),
+  ]);
+  const application = applicationSnap.data() as
+    OrganizerApplicationDocument | undefined;
+  const origin = originSnap.data(
+  ) as OrganizerContactOriginDocument | undefined;
   return {
+    applicationId: application?.organizerId === data.organizerId ?
+      applicationId : null,
+    contactId: origin?.organizerId === data.organizerId ?
+      origin.currentContactId : null,
     response: row,
     answers: response.answerSnapshots.map((snapshot) => {
       const question = questions.get(snapshot.questionId);

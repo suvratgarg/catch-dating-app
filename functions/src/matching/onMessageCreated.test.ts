@@ -61,7 +61,7 @@ class FakeFirestore {
     return data === undefined ? undefined : structuredClone(data);
   }
 
-  set(path: string, data: FakeData) {
+  set(path: string, data: FakeData | undefined) {
     this.docs[path] = structuredClone(data);
   }
 }
@@ -163,19 +163,29 @@ function harness({
       unreadCounts: {"runner-1": 0, "runner-2": 1},
       status: "active",
       ...(conversationType == null ? {} : {conversationType}),
+      ...(conversationType === "clubHostInquiry" ? {organizerId: "org-1"} : {}),
     },
     "publicProfiles/runner-1": {name: "Runner One"},
     "users/runner-2": {fcmToken: "token-2"},
+    "organizers/org-1": {
+      ownerUserId: "runner-2", hostUserIds: [], hostProfiles: [],
+    },
+    "hostProfiles/runner-2": {
+      displayName: "Professional Host",
+      avatarUrl: "https://example.com/host.png",
+    },
   });
   const notifications: Notification[] = [];
   const scorecardRefreshes: string[] = [];
   const signalFactBatches: unknown[] = [];
+  const pushRequests: Array<{uid: string; role: string}> = [];
 
   return {
     firestore,
     notifications,
     scorecardRefreshes,
     signalFactBatches,
+    pushRequests,
     deps: {
       firestore: () =>
         firestore as unknown as FirebaseFirestore.Firestore,
@@ -183,6 +193,12 @@ function harness({
         ({kind: "serverTimestamp"}) as unknown as FirebaseFirestore.FieldValue,
       sendNotification: async (notification: Notification) => {
         notifications.push(notification);
+      },
+      resolvePushTokens: async (
+        _db: FirebaseFirestore.Firestore, uid: string, role: string
+      ) => {
+        pushRequests.push({uid, role});
+        return [`${role}-token`];
       },
       refreshScorecard: async (eventId: string) => {
         scorecardRefreshes.push(eventId);
@@ -296,6 +312,10 @@ test(
     await onMessageCreatedHandler(event("event-1"), h.deps);
 
     assert.equal(h.notifications.length, 1);
+    assert.deepEqual(h.pushRequests, [{uid: "runner-2", role: "host"}]);
+    assert.equal(h.notifications[0]?.appRole, "host");
+    assert.equal(h.notifications[0]?.recipientUid, "runner-2");
+    assert.equal(h.notifications[0]?.messageId, "message-1");
     assert.deepEqual(h.scorecardRefreshes, []);
     assert.deepEqual(h.signalFactBatches, []);
     assert.equal(
@@ -304,3 +324,74 @@ test(
     );
   }
 );
+
+test("Host-only recipients need no Consumer profile", async () => {
+  const h = harness({conversationType: "clubHostInquiry"});
+  h.firestore.set("users/runner-2", undefined);
+  await onMessageCreatedHandler(event("host-only"), h.deps);
+  assert.equal(h.notifications[0]?.token, "host-token");
+});
+
+test("Host replies target Consumer and use professional identity", async () => {
+  const h = harness({conversationType: "clubHostInquiry"});
+  h.firestore.set("users/runner-1", {});
+  h.firestore.set("publicProfiles/runner-2", {name: "Private Dating Name"});
+  const reply = event("reply");
+  reply.data.data = () => ({
+    ...event("reply").data.data(), senderId: "runner-2",
+  });
+  await onMessageCreatedHandler(reply, h.deps);
+  assert.deepEqual(h.pushRequests, [{uid: "runner-1", role: "consumer"}]);
+  assert.equal(h.notifications[0]?.title, "Professional Host");
+  assert.equal(
+    h.notifications[0]?.actorAvatarUrl, "https://example.com/host.png"
+  );
+});
+
+for (const conversationType of ["match", "clubHostInquiry"] as const) {
+  test(`message preference is respected for ${conversationType}`, async () => {
+    const h = harness({conversationType});
+    h.firestore.set("users/runner-2", {prefsMessages: false});
+    await onMessageCreatedHandler(event("disabled"), h.deps);
+    assert.equal(h.notifications.length, 0);
+    assert.equal(h.pushRequests.length, 0);
+  });
+}
+
+test("one failed installation does not block another", async () => {
+  const h = harness();
+  await onMessageCreatedHandler(event("multi"), {
+    ...h.deps,
+    resolvePushTokens: async () => ["expired", "valid"],
+    sendNotification: async (notification) => {
+      if (notification.token === "expired") throw new Error("expired token");
+      h.notifications.push(notification);
+    },
+  });
+  assert.equal(h.notifications.length, 1);
+  assert.equal(h.notifications[0]?.token, "valid");
+});
+
+test("closed or deleted-recipient conversations do not notify", async () => {
+  for (const reason of ["closed", "deleted"]) {
+    const h = harness();
+    if (reason === "closed") {
+      h.firestore.set("matches/match-1", {
+        ...h.firestore.get("matches/match-1"), status: "closed",
+      });
+    } else {
+      h.firestore.set("deletedUsers/runner-2", {deleted: true});
+    }
+    await onMessageCreatedHandler(event(reason), h.deps);
+    assert.equal(h.notifications.length, 0);
+  }
+});
+
+test("missing organizer suppresses push, not chat metadata", async () => {
+  const h = harness({conversationType: "clubHostInquiry"});
+  h.firestore.set("organizers/org-1", undefined);
+  await onMessageCreatedHandler(event("missing-organizer"), h.deps);
+  assert.equal(h.notifications.length, 0);
+  assert.equal(h.firestore.get("matches/match-1")?.lastMessagePreview,
+    "Hello there");
+});

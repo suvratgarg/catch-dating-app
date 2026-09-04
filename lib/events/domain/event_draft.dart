@@ -41,6 +41,7 @@ abstract class EventDraft with _$EventDraft {
     String? locationDetails,
     String? meetingLocationAddress,
     String? meetingLocationPlaceId,
+    String? sourceVenueId,
     double? startingPointLat,
     double? startingPointLng,
     // When step
@@ -102,6 +103,7 @@ extension EventDraftX on EventDraft {
       locationDetails == null &&
       meetingLocationAddress == null &&
       meetingLocationPlaceId == null &&
+      sourceVenueId == null &&
       startingPointLat == null &&
       startingPointLng == null &&
       selectedDateMillis == null &&

@@ -42,6 +42,7 @@ const catchRawButtonControlConstructors = <String>{
   'ElevatedButton',
   'FilledButton',
   'FloatingActionButton',
+  'MenuAnchor',
   'OutlinedButton',
   'PopupMenuButton',
   'Radio',

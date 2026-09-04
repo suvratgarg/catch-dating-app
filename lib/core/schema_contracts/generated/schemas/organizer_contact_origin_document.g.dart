@@ -67,6 +67,7 @@ const schemaOrganizerContactOriginDocumentSchema = <String, Object?>{
         'providerRecord',
         'importBatch',
         'webRegistration',
+        'hostApplicationResponse',
       ],
     },
     'sourceEntityId': <String, Object?>{

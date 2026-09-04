@@ -372,14 +372,14 @@ export async function createOrganizerContactHandler(
 export type OrganizerContactCreationOrigin =
   | {kind: "hostManual"}
   | {
-    kind: "hostFormResponse";
+    kind: "hostFormResponse" | "hostApplicationResponse";
     formId: string;
     responseId: string;
     observedAt: FirebaseFirestore.Timestamp;
   };
 
 /** Creates one optionally deterministic organizer-only CRM record. */
-export async function createOrganizerContactRecord(params: {
+export interface OrganizerContactRecordInput {
   db: FirebaseFirestore.Firestore;
   organizerId: string;
   actorUid: string;
@@ -391,13 +391,29 @@ export async function createOrganizerContactRecord(params: {
   origin: OrganizerContactCreationOrigin;
   contactId?: string;
   now?: FirebaseFirestore.Timestamp;
-}): Promise<CreateOrganizerContactCallableResponse> {
-  const now = params.now ?? admin.firestore.Timestamp.now();
+}
+
+
+export async function createOrganizerContactRecord(
+  params: OrganizerContactRecordInput
+): Promise<CreateOrganizerContactCallableResponse> {
   const initialSourceCoverage = await resolveOrganizerAudienceCoverage({
-    db: params.db,
-    organizerId: params.organizerId,
-    storedCoverage: null,
+    db: params.db, organizerId: params.organizerId, storedCoverage: null,
   });
+  return params.db.runTransaction((transaction) =>
+    createOrganizerContactInTransaction({...params, transaction,
+      initialSourceCoverage}));
+}
+
+/** Shared writer lets admission commit the contact and review atomically. */
+export async function createOrganizerContactInTransaction(
+  params: OrganizerContactRecordInput & {
+    transaction: FirebaseFirestore.Transaction;
+    initialSourceCoverage: OrganizerAudienceSummaryDocument["sourceCoverage"];
+  }
+): Promise<CreateOrganizerContactCallableResponse> {
+  const now = params.now ?? admin.firestore.Timestamp.now();
+  const {transaction: tx, initialSourceCoverage} = params;
   const contactRef = params.contactId ?
     params.db.collection("organizerContacts").doc(params.contactId) :
     params.db.collection("organizerContacts").doc();
@@ -424,6 +440,9 @@ export async function createOrganizerContactRecord(params: {
       observedAt: params.origin.observedAt,
       now,
     });
+  if (params.origin.kind === "hostApplicationResponse") {
+    origin.sourceEntityKind = "hostApplicationResponse";
+  }
   const originRef = params.db.collection("organizerContactOrigins").doc(
     organizerContactOriginId({
       organizerId: origin.organizerId,
@@ -512,40 +531,49 @@ export async function createOrganizerContactRecord(params: {
       updatedByUid: params.actorUid,
     } : null;
 
-  await params.db.runTransaction(async (tx) => {
-    const [summarySnap, contactSnap, originSnap] = await Promise.all([
-      tx.get(summaryRef),
-      tx.get(contactRef),
-      tx.get(originRef),
-    ]);
-    if (contactSnap.exists) {
-      const existing = contactSnap.data() as OrganizerContactDocument;
-      if (existing.organizerId !== params.organizerId) {
-        throw new HttpsError("already-exists", "Contact identity is in use.");
-      }
-      if (!originSnap.exists) {
-        tx.create(originRef, origin);
-        tx.update(contactRef, {
-          sourceCount: admin.firestore.FieldValue.increment(1),
-          updatedAt: now,
-          revision: Math.max(existing.revision + 1, revision),
-        });
-      }
-      return;
+  const [summarySnap, contactSnap, originSnap] = await Promise.all([
+    tx.get(summaryRef),
+    tx.get(contactRef),
+    tx.get(originRef),
+  ]);
+  if (contactSnap.exists) {
+    const existing = contactSnap.data() as OrganizerContactDocument;
+    if (existing.organizerId !== params.organizerId) {
+      throw new HttpsError("already-exists", "Contact identity is in use.");
     }
-    tx.create(contactRef, contact);
-    tx.create(traitRef, trait);
-    tx.create(originRef, origin);
-    for (const link of identityLinks) tx.create(link.ref, link.data);
-    if (initialNoteRef && initialNote) tx.create(initialNoteRef, initialNote);
-    tx.set(summaryRef, summaryWithTrait(
-      params.organizerId,
-      summarySnap.data() as OrganizerAudienceSummaryDocument | undefined,
-      trait,
-      now,
-      initialSourceCoverage,
-    ));
-  });
+    if (existing.deletedAt !== null || existing.hiddenAt !== null ||
+        existing.mergedIntoContactId !== null) {
+      throw new HttpsError("failed-precondition",
+        "Contact is no longer active.");
+    }
+    if (!originSnap.exists) {
+      tx.create(originRef, origin);
+      tx.update(contactRef, {
+        sourceCount: admin.firestore.FieldValue.increment(1),
+        updatedAt: now,
+        revision: Math.max(existing.revision + 1, revision),
+      });
+    }
+    return {
+      organizerId: params.organizerId, contactId: contactRef.id,
+      displayName: existing.displayNameOverride ?? existing.displayName,
+      revision: originSnap.exists ? existing.revision :
+        Math.max(existing.revision + 1, revision),
+    };
+  }
+  tx.create(contactRef, contact);
+  tx.create(traitRef, trait);
+  tx.create(originRef, origin);
+  for (const link of identityLinks) tx.create(link.ref, link.data);
+  if (initialNoteRef && initialNote) tx.create(initialNoteRef, initialNote);
+  tx.set(summaryRef, summaryWithTrait(
+    params.organizerId,
+    summarySnap.data() as OrganizerAudienceSummaryDocument | undefined,
+    trait,
+    now,
+    initialSourceCoverage,
+  ));
+
   return {
     organizerId: params.organizerId,
     contactId: contactRef.id,
@@ -567,6 +595,9 @@ export async function getOrganizerContactDetailHandler(
     validateGetOrganizerContactDetailCallablePayload,
     normalizeContactDetailPayload
   );
+  const includeHistory = data.includeHistory !== false;
+  const historyQuery = <T>(read: () => Promise<T>): Promise<T | null> =>
+    includeHistory ? read() : Promise.resolve(null);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "getOrganizerContactDetail");
   await requireOrganizerManager({
@@ -613,7 +644,7 @@ export async function getOrganizerContactDetailHandler(
       data.organizerId,
       data.contactId
     ),
-    optionalContactQuery(
+    historyQuery(() => optionalContactQuery(
       db.collection("organizerCampaignRecipients")
         .where("organizerId", "==", data.organizerId)
         .where("contactId", "==", data.contactId)
@@ -624,24 +655,24 @@ export async function getOrganizerContactDetailHandler(
       "campaign sends",
       data.organizerId,
       data.contactId
-    ),
-    optionalContactQuery(
+    )),
+    historyQuery(() => optionalContactQuery(
       db.collection("organizerBroadcastSummaries")
         .where("recipientContactIds", "array-contains", data.contactId)
         .get(),
       "announcement sends",
       data.organizerId,
       data.contactId
-    ),
+    )),
     db.collection("organizerContactTagVocabularies")
       .doc(data.organizerId).get(),
-    db.collection("organizerContactMergeReceipts")
+    historyQuery(() => db.collection("organizerContactMergeReceipts")
       .where("organizerId", "==", data.organizerId)
       .where("survivorContactId", "==", data.contactId)
       .orderBy("createdAt", "desc")
       .orderBy(admin.firestore.FieldPath.documentId(), "desc")
       .limit(maxDetailMergeReceipts)
-      .get(),
+      .get()),
     optionalContactQuery(
       db.collection("organizerContactOrigins")
         .where("organizerId", "==", data.organizerId)
@@ -654,7 +685,7 @@ export async function getOrganizerContactDetailHandler(
       data.organizerId,
       data.contactId
     ),
-    optionalContactQuery(
+    historyQuery(() => optionalContactQuery(
       db.collection("organizerManualSendTasks")
         .where("organizerId", "==", data.organizerId)
         .where("contactId", "==", data.contactId)
@@ -665,8 +696,8 @@ export async function getOrganizerContactDetailHandler(
       "manual sends",
       data.organizerId,
       data.contactId
-    ),
-    optionalContactQuery(
+    )),
+    historyQuery(() => optionalContactQuery(
       db.collection("organizerWhatsappMessages")
         .where("organizerId", "==", data.organizerId)
         .where("contactId", "==", data.contactId)
@@ -677,7 +708,7 @@ export async function getOrganizerContactDetailHandler(
       "managed WhatsApp replies",
       data.organizerId,
       data.contactId
-    ),
+    )),
   ]);
   const contact = contactSnap.data() as OrganizerContactDocument | undefined;
   const traits = traitSnap.data() as OrganizerContactTraitDocument | undefined;
@@ -783,7 +814,7 @@ export async function getOrganizerContactDetailHandler(
     .map((document) => document.data() as OrganizerWhatsappMessageDocument)
     .filter((message) => message.organizerId === data.organizerId &&
       message.contactId === data.contactId);
-  const catchRepliesResult = await optionalContactQuery(
+  const catchRepliesResult = await historyQuery(() => optionalContactQuery(
     contactCatchReplyTimeline({
       db,
       organizerId: data.organizerId,
@@ -792,16 +823,16 @@ export async function getOrganizerContactDetailHandler(
     "Catch conversation replies",
     data.organizerId,
     data.contactId
-  );
-  const formTimeline = await contactFormTimeline({
+  ));
+  const formTimeline = includeHistory ? await contactFormTimeline({
     db,
     organizerId: data.organizerId,
     origins: originDocuments,
     formTitles: provenance.formTitles,
-  });
+  }) : {entries: [], unavailable: true, truncated: false};
   const timelineResult = buildContactTimeline({
     forms: formTimeline.entries,
-    events,
+    events: includeHistory ? events : [],
     sends,
     manualSendTasks,
     whatsappMessages,
@@ -810,7 +841,8 @@ export async function getOrganizerContactDetailHandler(
       "unavailable" : originSnap.size > maxDetailOrigins ||
         formTimeline.truncated || traits.sourceCoverage !== "exact" ?
         "partial" : "exact",
-    eventsCoverage: eventSnap.size > maxDetailEvents ||
+    eventsCoverage: !includeHistory ? "unavailable" :
+      eventSnap.size > maxDetailEvents ||
       traits.sourceCoverage !== "exact" ? "partial" : "exact",
     sendsCoverage: recipientSnap === null || broadcastSnap === null ||
       campaignSendsResult === null || manualSendTaskSnap === null ?
@@ -825,12 +857,13 @@ export async function getOrganizerContactDetailHandler(
   const activeMerges = await activeMergeRows({
     db,
     organizerId: data.organizerId,
-    receipts: mergeReceiptSnap.docs.map((document) => ({
+    receipts: (mergeReceiptSnap?.docs ?? []).map((document) => ({
       id: document.id,
       data: document.data() as OrganizerContactMergeReceiptDocument,
     })),
   });
   return {
+    historyLoaded: includeHistory,
     organizerId: data.organizerId,
     contactId: data.contactId,
     displayName: effectiveDisplayName(contact),
@@ -1045,6 +1078,7 @@ async function contactFormTimeline(params: {
 }> {
   const responseOrigins = params.origins.filter((origin) =>
     origin.data.sourceKind === "hostForm" &&
+    origin.data.sourceEntityKind === "hostFormResponse" &&
     origin.data.formId !== null && origin.data.responseId !== null);
   const responseIds = [...new Set(responseOrigins
     .map((origin) => origin.data.responseId!))];
@@ -1506,6 +1540,60 @@ export function summarizeContactRevenueFacts(params: {
       })),
     ])),
   };
+}
+
+/** Appends preserve existing tags and never create vocabulary entries. */
+export async function addExistingOrganizerContactTag(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  contactId: string;
+  tagId: string;
+  actorUid: string;
+  now: FirebaseFirestore.Timestamp;
+}): Promise<void> {
+  await requireOrganizerManager(params);
+  const contactRef = params.db
+    .collection("organizerContacts")
+    .doc(params.contactId);
+  const vocabularyRef = params.db
+    .collection("organizerContactTagVocabularies")
+    .doc(params.organizerId);
+  await params.db.runTransaction(async (tx) => {
+    const contact = (await tx.get(contactRef)).data() as
+      | OrganizerContactDocument
+      | undefined;
+    const vocabulary = (await tx.get(vocabularyRef)).data() as
+      | OrganizerContactTagVocabularyDocument
+      | undefined;
+    if (
+      !contact ||
+      contact.organizerId !== params.organizerId ||
+      contact.deletedAt ||
+      contact.hiddenAt ||
+      contact.mergedIntoContactId ||
+      !vocabulary?.tags.some((tag) => tag.tagId === params.tagId)
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Contact or tag is unavailable.",
+      );
+    }
+    const manualTagIds = [
+      ...new Set([...(contact.manualTagIds ?? []), params.tagId]),
+    ];
+    if (manualTagIds.length > 5) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Maximum contact tags reached.",
+      );
+    }
+    if ((contact.manualTagIds ?? []).includes(params.tagId)) return;
+    tx.update(contactRef, {
+      manualTagIds,
+      revision: contact.revision + 1,
+      updatedAt: params.now,
+    });
+  });
 }
 
 /** Corrects an organizer label, suppresses marketing, or hides a CRM row. */

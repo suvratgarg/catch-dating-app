@@ -23,7 +23,8 @@ export interface GetOrganizerApplicationDetailCallableResponse {
   dataAccessState:
     | "organizerImported"
     | "activeParticipantGrant"
-    | "revokedParticipantGrant";
+    | "revokedParticipantGrant"
+    | "submittedFormResponse";
   /**
    * @maxItems 100
    */
@@ -108,4 +109,6 @@ export interface GetOrganizerApplicationDetailCallableResponse {
   submittedAtMillis: number;
   reviewedAtMillis: number | null;
   revision: number;
+  contactId?: string | null;
+  sourceResponseId?: string | null;
 }

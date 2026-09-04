@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.9.0
-updated: 2026-09-02
+version: 1.10.0
+updated: 2026-09-03
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -168,11 +168,60 @@ Archivo, sentence/data roles to untracked IBM Plex Mono, explicit caps roles to 
 IBM Plex Mono, and names/controls/prose to the platform system font. App UI calls semantic
 `CatchTextStyles` roles; `CatchFonts` is an internal theme implementation detail.
 
-Route hierarchy is size and composition, not a competing font family. Root-screen
-titles use `CatchTextStyles.headline` (Archivo, 32/600/1.04); compact pushed-route
-labels use `CatchTextStyles.routeTitle` (Archivo, 20/700/1.16). A route whose title
-becomes a user-authored person name selects the semantic identity title role and
-stays in the platform family. Feature screens do not restate these styles.
+Functional root-screen titles use `CatchTextStyles.headline` in the platform system
+family. Compact brand route labels retain `CatchTextStyles.routeTitle` (Archivo,
+20/700/1.16); a user-authored person name uses the semantic identity title role.
+Feature screens do not restate these styles.
+
+### 5.1 Platform function scale and readable records
+
+The Audience review promotes these selected metrics into
+`design/tokens/catch.tokens.json`, generated as immutable iOS/Android profiles.
+Numbers below are size / line height / weight in logical units. They are Catch
+composition choices informed by the 2026-09-03 platform inventory, **not a claim
+that every value is a native default**. iOS Caption 1 informs context; Material
+Title Medium and Body Small inform Android names/context. Compact 16/24 reading
+text and zero tracking are deliberate Catch choices.
+
+| Semantic use | iOS | Android |
+| --- | --- | --- |
+| Functional headline | 24 / 30 / 600 | 24 / 32 / 600 |
+| UI title | 20 / 25 / 600 | 20 / 28 / 500 |
+| Person or record title | 16 / 20 / 600 | 16 / 24 / 500 |
+| Reading body | 16 / 24 / 400 | 16 / 24 / 400 |
+| Secondary metadata | 14 / 20 / 400 | 14 / 20 / 400 |
+| Record context | 13 / 18 / 400 | 12 / 16 / 400 |
+| Command | 15 / 20 / 400 | 14 / 20 / 400 |
+| Sentence-case status | 12 / 16 / 600 | 12 / 16 / 600 |
+| Prominent quantity | 24 / 30 / 600 | 24 / 32 / 600 |
+| Editable field value | 16 / 24 / 500 | 16 / 24 / 500 |
+| Field caption/support | 13 / 18 / 500 | 12 / 16 / 500 |
+| Minimum command/summary hit area | 44 | 48 |
+
+`CatchPlatformTokens` selects the same `defaultTargetPlatform` used by
+`CatchFonts`. Flutter treats that native target as a compiler constant in
+profile/release builds; the profiles themselves are Dart constants. Tests use
+Flutter's debug target override, and web resolves its browser platform at runtime.
+There is no independent Theme-based selector or redundant platform build flag.
+macOS uses Apple metrics; other desktop targets use the Android baseline.
+
+Rows use a 40-unit marker/avatar, a 12-unit leading gap, 8-unit vertical padding,
+a 4-unit heading-to-metadata gap, and an 8-unit prose gap. These belong to
+`CatchRecordTokens`, backed by canonical layout tokens. Sections retain outer
+gutter/divider ownership, and the shell retains floating-navigation obstruction.
+Field caption and value extents derive from typography, so a scale change also
+updates disclosure and save-status alignment.
+
+Use `CatchPersonRow.directory` for identity plus rich metadata/context/status;
+`CatchRecordRow` for historical evidence or provenance; and `CatchField` for an
+editable value or setting. Record text has natural height. Status moves below
+content at enlarged text sizes. `CatchBadge.status` is a passive rounded rectangle
+with readable categorical tones. `CatchOptionGroupVariant.summary` is a tappable
+rounded rectangle with selected semantics; `CatchButton.command` owns the paired
+sort/filter action treatment. Color communicates positive, attention, or affinity
+meaning and does not introduce a brand accent. These recipes supersede the
+feature-local Audience preview typography and palette.
+
 
 ---
 
@@ -279,11 +328,38 @@ still uses named `CatchStroke` roles instead of feature-local literals.
 
 ### 7.2 Geometry is owned by the primitive
 
+Persistent offline/rehearsal context uses `CatchStatusStrip`: full-width,
+square-edged bands with a shared icon, label-over-detail and trailing action
+anatomy. The screen owner places them **below the complete primary tab rail**,
+or below the title when there are no tabs; they never split title from tabs.
+Tabs and strips stay pinned together as the title scrolls away. Regular body
+content begins 16 pt after the last strip. Strips share 20 pt side gutters,
+a 64 pt minimum band height and 44 pt action targets; wrapping content may grow
+the band. At large text or narrow widths, actions reflow below the text.
+These are durable context, not floating `CatchNotice` notifications or local
+mutation errors. Existing semantic palettes and localized copy remain in use;
+neither fixture sync timestamps nor unimplemented global Retry actions ship.
+
 When a component family has shared placement geometry, the canonical primitive
 owns that geometry along with safe-area, platform, focus, and disabled/loading
 behavior. Callers provide semantic state, content slots, and callbacks; they do
 not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
 
+- Notice identity is supplied by its feature adapter through `CatchNoticeData`:
+  localized title/message, semantic tone, optional icon, optional
+  `CatchPersonAvatarItem`, and an optional theme-derived `accentColor`. A person
+  replaces the status glyph and reuses `CatchPersonAvatar` for circular photos
+  and initials fallback. The shared notice still owns typography, icon/avatar
+  extent, spacing, surface and tint derivation. Do not create separate visual
+  match/message widgets merely to change copy, identity or color. A color
+  override does not waive contrast review in both themes.
+  `CatchNoticeData.arrival` makes the whole card the open target with no visible
+  Open/Dismiss buttons; swipe up or sideways dismisses it, as do Escape and the
+  accessibility dismiss action. A downward drag does not open.
+  The global host enters from above the physical viewport, rests 12 pt below
+  the top safe area and never shifts route content. Reduced motion skips entry;
+  accessible navigation holds the card, and pointer/hover/focus interaction
+  pauses auto-dismiss. Ordinary inline notices retain their existing controls.
 - Primary screen CTA placement routes through the `CatchBottomAction` family.
   `CatchBottomAction` owns one floating Cupertino or anchored Material action;
   `CatchBottomActionOverlay` owns pinned multi-action form controls over a soft
@@ -298,7 +374,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchTopBarMenuAction`. Do not pass a body-style `CatchButton` directly into
   any top-bar `actions` slot.
 - Screen hierarchy follows one control per level. Shell destinations express
-  product-level navigation; pinned `CatchTabRail` / `CatchTabbedScreenScaffold`
+  product-level navigation; pinned `CatchTabRail` / `CatchRootScreenScaffold.withPrimaryRail`
   tabs switch peer views within one destination. A small fixed set of terse,
   mutually-exclusive filters uses `CatchOptionGroup`; longer, numerous, or
   dynamic mutually-exclusive filters use `CatchAdaptiveSelectionControl` so
@@ -312,16 +388,20 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
   vertical content has actually scrolled beneath the compact bar. Root tab
   titles are scroll content rather than fixed app bars.
-- Root title screens route through `CatchRootScreenScaffold` (or its
-  parent-scaffold `CatchRootScreenScrollView` variant), and pinned peer-tab
-  screens route through `CatchTabbedScreenScaffold` plus
-  `CatchTabbedPageScrollView`. Every body declares the one regular `standard`
-  geometry (20 pt phone gutter, 24 pt body start) or explicitly edge-owned
-  `fullBleed` geometry through `CatchScreenBodyLayout`; feature screens do not
+- Root title screens route through `CatchRootScreenScaffold.standard` or
+  `.fullBleed` (or the corresponding parent-scaffold
+  `CatchRootScreenScrollView` role). The constructor jointly owns geometry,
+  responsive width, and shell clearance. Roots with pinned peer
+  navigation use `CatchRootScreenScaffold.withPrimaryRail` plus
+  a closed `CatchRootScreenPageScrollView.standard`, `.fullBleed`, or
+  `.embeddedViewport` role. Standard owns the 20 pt phone gutter, 16 pt body
+  start, responsive lane, and shell clearance; full bleed retains shell
+  clearance without outer body geometry; embedded viewport delegates scrolling
+  and clearance to its fill-remaining child. Feature screens do not
   reconstruct title gaps, page gutters, terminal navigation clearance,
-  responsive content lanes, or state-viewport placement. Tabbed roots use a
-  4 pt title-to-rail handoff, 44 pt rail, and the same 24 pt body start.
-  `CatchInsets.pageBody`, `CatchInsets.tabbedScreenTitleBlock`, and
+  responsive content lanes, or state-viewport placement. Primary-rail roots use a
+  8 pt title-to-rail handoff, 44 pt rail, and the same 16 pt body start.
+  `CatchInsets.pageBody`, `CatchInsets.primaryRailTitleBlock`, and
   `CatchLayout.tabRailHeight` own those values. Full bleed removes only the
   outer inset; named nested lanes such as `CatchInsets.chatListGutter` keep
   Consumer Chats and Host Inbox on the same 20 pt horizontal rhythm.

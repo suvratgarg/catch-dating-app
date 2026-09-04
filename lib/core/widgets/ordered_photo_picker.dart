@@ -385,7 +385,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
           count: _photos.length,
         ),
         leadingType: CatchTopBarLeading.close,
-        border: scrolledUnder,
+        divider: scrolledUnder,
         actions: widget.showDoneAction
             ? [
                 CatchTextButton(
@@ -396,8 +396,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
             : const [],
       ),
       bottomNavigationBar: widget.footer,
-      body: CatchRouteBody.standard(
-        scrollable: false,
+      body: CatchRouteBody.standardViewport(
         child: Column(
           children: [
             if (widget.header case final header?) ...[header, gapH12],

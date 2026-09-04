@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
-  "sourceDigest": "sha256:591a1f87f529c3f4fe194a62cccdb39d9515d9299b8d2677e85da90bf3c5ce55",
-  "resolvedDigest": "sha256:9b11a31737e485e2bbedce4feb8f642430f2d75051b9ac2411a46a462330ef1e",
+  "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
+  "resolvedDigest": "sha256:a7087a220bc4ec335c9e597d58f6aba4d9f0bf09989e3abdc5a9e673e7e4bff4",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -150,7 +150,7 @@
           "catch.skeleton",
           "catch.surface",
           "catch.tab_rail",
-          "catch.tabbed_screen",
+          "catch.screen_body",
           "catch.top_bar"
         ],
         "dataContracts": [
@@ -5127,7 +5127,8 @@
                 "CatchBadge.live",
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
-                "CatchBadge.privacy"
+                "CatchBadge.privacy",
+                "CatchBadge.status"
               ]
             }
           },
@@ -5138,7 +5139,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },
@@ -5315,13 +5317,13 @@
             }
           },
           {
-            "id": "catch.tabbed_screen",
+            "id": "catch.screen_body",
             "kind": "pattern",
             "dart": {
-              "symbol": "CatchTabbedScreenScaffold",
-              "file": "lib/core/widgets/catch_tabbed_screen.dart",
+              "symbol": "CatchScreenBody",
+              "file": "lib/core/widgets/catch_section_layout.dart",
               "constructors": [
-                "CatchTabbedScreenScaffold"
+                "CatchScreenBody"
               ]
             }
           },

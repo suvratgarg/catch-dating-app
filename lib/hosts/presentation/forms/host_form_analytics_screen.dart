@@ -55,8 +55,7 @@ class _HostFormAnalyticsScreenState
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: CatchRouteBody.standard(
-        constrainToContentWidth: true,
+      body: CatchRouteBody.standardConstrained(
         child: CatchAsyncValueView<HostFormAnalytics>(
           value: analytics,
           onRetry: () => ref.invalidate(provider),
@@ -222,20 +221,15 @@ class _HostFormAnalyticsScreenState
             .read(externalLinkControllerProvider)
             .open(Uri.parse(receipt.downloadUrl!));
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              opened
-                  ? context.l10n.hostFormExportReady
-                  : context.l10n.hostFormExportFailed,
-            ),
-          ),
+        showCatchSnackBar(
+          context,
+          opened
+              ? context.l10n.hostFormExportReady
+              : context.l10n.hostFormExportFailed,
         );
       } else if (receipt.status == HostFormExportStatus.pending ||
           receipt.status == HostFormExportStatus.running) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.hostFormExportStillPreparing)),
-        );
+        showCatchSnackBar(context, context.l10n.hostFormExportStillPreparing);
       } else {
         throw StateError(
           receipt.errorMessage ?? context.l10n.hostFormExportFailed,

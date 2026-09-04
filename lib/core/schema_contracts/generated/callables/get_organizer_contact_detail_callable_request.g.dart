@@ -10,13 +10,16 @@ final class GetOrganizerContactDetailCallableRequest {
   const GetOrganizerContactDetailCallableRequest({
     required this.organizerId,
     required this.contactId,
+    this.includeHistory,
   });
 
   final String organizerId;
   final String contactId;
+  final bool? includeHistory;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
     'contactId': contactId,
+    'includeHistory': ?includeHistory,
   };
 }

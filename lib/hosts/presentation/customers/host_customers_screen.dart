@@ -1,20 +1,22 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -24,16 +26,18 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
@@ -43,6 +47,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_deta
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_saved_audience_members_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -62,6 +67,9 @@ part 'host_customer_editor.dart';
 part 'host_customer_editor_sheets.dart';
 part 'host_customers_directory.dart';
 part 'host_saved_audience_editor.dart';
+part 'host_static_audience_members_editor.dart';
+part 'host_saved_audience_source_rules.dart';
+part 'host_saved_audience_overview.dart';
 part 'host_saved_audiences_workspace.dart';
 
 enum _HostCustomersHeaderAction { reviewDuplicates, export }
@@ -296,95 +304,108 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
               summaryState.value?.smsReadiness,
             ),
     );
-    return CatchTabbedScreenScaffold(
-      title: context.l10n.hostNavigationAudience,
-      actions: peopleView
-          ? [
-              CatchTopBarPrimaryAction(
-                key: const ValueKey<String>('host-customers-add-customer'),
-                label: context.l10n.hostCustomersAdd,
-                icon: CatchIcons.personAddAlt1Rounded,
-                onPressed: () => _addCustomer(selectedClub, request),
-              ),
-              CatchTopBarMenuAction<_HostCustomersHeaderAction>(
-                tooltip: context.l10n.hostCustomersMoreActions,
-                items: _hostCustomersHeaderActions(
-                  context,
-                  includeExport: !_exporting,
-                  exportEnabled: _manualTag == null,
-                  exportSublabel: _manualTag == null
-                      ? null
-                      : context.l10n.hostCustomersManualTagExportUnavailable,
+    return CatchRootScreenScaffold.withPrimaryRail(
+      header: CatchRootScreenHeader.title(
+        title: context.l10n.hostNavigationAudience,
+        actions: peopleView
+            ? [
+                CatchTopBarPrimaryAction(
+                  key: const ValueKey<String>('host-customers-add-customer'),
+                  label: context.l10n.hostCustomersAdd,
+                  icon: CatchIcons.personAddAlt1Rounded,
+                  onPressed: () => _addCustomer(selectedClub, request),
                 ),
-                onSelected: (action) {
-                  if (action == _HostCustomersHeaderAction.reviewDuplicates) {
-                    unawaited(_reviewDuplicates(selectedClub.id));
-                  }
-                  if (action == _HostCustomersHeaderAction.export) {
-                    unawaited(_exportCustomers(selectedClub, effectiveFilter));
-                  }
-                },
-              ),
-            ]
-          : const [],
-      search: CatchTopBarSearch(
-        fieldKey: ValueKey(
-          peopleView ? 'host-customers-search' : 'host-audiences-search',
-        ),
-        value: activeQuery ?? '',
-        contract: peopleView
-            ? CatchContractConstraints.listOrganizerContactsCallablePayloadQuery
-            : CatchContractConstraints
-                  .upsertOrganizerSavedAudienceCallablePayloadName,
-        placeholder: peopleView
-            ? context.l10n.hostsHostAudienceSearch
-            : context.l10n.hostSavedAudiencesSearch,
-        tooltip: peopleView
-            ? context.l10n.hostsHostAudienceSearch
-            : context.l10n.hostSavedAudiencesSearch,
-        semanticLabel: peopleView
-            ? context.l10n.hostsHostAudienceSearch
-            : context.l10n.hostSavedAudiencesSearch,
-        expanded: _searchExpanded || activeQuery != null,
-        onExpandedChanged: (expanded) {
-          if (_searchExpanded == expanded) return;
-          setState(() => _searchExpanded = expanded);
-        },
-        onChanged: (value) => _scheduleSearch(_view, value),
-        onSubmitted: (value) => _applySearch(_view, value),
-        onFocusChanged: (focused) {
-          if (!focused && activeQuery == null && _searchExpanded) {
-            setState(() => _searchExpanded = false);
-          }
-        },
-        textInputAction: TextInputAction.search,
-      ),
-      tabRail: PreferredSize(
-        preferredSize: const Size.fromHeight(CatchLayout.tabRailHeight),
-        child: AnimatedBuilder(
-          animation: _tabController.animation!,
-          builder: (context, _) => HostAudienceTabRail(
-            selected: _view,
-            selectionPosition: _tabController.animation!.value,
-            onChanged: (view) => _selectAudienceView(view, selectedClub.id),
+                CatchTopBarMenuAction<_HostCustomersHeaderAction>(
+                  variant: CatchIconButtonVariant.plain,
+                  tooltip: context.l10n.hostCustomersMoreActions,
+                  items: _hostCustomersHeaderActions(
+                    context,
+                    includeExport: !_exporting,
+                    exportEnabled: _manualTag == null,
+                    exportSublabel: _manualTag == null
+                        ? null
+                        : context.l10n.hostCustomersManualTagExportUnavailable,
+                  ),
+                  onSelected: (action) {
+                    if (action == _HostCustomersHeaderAction.reviewDuplicates) {
+                      unawaited(_reviewDuplicates(selectedClub.id));
+                    }
+                    if (action == _HostCustomersHeaderAction.export) {
+                      unawaited(
+                        _exportCustomers(selectedClub, effectiveFilter),
+                      );
+                    }
+                  },
+                ),
+              ]
+            : const [],
+        search: CatchTopBarSearch(
+          backgroundColor: Colors.transparent,
+          borderColor: Colors.transparent,
+          fieldKey: ValueKey(
+            peopleView ? 'host-customers-search' : 'host-audiences-search',
           ),
+          value: activeQuery ?? '',
+          contract: peopleView
+              ? CatchContractConstraints
+                    .listOrganizerContactsCallablePayloadQuery
+              : CatchContractConstraints
+                    .upsertOrganizerSavedAudienceCallablePayloadName,
+          placeholder: peopleView
+              ? context.l10n.hostsHostAudienceSearch
+              : context.l10n.hostSavedAudiencesSearch,
+          tooltip: peopleView
+              ? context.l10n.hostsHostAudienceSearch
+              : context.l10n.hostSavedAudiencesSearch,
+          semanticLabel: peopleView
+              ? context.l10n.hostsHostAudienceSearch
+              : context.l10n.hostSavedAudiencesSearch,
+          expanded: _searchExpanded || activeQuery != null,
+          onExpandedChanged: (expanded) {
+            if (_searchExpanded == expanded) return;
+            setState(() => _searchExpanded = expanded);
+          },
+          onChanged: (value) => _scheduleSearch(_view, value),
+          onSubmitted: (value) => _applySearch(_view, value),
+          onFocusChanged: (focused) {
+            if (!focused && activeQuery == null && _searchExpanded) {
+              setState(() => _searchExpanded = false);
+            }
+          },
+          textInputAction: TextInputAction.search,
         ),
       ),
-      body: CatchTabbedScreenBody.paged(
+      primaryRail: HostAudienceTabRail(
+        selected: _view,
+        selectionAnimation: _tabController.animation!,
+        onChanged: (view) => _selectAudienceView(view, selectedClub.id),
+      ),
+      body: CatchRootScreenBody.paged(
         controller: _tabController,
         pages: [
-          CatchTabbedPageSpec.masterDetail(
-            bodyLayout: CatchScreenBodyLayout.standard,
+          CatchRootScreenPageSpec.masterDetail(
             expanded: screenSize.isExpanded,
-            master: CatchTabbedPageScrollView(
+            master: CatchRootScreenPageScrollView.standard(
               scrollKey: const PageStorageKey<String>('host-customers-people'),
-              bodyLayout: CatchScreenBodyLayout.standard,
-              constrainToContentWidth: true,
               slivers: [
                 SliverList.list(
                   children: [
                     HostCustomersSummary(
                       summary: summary,
+                      newCustomerCount: ref
+                          .watch(
+                            hostCustomerSegmentCountProvider(
+                              HostCustomerSegmentCountRequest(
+                                organizerId: selectedClub.id,
+                                filter: HostCustomerFilter.newToOrganizer,
+                              ),
+                            ),
+                          )
+                          .when(
+                            data: (value) => value,
+                            loading: () => null,
+                            error: (_, _) => null,
+                          ),
                       onRetry: () => ref.invalidate(
                         hostCrmSummaryProvider(selectedClub.id),
                       ),
@@ -392,8 +413,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                           _manualTag == null &&
                               const {
                                 HostCustomerFilter.all,
-                                HostCustomerFilter.attended,
                                 HostCustomerFilter.repeat,
+                                HostCustomerFilter.newToOrganizer,
                               }.contains(effectiveFilter)
                           ? effectiveFilter
                           : null,
@@ -406,15 +427,14 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                         _manualTag = null;
                       }),
                     ),
-                    gapH16,
+                    gapH8,
                     const CatchDivider.section(),
-                    gapH12,
-                    if (directoryState == null)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: directoryControls,
-                      )
-                    else
+                    directoryControls,
+                    const CatchDivider.section(),
+                    if (directoryState != null &&
+                        (effectiveFilter != HostCustomerFilter.all ||
+                            _manualTag != null ||
+                            _search != null))
                       HostCustomerFilterSummary(
                         filter: effectiveFilter,
                         manualTag: _manualTag,
@@ -446,9 +466,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                                 _filter = HostCustomerFilter.all;
                                 _manualTag = null;
                               }),
-                        trailing: directoryControls,
                       ),
-                    gapH12,
                     CatchAsyncValueView<HostCustomersDirectoryState>(
                       value: directory,
                       onRetry: () => ref.invalidate(
@@ -508,8 +526,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                     embedded: true,
                   ),
           ),
-          CatchTabbedPageSpec.scroll(
-            bodyLayout: CatchScreenBodyLayout.standard,
+          CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
               organizerId: selectedClub.id,
               query: _audienceSearch,

@@ -203,15 +203,13 @@ class ExampleScreen {
       owner: <String, Object?>{
         'symbol': 'ExampleScreen',
         'family': 'root',
-        'expression': 'CatchRootScreenScaffold',
+        'expression': 'CatchRootScreenScaffold.fullBleed',
         'bodyGeometry': 'full-bleed',
         'topEdge': 'header-owned',
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build() => CatchRootScreenScaffold(
-    bodyLayout: CatchScreenBodyLayout.fullBleed,
-  );
+  Object build() => CatchRootScreenScaffold.fullBleed();
 }
 ''',
     );

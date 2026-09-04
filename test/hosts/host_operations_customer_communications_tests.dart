@@ -2,68 +2,115 @@ part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsCustomerCommunicationsTests() {
   testWidgets('customer timeline joins form and reply history', (tester) async {
+    final opened = <String>[];
     await _pumpHostScreen(
       tester,
       Scaffold(
         body: HostCustomerTimelineSection(
           customer: _customerDetail(),
-          onOpenFormResponse: (_) {},
-          onOpenEvent: (_) {},
-          onOpenCatchThread: (_) {},
+          onOpenFormResponse: (id) => opened.add('form:$id'),
+          onOpenEvent: (id) => opened.add('event:$id'),
+          onOpenCatchThread: (id) => opened.add('chat:$id'),
           onOpenWhatsappThread: (_) {},
         ),
       ),
     );
 
-    expect(find.text('HISTORY'), findsOneWidget);
+    expect(find.text('Message received'), findsOneWidget);
     expect(find.text('Sunday Run sign-up'), findsOneWidget);
     expect(find.text('See you there!'), findsOneWidget);
-  });
-
-  testWidgets('customer detail orders identity, memory, activity, controls', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(390, 3600);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    final detail = _customerDetail();
-    await _pumpHostScreen(
-      tester,
-      const HostCustomerDetailScreen(
-        organizerId: 'organizer-1',
-        contactId: 'contact-1',
-      ),
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        hostAudienceContactDetailProvider(
-          'organizer-1',
-          'contact-1',
-        ).overrideWithValue(AsyncData(detail)),
-        hostCommunicationPlanProvider(
-          'organizer-1',
-          'contact-1',
-        ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
-      ],
+    expect(
+      tester.getTopLeft(find.text('See you there!')).dy,
+      lessThan(tester.getTopLeft(find.text('Sunday Run Club')).dy),
     );
-
-    final identityY = tester
-        .getTopLeft(find.byType(HostCustomerIdentityCard))
-        .dy;
-    final memoryY = tester
-        .getTopLeft(find.byType(HostCustomerMemorySection))
-        .dy;
-    final activityY = tester
-        .getTopLeft(find.byKey(const ValueKey('host-customer-activity')))
-        .dy;
-    final controlsY = tester
-        .getTopLeft(find.byKey(const ValueKey('host-customer-controls')))
-        .dy;
-
-    expect(identityY, lessThan(memoryY));
-    expect(memoryY, lessThan(activityY));
-    expect(activityY, lessThan(controlsY));
+    await tester.tap(find.text('See you there!'));
+    await tester.tap(find.text('Sunday Run Club'));
+    await tester.tap(find.text('Sunday Run sign-up'));
+    expect(opened, ['chat:match-1', 'event:event-1', 'form:response-1']);
   });
+
+  testWidgets(
+    'customer detail separates overview, details, memory and history',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 3600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final detail = _customerDetail();
+      await _pumpHostScreen(
+        tester,
+        const HostCustomerDetailScreen(
+          organizerId: 'organizer-1',
+          contactId: 'contact-1',
+        ),
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+          hostAudienceContactDetailProvider(
+            'organizer-1',
+            'contact-1',
+          ).overrideWithValue(AsyncData(detail)),
+          hostCommunicationPlanProvider(
+            'organizer-1',
+            'contact-1',
+          ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
+        ],
+      );
+
+      final identityY = tester
+          .getTopLeft(find.byType(HostCustomerIdentityCard))
+          .dy;
+      final memoryY = tester
+          .getTopLeft(find.byType(HostCustomerMemoryPreview))
+          .dy;
+      final activityY = tester
+          .getTopLeft(find.byKey(const ValueKey('host-customer-activity')))
+          .dy;
+      expect(identityY, lessThan(memoryY));
+      expect(activityY, lessThan(memoryY));
+      expect(find.byType(HostCustomerRevenueCard), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('host-customer-controls')),
+        findsNothing,
+      );
+      await tester.tap(
+        find.byKey(const ValueKey('host-customer-memory-preview')),
+      );
+      await pumpFeatureUi(tester);
+      expect(find.byType(HostCustomerMemorySection), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('host-customer-activity')),
+        findsNothing,
+      );
+      await tester.ensureVisible(find.text('History'));
+      await tester.tap(find.text('History'));
+      await pumpFeatureUi(tester);
+      expect(find.byType(HostCustomerTimelineSection), findsOneWidget);
+      expect(find.byType(HostCustomerRevenueCard), findsNothing);
+      expect(
+        find.byKey(const ValueKey('host-customer-controls')),
+        findsNothing,
+      );
+      final copy = AppLocalizationsEn();
+      expect(find.text(copy.hostsHostAudienceRemoveAction), findsNothing);
+      await tester.tap(
+        find.byKey(const ValueKey('host-customer-record-actions')),
+      );
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text(copy.hostsHostAudienceRemoveAction));
+      await pumpFeatureUi(tester);
+      expect(find.text(copy.hostsHostAudienceRemoveTitle), findsOneWidget);
+      expect(find.text(copy.hostsHostAudienceRemoveBody), findsOneWidget);
+      await tester.tap(
+        find.text(copy.coreCatchAdaptiveDialogVisiblecopyCancel),
+      );
+      await pumpFeatureUi(tester);
+      await tester.ensureVisible(find.text('Overview'));
+      await tester.tap(find.text('Overview'));
+      await pumpFeatureUi(tester);
+      expect(find.byType(HostCustomerMemoryPreview), findsOneWidget);
+      expect(find.byType(HostCustomerTimelineSection), findsNothing);
+    },
+  );
 
   testWidgets('customer detail exposes only the recommended message route', (
     tester,
@@ -98,19 +145,19 @@ void _registerHostOperationsCustomerCommunicationsTests() {
 
     expect(find.text('Message'), findsOneWidget);
     expect(find.text('Message Ananya Rao'), findsNothing);
-    expect(find.text('Opens the Catch conversation.'), findsNothing);
+    expect(find.text('Opens the Catch conversation.'), findsOneWidget);
     expect(find.byKey(const ValueKey('host-customer-message')), findsOneWidget);
     expect(
       find.ancestor(
         of: find.byKey(const ValueKey('host-customer-message')),
-        matching: find.byType(HostCustomerIdentityCard),
+        matching: find.byType(CatchTopBar),
       ),
       findsOneWidget,
     );
     expect(find.text('You press send'), findsNothing);
   });
 
-  testWidgets('wide customer detail aligns memory with attendance', (
+  testWidgets('wide customer detail aligns attendance with recorded spend', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(1000, 1200);
@@ -137,20 +184,18 @@ void _registerHostOperationsCustomerCommunicationsTests() {
       ],
     );
 
-    final memoryTop = tester
-        .getTopLeft(find.byType(HostCustomerMemorySection))
+    final revenueTop = tester
+        .getTopLeft(find.byType(HostCustomerRevenueCard))
         .dy;
     final attendanceTop = tester
         .getTopLeft(find.byKey(const ValueKey('host-customer-activity')))
         .dy;
-    expect(memoryTop, closeTo(attendanceTop, 0.5));
+    expect(revenueTop, closeTo(attendanceTop, 0.5));
     expect(
-      tester.getRect(find.byType(HostCustomerMemorySection)).right,
-      lessThan(
-        tester
-            .getRect(find.byKey(const ValueKey('host-customer-activity')))
-            .left,
-      ),
+      tester
+          .getRect(find.byKey(const ValueKey('host-customer-activity')))
+          .right,
+      lessThan(tester.getRect(find.byType(HostCustomerRevenueCard)).left),
     );
   });
 

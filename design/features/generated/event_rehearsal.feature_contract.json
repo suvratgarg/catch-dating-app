@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_rehearsal.feature.json",
   "generatedFor": "2026-08-19",
   "sourceDigest": "sha256:88e9f47505f58b7d44075ab377990a0100f96ce1ba505bcdeb9dc4fc6940ce0a",
-  "resolvedDigest": "sha256:500e6f283f07679dff35e81a7c5862323c662c9be6a6f531ccab8e53f360e1ab",
+  "resolvedDigest": "sha256:d4117605ac46a97ce150d6a05fbe244440415f08deeec3f04fd548d1de77b06a",
   "feature": {
     "id": "feature.event_rehearsal",
     "name": "Event Dress Rehearsal",
@@ -770,7 +770,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },

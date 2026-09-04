@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -43,10 +42,10 @@ class HostTodayBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchRootScreenScaffold(
+    return CatchRootScreenScaffold.standard(
       scrollKey: const ValueKey<String>('host-today-scroll-view'),
       header: HostTodayHeader(now: now),
-      bodyLayout: CatchScreenBodyLayout.standard,
+      maxContentExtent: CatchLayout.hostTodayWorkspacePageMaxExtent,
       slivers: [
         switch (state.status) {
           HostTodayStatus.loading => const SliverToBoxAdapter(

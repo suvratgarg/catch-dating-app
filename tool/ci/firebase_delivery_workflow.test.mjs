@@ -150,6 +150,14 @@ test("Delivery keeps the current immutable control plane separate from an older 
     path.join(repoRoot, "tool/deploy_firebase_targets.sh"),
     "utf8",
   );
+  assert.match(
+    executor,
+    /CATCH_DELIVERY_FUNCTIONS_DIR[\s\S]*CATCH_FIREBASE_SOURCE_ROOT[\s\S]*planner_policy_args\+=\(--filter-dormant-exact-targets\)/u,
+  );
+  assert.equal(
+    (executor.match(/"\$\{planner_policy_args\[@\]\}"/gu) ?? []).length,
+    2,
+  );
   assert.match(executor, /--function-batches/);
   assert.match(executor, /sleep 10/);
   assert.match(executor, /sleep 60/);

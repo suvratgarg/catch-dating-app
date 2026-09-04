@@ -184,6 +184,8 @@ void main() {
     expect(find.text('Reload profile'), findsOneWidget);
     expect(find.text('Guest'), findsNothing);
 
+    await tester.ensureVisible(find.text('Reload profile'));
+    await tester.pump();
     await tester.tap(find.text('Reload profile'));
     await pumpFeatureUi(tester);
     expect(attempts, 2);

@@ -11,14 +11,45 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class HostCustomerMemoryPreview extends StatelessWidget {
+  const HostCustomerMemoryPreview({
+    super.key,
+    required this.customer,
+    required this.onOpenMemory,
+  });
+
+  final HostAudienceContactDetail customer;
+  final VoidCallback onOpenMemory;
+
+  @override
+  Widget build(BuildContext context) => CatchSection.fieldRows(
+    key: const ValueKey('host-customer-memory-preview'),
+    title: context.l10n.hostCustomersMemory,
+    children: [
+      CatchField.content(
+        title: customer.manualTags.isEmpty
+            ? context.l10n.hostCustomersNotes
+            : customer.manualTags.map((tag) => tag.label).join(' · '),
+        body:
+            customer.notes.firstOrNull?.body ??
+            context.l10n.hostCustomersNoNotes,
+        titleMaxLines: 3,
+        icon: CatchIcons.editNoteOutlined,
+        onTap: onOpenMemory,
+      ),
+    ],
+  );
+}
 
 class HostCustomerMemorySection extends StatelessWidget {
   const HostCustomerMemorySection({
@@ -42,60 +73,105 @@ class HostCustomerMemorySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchSection.containedFieldRows(
+        CatchSection.plain(
           key: const ValueKey('host-customer-memory'),
           title: context.l10n.hostCustomersMemory,
           trailing: notes.isEmpty
               ? null
-              : CatchButton(
+              : CatchTextButton(
                   key: const ValueKey('host-customer-add-note'),
                   label: context.l10n.hostCustomersAddNote,
-                  variant: CatchButtonVariant.ghost,
-                  size: CatchButtonSize.sm,
+                  textStyle: CatchTextStyles.control(context, selected: true),
+                  minimumSize: const Size(CatchSpacing.s11, CatchSpacing.s11),
+                  padding: EdgeInsets.zero,
                   onPressed: onAddNote,
                 ),
-          footer: Text(
-            context.l10n.hostCustomersMemoryHelp,
-            style: CatchTextStyles.supporting(context),
-          ),
-          children: [
-            CatchField.nav(
-              key: const ValueKey('host-customer-edit-tags'),
-              title: context.l10n.hostCustomersManualTags,
-              body: customer.manualTags.isEmpty
-                  ? context.l10n.hostCustomersNoManualTags
-                  : customer.manualTags.map((tag) => tag.label).join(' · '),
-              valueText: context.l10n.hostCustomersEditTags,
-              icon: CatchIcons.editNoteOutlined,
-              onTap: onEditTags,
-            ),
-            if (notes.isEmpty)
-              CatchField.nav(
-                key: const ValueKey('host-customer-add-note'),
-                title: context.l10n.hostCustomersNotes,
-                body: context.l10n.hostCustomersNoNotes,
-                valueText: context.l10n.hostCustomersAddNote,
-                icon: CatchIcons.editNoteOutlined,
-                onTap: onAddNote,
-              )
-            else
-              for (final note in notes)
-                CatchField.content(
-                  key: ValueKey('host-customer-note-${note.noteId}'),
-                  title: note.body,
-                  body: _noteAttribution(context, note, currentUid),
-                  titleMaxLines: 6,
-                  bodyMaxLines: 2,
+          child: CatchSection.contained(
+            elevation: CatchSurfaceElevation.none,
+            borderColor: CatchTokens.of(context).line,
+            tone: CatchSurfaceTone.transparent,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CatchField.nav(
+                  key: const ValueKey('host-customer-edit-tags'),
+                  titleMaxLines: 3,
+                  valueMaxLines: 2,
+                  title: customer.manualTags.isEmpty
+                      ? context.l10n.hostCustomersNoManualTags
+                      : customer.manualTags.map((tag) => tag.label).join(' · '),
+                  valueText: context.l10n.hostCustomersEditTags,
                   icon: CatchIcons.editNoteOutlined,
-                  action: CatchIconButton.icon(
-                    tooltip: context.l10n.hostCustomersEditNote,
-                    icon: CatchIcons.edit,
-                    variant: CatchIconButtonVariant.plain,
-                    onTap: () => onEditNote(note),
-                  ),
-                  onTap: () => onEditNote(note),
+                  onTap: onEditTags,
                 ),
-          ],
+                if (notes.isEmpty)
+                  CatchField.nav(
+                    key: const ValueKey('host-customer-add-note'),
+                    title: context.l10n.hostCustomersNotes,
+                    body: context.l10n.hostCustomersNoNotes,
+                    valueText: context.l10n.hostCustomersAddNote,
+                    icon: CatchIcons.editNoteOutlined,
+                    onTap: onAddNote,
+                  )
+                else
+                  for (final note in notes) ...[
+                    const CatchDivider(),
+                    CatchRowPressSurface(
+                      key: ValueKey('host-customer-note-${note.noteId}'),
+                      onTap: () => onEditNote(note),
+                      child: Padding(
+                        padding: CatchInsets.tileVertical,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              CatchIcons.editNoteOutlined,
+                              size: CatchFieldTokens.leadingIconExtent,
+                              color: CatchTokens.of(context).ink2,
+                            ),
+                            const SizedBox(width: CatchFieldTokens.leadingGap),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Text(
+                                    note.body,
+                                    style: CatchTextStyles.bodyL(context),
+                                  ),
+                                  gapH8,
+                                  Text(
+                                    _noteAttribution(context, note, currentUid),
+                                    style: CatchTextStyles.supporting(context),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                gapH8,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      CatchIcons.lockOutline,
+                      size: CatchFieldTokens.leadingIconExtent,
+                      color: CatchTokens.of(context).ink2,
+                    ),
+                    const SizedBox(width: CatchFieldTokens.leadingGap),
+                    Expanded(
+                      child: Text(
+                        context.l10n.hostCustomersMemoryHelp,
+                        style: CatchTextStyles.recordContext(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
         if (customer.notesCoverage ==
             HostCustomerHistoryCoverage.unavailable) ...[

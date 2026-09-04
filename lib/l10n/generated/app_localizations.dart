@@ -3362,6 +3362,36 @@ abstract class AppLocalizations {
   /// **'Select start time'**
   String get hostsWhenStepPlaceholderSelectStartTime;
 
+  /// Title for organizer-owned reusable venues in Create Event.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved places'**
+  String get hostsWhereStepSavedPlacesTitle;
+
+  /// Explains reusable organizer venues.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a team-saved place to fill the location, or save the current place for next time.'**
+  String get hostsWhereStepSavedPlacesSubtitle;
+
+  /// Selected-state label for a saved venue.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get hostsWhereStepSavedPlaceSelected;
+
+  /// Action that saves the current event location as a reusable venue.
+  ///
+  /// In en, this message translates to:
+  /// **'Save current place'**
+  String get hostsWhereStepSaveCurrentPlace;
+
+  /// Action that updates the selected reusable venue.
+  ///
+  /// In en, this message translates to:
+  /// **'Update saved place'**
+  String get hostsWhereStepUpdateSavedPlace;
+
   /// Product copy used by lib/hosts/presentation/event_management/widgets/where_step.dart (title).
   ///
   /// In en, this message translates to:
@@ -6988,6 +7018,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{label}, optional'**
   String coreCatchFormFieldLabelLabelLabelOptional({required Object label});
+
+  /// Fallback title for a foreground match arrival when the server supplies no title.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'\'s a catch'**
+  String get notificationArrivalMatchTitle;
+
+  /// Fallback title for a foreground message arrival when the server supplies no title.
+  ///
+  /// In en, this message translates to:
+  /// **'New message'**
+  String get notificationArrivalMessageTitle;
 
   /// Product copy used by lib/core/widgets/catch_notice.dart (tooltip).
   ///
@@ -19585,23 +19627,11 @@ abstract class AppLocalizations {
   /// **'Disable website sign-up'**
   String get hostsHostPublicRegistrationActionDisable;
 
-  /// Contact count label.
-  ///
-  /// In en, this message translates to:
-  /// **'Contacts'**
-  String get hostsHostAudienceContacts;
-
   /// Past attendee count label.
   ///
   /// In en, this message translates to:
   /// **'Attended'**
   String get hostsHostAudienceAttended;
-
-  /// Repeat attendee count label.
-  ///
-  /// In en, this message translates to:
-  /// **'Repeat'**
-  String get hostsHostAudienceRepeat;
 
   /// Audience search field.
   ///
@@ -20003,23 +20033,17 @@ abstract class AppLocalizations {
   /// **'Reconnect required'**
   String get hostsHostAudienceSenderNeedsAttention;
 
-  /// Contact attended event count.
+  /// Compact attended event count in a customer directory row.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0{No check-ins yet} =1{1 event attended} other{{count} events attended}}'**
-  String hostsHostAudienceEventsAttended({required int count});
+  /// **'{count, plural, =0{No events} =1{1 event} other{{count} events}}'**
+  String hostCustomersCompactEventCount({required int count});
 
   /// Contact last attended date.
   ///
   /// In en, this message translates to:
   /// **'Last seen {date}'**
   String hostsHostAudienceLastSeen({required String date});
-
-  /// Contact WhatsApp permission state.
-  ///
-  /// In en, this message translates to:
-  /// **'WhatsApp opted in'**
-  String get hostsHostAudienceWhatsappOptedIn;
 
   /// Confirms the native-to-web WhatsApp Embedded Signup handoff.
   ///
@@ -22109,7 +22133,7 @@ abstract class AppLocalizations {
   /// Unified customer revenue heading with explicit provenance.
   ///
   /// In en, this message translates to:
-  /// **'Revenue'**
+  /// **'Recorded spend'**
   String get hostCustomersDetailRevenue;
 
   /// Zero unified customer revenue state.
@@ -22133,7 +22157,7 @@ abstract class AppLocalizations {
   /// Number of payment, imported, provider, or estimated facts for one currency.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 revenue fact} other{{count} revenue facts}}'**
+  /// **'{count, plural, =1{1 spend record} other{{count} spend records}}'**
   String hostCustomersDetailRevenueFacts({required int count});
 
   /// Catch-completed payment provenance label.
@@ -22277,12 +22301,6 @@ abstract class AppLocalizations {
   /// **'Resolve this customer’s identity before starting a conversation.'**
   String get hostCustomersConversationAmbiguous;
 
-  /// Above-fold customer communication and provenance section.
-  ///
-  /// In en, this message translates to:
-  /// **'Reach and provenance'**
-  String get hostCustomersReachAndProvenance;
-
   /// Single person-scoped messaging action whose route is server-derived.
   ///
   /// In en, this message translates to:
@@ -22312,6 +22330,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No participant permission is recorded.'**
   String get hostCustomersWhatsappPermissionUnknown;
+
+  /// Recorded participant permission without a displayable decision date.
+  ///
+  /// In en, this message translates to:
+  /// **'Participant granted permission.'**
+  String get hostCustomersWhatsappPermissionGrantedUndated;
+
+  /// Recorded participant withdrawal without a displayable decision date.
+  ///
+  /// In en, this message translates to:
+  /// **'Participant withdrew permission.'**
+  String get hostCustomersWhatsappPermissionRevokedUndated;
 
   /// Form-backed participant WhatsApp permission provenance.
   ///
@@ -22412,7 +22442,7 @@ abstract class AppLocalizations {
   /// Legal distinction between organizer suppression and participant consent.
   ///
   /// In en, this message translates to:
-  /// **'This is your team’s suppression. It does not change the participant’s permission record.'**
+  /// **'Stops your team from starting personal WhatsApp messages to this customer. Their permission stays unchanged.'**
   String get hostCustomersPauseWhatsappHandoffsBody;
 
   /// Newest-first cross-surface customer timeline heading.
@@ -22454,11 +22484,8 @@ abstract class AppLocalizations {
   /// Form-submission timeline summary with ICU answer count.
   ///
   /// In en, this message translates to:
-  /// **'Submitted · {answerCount, plural, =0{no recorded answers} =1{1 answer} other{{answerCount} answers}} · {date}'**
-  String hostCustomersTimelineFormSubmitted({
-    required int answerCount,
-    required String date,
-  });
+  /// **'Submitted · {answerCount, plural, =0{no recorded answers} =1{1 answer} other{{answerCount} answers}}'**
+  String hostCustomersTimelineFormSubmitted({required int answerCount});
 
   /// Form-withdrawal timeline summary.
   ///
@@ -22469,7 +22496,7 @@ abstract class AppLocalizations {
   /// Event participation state in the customer timeline.
   ///
   /// In en, this message translates to:
-  /// **'{status, select, invited{Invited} registered{Registered} waitlisted{Waitlisted} checkedIn{Checked in} cancelled{Cancelled} other{Event activity}}'**
+  /// **'{status, select, invited{Invited} registered{Registered} waitlisted{Waitlisted} checkedIn{Checked in} attended{Attended} noShow{Did not attend} cancelled{Cancelled} other{Event activity}}'**
   String hostCustomersTimelineEventStatus({required String status});
 
   /// Manual-send task title in the customer timeline.
@@ -22496,14 +22523,11 @@ abstract class AppLocalizations {
   /// **'Managed WhatsApp message'**
   String get hostCustomersTimelineManagedWhatsapp;
 
-  /// Direction and date for one observed conversation message.
+  /// Activity title for one observed conversation message.
   ///
   /// In en, this message translates to:
-  /// **'{direction, select, inbound{From customer} outbound{From your team} other{Message}} · {date}'**
-  String hostCustomersTimelineDirection({
-    required String direction,
-    required String date,
-  });
+  /// **'{direction, select, inbound{Message received} outbound{Message sent} other{Message}}'**
+  String hostCustomersTimelineDirection({required String direction});
 
   /// Organizer-authored manual-tag group, visually separate from computed audience segments.
   ///
@@ -22522,6 +22546,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Memory'**
   String get hostCustomersMemory;
+
+  /// Customer record overview tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get hostCustomersOverview;
+
+  /// Recent attended events on a customer record.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent events attended'**
+  String get hostCustomersRecentEvents;
 
   /// Privacy boundary for organizer-authored contact memory.
   ///
@@ -22661,12 +22697,6 @@ abstract class AppLocalizations {
   /// **'The customer details are available. Try reloading to restore note history.'**
   String get hostCustomersNotesUnavailableBody;
 
-  /// Customer messaging, consent, and removal controls heading.
-  ///
-  /// In en, this message translates to:
-  /// **'Controls'**
-  String get hostCustomersControls;
-
   /// Customers directory sort menu group label.
   ///
   /// In en, this message translates to:
@@ -22708,21 +22738,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'More customer actions'**
   String get hostCustomersMoreActions;
-
-  /// Number of organizer contacts currently reachable on WhatsApp.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 WhatsApp-ready contact} other{{count} WhatsApp-ready contacts}}'**
-  String hostCustomersWhatsappReadyCount({required int count});
-
-  /// Concise customer source and linked-account summary shown on the page.
-  ///
-  /// In en, this message translates to:
-  /// **'{importedCount, plural, =1{1 imported or added by your team} other{{importedCount} imported or added by your team}} · {linkedCount, plural, =1{1 linked Catch account} other{{linkedCount} linked Catch accounts}}'**
-  String hostCustomersSourceSummary({
-    required int importedCount,
-    required int linkedCount,
-  });
 
   /// Host accountability sweep heading.
   ///
@@ -23273,7 +23288,7 @@ abstract class AppLocalizations {
   /// Application approval action.
   ///
   /// In en, this message translates to:
-  /// **'Approve'**
+  /// **'Accept and add to People'**
   String get hostApplicationApprove;
 
   /// Application waitlist action.
@@ -25176,12 +25191,6 @@ abstract class AppLocalizations {
   /// **'Automations'**
   String get hostFormAutomationsTitle;
 
-  /// Explains form automations.
-  ///
-  /// In en, this message translates to:
-  /// **'Run explicit, observable actions after a response changes. You can disable any rule instantly.'**
-  String get hostFormAutomationsSubtitle;
-
   /// Form automation rules section title.
   ///
   /// In en, this message translates to:
@@ -25203,7 +25212,7 @@ abstract class AppLocalizations {
   /// Empty automation rules guidance.
   ///
   /// In en, this message translates to:
-  /// **'Start with a safe preset. Every run is recorded and can be disabled.'**
+  /// **'Create a rule for future activity. Review its actions, enable it when ready, and follow each run here.'**
   String get hostFormAutomationsEmptyBody;
 
   /// Creates a team notification response automation.
@@ -27096,6 +27105,648 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Needs attention'**
   String get eventSuccessRoomWorkspaceNeedsAttention;
+
+  /// Customer record details tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get hostCustomersDetails;
+
+  /// Customer contact methods section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact methods'**
+  String get hostCustomersContactMethods;
+
+  /// Customer submitted information section heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Form responses'**
+  String get hostCustomersSubmittedInformation;
+
+  /// Empty customer submitted information state.
+  ///
+  /// In en, this message translates to:
+  /// **'No form responses appear in the loaded history.'**
+  String get hostCustomersNoSubmittedInformation;
+
+  /// Action summary for opening a linked form response.
+  ///
+  /// In en, this message translates to:
+  /// **'View {count, plural, =1{1 answer} other{{count} answers}}'**
+  String hostCustomersViewAnswers({required int count});
+
+  /// Customer-specific application list empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No applications are linked to this customer.'**
+  String get hostCustomersNoApplications;
+
+  /// Heading for a dated application answer preview on customer details.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest submitted details'**
+  String get hostCustomersLatestSubmittedDetails;
+
+  /// Source attribution for customer submitted details.
+  ///
+  /// In en, this message translates to:
+  /// **'From the application submitted {date}. Open the application for all answers and their context.'**
+  String hostCustomersSubmittedOn({required String date});
+
+  /// Unfiltered customer history selection.
+  ///
+  /// In en, this message translates to:
+  /// **'All activity'**
+  String get hostCustomersAllActivity;
+
+  /// Customer communication history filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get hostCustomersMessageHistory;
+
+  /// Open customer recorded spend breakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'View breakdown'**
+  String get hostCustomersViewBreakdown;
+
+  /// Customer spending grouped by event.
+  ///
+  /// In en, this message translates to:
+  /// **'By event'**
+  String get hostCustomersSpendByEvent;
+
+  /// Revenue allocated to a shared order rather than one attendee.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared order'**
+  String get hostCustomersSharedOrder;
+
+  /// Event-level spending evidence is unavailable despite a recorded aggregate.
+  ///
+  /// In en, this message translates to:
+  /// **'No event breakdown is available for these recorded totals.'**
+  String get hostCustomersSpendBreakdownUnavailable;
+
+  /// Navigate from customer details to the complete application and review.
+  ///
+  /// In en, this message translates to:
+  /// **'Open application'**
+  String get hostCustomersOpenApplication;
+
+  /// Explains an application snapshot with no accessible answers.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted answers are unavailable. Open the application to review its status.'**
+  String get hostCustomersSubmittedAnswersUnavailable;
+
+  /// Section grouping current messaging availability, participant permission and team suppression.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging'**
+  String get hostCustomersMessaging;
+
+  /// Retry fetching customer messaging availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get hostCustomersCheckMessaging;
+
+  /// Title for a customer with no available origin receipts.
+  ///
+  /// In en, this message translates to:
+  /// **'Source not recorded'**
+  String get hostCustomersSourceUnavailable;
+
+  /// Explicit boundary when the backend returns a truncated set of customer origin receipts.
+  ///
+  /// In en, this message translates to:
+  /// **'More source records exist. Only the loaded records are shown.'**
+  String get hostCustomersSourcesTruncated;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review applications'**
+  String get hostApplicationsReviewQueue;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submissions, accept people, or keep them on your waitlist.'**
+  String get hostApplicationsReviewQueueBody;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Open person in People'**
+  String get hostApplicationOpenPerson;
+
+  /// Audience intake workflow label.
+  ///
+  /// In en, this message translates to:
+  /// **'Open original response'**
+  String get hostApplicationOpenResponse;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit audience'**
+  String get hostSavedAudienceEditRules;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'Last evaluated'**
+  String get hostSavedAudienceEvaluated;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'Message this audience'**
+  String get hostSavedAudienceMessage;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'People in this audience'**
+  String get hostSavedAudienceMembers;
+
+  /// Saved audience overview label.
+  ///
+  /// In en, this message translates to:
+  /// **'No people in this audience'**
+  String get hostSavedAudienceNoMembers;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Application status'**
+  String get hostAudienceRuleApplication;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Form answer'**
+  String get hostAudienceRuleFormAnswer;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Attended event'**
+  String get hostAudienceRuleNamedEvent;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a form'**
+  String get hostAudienceChooseForm;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event'**
+  String get hostAudienceChooseEvent;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a published question'**
+  String get hostAudienceChooseQuestion;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer contains or equals'**
+  String get hostAudienceChooseAnswer;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Source unavailable'**
+  String get hostAudienceSourceUnavailable;
+
+  /// Saved audience filter authoring label.
+  ///
+  /// In en, this message translates to:
+  /// **'Only choice and yes/no questions marked filterable appear here. Each rule uses the selected published version.'**
+  String get hostAudienceFilterableQuestionsHelp;
+
+  /// Saved audience SelectedCount control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 selected person} other{{count} selected people}}'**
+  String hostAudienceSelectedCount({required int count});
+
+  /// Saved audience StaticHelp control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose up to 2,500 people. Membership stays as selected until you edit it. Messaging permission is checked separately.'**
+  String get hostAudienceStaticHelp;
+
+  /// Saved audience UnavailablePerson control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable person'**
+  String get hostAudienceUnavailablePerson;
+
+  /// Saved audience RemoveSelected control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from this audience'**
+  String get hostAudienceRemoveSelected;
+
+  /// Saved audience PreviousPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous people'**
+  String get hostAudiencePreviousPeople;
+
+  /// Saved audience NextPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Next people'**
+  String get hostAudienceNextPeople;
+
+  /// Saved audience ChoosePeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose people'**
+  String get hostAudienceChoosePeople;
+
+  /// Saved audience SearchPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get hostAudienceSearchPeople;
+
+  /// Saved audience AvailablePeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'People you can select'**
+  String get hostAudienceAvailablePeople;
+
+  /// Saved audience NoPeopleFound control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'No people found'**
+  String get hostAudienceNoPeopleFound;
+
+  /// Saved audience NoSelectedPeople control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'No people selected yet'**
+  String get hostAudienceNoSelectedPeople;
+
+  /// Saved audience SelectionLimit control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'You have selected the maximum of 2,500 people.'**
+  String get hostAudienceSelectionLimit;
+
+  /// Saved audience MembershipMode control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience membership'**
+  String get hostAudienceMembershipMode;
+
+  /// Saved audience RuleMembership control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Match conditions automatically'**
+  String get hostAudienceRuleMembership;
+
+  /// Saved audience StaticMembership control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose people manually'**
+  String get hostAudienceStaticMembership;
+
+  /// Saved audience Spend control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch spend'**
+  String get hostAudienceSpend;
+
+  /// Saved audience SpendHelp control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses completed Catch payments for your events, excluding refunds. Only uniquely verified Catch accounts are included. Currencies are counted separately; changing currency resets the amount.'**
+  String get hostAudienceSpendHelp;
+
+  /// Saved audience SpendCurrency control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get hostAudienceSpendCurrency;
+
+  /// Saved audience SpendAmount control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get hostAudienceSpendAmount;
+
+  /// Saved audience SpendAmountInvalid control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid amount within 10 billion minor currency units.'**
+  String get hostAudienceSpendAmountInvalid;
+
+  /// Saved audience SpendDays control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Past number of days'**
+  String get hostAudienceSpendDays;
+
+  /// Saved audience SpendDaysHelp control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave blank to include all recorded Catch payments.'**
+  String get hostAudienceSpendDaysHelp;
+
+  /// Saved audience SpendDaysInvalid control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number from 1 to 3,650, or leave blank.'**
+  String get hostAudienceSpendDaysInvalid;
+
+  /// Saved audience SpendLifetime control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'All recorded payments'**
+  String get hostAudienceSpendLifetime;
+
+  /// Saved audience SpendWindow control or explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Past {days} days'**
+  String hostAudienceSpendWindow({required int days});
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'New automation'**
+  String get hostAutomationNew;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit automation'**
+  String get hostAutomationEdit;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Automation name'**
+  String get hostAutomationName;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get hostAutomationTrigger;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'When an application is accepted'**
+  String get hostAutomationAccepted;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'After a person attends an event'**
+  String get hostAutomationAttended;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Any application form'**
+  String get hostAutomationAnyForm;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Any event'**
+  String get hostAutomationAnyEvent;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Form'**
+  String get hostAutomationForm;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get hostAutomationEvent;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay in minutes'**
+  String get hostAutomationDelay;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'0 runs as soon as eligible. Attendance follow-ups wait until the event ends, then apply this delay. Maximum: 10,080 minutes (7 days).'**
+  String get hostAutomationDelayHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number from 0 to 10,080.'**
+  String get hostAutomationDelayInvalid;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer includes'**
+  String get hostAutomationAnswer;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Published question'**
+  String get hostAutomationQuestion;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a filterable choice or yes/no question from the current published form. Publishing a new version requires reviewing the condition again.'**
+  String get hostAutomationQuestionHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get hostAutomationAction;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add action'**
+  String get hostAutomationAddAction;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove action'**
+  String get hostAutomationRemoveAction;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add organizer tag'**
+  String get hostAutomationTag;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to application review'**
+  String get hostAutomationQueue;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose event attendee'**
+  String get hostAutomationAttendee;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Send signed webhook'**
+  String get hostAutomationWebhook;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Send WhatsApp message'**
+  String get hostAutomationMessage;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Webhook URL'**
+  String get hostAutomationWebhookUrl;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing secret'**
+  String get hostAutomationWebhookSecret;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Send event identifiers to your HTTPS endpoint. Verify the HMAC SHA-256 signature and deduplicate X-Catch-Delivery-Id. Answers and contact details are excluded.'**
+  String get hostAutomationWebhookHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 32–256 characters. An existing secret stays unchanged when left blank and the URL stays the same.'**
+  String get hostAutomationSecretHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a signing secret of 32–256 characters.'**
+  String get hostAutomationSecretInvalid;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a public HTTPS URL using port 443.'**
+  String get hostAutomationUrlInvalid;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message draft'**
+  String get hostAutomationDraft;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an unscheduled WhatsApp draft in Messaging, with a saved audience. Only the triggering person is targeted, if they match that audience and can receive the message. Select the draft again after editing it.'**
+  String get hostAutomationDraftHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more message drafts'**
+  String get hostAutomationDraftsMore;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No message drafts on this page. Create a draft in Messaging or load more.'**
+  String get hostAutomationDraftsEmpty;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get hostAutomationEnabled;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabling approves these actions for future matching events. Pausing stops queued actions at their next check; completed actions remain in history.'**
+  String get hostAutomationEnableHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save automation'**
+  String get hostAutomationSave;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the trigger, condition and action settings.'**
+  String get hostAutomationRequired;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome accepted applicants, follow up after attendance, and connect form activity to your team and tools.'**
+  String get hostAutomationOverview;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'A successful message action means the send was queued. Check its delivery in Messaging. Temporary failures retry up to five times; successful actions are retained.'**
+  String get hostAutomationRunHelp;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Next check'**
+  String get hostAutomationDue;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected draft'**
+  String get hostAutomationCurrentDraft;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No published form is available for this trigger.'**
+  String get hostAutomationNoForm;
+
+  /// Audience automation configuration and execution copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured'**
+  String get hostAutomationConfigured;
 }
 
 class _AppLocalizationsDelegate

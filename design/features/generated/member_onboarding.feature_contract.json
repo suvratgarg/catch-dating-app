@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6ac75dbeefe9632bac57a55502c1787d27578d3401ed5de7b5f1a88a6b577a56",
-  "resolvedDigest": "sha256:e2ad6b7eb76e751c3b3147a782135a27e462eb208b2265099ee6c140896f55ae",
+  "resolvedDigest": "sha256:0efaaf89c58fc0cc570840a23f381769435a370c4d4ed442fbbf03d2c73881fb",
   "feature": {
     "id": "feature.member_onboarding",
     "name": "Member Onboarding",
@@ -2294,7 +2294,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },
@@ -2790,7 +2791,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },

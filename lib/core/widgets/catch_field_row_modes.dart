@@ -63,6 +63,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
     }
     final hasInlineMetadata = widget.inlineMetadata?.trim().isNotEmpty == true;
     final centerVertically =
+        _showsInlineAddAtRest ||
         _isToggle ||
         hasInlineMetadata ||
         (widget._contentRow && widget.emphasis == CatchFieldEmphasis.title);
@@ -81,7 +82,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
         : Padding(
             padding: EdgeInsets.only(top: trailingTopPadding),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
+              constraints: BoxConstraints(
                 minHeight: CatchFieldTokens.valueLineExtent,
               ),
               child: Align(
@@ -527,7 +528,9 @@ extension _CatchFieldRowModes on _CatchFieldState {
         !_isEdit &&
         ((_body?.trim().isNotEmpty ?? false) ||
             (_placeholderText?.trim().isNotEmpty ?? false));
-    return textEntryValueLine || canonicalValueLine ? CatchSpacing.micro18 : 0;
+    return textEntryValueLine || canonicalValueLine
+        ? CatchFieldTokens.captionExtent
+        : 0;
   }
 
   String _inlineAddSemanticLabel(String addText) => widget.isOptional
@@ -627,7 +630,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
               ? t.danger
               : _active
               ? t.ink
-              : t.ink3,
+              : t.ink2,
         ),
       );
     }
@@ -757,7 +760,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
               )
             : _fieldCaptionTextStyle(
                 context,
-                color: hasError ? t.danger : t.ink3,
+                color: hasError ? t.danger : t.ink2,
               ));
     final effectiveLabelStyle = baseLabelStyle.copyWith(
       color: _fieldLabelColor(
@@ -773,7 +776,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
             : _fieldValueTextStyle(
                 context,
                 color: valueIsPlaceholder
-                    ? t.ink3
+                    ? t.ink2
                     : _toneColor(t, primaryFallback: t.ink),
               ));
     return Column(
@@ -825,7 +828,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
             key: const ValueKey<String>('catch-field-value-content'),
             padding: EdgeInsetsDirectional.only(end: headerTrailingReserve),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
+              constraints: BoxConstraints(
                 minHeight: CatchFieldTokens.valueLineExtent,
               ),
               child: Align(

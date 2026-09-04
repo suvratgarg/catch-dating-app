@@ -32,8 +32,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
           divider: scrolledUnder,
           leadingType: CatchTopBarLeading.back,
         ),
-        body: const CatchRouteBody.standard(
-          scrollable: false,
+        body: const CatchRouteBody.standardViewport(
           child: HostRouteLoadingBody(padding: EdgeInsets.zero),
         ),
       ),
@@ -43,8 +42,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
           divider: scrolledUnder,
           leadingType: CatchTopBarLeading.back,
         ),
-        body: CatchRouteBody.standard(
-          scrollable: false,
+        body: CatchRouteBody.standardViewport(
           child: CatchErrorState.fromError(
             error,
             context: AppErrorContext.event,
@@ -62,8 +60,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
               divider: scrolledUnder,
               leadingType: CatchTopBarLeading.back,
             ),
-            body: CatchRouteBody.standard(
-              scrollable: false,
+            body: CatchRouteBody.standardViewport(
               child: CatchErrorBody(
                 title: context.l10n.hostsEventOperatorCancelledTitle,
                 message: context.l10n.hostsEventOperatorCancelledMessage,

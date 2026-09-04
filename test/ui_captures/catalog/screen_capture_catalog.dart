@@ -4879,6 +4879,7 @@ final _hostInquiryImageDayMessages = <ChatMessage>[
 ];
 
 List<Object> _hostCustomersProviderOverrides() {
+  const preview = bool.fromEnvironment('AUDIENCE_VALUES_FIXTURE');
   final club = HostOperationsFixtures.primaryClub;
   final request = HostCustomersDirectoryRequest(organizerId: club.id);
   final audienceEditorRequest = HostCustomersDirectoryRequest(
@@ -4892,17 +4893,29 @@ List<Object> _hostCustomersProviderOverrides() {
     hostOperableClubsProvider(
       HostOperationsFixtures.hostUid,
     ).overrideWithValue(AsyncData<List<Club>>([club])),
+    if (preview)
+      hostCustomerSegmentCountProvider(
+        HostCustomerSegmentCountRequest(
+          organizerId: club.id,
+          filter: HostCustomerFilter.newToOrganizer,
+        ),
+      ).overrideWith(
+        (ref) async => const HostCustomerSegmentCount(
+          count: 2,
+          coverage: HostCustomerMatchCountCoverage.exact,
+        ),
+      ),
     hostCrmSummaryProvider(club.id).overrideWithValue(
       AsyncData(
         HostCrmSummary(
           organizerId: club.id,
-          contactCount: 214,
-          pastAttendeeCount: 148,
-          repeatAttendeeCount: 37,
-          linkedAccountCount: 92,
-          importedContactCount: 61,
-          whatsappOptInCount: 74,
-          smsOptInCount: 29,
+          contactCount: preview ? 8 : 214,
+          pastAttendeeCount: preview ? 8 : 148,
+          repeatAttendeeCount: preview ? 6 : 37,
+          linkedAccountCount: preview ? 4 : 92,
+          importedContactCount: preview ? 4 : 61,
+          whatsappOptInCount: preview ? 4 : 74,
+          smsOptInCount: preview ? 2 : 29,
           truncated: false,
           inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
           whatsappReadiness: HostCrmChannelReadiness.providerSetupRequired,
@@ -4933,9 +4946,10 @@ List<Object> _hostCustomersProviderOverrides() {
             whatsappOptedIn: false,
             whatsappAdminSuppressed: false,
           ),
+          if (preview) ..._audienceValuesPreviewExtraContacts(),
         ],
         nextCursor: null,
-        matchCount: 2,
+        matchCount: preview ? 8 : 2,
         matchCountCoverage: HostCustomerMatchCountCoverage.exact,
         sourceCoverage: HostCustomerDirectoryCoverage.exact,
         projectionVersion: 1,
@@ -4967,6 +4981,29 @@ List<Object> _hostCustomersProviderOverrides() {
     ),
   ];
 }
+
+// Expanded deterministic data for the explicitly requested before/after preview.
+// The canonical capture remains unchanged unless AUDIENCE_VALUES_FIXTURE is set.
+List<HostCustomerDirectoryContact> _audienceValuesPreviewExtraContacts() => [
+  for (final row in <(String, int, int, Set<HostCustomerTag>)>[
+    ('Rohan Iyer', 12, 28, {HostCustomerTag.repeat, HostCustomerTag.regular}),
+    ('Priya Sharma', 5, 27, {HostCustomerTag.repeat}),
+    ('Arjun Singh', 3, 25, {HostCustomerTag.repeat}),
+    ('Meera Nair', 9, 23, {HostCustomerTag.repeat, HostCustomerTag.regular}),
+    ('Dev Patel', 1, 21, {HostCustomerTag.newToOrganizer}),
+    ('Karan Malhotra', 7, 19, {HostCustomerTag.repeat, HostCustomerTag.atRisk}),
+  ])
+    HostCustomerDirectoryContact(
+      contactId: 'preview-${row.$1.toLowerCase().replaceAll(' ', '-')}',
+      displayName: row.$1,
+      attendedEventCount: row.$2,
+      lastAttendedAt: DateTime(2026, 5, row.$3, 18),
+      tags: row.$4,
+      hasAmbiguousIdentity: false,
+      whatsappOptedIn: row.$2 > 7,
+      whatsappAdminSuppressed: false,
+    ),
+];
 
 HostSavedAudience _hostSavedAudienceCapture() {
   final organizerId = HostOperationsFixtures.primaryClub.id;

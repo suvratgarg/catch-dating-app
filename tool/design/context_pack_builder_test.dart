@@ -830,8 +830,28 @@ class _ResolvedStyleEntry {
 }
 
 final _styleRegistry = <_StyleEntry>[
+  _StyleEntry.single('control', 'function', CatchTextStyles.control),
+  _StyleEntry.single(
+    'selectionLabel',
+    'function',
+    (context) => CatchTextStyles.selectionLabel(context, selected: false),
+  ),
+  _StyleEntry.single(
+    'supportingStrong',
+    'function',
+    CatchTextStyles.supportingStrong,
+  ),
+  _StyleEntry.single('metric', 'function', CatchTextStyles.metric),
+  _StyleEntry.single('tabLabel', 'function', CatchTextStyles.tabLabel),
+  _StyleEntry.single('recordTitle', 'function', CatchTextStyles.recordTitle),
+  _StyleEntry.single(
+    'recordContext',
+    'function',
+    CatchTextStyles.recordContext,
+  ),
+  _StyleEntry.single('recordBody', 'function', CatchTextStyles.recordBody),
   _StyleEntry.single('display', 'voice', CatchTextStyles.display),
-  _StyleEntry.single('headline', 'voice', CatchTextStyles.headline),
+  _StyleEntry.single('headline', 'function', CatchTextStyles.headline),
   _StyleEntry.single('headlineS', 'voice', CatchTextStyles.headlineS),
   _StyleEntry.single('routeTitle', 'voice', CatchTextStyles.routeTitle),
   _StyleEntry.single(

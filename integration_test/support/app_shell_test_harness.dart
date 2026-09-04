@@ -61,6 +61,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' show User;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -619,9 +620,13 @@ class RecordingFcmService extends FcmService {
   Future<void> initialize({
     required String uid,
     required GoRouter router,
+    void Function(RemoteMessage message)? onForegroundMessage,
   }) async {
     initializedUids.add(uid);
   }
+
+  @override
+  Future<void> unregisterCurrentInstallation() async {}
 }
 
 class UnsupportedTestFcmService extends FcmService {

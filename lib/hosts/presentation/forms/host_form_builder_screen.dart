@@ -365,6 +365,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final shouldPublish = await showCatchBottomSheet<bool>(
       context: context,
       builder: (sheetContext) => CatchBottomSheetScaffold(
+        scrollable: true,
         title: state.editor.form.status == HostFormLifecycleStatus.published
             ? context.l10n.hostFormReviewChangesTitle
             : context.l10n.hostFormReviewPublishTitle,
@@ -432,9 +433,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final published = await notifier.publish();
     if (!mounted) return;
     if (published) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.hostFormPublished)));
+      showCatchSnackBar(context, context.l10n.hostFormPublished);
     } else if (ref
             .read(
               hostFormEditorControllerProvider(

@@ -37,25 +37,24 @@ class HostOrganizerStateScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabbedScreenScaffold(
-      title: context.l10n.hostNavigationOrganizer,
-      titleMaxLines: 2,
-      rowCrossAxisAlignment: CrossAxisAlignment.start,
-      actions: actions,
-      tabRail: CatchTabRail<HostClubTab>(
+    return CatchRootScreenScaffold.withPrimaryRail(
+      header: CatchRootScreenHeader.title(
+        title: context.l10n.hostNavigationOrganizer,
+        titleMaxLines: 2,
+        rowCrossAxisAlignment: CrossAxisAlignment.start,
+        actions: actions,
+      ),
+      primaryRail: CatchTabRail<HostClubTab>(
         groupKey: _hostClubTabRailKey,
         selected: selectedTab,
         selectionPosition: selectedTab.index.toDouble(),
         options: _hostClubTabOptions(context),
       ),
       semanticsLabel: context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
-      body: CatchTabbedScreenBody.single(
-        page: CatchTabbedPageSpec.scroll(
-          bodyLayout: CatchScreenBodyLayout.standard,
-          page: CatchTabbedPageScrollView(
+      body: CatchRootScreenBody.single(
+        page: CatchRootScreenPageSpec.scroll(
+          page: CatchRootScreenPageScrollView.standard(
             scrollKey: scrollKey,
-            bodyLayout: CatchScreenBodyLayout.standard,
-            constrainToContentWidth: true,
             slivers: slivers,
           ),
         ),
@@ -91,10 +90,10 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
   late HostClubTab _selectedTab;
   late final TabController _tabController;
   final GlobalKey _profileSectionsKey = GlobalKey();
-  final Map<HostClubTab, CatchTabbedPageScrollController>
+  final Map<HostClubTab, CatchRootScreenPageScrollController>
   _pageScrollControllers = {
     for (final tab in HostClubTab.values)
-      tab: CatchTabbedPageScrollController(),
+      tab: CatchRootScreenPageScrollController(),
   };
   final Map<HostClubTab, double> _pageScrollOffsets = {};
   final HostClubInsightsRefreshController _insightsRefreshController =
@@ -184,12 +183,14 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
     return CatchMutationErrorListener(
       mutation: AuthSessionController.signOutMutation,
       errorContext: AppErrorContext.auth,
-      child: CatchTabbedScreenScaffold(
-        title: selectedClub.name,
-        titleMaxLines: 2,
-        rowCrossAxisAlignment: CrossAxisAlignment.start,
-        actions: [signOutAction],
-        tabRail: CatchTabControllerRail<HostClubTab>(
+      child: CatchRootScreenScaffold.withPrimaryRail(
+        header: CatchRootScreenHeader.title(
+          title: selectedClub.name,
+          titleMaxLines: 2,
+          rowCrossAxisAlignment: CrossAxisAlignment.start,
+          actions: [signOutAction],
+        ),
+        primaryRail: CatchTabControllerRail<HostClubTab>(
           controller: _tabController,
           groupKey: _hostClubTabRailKey,
           options: _hostClubTabOptions(context),
@@ -197,15 +198,12 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
         semanticsLabel:
             context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
         semanticsHint: context.l10n.hostsHostClubsScaffoldBodyDragLeftOrRight,
-        body: CatchTabbedScreenBody.paged(
+        body: CatchRootScreenBody.paged(
           controller: _tabController,
           pages: [
-            CatchTabbedPageSpec.scroll(
-              bodyLayout: CatchScreenBodyLayout.standard,
-              page: CatchTabbedPageScrollView(
+            CatchRootScreenPageSpec.scroll(
+              page: CatchRootScreenPageScrollView.standard(
                 scrollStateController: _pageScrollControllers[HostClubTab.edit],
-                bodyLayout: CatchScreenBodyLayout.standard,
-                constrainToContentWidth: true,
                 scrollKey: PageStorageKey(
                   'host-club-${selectedClub.id}-edit-scroll',
                 ),
@@ -228,13 +226,10 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
                 ],
               ),
             ),
-            CatchTabbedPageSpec.scroll(
-              bodyLayout: CatchScreenBodyLayout.standard,
-              page: CatchTabbedPageScrollView(
+            CatchRootScreenPageSpec.scroll(
+              page: CatchRootScreenPageScrollView.standard(
                 scrollStateController:
                     _pageScrollControllers[HostClubTab.insights],
-                bodyLayout: CatchScreenBodyLayout.standard,
-                constrainToContentWidth: true,
                 onRefresh: _insightsRefreshController.refresh,
                 scrollKey: PageStorageKey(
                   'host-club-${selectedClub.id}-insights-scroll',
@@ -253,13 +248,11 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
                 ],
               ),
             ),
-            CatchTabbedPageSpec.surface(
-              bodyLayout: CatchScreenBodyLayout.fullBleed,
+            CatchRootScreenPageSpec.surface(
               backgroundColor: t.surface,
-              page: CatchTabbedPageScrollView(
+              page: CatchRootScreenPageScrollView.fullBleed(
                 scrollStateController:
                     _pageScrollControllers[HostClubTab.preview],
-                bodyLayout: CatchScreenBodyLayout.fullBleed,
                 scrollKey: PageStorageKey(
                   'host-club-${selectedClub.id}-preview-scroll',
                 ),

@@ -167,7 +167,7 @@ class CatchTopBarMenuAction<T> extends StatelessWidget {
 
 /// Primary root-screen action that preserves canonical top-bar geometry.
 ///
-/// Compact phone layouts render the action as a 40px bordered icon target.
+/// Preview: compact layouts use a quiet 44-point icon target.
 /// Medium and expanded layouts retain the labelled small primary button.
 /// Callers provide semantics and behavior; this member owns the breakpoint,
 /// action primitive, size, palette, and icon/label composition.
@@ -187,7 +187,12 @@ class CatchTopBarPrimaryAction extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
     if (screenSize.isCompact) {
-      return CatchIconAction(icon: icon, tooltip: label, onPressed: onPressed);
+      return CatchIconAction(
+        icon: icon,
+        tooltip: label,
+        onPressed: onPressed,
+        variant: CatchIconButtonVariant.plain,
+      );
     }
 
     return CatchButton(

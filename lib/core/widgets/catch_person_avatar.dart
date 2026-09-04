@@ -505,12 +505,18 @@ class CatchInitialsAvatarPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final label = initials ?? _initialsOf(name);
+    final tone = name.runes.fold<int>(0, (value, rune) => value + rune) % 3;
+    final background = Color.lerp(
+      t.primarySoft,
+      t.ink2,
+      tone * CatchOpacity.calloutFill,
+    )!;
 
     // People are paper and ink, never activity pigment.
     return Stack(
       fit: StackFit.expand,
       children: [
-        ColoredBox(color: t.primarySoft),
+        ColoredBox(color: background),
         if (label.isNotEmpty)
           Center(
             child: Text(

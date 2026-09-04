@@ -29,6 +29,22 @@ class CatchCountBadge extends StatelessWidget {
   final AlignmentGeometry alignment;
   final Offset offset;
 
+  /// Width reserved by an attached control for the scaled count marker.
+  static double labelWidth(BuildContext context, int count) {
+    if (count <= 0) return 0;
+    final painter = TextPainter(
+      text: TextSpan(
+        text: catchCountLabel(count),
+        style: CatchTextStyles.statusLabel(context),
+      ),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    final width = CatchLayout.countBadgeWidth(painter.width);
+    painter.dispose();
+    return width;
+  }
+
   @override
   Widget build(BuildContext context) {
     final child = _child;
@@ -39,7 +55,7 @@ class CatchCountBadge extends StatelessWidget {
       radius: CatchRadius.pill,
       backgroundColor: t.primary,
       borderColor: t.surface,
-      borderWidth: CatchStroke.underline,
+      borderWidth: CatchLayout.countBadgeBorderWidth,
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           minWidth: CatchLayout.countBadgeMinExtent,
@@ -47,8 +63,8 @@ class CatchCountBadge extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: CatchSpacing.s1,
-            vertical: CatchStroke.hairline,
+            horizontal: CatchLayout.countBadgeHorizontalPadding,
+            vertical: CatchLayout.countBadgeVerticalPadding,
           ),
           child: Center(
             widthFactor: 1,

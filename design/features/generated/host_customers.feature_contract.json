@@ -2,26 +2,26 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
-  "generatedFor": "2026-08-31",
-  "sourceDigest": "sha256:0b571987a8c839ee3600498124aa97f227e62f348eb037b8c4b8075255e549bb",
-  "resolvedDigest": "sha256:e105a762b27c5b17cd3d9c814b70d3104d2507bcc24f7f911c0ce2aa9716dfe2",
+  "generatedFor": "2026-09-03",
+  "sourceDigest": "sha256:207257466d6e33ced3f1f94027ae766f64b6dd857bb8fee74c2c7521720de28d",
+  "resolvedDigest": "sha256:7f1ae29783856ffc98aab8aef9745e802354671203e5229472ef178d0790ac51",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
     "owner": "hosts",
     "status": "active",
-    "description": "Makes Audience the sole Host CRM and intake destination. This contract owns its People and Audiences modes; Forms and Responses are peer modes in the same destination with their own focused evidence. People owns server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration and customer detail. Audiences owns reusable group discovery, full-page definition authoring, exact previews and archive. Inbox consumes saved-audience identifiers for sends without recreating audience logic."
+    "description": "Makes Audience the sole Host CRM and intake destination. This contract owns its People and Audiences modes; Forms and Responses are peer modes in the same destination with their own focused evidence. People owns server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration and customer detail. Audiences owns reusable group discovery, a member overview with evaluated reach, separate definition editing, paginated membership and archive. Its closed vocabulary includes application form/status, published filterable answers and named-event attendance. Inbox consumes saved-audience identifiers for sends without recreating audience logic."
   },
   "coverage": {
     "surfaces": 1,
     "states": 48,
     "scenarios": 48,
-    "actionCases": 48,
-    "actions": 30,
-    "captures": 6,
-    "previews": 2,
-    "testFiles": 12,
-    "evidenceExceptions": 54
+    "actionCases": 49,
+    "actions": 33,
+    "captures": 5,
+    "previews": 3,
+    "testFiles": 13,
+    "evidenceExceptions": 53
   },
   "surfaces": [
     {
@@ -39,7 +39,8 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "widgetbook/lib/hosts/host_saved_audience_use_cases.dart"
         ],
         "actionOwners": [
           {
@@ -53,6 +54,18 @@
             "language": "dart",
             "file": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
             "symbol": "HostSavedAudiencesWorkspace"
+          },
+          {
+            "id": "audience_overview",
+            "language": "dart",
+            "file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
+            "symbol": "HostSavedAudienceOverview"
+          },
+          {
+            "id": "audience_members",
+            "language": "dart",
+            "file": "lib/hosts/presentation/customers/host_saved_audience_members_controller.dart",
+            "symbol": "HostSavedAudienceMembersController"
           },
           {
             "id": "audience_editor",
@@ -262,12 +275,12 @@
       "coverage": {
         "states": 48,
         "scenarios": 48,
-        "actionCases": 48,
-        "actions": 30,
-        "captures": 6,
-        "previews": 2,
-        "testFiles": 12,
-        "evidenceExceptions": 54
+        "actionCases": 49,
+        "actions": 33,
+        "captures": 5,
+        "previews": 3,
+        "testFiles": 13,
+        "evidenceExceptions": 53
       },
       "dimensions": {
         "load": {
@@ -501,7 +514,7 @@
               ]
             }
           ],
-          "description": "Opens one divided directory row as the full-page Customers-owned audience detail and editor route.",
+          "description": "Opens one divided directory row as the full-page Customers-owned member overview and explicit editor.",
           "implementationStatus": "implemented"
         },
         {
@@ -530,8 +543,8 @@
         },
         {
           "id": "refresh_saved_audience_preview",
-          "owner": "audience_editor",
-          "codeValue": "previewAudience",
+          "owner": "audience_overview",
+          "codeValue": "invalidate",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
@@ -549,6 +562,74 @@
             }
           ],
           "description": "Refreshes the exact match count and shared-route reach summary without composing or dispatching a send.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_saved_audience_editor",
+          "owner": "audience_overview",
+          "codeValue": "onEdit",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "audienceId",
+            "revision"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_saved_audience_detail"
+              ]
+            }
+          ],
+          "description": "Explicitly switches from member overview to definition editing.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "page_saved_audience_members",
+          "owner": "audience_members",
+          "codeValue": "loadMore",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "audienceId",
+            "revision",
+            "cursor"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "customer_saved_audience_detail"
+              ]
+            }
+          ],
+          "description": "Pages exact member ids; changed membership or revision requires a complete refresh.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "message_saved_audience",
+          "owner": "audience_overview",
+          "codeValue": "hostInboxScreen",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "organizerId",
+            "audienceId",
+            "revision"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.inbox"
+              }
+            }
+          ],
+          "description": "Carries the selected organizer and saved audience into Inbox compose; dispatch remains Inbox authority.",
           "implementationStatus": "implemented"
         },
         {
@@ -1154,7 +1235,6 @@
         {
           "stateIds": [
             "customer_saved_audience_create",
-            "customer_saved_audience_detail",
             "customer_saved_audience_mutation",
             "customer_saved_audience_archive"
           ],
@@ -1322,6 +1402,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -1414,6 +1497,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "switch_organizer",
                   "search_customers",
@@ -1506,6 +1592,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "search_customers",
@@ -1613,6 +1702,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "message_filtered_customers",
@@ -1698,6 +1790,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -1787,6 +1882,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -1882,6 +1980,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -1976,6 +2077,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -2068,6 +2172,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -2163,6 +2270,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -2257,6 +2367,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -2354,6 +2467,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -2450,6 +2566,9 @@
                 "notAllowed": [
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -2545,6 +2664,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -2640,6 +2762,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -2735,6 +2860,9 @@
                   "open_saved_audience_create",
                   "open_saved_audience_detail",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -2768,13 +2896,13 @@
           "id": "customer_saved_audience_detail",
           "stateId": "customer_saved_audience_detail",
           "kind": "populated",
-          "status": "captured",
+          "status": "tested",
           "dimensions": {
             "load": "ready",
             "view": "audiences",
             "directory": "populated",
             "audience_directory": "populated",
-            "audience_editor": "editing",
+            "audience_editor": "closed",
             "sort": "last_seen",
             "filter_sheet": "closed",
             "merge_review": "closed",
@@ -2789,15 +2917,77 @@
             "theme": "standard"
           },
           "evidence": {
-            "captureIds": [
-              "host_saved_audience_detail"
+            "captureIds": [],
+            "previewIds": [
+              "hostSavedAudienceOverviewState"
             ],
-            "previewIds": [],
             "tests": [
-              "test/hosts/host_operations_customers_tests.dart"
+              "test/hosts/host_saved_audience_workflows_test.dart"
             ]
           },
           "actionCases": [
+            {
+              "id": "overview",
+              "dimensions": {
+                "load": "ready",
+                "view": "audiences",
+                "directory": "populated",
+                "audience_directory": "populated",
+                "audience_editor": "closed",
+                "sort": "last_seen",
+                "filter_sheet": "closed",
+                "merge_review": "closed",
+                "notes": "populated",
+                "tags": "assigned",
+                "campaign_bridge": "blocked",
+                "identity": "linked",
+                "revenue": "exact",
+                "personal_whatsapp": "ready",
+                "mutation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
+                  "refresh_saved_audience_preview"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "switch_customers_view",
+                  "search_saved_audiences",
+                  "open_saved_audience_create",
+                  "open_saved_audience_detail",
+                  "save_saved_audience",
+                  "archive_saved_audience",
+                  "retry_directory",
+                  "switch_organizer",
+                  "search_customers",
+                  "open_customer_filters",
+                  "filter_customers",
+                  "sort_customers",
+                  "message_filtered_customers",
+                  "review_whatsapp_sender_setup",
+                  "load_more",
+                  "export_customers",
+                  "create_customer",
+                  "open_customer",
+                  "open_customer_event",
+                  "manage_customer",
+                  "review_duplicate_customers",
+                  "decide_duplicate_customer",
+                  "undo_customer_merge",
+                  "edit_contact_tags",
+                  "create_contact_note",
+                  "edit_contact_note",
+                  "retry_customer_detail",
+                  "start_conversation",
+                  "open_personal_whatsapp_handoff"
+                ]
+              }
+            },
             {
               "id": "edit",
               "dimensions": {
@@ -2805,7 +2995,7 @@
                 "view": "audiences",
                 "directory": "populated",
                 "audience_directory": "populated",
-                "audience_editor": "editing",
+                "audience_editor": "closed",
                 "sort": "last_seen",
                 "filter_sheet": "closed",
                 "merge_review": "closed",
@@ -2822,7 +3012,6 @@
               "actions": {
                 "enabled": [
                   "save_saved_audience",
-                  "refresh_saved_audience_preview",
                   "archive_saved_audience"
                 ],
                 "disabled": [],
@@ -2831,6 +3020,10 @@
                   "search_saved_audiences",
                   "open_saved_audience_create",
                   "open_saved_audience_detail",
+                  "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -2925,6 +3118,9 @@
                   "search_saved_audiences",
                   "open_saved_audience_create",
                   "open_saved_audience_detail",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3018,6 +3214,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "retry_directory",
                   "switch_organizer",
                   "search_customers",
@@ -3115,6 +3314,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -3206,6 +3408,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -3300,6 +3505,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -3391,6 +3599,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -3480,6 +3691,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -3572,6 +3786,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -3669,6 +3886,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -3764,6 +3984,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -3859,6 +4082,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -3958,6 +4184,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -4050,6 +4279,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -4142,6 +4374,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -4238,6 +4473,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -4332,6 +4570,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -4425,6 +4666,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -4516,6 +4760,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -4609,6 +4856,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -4700,6 +4950,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -4793,6 +5046,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -4883,6 +5139,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -4973,6 +5232,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -5071,6 +5333,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -5166,6 +5431,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -5262,6 +5530,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -5357,6 +5628,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -5449,6 +5723,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "switch_organizer",
                   "search_customers",
@@ -5537,6 +5814,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -5627,6 +5907,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -5717,6 +6000,9 @@
                   "open_saved_audience_detail",
                   "save_saved_audience",
                   "refresh_saved_audience_preview",
+                  "open_saved_audience_editor",
+                  "page_saved_audience_members",
+                  "message_saved_audience",
                   "archive_saved_audience",
                   "retry_directory",
                   "switch_organizer",
@@ -5803,6 +6089,11 @@
               "role": "host"
             },
             {
+              "id": "hostAudienceAutomationsScreen",
+              "path": "/host/audience/automations",
+              "role": "host"
+            },
+            {
               "id": "hostFormAutomationsScreen",
               "path": "/host/audience/forms/:formId/automations",
               "role": "host"
@@ -5822,7 +6113,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },
@@ -5915,7 +6207,8 @@
               "symbol": "CatchPersonRow",
               "file": "lib/core/widgets/catch_person_row.dart",
               "constructors": [
-                "CatchPersonRow"
+                "CatchPersonRow",
+                "CatchPersonRow.directory"
               ]
             }
           },
@@ -6001,6 +6294,7 @@
         ],
         "previews": [
           "hostCustomersStates",
+          "hostSavedAudienceOverviewState",
           "hostSavedAudiencesStates"
         ]
       }

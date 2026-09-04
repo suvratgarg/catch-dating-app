@@ -25,6 +25,9 @@ abstract final class GeneratedCatchColorTokens {
   static const Color lightLike = Color(0xFF16140F);
   static const Color lightPass = Color(0xFF9C958A);
   static const Color lightGold = Color(0xFFC9A24A);
+  static const Color lightPositiveText = Color(0xFF236B45);
+  static const Color lightAttentionText = Color(0xFF97451C);
+  static const Color lightAffinityText = Color(0xFF77529D);
   static const Color darkBg = Color(0xFF0F0E10);
   static const Color darkSurface = Color(0xFF18171A);
   static const Color darkRaised = Color(0xFF211F23);
@@ -45,6 +48,9 @@ abstract final class GeneratedCatchColorTokens {
   static const Color darkLike = Color(0xFFF4F0E8);
   static const Color darkPass = Color(0xFF7E776D);
   static const Color darkGold = Color(0xFFE0B45E);
+  static const Color darkPositiveText = Color(0xFF5BC07C);
+  static const Color darkAttentionText = Color(0xFFF0AF80);
+  static const Color darkAffinityText = Color(0xFFC5A6E7);
 }
 
 abstract final class GeneratedCatchGradientTokens {
@@ -116,4 +122,84 @@ abstract final class GeneratedCatchActivityPigmentTokens {
 abstract final class GeneratedCatchWebsiteTokens {
   static const double contentMax = 1180.0;
   static const double headerHeight = 76.0;
+}
+
+@immutable
+class GeneratedCatchTypographyProfile {
+  const GeneratedCatchTypographyProfile({
+    required this.headline,
+    required this.title,
+    required this.name,
+    required this.body,
+    required this.secondary,
+    required this.context,
+    required this.control,
+    required this.status,
+    required this.metric,
+    required this.fieldValue,
+    required this.fieldLabel,
+  });
+  final TextStyle headline;
+  final TextStyle title;
+  final TextStyle name;
+  final TextStyle body;
+  final TextStyle secondary;
+  final TextStyle context;
+  final TextStyle control;
+  final TextStyle status;
+  final TextStyle metric;
+  final TextStyle fieldValue;
+  final TextStyle fieldLabel;
+}
+
+abstract final class GeneratedCatchTypographyTokens {
+  static const ios = GeneratedCatchTypographyProfile(
+    headline: TextStyle(fontSize: 24.0, height: 30.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
+    title: TextStyle(fontSize: 20.0, height: 25.0 / 20.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
+    name: TextStyle(fontSize: 16.0, height: 20.0 / 16.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
+    body: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    secondary: TextStyle(fontSize: 14.0, height: 20.0 / 14.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    context: TextStyle(fontSize: 13.0, height: 18.0 / 13.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    control: TextStyle(fontSize: 15.0, height: 20.0 / 15.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    status: TextStyle(fontSize: 12.0, height: 16.0 / 12.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
+    metric: TextStyle(fontSize: 24.0, height: 30.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
+    fieldValue: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
+    fieldLabel: TextStyle(fontSize: 13.0, height: 18.0 / 13.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
+  );
+  static const android = GeneratedCatchTypographyProfile(
+    headline: TextStyle(fontSize: 24.0, height: 32.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
+    title: TextStyle(fontSize: 20.0, height: 28.0 / 20.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
+    name: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
+    body: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    secondary: TextStyle(fontSize: 14.0, height: 20.0 / 14.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    context: TextStyle(fontSize: 12.0, height: 16.0 / 12.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    control: TextStyle(fontSize: 14.0, height: 20.0 / 14.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    status: TextStyle(fontSize: 12.0, height: 16.0 / 12.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
+    metric: TextStyle(fontSize: 24.0, height: 32.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
+    fieldValue: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
+    fieldLabel: TextStyle(fontSize: 12.0, height: 16.0 / 12.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
+  );
+}
+
+abstract final class GeneratedCatchLayoutTokens {
+  static const double activityMapPinRestingSize = 26.0;
+  static const double activityMapPinSelectedSize = 38.0;
+  static const double activityMapPinFlagMaxWidth = 180.0;
+  static const double activityMapPinNativeCanvasPadding = 4.0;
+  static const double activityMapPinShadowBlur = 3.0;
+  static const double activityMapPinShadowDy = 2.0;
+  static const double recordAvatarExtent = 40.0;
+  static const double recordLeadingGap = 12.0;
+  static const double recordVerticalPadding = 8.0;
+  static const double recordTitleGap = 4.0;
+  static const double recordBodyGap = 8.0;
+  static const double selectionHorizontalPadding = 12.0;
+  static const double selectionVerticalPadding = 6.0;
+  static const double statusHorizontalPadding = 8.0;
+  static const double statusVerticalPadding = 2.0;
+}
+
+abstract final class GeneratedCatchInteractionTokens {
+  static const double iosMinimumExtent = 44.0;
+  static const double androidMinimumExtent = 48.0;
 }

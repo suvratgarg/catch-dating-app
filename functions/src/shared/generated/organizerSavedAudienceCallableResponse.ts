@@ -51,6 +51,42 @@ export interface OrganizerSavedAudienceCallableResponse {
           kind: "reachableForIntent";
           intent: "organizerWhatsappCampaign";
         }
+      | {
+          kind: "applicationStatus";
+          formId: string;
+          reviewStatus:
+            | "submitted"
+            | "inReview"
+            | "approved"
+            | "waitlisted"
+            | "declined";
+        }
+      | {
+          kind: "formAnswer";
+          formId: string;
+          versionId: string;
+          questionId: string;
+          value: string | boolean;
+        }
+      | {
+          kind: "attendedEvent";
+          eventId: string;
+        }
+      | {
+          kind: "spend";
+          operator: "atLeast" | "atMost";
+          currency: string;
+          amountMinor: number;
+          withinDays: number | null;
+        }
+      | {
+          kind: "staticMembers";
+          /**
+           * @minItems 0
+           * @maxItems 2500
+           */
+          contactIds: string[];
+        }
     )[];
   };
   definitionHash: string;

@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-31",
+  "updated": "2026-09-03",
   "id": "feature.host_customers",
   "name": "Host Audience CRM",
   "owner": "hosts",
   "status": "active",
-  "description": "Makes Audience the sole Host CRM and intake destination. This contract owns its People and Audiences modes; Forms and Responses are peer modes in the same destination with their own focused evidence. People owns server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration and customer detail. Audiences owns reusable group discovery, full-page definition authoring, exact previews and archive. Inbox consumes saved-audience identifiers for sends without recreating audience logic.",
+  "description": "Makes Audience the sole Host CRM and intake destination. This contract owns its People and Audiences modes; Forms and Responses are peer modes in the same destination with their own focused evidence. People owns server-backed sorting, computed segments, organizer-authored notes and tags, per-person send history, reviewed identity merges and reversals, contact administration and customer detail. Audiences owns reusable group discovery, a member overview with evaluated reach, separate definition editing, paginated membership and archive. Its closed vocabulary includes application form/status, published filterable answers and named-event attendance. Inbox consumes saved-audience identifiers for sends without recreating audience logic.",
   "surfaces": [
     {
       "id": "host_flutter",
@@ -19,10 +19,12 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/hosts/host_operations_use_cases.dart"],
+        "previewSources": ["widgetbook/lib/hosts/host_operations_use_cases.dart", "widgetbook/lib/hosts/host_saved_audience_use_cases.dart"],
         "actionOwners": [
           {"id": "customers_screen", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomersScreen"},
           {"id": "audiences_workspace", "language": "dart", "file": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart", "symbol": "HostSavedAudiencesWorkspace"},
+          {"id": "audience_overview", "language": "dart", "file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart", "symbol": "HostSavedAudienceOverview"},
+          {"id": "audience_members", "language": "dart", "file": "lib/hosts/presentation/customers/host_saved_audience_members_controller.dart", "symbol": "HostSavedAudienceMembersController"},
           {"id": "audience_editor", "language": "dart", "file": "lib/hosts/presentation/customers/host_saved_audience_editor.dart", "symbol": "HostSavedAudienceEditorScreen"},
           {"id": "customer_create", "language": "dart", "file": "lib/hosts/presentation/customers/host_customer_editor.dart", "symbol": "HostAddCustomerScreen"},
           {"id": "customers_directory", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_controller.dart", "symbol": "HostCustomersDirectoryController"},
@@ -157,7 +159,7 @@
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "organizerId", "audienceId"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["customer_saved_audience_detail"]}],
-          "description": "Opens one divided directory row as the full-page Customers-owned audience detail and editor route."
+          "description": "Opens one divided directory row as the full-page Customers-owned member overview and explicit editor."
         },
         {
           "id": "save_saved_audience",
@@ -170,12 +172,36 @@
         },
         {
           "id": "refresh_saved_audience_preview",
-          "owner": "audience_editor",
-          "codeValue": "previewAudience",
+          "owner": "audience_overview",
+          "codeValue": "invalidate",
           "cardinality": "singleton",
           "scopeKeys": ["viewerUid", "organizerId", "audienceId", "revision", "definitionHash"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["customer_saved_audience_detail"]}],
           "description": "Refreshes the exact match count and shared-route reach summary without composing or dispatching a send."
+        },
+        {
+          "id": "open_saved_audience_editor",
+          "owner": "audience_overview", "codeValue": "onEdit",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "organizerId", "audienceId", "revision"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customer_saved_audience_detail"]}],
+          "description": "Explicitly switches from member overview to definition editing."
+        },
+        {
+          "id": "page_saved_audience_members",
+          "owner": "audience_members", "codeValue": "loadMore",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "organizerId", "audienceId", "revision", "cursor"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["customer_saved_audience_detail"]}],
+          "description": "Pages exact member ids; changed membership or revision requires a complete refresh."
+        },
+        {
+          "id": "message_saved_audience",
+          "owner": "audience_overview", "codeValue": "hostInboxScreen",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "organizerId", "audienceId", "revision"],
+          "outcomes": [{"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.host.inbox"}}],
+          "description": "Carries the selected organizer and saved audience into Inbox compose; dispatch remains Inbox authority."
         },
         {
           "id": "archive_saved_audience",
@@ -443,7 +469,7 @@
         "customer_saved_audience_empty": {"dimensions": {"view": "audiences", "audience_directory": "empty"}, "actionCases": [{"id": "first_audience", "enabledActions": ["switch_customers_view", "open_saved_audience_create"]}]},
         "customer_saved_audience_error": {"dimensions": {"view": "audiences", "load": "error"}, "actionCases": [{"id": "recovery", "enabledActions": ["switch_customers_view"]}]},
         "customer_saved_audience_create": {"dimensions": {"view": "audiences", "audience_editor": "creating"}, "actionCases": [{"id": "author", "enabledActions": ["save_saved_audience"]}]},
-        "customer_saved_audience_detail": {"dimensions": {"view": "audiences", "audience_editor": "editing"}, "actionCases": [{"id": "edit", "enabledActions": ["save_saved_audience", "refresh_saved_audience_preview", "archive_saved_audience"]}]},
+        "customer_saved_audience_detail": {"dimensions": {"view": "audiences", "audience_editor": "closed"}, "actionCases": [{"id": "overview", "enabledActions": ["open_saved_audience_editor", "page_saved_audience_members", "message_saved_audience", "refresh_saved_audience_preview"]}, {"id": "edit", "enabledActions": ["save_saved_audience", "archive_saved_audience"]}]},
         "customer_saved_audience_mutation": {"dimensions": {"view": "audiences", "audience_editor": "previewing", "mutation": "saving_audience"}, "actionCases": [{"id": "pending", "disabledActions": ["save_saved_audience", "refresh_saved_audience_preview", "archive_saved_audience"]}]},
         "customer_saved_audience_archive": {"dimensions": {"view": "audiences", "audience_editor": "archiving"}, "actionCases": [{"id": "confirm", "enabledActions": ["archive_saved_audience"]}]},
         "manual_add_pending": {"dimensions": {"mutation": "adding"}, "actionCases": [{"id": "pending", "disabledActions": ["create_customer"]}]},
@@ -479,7 +505,7 @@
       "requiredEvidence": {"captures": false, "previews": true, "tests": true},
       "evidenceExceptions": [
         {
-          "stateIds": ["customer_saved_audience_create", "customer_saved_audience_detail", "customer_saved_audience_mutation", "customer_saved_audience_archive"],
+          "stateIds": ["customer_saved_audience_create", "customer_saved_audience_mutation", "customer_saved_audience_archive"],
           "evidence": ["previews"],
           "debtId": "HOST-CUSTOMERS-EVIDENCE-001",
           "reason": "The route-level audience editor has focused rendered and repository/backend tests; deterministic create, detail, pending, and archive Widgetbook variants remain explicit preview debt."

@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchButtonVariant { primary, secondary, ghost, danger, light }
@@ -31,7 +33,32 @@ class CatchButton extends StatefulWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.borderColor,
-  });
+  }) : _command = false,
+       iconAtEnd = false;
+
+  /// Unboxed toolbar command with natural-height text and a platform-sized
+  /// hit area. Useful for paired sort/filter commands and inline record actions.
+  const CatchButton.command({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.icon,
+    this.iconAtEnd = false,
+    this.semanticsLabel,
+  }) : _command = true,
+       variant = CatchButtonVariant.ghost,
+       size = CatchButtonSize.md,
+       shape = CatchButtonShape.rounded,
+       isLoading = false,
+       fullWidth = false,
+       isInteractive = true,
+       accentColor = null,
+       backgroundColor = null,
+       foregroundColor = null,
+       borderColor = null;
+
+  final bool _command;
+  final bool iconAtEnd;
 
   final String label;
   final VoidCallback? onPressed;
@@ -66,6 +93,54 @@ class _CatchButtonState extends State<CatchButton> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    if (widget._command) {
+      return Semantics(
+        button: true,
+        enabled: _enabled,
+        label: widget.semanticsLabel,
+        child: CatchRowPressSurface(
+          onTap: _enabled ? widget.onPressed : null,
+          expandToMaxWidth: false,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: CatchPlatformTokens.minimumInteractiveExtent,
+              minWidth: CatchPlatformTokens.minimumInteractiveExtent,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+              child: IconTheme(
+                data: IconThemeData(
+                  size: CatchIcon.sm,
+                  color: _enabled ? t.ink : t.ink3,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.icon != null && !widget.iconAtEnd) ...[
+                      widget.icon!,
+                      const SizedBox(width: CatchSpacing.s2),
+                    ],
+                    Flexible(
+                      child: Text(
+                        widget.label,
+                        style: CatchTextStyles.control(
+                          context,
+                          color: _enabled ? t.ink : t.ink3,
+                        ),
+                      ),
+                    ),
+                    if (widget.icon != null && widget.iconAtEnd) ...[
+                      const SizedBox(width: CatchSpacing.s2),
+                      widget.icon!,
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     final spec = _ButtonSizeSpec.from(widget.size);
     final mediaQuery = MediaQuery.maybeOf(context);
     final reduceMotion = mediaQuery?.disableAnimations ?? false;

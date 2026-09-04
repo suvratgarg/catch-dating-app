@@ -1,10 +1,34 @@
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_scaled_preferred_size.dart';
 import 'package:flutter/material.dart';
+
+/// Marker contract for the one pinned peer-control rail owned by a root screen.
+///
+/// Root composition accepts this type instead of any [PreferredSizeWidget], so
+/// an arbitrary app bar, wrapper, or hand-rolled tab bar cannot enter the
+/// pinned rail slot merely by reporting the expected height.
+abstract interface class CatchPrimaryRail implements PreferredSizeWidget {}
 
 /// Segmented tab rail for app-bar bottoms: a [CatchOptionGroup] in the
 /// standard rail shell.
-class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
+class CatchTabRail<T> extends StatelessWidget
+    implements CatchPrimaryRail, CatchScaledPreferredSize {
+  /// The pinned slot and its content use the same scaled line-box geometry.
+  /// The unscaled preferredSize remains the canonical minimum contract.
+  static double heightFor(BuildContext context) {
+    final style = CatchTextStyles.tabLabel(context);
+    final lineHeight =
+        MediaQuery.textScalerOf(context).scale(style.fontSize!) * style.height!;
+    final contentHeight = lineHeight + CatchSpacing.s4 + CatchSpacing.micro2;
+    final gridHeight =
+        (contentHeight / CatchSpacing.s1).ceil() * CatchSpacing.s1;
+    return gridHeight < CatchLayout.tabRailHeight
+        ? CatchLayout.tabRailHeight
+        : gridHeight;
+  }
+
   const CatchTabRail({
     super.key,
     required this.selected,
@@ -36,6 +60,10 @@ class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
 
   @override
+  Size preferredSizeFor(BuildContext context) =>
+      Size.fromHeight(CatchTabRail.heightFor(context));
+
+  @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final operational = variant == CatchOptionGroupVariant.operational;
@@ -47,7 +75,7 @@ class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
             ? const EdgeInsets.symmetric(horizontal: CatchSpacing.s4)
             : EdgeInsets.zero,
         child: SizedBox(
-          height: preferredSize.height,
+          height: heightFor(context),
           child: DecoratedBox(
             decoration: operational
                 ? BoxDecoration(
@@ -84,9 +112,9 @@ class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
 /// Binds a route-owned [TabController] to the canonical [CatchTabRail].
 ///
 /// This keeps tap selection, horizontal pager interpolation, and the standard
-/// option-group chrome on one shared path for tabbed root screens.
+/// option-group chrome on one shared path for root screens with peer views.
 class CatchTabControllerRail<T> extends StatelessWidget
-    implements PreferredSizeWidget {
+    implements CatchPrimaryRail, CatchScaledPreferredSize {
   const CatchTabControllerRail({
     super.key,
     required this.controller,
@@ -100,6 +128,10 @@ class CatchTabControllerRail<T> extends StatelessWidget
 
   @override
   Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+
+  @override
+  Size preferredSizeFor(BuildContext context) =>
+      Size.fromHeight(CatchTabRail.heightFor(context));
 
   @override
   Widget build(BuildContext context) {

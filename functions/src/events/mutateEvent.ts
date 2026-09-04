@@ -17,6 +17,7 @@ import {
   EventSuccessFormatPrimitives,
   EventMeetingLocation,
   OrganizerEventSuccessLayoutDocument,
+  OrganizerEventVenueDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {CancelEventCallablePayload} from
@@ -88,6 +89,10 @@ import {
 } from "../eventSuccess/formatPrimitives";
 import {organizerEventSuccessLayoutDocumentId} from
   "../eventSuccess/spatialLayout";
+import {
+  assertOrganizerEventVenueSource,
+  organizerEventVenueDocumentId,
+} from "./organizerEventVenues";
 import {
   createRazorpayClient,
   razorpayKeyId,
@@ -236,6 +241,11 @@ export async function createEventHandler(
     db.collection("organizerEventSuccessLayouts").doc(
       organizerEventSuccessLayoutDocumentId(organizerId, selectedLayoutId)
     ) : null;
+  const sourceVenueId = data.sourceVenueId ?? null;
+  const sourceVenueRef = sourceVenueId ?
+    db.collection("organizerEventVenues").doc(
+      organizerEventVenueDocumentId(organizerId, sourceVenueId)
+    ) : null;
 
   let createdEvent: EventDocument | null = null;
   let organizerName = "Your organizer";
@@ -247,11 +257,13 @@ export async function createEventHandler(
       organizerSnap,
       deletedUserSnap,
       selectedLayoutSnap,
+      sourceVenueSnap,
     ] = await Promise.all([
       tx.get(eventRef),
       tx.get(organizerRef),
       tx.get(deletedUserRef),
       selectedLayoutRef ? tx.get(selectedLayoutRef) : Promise.resolve(null),
+      sourceVenueRef ? tx.get(sourceVenueRef) : Promise.resolve(null),
     ]);
 
     if (eventSnap.exists) {
@@ -282,6 +294,14 @@ export async function createEventHandler(
           "The selected room layout belongs to another organizer."
         );
       }
+    }
+    if (sourceVenueId) {
+      assertValidSourceVenue({
+        snapshot: sourceVenueSnap,
+        organizerId,
+        sourceVenueId,
+        meetingLocation: normalizeMeetingLocationForCreate(data),
+      });
     }
     organizerName = organizer.name;
     const eventBase: EventDocumentBeforeDiscovery = {
@@ -872,6 +892,7 @@ function buildCreateEventDoc(
   }) : normalizedPolicy;
   return {
     name: data.name.trim(),
+    ...(data.sourceVenueId ? {sourceVenueId: data.sourceVenueId} : {}),
     eventOrigin: data.externalOrigin ? {
       mode: "externalCompanion",
       bookingAuthority: "external",
@@ -1354,6 +1375,30 @@ function normalizeEventSuccessFormatPrimitives(
     normalized.durationShape = raw.durationShape;
   }
   return Object.keys(normalized).length > 0 ? normalized : null;
+}
+
+function assertValidSourceVenue(params: {
+  snapshot: FirebaseFirestore.DocumentSnapshot | null;
+  organizerId: string;
+  sourceVenueId: string;
+  meetingLocation: EventMeetingLocation;
+}): void {
+  if (!params.snapshot?.exists) {
+    throw new HttpsError(
+      "failed-precondition",
+      "The selected saved place no longer exists."
+    );
+  }
+  const venue = requireDoc<OrganizerEventVenueDocument>(
+    params.snapshot,
+    "OrganizerEventVenueDocument"
+  );
+  assertOrganizerEventVenueSource({
+    venue,
+    organizerId: params.organizerId,
+    venueId: params.sourceVenueId,
+    meetingLocation: params.meetingLocation,
+  });
 }
 
 /**

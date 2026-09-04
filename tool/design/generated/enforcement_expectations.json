@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedFrom": "design/components/catch.components.json",
-  "registryUpdated": "2026-09-02",
+  "registryUpdated": "2026-09-03",
   "codeToComponents": {
     "catch_async_requires_retry": [
       "catch.async_value"
@@ -71,7 +71,7 @@
       "catch.network_image"
     ],
     "catch_no_raw_breakpoint": [
-      "catch.tabbed_screen"
+      "catch.screen_body"
     ],
     "catch_no_raw_button_control": [
       "catch.button",
@@ -143,10 +143,19 @@
     "catch_no_widget_returning_method": [
       "catch.event_detail_sections"
     ],
+    "catch_notice_host_is_app_owned": [
+      "catch.notice"
+    ],
+    "catch_notification_delivery_is_service_owned": [
+      "catch.notice"
+    ],
     "catch_prefer_semantic_insets": [
       "catch.screen_body"
     ],
     "catch_screen_gutter_uses_semantic_insets": [
+      "catch.screen_body"
+    ],
+    "catch_screen_layout_constructor_vocabulary": [
       "catch.screen_body"
     ],
     "catch_screen_layout_family_conformance": [
@@ -168,13 +177,19 @@
       "catch.section_stack"
     ],
     "catch_shell_owns_tab_scaffold": [
-      "catch.tabbed_screen"
+      "catch.tab_bar"
+    ],
+    "catch_status_strip_is_layout_owned": [
+      "catch.status_strip"
     ],
     "catch_text_requires_style": [
       "catch.typography"
     ],
     "catch_top_bar_requires_action_group": [
       "catch.top_bar"
+    ],
+    "catch_use_canonical_feedback": [
+      "catch.notice"
     ],
     "catch_use_named_catch_field_constructor": [
       "catch.field"

@@ -1,7 +1,7 @@
 part of 'host_customers_screen.dart';
 
 class HostSavedAudiencesWorkspace extends ConsumerWidget
-    implements CatchTabbedPageOwner {
+    implements CatchRootScreenPageOwner {
   const HostSavedAudiencesWorkspace({
     super.key,
     required this.organizerId,
@@ -16,15 +16,10 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
   final ValueChanged<HostSavedAudience> onOpen;
 
   @override
-  CatchScreenBodyLayout get bodyLayout => CatchScreenBodyLayout.standard;
-
-  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final audiences = ref.watch(hostAllSavedAudiencesProvider(organizerId));
-    return CatchTabbedPageScrollView(
+    return CatchRootScreenPageScrollView.standard(
       scrollKey: const PageStorageKey<String>('host-customers-audiences'),
-      bodyLayout: bodyLayout,
-      constrainToContentWidth: true,
       onRefresh: () async {
         ref.invalidate(hostSavedAudiencesProvider(organizerId));
         ref.invalidate(hostAllSavedAudiencesProvider(organizerId));
@@ -39,6 +34,19 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
                 context,
                 color: CatchTokens.of(context).ink2,
               ),
+            ),
+            gapH24,
+            CatchSection.fieldRows(
+              children: [
+                CatchField.nav(
+                  title: context.l10n.hostFormAutomationsTitle,
+                  body: context.l10n.hostAutomationOverview,
+                  onTap: () => context.pushNamed(
+                    Routes.hostAudienceAutomationsScreen.name,
+                    queryParameters: {'organizerId': organizerId},
+                  ),
+                ),
+              ],
             ),
             gapH24,
             CatchAsyncValueView<HostSavedAudiencePage>(

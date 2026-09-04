@@ -22,20 +22,22 @@ class PluginHostRosterFileService implements HostRosterFileService {
 
   @override
   Future<PickedHostRosterFile?> pickRosterFile() async {
-    final result = await FilePicker.pickFiles(
+    final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: const ['csv', 'xlsx'],
-      withData: true,
     );
-    if (result == null) return null;
-    final file = result.files.single;
-    final bytes = file.bytes;
-    if (bytes == null) {
-      throw const HostRosterImportException(
+    if (file == null) return null;
+    try {
+      return PickedHostRosterFile(
+        name: file.name,
+        bytes: await file.readAsBytes(),
+      );
+    } on Exception catch (error) {
+      throw HostRosterImportException(
         HostRosterImportIssue.unreadableXlsx,
+        cause: error,
       );
     }
-    return PickedHostRosterFile(name: file.name, bytes: bytes);
   }
 }
 

@@ -443,7 +443,7 @@ void _registerEventSuccessHostSetupTests() {
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(430, 2600);
+    tester.view.physicalSize = const Size(430, 874);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
@@ -521,10 +521,13 @@ void _registerEventSuccessHostSetupTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostSection(
-              event: event,
-              initialTab: EventSuccessHostTab.report,
-              showTabs: false,
+            body: SingleChildScrollView(
+              // Embedded reports inherit the event workspace scroll owner.
+              child: EventSuccessHostSection(
+                event: event,
+                initialTab: EventSuccessHostTab.report,
+                showTabs: false,
+              ),
             ),
           ),
         ),
@@ -543,6 +546,10 @@ void _registerEventSuccessHostSetupTests() {
     expect(find.text('3 assigned'), findsOneWidget);
     expect(find.text('1 opted out'), findsOneWidget);
     expect(find.text('2 host-help requests'), findsOneWidget);
+    await tester.ensureVisible(find.text('2 host-help requests'));
+    await tester.pump();
+    expect(find.text('2 host-help requests').hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('host section renders tab-shaped skeleton while guide loads', (

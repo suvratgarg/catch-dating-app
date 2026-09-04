@@ -84,6 +84,10 @@ enum Routes {
     '/host/audience/forms/:formId/analytics',
     AppRouteAudience.host,
   ),
+  hostAudienceAutomationsScreen(
+    '/host/audience/automations',
+    AppRouteAudience.host,
+  ),
   hostFormAutomationsScreen(
     '/host/audience/forms/:formId/automations',
     AppRouteAudience.host,

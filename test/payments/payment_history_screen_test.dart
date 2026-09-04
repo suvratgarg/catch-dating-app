@@ -131,6 +131,8 @@ void main() {
 
       expect(find.text('How to get help with this booking'), findsOneWidget);
 
+      await tester.ensureVisible(find.text('How to get help with this booking'));
+      await tester.pump();
       await tester.tap(find.text('How to get help with this booking'));
       await pumpFeatureUi(tester);
 

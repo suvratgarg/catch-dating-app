@@ -28,6 +28,7 @@ class CreateEventDraftSnapshot {
     required this.locationDetails,
     required this.meetingLocationAddress,
     required this.meetingLocationPlaceId,
+    this.sourceVenueId,
     required this.startingPointLat,
     required this.startingPointLng,
     required this.selectedDateMillis,
@@ -74,6 +75,7 @@ class CreateEventDraftSnapshot {
   final String? locationDetails;
   final String? meetingLocationAddress;
   final String? meetingLocationPlaceId;
+  final String? sourceVenueId;
   final double? startingPointLat;
   final double? startingPointLng;
   final int? selectedDateMillis;
@@ -120,6 +122,7 @@ class CreateEventDraftSnapshot {
     locationDetails: locationDetails,
     meetingLocationAddress: meetingLocationAddress,
     meetingLocationPlaceId: meetingLocationPlaceId,
+    sourceVenueId: sourceVenueId,
     startingPointLat: startingPointLat,
     startingPointLng: startingPointLng,
     selectedDateMillis: selectedDateMillis,
@@ -175,6 +178,7 @@ class CreateEventDraftSnapshot {
       locationDetails: locationDetails,
       meetingLocationAddress: meetingLocationAddress,
       meetingLocationPlaceId: meetingLocationPlaceId,
+      sourceVenueId: sourceVenueId,
       startingPointLat: startingPointLat,
       startingPointLng: startingPointLng,
       selectedDateMillis: selectedDateMillis,

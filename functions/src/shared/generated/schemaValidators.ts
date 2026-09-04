@@ -124,6 +124,7 @@ import {EventWaitlistOfferDocument} from "./eventWaitlistOfferDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
 import {EventSuccessConversationGraphDocument} from "./eventSuccessConversationGraphDocument";
 import {OrganizerEventSuccessLayoutDocument} from "./organizerEventSuccessLayoutDocument";
+import {OrganizerEventVenueDocument} from "./organizerEventVenueDocument";
 import {EventSuccessAssignmentDraftDocument} from "./eventSuccessAssignmentDraftDocument";
 import {EventSuccessFeedbackDocument} from "./eventSuccessFeedbackDocument";
 import {EventSuccessPreferenceDocument} from "./eventSuccessPreferenceDocument";
@@ -250,6 +251,8 @@ import {UpsertOrganizerCampaignCallablePayload} from "./upsertOrganizerCampaignC
 import {UpsertOrganizerSavedAudienceCallablePayload} from "./upsertOrganizerSavedAudienceCallablePayload";
 import {ListOrganizerSavedAudiencesCallablePayload} from "./listOrganizerSavedAudiencesCallablePayload";
 import {PreviewOrganizerSavedAudienceCallablePayload} from "./previewOrganizerSavedAudienceCallablePayload";
+import {ResolveOrganizerAudienceMembersCallablePayload} from "./resolveOrganizerAudienceMembersCallablePayload";
+import {ResolveOrganizerAudienceMembersCallableResponse} from "./resolveOrganizerAudienceMembersCallableResponse";
 import {ArchiveOrganizerSavedAudienceCallablePayload} from "./archiveOrganizerSavedAudienceCallablePayload";
 import {OrganizerSavedAudienceCallableResponse} from "./organizerSavedAudienceCallableResponse";
 import {ListOrganizerSavedAudiencesCallableResponse} from "./listOrganizerSavedAudiencesCallableResponse";
@@ -309,6 +312,8 @@ import {EventRehearsalGuestBootstrapCallableResponse} from "./eventRehearsalGues
 import {SubmitEventRehearsalGuestActionCallablePayload} from "./submitEventRehearsalGuestActionCallablePayload";
 import {EventRehearsalReproductionCallableResponse} from "./eventRehearsalReproductionCallableResponse";
 import {UpsertEventSuccessLayoutCallablePayload} from "./upsertEventSuccessLayoutCallablePayload";
+import {UpsertOrganizerEventVenueCallablePayload} from "./upsertOrganizerEventVenueCallablePayload";
+import {UpsertOrganizerEventVenueCallableResponse} from "./upsertOrganizerEventVenueCallableResponse";
 import {UpsertEventSuccessLayoutCallableResponse} from "./upsertEventSuccessLayoutCallableResponse";
 import {GetEventSuccessSpatialLayoutCallablePayload} from "./getEventSuccessSpatialLayoutCallablePayload";
 import {GetEventSuccessSpatialLayoutCallableResponse} from "./getEventSuccessSpatialLayoutCallableResponse";
@@ -648,6 +653,7 @@ import {
   eventSuccessPlanDocumentSchema,
   eventSuccessConversationGraphDocumentSchema,
   organizerEventSuccessLayoutDocumentSchema,
+  organizerEventVenueDocumentSchema,
   eventSuccessAssignmentDraftDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
   eventSuccessPreferenceDocumentSchema,
@@ -774,6 +780,8 @@ import {
   upsertOrganizerSavedAudienceCallablePayloadSchema,
   listOrganizerSavedAudiencesCallablePayloadSchema,
   previewOrganizerSavedAudienceCallablePayloadSchema,
+  resolveOrganizerAudienceMembersCallablePayloadSchema,
+  resolveOrganizerAudienceMembersCallableResponseSchema,
   archiveOrganizerSavedAudienceCallablePayloadSchema,
   organizerSavedAudienceCallableResponseSchema,
   listOrganizerSavedAudiencesCallableResponseSchema,
@@ -833,6 +841,8 @@ import {
   submitEventRehearsalGuestActionCallablePayloadSchema,
   eventRehearsalReproductionCallableResponseSchema,
   upsertEventSuccessLayoutCallablePayloadSchema,
+  upsertOrganizerEventVenueCallablePayloadSchema,
+  upsertOrganizerEventVenueCallableResponseSchema,
   upsertEventSuccessLayoutCallableResponseSchema,
   getEventSuccessSpatialLayoutCallablePayloadSchema,
   getEventSuccessSpatialLayoutCallableResponseSchema,
@@ -1310,6 +1320,8 @@ export const validateEventSuccessConversationGraphDocument =
   lazyValidator<EventSuccessConversationGraphDocument>(eventSuccessConversationGraphDocumentSchema);
 export const validateOrganizerEventSuccessLayoutDocument =
   lazyValidator<OrganizerEventSuccessLayoutDocument>(organizerEventSuccessLayoutDocumentSchema);
+export const validateOrganizerEventVenueDocument =
+  lazyValidator<OrganizerEventVenueDocument>(organizerEventVenueDocumentSchema);
 export const validateEventSuccessAssignmentDraftDocument =
   lazyValidator<EventSuccessAssignmentDraftDocument>(eventSuccessAssignmentDraftDocumentSchema);
 export const validateEventSuccessFeedbackDocument =
@@ -1562,6 +1574,10 @@ export const validateListOrganizerSavedAudiencesCallablePayload =
   lazyValidator<ListOrganizerSavedAudiencesCallablePayload>(listOrganizerSavedAudiencesCallablePayloadSchema);
 export const validatePreviewOrganizerSavedAudienceCallablePayload =
   lazyValidator<PreviewOrganizerSavedAudienceCallablePayload>(previewOrganizerSavedAudienceCallablePayloadSchema);
+export const validateResolveOrganizerAudienceMembersCallablePayload =
+  lazyValidator<ResolveOrganizerAudienceMembersCallablePayload>(resolveOrganizerAudienceMembersCallablePayloadSchema);
+export const validateResolveOrganizerAudienceMembersCallableResponse =
+  lazyValidator<ResolveOrganizerAudienceMembersCallableResponse>(resolveOrganizerAudienceMembersCallableResponseSchema);
 export const validateArchiveOrganizerSavedAudienceCallablePayload =
   lazyValidator<ArchiveOrganizerSavedAudienceCallablePayload>(archiveOrganizerSavedAudienceCallablePayloadSchema);
 export const validateOrganizerSavedAudienceCallableResponse =
@@ -1680,6 +1696,10 @@ export const validateEventRehearsalReproductionCallableResponse =
   lazyValidator<EventRehearsalReproductionCallableResponse>(eventRehearsalReproductionCallableResponseSchema);
 export const validateUpsertEventSuccessLayoutCallablePayload =
   lazyValidator<UpsertEventSuccessLayoutCallablePayload>(upsertEventSuccessLayoutCallablePayloadSchema);
+export const validateUpsertOrganizerEventVenueCallablePayload =
+  lazyValidator<UpsertOrganizerEventVenueCallablePayload>(upsertOrganizerEventVenueCallablePayloadSchema);
+export const validateUpsertOrganizerEventVenueCallableResponse =
+  lazyValidator<UpsertOrganizerEventVenueCallableResponse>(upsertOrganizerEventVenueCallableResponseSchema);
 export const validateUpsertEventSuccessLayoutCallableResponse =
   lazyValidator<UpsertEventSuccessLayoutCallableResponse>(upsertEventSuccessLayoutCallableResponseSchema);
 export const validateGetEventSuccessSpatialLayoutCallablePayload =

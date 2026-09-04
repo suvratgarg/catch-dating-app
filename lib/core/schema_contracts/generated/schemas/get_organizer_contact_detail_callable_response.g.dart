@@ -38,6 +38,10 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
     'revision',
   ],
   'properties': <String, Object?>{
+    'historyLoaded': <String, Object?>{
+      'type': 'boolean',
+      'description': 'False means operational history was deliberately not requested; empty history arrays are not evidence of no activity.',
+    },
     'organizerId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
@@ -260,6 +264,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
               'providerRecord',
               'importBatch',
               'webRegistration',
+              'hostApplicationResponse',
             ],
           },
           'formId': <String, Object?>{
@@ -1473,6 +1478,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'providerRecord',
             'importBatch',
             'webRegistration',
+            'hostApplicationResponse',
           ],
         },
         'formId': <String, Object?>{

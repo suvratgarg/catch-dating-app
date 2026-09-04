@@ -43,6 +43,59 @@ void _registerExploreMapTests() {
     expect(find.text('No organizers in Mumbai yet'), findsNothing);
   });
 
+  testWidgets('Explore time scope pins while its feed continues scrolling', (
+    tester,
+  ) async {
+    final externalItems = List<ExploreExternalEventItem>.generate(
+      24,
+      (index) => ExploreExternalEventItem(
+        event: _buildExternalExploreEvent(
+          id: 'external-pinned-$index',
+          title: 'Pinned rail event $index',
+        ),
+      ),
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          cityListProvider.overrideWith((ref) async => _testCities),
+          deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+          exploreSourceClubsProvider.overrideWithValue(
+            const AsyncData(<Club>[]),
+          ),
+          exploreClubsViewModelProvider.overrideWithValue(
+            const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+          ),
+          exploreFeedViewModelProvider.overrideWithValue(
+            AsyncData(
+              ExploreFeedViewModel(
+                items: const [],
+                externalItems: externalItems,
+              ),
+            ),
+          ),
+        ],
+        child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
+      ),
+    );
+    await _pumpClubUi(tester);
+
+    expect(find.byType(NestedScrollView), findsOneWidget);
+    final rail = find.byType(ExploreFilterRail);
+    final railBefore = tester.getRect(rail);
+
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -700));
+    await _pumpClubUi(tester);
+    final railAfterCollapse = tester.getRect(rail);
+    expect(railAfterCollapse.top, lessThan(railBefore.top));
+
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -240));
+    await _pumpClubUi(tester);
+    expect(tester.getRect(rail).top, closeTo(railAfterCollapse.top, 0.001));
+  });
+
   testWidgets('ExploreScreen filters discover cards from the chip rail', (
     tester,
   ) async {
@@ -214,14 +267,27 @@ void _registerExploreMapTests() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: ExploreFilterRail(
-            filters: filters,
-            state: ExploreFilterRailState.from(filters, l10n: _l10n),
-            dateStripState: ExploreDateStripState.from(
-              viewModel: null,
-              l10n: _l10n,
-              now: DateTime(2026, 5, 26, 10),
-            ),
+          body: Column(
+            children: [
+              ExploreFilterRail(
+                filters: filters,
+                state: ExploreFilterRailState.from(filters, l10n: _l10n),
+                dateStripState: ExploreDateStripState.from(
+                  viewModel: null,
+                  l10n: _l10n,
+                  now: DateTime(2026, 5, 26, 10),
+                ),
+              ),
+              const ExploreAppliedFilterChips(
+                filters: filters,
+                showJoinedOnly: true,
+                onDistanceFilterSelected: null,
+                onToggleJoinedOnly: null,
+                onToggleHighRatedOnly: null,
+                onToggleActivityTag: null,
+                onToggleArea: null,
+              ),
+            ],
           ),
         ),
       ),
@@ -260,7 +326,20 @@ void _registerExploreMapTests() {
       MaterialApp(
         theme: AppTheme.light,
         home: const Scaffold(
-          body: ExploreFilterRail(filters: filters, showJoinedOnly: false),
+          body: Column(
+            children: [
+              ExploreFilterRail(filters: filters, showJoinedOnly: false),
+              ExploreAppliedFilterChips(
+                filters: filters,
+                showJoinedOnly: false,
+                onDistanceFilterSelected: null,
+                onToggleJoinedOnly: null,
+                onToggleHighRatedOnly: null,
+                onToggleActivityTag: null,
+                onToggleArea: null,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -285,11 +364,15 @@ void _registerExploreMapTests() {
         theme: AppTheme.light,
         home: Scaffold(
           body: StatefulBuilder(
-            builder: (context, setState) => ExploreFilterRail(
+            builder: (context, setState) => ExploreAppliedFilterChips(
               filters: filters,
+              showJoinedOnly: true,
               onDistanceFilterSelected: (distance) => setState(
                 () => filters = filters.copyWith(distanceFilter: distance),
               ),
+              onToggleJoinedOnly: null,
+              onToggleHighRatedOnly: null,
+              onToggleActivityTag: null,
               onToggleArea: (area) =>
                   setState(() => filters = filters.copyWith(area: null)),
             ),

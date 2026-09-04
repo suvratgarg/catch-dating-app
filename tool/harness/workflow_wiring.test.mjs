@@ -518,7 +518,10 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
   assert.ok(fullBuckets, "tool-buckets job must remain present");
   assert.match(fullBuckets, /- preflight\s*\n\s+- fast-gates/u);
   assert.match(fullBuckets, /needs\.fast-gates\.result == 'success'/u);
-  assert.match(fullBuckets, /timeout-minutes: 30/u);
+  assert.match(
+    fullBuckets,
+    /timeout-minutes: \$\{\{ matrix\.name == 'lint-scanners' && 45 \|\| 30 \}\}/u,
+  );
   assert.doesNotMatch(fullBuckets, /playwright install --with-deps/u);
   assert.match(fullBuckets, /if command -v rg >\/dev\/null 2>&1/u);
   assert.doesNotMatch(fullBuckets, /apt-get/u);

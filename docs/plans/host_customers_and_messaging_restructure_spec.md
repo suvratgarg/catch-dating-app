@@ -1,5 +1,96 @@
 # Host Customers + Messaging Restructure Spec (for Codex)
 
+## Audience workflow completion (owner-approved 2026-09-03)
+
+Goal: complete intake, customer linking, reusable group inspection, and the
+first source-backed targeting jobs inside the existing Audience destination.
+The earlier phases below remain historical implementation context.
+
+### Scope and responsibilities
+
+- People is the organizer's complete contact directory, including prospects,
+  imported/manual contacts and accepted applicants. Application decisions
+  remain attached to their applications; one person can have several.
+- Responses owns intake and a discoverable application-review queue. Ordinary
+  feedback and surveys do not acquire an artificial approval lifecycle.
+- Accepting an application atomically approves it and creates or links an
+  organizer contact. Preserve the original response, source and review note.
+  A unique existing contact is reused; conflicting matches require duplicate
+  resolution. Retries cannot create duplicate contacts.
+- Generic application forms use their exact submitted response authority.
+  Legacy native applications continue to require their participant data grant.
+  Withdrawn or inaccessible evidence cannot be approved or used for targeting.
+- Saved audiences own membership rules, exact member inspection, preview
+  freshness, reach summaries and an explicit handoff to Inbox compose.
+- Inbox owns content, approval, scheduling and dispatch. Event bookings,
+  verified Consumer identity and marketing permission are separate authorities.
+
+### Ordered implementation slices
+
+1. Repair generic-form application access, expose the review queue under
+   Responses, connect approval to People, and link the response/application/
+   person records in both directions.
+2. Make saved-audience detail an overview with members, rules, preview time,
+   reach and Message this audience. Keep editing and archive explicit.
+3. Extend the closed targeting vocabulary for applications by form/status,
+   versioned filterable choice/boolean answers, and attendance at a named
+   event. Resolve current organizer-scoped source facts on the server; do not
+   copy private Consumer attributes or execute arbitrary queries.
+
+### Extended functional scope (owner-approved 2026-09-03)
+
+Complete these three additions before the visual pass, in independently
+verifiable commits:
+
+1. Spend targeting: currency-specific minimum/maximum verified Catch spend,
+   with an optional trailing-day window. Read canonical successful payment
+   facts, exclude failed bookings and refunded charges, use completion time,
+   and validate organizer event ownership. Never mix currencies, infer private
+   identity, or treat imported estimates as verified spend. Exact evaluation
+   fails explicitly when source bounds are exceeded.
+2. Static audiences: explicitly selected organizer contacts with search,
+   pagination, add/remove, save/edit, exact member inspection and the existing
+   Messaging action. Membership changes only through host edits or canonical
+   contact merge/deletion resolution; static membership does not grant messaging
+   permission. Prevent accidental mixing with dynamic predicates.
+3. Automation delivery: extend the existing rule/run authority with application
+   acceptance and event-attendance triggers, complete signed HTTPS webhooks and
+   campaign follow-up actions, and expose editing, enable/pause and run history.
+   Activation explicitly approves the selected message configuration. Execution
+   rechecks manager authority, source validity, recipient permission and sender/
+   template availability. Stable event/action identities, exclusive execution,
+   bounded retries and visible failures prevent silent loss or duplicate sends.
+   Existing form submission/withdrawal rules retain their behavior and share
+   the same delivery implementation. Webhooks carry a minimal organizer-scoped
+   event envelope with a stable delivery id and signature, never raw answers or
+   private profile/payment data.
+
+### Exclusions
+
+Visual redesign and render matching remain deferred. Use existing Catch
+components. This scope does not add arbitrary nested expressions, a visual
+workflow canvas, imported-spend reconciliation, additional messaging providers,
+bulk historical automation replay, or production deployment/activation.
+
+### Checks and acceptance
+
+- Backend tests cover generic/legacy authority, withdrawal and cross-organizer
+  denial, optimistic conflict, repeat approval, unique existing contact reuse,
+  ambiguous endpoints and atomic approval/contact creation.
+- Audience tests cover each new predicate, mixed all/any rules, source
+  withdrawal, foreign source rejection and stable member pagination. Spend
+  tests cover time/currency/refund boundaries; static-list tests cover edits,
+  contact merges and cross-organizer denial. Automation tests cover duplicate
+  events, execution leases, permission revocation, source changes, public-HTTPS
+  validation, signatures, retry exhaustion and campaign dispatch handoff.
+- Flutter tests cover queue discovery, approval/customer navigation, audience
+  member inspection/edit/compose and filter authoring with server vocabulary.
+- Regenerate schema DTOs, validators, localization and affected feature/screen
+  contracts; run data-contract checks, focused analysis/tests and the registered
+  CRM boundary checks selected from the current impact plan.
+- Preserve each coherent slice in Git. Report source/check, PR/CI and deployment
+  states separately. No source claim depends on screenshots alone.
+
 Status: phases 0–6 and server-backed sort implemented after this change merges · updated 2026-08-16
 
 Delivery state (verified against `origin/main`, 2026-08-16):

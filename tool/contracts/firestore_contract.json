@@ -290,6 +290,7 @@
           "payloadSchemaRef": "contracts/callables/create_event_payload.schema.json",
           "allowedFields": [
             "organizerId",
+            "sourceVenueId",
             "startTime",
             "endTime",
             "meetingPoint",
@@ -410,6 +411,45 @@
       "migrationNotes": [
         "cancelEvent handles events with history.",
         "deleteEvent hard-deletes only unused hosted events with no participations, payments, or reviews."
+      ]
+    },
+    {
+      "id": "organizerEventVenues",
+      "path": "organizerEventVenues/{organizerId_venueId}",
+      "rulesMatch": "/organizerEventVenues/{venueDocumentId}",
+      "typescriptInterface": "OrganizerEventVenueDocument",
+      "dartModel": "lib/events/domain/organizer_event_venue.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer managers through upsertOrganizerEventVenue",
+      "read": "organizer managers only",
+      "write": "server only; all mutations are callable-owned",
+      "exportedFunctions": [
+        "upsertOrganizerEventVenue"
+      ],
+      "operations": [
+        {
+          "id": "manager_upsert",
+          "type": "callable",
+          "owner": "organizer manager",
+          "function": "upsertOrganizerEventVenue",
+          "payloadSchemaRef": "contracts/callables/upsert_organizer_event_venue_payload.schema.json",
+          "allowedFields": [
+            "organizerId",
+            "venueId",
+            "label",
+            "meetingLocation",
+            "defaultEventCapacity",
+            "status",
+            "createdAt",
+            "updatedAt"
+          ],
+          "rulesTestNames": [
+            "limits saved event venues to organizer managers"
+          ]
+        }
+      ],
+      "migrationNotes": [
+        "Events retain meetingLocation, capacityLimit, and optional sourceVenueId snapshots; venue edits and archival never rewrite existing events."
       ]
     },
     {

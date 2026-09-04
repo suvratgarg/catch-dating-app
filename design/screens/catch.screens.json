@@ -31,17 +31,17 @@
     },
     "screen.explore.discovery": {
       "owners": [
-        {"routes": ["exploreScreen"], "file": "lib/explore/presentation/explore_screen.dart", "symbol": "_ExploreScreenState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "full-bleed", "topEdge": "header-owned"},
+        {"routes": ["exploreScreen"], "file": "lib/explore/presentation/explore_screen.dart", "symbol": "_ExploreScreenState", "family": "root", "expression": "CatchRootScreenScaffold.withPrimaryRail", "bodyGeometry": "full-bleed", "topEdge": "header-owned"},
         {"routes": ["exploreMapScreen"], "file": "lib/explore/presentation/explore_map_screen.dart", "symbol": "_ExploreMapScreenState", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
       ],
       "reason": "Explore declares separate canonical list-root and immersive-map owners."
     },
     "screen.dashboard.home": {
       "owners": [
-        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_home_screen.dart", "symbol": "DashboardHomeScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_loading_screen.dart", "symbol": "DashboardLoadingScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_error_screen.dart", "symbol": "DashboardErrorScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_empty_home_screen.dart", "symbol": "DashboardEmptyHomeScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "full-bleed", "topEdge": "safe-area"}
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_home_screen.dart", "symbol": "DashboardHomeScreen", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_loading_screen.dart", "symbol": "DashboardLoadingScreen", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_error_screen.dart", "symbol": "DashboardErrorScreen", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["dashboardScreen"], "file": "lib/dashboard/presentation/dashboard_empty_home_screen.dart", "symbol": "DashboardEmptyHomeScreen", "family": "root", "expression": "CatchRootScreenScaffold.fullBleed", "bodyGeometry": "full-bleed", "topEdge": "safe-area"}
       ],
       "reason": "Dashboard state variants share the root-screen family while declaring their body geometry."
     },
@@ -65,7 +65,7 @@
     },
     "screen.matches.list": {
       "owners": [
-        {"routes": ["matchesListScreen"], "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart", "symbol": "_ChatsListScreenState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "full-bleed", "topEdge": "safe-area"}
+        {"routes": ["matchesListScreen"], "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart", "symbol": "_ChatsListScreenState", "family": "root", "expression": "CatchRootScreenScaffold.fullBleed", "bodyGeometry": "full-bleed", "topEdge": "safe-area"}
       ],
       "reason": "Consumer Chats is a root list using the universal 20-point horizontal gutter."
     },
@@ -77,9 +77,9 @@
     },
     "screen.profile.self": {
       "owners": [
-        {"routes": ["profileScreen"], "file": "lib/user_profile/presentation/profile_screen.dart", "symbol": "_ProfileScreenState", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "mixed", "topEdge": "safe-area"}
+        {"routes": ["profileScreen"], "file": "lib/user_profile/presentation/profile_screen.dart", "symbol": "_ProfileScreenState", "family": "root", "expression": "CatchRootScreenScaffold.withPrimaryRail", "bodyGeometry": "mixed", "topEdge": "safe-area"}
       ],
-      "reason": "Self Profile is a tabbed root whose page owners declare standard or full-bleed bodies."
+      "reason": "Self Profile is a primary-rail root whose page owners declare standard or full-bleed bodies."
     },
     "screen.profile.public": {
       "owners": [
@@ -89,19 +89,19 @@
     },
     "screen.host.home": {
       "owners": [
-        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/host_today_screen.dart", "symbol": "_HostTodayScreenState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/host_today_screen.dart", "symbol": "HostTodayOrganizerEmptyState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/widgets/host_today_body.dart", "symbol": "HostTodayBody", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "HostEventsScreen", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "_HostEventsRouteScaffoldState", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/widgets/host_events_list.dart", "symbol": "HostEventsClubSection", "family": "root", "expression": "CatchRootScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"}
+        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/host_today_screen.dart", "symbol": "_HostTodayScreenState", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/host_today_screen.dart", "symbol": "HostTodayOrganizerEmptyState", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostTodayScreen"], "file": "lib/hosts/today/presentation/widgets/host_today_body.dart", "symbol": "HostTodayBody", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "HostEventsScreen", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "_HostEventsRouteScaffoldState", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostEventsScreen"], "file": "lib/hosts/events/presentation/widgets/host_events_list.dart", "symbol": "HostEventsClubSection", "family": "root", "expression": "CatchRootScreenScaffold.standard", "bodyGeometry": "standard", "topEdge": "safe-area"}
       ],
       "reason": "Host Today and Events use the same root composition in loading, error, empty, and populated states."
     },
     "screen.host.clubs": {
       "owners": [
-        {"routes": ["hostOrganizerScreen"], "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "HostOrganizerStateScaffold", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostOrganizerScreen"], "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "_HostClubsScaffoldState", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "mixed", "topEdge": "safe-area"},
+        {"routes": ["hostOrganizerScreen"], "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "HostOrganizerStateScaffold", "family": "root", "expression": "CatchRootScreenScaffold.withPrimaryRail", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostOrganizerScreen"], "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart", "symbol": "_HostClubsScaffoldState", "family": "root", "expression": "CatchRootScreenScaffold.withPrimaryRail", "bodyGeometry": "mixed", "topEdge": "safe-area"},
         {"routes": ["hostClubEventDefaultsScreen", "hostClubLiveGuideScreen", "hostClubPaymentsScreen"], "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart", "symbol": "HostClubSpokeScaffold", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostClubTeamScreen"], "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "_HostClubTeamScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostClubEventDefaultsScreen", "hostClubLiveGuideScreen", "hostClubPaymentsScreen", "hostClubTeamScreen"], "file": "lib/hosts/presentation/host_operations/host_loading_screen.dart", "symbol": "HostLoadingScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
@@ -132,10 +132,11 @@
     },
     "screen.host.customers": {
       "owners": [
-        {"routes": ["hostAudienceScreen"], "file": "lib/hosts/presentation/host_audience_view.dart", "symbol": "HostAudienceStateScaffold", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostAudienceScreen"], "file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "_HostCustomersScreenState", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["hostAudienceScreen"], "file": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "family": "tabbed-root", "expression": "CatchTabbedScreenScaffold", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostAudienceScreen"], "file": "lib/hosts/presentation/host_audience_view.dart", "symbol": "HostAudienceStateScaffold", "family": "root", "expression": "CatchRootScreenScaffold.withPrimaryRail", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostAudienceScreen"], "file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "_HostCustomersScreenState", "family": "root", "expression": "CatchRootScreenScaffold.withPrimaryRail", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["hostAudienceScreen"], "file": "lib/hosts/presentation/forms/host_forms_screen.dart", "symbol": "_HostFormsScreenState", "family": "root", "expression": "CatchRootScreenScaffold.withPrimaryRail", "bodyGeometry": "standard", "topEdge": "safe-area"},
         {"routes": ["hostAddCustomerScreen"], "file": "lib/hosts/presentation/customers/host_customer_editor.dart", "symbol": "_HostAddCustomerScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostSavedAudienceDetailScreen"], "file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart", "symbol": "HostSavedAudienceOverview", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostCreateSavedAudienceScreen", "hostSavedAudienceDetailScreen"], "file": "lib/hosts/presentation/customers/host_saved_audience_editor.dart", "symbol": "_HostSavedAudienceEditorFormState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostFormTemplatesScreen"], "file": "lib/hosts/presentation/forms/host_form_templates_screen.dart", "symbol": "_HostFormTemplatesScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostFormResponseDetailScreen"], "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart", "symbol": "_HostFormResponseDetailScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
@@ -143,16 +144,17 @@
         {"routes": ["hostFormPreviewScreen"], "file": "lib/hosts/presentation/forms/host_form_preview_screen.dart", "symbol": "HostFormPreviewScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostFormShareScreen"], "file": "lib/hosts/presentation/forms/host_form_share_screen.dart", "symbol": "_HostFormShareScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostFormAnalyticsScreen"], "file": "lib/hosts/presentation/forms/host_form_analytics_screen.dart", "symbol": "_HostFormAnalyticsScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
-        {"routes": ["hostFormAutomationsScreen"], "file": "lib/hosts/presentation/forms/host_form_automations_screen.dart", "symbol": "HostFormAutomationsScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostFormAutomationsScreen", "hostAudienceAutomationsScreen"], "file": "lib/hosts/presentation/forms/host_automation_rule_editor.dart", "symbol": "_HostAutomationRuleEditorState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
+        {"routes": ["hostFormAutomationsScreen", "hostAudienceAutomationsScreen"], "file": "lib/hosts/presentation/forms/host_form_automations_screen.dart", "symbol": "_HostFormAutomationsScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostCustomerDetailScreen"], "file": "lib/hosts/presentation/customers/host_customer_detail_screen.dart", "symbol": "_HostCustomerDetailScreenState", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"},
         {"routes": ["hostSavedAudienceDetailScreen"], "file": "lib/hosts/presentation/host_operations/host_loading_screen.dart", "symbol": "HostLoadingScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
       ],
-      "reason": "Audience owns one tabbed root and a complete set of canonical pushed editor, form, and customer routes."
+      "reason": "Audience owns one primary-rail root and a complete set of canonical pushed editor, form, and customer routes."
     },
     "screen.host.inbox": {
       "owners": [
         {"routes": ["hostInboxScreen"], "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart", "symbol": "_HostInboxScreenState", "family": "adaptive-workspace", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
-        {"routes": ["hostInboxScreen"], "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart", "symbol": "_HostInboxScreenState", "family": "adaptive-workspace", "expression": "CatchRootScreenScrollView", "bodyGeometry": "full-bleed", "topEdge": "safe-area"},
+        {"routes": ["hostInboxScreen"], "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart", "symbol": "_HostInboxScreenState", "family": "adaptive-workspace", "expression": "CatchRootScreenScrollView.withPrimaryRail", "bodyGeometry": "full-bleed", "topEdge": "safe-area"},
         {"routes": ["hostOrganizerMessagingScreen"], "file": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart", "symbol": "HostMessagingSetupScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
       ],
       "reason": "Host Inbox declares its compact root-scroll and expanded workspace variants; setup remains a pushed route."
@@ -7530,9 +7532,9 @@
         },
       "topBar": {
         "role": "screen",
-        "expression": "CatchTabbedScreenScaffold",
-        "owner": "CatchTabbedScreenScaffold",
-        "reason": "The tabbed root owns the canonical profile title and peer-tab chrome."
+        "expression": "CatchRootScreenScaffold.withPrimaryRail",
+        "owner": "CatchRootScreenScaffold.withPrimaryRail",
+        "reason": "The root owner owns the canonical profile title and peer-navigation chrome."
         },
         "statePolicy": {
           "requiredStates": [
@@ -10811,15 +10813,15 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "CatchTabbedScreenScaffold",
+              "CatchRootScreenScaffold.withPrimaryRail",
               "ClubSwitcher"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_tabbed_screen.dart",
-              "symbol": "CatchTabbedScreenScaffold"
+              "file": "lib/core/widgets/catch_screen_scaffold.dart",
+              "symbol": "CatchRootScreenScaffold.withPrimaryRail"
             },
-            "currentOwner": "HostClubsScaffold + CatchTabbedScreenScaffold",
-            "targetOwner": "shared CatchTabbedScreenScaffold",
+            "currentOwner": "HostClubsScaffold + CatchRootScreenScaffold.withPrimaryRail",
+            "targetOwner": "shared CatchRootScreenScaffold.withPrimaryRail",
             "dependencies": [
               "catch.top_bar",
               "catch.icon_button"
@@ -10834,7 +10836,7 @@
               "error",
               "empty"
             ],
-            "migration": "HostClubsScreenState owns the selected club and picker visibility while HostClubsScaffold composes the shared CatchTabbedScreenScaffold with settings and club-switcher actions.",
+            "migration": "HostClubsScreenState owns the selected club and picker visibility while HostClubsScaffold composes the shared CatchRootScreenScaffold.withPrimaryRail with settings and club-switcher actions.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -10863,7 +10865,7 @@
               "long_labels",
               "text_scale"
             ],
-            "migration": "Keep Edit as the default route tab and selection as screen state. Loaded and route-level loading, auth, error, and empty branches retain the same pinned Edit, Insights, and Preview rail through CatchTabbedScreenScaffold and the shared CatchTabRail primitive.",
+            "migration": "Keep Edit as the default route tab and selection as screen state. Loaded and route-level loading, auth, error, and empty branches retain the same pinned Edit, Insights, and Preview rail through CatchRootScreenScaffold.withPrimaryRail and the shared CatchTabRail primitive.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -15333,6 +15335,7 @@
         {"id": "hostFormPreviewScreen", "path": "/host/audience/forms/:formId/preview", "role": "host"},
         {"id": "hostFormShareScreen", "path": "/host/audience/forms/:formId/share", "role": "host"},
         {"id": "hostFormAnalyticsScreen", "path": "/host/audience/forms/:formId/analytics", "role": "host"},
+        {"id": "hostAudienceAutomationsScreen", "path": "/host/audience/automations", "role": "host"},
         {"id": "hostFormAutomationsScreen", "path": "/host/audience/forms/:formId/automations", "role": "host"},
         {"id": "hostCustomerDetailScreen", "path": "/host/audience/people/:contactId", "role": "host"}
       ],
@@ -15348,6 +15351,8 @@
           {"file": "lib/hosts/presentation/customers/host_customer_memory.dart", "symbol": "HostCustomerMemorySection"},
           {"file": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart", "symbol": "HostSavedAudiencesWorkspace"},
           {"file": "lib/hosts/presentation/customers/host_saved_audience_editor.dart", "symbol": "HostSavedAudienceEditorScreen"},
+          {"file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart", "symbol": "HostSavedAudienceOverview"},
+          {"file": "lib/hosts/presentation/customers/host_saved_audience_members_controller.dart", "symbol": "HostSavedAudienceMembersController"},
           {"file": "lib/hosts/data/host_crm_repository.dart", "symbol": "hostAudienceContactDetail"},
           {"file": "lib/hosts/presentation/host_organizer_selection_controller.dart", "symbol": "HostOrganizerSelection"}
         ],
@@ -15392,7 +15397,7 @@
         {
           "id": "host_saved_audience_detail",
           "status": "captured",
-          "notes": "Deterministic full-page saved-audience detail/edit route with stored exact-preview reach summary."
+          "notes": "Historical editor capture; the new member overview requires refresh during the owner-led visual pass."
         },
         {
           "id": "host_customer_add",
@@ -15422,7 +15427,7 @@
         {"id": "customer_saved_audience_empty", "kind": "empty", "status": "tested", "source": "HostSavedAudiencesWorkspace CatchEmptyState", "previewIds": ["hostSavedAudiencesStates"], "tests": ["test/hosts/host_operations_customers_tests.dart"], "nextAction": "Capture the Audience-owned first-audience path when the authenticated gallery is refreshed."},
         {"id": "customer_saved_audience_error", "kind": "error", "status": "tested", "source": "HostSavedAudiencesWorkspace CatchErrorState", "previewIds": ["hostSavedAudiencesStates"], "tests": ["test/hosts/host_operations_customers_tests.dart"], "nextAction": "Capture retry treatment when the authenticated gallery is refreshed."},
         {"id": "customer_saved_audience_create", "kind": "mutation", "status": "captured", "source": "HostSavedAudienceEditorScreen create route", "captureIds": ["host_saved_audience_create"], "tests": ["test/hosts/host_operations_customers_tests.dart"], "nextAction": "Keep the full-page authoring capture aligned with the complete predicate vocabulary."},
-        {"id": "customer_saved_audience_detail", "kind": "populated", "status": "captured", "source": "HostSavedAudienceEditorScreen detail/edit route", "captureIds": ["host_saved_audience_detail"], "tests": ["test/hosts/host_operations_customers_tests.dart"], "nextAction": "Keep the populated definition and stored reach summary capture current."},
+        {"id": "customer_saved_audience_detail", "kind": "populated", "status": "tested", "source": "HostSavedAudienceOverview member and rule overview with explicit editing", "tests": ["test/hosts/host_saved_audience_workflows_test.dart"], "nextAction": "Refresh the full-shell capture with the owner during the deferred visual pass.", "previewIds": ["hostSavedAudienceOverviewState"]},
         {"id": "customer_saved_audience_mutation", "kind": "mutation", "status": "tested", "source": "HostAudienceController save then exact preview", "tests": ["test/hosts/host_crm_repository_test.dart", "functions/src/organizers/organizerSavedAudiences.test.ts"], "nextAction": "Add a deterministic pending-state capture."},
         {"id": "customer_saved_audience_archive", "kind": "mutation", "status": "implemented", "source": "HostSavedAudienceEditorScreen archive confirmation", "tests": ["test/hosts/host_crm_repository_test.dart"], "nextAction": "Add a focused confirmation interaction test."},
         {"id": "manual_add_pending", "kind": "mutation", "status": "captured", "source": "HostAddCustomerScreen submit lifecycle", "previewIds": ["hostCustomersStates"], "captureIds": ["host_customer_add"], "tests": ["test/hosts/host_operations_screen_test.dart"], "nextAction": "Keep the route-level name-plus-endpoint validation aligned with the callable schema."},
@@ -25477,7 +25482,7 @@
         {"id": "host_applications_populated", "kind": "populated", "status": "implemented", "source": "HostApplicationsDirectoryController and application list frame", "tests": ["test/hosts/host_application_import_test.dart"], "nextAction": "Add rendered queue interaction coverage."},
         {"id": "host_applications_error", "kind": "error", "status": "implemented", "source": "CatchErrorState queue and detail branches", "nextAction": "Add deterministic callable-error capture."},
         {"id": "host_applications_import", "kind": "mutation", "status": "tested", "source": "HostApplicationsController provider-neutral import", "tests": ["test/hosts/host_application_import_test.dart"], "nextAction": "Add mapping-sheet interaction coverage."},
-        {"id": "host_application_review", "kind": "mutation", "status": "implemented", "source": "HostApplicationsController optimistic review", "nextAction": "Add revision-conflict interaction coverage."},
+        {"id": "host_application_review", "kind": "mutation", "status": "tested", "source": "Atomic accept-to-People with response/person links and inaccessible-source denial", "nextAction": "Capture the accepted application during the deferred visual pass.", "tests": ["test/hosts/applications/host_application_intake_test.dart"]},
         {"id": "host_applications_offline", "kind": "offline", "status": "implemented", "source": "CatchErrorState AppException mapping", "nextAction": "Add deterministic offline capture."},
         {"id": "host_applications_permission", "kind": "permission", "status": "implemented", "source": "Manager-authorized callable failures", "nextAction": "Add deterministic permission capture."}
       ],

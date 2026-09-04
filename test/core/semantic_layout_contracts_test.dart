@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('semantic layout tokens map to the intended primitive values', () {
     expect(CatchSpacing.screenPx, 20);
-    expect(CatchSpacing.screenPt, 24);
+    expect(CatchSpacing.screenPt, 16);
     expect(CatchInsets.pageBody.left, CatchSpacing.screenPx);
     expect(CatchInsets.pageBody.top, CatchSpacing.screenPt);
     expect(CatchInsets.pageBody.right, CatchSpacing.screenPx);

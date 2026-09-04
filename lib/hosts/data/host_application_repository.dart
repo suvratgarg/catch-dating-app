@@ -37,6 +37,7 @@ enum HostApplicationSort {
 class HostApplicationListRequest {
   const HostApplicationListRequest({
     required this.organizerId,
+    this.contactId,
     this.formId,
     this.targetId,
     this.reviewStatus,
@@ -46,6 +47,7 @@ class HostApplicationListRequest {
   });
 
   final String organizerId;
+  final String? contactId;
   final String? formId;
   final String? targetId;
   final HostApplicationReviewStatus? reviewStatus;
@@ -56,6 +58,7 @@ class HostApplicationListRequest {
   HostApplicationListRequest copyWith({String? cursor}) =>
       HostApplicationListRequest(
         organizerId: organizerId,
+        contactId: contactId,
         formId: formId,
         targetId: targetId,
         reviewStatus: reviewStatus,
@@ -68,6 +71,7 @@ class HostApplicationListRequest {
   bool operator ==(Object other) =>
       other is HostApplicationListRequest &&
       other.organizerId == organizerId &&
+      other.contactId == contactId &&
       other.formId == formId &&
       other.targetId == targetId &&
       other.reviewStatus == reviewStatus &&
@@ -78,6 +82,7 @@ class HostApplicationListRequest {
   @override
   int get hashCode => Object.hash(
     organizerId,
+    contactId,
     formId,
     targetId,
     reviewStatus,
@@ -268,6 +273,9 @@ class HostApplicationDetail {
     required this.submittedAt,
     required this.reviewedAt,
     required this.revision,
+    this.contactId,
+    this.sourceResponseId,
+    this.dataAccessState,
   });
 
   factory HostApplicationDetail.fromCallableData(Object? data) {
@@ -297,6 +305,9 @@ class HostApplicationDetail {
       submittedAt: _requiredDateTimeFromMillis(map, 'submittedAtMillis'),
       reviewedAt: _dateTimeFromMillis(map['reviewedAtMillis']),
       revision: _requiredInt(map, 'revision'),
+      contactId: _nullableString(map['contactId']),
+      sourceResponseId: _nullableString(map['sourceResponseId']),
+      dataAccessState: _nullableString(map['dataAccessState']),
     );
   }
 
@@ -315,6 +326,9 @@ class HostApplicationDetail {
   final DateTime submittedAt;
   final DateTime? reviewedAt;
   final int revision;
+  final String? contactId;
+  final String? sourceResponseId;
+  final String? dataAccessState;
 }
 
 class HostApplicationReviewResult {
@@ -324,6 +338,7 @@ class HostApplicationReviewResult {
     required this.reviewStatus,
     required this.reviewedAt,
     required this.revision,
+    this.contactId,
   });
 
   factory HostApplicationReviewResult.fromCallableData(Object? data) {
@@ -338,6 +353,7 @@ class HostApplicationReviewResult {
       ),
       reviewedAt: _requiredDateTimeFromMillis(map, 'reviewedAtMillis'),
       revision: _requiredInt(map, 'revision'),
+      contactId: _nullableString(map['contactId']),
     );
   }
 
@@ -346,6 +362,7 @@ class HostApplicationReviewResult {
   final HostApplicationReviewStatus reviewStatus;
   final DateTime reviewedAt;
   final int revision;
+  final String? contactId;
 }
 
 class HostPublishedApplicationForm {
@@ -503,6 +520,7 @@ class HostApplicationRepository {
     name: 'listOrganizerApplications',
     payload: ListOrganizerApplicationsCallableRequest(
       organizerId: request.organizerId,
+      contactId: request.contactId,
       formId: request.formId,
       targetId: request.targetId,
       reviewStatus: request.reviewStatus?.name,

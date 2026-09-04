@@ -25,6 +25,7 @@ import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -183,28 +184,37 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
                     _selectWorkspace(HostMessagingWorkspace.inbox),
               ),
             );
-      return CatchRootScreenScrollView(
-        header: ChatsBrowseHeader(
-          presentation: ChatsBrowsePresentation.host,
-          showSearchAction: showSearch,
-          searchValue: isInbox ? query : '',
-          onSearchChanged: isInbox
-              ? ref.read(chatSearchQueryProvider.notifier).setQuery
-              : null,
-          hostFilter: null,
-          hostUnreadCount: 0,
-          onHostFilterChanged: null,
-          showHostSubtitle: !isInbox,
-          subtitle: isInbox ? null : context.l10n.hostSendsSubtitle,
-        ),
-        bodyLayout: CatchScreenBodyLayout.fullBleed,
-        slivers: [
-          HostMessagingWorkspaceRail(
-            selected: _workspace,
-            onChanged: _campaignBusy ? null : _selectWorkspace,
+      return CatchRootScreenScrollView.withPrimaryRail(
+        header: CatchRootScreenHeader.custom(
+          ChatsBrowseHeader(
+            presentation: ChatsBrowsePresentation.host,
+            showSearchAction: showSearch,
+            searchValue: isInbox ? query : '',
+            onSearchChanged: isInbox
+                ? ref.read(chatSearchQueryProvider.notifier).setQuery
+                : null,
+            hostFilter: null,
+            hostUnreadCount: 0,
+            onHostFilterChanged: null,
+            showHostSubtitle: !isInbox,
+            subtitle: isInbox ? null : context.l10n.hostSendsSubtitle,
+            compactForPrimaryRail: true,
           ),
-          workspaceSliver,
-        ],
+        ),
+        primaryRail: HostMessagingWorkspaceRail(
+          selected: _workspace,
+          onChanged: _campaignBusy ? null : _selectWorkspace,
+        ),
+        body: CatchRootScreenBody.single(
+          page: CatchRootScreenPageSpec.scroll(
+            page: CatchRootScreenPageScrollView.fullBleed(
+              scrollKey: PageStorageKey<String>(
+                'host-messaging-${_workspace.name}',
+              ),
+              slivers: [workspaceSliver],
+            ),
+          ),
+        ),
       );
     }
 
@@ -577,7 +587,8 @@ class _HostAuthRequiredSliver extends StatelessWidget {
   );
 }
 
-class HostMessagingWorkspaceRail extends StatelessWidget {
+class HostMessagingWorkspaceRail extends StatelessWidget
+    implements CatchPrimaryRail {
   const HostMessagingWorkspaceRail({
     super.key,
     required this.selected,
@@ -588,27 +599,23 @@ class HostMessagingWorkspaceRail extends StatelessWidget {
   final ValueChanged<HostMessagingWorkspace>? onChanged;
 
   @override
-  Widget build(BuildContext context) => SliverToBoxAdapter(
-    child: Padding(
-      padding: CatchInsets.pageHorizontal.copyWith(bottom: CatchSpacing.s2),
-      child: CatchOptionGroup<HostMessagingWorkspace>(
-        key: const ValueKey<String>('host-messaging-workspace-rail'),
-        contractExemption:
-            'Host Messaging workspaces are local presentation state.',
-        selected: selected,
-        options: [
-          CatchOption(
-            value: HostMessagingWorkspace.inbox,
-            label: context.l10n.hostMessagingWorkspaceInbox,
-          ),
-          CatchOption(
-            value: HostMessagingWorkspace.campaigns,
-            label: context.l10n.hostMessagingWorkspaceSends,
-          ),
-        ],
-        onChanged: onChanged,
+  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+
+  @override
+  Widget build(BuildContext context) => CatchTabRail<HostMessagingWorkspace>(
+    key: const ValueKey<String>('host-messaging-workspace-rail'),
+    selected: selected,
+    options: [
+      CatchOption(
+        value: HostMessagingWorkspace.inbox,
+        label: context.l10n.hostMessagingWorkspaceInbox,
       ),
-    ),
+      CatchOption(
+        value: HostMessagingWorkspace.campaigns,
+        label: context.l10n.hostMessagingWorkspaceSends,
+      ),
+    ],
+    onChanged: onChanged,
   );
 }
 

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/cross_paths_invitation.feature.json",
   "generatedFor": "2026-08-06",
   "sourceDigest": "sha256:f7c1c48c708574510f02cee90e840b42d11b6765f6f3514e7217935cbef51fff",
-  "resolvedDigest": "sha256:f86783f170bad4b2b546dafe4b943fc278abad97181731bb7e3b2a8d8b97043c",
+  "resolvedDigest": "sha256:c82dec58e6ee52310d2d39c344ab0e49c14032d356d48159d78aa5d9449fec70",
   "feature": {
     "id": "feature.cross_paths_invitation",
     "name": "Cross Paths Invitation",
@@ -581,7 +581,8 @@
               "symbol": "CatchButton",
               "file": "lib/core/widgets/catch_button.dart",
               "constructors": [
-                "CatchButton"
+                "CatchButton",
+                "CatchButton.command"
               ]
             }
           },

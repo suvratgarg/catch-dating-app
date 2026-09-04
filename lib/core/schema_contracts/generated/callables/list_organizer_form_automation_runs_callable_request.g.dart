@@ -16,7 +16,7 @@ final class ListOrganizerFormAutomationRunsCallableRequest {
   });
 
   final String organizerId;
-  final String formId;
+  final String? formId;
   final String? ruleId;
   final String? cursor;
   final int limit;

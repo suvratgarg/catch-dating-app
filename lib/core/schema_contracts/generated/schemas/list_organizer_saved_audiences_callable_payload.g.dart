@@ -43,5 +43,8 @@ const schemaListOrganizerSavedAudiencesCallablePayloadSchema = <String, Object?>
       ],
       'maxLength': 1000,
     },
+    'includeFilterOptions': <String, Object?>{
+      'type': 'boolean',
+    },
   },
 };

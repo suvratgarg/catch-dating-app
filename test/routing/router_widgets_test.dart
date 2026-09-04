@@ -197,6 +197,16 @@ void main() {
     expect(screen.initialThreadId, 'match-2');
   });
 
+  test('saved audience compose restores its organizer from the URI', () {
+    final screen = app_router.hostInboxScreenForUri(
+      Uri.parse(
+        '/host/inbox?workspace=campaigns&compose=1&audienceId=audience-1&organizerId=organizer-2',
+      ),
+    );
+    expect(screen.initialOrganizerId, 'organizer-2');
+    expect(screen.initialSavedAudienceId, 'audience-1');
+  });
+
   test('host inbox route ignores an audience outside compose mode', () {
     final screen = app_router.hostInboxScreenForUri(
       Uri.parse('/host/inbox?workspace=campaigns&audienceId=audience-1'),

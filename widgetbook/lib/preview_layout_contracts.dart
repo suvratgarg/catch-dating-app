@@ -71,6 +71,7 @@ abstract final class WidgetbookPreviewLayout {
   static const double paperScaffoldViewportHeight = 720;
   static const double phonePreviewCornerRadius = CatchSpacing.s7;
   static const double defaultPhonePreviewHeight = 520;
+  static const double hostEditorViewportHeight = 820;
 
   static const double profileDensePreviewHeight = 96;
   static const double profileCompactPreviewHeight = 120;

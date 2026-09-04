@@ -123,6 +123,7 @@ import {
   eventSuccessPlanDocumentSchema,
   eventSuccessConversationGraphDocumentSchema,
   organizerEventSuccessLayoutDocumentSchema,
+  organizerEventVenueDocumentSchema,
   eventSuccessAssignmentDraftDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
   eventSuccessPreferenceDocumentSchema,
@@ -249,6 +250,8 @@ import {
   upsertOrganizerSavedAudienceCallablePayloadSchema,
   listOrganizerSavedAudiencesCallablePayloadSchema,
   previewOrganizerSavedAudienceCallablePayloadSchema,
+  resolveOrganizerAudienceMembersCallablePayloadSchema,
+  resolveOrganizerAudienceMembersCallableResponseSchema,
   archiveOrganizerSavedAudienceCallablePayloadSchema,
   organizerSavedAudienceCallableResponseSchema,
   listOrganizerSavedAudiencesCallableResponseSchema,
@@ -308,6 +311,8 @@ import {
   submitEventRehearsalGuestActionCallablePayloadSchema,
   eventRehearsalReproductionCallableResponseSchema,
   upsertEventSuccessLayoutCallablePayloadSchema,
+  upsertOrganizerEventVenueCallablePayloadSchema,
+  upsertOrganizerEventVenueCallableResponseSchema,
   upsertEventSuccessLayoutCallableResponseSchema,
   getEventSuccessSpatialLayoutCallablePayloadSchema,
   getEventSuccessSpatialLayoutCallableResponseSchema,
@@ -670,6 +675,7 @@ export const validateEventWaitlistOfferDocument = ajv.compile(eventWaitlistOffer
 export const validateEventSuccessPlanDocument = ajv.compile(eventSuccessPlanDocumentSchema);
 export const validateEventSuccessConversationGraphDocument = ajv.compile(eventSuccessConversationGraphDocumentSchema);
 export const validateOrganizerEventSuccessLayoutDocument = ajv.compile(organizerEventSuccessLayoutDocumentSchema);
+export const validateOrganizerEventVenueDocument = ajv.compile(organizerEventVenueDocumentSchema);
 export const validateEventSuccessAssignmentDraftDocument = ajv.compile(eventSuccessAssignmentDraftDocumentSchema);
 export const validateEventSuccessFeedbackDocument = ajv.compile(eventSuccessFeedbackDocumentSchema);
 export const validateEventSuccessPreferenceDocument = ajv.compile(eventSuccessPreferenceDocumentSchema);
@@ -796,6 +802,8 @@ export const validateUpsertOrganizerCampaignCallablePayload = ajv.compile(upsert
 export const validateUpsertOrganizerSavedAudienceCallablePayload = ajv.compile(upsertOrganizerSavedAudienceCallablePayloadSchema);
 export const validateListOrganizerSavedAudiencesCallablePayload = ajv.compile(listOrganizerSavedAudiencesCallablePayloadSchema);
 export const validatePreviewOrganizerSavedAudienceCallablePayload = ajv.compile(previewOrganizerSavedAudienceCallablePayloadSchema);
+export const validateResolveOrganizerAudienceMembersCallablePayload = ajv.compile(resolveOrganizerAudienceMembersCallablePayloadSchema);
+export const validateResolveOrganizerAudienceMembersCallableResponse = ajv.compile(resolveOrganizerAudienceMembersCallableResponseSchema);
 export const validateArchiveOrganizerSavedAudienceCallablePayload = ajv.compile(archiveOrganizerSavedAudienceCallablePayloadSchema);
 export const validateOrganizerSavedAudienceCallableResponse = ajv.compile(organizerSavedAudienceCallableResponseSchema);
 export const validateListOrganizerSavedAudiencesCallableResponse = ajv.compile(listOrganizerSavedAudiencesCallableResponseSchema);
@@ -855,6 +863,8 @@ export const validateEventRehearsalGuestBootstrapCallableResponse = ajv.compile(
 export const validateSubmitEventRehearsalGuestActionCallablePayload = ajv.compile(submitEventRehearsalGuestActionCallablePayloadSchema);
 export const validateEventRehearsalReproductionCallableResponse = ajv.compile(eventRehearsalReproductionCallableResponseSchema);
 export const validateUpsertEventSuccessLayoutCallablePayload = ajv.compile(upsertEventSuccessLayoutCallablePayloadSchema);
+export const validateUpsertOrganizerEventVenueCallablePayload = ajv.compile(upsertOrganizerEventVenueCallablePayloadSchema);
+export const validateUpsertOrganizerEventVenueCallableResponse = ajv.compile(upsertOrganizerEventVenueCallableResponseSchema);
 export const validateUpsertEventSuccessLayoutCallableResponse = ajv.compile(upsertEventSuccessLayoutCallableResponseSchema);
 export const validateGetEventSuccessSpatialLayoutCallablePayload = ajv.compile(getEventSuccessSpatialLayoutCallablePayloadSchema);
 export const validateGetEventSuccessSpatialLayoutCallableResponse = ajv.compile(getEventSuccessSpatialLayoutCallableResponseSchema);

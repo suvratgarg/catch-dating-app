@@ -6,11 +6,19 @@ import {
   ChatMessageDocument,
   MatchDocument,
   PublicProfileDocument,
+  OrganizerDocument,
+  HostProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   allowsPushPreference,
   sendFcmNotification,
+  notificationProfileAvatar,
 } from "../shared/notifications";
+import {
+  ConversationPushRole,
+  resolveConversationPushTokens,
+} from "../shared/conversationPushTargets";
+import {organizerManagerUserIds} from "../shared/organizerHosts";
 import {buildChatSignalFacts} from "../marketplace/signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
@@ -35,6 +43,7 @@ interface MessageCreatedDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   sendNotification: typeof sendFcmNotification;
+  resolvePushTokens?: typeof resolveConversationPushTokens;
   recordSignalFacts?: typeof recordParticipantSignalFactsBestEffort;
   refreshScorecard?: typeof refreshEventSuccessScorecard;
 }
@@ -82,8 +91,16 @@ export async function onMessageCreatedHandler(
   let notificationBody = buildMessageBody(displayMessage);
   let scorecardEventIds: string[] = [];
   let isDatingConversation = false;
+  const pushContext: {role: ConversationPushRole; allowed: boolean} = {
+    role: "consumer", allowed: true,
+  };
+  let actorAvatarUrl: string | undefined;
 
   await db.runTransaction(async (tx) => {
+    // Firestore may retry this callback. Only its final attempt may dispatch.
+    shouldNotify = false;
+    pushContext.role = "consumer";
+    pushContext.allowed = true;
     const senderProfileRef = db.collection("publicProfiles").doc(
       message.senderId
     );
@@ -98,7 +115,8 @@ export async function onMessageCreatedHandler(
     }
 
     const match = matchDoc.data() as MatchDocument;
-    if (match.status === "blocked") {
+    if (match.status === "blocked" || match.status === "closed" ||
+        ![match.user1Id, match.user2Id].includes(message.senderId)) {
       logger.info("Skipping notification for blocked match", {matchId});
       return;
     }
@@ -108,10 +126,40 @@ export async function onMessageCreatedHandler(
       match.eventIds : [];
     recipientId =
       match.user1Id === message.senderId ? match.user2Id : match.user1Id;
+    const deletedRecipient = await tx.get(
+      db.collection("deletedUsers").doc(recipientId)
+    );
+    if (deletedRecipient.exists) return;
     isFirstMessage = match.lastMessageAt == null;
-    const senderName =
-      (senderProfileDoc.data() as PublicProfileDocument | undefined)?.name ??
-      "New message";
+    const senderProfile = senderProfileDoc.data() as
+      PublicProfileDocument | undefined;
+    let senderName = senderProfile?.name ?? "New message";
+    actorAvatarUrl = notificationProfileAvatar(senderProfile);
+    if (match.conversationType === "clubHostInquiry") {
+      const organizerId = match.organizerId ?? match.clubId;
+      // Never guess Host identity from lexically sorted participant ids.
+      const organizerSnap = organizerId ? await tx.get(
+        db.collection("organizers").doc(organizerId)
+      ) : undefined;
+      const managers = organizerSnap?.exists ? organizerManagerUserIds(
+        organizerSnap.data() as OrganizerDocument
+      ) : [];
+      if (managers.includes(recipientId)) pushContext.role = "host";
+      else if (!managers.includes(message.senderId)) {
+        pushContext.allowed = false;
+      }
+      // Missing/stale organizer membership suppresses delivery, not the
+      // independent server-owned preview/unread update for a stored message.
+      if (managers.includes(message.senderId)) {
+        const hostSnap = await tx.get(
+          db.collection("hostProfiles").doc(message.senderId)
+        );
+        const host = hostSnap.data() as HostProfileDocument | undefined;
+        // Professional replies must not expose the sender's dating identity.
+        senderName = host?.displayName ?? "Catch Host";
+        actorAvatarUrl = host?.avatarUrl ?? undefined;
+      }
+    }
     notificationTitle = senderName;
     notificationBody = buildMessageBody(displayMessage);
     const messageSentAt = message.sentAt ?? deps.serverTimestamp();
@@ -134,7 +182,7 @@ export async function onMessageCreatedHandler(
       createdAt: deps.serverTimestamp(),
     });
 
-    shouldNotify = true;
+    shouldNotify = pushContext.allowed;
   });
 
   await refreshScorecardsForEvents(scorecardEventIds, deps);
@@ -160,19 +208,31 @@ export async function onMessageCreatedHandler(
   const recipientUser = recipientUserDoc.data() as
     | UserProfileDocument
     | undefined;
-  const fcmToken = recipientUser?.fcmToken;
-  if (!fcmToken) return;
-  if (!allowsPushPreference(recipientUser, "messages")) return;
+  // A Host-only account need not have a Consumer dating-profile document.
+  const pushEnabled = pushContext.role === "host" ?
+    recipientUser?.prefsMessages !== false :
+    allowsPushPreference(recipientUser, "messages");
+  if (!pushEnabled) return;
+  const resolveTokens = deps.resolvePushTokens ?? resolveConversationPushTokens;
+  const tokens = await resolveTokens(
+    db, recipientId, pushContext.role, recipientUser
+  );
 
   logger.info("Sending message notification", {matchId, recipientId});
 
-  await deps.sendNotification({
-    token: fcmToken,
+  await Promise.allSettled(tokens.map((token) => deps.sendNotification({
+    token,
     title: notificationTitle,
     body: notificationBody,
     type: "message",
     matchId,
-  });
+    messageId,
+    notificationId: `message_${matchId}_${messageId}`,
+    recipientUid: recipientId!,
+    appRole: pushContext.role,
+    actorName: notificationTitle,
+    actorAvatarUrl,
+  })));
 }
 
 /**
