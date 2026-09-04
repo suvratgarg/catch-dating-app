@@ -233,6 +233,10 @@ class CatchFieldRow extends StatelessWidget {
 }
 
 class CatchFieldTrailing extends StatelessWidget {
+  /// Shared clear-action allocation for the native target and its row slot.
+  static BoxConstraints get clearTargetConstraints =>
+      CatchControlMetrics.squareConstraints(CatchSpacing.s6);
+
   factory CatchFieldTrailing.custom({
     Key? key,
     required Widget child,
@@ -370,9 +374,9 @@ class CatchFieldTrailing extends StatelessWidget {
       tooltip: tooltip,
       visualDensity: VisualDensity.standard,
       padding: EdgeInsets.zero,
-      constraints: CatchControlMetrics.squareConstraints(CatchSpacing.s6),
+      constraints: clearTargetConstraints,
       style: IconButton.styleFrom(
-        minimumSize: Size.zero,
+        minimumSize: clearTargetConstraints.smallest,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       icon: Icon(

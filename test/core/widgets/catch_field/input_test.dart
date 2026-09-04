@@ -722,17 +722,17 @@ void main() {
       final clearableHeight = tester
           .getSize(find.byKey(const ValueKey('clearable-populated-field')))
           .height;
-      final clearableEditable = find.descendant(
-        of: find.byKey(const ValueKey('clearable-populated-field')),
-        matching: find.byType(EditableText),
-      );
-
       expect(clearableHeight, closeTo(plainHeight, 0.1));
-      expect(find.byTooltip('Clear Display name'), findsOneWidget);
-      expect(
-        tester.getCenter(find.byTooltip('Clear Display name')).dy,
-        closeTo(tester.getCenter(clearableEditable).dy, 0.5),
+      expectMinimumAccessibleTarget(
+        tester,
+        find.byTooltip('Clear Display name'),
       );
+      final clearRect = tester.getRect(find.byTooltip('Clear Display name'));
+      final rowRect = tester.getRect(
+        find.byKey(const ValueKey('clearable-populated-field')),
+      );
+      expect(clearRect.top, greaterThanOrEqualTo(rowRect.top));
+      expect(clearRect.bottom, lessThanOrEqualTo(rowRect.bottom));
     },
   );
 

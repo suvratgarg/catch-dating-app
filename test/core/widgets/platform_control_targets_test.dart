@@ -360,6 +360,53 @@ void main() {
         expect(tester.takeException(), isNull);
         debugDefaultTargetPlatformOverride = null;
       });
+
+      testWidgets(
+        'field clear target is reserved and contained at $scale $platform',
+        (tester) async {
+          debugDefaultTargetPlatformOverride = platform;
+          addTearDown(() => debugDefaultTargetPlatformOverride = null);
+          final controller = TextEditingController(
+            text:
+                'A long public organizer name that fills the available value lane',
+          );
+          addTearDown(controller.dispose);
+          await _pump(
+            tester,
+            SizedBox(
+              width: 280,
+              child: CatchField.input(
+                key: _controlKey,
+                title: 'Public name',
+                controller: controller,
+                showClearButton: true,
+              ),
+            ),
+            scale: scale,
+          );
+          final field = tester.getRect(find.byKey(_controlKey));
+          final clear = find.byTooltip('Clear Public name');
+          final target = tester.getRect(clear);
+          final value = tester.getRect(find.byType(EditableText));
+          final minimum = CatchPlatformTokens.minimumInteractiveExtent;
+          expect(target.size.width, greaterThanOrEqualTo(minimum));
+          expect(target.size.height, greaterThanOrEqualTo(minimum));
+          expect(target.left, greaterThanOrEqualTo(value.right));
+          expect(target.top, greaterThanOrEqualTo(field.top));
+          expect(target.bottom, lessThanOrEqualTo(field.bottom));
+          final nodes = _tapNodes(tester.getSemantics(clear));
+          expect(nodes, isNotEmpty);
+          for (final node in nodes) {
+            expect(node.rect.height, greaterThanOrEqualTo(minimum));
+            expect(node.rect.width, greaterThanOrEqualTo(minimum));
+          }
+          await tester.tapAt(Offset(target.center.dx, target.bottom - 2));
+          await tester.pump();
+          expect(controller.text, isEmpty);
+          expect(tester.takeException(), isNull);
+          debugDefaultTargetPlatformOverride = null;
+        },
+      );
     }
 
     testWidgets('small siblings have disjoint touch targets on $platform', (
