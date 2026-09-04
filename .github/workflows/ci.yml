@@ -406,6 +406,42 @@ jobs:
       web_smoke: ${{ needs.plan.outputs.flutter_web_smoke == 'true' }}
     secrets: inherit
 
+  backend-review:
+    name: Backend source review
+    if: >-
+      always() && github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.id == github.repository_id &&
+      needs.plan.result == 'success' && needs.plan.outputs.functions == 'true' &&
+      !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    needs:
+      - plan
+      - tools
+      - contracts
+      - functions
+      - firestore-rules
+      - flutter
+      - visual-integration
+      - admin
+      - marketing
+      - operations
+      - docs-policy
+      - app-builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    # Review source before merge, outside the shared backend delivery queue.
+    # This environment has a required reviewer and no cloud credentials.
+    environment:
+      name: backend-review
+      url: ${{ github.event.pull_request.html_url }}
+    steps:
+      - name: Record the reviewed source
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          TESTED_SHA: ${{ needs.plan.outputs.source_sha }}
+        run: |
+          printf 'Backend source reviewed: %s (tested merge: %s)\n' "$HEAD_SHA" "$TESTED_SHA" >> "$GITHUB_STEP_SUMMARY"
+
   package-firebase:
     name: Package approved Firebase backend
     if: >-
@@ -558,12 +594,14 @@ jobs:
       - docs-policy
       - app-builds
       - package-firebase
+      - backend-review
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - id: artifact_guard
         name: Require every selected lane
         env:
+          BACKEND_REVIEW_REQUIRED: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.id == github.repository_id && needs.plan.outputs.functions == 'true' }}
           DEPLOY_REQUIRED: ${{ needs.plan.outputs.deploy_required }}
           EVENT_NAME: ${{ github.event_name }}
           GH_TOKEN: ${{ github.token }}
@@ -579,6 +617,9 @@ jobs:
             echo "Selected CI lanes did not pass:"
             echo "$failures"
             exit 1
+          fi
+          if [[ "$BACKEND_REVIEW_REQUIRED" == "true" ]]; then
+            test "$(jq -er '.["backend-review"].result' <<< "$NEEDS_JSON")" = success
           fi
           if [[ "$DEPLOY_REQUIRED" == "true" ]]; then
             package_result="$(jq -er '.["package-firebase"].result' <<< "$NEEDS_JSON")"

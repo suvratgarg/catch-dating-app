@@ -30,6 +30,7 @@ on:
 permissions:
   actions: read
   contents: read
+  pull-requests: read
   id-token: write
 
 # This key serializes one drain worker. It is not the queue: GitHub may replace
@@ -813,6 +814,7 @@ jobs:
         name: Verify the packaged CI plan and least-authority config
         if: ${{ steps.plan.outputs.deploy_required == 'true' }}
         env:
+          GH_TOKEN: ${{ github.token }}
           BASE_SHA: ${{ steps.plan.outputs.base_sha }}
           SOURCE_CI_RUN_ATTEMPT: ${{ steps.source.outputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ steps.source.outputs.source_ci_run_id }}
@@ -833,6 +835,9 @@ jobs:
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
             --provenance-manifest build/delivery/source/firebase-provenance.json \
             --affected-functions true)"
+          result="$(node tool/ci/backend_source_review.mjs \
+            --source-root build/delivery/source-checkout \
+            --repository "$GITHUB_REPOSITORY" <<< "$result")"
           test "$(jq -er '.baseSha' <<< "$result")" = "$BASE_SHA"
           production_environment="$(jq -r '.productionPromotion.environment // "prod"' <<< "$result")"
           # Explicit recovery remains reviewer-protected even for ordinary code.

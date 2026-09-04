@@ -50,6 +50,7 @@ on:
 permissions:
   actions: read
   contents: read
+  pull-requests: read
   id-token: write
 
 jobs:
@@ -148,6 +149,7 @@ jobs:
       - id: verify
         name: Verify artifact provenance and packaged CI plan before mutation
         env:
+          GH_TOKEN: ${{ github.token }}
           BASE_SHA: ${{ inputs.base_sha }}
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
@@ -175,6 +177,9 @@ jobs:
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
             --provenance-manifest build/delivery/source/firebase-provenance.json \
             --affected-functions true)"
+          result="$(node tool/ci/backend_source_review.mjs \
+            --source-root build/delivery/source-checkout \
+            --repository "$GITHUB_REPOSITORY" <<< "$result")"
           project_id="$(jq -er --arg environment "$DEPLOY_ENVIRONMENT" \
             '.projects[$environment]' build/delivery/package/.firebaserc)"
           control_project_id="$(jq -er --arg environment "$DEPLOY_ENVIRONMENT" \

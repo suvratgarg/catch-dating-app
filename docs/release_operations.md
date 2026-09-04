@@ -476,7 +476,7 @@ node tool/git/branch_hygiene.mjs --base origin/main --local --json
 
 Firebase deploy and data-validation workflows use GitHub OIDC rather than
 long-lived service-account JSON secrets. Use GitHub Environments named `dev`,
-`staging`, `prod-hosting`, `prod-mobile`, `prod-backend`, and `prod`. `prod-hosting` is
+`staging`, `prod-hosting`, `prod-mobile`, `backend-review`, `prod-backend`, and `prod`. `prod-hosting` is
 approval-free and limited to the automatic marketing and admin Firebase
 Hosting workflows. `prod-mobile` is approval-free and `main`-only; it contains
 only mobile signing, Maps, App Store Connect, and Play-publisher credentials.
@@ -492,18 +492,28 @@ is restricted to the exact `prod`, `prod-hosting`, and `prod-backend` subjects,
 replacing its former repository-wide grant. The older production provider
 accepts only main jobs in `prod`, `prod-hosting`, or `prod-mobile`.
 
-Keep required reviewers on shared `prod` for production data operations and
-higher-risk backend updates. Delivery derives the production environment from
-its verified package and exact Git window; the promoter recomputes eligibility
-before authentication. `productionPromotionEnvironment` beside the affected
-Functions selector admits only changes to existing implementation bodies with
-unchanged imports, exports, signatures, initialization and trigger options.
-Sensitive source names or identifiers anywhere in either complete source module,
-additions/deletions, contracts,
-configuration, mixed runtime surfaces, non-Functions stages, snapshots, and
-manual recovery retain `prod` review. Uncertain parsing also retains review.
-This intentionally conservative structural policy complements code review; it
-does not prove the absence of a security bug in arbitrary business logic.
+Keep required reviewers on shared `prod` for production data operations,
+non-Functions stages, snapshots, recovery, and older source without review proof.
+Same-repository pull requests whose plan selects Functions require the
+credential-free `backend-review` environment after selected validation passes.
+Its reviewer explicitly reviews the whole backend change, including permissions,
+secrets, migrations, initialization and trigger settings, before merge. Required
+CI includes this gate. A new PR head requires a new reviewed CI run.
+
+For Functions-only packages, `tool/ci/backend_source_review.mjs` verifies the
+merged PR, successful pre-merge CI, required-reviewer approval history, completed
+review job, and equality of the reviewed PR tree with the exact packaged source
+tree. Delivery and the promoter independently repeat this read-only verification
+before authentication. Evidence that is missing, expired, unavailable or bound
+to different source retains `prod` review. Source pattern matching cannot prove
+that business logic is free of permission changes and is not used as approval.
+Verified Functions no-ops need no runtime approval. `backend-review` has no
+secrets, variables or cloud federation, allows the sole maintainer to review
+self-authored PRs, restricts branches to `refs/pull/*/merge`, and forbids
+administrator bypass. Its approval is recorded by
+GitHub, not a checked-in receipt. Reviewing before merge keeps human waiting time
+outside the shared deployment queue; after dev succeeds, reviewed Functions-only
+source uses `prod-backend` automatically.
 Both production paths keep the same `firebase-prod` lock and delivery cursor;
 automation never skips an older package or deploys production before dev succeeds.
 
@@ -868,9 +878,9 @@ Firebase backend delivery is one ordered promotion chain. After a successful
 same-repository `main` push, CI packages only the backend groups authorized by
 the exact impact plan. `Delivery` verifies that CI-produced package and promotes
 the same bytes through `dev`, then production; production waits for dev to
-finish. The verified structural policy described under GitHub Environments And
-Auth selects `prod-backend` for ordinary implementation updates and verified
-Functions no-ops, or reviewer-protected `prod` for the remaining changes. Neither
+finish. The source review policy described under GitHub Environments And
+Auth selects `prod-backend` for explicitly reviewed Functions-only source and
+verified Functions no-ops, or reviewer-protected `prod` for the remaining changes. Neither
 path rebuilds or changes the approved artifact.
 
 Functions packages retain their full immutable CI-authorized target set. Before

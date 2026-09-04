@@ -216,69 +216,21 @@ export function affectedFunctionTargets({
 }
 
 
-// Approval policy is deliberately narrower than affected-target selection.
-// A dependency graph proves scope, not whether a permission change is safe.
+// Dependency selection proves scope, not the absence of sensitive behavior.
+// Runtime changes require an explicit review of the exact source. The caller
+// may replace this protected default only with live GitHub review evidence.
 export function productionPromotionEnvironment({
   sourceRoot, sourceSha, baseSha, stages, fullSnapshot = false, noOp = false,
 }) {
-  const review = (reason) => ({environment: "prod", reason});
   if (!SHA.test(sourceSha) || !SHA.test(baseSha)) throw new Error("Invalid Git source/base SHA.");
   git(sourceRoot, ["merge-base", "--is-ancestor", baseSha, sourceSha]);
   if (fullSnapshot || sourceSha === baseSha ||
       stages.length !== 1 || stages[0] !== "functions") {
-    return review("Snapshots and non-Functions stages require production review");
+    return {environment: "prod", reason: "Snapshots and non-Functions stages require production review"};
   }
   if (noOp) return {environment: "prod-backend", reason: "Verified Functions no-op"};
-  try {
-    const changed = git(sourceRoot, ["diff", "--name-only", "--no-renames", "-z", baseSha, sourceSha])
-      .split("\0").filter(Boolean);
-    const runtime = changed.filter((name) => !isNonRuntimeFile(name));
-    if (!runtime.length || runtime.some((name) => !/^functions\/src\/.+\.ts$/.test(name))) {
-      return review("Configuration, contracts, operations, or mixed-surface changes require review");
-    }
-    const ts = require("typescript");
-    const before = sourceTree(sourceRoot, baseSha);
-    const after = sourceTree(sourceRoot, sourceSha);
-    const sensitive = /auth|permission|credential|secret|token|claim|role|invoker|serviceAccount|appCheck|migrat|backfill|security|polic(?:y|ies)|access|grant|revoke|privileg|admin|identity|verif|session|encrypt/i;
-    const tokens = (text) => {
-      const scanner = ts.createScanner(ts.ScriptTarget.Latest, true, ts.LanguageVariant.Standard, text);
-      const result = [];
-      while (scanner.scan() !== ts.SyntaxKind.EndOfFileToken) result.push(scanner.getTokenText());
-      return JSON.stringify(result);
-    };
-    // Preserve imports, exports, signatures, initialization and trigger options.
-    // Only implementation bodies may differ on the automatic path. Sensitive
-    // implementations stay protected even when the surrounding API is stable.
-    const envelope = (tree, name) => {
-      const source = parse(ts, tree, name);
-      const bodies = [];
-      const visit = (node) => {
-        if (ts.isFunctionLike(node) && node.body) {
-          bodies.push([node.body.getStart(source), node.body.end]);
-          return;
-        }
-        ts.forEachChild(node, visit);
-      };
-      visit(source);
-      let text = source.text;
-      for (const [start, end] of bodies.reverse()) text = text.slice(0, start) + "__implementation__" + text.slice(end);
-      return tokens(text);
-    };
-    for (const name of runtime) {
-      if (!before.has(name) || !after.has(name)) return review("Source additions and deletions require review");
-      if (sensitive.test(name)) return review(`Sensitive source owner: ${name}`);
-      // Security ownership can be in a stable function/variable/class name or
-      // import, while the changed body is only "return true". Inspect both
-      // complete modules before normalizing bodies; prefer review on ambiguity.
-      if (sensitive.test(before.get(name)) || sensitive.test(after.get(name))) {
-        return review(`Security-sensitive module requires review: ${name}`);
-      }
-      if (envelope(before, name) !== envelope(after, name)) {
-        return review(`Exports, imports, initialization, or deployment options changed: ${name}`);
-      }
-    }
-    return {environment: "prod-backend", reason: "Existing implementation bodies with unchanged deployment and security surface"};
-  } catch (error) {
-    return review(`Conservative approval fallback: ${error.message}`);
-  }
+  return {
+    environment: "prod", preMergeReviewEligible: true,
+    reason: "Runtime changes require an explicit review of the exact source",
+  };
 }

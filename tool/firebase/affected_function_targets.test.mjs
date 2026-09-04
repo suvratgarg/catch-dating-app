@@ -221,10 +221,15 @@ function promotionFixture(t) {
   }};
 }
 
-test("ordinary existing implementation updates may promote automatically", (t) => {
-  const f = promotionFixture(t);
-  f.write("functions/src/gamma.ts", "export function gamma(value: number) { return value + 2; }");
-  assert.equal(f.policy().environment, "prod-backend");
+test("ordinary implementation updates require explicit source review", (t) => {
+  const f = fixture(t);
+  const before = 'import {onRequest as serve} from "firebase-functions/v2/https"; export const gamma = serve((request, response) => { response.send(1); });';
+  f.write("functions/src/gamma.ts", before);
+  const base = f.commit();
+  f.write("functions/src/gamma.ts", before.replace('send(1)', 'send(2)'));
+  assert.equal(productionPromotionEnvironment({
+    sourceRoot: f.root, baseSha: base, sourceSha: f.commit(), stages: ["functions"],
+  }).environment, "prod");
 });
 
 for (const [label, file, content] of [
@@ -266,16 +271,17 @@ test("trigger options and security bodies cannot be hidden by handler-body norma
   }).environment, "prod");
 });
 
-test("ordinary handler bodies may change with identical trigger options", (t) => {
+test("unchanged trigger options do not replace source review", (t) => {
   const f = fixture(t);
-  f.write("functions/src/gamma.ts", 'export const gamma = onCall({region: "asia-south1"}, (request) => request.data + 1);');
+  const sdk = 'import {onCall} from "firebase-functions/v2/https"; ';
+  f.write("functions/src/gamma.ts", sdk + 'export const gamma = onCall({region: "asia-south1"}, (request) => request.data + 1);');
   const base = f.commit();
-  f.write("functions/src/gamma.ts", 'export const gamma = onCall({region: "asia-south1"}, (request) => request.data + 2);');
+  f.write("functions/src/gamma.ts", sdk + 'export const gamma = onCall({region: "asia-south1"}, (request) => request.data + 2);');
   const head = f.commit();
   f.write("functions/src/gamma.ts", "dirty bytes must not change approval");
   assert.equal(productionPromotionEnvironment({
     sourceRoot: f.root, baseSha: base, sourceSha: head, stages: ["functions"],
-  }).environment, "prod-backend");
+  }).environment, "prod");
   assert.equal(productionPromotionEnvironment({
     sourceRoot: f.root, baseSha: base, sourceSha: head, stages: ["functions", "firestore-rules"],
   }).environment, "prod");
@@ -297,3 +303,52 @@ for (const declaration of [
     }).environment, "prod");
   });
 }
+
+for (const [label, before, after] of [
+  ["immediately invoked option factory",
+    'export const gamma = onCall({timeoutSeconds: (() => 30)()}, (request) => request.data);',
+    'export const gamma = onCall({timeoutSeconds: (() => 60)()}, (request) => request.data);'],
+  ["helper used by initialization",
+    'function runtimeWindow() { return 30; } export const gamma = onCall({timeoutSeconds: runtimeWindow()}, (request) => request.data);',
+    'function runtimeWindow() { return 60; } export const gamma = onCall({timeoutSeconds: runtimeWindow()}, (request) => request.data);'],
+  ["getter used by initialization",
+    'class Settings { get region() { return "asia-south1"; } } const settings = new Settings(); export const gamma = onCall({region: settings.region}, (request) => request.data);',
+    'class Settings { get region() { return "us-central1"; } } const settings = new Settings(); export const gamma = onCall({region: settings.region}, (request) => request.data);'],
+]) {
+  test(`${label} cannot be hidden by handler-body normalization`, (t) => {
+    const f = fixture(t);
+    const sdk = 'import {onCall} from "firebase-functions/v2/https"; ';
+    f.write("functions/src/gamma.ts", sdk + before);
+    const base = f.commit();
+    f.write("functions/src/gamma.ts", sdk + after);
+    assert.equal(productionPromotionEnvironment({
+      sourceRoot: f.root, baseSha: base, sourceSha: f.commit(), stages: ["functions"],
+    }).environment, "prod");
+  });
+}
+
+test("a custom factory named onCall does not establish a runtime-only handler", (t) => {
+  const f = fixture(t);
+  f.write("functions/src/factory.ts", "export function onCall(callback: () => number) { callback(); return callback; }");
+  const before = 'import {onCall} from "./factory"; export const gamma = onCall(() => 1);';
+  f.write("functions/src/gamma.ts", before);
+  const base = f.commit();
+  f.write("functions/src/gamma.ts", before.replace("() => 1", "() => 2"));
+  assert.equal(productionPromotionEnvironment({
+    sourceRoot: f.root, baseSha: base, sourceSha: f.commit(), stages: ["functions"],
+  }).environment, "prod");
+});
+
+
+test("only a verified Functions no-op can bypass review without source approval", (t) => {
+  const f = promotionFixture(t);
+  f.write("functions/src/gamma.test.ts", "// test only");
+  const sourceSha = f.commit();
+  const policy = (options = {}) => productionPromotionEnvironment({
+    sourceRoot: f.root, baseSha: f.base, sourceSha, stages: ["functions"], ...options,
+  });
+  assert.equal(policy({noOp: true}).environment, "prod-backend");
+  assert.equal(policy({noOp: true, fullSnapshot: true}).environment, "prod");
+  assert.equal(policy({noOp: true, stages: ["functions", "storage-rules"]}).environment, "prod");
+  assert.equal(policy().preMergeReviewEligible, true);
+});

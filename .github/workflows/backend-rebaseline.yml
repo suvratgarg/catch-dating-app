@@ -20,6 +20,7 @@ on:
 permissions:
   actions: read
   contents: read
+  pull-requests: read
   id-token: write
 
 # Rebaseline and ordinary cursor delivery mutate the same Firebase surfaces.
