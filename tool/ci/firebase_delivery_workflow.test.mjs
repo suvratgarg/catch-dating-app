@@ -490,7 +490,7 @@ test("only the successful finalizer advances and drains the cursor", () => {
   assert.equal((delivery.match(/name: backend-delivery-cursor-v4-/g) ?? []).length, 1);
 });
 
-test("promotion is ordered dev to production with separately bounded automatic approval", () => {
+test("promotion is ordered dev to protected prod", () => {
   const delivery = workflow("delivery.yml");
   assert.match(delivery, /dev:[\s\S]*environment: dev/);
   assert.doesNotMatch(delivery, /\n  staging:|environment: staging|needs\.staging/);
