@@ -1557,6 +1557,7 @@ class HostAudienceContactDetail {
     this.sends = const [],
     this.sendsTruncated = false,
     this.sendsCoverage = HostCustomerHistoryCoverage.exact,
+    this.historyLoaded = true,
     required this.timeline,
     required this.timelineTruncated,
     required this.timelineCoverage,
@@ -1643,6 +1644,9 @@ class HostAudienceContactDetail {
               _requiredString(map, 'sendsCoverage'),
               'sends coverage',
             ),
+      historyLoaded: map['historyLoaded'] == null
+          ? true
+          : _requiredBool(map, 'historyLoaded'),
       timeline: _mapList(
         map['timeline'],
         'customer timeline',
@@ -1689,6 +1693,7 @@ class HostAudienceContactDetail {
   final List<HostCustomerSend> sends;
   final bool sendsTruncated;
   final HostCustomerHistoryCoverage sendsCoverage;
+  final bool historyLoaded;
   final List<HostCustomerTimelineEntry> timeline;
   final bool timelineTruncated;
   final HostCustomerTimelineCoverage timelineCoverage;
@@ -2900,6 +2905,40 @@ class HostCrmRepository {
     parse: HostAudienceContactDetail.fromCallableData,
   );
 
+  Future<HostAudienceContactDetail> getContactOverview(
+    String organizerId,
+    String contactId,
+  ) => withBackendErrorContext(
+    () async {
+      try {
+        final result = await _functions
+            .httpsCallable('getOrganizerContactDetail')
+            .call<Object?>(
+              GetOrganizerContactDetailCallableRequest(
+                organizerId: organizerId,
+                contactId: contactId,
+                includeHistory: false,
+              ).toJson(),
+            );
+        return HostAudienceContactDetail.fromCallableData(result.data);
+      } on FirebaseFunctionsException catch (error) {
+        // A rolling deployment may still serve the previous request schema.
+        // Only its exact unknown-property diagnostic authorizes a full read.
+        if (error.code != 'invalid-argument' ||
+            error.message !=
+                'includeHistory: must NOT have additional properties') {
+          rethrow;
+        }
+        return getContactDetail(organizerId, contactId);
+      }
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'load organizer contact overview',
+      resource: 'getOrganizerContactDetail',
+    ),
+  );
+
   Future<HostCommunicationPlan> resolveIndividualCommunicationPlan({
     required String organizerId,
     required String contactId,
@@ -3536,6 +3575,15 @@ Future<HostAudiencePage> hostAudience(
 
 @riverpod
 Future<HostAudienceContactDetail> hostAudienceContactDetail(
+  Ref ref,
+  String organizerId,
+  String contactId,
+) => ref
+    .read(hostCrmRepositoryProvider)
+    .getContactOverview(organizerId, contactId);
+
+@riverpod
+Future<HostAudienceContactDetail> hostAudienceContactHistory(
   Ref ref,
   String organizerId,
   String contactId,

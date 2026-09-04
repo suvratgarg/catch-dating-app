@@ -595,6 +595,9 @@ export async function getOrganizerContactDetailHandler(
     validateGetOrganizerContactDetailCallablePayload,
     normalizeContactDetailPayload
   );
+  const includeHistory = data.includeHistory !== false;
+  const historyQuery = <T>(read: () => Promise<T>): Promise<T | null> =>
+    includeHistory ? read() : Promise.resolve(null);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "getOrganizerContactDetail");
   await requireOrganizerManager({
@@ -641,7 +644,7 @@ export async function getOrganizerContactDetailHandler(
       data.organizerId,
       data.contactId
     ),
-    optionalContactQuery(
+    historyQuery(() => optionalContactQuery(
       db.collection("organizerCampaignRecipients")
         .where("organizerId", "==", data.organizerId)
         .where("contactId", "==", data.contactId)
@@ -652,24 +655,24 @@ export async function getOrganizerContactDetailHandler(
       "campaign sends",
       data.organizerId,
       data.contactId
-    ),
-    optionalContactQuery(
+    )),
+    historyQuery(() => optionalContactQuery(
       db.collection("organizerBroadcastSummaries")
         .where("recipientContactIds", "array-contains", data.contactId)
         .get(),
       "announcement sends",
       data.organizerId,
       data.contactId
-    ),
+    )),
     db.collection("organizerContactTagVocabularies")
       .doc(data.organizerId).get(),
-    db.collection("organizerContactMergeReceipts")
+    historyQuery(() => db.collection("organizerContactMergeReceipts")
       .where("organizerId", "==", data.organizerId)
       .where("survivorContactId", "==", data.contactId)
       .orderBy("createdAt", "desc")
       .orderBy(admin.firestore.FieldPath.documentId(), "desc")
       .limit(maxDetailMergeReceipts)
-      .get(),
+      .get()),
     optionalContactQuery(
       db.collection("organizerContactOrigins")
         .where("organizerId", "==", data.organizerId)
@@ -682,7 +685,7 @@ export async function getOrganizerContactDetailHandler(
       data.organizerId,
       data.contactId
     ),
-    optionalContactQuery(
+    historyQuery(() => optionalContactQuery(
       db.collection("organizerManualSendTasks")
         .where("organizerId", "==", data.organizerId)
         .where("contactId", "==", data.contactId)
@@ -693,8 +696,8 @@ export async function getOrganizerContactDetailHandler(
       "manual sends",
       data.organizerId,
       data.contactId
-    ),
-    optionalContactQuery(
+    )),
+    historyQuery(() => optionalContactQuery(
       db.collection("organizerWhatsappMessages")
         .where("organizerId", "==", data.organizerId)
         .where("contactId", "==", data.contactId)
@@ -705,7 +708,7 @@ export async function getOrganizerContactDetailHandler(
       "managed WhatsApp replies",
       data.organizerId,
       data.contactId
-    ),
+    )),
   ]);
   const contact = contactSnap.data() as OrganizerContactDocument | undefined;
   const traits = traitSnap.data() as OrganizerContactTraitDocument | undefined;
@@ -811,7 +814,7 @@ export async function getOrganizerContactDetailHandler(
     .map((document) => document.data() as OrganizerWhatsappMessageDocument)
     .filter((message) => message.organizerId === data.organizerId &&
       message.contactId === data.contactId);
-  const catchRepliesResult = await optionalContactQuery(
+  const catchRepliesResult = await historyQuery(() => optionalContactQuery(
     contactCatchReplyTimeline({
       db,
       organizerId: data.organizerId,
@@ -820,16 +823,16 @@ export async function getOrganizerContactDetailHandler(
     "Catch conversation replies",
     data.organizerId,
     data.contactId
-  );
-  const formTimeline = await contactFormTimeline({
+  ));
+  const formTimeline = includeHistory ? await contactFormTimeline({
     db,
     organizerId: data.organizerId,
     origins: originDocuments,
     formTitles: provenance.formTitles,
-  });
+  }) : {entries: [], unavailable: true, truncated: false};
   const timelineResult = buildContactTimeline({
     forms: formTimeline.entries,
-    events,
+    events: includeHistory ? events : [],
     sends,
     manualSendTasks,
     whatsappMessages,
@@ -838,7 +841,8 @@ export async function getOrganizerContactDetailHandler(
       "unavailable" : originSnap.size > maxDetailOrigins ||
         formTimeline.truncated || traits.sourceCoverage !== "exact" ?
         "partial" : "exact",
-    eventsCoverage: eventSnap.size > maxDetailEvents ||
+    eventsCoverage: !includeHistory ? "unavailable" :
+      eventSnap.size > maxDetailEvents ||
       traits.sourceCoverage !== "exact" ? "partial" : "exact",
     sendsCoverage: recipientSnap === null || broadcastSnap === null ||
       campaignSendsResult === null || manualSendTaskSnap === null ?
@@ -853,12 +857,13 @@ export async function getOrganizerContactDetailHandler(
   const activeMerges = await activeMergeRows({
     db,
     organizerId: data.organizerId,
-    receipts: mergeReceiptSnap.docs.map((document) => ({
+    receipts: (mergeReceiptSnap?.docs ?? []).map((document) => ({
       id: document.id,
       data: document.data() as OrganizerContactMergeReceiptDocument,
     })),
   });
   return {
+    historyLoaded: includeHistory,
     organizerId: data.organizerId,
     contactId: data.contactId,
     displayName: effectiveDisplayName(contact),

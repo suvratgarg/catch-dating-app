@@ -61,6 +61,7 @@ HostMessagingSetup _hostMessagingSetup({
 );
 
 HostAudienceContactDetail _customerDetail({
+  bool historyLoaded = true,
   bool contactDetailsEditable = false,
   bool linkedAccount = true,
   HostAudienceIdentityState identityState = HostAudienceIdentityState.verified,
@@ -73,6 +74,7 @@ HostAudienceContactDetail _customerDetail({
 }) => HostAudienceContactDetail(
   organizerId: 'organizer-1',
   contactId: 'contact-1',
+  historyLoaded: historyLoaded,
   displayName: 'Ananya Rao',
   sourceDisplayName: 'Ananya Rao',
   displayNameOverride: null,

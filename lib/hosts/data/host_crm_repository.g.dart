@@ -348,7 +348,7 @@ final class HostAudienceContactDetailProvider
 }
 
 String _$hostAudienceContactDetailHash() =>
-    r'5b65f279a2964fc649a3c0b65291b945e957bde6';
+    r'4642b5284311c910f66ba779397083ed32601628';
 
 final class HostAudienceContactDetailFamily extends $Family
     with
@@ -375,6 +375,94 @@ final class HostAudienceContactDetailFamily extends $Family
 
   @override
   String toString() => r'hostAudienceContactDetailProvider';
+}
+
+@ProviderFor(hostAudienceContactHistory)
+final hostAudienceContactHistoryProvider = HostAudienceContactHistoryFamily._();
+
+final class HostAudienceContactHistoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostAudienceContactDetail>,
+          HostAudienceContactDetail,
+          FutureOr<HostAudienceContactDetail>
+        >
+    with
+        $FutureModifier<HostAudienceContactDetail>,
+        $FutureProvider<HostAudienceContactDetail> {
+  HostAudienceContactHistoryProvider._({
+    required HostAudienceContactHistoryFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostAudienceContactHistoryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostAudienceContactHistoryHash();
+
+  @override
+  String toString() {
+    return r'hostAudienceContactHistoryProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostAudienceContactDetail> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostAudienceContactDetail> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return hostAudienceContactHistory(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostAudienceContactHistoryProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostAudienceContactHistoryHash() =>
+    r'3b4a1a38019c4a7a3210db6a6b369ccc54b22664';
+
+final class HostAudienceContactHistoryFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostAudienceContactDetail>,
+          (String, String)
+        > {
+  HostAudienceContactHistoryFamily._()
+    : super(
+        retry: null,
+        name: r'hostAudienceContactHistoryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostAudienceContactHistoryProvider call(
+    String organizerId,
+    String contactId,
+  ) => HostAudienceContactHistoryProvider._(
+    argument: (organizerId, contactId),
+    from: this,
+  );
+
+  @override
+  String toString() => r'hostAudienceContactHistoryProvider';
 }
 
 @ProviderFor(hostCommunicationPlan)

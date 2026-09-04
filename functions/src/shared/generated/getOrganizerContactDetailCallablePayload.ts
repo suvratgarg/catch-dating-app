@@ -8,4 +8,8 @@
 export interface GetOrganizerContactDetailCallablePayload {
   organizerId: string;
   contactId: string;
+  /**
+   * False loads overview facts without send, reply, form-response timeline, or merge-history reads. Omission preserves the full response for existing clients.
+   */
+  includeHistory?: boolean;
 }

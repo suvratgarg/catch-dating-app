@@ -25515,6 +25515,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getOrganizerContactDetailCallablePayloadIncludeHistory = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallablePayload.includeHistory',
+    valueTypes: <String>['boolean'],
+  );
+
   static const getOrganizerContactDetailCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallablePayload.organizerId',
     maxLength: 180,
@@ -25816,6 +25821,11 @@ abstract final class CatchContractConstraints {
   static const getOrganizerContactDetailCallableResponseEventsTruncated = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallableResponse.eventsTruncated',
     required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseHistoryLoaded = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.historyLoaded',
     valueTypes: <String>['boolean'],
   );
 
@@ -66614,6 +66624,7 @@ abstract final class CatchContractConstraints {
     'getOrganizerApplicationDetailCallableResponse.targetId': getOrganizerApplicationDetailCallableResponseTargetId,
     'getOrganizerApplicationDetailCallableResponse.targetKind': getOrganizerApplicationDetailCallableResponseTargetKind,
     'getOrganizerContactDetailCallablePayload.contactId': getOrganizerContactDetailCallablePayloadContactId,
+    'getOrganizerContactDetailCallablePayload.includeHistory': getOrganizerContactDetailCallablePayloadIncludeHistory,
     'getOrganizerContactDetailCallablePayload.organizerId': getOrganizerContactDetailCallablePayloadOrganizerId,
     'getOrganizerContactDetailCallableResponse.activeMerges': getOrganizerContactDetailCallableResponseActiveMerges,
     'getOrganizerContactDetailCallableResponse.activeMerges.items.conflicts': getOrganizerContactDetailCallableResponseActiveMergesItemsConflicts,
@@ -66656,6 +66667,7 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.events.items.source': getOrganizerContactDetailCallableResponseEventsItemsSource,
     'getOrganizerContactDetailCallableResponse.events.items.status': getOrganizerContactDetailCallableResponseEventsItemsStatus,
     'getOrganizerContactDetailCallableResponse.eventsTruncated': getOrganizerContactDetailCallableResponseEventsTruncated,
+    'getOrganizerContactDetailCallableResponse.historyLoaded': getOrganizerContactDetailCallableResponseHistoryLoaded,
     'getOrganizerContactDetailCallableResponse.identityConfidence': getOrganizerContactDetailCallableResponseIdentityConfidence,
     'getOrganizerContactDetailCallableResponse.identityState': getOrganizerContactDetailCallableResponseIdentityState,
     'getOrganizerContactDetailCallableResponse.linkedAccount': getOrganizerContactDetailCallableResponseLinkedAccount,

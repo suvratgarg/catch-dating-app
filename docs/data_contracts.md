@@ -935,7 +935,18 @@ diagnostics and never replace the legacy cards. It never returns attendee
 identity or contact fields. `listOrganizerContacts` and
 `getOrganizerContactDetail` are separate manager-authorized, server-paginated
 boundaries. They return only organizer-owned endpoints plus explainable
-attendance/reachability facts; no Event Success private input is a CRM field.
+attendance/reachability facts; no Event Success private input is a CRM field. The
+current detail UI requests `includeHistory: false`: attendance, revenue, memory,
+permission, and source provenance remain available, while campaign, broadcast,
+manual-send, reply, form-response timeline, and merge-history reads are deferred
+until History opens. `historyLoaded: false` and unavailable timeline coverage
+keep an unrequested history distinct from no activity. Omission of the request
+flag preserves the full response for older clients. A new client retries without
+the flag only for the old server's exact `includeHistory: must NOT have
+additional properties` diagnostic; other validation and access failures are
+not retried. Loading all tabs can add a
+second invocation and repeat core reads; overview-only visits omit operational
+queries. No minimum instances or new persistent listeners are introduced.
 The directory accepts `lastSeen`, `mostAttended`, or `name`; every opaque cursor
 is versioned and bound to its query plan, filters, and ordering. Filtered sorts
 are computed over a bounded complete candidate set rather than sorting one

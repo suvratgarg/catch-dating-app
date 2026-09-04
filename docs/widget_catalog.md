@@ -1153,6 +1153,7 @@ Widgetbook callers.
 | `HostCustomerRecentEvents` | `lib/hosts/presentation/customers/host_customer_detail_cards.dart` | Attended event record rows with dates and actual event destinations. |
 | `HostCustomerRevenueBreakdown` | `lib/hosts/presentation/customers/host_customer_detail_cards.dart` | Revenue detail sheet retaining currencies, source, coverage, event allocation and links. |
 | `HostCustomerDetailTabs` | `lib/hosts/presentation/customers/host_customer_detail_tabs.dart` | Overview, Details, Memory and History selection with shared scalable tab typography. |
+| `HostCustomerHistoryPanel` | `lib/hosts/presentation/customers/host_customer_history_panel.dart` | History-tab data boundary. Defers operational timeline and merge reads until mounted, contains loading/retry, and composes typed timeline records. |
 | `HostCustomerMemoryPreview` | `lib/hosts/presentation/customers/host_customer_memory.dart` | Compact private note and tag preview with a single memory destination. |
 | `HostCustomerHistoryFilters` | `lib/hosts/presentation/customers/host_customer_timeline.dart` | Local All, Forms, Events and Messages selection over the activity timeline. |
 | `HostCustomerTimelineRecord` | `lib/hosts/presentation/customers/host_customer_timeline.dart` | Typed historical records rendered through CatchRecordRow with action affordances only for known destinations. |

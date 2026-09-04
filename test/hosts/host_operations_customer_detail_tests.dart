@@ -1,6 +1,48 @@
 part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsCustomerDetailTests() {
+  testWidgets('customer operational history loads only when its tab opens', (
+    tester,
+  ) async {
+    var requests = 0;
+    final pending = Completer<HostAudienceContactDetail>();
+    await _pumpHostScreen(
+      tester,
+      const HostCustomerDetailScreen(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      ),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        hostAudienceContactDetailProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(_customerDetail(historyLoaded: false))),
+        hostCommunicationPlanProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
+        hostAudienceContactHistoryProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWith((ref) {
+          requests++;
+          return pending.future;
+        }),
+      ],
+    );
+    expect(requests, 0);
+    expect(find.byType(HostCustomerRevenueCard), findsOneWidget);
+    await tester.tap(find.text('History'));
+    await tester.pump();
+    expect(requests, 1);
+    expect(find.byType(HostCustomerTimelineSection), findsNothing);
+    pending.complete(_customerDetail());
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostCustomerTimelineSection), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('customer detail failure names the customer, not organizer', (
     tester,
   ) async {

@@ -26,5 +26,10 @@ const schemaGetOrganizerContactDetailCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'includeHistory': <String, Object?>{
+      'type': 'boolean',
+      'default': true,
+      'description': 'False loads overview facts without send, reply, form-response timeline, or merge-history reads. Omission preserves the full response for existing clients.',
+    },
   },
 };

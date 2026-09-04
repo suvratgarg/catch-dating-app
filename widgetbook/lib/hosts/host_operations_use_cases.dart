@@ -8921,3 +8921,21 @@ Stream<T> _streamValue<T>(AsyncValue<T>? value, T fallback) {
     null => Stream<T>.value(fallback),
   };
 }
+
+@widgetbook.UseCase(
+  name: 'Loaded history',
+  type: HostCustomerHistoryPanel,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostCustomerHistoryPanelStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => HostCustomerHistoryPanel(
+        customer: customer,
+        onOpenFormResponse: (_) {},
+        onOpenEvent: (_) {},
+        onOpenCatchThread: (_) {},
+        onOpenWhatsappThread: (_) {},
+        onUndoMerge: (_) {},
+      ),
+    );

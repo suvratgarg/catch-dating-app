@@ -7790,6 +7790,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerHistoryPanel',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loaded history',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostCustomerHistoryPanelStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostEventManageScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

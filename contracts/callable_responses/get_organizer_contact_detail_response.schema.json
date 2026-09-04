@@ -7,6 +7,7 @@
   "additionalProperties": false,
   "required": ["organizerId", "contactId", "displayName", "sourceDisplayName", "displayNameOverride", "phoneE164", "email", "linkedAccount", "identityState", "identityConfidence", "ambiguousCandidateContactIds", "whatsappAdminSuppressed", "whatsappPermission", "origins", "originsTruncated", "traits", "revenue", "events", "eventsTruncated", "timeline", "timelineTruncated", "timelineCoverage", "activeMerges", "revision"],
   "properties": {
+    "historyLoaded": {"type": "boolean", "description": "False means operational history was deliberately not requested; empty history arrays are not evidence of no activity."},
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "displayName": {"type": "string", "minLength": 1, "maxLength": 120},

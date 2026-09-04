@@ -228,15 +228,24 @@ export async function listOrganizerWhatsappThreadsHandler(
       .expiresAt.toMillis() > nowMillis
   );
   const selected = retained.slice(0, limit);
-  const threads = await Promise.all(selected.map(async (document) => {
+  const contactSnapshots = selected.length === 0 ? [] : await db.getAll(
+    ...selected.map((document) => {
+      const thread = document.data() as OrganizerWhatsappThreadDocument;
+      return db.collection("organizerContacts").doc(thread.contactId);
+    })
+  );
+  const contacts = new Map(contactSnapshots
+    .filter((contact) => contact.exists)
+    .map((contact) => [
+      contact.id,
+      contact.data() as OrganizerContactDocument,
+    ]));
+  const threads = selected.map((document) => {
     const thread = document.data() as OrganizerWhatsappThreadDocument;
     if (thread.organizerId !== data.organizerId) {
       throw new HttpsError("internal", "WhatsApp thread scope is invalid.");
     }
-    const contactSnapshot = await db.collection("organizerContacts")
-      .doc(thread.contactId).get();
-    const contact = contactSnapshot.data() as OrganizerContactDocument |
-      undefined;
+    const contact = contacts.get(thread.contactId);
     return {
       threadId: document.id,
       contactId: thread.contactId,
@@ -253,7 +262,7 @@ export async function listOrganizerWhatsappThreadsHandler(
         nowMillis
       ),
     };
-  }));
+  });
   const last = selected.at(-1);
   return {
     organizerId: data.organizerId,

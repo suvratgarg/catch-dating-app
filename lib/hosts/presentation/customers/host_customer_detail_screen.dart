@@ -41,6 +41,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 part 'host_customer_detail_body.dart';
+part 'host_customer_history_panel.dart';
 
 enum _HostCustomerRecordAction { message, remove }
 
@@ -305,6 +306,9 @@ class _HostCustomerDetailScreenState
   void _refreshDetail() {
     ref.invalidate(
       hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
+    );
+    ref.invalidate(
+      hostAudienceContactHistoryProvider(widget.organizerId, widget.contactId),
     );
     _refreshCommunicationPlan();
   }

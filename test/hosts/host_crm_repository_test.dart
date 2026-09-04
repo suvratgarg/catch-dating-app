@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,10 +14,12 @@ class _TestFirebaseFunctions extends Fake implements FirebaseFunctions {
 class _TestHttpsCallable extends Fake implements HttpsCallable {
   final calls = <Object?>[];
   Object? resultData;
+  final failures = <Object>[];
 
   @override
   Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
     calls.add(parameters);
+    if (failures.isNotEmpty) throw failures.removeAt(0);
     return _TestHttpsCallableResult<T>(resultData as T);
   }
 }
@@ -714,126 +717,101 @@ void main() {
     );
   });
 
+  test(
+    'overview requests deferred history and respects unloaded metadata',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('getOrganizerContactDetail')
+              as _TestHttpsCallable;
+      callable.resultData = {..._contactDetailData(), 'historyLoaded': false};
+      final detail = await HostCrmRepository(
+        functions,
+      ).getContactOverview('organizer-1', 'contact-1');
+      expect(detail.historyLoaded, isFalse);
+      expect(callable.calls.single, {
+        'organizerId': 'organizer-1',
+        'contactId': 'contact-1',
+        'includeHistory': false,
+      });
+    },
+  );
+
+  test(
+    'overview retries only the old server unknown-history-flag response',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final callable =
+          functions.httpsCallable('getOrganizerContactDetail')
+              as _TestHttpsCallable;
+      callable.resultData = _contactDetailData();
+      callable.failures.add(
+        FirebaseFunctionsException(
+          code: 'invalid-argument',
+          message: 'includeHistory: must NOT have additional properties',
+        ),
+      );
+      final detail = await HostCrmRepository(
+        functions,
+      ).getContactOverview('organizer-1', 'contact-1');
+      expect(detail.historyLoaded, isTrue);
+      expect(detail.timeline, isNotEmpty);
+      expect(callable.calls, [
+        {
+          'organizerId': 'organizer-1',
+          'contactId': 'contact-1',
+          'includeHistory': false,
+        },
+        {'organizerId': 'organizer-1', 'contactId': 'contact-1'},
+      ]);
+    },
+  );
+
+  test(
+    'overview never retries permission or other validation failures',
+    () async {
+      for (final error in [
+        FirebaseFunctionsException(
+          code: 'permission-denied',
+          message: 'Organizer manager required',
+        ),
+        FirebaseFunctionsException(
+          code: 'invalid-argument',
+          message: 'contactId: must be string',
+        ),
+        FirebaseFunctionsException(
+          code: 'invalid-argument',
+          message: 'includeHistory: must be boolean',
+        ),
+      ]) {
+        final functions = _TestFirebaseFunctions();
+        final callable =
+            functions.httpsCallable('getOrganizerContactDetail')
+                as _TestHttpsCallable;
+        callable.failures.add(error);
+        await expectLater(
+          HostCrmRepository(
+            functions,
+          ).getContactOverview('organizer-1', 'contact-1'),
+          throwsA(isA<AppException>()),
+        );
+        expect(callable.calls, hasLength(1));
+      }
+    },
+  );
+
   test('parses contact detail without exposing private runtime answers', () {
-    final data = <String, Object?>{
-      'organizerId': 'organizer-1',
-      'contactId': 'contact-1',
-      'displayName': 'Asha',
-      'sourceDisplayName': 'Asha Rao',
-      'displayNameOverride': 'Asha',
-      'phoneE164': '+919876543210',
-      'email': null,
-      'linkedAccount': true,
-      'identityState': 'verified',
-      'identityConfidence': 'verified',
-      'contactDetailsEditable': false,
-      'ambiguousCandidateContactIds': <String>[],
-      'whatsappAdminSuppressed': true,
-      'whatsappPermission': {
-        'status': 'optedIn',
-        'evidenceStatus': 'complete',
-        'receiptId': 'permission-1',
-        'source': 'hostFormResponse',
-        'sourceFormId': 'form-1',
-        'sourceFormTitle': 'Social run sign-up',
-        'decisionAtMillis': 1699000000000,
-        'identityStrength': 'phoneVerified',
-      },
-      'origins': [
-        {
-          'originId': 'origin-1',
-          'sourceKind': 'hostForm',
-          'sourceEntityKind': 'hostFormResponse',
-          'formId': 'form-1',
-          'formTitle': 'Social run sign-up',
-          'eventId': 'event-1',
-          'eventTitle': 'Social run',
-          'observedAtMillis': 1699000000000,
-        },
-      ],
-      'originsTruncated': false,
-      'traits': {
-        'expectedEventCount': 4,
-        'attendedEventCount': 3,
-        'cancelledEventCount': 0,
-        'noShowCount': 1,
-        'importedEventCount': 1,
-        'attendanceRate': 0.75,
-        'segmentIds': ['repeat_attendee'],
-        'whatsappStatus': 'optedIn',
-        'smsStatus': 'unknown',
-        'sourceCoverage': 'exact',
-      },
-      'revenue': {
-        'coverage': 'exact',
-        'amounts': [
-          {
-            'currency': 'INR',
-            'amountMinor': 450000,
-            'factCount': 3,
-            'sources': [
-              {'source': 'catchPayment', 'amountMinor': 450000, 'factCount': 3},
-            ],
-          },
-        ],
-      },
-      'events': [
-        {
-          'eventId': 'event-1',
-          'displayName': 'Social run',
-          'eventOriginMode': 'externalCompanion',
-          'eventProvider': 'eventbrite',
-          'source': 'hostImport',
-          'status': 'checkedIn',
-          'checkedIn': true,
-          'eventStartAtMillis': 1700000000000,
-          'revenues': [
-            {
-              'currency': 'INR',
-              'amountMinor': 150000,
-              'source': 'hostImport',
-              'factCount': 1,
-              'allocation': 'perAttendee',
-            },
-          ],
-        },
-      ],
-      'eventsTruncated': false,
-      'timeline': [
-        {
-          'kind': 'form',
-          'timelineId': 'timeline-form-1',
-          'responseId': 'response-1',
-          'formId': 'form-1',
-          'formTitle': 'Social run sign-up',
-          'action': 'submitted',
-          'answeredQuestionCount': 3,
-          'occurredAtMillis': 1699000000000,
-        },
-      ],
-      'timelineTruncated': false,
-      'timelineCoverage': {
-        'forms': 'exact',
-        'events': 'exact',
-        'sends': 'exact',
-        'replies': 'partial',
-        'replyObservation': 'catchAndManagedWhatsappOnly',
-      },
-      'activeMerges': [
-        {
-          'mergeReceiptId': 'receipt-1',
-          'sourceContactId': 'contact-2',
-          'sourceDisplayName': 'Asha R.',
-          'evidence': ['sameVerifiedPhone', 'managerConfirmed'],
-          'conflicts': <String>[],
-          'movedFactCount': 4,
-          'mergedAtMillis': 1700000001000,
-        },
-      ],
-      'revision': 7,
-    };
+    final data = _contactDetailData();
     final detail = HostAudienceContactDetail.fromCallableData(data);
 
+    expect(detail.historyLoaded, isTrue);
+    expect(
+      HostAudienceContactDetail.fromCallableData({
+        ...data,
+        'historyLoaded': false,
+      }).historyLoaded,
+      isFalse,
+    );
     expect(detail.displayName, 'Asha');
     expect(detail.contactDetailsEditable, isFalse);
     expect(detail.whatsappAdminSuppressed, isTrue);
@@ -1090,4 +1068,122 @@ Map<String, Object?> _manualSendTaskData({
   'updatedAtMillis': 1700000000000,
   'openedAtMillis': openedAtMillis,
   'expiresAtMillis': 1702592000000,
+};
+
+Map<String, Object?> _contactDetailData() => <String, Object?>{
+  'organizerId': 'organizer-1',
+  'contactId': 'contact-1',
+  'displayName': 'Asha',
+  'sourceDisplayName': 'Asha Rao',
+  'displayNameOverride': 'Asha',
+  'phoneE164': '+919876543210',
+  'email': null,
+  'linkedAccount': true,
+  'identityState': 'verified',
+  'identityConfidence': 'verified',
+  'contactDetailsEditable': false,
+  'ambiguousCandidateContactIds': <String>[],
+  'whatsappAdminSuppressed': true,
+  'whatsappPermission': {
+    'status': 'optedIn',
+    'evidenceStatus': 'complete',
+    'receiptId': 'permission-1',
+    'source': 'hostFormResponse',
+    'sourceFormId': 'form-1',
+    'sourceFormTitle': 'Social run sign-up',
+    'decisionAtMillis': 1699000000000,
+    'identityStrength': 'phoneVerified',
+  },
+  'origins': [
+    {
+      'originId': 'origin-1',
+      'sourceKind': 'hostForm',
+      'sourceEntityKind': 'hostFormResponse',
+      'formId': 'form-1',
+      'formTitle': 'Social run sign-up',
+      'eventId': 'event-1',
+      'eventTitle': 'Social run',
+      'observedAtMillis': 1699000000000,
+    },
+  ],
+  'originsTruncated': false,
+  'traits': {
+    'expectedEventCount': 4,
+    'attendedEventCount': 3,
+    'cancelledEventCount': 0,
+    'noShowCount': 1,
+    'importedEventCount': 1,
+    'attendanceRate': 0.75,
+    'segmentIds': ['repeat_attendee'],
+    'whatsappStatus': 'optedIn',
+    'smsStatus': 'unknown',
+    'sourceCoverage': 'exact',
+  },
+  'revenue': {
+    'coverage': 'exact',
+    'amounts': [
+      {
+        'currency': 'INR',
+        'amountMinor': 450000,
+        'factCount': 3,
+        'sources': [
+          {'source': 'catchPayment', 'amountMinor': 450000, 'factCount': 3},
+        ],
+      },
+    ],
+  },
+  'events': [
+    {
+      'eventId': 'event-1',
+      'displayName': 'Social run',
+      'eventOriginMode': 'externalCompanion',
+      'eventProvider': 'eventbrite',
+      'source': 'hostImport',
+      'status': 'checkedIn',
+      'checkedIn': true,
+      'eventStartAtMillis': 1700000000000,
+      'revenues': [
+        {
+          'currency': 'INR',
+          'amountMinor': 150000,
+          'source': 'hostImport',
+          'factCount': 1,
+          'allocation': 'perAttendee',
+        },
+      ],
+    },
+  ],
+  'eventsTruncated': false,
+  'timeline': [
+    {
+      'kind': 'form',
+      'timelineId': 'timeline-form-1',
+      'responseId': 'response-1',
+      'formId': 'form-1',
+      'formTitle': 'Social run sign-up',
+      'action': 'submitted',
+      'answeredQuestionCount': 3,
+      'occurredAtMillis': 1699000000000,
+    },
+  ],
+  'timelineTruncated': false,
+  'timelineCoverage': {
+    'forms': 'exact',
+    'events': 'exact',
+    'sends': 'exact',
+    'replies': 'partial',
+    'replyObservation': 'catchAndManagedWhatsappOnly',
+  },
+  'activeMerges': [
+    {
+      'mergeReceiptId': 'receipt-1',
+      'sourceContactId': 'contact-2',
+      'sourceDisplayName': 'Asha R.',
+      'evidence': ['sameVerifiedPhone', 'managerConfirmed'],
+      'conflicts': <String>[],
+      'movedFactCount': 4,
+      'mergedAtMillis': 1700000001000,
+    },
+  ],
+  'revision': 7,
 };

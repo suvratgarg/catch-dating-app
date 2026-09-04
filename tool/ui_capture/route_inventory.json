@@ -1215,7 +1215,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 382,
+      "line": 383,
       "ordinal": 1,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:_locationState.startingPoint,initialCenter:_locationState.initialCenter(deviceLocation),initialLabel:_locationState.initialLabel(meetingPoint:_meetingPointController.text),loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
@@ -1224,7 +1224,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:2",
       "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 418,
+      "line": 433,
       "ordinal": 2,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_locationState.startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",

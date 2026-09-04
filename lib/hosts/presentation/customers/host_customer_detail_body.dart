@@ -133,25 +133,13 @@ class HostCustomerDetailBody extends StatelessWidget {
               ),
             ],
           ),
-          history: CatchSectionList(
-            emptyStateOmitted: true,
-            children: [
-              HostCustomerHistoryFilters(
-                builder: (filter) => HostCustomerTimelineSection(
-                  customer: customer,
-                  filter: filter,
-                  onOpenFormResponse: onOpenFormResponse,
-                  onOpenEvent: onOpenEvent,
-                  onOpenCatchThread: onOpenCatchThread,
-                  onOpenWhatsappThread: onOpenWhatsappThread,
-                ),
-              ),
-              if (customer.activeMerges.isNotEmpty)
-                HostCustomerActiveMergesSection(
-                  merges: customer.activeMerges,
-                  onUndo: onUndoMerge,
-                ),
-            ],
+          history: HostCustomerHistoryPanel(
+            customer: customer,
+            onOpenFormResponse: onOpenFormResponse,
+            onOpenEvent: onOpenEvent,
+            onOpenCatchThread: onOpenCatchThread,
+            onOpenWhatsappThread: onOpenWhatsappThread,
+            onUndoMerge: onUndoMerge,
           ),
         ),
       ],

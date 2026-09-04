@@ -89189,6 +89189,11 @@ export const getOrganizerContactDetailCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "includeHistory": {
+      "type": "boolean",
+      "default": true,
+      "description": "False loads overview facts without send, reply, form-response timeline, or merge-history reads. Omission preserves the full response for existing clients."
     }
   }
 };
@@ -89227,6 +89232,10 @@ export const getOrganizerContactDetailCallableResponseSchema = {
     "revision"
   ],
   "properties": {
+    "historyLoaded": {
+      "type": "boolean",
+      "description": "False means operational history was deliberately not requested; empty history arrays are not evidence of no activity."
+    },
     "organizerId": {
       "type": "string",
       "minLength": 1,

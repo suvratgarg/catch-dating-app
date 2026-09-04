@@ -6,6 +6,10 @@
  * Manager-only contact facts, permission provenance, and a bounded cross-surface activity timeline. Private feedback and Event Success inputs are excluded.
  */
 export interface GetOrganizerContactDetailCallableResponse {
+  /**
+   * False means operational history was deliberately not requested; empty history arrays are not evidence of no activity.
+   */
+  historyLoaded?: boolean;
   organizerId: string;
   contactId: string;
   displayName: string;
