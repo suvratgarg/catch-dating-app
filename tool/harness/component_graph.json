@@ -98,6 +98,15 @@
       },
       "affected": {}
     },
+    "ci-workflow-react": {
+      "direct": {
+        "pr": {"ciTargets": ["admin", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
+        "merge_group": {"ciTargets": ["admin", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
+        "main": {"ciTargets": ["admin", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
+        "nightly": {"ciTargets": ["admin", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]}
+      },
+      "affected": {}
+    },
     "ci-workflow-rules": {
       "direct": {
         "pr": {"ciTargets": ["firestore_rules", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
@@ -658,6 +667,7 @@
       "components": ["ci.backend-delivery"],
       "terminal": true
     },
+    {"id": "dedicated-react-workflow", "paths": {"include": [".github/workflows/react-surface-validation.yml"]}, "components": ["ci.workflow.react"], "terminal": true},
     {"id": "dedicated-rules-workflow", "paths": {"include": [".github/workflows/firestore-rules-ci.yml"]}, "components": ["ci.workflow.rules"], "terminal": true},
     {"id": "dedicated-contracts-workflow", "paths": {"include": [".github/workflows/contracts-ci.yml"]}, "components": ["ci.workflow.contracts"], "terminal": true},
     {"id": "dedicated-functions-workflow", "paths": {"include": [".github/workflows/functions-ci.yml"]}, "components": ["ci.workflow.functions"], "terminal": true},
@@ -768,6 +778,7 @@
   ],
   "components": [
     {"id": "ci.backend-delivery", "owner": "repository_tooling", "risk": "high", "operationProfile": "backend-delivery-control", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Exclusive backend delivery workflows and verifiers validate backend payloads and control-plane guards without compiling unrelated clients or authorizing deployment."},
+    {"id": "ci.workflow.react", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-workflow-react", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Shared React validation workflow; execute both callers and policy/Hosting guards without compiling unrelated clients or granting deployment authority."},
     {"id": "ci.workflow.rules", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-workflow-rules", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Dedicated rules validation workflow; execute its lane and policy checks without granting deployment authority."},
     {"id": "ci.workflow.contracts", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-workflow-contracts", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Dedicated contracts validation workflow; execute its lane and policy checks without granting deployment authority."},
     {"id": "ci.workflow.functions", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-workflow-functions", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Dedicated functions validation workflow; execute its lane and policy checks without granting deployment authority."},
