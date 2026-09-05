@@ -596,6 +596,48 @@
       ]
     },
     {
+      "id": "ci:firebase-functions-checkpoint",
+      "category": "ci",
+      "path": "tool/ci/firebase_functions_checkpoint.mjs",
+      "command": "node --test tool/ci/firebase_functions_checkpoint.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/firebase_functions_checkpoint.test.mjs",
+        "tool/ci/backend_delivery_lanes.mjs",
+        "tool/ci/delivery_core.mjs",
+        ".github/workflows/_firebase-promote.yml",
+        "tool/deploy_firebase_targets.sh"
+      ],
+      "alsoCheckIds": [
+        "ci:backend-delivery-lanes",
+        "ci:delivery-core",
+        "ci:firebase-delivery-workflow",
+        "firebase:deploy-target-plan"
+      ],
+      "description": "Verifies exact Functions deployment and Cloud Run serving identities for postconditions-only recovery, with strict source-bound checkpoint archive restoration and unchanged portable v2 fallback.",
+      "checks": [
+        "node --check tool/ci/firebase_functions_checkpoint.mjs",
+        "node --test tool/ci/firebase_functions_checkpoint.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/firebase_functions_checkpoint.test.mjs",
+        "contains": [
+          "changed source, attempt, project, base, targets, params or live revision cannot skip deployment",
+          "restore verifies the complete archive and historical producer before accepting either file",
+          "unchanged v2 core and actual legacy Delivery reader ignore a valid companion and replay the failed stage"
+        ]
+      }
+    },
+    {
       "id": "ci:backend-delivery-lanes",
       "category": "ci",
       "path": "tool/ci/backend_delivery_lanes.mjs",

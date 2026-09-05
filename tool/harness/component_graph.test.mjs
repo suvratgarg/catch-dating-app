@@ -139,6 +139,7 @@ test("backend-only delivery controls validate the backend without granting mutat
     "tool/ci/backend_source_review.mjs", "tool/ci/backend_source_review.test.mjs",
     "tool/ci/package_firebase_delivery.mjs", "tool/ci/package_firebase_delivery.test.mjs",
     "tool/ci/firebase_delivery_workflow.test.mjs",
+    "tool/ci/firebase_functions_checkpoint.mjs", "tool/ci/firebase_functions_checkpoint.test.mjs",
   ];
   for (const file of paths) {
     assert.ok(fs.existsSync(new URL(`../../${file}`, import.meta.url)), file);
@@ -151,7 +152,7 @@ test("backend-only delivery controls validate the backend without granting mutat
       assert.deepEqual(result.operations.releaseTargets, []);
       assert.deepEqual(result.operations.releaseRoles, []);
       for (const check of ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package",
-        "ci:firebase-delivery-workflow", "ci:backend-source-review"]) {
+        "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint"]) {
         assert.ok(result.operations.checkIds.includes(check), `${file}: ${check}`);
       }
     }

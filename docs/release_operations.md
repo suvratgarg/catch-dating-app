@@ -1292,6 +1292,45 @@ same artifact and checkpoint binding, identifies the first incomplete stage,
 and resumes there. It cannot skip ahead; replay of an already-passed stage is
 idempotent and does not rewrite prior proof.
 
+Before any selected backend stage mutates, the Firebase adapter preflights the
+whole plan's local Functions helper protocol and runtime imports, project aliases,
+permission-sync command, source export/secret parsing, and exact deployment
+batches. Historical packages retain their original supported callable scope.
+
+Functions deployment and postconditions are separate subphases. Every exact
+Firebase batch must return success before the adapter records deployment proof;
+callable IAM sync and source-bound live parity must still pass before the
+Functions stage is complete. A batch failure stops later batches and cannot be
+converted into success by logging or a subsequent shell command.
+
+The portable `catch.delivery-checkpoints/v2` file remains unchanged. Its existing
+checkpoint artifact may also contain `functions-deployment.json` with schema
+`catch.firebase-functions-deployment/v1`. This companion binds the package and
+source attempt, environment/project scope, base SHA, exact target set, and a
+SHA-256 hash of the materialized project params file. It records every selected
+Function's ACTIVE generation-two deployment: latest successful build, resolved
+Storage source generation, update time, service, and revision. An independent
+Cloud Run read must show the same service UID/generation, fully observed ready
+state, latest created/ready revision, and all untagged traffic on that revision.
+The companion stores hashes and deployment identities, never params or tokens.
+
+Explicit recovery independently verifies the historical Delivery attempt,
+artifact id, name and archive digest, and both allowlisted JSON entries before
+writing either restored file. It never extracts archive paths. At the first
+incomplete Functions stage, the adapter compares the companion to the current
+verified package, exact materialized inputs and fresh Functions/Cloud Run state.
+Only an exact match permits `--functions-postconditions-only`, avoiding another
+Cloud Build while repeating IAM sync and parity. This local executor option does
+not itself authorize recovery; the verified workflow owns that decision.
+
+An older v2 checkpoint with no companion replays the full Functions stage. A
+missing target, partial deployment, changed source/configuration, or unexpected
+live deployment/serving drift fails explicitly before permissions or deployment
+mutate. Do not synthesize a companion from logs or delete a mismatching proof to
+bypass this stop. Resolve the mismatch through an exact source-bound recovery
+review. The companion has the checkpoint's existing retention and does not
+advance either environment's delivery position or replace successful dev proof.
+
 Provenance, source-bound recovery authorizations, completion receipts, cursors,
 and checkpoints are CI or bounded recovery artifacts, not tracked repository
 state. Writes must be atomic so interruption cannot publish partial proof.

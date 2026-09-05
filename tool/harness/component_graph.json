@@ -93,10 +93,10 @@
     },
     "backend-delivery-control": {
       "direct": {
-        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review"]},
-        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review"]},
-        "main": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review"]},
-        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review"]}
+        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint"]},
+        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint"]},
+        "main": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint"]}
       },
       "affected": {}
     },
@@ -682,6 +682,7 @@
         ".github/workflows/backend-staging.yml", ".github/workflows/backend-rebaseline.yml",
         ".github/workflows/_backend-rebaseline.yml",
         "tool/ci/backend_delivery_lanes.mjs", "tool/ci/backend_delivery_lanes.test.mjs",
+        "tool/ci/firebase_functions_checkpoint.mjs", "tool/ci/firebase_functions_checkpoint.test.mjs",
         "tool/ci/backend_source_review.mjs", "tool/ci/backend_source_review.test.mjs",
         "tool/ci/package_firebase_delivery.mjs", "tool/ci/package_firebase_delivery.test.mjs",
         "tool/ci/firebase_delivery_workflow.test.mjs",
