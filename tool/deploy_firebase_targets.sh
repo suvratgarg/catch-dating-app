@@ -64,7 +64,21 @@ sync_callable_invokers() {
       process.stdout.write(project);
     ' "$environment" "$repo_root/.firebaserc"
   )"
-  npm --prefix "$functions_dir" run sync:callable-invokers -- "$project_id"
+  local scope_version
+  local invoker_args=("$project_id")
+  scope_version="$(node -e '
+    const version = require(process.argv[1]).functionTargetScopeVersion;
+    if (version !== undefined && version !== 1) {
+      throw new Error("Unsupported packaged callable scope protocol");
+    }
+    process.stdout.write(version === 1 ? "1" : "legacy");
+  ' "$functions_dir/scripts/set-callable-invokers-public.cjs")"
+  if [[ "$scope_version" == "1" ]]; then
+    invoker_args+=(--targets "$1")
+  else
+    echo "Historical package retains its original callable permission scan."
+  fi
+  npm --prefix "$functions_dir" run sync:callable-invokers -- "${invoker_args[@]}"
 }
 
 plan_output="$(
@@ -102,7 +116,7 @@ while IFS=$'\t' read -r phase deploy_only; do
       # temporary Cloud Run CPU limits without changing the authorized set.
       sleep 10
     done <<< "$function_batches"
-    sync_callable_invokers
+    sync_callable_invokers "$deploy_only"
     node "$repo_root/tool/firebase/check_deploy_parity.mjs" \
       --env "$environment" \
       --repo-root "${CATCH_FIREBASE_SOURCE_ROOT:-$repo_root}"

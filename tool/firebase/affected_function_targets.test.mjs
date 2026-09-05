@@ -122,7 +122,6 @@ for (const [label, file, content] of [
   ["dependency lock", "functions/package-lock.json", "{}"],
   ["runtime", "functions/package.json", '{"engines":{"node":"24"}}'],
   ["compiler settings", "functions/tsconfig.json", "{}"],
-  ["packaged invoker script", "functions/scripts/set-callable-invokers-public.cjs", "// changed"],
   ["unknown Functions script", "functions/scripts/unknown.cjs", "// changed"],
   ["deploy config", "firebase.json", "{}"],
   ["runtime asset", "functions/src/template.html", "<b>Updated</b>"],
@@ -366,4 +365,15 @@ test("only a verified Functions no-op can bypass review without source approval"
   assert.equal(policy({noOp: true, fullSnapshot: true}).environment, "prod");
   assert.equal(policy({noOp: true, stages: ["functions", "storage-rules"]}).environment, "prod");
   assert.equal(policy().preMergeReviewEligible, true);
+});
+
+
+test("packaged post-deploy IAM tooling does not rebuild unrelated Functions", (t) => {
+  const f = fixture(t);
+  f.write("functions/scripts/set-callable-invokers-public.cjs", "// post-deploy CLI only");
+  assert.deepEqual(f.select().targets, []);
+  f.write("functions/src/alpha.ts", "export const alpha = 2;");
+  assert.deepEqual(f.select().targets, targets.slice(0, 2));
+  f.write("functions/src/alpha.ts", 'require("../scripts/set-callable-invokers-public.cjs"); export const alpha = 2;');
+  assert.equal(f.select().mode, "full", "An unexpected runtime import of a CLI script must not be ignored.");
 });

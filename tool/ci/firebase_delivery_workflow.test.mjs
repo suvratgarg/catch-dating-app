@@ -948,3 +948,36 @@ test("Required CI cannot succeed when main publication is skipped or absent", (c
     assert.equal(fs.existsSync(path.join(directory, "called")), false, "Missing finalization must reject before consulting artifacts.");
   }
 });
+
+test("callable permission sync scopes new packages and preserves historical package compatibility", (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-callable-scope-"));
+  context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(directory, "functions/scripts"), {recursive: true});
+  fs.mkdirSync(path.join(directory, "bin"));
+  fs.writeFileSync(path.join(directory, ".firebaserc"), JSON.stringify({projects: {dev: "demo-project"}}));
+  const receipt = path.join(directory, "npm-args");
+  fs.writeFileSync(path.join(directory, "bin/npm"), '#!/bin/sh\nprintf "%s\\n" "$@" > "$NPM_ARGS"\n', {mode: 0o755});
+  const executor = fs.readFileSync(path.join(repoRoot, "tool/deploy_firebase_targets.sh"), "utf8");
+  const sync = executor.slice(executor.indexOf("sync_callable_invokers() {"), executor.indexOf('\nplan_output="'));
+  assert.match(executor, /sync_callable_invokers "\$deploy_only"/);
+  for (const version of [1, undefined, 2]) {
+    fs.writeFileSync(path.join(directory, "functions/scripts/set-callable-invokers-public.cjs"),
+      `module.exports = ${JSON.stringify(version === undefined ? {} : {functionTargetScopeVersion: version})};\n`);
+    if (fs.existsSync(receipt)) fs.unlinkSync(receipt);
+    const result = spawnSync("bash", ["-eu", "-c", sync + '\nsync_callable_invokers "functions:alpha,functions:beta"'], {
+      encoding: "utf8", env: {...process.env, repo_root: directory, environment: "dev",
+        CATCH_DELIVERY_FUNCTIONS_DIR: path.join(directory, "functions"), NPM_ARGS: receipt,
+        PATH: `${path.join(directory, "bin")}${path.delimiter}${process.env.PATH}`},
+    });
+    if (version === 2) {
+      assert.notEqual(result.status, 0);
+      assert.equal(fs.existsSync(receipt), false);
+    } else {
+      assert.equal(result.status, 0, result.stderr);
+      assert.deepEqual(fs.readFileSync(receipt, "utf8").trim().split("\n"), [
+        "--prefix", path.join(directory, "functions"), "run", "sync:callable-invokers", "--", "demo-project",
+        ...(version === 1 ? ["--targets", "functions:alpha,functions:beta"] : []),
+      ]);
+    }
+  }
+});

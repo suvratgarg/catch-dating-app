@@ -682,7 +682,8 @@
         ".github/workflows/backend-staging.yml", ".github/workflows/backend-rebaseline.yml",
         "tool/ci/backend_source_review.mjs", "tool/ci/backend_source_review.test.mjs",
         "tool/ci/package_firebase_delivery.mjs", "tool/ci/package_firebase_delivery.test.mjs",
-        "tool/ci/firebase_delivery_workflow.test.mjs"
+        "tool/ci/firebase_delivery_workflow.test.mjs",
+        "functions/scripts/set-callable-invokers-public.cjs", "functions/test/callable-invokers.test.cjs"
       ]},
       "components": ["ci.backend-delivery"],
       "terminal": true

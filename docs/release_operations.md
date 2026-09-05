@@ -287,6 +287,17 @@ ordinary prose keeps its lightweight document checks.
 Only direct component ownership may authorize Firebase deployment or a mobile
 release; dependency expansion can add validation but cannot authorize mutation.
 
+The packaged callable IAM helper is deployment tooling, not compiled Functions
+runtime. Its exact script and test paths select backend validation without
+redeploying runtime exports. After a Functions deployment, the executor passes
+only that phase's verified exact targets to scope-aware packages. Discovery
+must find every selected target active before any IAM request; non-callable
+HTTP handlers need no callable permission update. Unrelated services are not
+read or changed. Older immutable packages retain their original scan through
+an explicit capability check; an unknown capability version fails. Existing
+conditional bindings and policy etags are preserved when adding the intended
+unconditional public invoker binding.
+
 Main pushes start validation immediately from the latest completed successful
 main CI source. Harness, Tools preflight/execution and Flutter test selection
 use the union of every path touched in that committed history, including
