@@ -2,32 +2,11 @@
 import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fromRepo} from "../lib/repo_paths.mjs";
-
-const expectedExtensions = [
-  "bq-host-clubs",
-  "bq-host-event-invite-links",
-  "bq-host-event-participations",
-  "bq-host-events",
-  "bq-host-matches",
-  "bq-host-payments",
-  "bq-host-reviews",
-  "bq-host-saved-events",
-];
+import {hostRawViews, inspectHostExtensions, inspectHostSchedule} from "./host_analytics_contract.mjs";
 
 const expectedTables = [
   "host_analytics_events",
   "mart_host_event_daily",
-];
-
-const expectedRawViews = [
-  "clubs_raw_latest",
-  "event_invite_links_raw_latest",
-  "event_participations_raw_latest",
-  "events_raw_latest",
-  "matches_raw_latest",
-  "payments_raw_latest",
-  "reviews_raw_latest",
-  "saved_events_raw_latest",
 ];
 
 const expectedFunctions = [
@@ -91,7 +70,7 @@ function checkBigQueryDatasetAndTables() {
   const missingTables = expectedTables.filter((table) =>
     !tableIds.includes(table)
   );
-  const missingRawViews = expectedRawViews.filter((view) =>
+  const missingRawViews = hostRawViews.filter((view) =>
     !tableIds.includes(view)
   );
 
@@ -182,41 +161,26 @@ function checkScheduledQuery() {
   }
 
   const configs = parseJson(result.stdout, []);
-  const matches = configs.filter((config) =>
-    config?.displayName === args.scheduleDisplayName &&
-    config?.dataSourceId === "scheduled_query"
-  );
-  const failedMatches = matches.filter((config) => config?.state === "FAILED");
-  status.checks.schedule = {
-    ok: matches.length === 1 && failedMatches.length === 0,
-    matches: matches.map((config) => ({
-      name: config.name ?? config.transferConfigName ?? null,
-      displayName: config.displayName,
-      state: config.state ?? null,
-    })),
-  };
-
-  if (matches.length === 0) {
-    missing(
-      "bigquery.schedule",
-      `Missing scheduled query ${args.scheduleDisplayName}.`,
-    );
-  } else if (matches.length > 1) {
-    missing(
-      "bigquery.schedule_duplicate",
-      `Found ${matches.length} scheduled queries named ${args.scheduleDisplayName}.`,
-    );
-  } else if (failedMatches.length > 0) {
-    missing(
-      "bigquery.schedule_failed",
-      `Scheduled query ${args.scheduleDisplayName} is in FAILED state.`,
-    );
+  const expectedQuery = fs.readFileSync(fromRepo("analytics/sql/marts/refresh_mart_host_event_daily.sql"), "utf8");
+  status.checks.schedule = inspectHostSchedule(configs, args.scheduleDisplayName, expectedQuery);
+  const {matches} = status.checks.schedule;
+  if (matches.length !== 1) {
+    missing("bigquery.schedule", `Expected one scheduled query ${args.scheduleDisplayName}; found ${matches.length}.`);
+    return;
+  }
+  const match = matches[0];
+  if (!match.name) missing("bigquery.schedule_resource", "Scheduled query has no resource name.");
+  if (match.state === "FAILED") missing("bigquery.schedule_failed", "Host analytics scheduled query is in FAILED state.");
+  if (match.disabled) missing("bigquery.schedule_disabled", "Host analytics automatic refresh is disabled.");
+  if (!match.queryMatchesSource) {
+    missing("bigquery.schedule_query", "Host analytics scheduled SQL differs from this checkout's reviewed source.");
   }
 }
 
 function checkExtensions() {
   const result = run("firebase", [
     "ext:list",
+    "--json",
     "--project",
     projectId,
     "--non-interactive",
@@ -232,22 +196,16 @@ function checkExtensions() {
     return;
   }
 
-  const rows = result.stdout.split(/\r?\n/);
-  const active = expectedExtensions.filter((instanceId) =>
-    rows.some((row) => row.includes(instanceId) && row.includes("ACTIVE"))
-  );
-  const missingExtensions = expectedExtensions.filter((instanceId) =>
-    !active.includes(instanceId)
-  );
-
+  const parsed = parseJson(result.stdout, {result: []});
+  const inspections = inspectHostExtensions(Array.isArray(parsed.result) ? parsed.result : [], projectId);
   status.checks.extensions = {
-    ok: missingExtensions.length === 0,
-    active,
-    missing: missingExtensions,
+    ok: inspections.every((instance) => instance.ok),
+    instances: inspections,
   };
-
-  for (const instanceId of missingExtensions) {
-    missing("firebase.extension", `Missing active Firebase extension ${instanceId}.`);
+  for (const instance of inspections) {
+    if (!instance.ok) {
+      missing("firebase.extension", `${instance.instanceId}: source/live mismatch in ${instance.mismatches.map(({field}) => field).join(", ")}.`);
+    }
   }
 }
 
@@ -408,6 +366,6 @@ function printHumanStatus(ok) {
     console.log(`- ${item.detail}`);
   }
   if (status.missing.length === 0) {
-    console.log("- BigQuery dataset, export views, scheduled refresh, extensions, and callables are present.");
+    console.log("- Expected export views, extension parameters, scheduled SQL, and callables are present. Source/export content parity still requires cutover verification.");
   }
 }

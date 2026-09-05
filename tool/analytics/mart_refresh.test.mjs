@@ -43,6 +43,10 @@ test("host: one canonical-first identity function owns event/review projection a
   assert.match(sql, /WHERE key IN \('organizer_id', 'club_id'\)/);
   assert.match(sql, /ORDER BY IF\(key = 'organizer_id', 0, 1\)/);
   assert.doesNotMatch(sql, /review_target_id/);
+  const dimension = sql.match(/clubs AS \(([\s\S]+?)\n\),\nevents AS/)[1];
+  assert.match(dimension, /0 AS source_priority\s+FROM `%s\.%s\.organizers_raw_latest`/);
+  assert.match(dimension, /1 AS source_priority\s+FROM `%s\.%s\.clubs_raw_latest`/);
+  assert.match(dimension, /QUALIFY ROW_NUMBER\(\) OVER \(\s+PARTITION BY document_id ORDER BY source_priority\s+\) = 1/);
 });
 
 // These fixtures execute the real SQL with only named temporary tables. They
@@ -52,6 +56,7 @@ test("host: one canonical-first identity function owns event/review projection a
 function fixture(mart, failure = null) {
   const fixtureSources = {
     clubs_raw_latest: "document_id STRING, data STRING",
+    organizers_raw_latest: "document_id STRING, data STRING",
     events_raw_latest: "document_id STRING, data STRING",
     event_participations_raw_latest: "data STRING",
     event_invite_links_raw_latest: "data STRING",
@@ -91,6 +96,7 @@ function fixture(mart, failure = null) {
       {id: "legacy", clubId: "legacy"},
       {id: "dual", organizerId: "dual", clubId: "wrong"},
       {id: "empty", organizerId: "", clubId: "empty"},
+      {id: "orphan", organizerId: "orphan"},
       {id: "missing"},
     ];
     for (const row of records) {
@@ -99,8 +105,15 @@ function fixture(mart, failure = null) {
         JSON_SET(JSON '${data}', '$.startTime._seconds', UNIX_SECONDS(CURRENT_TIMESTAMP()), '$.bookedCount', 2).to_json_string());`);
       seed.push(`INSERT INTO fixture_reviews_raw_latest VALUES (
         JSON_SET(JSON '${data}', '$.createdAt._seconds', UNIX_SECONDS(CURRENT_TIMESTAMP()), '$.rating', 4).to_json_string());`);
-      seed.push(`INSERT INTO fixture_clubs_raw_latest VALUES ('${row.id}', '{"name":"${row.id}"}');`);
     }
+    seed.push(`INSERT INTO fixture_organizers_raw_latest VALUES
+      ('canonical', '{"name":"Canonical name"}'),
+      ('dual', '{"name":"Renamed organizer"}'),
+      ('empty', '{"name":null}');`);
+    seed.push(`INSERT INTO fixture_clubs_raw_latest VALUES
+      ('legacy', '{"name":"Historical name"}'),
+      ('dual', '{"name":"Stale name"}'),
+      ('empty', '{"name":"Stale deleted name"}');`);
     // Canonical, historical, conflicting dual-ID and empty-canonical GA4 rows.
     for (const [canonical, legacy] of [["canonical", null], [null, "legacy"], ["dual", "wrong"], ["", "empty"]]) {
       const params = [["organizer_id", canonical], ["club_id", legacy]].filter(([, value]) => value !== null)
@@ -121,6 +134,29 @@ function fixture(mart, failure = null) {
       sql = sql.replace("WHERE u.date BETWEEN @refresh_start AND @refresh_end", "WHERE ERROR('fixture compute failure')");
     }
   }
+  if (mart === "host_event" && !failure) {
+    // Execute the actual SELECT with the old name dimension too. Every metric
+    // and row key must match; only names and refresh timestamps may differ.
+    const start = sql.indexOf('EXECUTE IMMEDIATE FORMAT("""\nCREATE TEMP TABLE refreshed_host_event_daily');
+    const end = sql.indexOf("-- Build every replacement row", start);
+    const baseline = sql.slice(start, end)
+      .replace("CREATE TEMP TABLE refreshed_host_event_daily", "CREATE TEMP TABLE baseline_host_event_daily")
+      .replace(/clubs AS \([\s\S]+?\n\),\nevents AS/, `clubs AS (
+  SELECT document_id AS club_id, JSON_VALUE(data, '$.name') AS club_name
+  FROM fixture_clubs_raw_latest /* %s.%s */
+  /* Preserve the second FORMAT pair: %s.%s */
+),
+events AS`);
+    const projection = (name) => `SELECT TO_JSON_STRING((SELECT AS STRUCT r.* EXCEPT (club_name, refreshed_at))) AS value FROM ${name} r`;
+    const current = projection("refreshed_host_event_daily");
+    const previous = projection("baseline_host_event_daily");
+    const parity = `${baseline}
+ASSERT (SELECT COUNT(*) FROM refreshed_host_event_daily) = (SELECT COUNT(*) FROM baseline_host_event_daily) AS 'dimension row-count parity';
+ASSERT NOT EXISTS (${current} EXCEPT DISTINCT ${previous}) AS 'no changed metric rows';
+ASSERT NOT EXISTS (${previous} EXCEPT DISTINCT ${current}) AS 'no lost metric rows';
+`;
+    sql = sql.slice(0, end) + parity + sql.slice(end);
+  }
   seed.push(`BEGIN\n${sql}\nEXCEPTION WHEN ERROR THEN\n  SET caught = TRUE;\n  SET caught_message = @@error.message;\nEND;`);
   if (failure) {
     seed.push(`IF STRPOS(caught_message, 'fixture ${failure} failure') = 0 THEN RAISE USING MESSAGE = caught_message; END IF;`);
@@ -131,9 +167,14 @@ function fixture(mart, failure = null) {
   seed.push(`ASSERT (SELECT COUNT(*) FROM ${table} WHERE ${identity} = 'history') = 1 AS 'history must survive';`);
   seed.push(`ASSERT (SELECT COUNT(*) FROM ${table} WHERE ${identity} = 'previous') = ${failure ? 1 : 0} AS 'old window must survive a failure only';`);
   if (!failure && mart === "host_event") {
-    seed.push(`ASSERT (SELECT COUNT(DISTINCT club_id) FROM ${table} WHERE club_id != 'history') = 4 AS 'canonical and historical identities';`);
+    seed.push(`ASSERT (SELECT COUNT(DISTINCT club_id) FROM ${table} WHERE club_id != 'history') = 5 AS 'canonical and historical identities';`);
     seed.push(`ASSERT (SELECT COUNT(*) FROM ${table} WHERE club_id IN ('wrong', 'missing')) = 0 AS 'invalid identities excluded';`);
-    seed.push(`ASSERT (SELECT COUNT(*) FROM (SELECT club_id FROM ${table} WHERE club_id != 'history' GROUP BY club_id HAVING SUM(booked_count) = 2 AND SUM(review_count) = 1 AND SUM(listing_views) = 1)) = 4 AS 'metrics and direct GA4 deduplication';`);
+    seed.push(`ASSERT (SELECT COUNT(*) FROM (SELECT club_id FROM ${table} WHERE club_id != 'history' GROUP BY club_id HAVING SUM(booked_count) = 2 AND SUM(review_count) = 1 AND SUM(listing_views) = IF(club_id = 'orphan', 0, 1))) = 5 AS 'metrics and direct GA4 deduplication';`);
+    seed.push(`ASSERT (SELECT COUNT(*) FROM ${table} WHERE club_id != 'history') = 10 AS 'one row per organizer event date grain';`);
+    for (const [id, name] of [["canonical", "Canonical name"], ["dual", "Renamed organizer"], ["legacy", "Historical name"]]) {
+      seed.push(`ASSERT (SELECT COUNTIF(club_name = '${name}') FROM ${table} WHERE club_id = '${id}') = 2 AS '${id} dimension name';`);
+    }
+    seed.push(`ASSERT (SELECT COUNTIF(club_name IS NULL) FROM ${table} WHERE club_id IN ('empty', 'orphan')) = 4 AS 'canonical deletion and missing dimension preserve rows';`);
   } else if (!failure) {
     seed.push(`ASSERT (SELECT SUM(events_booked_count) FROM ${table} WHERE uid = 'member') = 1 AS 'user metrics preserved';`);
   }
@@ -151,10 +192,13 @@ for (const mart of marts) {
     test(`${mart}: BigQuery ${failure ?? "success"}`, {
       skip: !process.env.CATCH_ANALYTICS_BQ_TEST_PROJECT,
     }, () => {
+      // The host success scenario computes both dimension variants. BigQuery's
+      // minimum billing per table exceeds these tiny fixtures' physical bytes.
+      const maximumBytes = mart === "host_event" && !failure ? 536870912 : 268435456;
       const result = spawnSync("bq", [
         `--project_id=${process.env.CATCH_ANALYTICS_BQ_TEST_PROJECT}`,
         "--location=asia-south1", "--format=json", "--quiet", "query",
-        "--use_legacy_sql=false", "--maximum_bytes_billed=268435456",
+        "--use_legacy_sql=false", `--maximum_bytes_billed=${maximumBytes}`,
       ], {input: fixture(mart, failure), encoding: "utf8", timeout: 120000});
       assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
       assert.match(result.stdout, /fixture_passed/);

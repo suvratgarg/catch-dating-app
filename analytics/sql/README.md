@@ -15,8 +15,10 @@ with GA4/direct behavioral events here.
   daily count for the same organizer/event/event-name key. Canonical
   `organizer_id` takes precedence over historical `club_id` GA4 parameters.
 - `catch_analytics.*_raw_latest`: Firestore-to-BigQuery export views for
-  `clubs`, `events`, `eventParticipations`, `payments`, `reviews`,
-  `savedEvents`, `eventInviteLinks`, and `matches`.
+  `organizers`, `events`, `eventParticipations`, `payments`, `reviews`,
+  `savedEvents`, `eventInviteLinks`, and `matches`. The retained
+  `clubs_raw_latest` view supplies names for historical IDs absent from the
+  canonical organizer export; it has no second active exporter.
 - `catch_marketplace_metrics.event_success_scorecards_raw_latest`: existing
   Event Success export, used for post-event connection/chat/repeat metrics.
 
@@ -34,7 +36,9 @@ Deploy order:
 
 1. Run `node tool/run.mjs check analytics:check-host-bigquery`.
 2. Run `ddl/host_analytics_events.sql` and `ddl/mart_host_event_daily.sql`.
-3. Deploy the Firestore-to-BigQuery extension instances in `firebase.json`.
+3. For a new warehouse, deploy its planned Firestore-to-BigQuery instances.
+   Existing club exports require the bounded organizer cutover below before
+   running the current host refresh; do not deploy all extensions as a shortcut.
 4. Deploy the Functions callables that write/read host analytics.
 5. Explicitly import existing documents for each exported collection, then
    verify source/export document IDs and latest values before refreshing and
@@ -61,47 +65,57 @@ IAM ownership:
 
 ## Organizer Export Cutover
 
-The checked-in `bq-host-clubs` instance still exports `clubs`; the host mart
-therefore still gets display names from `clubs_raw_latest`. Canonical ID
-handling above does not claim that this live export has migrated.
+The checked-in `bq-host-clubs` instance now targets `organizers` with
+`TABLE_ID=organizers`. Its historical instance ID is intentionally retained:
+reconfigure that existing deployment instead of adding a paid parallel exporter.
+The host mart prefers canonical names and uses `clubs_raw_latest` only for IDs
+absent from the canonical export. The union is deduplicated by document ID before
+joining metrics. Canonical null/empty names do not resurrect a stale legacy name.
+The physical mart column names remain compatible with existing readers.
 
-The preferred next rollout is to reuse that existing instance with
-`COLLECTION_PATH=organizers` and `TABLE_ID=organizers`, preserving the old
-`clubs_raw_changelog` and `clubs_raw_latest` history. This avoids a permanent
-second export. Validate the installed version's reconfiguration metadata and
-isolated SQL fixtures first; the latest manifest alone is not proof of what an
-older deployed version allows. Rehearse against an existing non-production
-export when available, without creating a paid warehouse solely for rehearsal.
-Keep the current production schedule and source tables until the replacement
-has passed verification.
+These are desired source settings, not evidence of completed live migration.
+Extension configuration is validation-only in the delivery planner; merging this
+source does not reconfigure an extension or update a BigQuery schedule. The host
+refresh now requires both raw views and must not be published before canonical
+import/parity succeeds. Keep the currently deployed schedule during the cutover;
+if first installing the atomic refresh with its old dimension for rollback,
+preserve that exact reviewed SQL separately before updating to the canonical query.
 
-1. Read back the instance parameters, source schema/version, trigger, table
-   schemas, and scheduled query. Save the exact prior configuration for
-   recovery. Confirm the source collection and table-prefix parameters can
-   change without deleting the old tables.
-2. Reconfigure only this instance to the canonical collection and a **new table
-   prefix**. Reusing the `clubs` table prefix would mix collection-qualified
-   document names and can produce two latest rows for the same organizer ID.
-3. Once the canonical trigger and export tables are ready, run the explicit
-   import over the entire organizers collection. Reconfiguration may interrupt
-   streaming. Reconcile latest document IDs and relevant field values against
-   Firestore after the import, including updates/deletions during that interval.
-   An import reconstructs current state; it cannot recreate every missed
-   historical change. Firebase documents [post-update import and temporary
-   parallel-instance alternatives](https://github.com/firebase/extensions/blob/next/firestore-bigquery-export/PREINSTALL.md#mitigating-data-loss-during-extension-updates).
-4. Compare the host SELECT result before/after the dimension change. Prefer
-   `organizers_raw_latest` for present canonical IDs; retain old club names only
-   for historical IDs absent from the canonical export. Deduplicate the union
-   by document ID before joining metrics. Verify names and aggregate parity,
-   and do not copy frozen club counters over canonical organizer counters.
-5. In one reviewed source change, update the extension parameters, expected
-   export inventory in both host check/status tools, and the mart dimension
-   query. Then update the existing schedule and read its query back. Confirm
-   the next scheduled run and host/admin results. Retiring old tables is a
-   separate decision; this procedure preserves them.
+1. Read back the existing instance parameters, installed source version, trigger,
+   function locations, table schemas, and schedule. Save the exact prior
+   configuration and query for recovery. Confirm collection/table parameters are
+   mutable in that installed version. Check its task queues in the functions'
+   actual region, which can differ from the BigQuery dataset location.
+2. Reconfigure only `bq-host-clubs` to `COLLECTION_PATH=organizers` and
+   `TABLE_ID=organizers`, preserving other parameters, version, instance ID and
+   both old table/view resources. Drain/reconcile in-flight old-collection work
+   first. A new prefix avoids mixing collection-qualified paths into a latest
+   view that could otherwise contain two rows for one organizer ID.
+3. Once the canonical trigger and tables are ready, explicitly import the whole
+   organizers collection with the official importer. Reconcile latest document
+   IDs, collection-qualified paths, and relevant field values against a fresh
+   Firestore read, including updates/deletions during the reconfiguration gap.
+   Require no duplicate latest IDs or failed batches. Import reconstructs current
+   state; it cannot recreate every missed historical change. Firebase documents
+   [post-update import and temporary parallel-instance alternatives](https://github.com/firebase/extensions/blob/next/firestore-bigquery-export/PREINSTALL.md#mitigating-data-loss-during-extension-updates).
+   Prefer the existing-instance approach here, without adding paid dev analytics
+   infrastructure solely for rehearsal.
+4. Compare the host SELECT before/after the dimension change. Require identical
+   metric keys/totals and historical-window retention. Only current canonical
+   names and name availability for canonical-only IDs should differ. Preserve
+   canonical follower counters; frozen legacy counters are not repair authority.
+5. Update the one existing host schedule to this reviewed source SQL, preserving
+   its identity, credentials and cadence. Read back the exact query, run one
+   refresh, and verify the next scheduled run plus host/admin results. On failure,
+   restore the saved prior query; preserve both table families for diagnosis.
+   Table or extension deletion is outside this cutover.
 
-This source batch does not perform that live cutover or change extension
-configuration automatically.
+`host_analytics_contract.mjs` owns the shared export inventory used by the source
+checker and live-status tool. The live check verifies structured extension
+parameters/version, both dimension views, and a unique enabled schedule whose
+SQL exactly matches this checkout. It intentionally reports incomplete against
+an older deployed configuration. It does not replace source/export content
+parity or prove a refresh is recent merely because rows exist.
 
 ## Refresh Safety And Verification
 
@@ -116,11 +130,13 @@ Run the normal offline checks with:
 
 ```sh
 node tool/run.mjs check analytics:check-host-bigquery analytics:check-user-bigquery
-node --test tool/analytics/mart_refresh.test.mjs
+node --test tool/analytics/mart_refresh.test.mjs tool/analytics/host_analytics_contract.test.mjs
 ```
 
 The same test file can validate the actual SQL in BigQuery using only tiny
-synthetic temporary tables, including failures during computation and insertion:
+synthetic temporary tables, including failures during computation and insertion,
+canonical/legacy dimension overlap, missing historical IDs, and full metric-row
+parity against the old dimension:
 
 ```sh
 CATCH_ANALYTICS_BQ_TEST_PROJECT=<project-id> node --test tool/analytics/mart_refresh.test.mjs
@@ -128,7 +144,7 @@ CATCH_ANALYTICS_BQ_TEST_PROJECT=<project-id> node --test tool/analytics/mart_ref
 
 It never uses application source tables or changes schedules/extensions. The
 optional test requires BigQuery credentials and is not part of ordinary offline
-CI. A script-level `bq --dry_run` does not execute or fully validate dynamic
+CI. A script-level `bq --dry_run` does not execute or fully validate
 [dynamic statements](https://docs.cloud.google.com/bigquery/docs/multi-statement-queries#dry-run), so it is not a substitute for these fixtures or
 source/export parity checks before a live cutover.
 

@@ -23,7 +23,8 @@ warehouse DDL, the Firestore-to-BigQuery extension instances, then the refresh:
 
   node tool/run.mjs check analytics:check-host-bigquery
   tool/analytics/deploy_host_analytics_bigquery.sh <env> --skip-refresh
-  ./tool/firebase_with_env.sh <env> deploy --only extensions
+  # Complete the export installation/import or existing-instance cutover in
+  # analytics/sql/README.md before refreshing. Preserve old club export tables.
   ./tool/deploy_firebase_targets.sh <env> functions
   tool/analytics/deploy_host_analytics_bigquery.sh <env> --refresh-only --create-schedule
 

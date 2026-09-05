@@ -121,7 +121,18 @@ clubs AS (
   SELECT
     document_id AS club_id,
     JSON_VALUE(data, '$.name') AS club_name
-  FROM `%s.%s.clubs_raw_latest`
+  FROM (
+    -- One dimension row per ID: canonical state wins, while retained legacy
+    -- names still describe historical IDs absent from the canonical export.
+    SELECT document_id, data, 0 AS source_priority
+    FROM `%s.%s.organizers_raw_latest`
+    UNION ALL
+    SELECT document_id, data, 1 AS source_priority
+    FROM `%s.%s.clubs_raw_latest`
+  )
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY document_id ORDER BY source_priority
+  ) = 1
 ),
 events AS (
   SELECT
@@ -509,6 +520,7 @@ LEFT JOIN event_dim ed ON ed.event_id = u.event_id
 WHERE u.date BETWEEN @refresh_start AND @refresh_end
 GROUP BY u.date, u.club_id, u.event_id
 """,
+analytics_project, analytics_dataset,
 analytics_project, analytics_dataset,
 analytics_project, analytics_dataset,
 analytics_project, analytics_dataset,
