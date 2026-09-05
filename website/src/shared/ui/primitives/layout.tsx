@@ -1,10 +1,16 @@
 import type {AnchorHTMLAttributes, CSSProperties, HTMLAttributes, MouseEvent, ReactNode} from "react";
 import {ToggleGroupControl, UiLabel as WebUiLabel} from "@catch/web-ui";
-import type {HostFeatureGridVariant, HostFeatureRailVariant, HostFeatureSectionVariant, HostPageSectionVariant, HostPreviewSectionVariant} from "./host";
+import type {
+  HostFeatureGridVariant,
+  HostFeatureRailVariant,
+  HostFeatureSectionVariant,
+  HostPageSectionVariant,
+  HostPreviewSectionVariant,
+} from "./host";
 import type {CaptureGridVariant, MarketingSectionCopyVariant, MarketingSectionVariant} from "./media";
 import type {ListingGridVariant, ListingSectionVariant, OrganizerSearchSectionVariant} from "./organizer";
-import {PlainLink} from "./actions";
-import {classNames} from "./foundation";
+import {PlainLink} from "./actionControls";
+import {classNames} from "@catch/web-ui";
 
 export type SuccessGridVariant = "event-success-module" | "listing";
 

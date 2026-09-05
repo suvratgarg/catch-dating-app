@@ -1,8 +1,7 @@
 import type {HTMLAttributes, MouseEvent, ReactNode} from "react";
-import {BadgeControl, EmptyStateControl} from "@catch/web-ui";
+import {BadgeControl, EmptyStateControl, classNames} from "@catch/web-ui";
 import type {AppDownloadCtaItem, ProcessStatusAction} from "./actions";
-import {ButtonLink} from "./actions";
-import {classNames, emptyStateClassNames} from "./foundation";
+import {ButtonLink} from "./actionControls";
 import {UiLabel} from "./layout";
 
 export type StatusBadgeTone = "claimed" | "unclaimed" | "verified";
@@ -314,3 +313,12 @@ export function AuthStatusRow({
     </div>
   );
 }
+
+export const emptyStateClassNames: Record<EmptyStateVariant, string | null> = {
+  claim: "claim-empty-state",
+  default: null,
+  "listing-review": "listing-review-empty",
+  "organizer-results": "empty-results",
+  "public-event": "public-event-empty",
+  "review-signal-lane": "review-signal-lane__empty",
+};
