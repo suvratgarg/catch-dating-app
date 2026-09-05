@@ -61,6 +61,7 @@
     "web:admin-feature-exports:check": "node tool/run.mjs check web:admin-feature-exports"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.11",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "picomatch": "^4.0.7",

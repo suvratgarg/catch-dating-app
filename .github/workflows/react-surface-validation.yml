@@ -91,32 +91,22 @@ jobs:
         if: ${{ inputs.surface == 'admin' }}
         run: node tool/organizer_intake/check_admin_review_bridge.mjs
 
-      - name: Run admin unit tests
+      - name: Run admin unit tests with coverage
         if: ${{ inputs.surface == 'admin' }}
-        run: npm --workspace catch-admin run test
+        run: npm --workspace catch-admin run test:coverage
 
       - name: Check named React controller test targets
         run: npm run web:controller-tests:check
 
-      - name: Run marketing unit tests
+      - name: Run marketing unit tests with coverage
         if: ${{ inputs.surface == 'marketing' }}
-        run: npm --workspace catch-marketing run test:unit
+        run: npm --workspace catch-marketing run test:unit:coverage
 
       - name: Check shared web UI adoption
         run: npm run web:shared-ui-adoption:check
 
       - name: Run shared web UI tests and typecheck
         run: npm run web:ui:test && npm run web:ui:typecheck
-
-      - name: Report admin unit-test coverage
-        if: ${{ inputs.surface == 'admin' }}
-        continue-on-error: true
-        run: npm --workspace catch-admin run test:coverage
-
-      - name: Report marketing unit-test coverage
-        if: ${{ inputs.surface == 'marketing' }}
-        continue-on-error: true
-        run: npm --workspace catch-marketing run test:unit:coverage
 
       - name: Validate marketing build prerequisites without emitting a bundle
         if: ${{ inputs.surface == 'marketing' && inputs.skip_deployable_build }}
