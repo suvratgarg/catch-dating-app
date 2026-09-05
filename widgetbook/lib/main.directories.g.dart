@@ -8367,6 +8367,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostSavedAudiencesDirectory',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Membership filters and saved counts',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostGroupsDirectory,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostSavedAudiencesWorkspace',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

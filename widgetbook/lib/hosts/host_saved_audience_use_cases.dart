@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_saved_audience_members_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
@@ -32,6 +33,34 @@ const _reach = HostAudienceReachSummary(
   automatic: 0,
   byHand: 1,
   unavailable: 0,
+);
+
+@widgetbook.UseCase(
+  name: 'Membership filters and saved counts',
+  type: HostSavedAudiencesDirectory,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostGroupsDirectory(BuildContext context) => ProviderScope(
+  overrides: [
+    hostAllSavedAudiencesProvider(_audience.organizerId).overrideWith(
+      (_) async =>
+          HostSavedAudiencePage(audiences: [_audience], nextCursor: null),
+    ),
+  ],
+  child: SizedBox(
+    width: WidgetbookPreviewLayout.wideContractWidth,
+    height: WidgetbookPreviewLayout.hostEditorViewportHeight,
+    child: CustomScrollView(
+      slivers: [
+        HostSavedAudiencesDirectory(
+          organizerId: _audience.organizerId,
+          query: null,
+          onCreate: () {},
+          onOpen: (_) {},
+        ),
+      ],
+    ),
+  ),
 );
 const _options = HostSavedAudienceFilterOptions(
   forms: [

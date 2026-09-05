@@ -3,12 +3,12 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 71,
-    "captures": 640,
+    "captures": 665,
     "statusCounts": {
       "excluded": 2,
-      "captured": 44,
+      "captured": 53,
       "alias": 10,
-      "planned": 15
+      "planned": 6
     }
   },
   "profile": {
@@ -8927,6 +8927,431 @@
         "dark": "dark/host_saved_audience_detail.png"
       },
       "whatItIs": "Host Saved Audience Detail",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_overview",
+      "routes": [
+        "hostFormBuilderScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_overview.png",
+        "dark": "dark/host_form_overview.png"
+      },
+      "whatItIs": "Host Form Overview",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_questions_phone",
+      "routes": [
+        "hostFormBuilderScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_questions_phone.png",
+        "dark": "dark/host_form_questions_phone.png"
+      },
+      "whatItIs": "Host Form Questions Phone",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_settings",
+      "routes": [
+        "hostFormBuilderScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_settings.png",
+        "dark": "dark/host_form_settings.png"
+      },
+      "whatItIs": "Host Form Settings",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_preview",
+      "routes": [
+        "hostFormPreviewScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_preview.png",
+        "dark": "dark/host_form_preview.png"
+      },
+      "whatItIs": "Host Form Preview",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_templates",
+      "routes": [
+        "hostFormTemplatesScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_templates.png",
+        "dark": "dark/host_form_templates.png"
+      },
+      "whatItIs": "Host Form Templates",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_share",
+      "routes": [
+        "hostFormShareScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_share.png",
+        "dark": "dark/host_form_share.png"
+      },
+      "whatItIs": "Host Form Share",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_results",
+      "routes": [
+        "hostFormAnalyticsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_results.png",
+        "dark": "dark/host_form_results.png"
+      },
+      "whatItIs": "Host Form Results",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_response_application",
+      "routes": [
+        "hostFormResponseDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_response_application.png",
+        "dark": "dark/host_form_response_application.png"
+      },
+      "whatItIs": "Host Form Response Application",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_response_intake",
+      "routes": [
+        "hostFormResponseDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_response_intake.png",
+        "dark": "dark/host_form_response_intake.png"
+      },
+      "whatItIs": "Host Form Response Intake",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_response_withdrawn",
+      "routes": [
+        "hostFormResponseDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_response_withdrawn.png",
+        "dark": "dark/host_form_response_withdrawn.png"
+      },
+      "whatItIs": "Host Form Response Withdrawn",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_response_large_text",
+      "routes": [
+        "hostFormResponseDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_response_large_text.png",
+        "dark": "dark/host_form_response_large_text.png"
+      },
+      "whatItIs": "Host Form Response Large Text",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_form_automations",
+      "routes": [
+        "hostFormAutomationsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_form_automations.png",
+        "dark": "dark/host_form_automations.png"
+      },
+      "whatItIs": "Host Form Automations",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_audience_automations",
+      "routes": [
+        "hostAudienceAutomationsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_audience_automations.png",
+        "dark": "dark/host_audience_automations.png"
+      },
+      "whatItIs": "Host Audience Automations",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_automation_editor",
+      "routes": [
+        "hostFormAutomationsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_automation_editor.png",
+        "dark": "dark/host_automation_editor.png"
+      },
+      "whatItIs": "Host Automation Editor",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_applications_populated",
+      "routes": [
+        "hostApplicationsScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_applications_populated.png",
+        "dark": "dark/host_applications_populated.png"
+      },
+      "whatItIs": "Host Applications Populated",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_application_detail",
+      "routes": [
+        "hostApplicationDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_application_detail.png",
+        "dark": "dark/host_application_detail.png"
+      },
+      "whatItIs": "Host Application Detail",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_group_overview",
+      "routes": [
+        "hostSavedAudienceDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_group_overview.png",
+        "dark": "dark/host_group_overview.png"
+      },
+      "whatItIs": "Host Group Overview",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_group_edit",
+      "routes": [
+        "hostSavedAudienceDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_group_edit.png",
+        "dark": "dark/host_group_edit.png"
+      },
+      "whatItIs": "Host Group Edit",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_group_create",
+      "routes": [
+        "hostCreateSavedAudienceScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_group_create.png",
+        "dark": "dark/host_group_create.png"
+      },
+      "whatItIs": "Host Group Create",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_person_overview",
+      "routes": [
+        "hostCustomerDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_person_overview.png",
+        "dark": "dark/host_person_overview.png"
+      },
+      "whatItIs": "Host Person Overview",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_person_details",
+      "routes": [
+        "hostCustomerDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_person_details.png",
+        "dark": "dark/host_person_details.png"
+      },
+      "whatItIs": "Host Person Details",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_person_notes",
+      "routes": [
+        "hostCustomerDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_person_notes.png",
+        "dark": "dark/host_person_notes.png"
+      },
+      "whatItIs": "Host Person Notes",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_person_history",
+      "routes": [
+        "hostCustomerDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_person_history.png",
+        "dark": "dark/host_person_history.png"
+      },
+      "whatItIs": "Host Person History",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_add_person",
+      "routes": [
+        "hostAddCustomerScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_add_person.png",
+        "dark": "dark/host_add_person.png"
+      },
+      "whatItIs": "Host Add Person",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_responses_populated",
+      "routes": [
+        "hostAudienceScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_responses_populated.png",
+        "dark": "dark/host_responses_populated.png"
+      },
+      "whatItIs": "Host Responses Populated",
       "keepChangeNotes": ""
     },
     {

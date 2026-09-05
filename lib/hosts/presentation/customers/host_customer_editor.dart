@@ -131,6 +131,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
     if (_saving) return;
     final formValid = _formKey.currentState?.validate() ?? false;
     final initialNote = _optionalTrimmed(_noteController.text);
+    // The optional payload key is required only when a note is supplied.
     final noteValid =
         initialNote == null || (_noteFormKey.currentState?.validate() ?? true);
     final name = _nameController.text.trim();

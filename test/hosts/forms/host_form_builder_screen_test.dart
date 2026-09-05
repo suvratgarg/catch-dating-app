@@ -326,7 +326,12 @@ void main() {
     testWidgets('Published form shares its workspace navigation at $size', (
       tester,
     ) async {
-      await _pumpBuilder(tester, published: true, size: size);
+      await _pumpBuilder(
+        tester,
+        published: true,
+        withHistory: true,
+        size: size,
+      );
       expect(
         find.byKey(const ValueKey('host-form-builder-overview')),
         findsOneWidget,
@@ -344,6 +349,8 @@ void main() {
       );
       await tester.tap(questions);
       await pumpFeatureUi(tester);
+      expect(find.byTooltip('Undo last edit'), findsOneWidget);
+      expect(find.byTooltip('Redo edit'), findsOneWidget);
       expect(
         find.textContaining('Full name', findRichText: true),
         findsWidgets,
@@ -397,6 +404,7 @@ void main() {
 Future<void> _pumpBuilder(
   WidgetTester tester, {
   bool published = false,
+  bool withHistory = false,
   bool legacyConsequences = false,
   double textScale = 1,
   bool disableAnimations = false,
@@ -431,6 +439,8 @@ Future<void> _pumpBuilder(
       ).millisecondsSinceEpoch;
   }
   final state = HostFormEditorState(
+    canUndo: withHistory,
+    canRedo: withHistory,
     editor: HostFormEditor(
       form: HostFormSummary.fromMap(summary),
       definition: HostFormDefinition.fromMap(_definitionMap()),

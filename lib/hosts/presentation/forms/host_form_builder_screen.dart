@@ -38,16 +38,7 @@ import 'package:go_router/go_router.dart';
 
 enum HostFormWorkspaceView { overview, questions, responses, settings }
 
-enum _BuilderAction {
-  preview,
-  undo,
-  redo,
-  share,
-  settings,
-  pause,
-  resume,
-  archive,
-}
+enum _BuilderAction { preview, share, settings, pause, resume, archive }
 
 enum _SectionAction { edit, moveUp, moveDown, remove }
 
@@ -189,10 +180,39 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
               ),
             ),
             builder: (context, value) {
-              final header = HostFormWorkspaceHeader(
-                state: value,
-                selected: view,
-                onChanged: (next) => setState(() => _view = next),
+              final header = Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  HostFormWorkspaceHeader(
+                    state: value,
+                    selected: view,
+                    onChanged: (next) => setState(() => _view = next),
+                  ),
+                  if ((view == HostFormWorkspaceView.questions || settings) &&
+                      (value.canUndo || value.canRedo)) ...[
+                    gapH12,
+                    Wrap(
+                      alignment: WrapAlignment.end,
+                      spacing: CatchSpacing.s2,
+                      children: [
+                        CatchIconButton(
+                          tooltip: context.l10n.hostFormUndo,
+                          onTap: value.canUndo && !value.operationInProgress
+                              ? notifier.undo
+                              : null,
+                          child: Icon(CatchIcons.undoRounded),
+                        ),
+                        CatchIconButton(
+                          tooltip: context.l10n.hostFormRedo,
+                          onTap: value.canRedo && !value.operationInProgress
+                              ? notifier.redo
+                              : null,
+                          child: Icon(CatchIcons.redoRounded),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
               );
               if (!compact && view == HostFormWorkspaceView.questions) {
                 final definition = value.editor.definition;
@@ -332,18 +352,6 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
           label: context.l10n.hostFormPreview,
           icon: CatchIcons.visibilityOutlined,
         ),
-      if (state.canUndo)
-        CatchActionMenuItem(
-          value: _BuilderAction.undo,
-          label: context.l10n.hostFormUndo,
-          icon: CatchIcons.undoRounded,
-        ),
-      if (state.canRedo)
-        CatchActionMenuItem(
-          value: _BuilderAction.redo,
-          label: context.l10n.hostFormRedo,
-          icon: CatchIcons.redoRounded,
-        ),
       if (state.editor.form.activeVersionId != null)
         CatchActionMenuItem(
           value: _BuilderAction.share,
@@ -391,10 +399,6 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         );
       case _BuilderAction.preview:
         _openPreview();
-      case _BuilderAction.undo:
-        notifier.undo();
-      case _BuilderAction.redo:
-        notifier.redo();
       case _BuilderAction.share:
         await context.pushNamed(
           Routes.hostFormShareScreen.name,
@@ -514,8 +518,6 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
       _BuilderAction.archive => HostFormLifecycleAction.archive,
       _BuilderAction.preview ||
       _BuilderAction.settings ||
-      _BuilderAction.undo ||
-      _BuilderAction.redo ||
       _BuilderAction.share => throw StateError('Expected a lifecycle action.'),
     };
     final changed = await notifier.setLifecycle(lifecycle);
