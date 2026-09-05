@@ -68,10 +68,12 @@ handling above does not claim that this live export has migrated.
 The preferred next rollout is to reuse that existing instance with
 `COLLECTION_PATH=organizers` and `TABLE_ID=organizers`, preserving the old
 `clubs_raw_changelog` and `clubs_raw_latest` history. This avoids a permanent
-second export. Rehearse reconfiguration of the installed version in dev first;
-the latest extension manifest is not proof of what an older deployed version
-allows. Keep the current production schedule and source tables until the
-replacement has passed verification.
+second export. Validate the installed version's reconfiguration metadata and
+isolated SQL fixtures first; the latest manifest alone is not proof of what an
+older deployed version allows. Rehearse against an existing non-production
+export when available, without creating a paid warehouse solely for rehearsal.
+Keep the current production schedule and source tables until the replacement
+has passed verification.
 
 1. Read back the instance parameters, source schema/version, trigger, table
    schemas, and scheduled query. Save the exact prior configuration for

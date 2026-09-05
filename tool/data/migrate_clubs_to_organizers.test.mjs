@@ -190,6 +190,74 @@ test("repair mode corrects only the known legacy-derived follower count", () => 
   assert.equal(conflicting.blockers.length, 1);
 });
 
+function followerInventory({
+  followerCount = 3,
+  canonicalMembers = ["one", "two", "new"],
+  legacyMembers = ["one", "two"],
+} = {}) {
+  const club = entry("clubs/club-1", {memberCount: 4});
+  return inventory({
+    clubs: [club],
+    organizers: [entry("organizers/club-1", canonicalOrganizerDocument(
+      "club-1", club.data, {followerCount}
+    ))],
+    clubMemberships: legacyMembers.map((uid) => entry(
+      `clubMemberships/club-1_${uid}`,
+      {clubId: "club-1", uid, role: "member", status: "active", joinedAt: timestamp}
+    )),
+    organizerFollows: canonicalMembers.map((uid) => entry(
+      `organizerFollows/club-1_${uid}`,
+      {organizerId: "club-1", uid, status: "active", pushNotificationsEnabled: true,
+        followedAt: timestamp, unfollowedAt: null}
+    )),
+  });
+}
+
+test("canonical follows added after migration do not inherit frozen legacy counts", () => {
+  const before = followerInventory();
+  const plan = buildClubsToOrganizersPlan(before);
+  assert.deepEqual(plan.blockers, []);
+  assert.deepEqual(plan.writes, []);
+  assert.equal(before.collections.organizers[0].data.followerCount, 3);
+  assert.equal(before.collections.organizerFollows.length, 3);
+});
+
+test("actual canonical follower-count mismatches still block ordinary migration", () => {
+  for (const followerCount of [2, 4]) {
+    const plan = buildClubsToOrganizersPlan(followerInventory({followerCount}));
+    assert.deepEqual(plan.writes, []);
+    assert.equal(plan.blockers.length, 1);
+    assert.deepEqual(plan.blockers[0].reasons,
+      ["followerCount differs between source and target"]);
+  }
+});
+
+test("partial migration keeps canonical followers and adds missing legacy members once", () => {
+  const before = followerInventory({canonicalMembers: ["one", "new"]});
+  const plan = buildClubsToOrganizersPlan(before);
+  assert.deepEqual(plan.blockers, []);
+  assert.equal(plan.writes.length, 1);
+  assert.equal(plan.writes[0].targetPath, "organizerFollows/club-1_two");
+  assert.equal(plan.writes[0].data.status, "active");
+  const after = structuredClone(before);
+  after.collections.organizerFollows.push(entry(
+    plan.writes[0].targetPath, plan.writes[0].data
+  ));
+  assert.equal(after.collections.organizerFollows.length, 3);
+  assert.deepEqual(buildClubsToOrganizersPlan(after).writes, []);
+  assert.deepEqual(buildClubsToOrganizersPlan(after).blockers, []);
+});
+
+test("legacy active memberships cannot overwrite a canonical unfollow", () => {
+  const before = followerInventory({followerCount: 2});
+  before.collections.organizerFollows[1].data.status = "inactive";
+  const plan = buildClubsToOrganizersPlan(before);
+  assert.deepEqual(plan.writes, []);
+  assert.equal(plan.blockers.length, 1);
+  assert.equal(plan.blockers[0].path, "organizerFollows/club-1_two");
+  assert.match(plan.blockers[0].reasons.join(" "), /status differs/);
+});
+
 test("plan splits host/member edges and patches dependent references", () => {
   const sourceClub = entry("clubs/club-1", {
     name: "Club One",
