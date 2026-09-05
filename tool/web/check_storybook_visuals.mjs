@@ -8,13 +8,13 @@ import {PNG} from "pngjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 const args = parseArgs(process.argv.slice(2));
-const captureConcurrency = 1;
+const captureConcurrency = args.concurrency;
 if (args.help) {
   printHelp();
   process.exit(0);
 }
 if (args.selfTest) {
-  runSelfTest();
+  await runSelfTest();
   process.exit(0);
 }
 
@@ -341,9 +341,18 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
+function captureWorkerCount(surface, override = null) {
+  const concurrency = override ?? (surface === "admin" ? 2 : 1);
+  if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 2) {
+    throw new Error("--concurrency must be 1 or 2");
+  }
+  return concurrency;
+}
+
 function parseArgs(argv) {
   const parsed = {
     components: [],
+    concurrency: null,
     help: false,
     selfTest: false,
     storybook: null,
@@ -360,11 +369,17 @@ function parseArgs(argv) {
     else if (arg === "--component") parsed.components.push(requiredValue(argv, ++index, arg));
     else if (arg === "--surface") parsed.surface = requiredValue(argv, ++index, arg);
     else if (arg === "--storybook") parsed.storybook = requiredValue(argv, ++index, arg);
+    else if (arg === "--concurrency") parsed.concurrency = Number(requiredValue(argv, ++index, arg));
     else if (arg === "--threshold") parsed.threshold = Number(requiredValue(argv, ++index, arg));
     else fail(`Unknown argument: ${arg}`);
   }
   if (!Number.isFinite(parsed.threshold) || parsed.threshold < 0 || parsed.threshold > 1) {
     fail("--threshold must be between 0 and 1");
+  }
+  try {
+    parsed.concurrency = captureWorkerCount(parsed.surface, parsed.concurrency);
+  } catch (error) {
+    fail(error.message);
   }
   return parsed;
 }
@@ -375,7 +390,7 @@ function requiredValue(argv, index, flag) {
   return value;
 }
 
-function runSelfTest() {
+async function runSelfTest() {
   const first = new PNG({width: 2, height: 1});
   first.data.set([10, 10, 10, 255, 20, 20, 20, 255]);
   const same = comparePng(PNG.sync.write(first), PNG.sync.write(first), 0);
@@ -403,6 +418,42 @@ function runSelfTest() {
   ];
   assert.deepEqual(selectStories(stories, ["two"]), [stories[1]]);
   assert.throws(() => selectStories(stories, ["missing"]), /Ready visual component not found: missing/u);
+  assert.equal(parseArgs(["--surface", "admin"]).concurrency, 2);
+  assert.equal(parseArgs(["--surface", "website"]).concurrency, 1);
+  assert.equal(parseArgs(["--surface", "webui"]).concurrency, 1);
+  assert.equal(parseArgs(["--surface", "admin", "--concurrency", "1"]).concurrency, 1);
+  assert.equal(parseArgs(["--concurrency", "2", "--surface", "website"]).concurrency, 2);
+  for (const invalid of [0, -1, 3, 1.5, NaN, Infinity]) {
+    assert.throws(() => captureWorkerCount("admin", invalid), /--concurrency must be 1 or 2/u);
+  }
+  for (const concurrency of [1, 2]) {
+    const jobs = [0, 1, 2, 3, 4, 5, 6];
+    const captured = [];
+    let active = 0;
+    let peakActive = 0;
+    await runPool(jobs, concurrency, async (job) => {
+      active += 1;
+      peakActive = Math.max(peakActive, active);
+      await new Promise((resolve) => setImmediate(resolve));
+      captured.push(job);
+      active -= 1;
+    });
+    assert.equal(peakActive, concurrency, "capture pool must respect the worker limit");
+    assert.equal(active, 0, "all captures must finish before the pool resolves");
+    assert.deepEqual(captured.sort((a, b) => a - b), jobs, "every capture must run exactly once");
+  }
+  await runPool([], 2, () => assert.fail("an empty capture pool must not invoke a worker"));
+  const singleCapture = [];
+  await runPool(["only"], 2, async (job) => singleCapture.push(job));
+  assert.deepEqual(singleCapture, ["only"]);
+  const captureFailure = new Error("capture failed");
+  await assert.rejects(
+    runPool(["success", "failure"], 2, async (job) => {
+      if (job === "failure") throw captureFailure;
+    }),
+    (error) => error === captureFailure,
+    "worker failure must reject the capture pool"
+  );
   console.log("Storybook visual checker self-test passed.");
 }
 
@@ -416,7 +467,8 @@ Options:
   --update                       Write committed baselines for the current platform.
   --check                        Compare against current-platform baselines (default).
   --threshold <ratio>            Maximum changed-pixel ratio (default 0.001).
-  --self-test                    Run deterministic pixel-comparison proof.
+  --concurrency <1|2>            Capture workers (default: admin 2, website/webui 1).
+  --self-test                    Run pixel-comparison and capture-scheduler proofs.
 `);
 }
 
