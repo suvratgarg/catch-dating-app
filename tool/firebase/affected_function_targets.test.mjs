@@ -98,6 +98,19 @@ test("selection uses exact committed source and the whole base-to-source window"
   assert.deepEqual(result.targets, ["functions:alpha", "functions:alphaAlias", "functions:gamma"]);
 });
 
+test("local emulator tooling never forces redeployment of unrelated runtime exports", (t) => {
+  const f = fixture(t);
+  f.write("functions/scripts/run-local-emulators.cjs", "// local CLI only");
+  f.write("functions/scripts/run-local-emulators.test.cjs", "// local CLI tests");
+  const local = f.select();
+  assert.equal(local.mode, "no-op");
+  assert.deepEqual(local.targets, []);
+  f.write("functions/src/alpha.ts", "export const alpha = 2;");
+  const mixed = f.select();
+  assert.equal(mixed.mode, "affected");
+  assert.deepEqual(mixed.targets, targets.slice(0, 2));
+});
+
 test("removing an import selects its changed consumer; cycles terminate", (t) => {
   const f = fixture(t);
   f.write("functions/src/alpha.ts", "export const alpha = 2;");
@@ -109,6 +122,8 @@ for (const [label, file, content] of [
   ["dependency lock", "functions/package-lock.json", "{}"],
   ["runtime", "functions/package.json", '{"engines":{"node":"24"}}'],
   ["compiler settings", "functions/tsconfig.json", "{}"],
+  ["packaged invoker script", "functions/scripts/set-callable-invokers-public.cjs", "// changed"],
+  ["unknown Functions script", "functions/scripts/unknown.cjs", "// changed"],
   ["deploy config", "firebase.json", "{}"],
   ["runtime asset", "functions/src/template.html", "<b>Updated</b>"],
   ["global initialization", "functions/src/index.ts", 'console.log("global");'],

@@ -123,6 +123,10 @@ function dependencies(ts, tree, source) {
 }
 
 function isNonRuntimeFile(name) {
+  // The bounded delivery package contains tested lib and the invoker script;
+  // these two local-emulator files are never copied into that package.
+  if (name === "functions/scripts/run-local-emulators.cjs" ||
+      name === "functions/scripts/run-local-emulators.test.cjs") return true;
   return /\.(?:md|test\.ts|spec\.ts)$/.test(name) ||
     /^functions\/(?:test|tests|__tests__)\//.test(name) ||
     /\/(?:__tests__|__mocks__)\//.test(name);
