@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_view.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_start_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -124,6 +125,40 @@ void main() {
     await pumpFeatureUi(tester);
     expect(find.byType(EventRehearsalCustomiseSheet), findsOneWidget);
     expect(find.text('Choose between 2 and 50 guests.'), findsOneWidget);
+  });
+
+  testWidgets('starting-point choices fit phone and large text', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    for (final scale in [1.0, 2.0]) {
+      await tester.pumpWidget(
+        _app(
+          Scaffold(
+            body: Align(
+              alignment: Alignment.bottomCenter,
+              child: EventRehearsalStartSheet(
+                event: rehearsalSourceEvent().copyWith(
+                  name: 'Wednesday Trivia Night',
+                  bookedCount: 24,
+                ),
+              ),
+            ),
+          ),
+          scale: scale,
+        ),
+      );
+      await pumpFeatureUi(tester);
+
+      expect(find.text('Start dress rehearsal'), findsOneWidget);
+      expect(find.text('Rehearse Wednesday Trivia Night'), findsOneWidget);
+      expect(find.text('Create a custom rehearsal'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await _capture(tester, 'start-sheet-390-$scale-false');
+    }
   });
 }
 

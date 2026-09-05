@@ -12,6 +12,7 @@ import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehe
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_content.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_view.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_source_sheet.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_start_sheet.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,29 @@ Widget rehearsalUpcomingEntry(BuildContext context) =>
 )
 Widget rehearsalSampleEntry(BuildContext context) =>
     const _EntryPreview(sample: true);
+
+@widgetbook.UseCase(
+  name: 'Starting point sheet',
+  type: EventRehearsalStartSheet,
+  path: '[P1 product surfaces]/Dress rehearsal',
+)
+Widget rehearsalStartSheet(BuildContext context) => EventRehearsalStartSheet(
+  event: Event(
+    id: 'preview-event',
+    clubId: 'preview-organizer',
+    name: 'Wednesday Trivia Night',
+    startTime: DateTime(2026, 9, 9, 19),
+    endTime: DateTime(2026, 9, 9, 21),
+    meetingPoint: 'The Courtyard',
+    eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.pubQuiz),
+    distanceKm: 0,
+    pace: PaceLevel.easy,
+    capacityLimit: 30,
+    bookedCount: 24,
+    description: '',
+    priceInPaise: 0,
+  ),
+);
 
 class _EntryPreview extends StatefulWidget {
   const _EntryPreview({required this.sample});

@@ -220,6 +220,12 @@ abstract class AppLocalizations {
   /// **'View full calendar'**
   String get hostTodayViewAllEvents;
 
+  /// Contextual action on the featured Today event card.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearse this event'**
+  String get hostTodayRehearseThisEvent;
+
   /// Today workspace section for the next events after the operational spotlight.
   ///
   /// In en, this message translates to:
@@ -27756,6 +27762,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rehearse your next event'**
   String get hostRehearsalEntryUpcoming;
+
+  /// Title for the rehearsal starting-point sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Start dress rehearsal'**
+  String get hostRehearsalStartTitle;
+
+  /// Supporting copy for the rehearsal starting-point sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a starting point'**
+  String get hostRehearsalStartSubtitle;
+
+  /// Choice that starts from an upcoming event.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearse {title}'**
+  String hostRehearsalStartUpcoming({required String title});
+
+  /// Explains what is copied from the selected upcoming event.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses its format and {count}-person guest list. You can adjust the rehearsal copy.'**
+  String hostRehearsalStartUpcomingDescription({required int count});
+
+  /// Choice that starts from organizer defaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a custom rehearsal'**
+  String get hostRehearsalStartCustom;
+
+  /// Explains the editable custom rehearsal path.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with organiser defaults, then choose the format, guests and scenario.'**
+  String get hostRehearsalStartCustomDescription;
 
   /// Dress rehearsal entry and optional configuration: EntrySample.
   ///

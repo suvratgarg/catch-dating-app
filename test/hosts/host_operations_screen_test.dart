@@ -46,6 +46,7 @@ import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_start_sheet.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -222,8 +223,11 @@ Future<void> _pumpHostScreen(
       GoRoute(
         path: Routes.hostEventRehearsalStartScreen.path,
         name: Routes.hostEventRehearsalStartScreen.name,
-        builder: (_, state) =>
-            Text('Rehearse ${state.pathParameters['clubId']}'),
+        builder: (_, state) => Text(
+          'Rehearse ${state.pathParameters['clubId']} '
+          'event=${state.uri.queryParameters['eventId']} '
+          'source=${state.uri.queryParameters['source']}',
+        ),
       ),
       GoRoute(
         path: Routes.hostClubTeamScreen.path,

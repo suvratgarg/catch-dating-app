@@ -27,9 +27,11 @@ class HostEventRehearsalStartScreen extends ConsumerStatefulWidget {
     super.key,
     required this.clubId,
     this.sourceEventId,
+    this.startFromOrganizerDefaults = false,
   });
   final String clubId;
   final String? sourceEventId;
+  final bool startFromOrganizerDefaults;
 
   @override
   ConsumerState<HostEventRehearsalStartScreen> createState() =>
@@ -66,7 +68,13 @@ class _HostEventRehearsalStartScreenState
               ),
             ),
         builder: (context, data) {
-          final configuration = _configuration ?? data.initialConfiguration;
+          final configuration =
+              _configuration ??
+              (widget.startFromOrganizerDefaults
+                  ? EventRehearsalConfiguration.defaults(
+                      organizerDefaults: data.organizerDefaults,
+                    )
+                  : data.initialConfiguration);
           return EventRehearsalEntryView(
             configuration: configuration,
             isPending: _loadingSource || mutation.isPending,

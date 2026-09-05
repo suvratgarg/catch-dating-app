@@ -7,10 +7,12 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_start_sheet.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
@@ -148,15 +150,42 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
         onOpenEvent: _openEvent,
         onOpenAttention: _openAttention,
         onViewEvents: () => context.goNamed(Routes.hostEventsScreen.name),
-        onStartRehearsal: _startRehearsal,
+        onStartRehearsal: _showRehearsalStart,
+        onStartCustomRehearsal: _startCustomRehearsal,
       ),
     };
   }
 
-  void _startRehearsal(Club organizer) {
+  Future<void> _showRehearsalStart(Club organizer, Event event) async {
+    final choice = await showCatchBottomSheet<EventRehearsalStartChoice>(
+      context: context,
+      builder: (_) => EventRehearsalStartSheet(event: event),
+    );
+    if (!mounted || choice == null) return;
+    switch (choice) {
+      case EventRehearsalStartChoice.upcomingEvent:
+        _startRehearsal(organizer, sourceEventId: event.id);
+      case EventRehearsalStartChoice.custom:
+        _startRehearsal(organizer, custom: true);
+    }
+  }
+
+  void _startCustomRehearsal(Club organizer) {
+    _startRehearsal(organizer, custom: true);
+  }
+
+  void _startRehearsal(
+    Club organizer, {
+    String? sourceEventId,
+    bool custom = false,
+  }) {
     context.pushNamed(
       Routes.hostEventRehearsalStartScreen.name,
       pathParameters: {'clubId': organizer.id},
+      queryParameters: {
+        'eventId': ?sourceEventId,
+        if (custom) 'source': 'custom',
+      },
     );
   }
 
@@ -234,7 +263,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
         );
         return;
       case HostAttentionDestinationRoute.hostDressRehearsal:
-        _startRehearsal(organizer);
+        _startCustomRehearsal(organizer);
         return;
       case HostAttentionDestinationRoute.hostEvents:
         context.goNamed(Routes.hostEventsScreen.name);
@@ -253,6 +282,7 @@ class HostTodayLoadedRoute extends ConsumerWidget {
     required this.onOpenAttention,
     required this.onViewEvents,
     required this.onStartRehearsal,
+    required this.onStartCustomRehearsal,
     this.initialOrganizerId,
   });
 
@@ -263,7 +293,8 @@ class HostTodayLoadedRoute extends ConsumerWidget {
   final void Function(Club organizer, Event event) onOpenEvent;
   final void Function(Club organizer, HostAttentionItem item) onOpenAttention;
   final VoidCallback onViewEvents;
-  final ValueChanged<Club> onStartRehearsal;
+  final void Function(Club organizer, Event event) onStartRehearsal;
+  final ValueChanged<Club> onStartCustomRehearsal;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -299,7 +330,8 @@ class HostTodayLoadedRoute extends ConsumerWidget {
       onOpenEvent: (event) => onOpenEvent(organizer, event),
       onOpenAttention: (item) => onOpenAttention(organizer, item),
       onViewEvents: onViewEvents,
-      onStartRehearsal: () => onStartRehearsal(organizer),
+      onStartRehearsal: (event) => onStartRehearsal(organizer, event),
+      onStartCustomRehearsal: () => onStartCustomRehearsal(organizer),
     );
   }
 }

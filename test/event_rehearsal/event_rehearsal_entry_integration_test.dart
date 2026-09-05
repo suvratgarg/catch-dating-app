@@ -112,15 +112,31 @@ void main() {
       expect(find.text('runtime: session-new'), findsOneWidget);
     },
   );
+
+  testWidgets('custom entry starts from organizer defaults', (tester) async {
+    final controller = _Controller();
+    final router = _router(custom: true);
+    addTearDown(router.dispose);
+    await tester.pumpWidget(_app(router, controller));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Practise hosting'), findsOneWidget);
+    expect(find.text('ORGANISER DEFAULT'), findsOneWidget);
+    expect(find.text('Sample Social run'), findsOneWidget);
+    expect(find.text('Saturday singles mixer'), findsNothing);
+    expect(find.textContaining('18 attendees'), findsNothing);
+  });
 }
 
-GoRouter _router() => GoRouter(
+GoRouter _router({bool custom = false}) => GoRouter(
   initialLocation: '/start',
   routes: [
     GoRoute(
       path: '/start',
-      builder: (_, state) =>
-          const HostEventRehearsalStartScreen(clubId: 'club-1'),
+      builder: (_, state) => HostEventRehearsalStartScreen(
+        clubId: 'club-1',
+        startFromOrganizerDefaults: custom,
+      ),
     ),
     GoRoute(
       path: '/runtime/:clubId/:sessionId',

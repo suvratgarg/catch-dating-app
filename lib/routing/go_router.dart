@@ -807,6 +807,8 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
               builder: (context, state) => HostEventRehearsalStartScreen(
                 clubId: state.pathParameters['clubId']!,
                 sourceEventId: state.uri.queryParameters['eventId'],
+                startFromOrganizerDefaults:
+                    state.uri.queryParameters['source'] == 'custom',
               ),
             ),
             GoRoute(

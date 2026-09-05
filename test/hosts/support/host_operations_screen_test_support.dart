@@ -88,7 +88,57 @@ void registerHostEventEntryTests() {
     expect(rehearsalAction, findsOneWidget);
     await tester.tap(rehearsalAction);
     await pumpFeatureUi(tester);
-    expect(find.text('Rehearse rehearsal-club'), findsOneWidget);
+    expect(
+      find.text('Rehearse rehearsal-club event=null source=custom'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Host Today opens the rehearsal starting-point sheet', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'choice-club', ownerUserId: _hostUid);
+    final event = buildEvent(
+      id: 'choice-event',
+      clubId: club.id,
+      bookedCount: 24,
+      startTime: DateTime(2026, 6, 15, 17),
+    ).copyWith(name: 'Wednesday Trivia Night');
+
+    await _pumpHostScreen(
+      tester,
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        ..._hostClubOverrides(
+          owned: [club],
+          timelineEventsByOrganizer: {
+            club.id: [event],
+          },
+        ),
+      ],
+    );
+
+    expect(
+      find.byKey(const ValueKey<String>('host-today-start-dress-rehearsal')),
+      findsNothing,
+    );
+    await tester.tap(
+      find.byKey(const ValueKey<String>('host-today-rehearse-event')),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(EventRehearsalStartSheet), findsOneWidget);
+    expect(find.text('Start dress rehearsal'), findsOneWidget);
+    expect(find.text('Choose a starting point'), findsOneWidget);
+    expect(find.text('Rehearse Wednesday Trivia Night'), findsOneWidget);
+    expect(find.text('Create a custom rehearsal'), findsOneWidget);
+
+    await tester.tap(find.text('Rehearse Wednesday Trivia Night'));
+    await pumpFeatureUi(tester);
+    expect(
+      find.text('Rehearse choice-club event=choice-event source=null'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('Host Events resumes a loaded draft without a second lookup', (

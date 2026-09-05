@@ -29,6 +29,7 @@ class HostTodayBody extends StatelessWidget {
     required this.onOpenAttention,
     required this.onViewEvents,
     required this.onStartRehearsal,
+    required this.onStartCustomRehearsal,
   });
 
   final Club organizer;
@@ -38,7 +39,8 @@ class HostTodayBody extends StatelessWidget {
   final ValueChanged<Event> onOpenEvent;
   final ValueChanged<HostAttentionItem> onOpenAttention;
   final VoidCallback onViewEvents;
-  final VoidCallback onStartRehearsal;
+  final ValueChanged<Event> onStartRehearsal;
+  final VoidCallback onStartCustomRehearsal;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +64,7 @@ class HostTodayBody extends StatelessWidget {
           HostTodayStatus.empty => SliverToBoxAdapter(
             child: HostTodayQuietState(
               onViewEvents: onViewEvents,
-              onStartRehearsal: onStartRehearsal,
+              onStartRehearsal: onStartCustomRehearsal,
             ),
           ),
           HostTodayStatus.content => SliverToBoxAdapter(
@@ -74,6 +76,7 @@ class HostTodayBody extends StatelessWidget {
               onOpenAttention: onOpenAttention,
               onViewEvents: onViewEvents,
               onStartRehearsal: onStartRehearsal,
+              onStartCustomRehearsal: onStartCustomRehearsal,
             ),
           ),
         },

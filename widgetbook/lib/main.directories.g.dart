@@ -5650,6 +5650,17 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalStartSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Starting point sheet',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalStartSheet,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(

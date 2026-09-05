@@ -242,7 +242,8 @@ void _registerHostOperationsClubWorkspaceTests() {
           onOpenEvent: (_) {},
           onOpenAttention: (_) {},
           onViewEvents: () {},
-          onStartRehearsal: () {},
+          onStartRehearsal: (_) {},
+          onStartCustomRehearsal: () {},
         ),
       );
 

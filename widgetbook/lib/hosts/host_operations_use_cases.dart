@@ -2456,13 +2456,15 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
       onOpenEvent: (_) {},
       onOpenAttention: (_) {},
       onViewEvents: () {},
-      onStartRehearsal: () {},
+      onStartRehearsal: (_) {},
+      onStartCustomRehearsal: () {},
     ),
     'HostTodayEventSpotlight' => HostTodayEventSpotlight(
       event: event,
       now: HostOperationsFixtures.now,
       taskCount: tasks.length,
       onPressed: () {},
+      onRehearse: () {},
     ),
     'HostTodayEventMetric' => const HostTodayEventMetric(
       value: '10',

@@ -74,6 +74,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostTodayViewAllEvents => 'View full calendar';
 
   @override
+  String get hostTodayRehearseThisEvent => 'Rehearse this event';
+
+  @override
   String get hostTodayLater => 'Next 7 days';
 
   @override
@@ -17602,6 +17605,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostRehearsalEntryUpcoming => 'Rehearse your next event';
+
+  @override
+  String get hostRehearsalStartTitle => 'Start dress rehearsal';
+
+  @override
+  String get hostRehearsalStartSubtitle => 'Choose a starting point';
+
+  @override
+  String hostRehearsalStartUpcoming({required String title}) {
+    return 'Rehearse $title';
+  }
+
+  @override
+  String hostRehearsalStartUpcomingDescription({required int count}) {
+    return 'Uses its format and $count-person guest list. You can adjust the rehearsal copy.';
+  }
+
+  @override
+  String get hostRehearsalStartCustom => 'Create a custom rehearsal';
+
+  @override
+  String get hostRehearsalStartCustomDescription =>
+      'Start with organiser defaults, then choose the format, guests and scenario.';
 
   @override
   String get hostRehearsalEntrySample => 'Practise hosting';
