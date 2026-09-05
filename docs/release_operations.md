@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.10
-updated: 2026-09-05
+version: 2.7.11
+updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -456,6 +456,25 @@ No production Hosting caller may list `*.test.mjs` in its push filter. Test
 changes are validated by CI; they do not alter deployable bytes and therefore
 cannot authorize an Admin, Marketing, or Host production promotion.
 
+### Shared iOS dependency policy
+
+Edit `ios/Podfile.template` and
+`ios/Flutter/CatchBuildSettings.xcconfig.template`, then run
+`node tool/platform/sync_ios_pod_policy.mjs --write` before native builds. The
+root, Consumer and Host Podfiles and Runner settings are generated verbatim;
+their separate Pod lockfiles, plugin graphs and app targets remain independent.
+`platform:ios-pod-policy` checks freshness in every selected iOS-native lane,
+and the existing compile-codegen catalog selects the same check before commit.
+A checkout with current generated files needs no extra generation step.
+
+Each generated Podfile contains the complete policy. Do not replace it with a
+runtime Ruby import: Flutter's warm-checkout pod-install decision and
+CocoaPods' checksum observe the Podfile itself. The generator writes only
+changed outputs and never updates dependency locks or installation receipts,
+so no-op generation avoids extra installs and failed installs remain pending.
+The app's explicit-module setting and the Podfile's pod-target setting apply
+to different build targets; both remain required while CocoaPods is in use.
+
 ### Dependency maintenance
 
 GitHub-native Dependabot is the sole routine dependency-update service. It
@@ -474,10 +493,13 @@ patches.
 
 iOS remains on CocoaPods. The currently locked `razorpay_flutter` and
 `google_maps_flutter_ios` packages do not ship Swift Package Manager manifests;
-`health` does. The FirebaseFirestore prebuilt-pod graph has a separate
-duplicate-symbol boundary. Remove `enable-swift-package-manager:
-false` only in a dedicated migration after both conditions are resolved and
-Consumer plus Host iOS builds pass together.
+`health` and the locked FlutterFire plugins do. Flutter supports CocoaPods
+fallback for plugins without SwiftPM support, but Catch's complete mixed graph
+still needs native proof. A dedicated migration must remove the explicit
+prebuilt Firestore pod only when Firebase has one verified distribution owner,
+preserve the Maps/Razorpay locked versions and all role/flavor settings, and
+pass Consumer plus Host iOS builds before enabling SwiftPM on main. Retain the current
+explicit-module settings until that migration proves they can be removed.
 
 `tool/app_targets.json#appleNativeDependencies` binds the checked-in
 `firebase_core` and `cloud_firestore` Flutter versions to the Firebase Apple SDK

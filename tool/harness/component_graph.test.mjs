@@ -11,6 +11,7 @@ import {
   validateComponentGraph,
 } from "./lib/component_graph.mjs";
 import {collectLocalReadonlyCheckIds, planAffectedToolChecks} from "../lib/tool_impact.mjs";
+import {planPreCommitActions} from "../git/pre_commit_generated_artifacts.mjs";
 
 const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
@@ -29,6 +30,46 @@ function plan(path, mode = "pr", sourceGraph = graph) {
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
+
+test("iOS policy inputs and outputs retain native builds and generated freshness", () => {
+  const generator = graph.compileCodegen.find((entry) => entry.id === "platform.ios-pod-policy");
+  assert.ok(generator);
+  assert.equal(generator.checkCommand, "node tool/platform/sync_ios_pod_policy.mjs --check");
+  for (const file of [...generator.inputs, ...generator.outputs]) {
+    const expectedRole = file.startsWith("apps/host/") ? "host"
+      : file.startsWith("apps/consumer/") ? "consumer" : null;
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true, file);
+      assert.deepEqual(result.operations.ciTargets, ["flutter_build_ios", "tools"], file);
+      assert.deepEqual(result.operations.checkIds, ["platform:ios-pod-policy"], file);
+      assert.deepEqual(result.operations.codegenIds, [generator.id], file);
+      assert.deepEqual(result.operations.deployGroups, [], file);
+      assert.deepEqual(result.operations.releaseTargets, mode === "main"
+        ? (expectedRole ? [`${expectedRole}-ios`] : ["consumer-ios", "host-ios"]) : [], file);
+      const tools = planAffectedToolChecks({changedPaths: [file],
+        manifest: toolsManifest, componentGraph: graph, mode});
+      assert.equal(tools.mode, "affected", file);
+      assert.ok(tools.toolIds.includes("platform:ios-pod-policy"), file);
+      assert.deepEqual(tools.setupRequirements, ["node"], file);
+    }
+    assert.deepEqual(planPreCommitActions({graph, stagedPaths: [file]}).triggeredGeneratorIds,
+      [generator.id], file);
+  }
+  const testOnly = plan("tool/platform/sync_ios_pod_policy.test.mjs", "main");
+  assert.deepEqual(testOnly.operations.ciTargets, ["tools"]);
+  assert.deepEqual(testOnly.operations.releaseTargets, []);
+  // The native profiles also cover ordinary app metadata. Their freshness gate
+  // must not turn an unrelated iOS edit into the full Tools setup/matrix.
+  for (const file of ["ios/Runner/Info.plist", "apps/host/ios/Runner/Info.plist",
+    "apps/consumer/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json"]) {
+    const tools = planAffectedToolChecks({changedPaths: [file],
+      manifest: toolsManifest, componentGraph: graph, mode: "pr"});
+    assert.equal(tools.mode, "affected", file);
+    assert.ok(tools.toolIds.includes("platform:ios-pod-policy"), file);
+    assert.deepEqual(tools.setupRequirements, ["node"], file);
+  }
+});
 
 test("component graph validates and affected edges cannot authorize release", () => {
   assert.deepEqual(validateComponentGraph(graph), []);
@@ -478,7 +519,7 @@ test("native and Firebase role fixtures retain platform-specific validation", ()
 
   const packageIos = plan("apps/host/ios/Runner/Info.plist", "main");
   assert.deepEqual(packageIos.directComponents, ["app.host.native.ios"]);
-  assert.deepEqual(packageIos.operations.ciTargets, ["flutter_build_ios"]);
+  assert.deepEqual(packageIos.operations.ciTargets, ["flutter_build_ios", "tools"]);
   assert.deepEqual(packageIos.operations.releaseTargets, ["host-ios"]);
   assert.deepEqual(packageIos.operations.releaseRoles, ["host"]);
 

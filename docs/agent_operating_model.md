@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.0.7
-updated: 2026-09-05
+version: 3.0.8
+updated: 2026-09-06
 owner: agent_operating_model
 status: active
 ---
@@ -178,7 +178,7 @@ git config --get core.hooksPath
 worktrees inherit it. The hook reads the source-owned compile-codegen catalog.
 Staged localization ARB changes regenerate and explicitly stage the declared
 Flutter outputs; staged Dart files are formatted and explicitly re-staged; all
-seven committed compile-critical generator families run their declared
+committed compile-critical generator families run their declared
 freshness checks when an input or output is staged. Contract changes therefore
 check both schema projections and, for `contracts/callables/**`, Admin callable
 validators. A failure prints the exact write command to run.
