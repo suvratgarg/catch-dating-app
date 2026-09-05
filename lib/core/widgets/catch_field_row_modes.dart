@@ -676,29 +676,26 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final inlineMetadata = widget.inlineMetadata?.trim();
     if (inlineMetadata?.isNotEmpty == true) {
       final title = _title?.trim() ?? '';
-      final allowWrap = MediaQuery.textScalerOf(context).scale(1) >= 2;
       return Semantics(
         label: '$title, $inlineMetadata',
         excludeSemantics: true,
-        child: Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(
-                text: title,
-                style: _fieldValueTextStyle(
-                  context,
-                  color: _toneColor(t, primaryFallback: t.ink),
-                  fontWeight: FontWeight.w600,
-                ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: CatchTextStyles.recordTitle(
+                context,
+                color: _toneColor(t, primaryFallback: t.ink),
               ),
-              TextSpan(
-                text: '  ·  $inlineMetadata',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ],
-          ),
-          maxLines: allowWrap ? 2 : 1,
-          overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: CatchRecordTokens.titleGap),
+            Text(
+              inlineMetadata!,
+              style: CatchTextStyles.recordContext(context),
+            ),
+          ],
         ),
       );
     }

@@ -267,6 +267,7 @@ class _HostFormResponsesPanelState
       builder: (sheetContext) => Consumer(
         builder: (context, ref, _) => CatchBottomSheetScaffold(
           title: context.l10n.hostAudienceChooseForm,
+          scrollable: true,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

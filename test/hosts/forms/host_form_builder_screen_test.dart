@@ -5,7 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
@@ -13,9 +13,11 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_scre
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../test_pump_helpers.dart';
 
@@ -27,14 +29,14 @@ void main() {
   ) async {
     await _pumpBuilder(tester);
 
-    expect(find.text('Build'), findsOneWidget);
-    expect(find.text('Responses · 2'), findsOneWidget);
-    expect(find.text('DRAFT · 2 QUESTIONS'), findsOneWidget);
+    expect(find.text('Overview'), findsOneWidget);
+    expect(find.text('Responses'), findsOneWidget);
+    expect(find.text('Draft'), findsOneWidget);
     expect(find.text('Questions'), findsWidgets);
     expect(find.text('What do you need to know?'), findsNothing);
     expect(
       find.text('Choose the questions that will help you decide who to call.'),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.textContaining('Full name', findRichText: true),
@@ -57,7 +59,7 @@ void main() {
     expect(tester.widget<CatchTopBar>(topBar).titleWidget, isNull);
     final titleFinder = find.descendant(
       of: topBar,
-      matching: find.text('Saturday Social application'),
+      matching: find.text('Form'),
     );
     final titleContext = tester.element(titleFinder);
     expect(
@@ -243,7 +245,7 @@ void main() {
 
     final phoneNumberRowLabel = find.descendant(
       of: find.byKey(const ValueKey('form-question-question_2')),
-      matching: find.textContaining('Phone number', findRichText: true),
+      matching: find.text('Phone number'),
     );
     await ensureCentered(tester, phoneNumberRowLabel);
     await tester.tap(phoneNumberRowLabel);
@@ -282,7 +284,7 @@ void main() {
 
     final phoneRow = find.descendant(
       of: find.byKey(const ValueKey('form-question-question_2')),
-      matching: find.textContaining('Phone number', findRichText: true),
+      matching: find.text('Phone number'),
     );
     final nameRow = find.descendant(
       of: find.byKey(const ValueKey('form-question-question_1')),
@@ -306,44 +308,63 @@ void main() {
             find.byKey(const ValueKey('form-question-question_2-drag')),
           )
           .dy,
-      closeTo(tester.getCenter(phoneRow).dy, 0.5),
+      inInclusiveRange(
+        tester.getTopLeft(phoneRow).dy,
+        tester
+            .getBottomLeft(
+              find.descendant(
+                of: find.byKey(const ValueKey('form-question-question_2')),
+                matching: find.text('Phone number · Required'),
+              ),
+            )
+            .dy,
+      ),
     );
   });
 
-  testWidgets('published form opens on its operational command center', (
-    tester,
-  ) async {
-    await _pumpBuilder(tester, published: true);
+  for (final size in [const Size(390, 844), const Size(1200, 1000)]) {
+    testWidgets('Published form shares its workspace navigation at $size', (
+      tester,
+    ) async {
+      await _pumpBuilder(tester, published: true, size: size);
+      expect(
+        find.byKey(const ValueKey('host-form-builder-overview')),
+        findsOneWidget,
+      );
+      expect(find.text('Saturday Social application'), findsOneWidget);
+      expect(find.text('Maya Kapoor'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('host-form-builder-tabs')),
+        findsOneWidget,
+      );
+      expect(find.byType(CatchStatColumn), findsNWidgets(2));
+      final questions = find.descendant(
+        of: find.byKey(const ValueKey('host-form-builder-tabs')),
+        matching: find.text('Questions'),
+      );
+      await tester.tap(questions);
+      await pumpFeatureUi(tester);
+      expect(
+        find.textContaining('Full name', findRichText: true),
+        findsWidgets,
+      );
+      expect(
+        find.byKey(const ValueKey('host-form-builder-tabs')),
+        findsOneWidget,
+      );
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(const ValueKey('host-form-builder-tabs')),
+          matching: find.text('Responses'),
+        ),
+      );
+      await pumpFeatureUi(tester);
+      expect(find.text('Maya Kapoor'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
 
-    expect(
-      find.byKey(const ValueKey('host-form-command-center')),
-      findsOneWidget,
-    );
-    expect(find.text('Saturday Social application'), findsOneWidget);
-    expect(find.text('View responses'), findsOneWidget);
-    expect(find.text('Maya Kapoor'), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('host-form-command-center-metrics')),
-      findsOneWidget,
-    );
-    expect(find.byKey(const ValueKey('host-form-builder-tabs')), findsNothing);
-
-    await tester.tap(
-      find.byKey(const ValueKey('host-form-command-center-edit')),
-    );
-    await pumpFeatureUi(tester);
-
-    expect(
-      find.byKey(const ValueKey('host-form-command-center')),
-      findsNothing,
-    );
-    expect(
-      find.byKey(const ValueKey('host-form-builder-tabs')),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('published command center reflows at large text in dark mode', (
+  testWidgets('Form overview reflows at large text in dark mode', (
     tester,
   ) async {
     await _pumpBuilder(
@@ -353,25 +374,20 @@ void main() {
       disableAnimations: true,
       theme: AppTheme.dark,
     );
-
     final title = find.byKey(const ValueKey('host-form-command-center-title'));
-    final edit = find.byKey(const ValueKey('host-form-command-center-edit'));
+    expect(tester.widget<Text>(title).maxLines, isNull);
     expect(
-      tester.getBottomLeft(title).dy,
-      lessThan(tester.getTopLeft(edit).dy),
-    );
-    expect(
-      find.byKey(const ValueKey('catch_metric_strip.reflow')),
+      find.byKey(const ValueKey('host_form_metrics.reflow')),
       findsOneWidget,
     );
-    final metricCells = find.byType(CatchMetricStripCell);
-    expect(metricCells, findsNWidgets(3));
+    final metricCells = find.byType(CatchStatColumn);
+    expect(metricCells, findsNWidgets(2));
     expect(
       tester.getCenter(metricCells.at(0)).dy,
       lessThan(tester.getCenter(metricCells.at(1)).dy),
     );
     expect(
-      tester.getSize(find.widgetWithText(CatchButton, 'View responses')).height,
+      tester.getSize(find.widgetWithText(CatchButton, 'Share form')).height,
       greaterThan(CatchSpacing.s12),
     );
     expect(tester.takeException(), isNull);
@@ -421,6 +437,25 @@ Future<void> _pumpBuilder(
       validationIssues: const [],
     ),
   );
+  final router = GoRouter(
+    initialLocation: '/forms/form_1',
+    routes: [
+      GoRoute(
+        path: '/forms/:formId',
+        name: Routes.hostFormBuilderScreen.name,
+        builder: (context, routeState) => HostFormBuilderScreen(
+          organizerId: 'org_1',
+          formId: 'form_1',
+          initialView: HostFormWorkspaceView.values
+              .where(
+                (view) => view.name == routeState.uri.queryParameters['view'],
+              )
+              .firstOrNull,
+        ),
+      ),
+    ],
+  );
+  addTearDown(router.dispose);
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
@@ -433,7 +468,8 @@ Future<void> _pumpBuilder(
             (_) => _FakeHostFormResponsesController(),
           ),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
+        routerConfig: router,
         theme: theme ?? AppTheme.light,
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context).copyWith(
@@ -444,10 +480,6 @@ Future<void> _pumpBuilder(
         ),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const HostFormBuilderScreen(
-          organizerId: 'org_1',
-          formId: 'form_1',
-        ),
       ),
     ),
   );

@@ -6,22 +6,24 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_metrics.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class HostFormAnalyticsScreen extends ConsumerStatefulWidget {
   const HostFormAnalyticsScreen({
@@ -49,6 +51,10 @@ class _HostFormAnalyticsScreenState
       formId: widget.formId,
     );
     final analytics = ref.watch(provider);
+    final editorProvider = hostFormEditorControllerProvider(
+      widget.organizerId,
+      widget.formId,
+    );
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostFormAnalyticsTitle,
@@ -69,115 +75,224 @@ class _HostFormAnalyticsScreenState
           builder: (context, value) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                context.l10n.hostFormAnalyticsFunnel,
-                style: CatchTextStyles.sectionTitle(context),
+              CatchAsyncValueView<HostFormEditorState>(
+                value: ref.watch(editorProvider),
+                onRetry: () => ref.read(editorProvider.notifier).reload(),
+                loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
+                errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                  error,
+                  context: AppErrorContext.forms,
+                  mode: CatchErrorStateMode.compact,
+                  onRetry: () => ref.read(editorProvider.notifier).reload(),
+                ),
+                builder: (context, editor) => Text(
+                  editor.editor.definition.title,
+                  style: CatchTextStyles.headline(context),
+                ),
               ),
-              gapH12,
-              CatchAnalyticsMetricGrid(
-                metrics: [
-                  CatchMetricCardData(
-                    icon: CatchIcons.visibilityOutlined,
+              gapH8,
+              Text(
+                context.l10n.hostAudienceResultsVersion(version: value.version),
+                style: CatchTextStyles.supporting(context),
+              ),
+              gapH24,
+              HostFormMetrics(
+                items: [
+                  (
                     value: '${value.opens}',
                     label: context.l10n.hostFormAnalyticsOpens,
                   ),
-                  CatchMetricCardData(
-                    icon: CatchIcons.playCircleOutlineRounded,
+                  (
                     value: '${value.starts}',
                     label: context.l10n.hostFormAnalyticsStarts,
                   ),
-                  CatchMetricCardData(
-                    icon: CatchIcons.checkCircleOutlineRounded,
+                  (
                     value: '${value.submissions}',
                     label: context.l10n.hostFormAnalyticsSubmissions,
                   ),
-                  CatchMetricCardData(
-                    icon: CatchIcons.insightsOutlined,
-                    value: '${(value.completionRate * 100).round()}%',
-                    label: context.l10n.hostFormAnalyticsCompletionRate,
-                  ),
-                  CatchMetricCardData(
-                    icon: CatchIcons.accessTimeRounded,
-                    value: value.medianCompletionMillis == null
-                        ? '—'
-                        : _duration(value.medianCompletionMillis!),
-                    label: context.l10n.hostFormAnalyticsMedianTime,
-                  ),
                 ],
               ),
               gapH24,
-              Wrap(
-                spacing: CatchSpacing.s3,
-                runSpacing: CatchSpacing.s3,
-                children: [
-                  CatchButton(
-                    label: context.l10n.hostFormExportCsv,
-                    icon: Icon(CatchIcons.downloadRounded),
-                    variant: CatchButtonVariant.secondary,
-                    isLoading: _exporting == HostFormExportFormat.csv,
-                    onPressed: _exporting == null
-                        ? () => _export(HostFormExportFormat.csv)
-                        : null,
-                  ),
-                  CatchButton(
-                    label: context.l10n.hostFormExportXlsx,
-                    icon: Icon(CatchIcons.downloadRounded),
-                    variant: CatchButtonVariant.secondary,
-                    isLoading: _exporting == HostFormExportFormat.xlsx,
-                    onPressed: _exporting == null
-                        ? () => _export(HostFormExportFormat.xlsx)
-                        : null,
-                  ),
-                ],
-              ),
-              if (value.sources.isNotEmpty) ...[
-                gapH24,
-                CatchSection.fieldRows(
-                  title: context.l10n.hostFormAnalyticsSources,
+              CatchSection.divided(
+                title: context.l10n.hostFormAnalyticsCompletionRate,
+                first: true,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    for (final source in value.sources)
-                      CatchField.read(
-                        title: source.label,
-                        body: context.l10n.hostFormAnalyticsSourceSummary(
-                          opens: source.opens,
-                          starts: source.starts,
-                          submissions: source.submissions,
-                        ),
+                    Text(
+                      value.starts == 0
+                          ? '—'
+                          : '${(value.completionRate * 100).round()}%',
+                      style: CatchTextStyles.headline(context),
+                    ),
+                    gapH8,
+                    Text(
+                      context.l10n.hostAudienceCompletionDenominator(
+                        submissions: value.submissions,
+                        starts: value.starts,
                       ),
-                  ],
-                ),
-              ],
-              gapH24,
-              Text(
-                context.l10n.hostFormAnalyticsPrivacyNotice,
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: CatchTokens.of(context).ink2,
-                ),
-              ),
-              if (value.questions.isNotEmpty) ...[
-                gapH12,
-                CatchSection.fieldRows(
-                  title: context.l10n.hostFormAnalyticsQuestions,
-                  children: [
-                    for (final question in value.questions) ...[
-                      CatchField.read(
-                        title: question.label,
-                        body: context.l10n.hostFormAnalyticsQuestionSummary(
-                          count: question.responseCount,
+                      style: CatchTextStyles.supporting(context),
+                    ),
+                    if (value.medianCompletionMillis
+                        case final milliseconds?) ...[
+                      gapH8,
+                      Text(
+                        context.l10n.hostAudienceMedianCompletion(
+                          duration: _duration(milliseconds),
                         ),
+                        style: CatchTextStyles.supporting(context),
                       ),
-                      for (final choice in question.choiceCounts)
-                        CatchField.read(
-                          title: choice.label,
-                          valueText: context.l10n.hostFormAnalyticsChoiceCount(
-                            count: choice.count,
-                          ),
-                        ),
                     ],
                   ],
                 ),
+              ),
+              gapH24,
+              Text(
+                context.l10n.hostFormAnalyticsPrivacyNotice,
+                style: CatchTextStyles.supporting(context),
+              ),
+              for (final question in value.questions) ...[
+                gapH24,
+                CatchSection.divided(
+                  first: true,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        question.label,
+                        style: CatchTextStyles.recordTitle(context),
+                      ),
+                      gapH8,
+                      Text(
+                        context.l10n.hostFormAnalyticsQuestionSummary(
+                          count: question.responseCount,
+                        ),
+                        style: CatchTextStyles.recordContext(context),
+                      ),
+                      if (question.kind == 'multiChoice') ...[
+                        gapH8,
+                        Text(
+                          context.l10n.hostAudienceMultipleChoiceResults,
+                          style: CatchTextStyles.supporting(context),
+                        ),
+                      ],
+                      for (final choice in question.choiceCounts) ...[
+                        gapH16,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                choice.label,
+                                style: CatchTextStyles.recordBody(context),
+                              ),
+                            ),
+                            gapW12,
+                            Text(
+                              '${choice.count}',
+                              style: CatchTextStyles.recordTitle(context),
+                            ),
+                          ],
+                        ),
+                        gapH8,
+                        LinearProgressIndicator(
+                          value: question.responseCount == 0
+                              ? 0
+                              : (choice.count / question.responseCount).clamp(
+                                  0,
+                                  1,
+                                ),
+                          backgroundColor: CatchTokens.of(context).line,
+                          valueColor: AlwaysStoppedAnimation(
+                            CatchTokens.of(context).ink,
+                          ),
+                          minHeight: CatchSpacing.s1,
+                          semanticsLabel: context.l10n
+                              .hostAudienceChoiceDenominator(
+                                count: choice.count,
+                                total: question.responseCount,
+                              ),
+                        ),
+                      ],
+                      if (question.numericCount > 0) ...[
+                        gapH16,
+                        Text(
+                          context.l10n.hostAudienceNumericResult(
+                            average:
+                                (question.numericSum / question.numericCount)
+                                    .toStringAsFixed(1),
+                            count: question.numericCount,
+                          ),
+                          style: CatchTextStyles.recordBody(context),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ],
+              gapH24,
+              CatchButton.command(
+                label: context.l10n.hostAudienceViewAllResponses,
+                icon: Icon(CatchIcons.forwardArrow),
+                onPressed: () => context.pushNamed(
+                  Routes.hostFormBuilderScreen.name,
+                  pathParameters: {'formId': widget.formId},
+                  queryParameters: {
+                    'organizerId': widget.organizerId,
+                    'view': 'responses',
+                  },
+                ),
+              ),
+              Text(
+                context.l10n.hostAudienceResponsesAllVersions,
+                style: CatchTextStyles.recordContext(context),
+              ),
+              if (value.sources.isNotEmpty) ...[
+                gapH24,
+                CatchSection.divided(
+                  title: context.l10n.hostFormAnalyticsSources,
+                  children: [
+                    for (final source in value.sources)
+                      CatchRecordRow(
+                        title: source.label,
+                        icon: CatchIcons.linkOutlined,
+                        facts: [
+                          context.l10n.hostFormAnalyticsSourceSummary(
+                            opens: source.opens,
+                            starts: source.starts,
+                            submissions: source.submissions,
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ],
+              if (value.sources.isNotEmpty) ...[
+                gapH8,
+                Text(
+                  context.l10n.hostAudienceSourceTotalsScope,
+                  style: CatchTextStyles.recordContext(context),
+                ),
+              ],
+              gapH24,
+              Wrap(
+                spacing: CatchSpacing.s4,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  for (final format in HostFormExportFormat.values)
+                    CatchButton.command(
+                      label: _exporting == format
+                          ? context.l10n.hostAudiencePreparingExport
+                          : format == HostFormExportFormat.csv
+                          ? context.l10n.hostFormExportCsv
+                          : context.l10n.hostFormExportXlsx,
+                      icon: Icon(CatchIcons.downloadRounded),
+                      onPressed: _exporting == null
+                          ? () => _export(format, value.versionId)
+                          : null,
+                    ),
+                ],
+              ),
             ],
           ),
         ),
@@ -185,7 +300,7 @@ class _HostFormAnalyticsScreenState
     );
   }
 
-  Future<void> _export(HostFormExportFormat format) async {
+  Future<void> _export(HostFormExportFormat format, String versionId) async {
     setState(() => _exporting = format);
     final controller = ref.read(hostFormsControllerProvider);
     final requestId = 'export_${DateTime.now().microsecondsSinceEpoch}';
@@ -196,6 +311,7 @@ class _HostFormAnalyticsScreenState
         requestId: requestId,
         format: format,
         statuses: HostFormResponseStatus.values.toSet(),
+        versionId: versionId,
       );
       for (
         var attempt = 0;
@@ -212,6 +328,7 @@ class _HostFormAnalyticsScreenState
           requestId: requestId,
           format: format,
           statuses: HostFormResponseStatus.values.toSet(),
+          versionId: versionId,
         );
       }
       if (!mounted) return;

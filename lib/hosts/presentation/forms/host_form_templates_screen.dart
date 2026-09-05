@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
@@ -71,36 +71,34 @@ class _HostFormTemplatesScreenState
                         hostFormTemplatesProvider(widget.organizerId),
                       ),
                     ),
-                    builder: (context, values) =>
-                        CatchSection.containedFieldRows(
-                          children: [
-                            for (final template in values)
-                              CatchField.nav(
-                                key: ValueKey(
-                                  'host-form-template-${template.templateId}',
-                                ),
-                                title: template.title,
-                                body: template.description,
-                                valueText: context.l10n.hostFormTemplateSummary(
-                                  purpose: hostFormPurposeLabel(
-                                    context,
-                                    template.purpose,
+                    builder: (context, values) => CatchSection.divided(
+                      first: true,
+                      children: [
+                        for (final template in values)
+                          CatchRecordRow(
+                            key: ValueKey(
+                              'host-form-template-${template.templateId}',
+                            ),
+                            title: template.title,
+                            description: template.description,
+                            metadata: _creatingTemplateId == template.templateId
+                                ? context.l10n.hostAudienceCreatingForm
+                                : context.l10n.hostFormTemplateSummary(
+                                    purpose: hostFormPurposeLabel(
+                                      context,
+                                      template.purpose,
+                                    ),
+                                    count: template.questionCount,
                                   ),
-                                  count: template.questionCount,
-                                ),
-                                icon: template.templateId == 'blank_form'
-                                    ? CatchIcons.addRounded
-                                    : CatchIcons.descriptionOutlined,
-                                status:
-                                    _creatingTemplateId == template.templateId
-                                    ? CatchFieldStatus.saving
-                                    : CatchFieldStatus.idle,
-                                onTap: _creatingTemplateId == null
-                                    ? () => _create(template)
-                                    : null,
-                              ),
-                          ],
-                        ),
+                            icon: template.templateId == 'blank_form'
+                                ? CatchIcons.addRounded
+                                : CatchIcons.descriptionOutlined,
+                            onTap: _creatingTemplateId == null
+                                ? () => _create(template)
+                                : null,
+                          ),
+                      ],
+                    ),
                   ),
                 ],
               ),

@@ -15249,11 +15249,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormsPurposeSurvey => 'Survey';
 
   @override
-  String get hostFormTemplatesTitle => 'Choose a template';
+  String get hostFormTemplatesTitle => 'New form';
 
   @override
   String get hostFormTemplatesSubtitle =>
-      'Every template is editable. Start blank when you want full control.';
+      'Choose a starting point. You can edit every question before publishing.';
 
   @override
   String hostFormTemplateSummary({
@@ -15378,7 +15378,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormPreviewSubtitle =>
-      'This uses the same renderer respondents will see.';
+      'Preview the questions and their order. Sign-in, uploads, signatures and confirmation are not included.';
 
   @override
   String get hostFormPreviewSubmitDisabled => 'Preview only';
@@ -15960,7 +15960,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormsViewResponsesAction => 'View responses';
 
   @override
-  String get hostFormsAnalyticsAction => 'View analytics';
+  String get hostFormsAnalyticsAction => 'Results';
 
   @override
   String get hostFormsAutomationsAction => 'Manage automations';
@@ -16033,7 +16033,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormConversionComplete => 'Action completed';
 
   @override
-  String get hostFormAnalyticsTitle => 'Form analytics';
+  String get hostFormAnalyticsTitle => 'Results';
 
   @override
   String get hostFormAnalyticsFunnel => 'Response funnel';
@@ -17670,4 +17670,97 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAudienceSelectedForm => 'Selected form';
+
+  @override
+  String get hostAudienceFormWorkspaceTitle => 'Form';
+
+  @override
+  String get hostAudienceFormOverview => 'Overview';
+
+  @override
+  String hostAudienceFormVersionContext({
+    required String purpose,
+    required int version,
+  }) {
+    return '$purpose · Version $version';
+  }
+
+  @override
+  String get hostAudienceEditQuestions => 'Edit questions';
+
+  @override
+  String get hostAudienceLatestResponse => 'Latest response';
+
+  @override
+  String get hostAudienceQuestionPreview => 'Question preview';
+
+  @override
+  String get hostAudienceFormDetails => 'Form details';
+
+  @override
+  String get hostAudienceFormAccess => 'Access';
+
+  @override
+  String get hostAudienceAfterSubmission => 'After submission';
+
+  @override
+  String get hostAudienceCreatingForm => 'Creating form…';
+
+  @override
+  String get hostAudienceShowQr => 'Show QR code';
+
+  @override
+  String get hostAudienceCreatingLink => 'Creating tracked link…';
+
+  @override
+  String hostAudienceResultsVersion({required int version}) {
+    return 'Published version $version';
+  }
+
+  @override
+  String hostAudienceCompletionDenominator({
+    required int submissions,
+    required int starts,
+  }) {
+    return '$submissions submitted from $starts starts.';
+  }
+
+  @override
+  String hostAudienceMedianCompletion({required String duration}) {
+    return 'Median completion time: $duration';
+  }
+
+  @override
+  String get hostAudienceMultipleChoiceResults =>
+      'People can select more than one option.';
+
+  @override
+  String hostAudienceChoiceDenominator({
+    required int count,
+    required int total,
+  }) {
+    return '$count of $total answers';
+  }
+
+  @override
+  String hostAudienceNumericResult({
+    required String average,
+    required int count,
+  }) {
+    return 'Average $average from $count answers';
+  }
+
+  @override
+  String get hostAudienceViewAllResponses => 'View all responses';
+
+  @override
+  String get hostAudienceResponsesAllVersions =>
+      'Includes all versions of this form.';
+
+  @override
+  String get hostAudienceSourceTotalsScope =>
+      'Tracked link totals include all versions.';
+
+  @override
+  String get hostAudiencePreparingExport => 'Preparing export…';
 }

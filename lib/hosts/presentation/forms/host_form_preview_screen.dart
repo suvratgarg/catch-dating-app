@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
@@ -27,8 +29,7 @@ class HostFormPreviewScreen extends ConsumerWidget {
     );
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        title: context.l10n.hostFormPreview,
-        subtitle: context.l10n.hostFormPreviewSubtitle,
+        title: context.l10n.hostAudienceQuestionPreview,
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
@@ -54,8 +55,17 @@ class HostFormPreviewScreen extends ConsumerWidget {
                 )
                 .reload(),
           ),
-          builder: (context, value) =>
+          builder: (context, value) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                context.l10n.hostFormPreviewSubtitle,
+                style: CatchTextStyles.supporting(context),
+              ),
+              gapH24,
               HostFormRenderer(definition: value.editor.definition),
+            ],
+          ),
         ),
       ),
     );

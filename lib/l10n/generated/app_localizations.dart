@@ -23733,13 +23733,13 @@ abstract class AppLocalizations {
   /// Forms template gallery title.
   ///
   /// In en, this message translates to:
-  /// **'Choose a template'**
+  /// **'New form'**
   String get hostFormTemplatesTitle;
 
   /// Forms template gallery guidance.
   ///
   /// In en, this message translates to:
-  /// **'Every template is editable. Start blank when you want full control.'**
+  /// **'Choose a starting point. You can edit every question before publishing.'**
   String get hostFormTemplatesSubtitle;
 
   /// Form template purpose and question count.
@@ -23922,7 +23922,7 @@ abstract class AppLocalizations {
   /// Explains preview fidelity.
   ///
   /// In en, this message translates to:
-  /// **'This uses the same renderer respondents will see.'**
+  /// **'Preview the questions and their order. Sign-in, uploads, signatures and confirmation are not included.'**
   String get hostFormPreviewSubtitle;
 
   /// Disabled submit label in a non-submitting preview.
@@ -25017,7 +25017,7 @@ abstract class AppLocalizations {
   /// Opens aggregate form analytics.
   ///
   /// In en, this message translates to:
-  /// **'View analytics'**
+  /// **'Results'**
   String get hostFormsAnalyticsAction;
 
   /// Opens form automation rules and runs.
@@ -25155,7 +25155,7 @@ abstract class AppLocalizations {
   /// Form analytics screen title.
   ///
   /// In en, this message translates to:
-  /// **'Form analytics'**
+  /// **'Results'**
   String get hostFormAnalyticsTitle;
 
   /// Form analytics funnel section title.
@@ -27855,6 +27855,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Selected form'**
   String get hostAudienceSelectedForm;
+
+  /// Route title for the shared form workspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Form'**
+  String get hostAudienceFormWorkspaceTitle;
+
+  /// Form workspace overview tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get hostAudienceFormOverview;
+
+  /// Published form purpose and version context.
+  ///
+  /// In en, this message translates to:
+  /// **'{purpose} · Version {version}'**
+  String hostAudienceFormVersionContext({
+    required String purpose,
+    required int version,
+  });
+
+  /// Opens a draft question outline from its overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit questions'**
+  String get hostAudienceEditQuestions;
+
+  /// Most recent submitted response to this form.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest response'**
+  String get hostAudienceLatestResponse;
+
+  /// Preview limited to the form questions and order.
+  ///
+  /// In en, this message translates to:
+  /// **'Question preview'**
+  String get hostAudienceQuestionPreview;
+
+  /// Editable form name, description and purpose group.
+  ///
+  /// In en, this message translates to:
+  /// **'Form details'**
+  String get hostAudienceFormDetails;
+
+  /// Form identity verification settings group.
+  ///
+  /// In en, this message translates to:
+  /// **'Access'**
+  String get hostAudienceFormAccess;
+
+  /// Form confirmation and completion action settings group.
+  ///
+  /// In en, this message translates to:
+  /// **'After submission'**
+  String get hostAudienceAfterSubmission;
+
+  /// Status shown while a template creates a new draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating form…'**
+  String get hostAudienceCreatingForm;
+
+  /// Shows the public form QR code in a secondary sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Show QR code'**
+  String get hostAudienceShowQr;
+
+  /// Pending state for form source-link creation.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating tracked link…'**
+  String get hostAudienceCreatingLink;
+
+  /// Version that owns the displayed form question results.
+  ///
+  /// In en, this message translates to:
+  /// **'Published version {version}'**
+  String hostAudienceResultsVersion({required int version});
+
+  /// Explicit start-to-submit denominator for form completion.
+  ///
+  /// In en, this message translates to:
+  /// **'{submissions} submitted from {starts} starts.'**
+  String hostAudienceCompletionDenominator({
+    required int submissions,
+    required int starts,
+  });
+
+  /// Median duration for the published form version.
+  ///
+  /// In en, this message translates to:
+  /// **'Median completion time: {duration}'**
+  String hostAudienceMedianCompletion({required String duration});
+
+  /// Explains that multiple-choice percentages need not total 100 percent.
+  ///
+  /// In en, this message translates to:
+  /// **'People can select more than one option.'**
+  String get hostAudienceMultipleChoiceResults;
+
+  /// Accessible answer-distribution bar value.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} answers'**
+  String hostAudienceChoiceDenominator({
+    required int count,
+    required int total,
+  });
+
+  /// Privacy-eligible numeric question aggregate.
+  ///
+  /// In en, this message translates to:
+  /// **'Average {average} from {count} answers'**
+  String hostAudienceNumericResult({
+    required String average,
+    required int count,
+  });
+
+  /// Opens all responses to the current form.
+  ///
+  /// In en, this message translates to:
+  /// **'View all responses'**
+  String get hostAudienceViewAllResponses;
+
+  /// Scope of the response-directory drilldown.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes all versions of this form.'**
+  String get hostAudienceResponsesAllVersions;
+
+  /// Separates source-link lifetime totals from version-specific question analytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracked link totals include all versions.'**
+  String get hostAudienceSourceTotalsScope;
+
+  /// Pending state while the requested form export is prepared.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing export…'**
+  String get hostAudiencePreparingExport;
 }
 
 class _AppLocalizationsDelegate
