@@ -42,6 +42,11 @@ Companion files owned exclusively by Docs, Policy, or another Harness lane are
 excluded from direct tool ownership instead of broadening a valid Tools
 selection. Their graph-declared check ids are still included, so a mixed
 workflow change keeps its policy wiring checks when Tools owns that validation.
+The shared React validation workflow routes to both Admin and Marketing plus
+policy and Hosting workflow checks. Changing that file alone does not select
+native app builds or backend deployment; mixed source edits retain their own
+validation and release ownership. Unknown and shared orchestration files keep
+the full validation fallback.
 Graph checks, exact tool owners, and mandatory checks all expand through the
 same transitive `alsoCheckIds`; an unavailable required check fails planning.
 Identical check commands run once per invocation, preserving their first owner's

@@ -108,6 +108,38 @@ test("backend-only delivery controls validate the backend without granting mutat
   assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
 });
 
+test("shared React validation runs both callers and retains Hosting and policy checks", () => {
+  const file = ".github/workflows/react-surface-validation.yml";
+  for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+    const result = plan(file, mode);
+    assert.equal(result.complete, true);
+    assert.deepEqual(result.operations.ciTargets,
+      ["admin", "marketing", "policy_docs", "tools"]);
+    assert.deepEqual(result.operations.deployGroups, []);
+    assert.deepEqual(result.operations.releaseTargets, []);
+    const tools = planAffectedToolChecks({changedPaths: [file],
+      manifest: toolsManifest, componentGraph: graph, mode});
+    assert.equal(tools.mode, "affected");
+    for (const id of ["agent:harness-v2", "meta:enforcement-integrity",
+      "ci:web-hosting-delivery-workflow"]) {
+      assert.ok(tools.toolIds.includes(id), `${mode} omitted ${id}`);
+    }
+  }
+});
+
+test("React workflow routing preserves mixed native and backend ownership", () => {
+  const result = planAffected({changedPaths: [
+    ".github/workflows/react-surface-validation.yml",
+    "functions/src/payments/razorpay.ts", "apps/host/ios/Runner/Info.plist",
+  ], graph, mode: "main"});
+  for (const target of ["admin", "marketing", "functions", "flutter_build_ios"]) {
+    assert.ok(result.operations.ciTargets.includes(target), target);
+  }
+  assert.deepEqual(result.operations.deployGroups, ["functions"]);
+  assert.deepEqual(result.operations.releaseTargets, ["host-ios"]);
+  assert.deepEqual(result.operations.releaseRoles, ["host"]);
+});
+
 test("backend control routing cannot suppress a changed native app or its release ownership", () => {
   const result = planAffected({changedPaths: [
     ".github/workflows/_firebase-promote.yml", "apps/host/ios/Runner/Info.plist",
