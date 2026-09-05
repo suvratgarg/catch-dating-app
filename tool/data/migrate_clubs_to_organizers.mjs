@@ -446,18 +446,26 @@ export function canonicalOrganizerDocument(
 
 function activeFollowerCountsAfterMigration(collections) {
   // Canonical follows may have grown after the legacy copy. Keep them, and
-  // count only missing legacy member edges that this plan will still create.
+  // project the same missing-only fills that queueFullDocument will apply to
+  // new or partial member edges before counting the resulting active follows.
   // Existing conflicting/inactive canonical edges remain blockers in the
   // ordinary follow comparison; a stale legacy edge never overrides them here.
   const follows = indexById(collections.organizerFollows);
   for (const membership of collections.clubMemberships ?? []) {
-    const {clubId, uid, role, status} = membership.data ?? {};
+    const {clubId, uid, role} = membership.data ?? {};
     if (typeof clubId !== "string" || !clubId.trim() ||
         typeof uid !== "string" || !uid.trim() ||
-        role !== "member" || status !== "active") continue;
+        role !== "member") continue;
     const targetId = `${clubId}_${uid}`;
-    if (!follows.has(targetId)) {
-      follows.set(targetId, {data: {organizerId: clubId, status: "active"}});
+    const existing = follows.get(targetId)?.data;
+    const expected = canonicalOrganizerFollow(membership.data, clubId, uid);
+    if (existing === undefined) {
+      follows.set(targetId, {data: expected});
+    } else {
+      const patch = missingOrEqualPatch(existing, expected);
+      if (patch.conflicts.length === 0) {
+        follows.set(targetId, {data: {...existing, ...patch.missing}});
+      }
     }
   }
   const counts = new Map();

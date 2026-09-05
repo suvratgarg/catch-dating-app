@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {
+  applyClubsToOrganizersPlan,
   applyStorageMigrationPlan,
   buildClubsToOrganizersPlan,
   buildStorageMigrationPlan,
@@ -248,6 +249,55 @@ test("partial migration keeps canonical followers and adds missing legacy member
   assert.deepEqual(buildClubsToOrganizersPlan(after).blockers, []);
 });
 
+for (const missingField of ["status", "organizerId"]) {
+  test(`partial canonical follow missing ${missingField} remains idempotent after apply`, async () => {
+    const before = followerInventory({
+      followerCount: 1, canonicalMembers: ["one"], legacyMembers: ["one"],
+    });
+    before.collections.organizers = [];
+    delete before.collections.organizerFollows[0].data[missingField];
+    before.collections.organizerFollows[0].data.canonicalOnlyField = "preserve";
+    const snapshot = structuredClone(before);
+    const plan = buildClubsToOrganizersPlan(before);
+    assert.deepEqual(before, snapshot, "planning must not modify its inventory");
+    assert.deepEqual(plan.blockers, []);
+    assert.equal(plan.writes.length, 2);
+    const followPatch = plan.writes.find(({kind}) => kind === "follow");
+    assert.equal(followPatch.merge, true);
+    assert.deepEqual(Object.keys(followPatch.data), [missingField]);
+
+    // Exercise the real apply function against an in-memory Firestore batch.
+    const after = structuredClone(before);
+    const db = {
+      doc: (documentPath) => documentPath,
+      batch: () => {
+        const writes = [];
+        return {
+          set: (documentPath, data, options) => writes.push({documentPath, data, options}),
+          commit: async () => {
+            for (const {documentPath, data, options} of writes) {
+              const [collection, id] = documentPath.split("/");
+              const entries = after.collections[collection];
+              const existing = entries.find((item) => item.id === id);
+              if (existing) {
+                existing.data = options.merge ? {...existing.data, ...data} : {...data};
+              } else {
+                entries.push(entry(documentPath, {...data}));
+              }
+            }
+          },
+        };
+      },
+    };
+    await applyClubsToOrganizersPlan(db, plan);
+    assert.equal(after.collections.organizers[0].data.followerCount, 1);
+    assert.equal(after.collections.organizerFollows.length, 1);
+    assert.equal(after.collections.organizerFollows[0].data.canonicalOnlyField, "preserve");
+    assert.deepEqual(buildClubsToOrganizersPlan(after).writes, []);
+    assert.deepEqual(buildClubsToOrganizersPlan(after).blockers, []);
+  });
+}
+
 test("legacy active memberships cannot overwrite a canonical unfollow", () => {
   const before = followerInventory({followerCount: 2});
   before.collections.organizerFollows[1].data.status = "inactive";
@@ -256,6 +306,30 @@ test("legacy active memberships cannot overwrite a canonical unfollow", () => {
   assert.equal(plan.blockers.length, 1);
   assert.equal(plan.blockers[0].path, "organizerFollows/club-1_two");
   assert.match(plan.blockers[0].reasons.join(" "), /status differs/);
+});
+
+test("conflicting partial canonical follows never project blocked missing-field fills", () => {
+  for (const [presentField, value, missingField] of [
+    ["status", "inactive", "organizerId"],
+    ["status", null, "organizerId"],
+    ["organizerId", null, "status"],
+    ["organizerId", "other-organizer", "status"],
+  ]) {
+    const before = followerInventory({canonicalMembers: ["one"], legacyMembers: ["one"]});
+    before.collections.organizers = [];
+    const partial = before.collections.organizerFollows[0].data;
+    partial[presentField] = value;
+    delete partial[missingField];
+    const snapshot = structuredClone(before);
+    const plan = buildClubsToOrganizersPlan(before);
+    assert.deepEqual(before, snapshot);
+    assert.equal(plan.blockers.length, 1);
+    assert.equal(plan.blockers[0].path, "organizerFollows/club-1_one");
+    assert.deepEqual(plan.blockers[0].reasons, [`${presentField} differs between source and target`]);
+    assert.equal(plan.writes.length, 1);
+    assert.equal(plan.writes[0].kind, "organizer");
+    assert.equal(plan.writes[0].data.followerCount, 0);
+  }
 });
 
 test("plan splits host/member edges and patches dependent references", () => {

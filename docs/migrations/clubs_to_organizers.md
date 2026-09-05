@@ -1,6 +1,6 @@
 ---
 doc_id: clubs_to_organizers_migration
-version: 1.2.1
+version: 1.2.2
 updated: 2026-09-05
 owner: data_platform
 status: active
@@ -90,8 +90,9 @@ except for backend-owned organizer projections such as next-event and review
 aggregates. Once a canonical organizer exists, those trigger-recomputed values
 are authoritative and the migration verifier preserves them instead of
 comparing them to a stale legacy projection. Follower parity is checked against
-active canonical `organizerFollows` plus missing legacy member edges that the
-plan will create, deduplicated by target document ID. This preserves followers
+active canonical `organizerFollows` after projecting the plan's missing-only
+fills for new and partial legacy member edges, deduplicated by target document
+ID. Blocked fills never count as applied. This preserves followers
 added after the cutover and still validates initial/partial migrations. A count
 that differs from that resulting edge set remains a blocker. A conflicting
 canonical follow (including a later unfollow) is never overwritten by a frozen
