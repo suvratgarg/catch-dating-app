@@ -12,6 +12,11 @@ on:
       full:
         required: true
         type: boolean
+      marketing_checks_in_react:
+        description: The caller's required aggregate owns the same-run React marketing browser checks.
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       base_sha:
@@ -192,7 +197,14 @@ jobs:
         env:
           BASE_SHA: ${{ inputs.base_sha }}
           MODE: ${{ inputs.mode }}
-        run: node tool/run.mjs affected-tools --base "$BASE_SHA" --mode "$MODE" --check
+          MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
+        run: |
+          set -euo pipefail
+          shared_flags=()
+          if [[ "$MARKETING_CHECKS_IN_REACT" == "true" ]]; then
+            shared_flags=(--marketing-checks-in-react)
+          fi
+          node tool/run.mjs affected-tools --base "$BASE_SHA" --mode "$MODE" --check "${shared_flags[@]}"
 
   fast-gates:
     name: Fast deterministic tool gates
@@ -310,11 +322,19 @@ jobs:
       - name: Check tool categories
         env:
           CATEGORIES: ${{ matrix.categories }}
+          MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
         run: |
+          set -euo pipefail
+          shared_flags=()
+          if [[ "$MARKETING_CHECKS_IN_REACT" == "true" ]]; then
+            shared_flags=(--marketing-checks-in-react)
+          fi
+          category_flags=()
           for category in $CATEGORIES; do
-            echo "==> tool category: ${category}"
-            node tool/run.mjs check --category "${category}"
+            category_flags+=(--category "$category")
           done
+          (( ${#category_flags[@]} > 0 ))
+          node tool/run.mjs check "${category_flags[@]}" "${shared_flags[@]}"
 
   tools:
     name: Validate tool manifest and fast checks

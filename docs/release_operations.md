@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.6
+version: 2.7.7
 updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
@@ -336,8 +336,20 @@ Local `node tool/harness/verify_local.mjs --base origin/main --list` resolves
 Tools checks through the same affected-tool planner and registered runner as CI,
 including full fallback. Literal package working directories are preserved;
 commands with unresolved environment or Actions context remain explicit gaps.
-Identical registered commands execute once per runner invocation. Local checks
+Each Tools category bucket uses one runner invocation, so identical registered
+commands execute once across its categories in their declared order. Repeated
+`--category` arguments retain that behavior locally; every category must exist
+before any check executes. Local checks
 stop on shell pipeline failures and incomplete ownership cannot report success.
+
+When the actual CI plan selects Marketing, Tools reuses that same run's required
+React marketing accessibility and screenshot comparisons. It omits only the
+two exact registered browser commands; syntax, configuration and scanner
+self-tests still execute. The required aggregate owns both lanes, so a failed
+or cancelled React check still blocks CI. Reusable and standalone Tools runs
+default to executing their own browser checks. No result crosses source commits
+or CI attempts, and altered commands lose the omission until their equivalence
+is verified again.
 
 The complete impact plan is written to `build/ci/impact-plan.json` and rendered
 from that file. Only bounded booleans and role arrays cross the GitHub step/job
