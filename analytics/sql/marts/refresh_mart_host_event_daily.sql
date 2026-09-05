@@ -7,11 +7,14 @@ DECLARE refresh_end DATE DEFAULT CURRENT_DATE("Asia/Kolkata");
 DECLARE ga4_dataset_exists BOOL DEFAULT FALSE;
 DECLARE ga4_events_exist BOOL DEFAULT FALSE;
 
-EXECUTE IMMEDIATE FORMAT("""
-DELETE FROM `%s.%s.mart_host_event_daily`
-WHERE date BETWEEN @refresh_start AND @refresh_end
-""", analytics_project, analytics_dataset)
-USING refresh_start AS refresh_start, refresh_end AS refresh_end;
+-- The warehouse keeps club_id as a physical compatibility column. Canonical
+-- Firestore organizerId wins; only historical rows need the clubId fallback.
+CREATE TEMP FUNCTION organizer_id(data STRING) AS (
+  COALESCE(
+    NULLIF(JSON_VALUE(data, '$.organizerId'), ''),
+    NULLIF(JSON_VALUE(data, '$.clubId'), '')
+  )
+);
 
 CREATE TEMP TABLE ga4_host_analytics_events (
   event_date DATE NOT NULL,
@@ -71,7 +74,14 @@ IF ga4_events_exist THEN
           CAST(value.double_value AS STRING)
         )
         FROM UNNEST(event_params)
-        WHERE key = 'club_id'
+        WHERE key IN ('organizer_id', 'club_id')
+          AND NULLIF(COALESCE(
+            value.string_value,
+            CAST(value.int_value AS STRING),
+            CAST(value.float_value AS STRING),
+            CAST(value.double_value AS STRING)
+          ), '') IS NOT NULL
+        ORDER BY IF(key = 'organizer_id', 0, 1)
         LIMIT 1
       ), '') AS club_id,
       NULLIF((
@@ -105,45 +115,7 @@ IF ga4_events_exist THEN
 END IF;
 
 EXECUTE IMMEDIATE FORMAT("""
-INSERT INTO `%s.%s.mart_host_event_daily` (
-  date,
-  club_id,
-  club_name,
-  event_id,
-  event_title,
-  event_start_time,
-  event_status,
-  capacity_limit,
-  booked_count,
-  checked_in_count,
-  waitlisted_count,
-  gross_revenue_minor,
-  currency,
-  checkout_started_count,
-  checkout_dropoff_count,
-  payment_completed_count,
-  payment_failed_count,
-  payment_refunded_count,
-  review_count,
-  rating_total,
-  verified_review_count,
-  public_review_count,
-  owner_response_count,
-  demand_count,
-  invite_open_count,
-  mutual_match_count,
-  chat_started_count,
-  repeat_attendee_count,
-  listing_views,
-  search_appearances,
-  event_views,
-  organizer_saves,
-  event_saves,
-  contact_clicks,
-  claim_clicks,
-  outbound_clicks,
-  refreshed_at
-)
+CREATE TEMP TABLE refreshed_host_event_daily AS
 WITH
 clubs AS (
   SELECT
@@ -154,7 +126,7 @@ clubs AS (
 events AS (
   SELECT
     document_id AS event_id,
-    JSON_VALUE(data, '$.clubId') AS club_id,
+    organizer_id(data) AS club_id,
     COALESCE(
       NULLIF(JSON_VALUE(data, '$.eventFormat.customActivityLabel'), ''),
       NULLIF(JSON_VALUE(data, '$.eventFormat.activityKind'), ''),
@@ -171,7 +143,7 @@ events AS (
     COALESCE(SAFE_CAST(JSON_VALUE(data, '$.waitlistedCount') AS INT64), 0) AS waitlisted_count,
     COALESCE(NULLIF(JSON_VALUE(data, '$.currency'), ''), 'INR') AS currency
   FROM `%s.%s.events_raw_latest`
-  WHERE JSON_VALUE(data, '$.clubId') IS NOT NULL
+  WHERE organizer_id(data) IS NOT NULL
 ),
 event_dim AS (
   SELECT
@@ -233,8 +205,7 @@ payments AS (
 ),
 reviews AS (
   SELECT
-    COALESCE(JSON_VALUE(data, '$.eventId'), CONCAT('club:', JSON_VALUE(data, '$.clubId'))) AS review_target_id,
-    JSON_VALUE(data, '$.clubId') AS club_id,
+    organizer_id(data) AS club_id,
     JSON_VALUE(data, '$.eventId') AS event_id,
     DATE(TIMESTAMP_MICROS(
       SAFE_CAST(JSON_VALUE(data, '$.createdAt._seconds') AS INT64) * 1000000 +
@@ -253,8 +224,8 @@ reviews AS (
     COUNTIF(COALESCE(JSON_VALUE(data, '$.source'), 'catchEvent') = 'publicListing') AS public_review_count,
     COUNTIF(JSON_QUERY(data, '$.ownerResponse') IS NOT NULL) AS owner_response_count
   FROM `%s.%s.reviews_raw_latest`
-  WHERE JSON_VALUE(data, '$.clubId') IS NOT NULL
-  GROUP BY review_target_id, club_id, event_id, review_date
+  WHERE organizer_id(data) IS NOT NULL
+  GROUP BY club_id, event_id, review_date
 ),
 saved_events AS (
   SELECT
@@ -545,7 +516,104 @@ analytics_project, analytics_dataset,
 analytics_project, analytics_dataset,
 analytics_project, analytics_dataset,
 analytics_project, analytics_dataset,
-analytics_project, analytics_dataset,
 analytics_project, marketplace_dataset,
 analytics_project, analytics_dataset)
 USING refresh_start AS refresh_start, refresh_end AS refresh_end;
+
+-- Build every replacement row before touching the published mart. If either
+-- mutation fails, roll back the whole refresh and propagate the error.
+BEGIN
+  BEGIN TRANSACTION;
+
+EXECUTE IMMEDIATE FORMAT("""
+DELETE FROM `%s.%s.mart_host_event_daily`
+WHERE date BETWEEN @refresh_start AND @refresh_end
+""", analytics_project, analytics_dataset)
+USING refresh_start AS refresh_start, refresh_end AS refresh_end;
+
+EXECUTE IMMEDIATE FORMAT("""
+INSERT INTO `%s.%s.mart_host_event_daily` (
+  date,
+  club_id,
+  club_name,
+  event_id,
+  event_title,
+  event_start_time,
+  event_status,
+  capacity_limit,
+  booked_count,
+  checked_in_count,
+  waitlisted_count,
+  gross_revenue_minor,
+  currency,
+  checkout_started_count,
+  checkout_dropoff_count,
+  payment_completed_count,
+  payment_failed_count,
+  payment_refunded_count,
+  review_count,
+  rating_total,
+  verified_review_count,
+  public_review_count,
+  owner_response_count,
+  demand_count,
+  invite_open_count,
+  mutual_match_count,
+  chat_started_count,
+  repeat_attendee_count,
+  listing_views,
+  search_appearances,
+  event_views,
+  organizer_saves,
+  event_saves,
+  contact_clicks,
+  claim_clicks,
+  outbound_clicks,
+  refreshed_at
+)
+SELECT
+  date,
+  club_id,
+  club_name,
+  event_id,
+  event_title,
+  event_start_time,
+  event_status,
+  capacity_limit,
+  booked_count,
+  checked_in_count,
+  waitlisted_count,
+  gross_revenue_minor,
+  currency,
+  checkout_started_count,
+  checkout_dropoff_count,
+  payment_completed_count,
+  payment_failed_count,
+  payment_refunded_count,
+  review_count,
+  rating_total,
+  verified_review_count,
+  public_review_count,
+  owner_response_count,
+  demand_count,
+  invite_open_count,
+  mutual_match_count,
+  chat_started_count,
+  repeat_attendee_count,
+  listing_views,
+  search_appearances,
+  event_views,
+  organizer_saves,
+  event_saves,
+  contact_clicks,
+  claim_clicks,
+  outbound_clicks,
+  refreshed_at
+FROM refreshed_host_event_daily
+""", analytics_project, analytics_dataset);
+
+  COMMIT TRANSACTION;
+EXCEPTION WHEN ERROR THEN
+  ROLLBACK TRANSACTION;
+  RAISE;
+END;
