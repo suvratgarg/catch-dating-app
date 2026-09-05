@@ -1,14 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+preflight_only=false
+if [[ "${1:-}" == "--preflight" ]]; then
+  preflight_only=true
+  shift
+fi
+
 if [[ $# -lt 2 ]]; then
-  echo "Usage: $0 <environment> <comma-separated-targets> [firebase deploy args...]" >&2
+  echo "Usage: $0 [--preflight] <environment> <comma-separated-targets> [firebase deploy args...]" >&2
   exit 64
 fi
 
 environment="$1"
 targets_csv="$2"
 shift 2
+
+case "$environment" in
+  dev|staging|prod) ;;
+  *) echo "Unsupported environment: $environment" >&2; exit 64 ;;
+esac
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
@@ -60,7 +71,10 @@ sync_callable_invokers() {
       const env = process.argv[1];
       const rc = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
       const project = rc.projects && rc.projects[env];
-      if (!project) process.exit(2);
+      if (typeof project !== "string" ||
+          !/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(project)) {
+        throw new Error("Invalid Firebase project id for " + env);
+      }
       process.stdout.write(project);
     ' "$environment" "$repo_root/.firebaserc"
   )"
@@ -79,6 +93,12 @@ sync_callable_invokers() {
   else
     echo "Historical package retains its original callable permission scan."
   fi
+  # The same compatibility probe runs before any target mutates. Importing the
+  # packaged helper catches missing runtime dependencies as well as unsupported
+  # scope versions; preflight must never invoke its permission-writing command.
+  if [[ "${2:-}" == "--preflight" ]]; then
+    return
+  fi
   npm --prefix "$functions_dir" run sync:callable-invokers -- "${invoker_args[@]}"
 }
 
@@ -87,15 +107,52 @@ plan_output="$(
     "$targets_csv" --tsv "${planner_policy_args[@]}"
 )"
 
+# Validate every local Functions prerequisite before even an earlier index
+# phase deploys. Reuse parity's source parser without querying live state:
+# new exports and secrets are expected to be absent until deployment finishes.
+function_batches=""
+while IFS=$'\t' read -r phase deploy_only; do
+  [[ "$phase" == "functions" ]] || continue
+  command -v npm > /dev/null
+  command -v firebase > /dev/null
+  command -v gcloud > /dev/null
+  sync_callable_invokers "$deploy_only" --preflight
+  node --input-type=module -e '
+    import fs from "node:fs";
+    import path from "node:path";
+    import {pathToFileURL} from "node:url";
+    const [controlRoot, sourceRoot, functionsDir, environment] = process.argv.slice(1);
+    const read = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
+    const expectedProject = read(path.join(controlRoot, ".firebaserc")).projects?.[environment];
+    const sourceProject = read(path.join(sourceRoot, ".firebaserc")).projects?.[environment];
+    if (sourceProject !== expectedProject) {
+      throw new Error("Functions source and control plane Firebase projects differ");
+    }
+    const command = read(path.join(functionsDir, "package.json")).scripts?.["sync:callable-invokers"];
+    if (typeof command !== "string" || !command.trim()) {
+      throw new Error("Packaged Functions require the sync:callable-invokers npm script");
+    }
+    const {loadRepositoryInventory} = await import(pathToFileURL(
+      path.join(controlRoot, "tool/firebase/check_deploy_parity.mjs")));
+    loadRepositoryInventory(sourceRoot);
+  ' "$repo_root" "${CATCH_FIREBASE_SOURCE_ROOT:-$repo_root}" \
+    "${CATCH_DELIVERY_FUNCTIONS_DIR:-$repo_root/functions}" "$environment"
+  function_batches="$(
+    CATCH_FIREBASE_SOURCE_ROOT="${CATCH_FIREBASE_SOURCE_ROOT:-$repo_root}" \
+      node "$repo_root/tool/firebase/plan_firebase_deploy_targets.mjs" \
+        "$deploy_only" --function-batches "${planner_policy_args[@]}"
+  )"
+  [[ -n "$function_batches" ]]
+done <<< "$plan_output"
+
+if [[ "$preflight_only" == "true" ]]; then
+  echo "Local Firebase deployment prerequisites passed."
+  exit 0
+fi
+
 while IFS=$'\t' read -r phase deploy_only; do
   [[ -z "$phase" || -z "$deploy_only" ]] && continue
   if [[ "$phase" == "functions" ]]; then
-    function_batches="$(
-      CATCH_FIREBASE_SOURCE_ROOT="${CATCH_FIREBASE_SOURCE_ROOT:-$repo_root}" \
-        node "$repo_root/tool/firebase/plan_firebase_deploy_targets.mjs" \
-          "$deploy_only" --function-batches "${planner_policy_args[@]}"
-    )"
-    [[ -n "$function_batches" ]]
     while IFS= read -r function_batch; do
       [[ -z "$function_batch" ]] && continue
       function_batch_status=1
