@@ -567,6 +567,8 @@
         ".github/workflows/_firebase-promote.yml",
         "tool/ci/firebase_delivery_workflow.test.mjs",
         "tool/deploy_firebase_targets.sh",
+        "functions/scripts/set-callable-invokers-public.cjs",
+        "functions/test/callable-invokers.test.cjs",
         ".github/workflows/backend-staging.yml",
         ".github/workflows/backend-rebaseline.yml"
       ],
