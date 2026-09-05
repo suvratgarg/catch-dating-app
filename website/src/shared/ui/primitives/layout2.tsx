@@ -1,8 +1,8 @@
 import {ToggleButtonControl, ToggleGroupControl} from "@catch/web-ui";
 import type {ButtonHTMLAttributes, HTMLAttributes, ReactNode} from "react";
 import type {ModuleStackItem} from "./layout";
-import {PlainButton} from "./actions";
-import {classNames} from "./foundation";
+import {PlainButton} from "./actionControls";
+import {classNames} from "@catch/web-ui";
 import {ProductShell} from "./layout";
 
 export function ModuleStack({

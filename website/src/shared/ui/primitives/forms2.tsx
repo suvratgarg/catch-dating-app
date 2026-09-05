@@ -2,7 +2,7 @@ import {forwardRef} from "react";
 import type {FormHTMLAttributes, InputHTMLAttributes, ReactNode} from "react";
 import type {SearchFormVariant} from "./forms";
 import {Form, InlineInputField, searchFormClassNames} from "./forms";
-import {classNames} from "./foundation";
+import {classNames} from "@catch/web-ui";
 
 export const SearchFormShell = forwardRef<
   HTMLFormElement,

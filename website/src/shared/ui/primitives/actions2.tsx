@@ -1,8 +1,14 @@
-import type {AnchorHTMLAttributes, ButtonHTMLAttributes, CSSProperties, HTMLAttributes, MouseEvent, ReactNode} from "react";
-import {DataTableControl} from "@catch/web-ui";
+import type {
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+  CSSProperties,
+  HTMLAttributes,
+  MouseEvent,
+  ReactNode,
+} from "react";
+import {DataTableControl, classNames} from "@catch/web-ui";
 import type {AppDownloadCtaItem} from "./actions";
-import {PlainButton, PlainLink} from "./actions";
-import {classNames} from "./foundation";
+import {PlainButton, PlainLink} from "./actionControls";
 import {AppleStoreMark, GooglePlayStoreMark} from "./media";
 
 export function StoreButtonMark({

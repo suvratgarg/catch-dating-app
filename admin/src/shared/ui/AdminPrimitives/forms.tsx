@@ -1,58 +1,23 @@
 // Slightly above the family target because the generic decision footer and field controls share form-state types.
-import type {
-  AnchorHTMLAttributes,
-  ButtonHTMLAttributes,
-  FieldsetHTMLAttributes,
-  FormHTMLAttributes,
-  HTMLAttributes,
-  ImgHTMLAttributes,
-  InputHTMLAttributes,
-  ReactNode,
-  SelectHTMLAttributes,
-  TextareaHTMLAttributes,
-} from "react";
-import {
-  CheckboxControl,
-  SelectControl,
-  TextareaControl,
-  TextInputControl,
-} from "@catch/web-ui";
-import {CheckCircle2, FileWarning, Lock, RefreshCw} from "lucide-react";
+import type {InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes} from "react";
+import {CheckboxControl, SelectControl, TextareaControl, TextInputControl} from "@catch/web-ui";
+import {CheckCircle2, FileWarning} from "lucide-react";
 
 import {
   classNames,
   layoutSpanClass,
   type SelectOption,
-  type ChipTone,
-  type AlertTone,
-  type TagTone,
-  type MetricTone,
-  type MetricVariant,
-  type QualityRowTone,
-  type AdminOverviewQueueIntent,
-  type AdminOverviewSignalTone,
-  type RiskTone,
-  type DataTableVariant,
-  type AdminFormVariant,
-  type AdminEditorGridElement,
-  type AdminTagRowElement,
-  type EmptyStateVariant,
   type AdminLayoutSpan,
-  type AdminEyebrowElement,
-  type AdminIntakeGateTone,
-  type AdminBrandMarkSize,
-  type AdminMarketingStepStatus,
-  type AdminMarketingNewPostAccent,
-  type ReviewDecision,
   type ReviewDecisionHandler,
   type ReviewDecisionResponse,
-  type PageHeaderProps,
   type PanelProps,
 } from "./shared";
 
 import {AlertRow, Panel} from "./data";
 import {AdminDecisionFooterShell, AdminIntakeDecisionActions, AdminIntakeDecisionState} from "./intake";
 import {AdminButton} from "./overview";
+
+export {StateRow} from "./data";
 
 type FieldValidationProps = {
   descriptionId?: string;
@@ -82,21 +47,6 @@ export function AdminStateRow({
     <div className="state-row">
       <span>{label}</span>
       <strong>{value}</strong>
-    </div>
-  );
-}
-
-export function StateRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: ReactNode | null;
-}) {
-  return (
-    <div className="state-row">
-      <span>{label}</span>
-      <strong>{value ?? "none"}</strong>
     </div>
   );
 }

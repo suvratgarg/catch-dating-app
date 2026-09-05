@@ -1,16 +1,18 @@
 import {forwardRef} from "react";
-import {
-  CheckboxControl,
-  SelectControl,
-  TextareaControl,
-  TextInputControl,
-} from "@catch/web-ui";
-import type {FormHTMLAttributes, HTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes} from "react";
+import {CheckboxControl, SelectControl, TextareaControl, TextInputControl} from "@catch/web-ui";
+import type {
+  FormHTMLAttributes,
+  HTMLAttributes,
+  InputHTMLAttributes,
+  ReactNode,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
+} from "react";
 import type {FormStatus as FormStatusModel} from "../../forms/types";
 import {usePendingRequestNavigationBlocked} from "../../pendingRequest";
 import type {ChipRailItem} from "./layout2";
 import {LiveStatus} from "./feedback";
-import {classNames} from "./foundation";
+import {classNames} from "@catch/web-ui";
 import {ChipRail} from "./layout2";
 
 export type SearchFormVariant = "organizer" | "public";
