@@ -1097,6 +1097,11 @@ process.stdout.write(JSON.stringify(input[endpoint]));
       });
     });
     assert.equal(scripts.length, 4);
+    const rebaseline = workflow("_backend-rebaseline.yml");
+    const authorize = ciJob(rebaseline, "authorize");
+    assert.ok(authorize.indexOf("actions/setup-node@v6") < authorize.indexOf("      - id: cursor"));
+    assert.match(authorize, /node-version: \$\{\{ steps\.authorization-toolchain\.outputs\.node-version \}\}/);
+
     const repo = {id: 42, full_name: "owner/catch"};
     for (const {file, role, output, script} of scripts) {
       const run = {id: 900, run_attempt: 1, workflow_id: 88, path: ".github/workflows/delivery.yml",

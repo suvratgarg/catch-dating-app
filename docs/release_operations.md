@@ -1279,7 +1279,9 @@ a verified true no-op is authorized. The receipt binds the exact CI authority,
 plan, package, raw provenance digest, source attempt, base SHA and successful dev
 worker. Production selection and the credential-bearing promoter independently
 verify that receipt against historical CI and dev jobs before authentication.
-A newer CI rerun cannot substitute different bytes for the completed dev attempt. Historical run identity uses the exact repository, workflow path and numeric
+A newer CI rerun cannot substitute different bytes for the completed dev attempt.
+
+Historical run identity uses the exact repository, workflow path and numeric
 workflow id, run id and attempt; GitHub's custom run title is not an identity
 field. Cursor and recovery readers share the same verifier. Only the two
 explicit cursor-producing workflow paths are eligible, and recovery accepts

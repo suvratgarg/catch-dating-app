@@ -42,6 +42,13 @@ jobs:
           ref: ${{ inputs.source_sha }}
           fetch-depth: 0
 
+      - id: authorization-toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.authorization-toolchain.outputs.node-version }}
+
       - id: inputs
         name: Require an explicit exact-current-main authorization
         env:

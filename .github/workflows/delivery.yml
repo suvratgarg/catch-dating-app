@@ -609,13 +609,13 @@ jobs:
               --role delivery --output build/delivery/selection/failed-producer.json
             jq -e '
               .status == "completed" and
-                (.conclusion == "failure" or
-                 .conclusion == "cancelled" or
-                 .conclusion == "timed_out" or
-                 .conclusion == "stale" or
-                 .conclusion == "action_required" or
-                 .conclusion == "startup_failure")
-              ' build/delivery/selection/failed-producer.json > /dev/null
+              (.conclusion == "failure" or
+               .conclusion == "cancelled" or
+               .conclusion == "timed_out" or
+               .conclusion == "stale" or
+               .conclusion == "action_required" or
+               .conclusion == "startup_failure")
+            ' build/delivery/selection/failed-producer.json > /dev/null
             authorization_name="backend-delivery-authorization-${CURRENT_CI_WORKFLOW_ID}-${source_sha}-${source_ci_run_attempt}-${RESUME_DELIVERY_ATTEMPT}"
             failed_artifacts="$(gh api --paginate --slurp \
               "repos/$GITHUB_REPOSITORY/actions/runs/$RESUME_DELIVERY_RUN_ID/artifacts?per_page=100")"
