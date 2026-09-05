@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 3.0.5
+version: 3.0.6
 updated: 2026-09-05
 owner: agent_operating_model
 status: active
@@ -226,8 +226,11 @@ any other base, then creates a normal branch and worktree at that exact commit
 and records a disposable local claimed-path set. Continue explicitly requested
 non-main work in its existing worktree rather than creating a new task from an
 ambient branch. It refuses overlap with another active local claim. `doctor`
-reports registration, branch, dirty-state, and
-out-of-scope problems. `finish` removes only the local claim after the branch
+reports registration, branch, dirty-state, and out-of-scope problems. Its
+committed scope uses the latest shared ancestor with fetched `origin/main`, so
+ordinary upstream merges do not claim other tasks' changes. The original exact
+base still must be an ancestor of the task head; unavailable main history keeps
+the original scope window. Dirty paths are always checked independently. `finish` removes only the local claim after the branch
 is clean and any unique commits are pushed. `stale` reports candidates and
 never deletes anything. When a task is deliberately superseded and pushing its
 commits is inappropriate, `finish --abandon` releases the claim only if the

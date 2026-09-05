@@ -391,6 +391,7 @@ export function inspectClaim({repository, claim, runner = runGit}) {
   let committedPaths = [];
   let changedPaths = [];
   let outOfScopePaths = [];
+  let scopeBaseSha = claim.baseSha;
   let headSha = null;
   let branch = null;
   if (record != null && fs.existsSync(claim.worktreePath)) {
@@ -404,9 +405,21 @@ export function inspectClaim({repository, claim, runner = runGit}) {
         args: ["merge-base", "--is-ancestor", claim.baseSha, "HEAD"],
       });
       if (ancestor.status !== 0) blockers.push("base_not_ancestor_of_head");
+      // A normal main merge can introduce paths owned by other tasks. Compare
+      // unique work against the latest shared ancestor, while retaining the
+      // original exact-base ancestry guard. Missing/rewritten main falls back
+      // to the original scope window rather than hiding task changes.
+      const shared = runner({cwd: claim.worktreePath,
+        args: ["merge-base", "HEAD", "refs/remotes/origin/main"]});
+      if (shared.status === 0 && SHA_40.test(shared.stdout.trim())) {
+        const sharedSha = shared.stdout.trim();
+        const containsBase = runner({cwd: claim.worktreePath,
+          args: ["merge-base", "--is-ancestor", claim.baseSha, sharedSha]});
+        if (containsBase.status === 0) scopeBaseSha = sharedSha;
+      }
       const committed = runner({
         cwd: claim.worktreePath,
-        args: ["diff", "--name-only", "-z", `${claim.baseSha}..HEAD`],
+        args: ["diff", "--name-only", "-z", `${scopeBaseSha}..HEAD`],
       });
       if (committed.status === 0) {
         committedPaths = parseNulPaths(committed.stdout);
@@ -433,6 +446,7 @@ export function inspectClaim({repository, claim, runner = runGit}) {
     branch,
     expectedBranch: claim.branch,
     baseSha: claim.baseSha,
+    scopeBaseSha,
     headSha,
     claimedPaths: claim.claimedPaths,
     dirtyPaths,
