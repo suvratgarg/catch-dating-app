@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.7
+version: 2.7.8
 updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
@@ -286,6 +286,39 @@ is selected alongside a workflow change, its check closure owns that suite;
 ordinary prose keeps its lightweight document checks.
 Only direct component ownership may authorize Firebase deployment or a mobile
 release; dependency expansion can add validation but cannot authorize mutation.
+
+The packaged callable IAM helper is deployment tooling, not compiled Functions
+runtime. Its exact script and test paths select backend validation without
+redeploying runtime exports. After a Functions deployment, the executor passes
+only that phase's verified exact targets to scope-aware packages. Discovery
+must find every selected target active before any IAM request; non-callable
+HTTP handlers need no callable permission update. Unrelated services are not
+read or changed. Older immutable packages retain their original scan through
+an explicit capability check; an unknown capability version fails. Existing
+conditional bindings and policy etags are preserved when adding the intended
+unconditional public invoker binding.
+
+Main pushes start validation immediately from the latest completed successful
+main CI source. Harness, Tools preflight/execution and Flutter test selection
+use the union of every path touched in that committed history, including
+reversions, merge-parent changes and transient removed files. Current unowned
+paths still fail; unowned transient history broadens validation to the existing
+nightly/full mode. The validation plan cannot authorize deployment or release.
+
+After all selected lanes pass, `finalize-plan` waits for lower-numbered main CI
+runs and resolves the final successful predecessor. It independently recomputes
+the committed validation plan, binds the source/run/attempt and checks every
+selected job result. The final predecessor must lie inside the validated window;
+its endpoint main plan must be covered by the validated paths, lanes, registered
+Tools closure, generators and actual role/platform builds. Directional document
+metadata and new-widget gates run again against that predecessor. Missing or
+incompatible proof fails before publication. Only this final plan receives the
+existing delivery artifact name, and Firebase packaging consumes its deploy
+groups and the same attempt's tested Functions build. Failed predecessors keep
+the earlier successful base; successful ones advance it. Required CI includes
+finalization, preserving the existing immutable delivery cursor chain while
+allowing test execution to overlap. Pull requests and nightly runs retain their
+existing validation flow.
 
 Root Flutter unit/widget tests are selected by
 `tool/harness/lib/flutter_test_selection.dart` from the exact base and head Git

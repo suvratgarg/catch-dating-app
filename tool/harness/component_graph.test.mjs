@@ -224,8 +224,10 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
     timeoutMinutes: 3,
     paths: [
       "/tool/harness.mjs",
+      "/tool/ci/main_ci_baseline.mjs",
       "/tool/harness/component_graph.json",
       "/tool/harness/lib/component_graph.mjs",
+      "/tool/harness/lib/git_changes.mjs",
       "/tool/lib/path_glob.mjs",
       "/tool/lib/repo_paths.mjs",
       "/tool/lib/tool_impact.mjs",
@@ -831,4 +833,16 @@ test("every tracked path has exactly one terminal classification or component ow
   assert.equal(summary.coveragePercent, 100);
   assert.equal(summary.unknownPathCount, 0);
   assert.equal(summary.ambiguousPathCount, 0);
+});
+
+
+test("post-deploy callable IAM helper is deployment control, without runtime mutation authority", () => {
+  for (const changedPath of ["functions/scripts/set-callable-invokers-public.cjs", "functions/test/callable-invokers.test.cjs"]) {
+    const plan = planAffected({graph, changedPaths: [changedPath], mode: "main"});
+    assert.equal(plan.complete, true);
+    assert.deepEqual(plan.directComponents, ["ci.backend-delivery"]);
+    assert.ok(plan.operations.ciTargets.includes("functions"));
+    assert.deepEqual(plan.operations.deployGroups, []);
+    assert.deepEqual(plan.operations.releaseTargets, []);
+  }
 });

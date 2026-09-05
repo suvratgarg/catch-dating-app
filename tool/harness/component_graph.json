@@ -34,8 +34,10 @@
       "timeoutMinutes": 3,
       "paths": [
         "/tool/harness.mjs",
+        "/tool/ci/main_ci_baseline.mjs",
         "/tool/harness/component_graph.json",
         "/tool/harness/lib/component_graph.mjs",
+        "/tool/harness/lib/git_changes.mjs",
         "/tool/lib/path_glob.mjs",
         "/tool/lib/repo_paths.mjs",
         "/tool/lib/tool_impact.mjs",
@@ -680,7 +682,8 @@
         ".github/workflows/backend-staging.yml", ".github/workflows/backend-rebaseline.yml",
         "tool/ci/backend_source_review.mjs", "tool/ci/backend_source_review.test.mjs",
         "tool/ci/package_firebase_delivery.mjs", "tool/ci/package_firebase_delivery.test.mjs",
-        "tool/ci/firebase_delivery_workflow.test.mjs"
+        "tool/ci/firebase_delivery_workflow.test.mjs",
+        "functions/scripts/set-callable-invokers-public.cjs", "functions/test/callable-invokers.test.cjs"
       ]},
       "components": ["ci.backend-delivery"],
       "terminal": true

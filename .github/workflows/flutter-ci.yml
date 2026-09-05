@@ -6,6 +6,11 @@ on:
       base_sha:
         required: true
         type: string
+      commit_window:
+        description: Include every committed path touched between the exact base and source.
+        required: false
+        type: boolean
+        default: false
       full:
         required: false
         type: boolean
@@ -55,9 +60,11 @@ jobs:
           BASE_SHA: ${{ inputs.base_sha }}
           SOURCE_SHA: ${{ github.sha }}
           FULL: ${{ inputs.full }}
+          COMMIT_WINDOW: ${{ inputs.commit_window || false }}
         run: |
           dart run tool/harness/lib/flutter_test_selection.dart \
             --base "$BASE_SHA" --head "$SOURCE_SHA" --full "$FULL" \
+            --commit-window "$COMMIT_WINDOW" \
             --output build/ci/flutter-test-plan.json \
             --github-output "$GITHUB_OUTPUT"
           jq '{mode, reason, totalTests, selectedTests, uiLintSmoke}' build/ci/flutter-test-plan.json >> "$GITHUB_STEP_SUMMARY"

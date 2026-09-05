@@ -31,7 +31,7 @@ jobs:
   plan:
     name: Plan affected targets
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 10
     outputs:
       admin: ${{ steps.plan.outputs.admin }}
       app_roles: ${{ steps.plan.outputs.app_roles }}
@@ -56,6 +56,7 @@ jobs:
       deploy_required: ${{ steps.plan.outputs.deploy_required }}
       mode: ${{ steps.plan.outputs.mode }}
       full: ${{ steps.plan.outputs.full }}
+      commit_window: ${{ steps.plan.outputs.commit_window }}
       tools_owns_ui_lint_smoke: ${{ steps.plan.outputs.tools_owns_ui_lint_smoke }}
 
     steps:
@@ -67,8 +68,10 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             /tool/harness.mjs
+            /tool/ci/main_ci_baseline.mjs
             /tool/harness/component_graph.json
             /tool/harness/lib/component_graph.mjs
+            /tool/harness/lib/git_changes.mjs
             /tool/lib/path_glob.mjs
             /tool/lib/repo_paths.mjs
             /tool/lib/tool_impact.mjs
@@ -81,7 +84,6 @@ jobs:
         env:
           BEFORE_SHA: ${{ github.event.before }}
           EVENT_NAME: ${{ github.event_name }}
-          CURRENT_RUN_NUMBER: ${{ github.run_number }}
           GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ github.sha }}
           MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
@@ -92,6 +94,7 @@ jobs:
           event_mode="pr"
           base_sha=""
           full_flag=()
+          window_flag=()
           case "$EVENT_NAME" in
             pull_request)
               base_sha="$PR_BASE_SHA"
@@ -102,51 +105,12 @@ jobs:
               ;;
             push)
               event_mode="main"
-              while true; do
-                active_pages="$(gh api --paginate --slurp \
-                  "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?branch=main&event=push&per_page=100")"
-                lower_active="$(jq -r \
-                  --arg repository "$GITHUB_REPOSITORY" \
-                  --argjson current_run "$CURRENT_RUN_NUMBER" '
-                    [.[].workflow_runs[] |
-                      select(
-                        .run_number < $current_run and
-                        .event == "push" and
-                        .head_branch == "main" and
-                        .head_repository.full_name == $repository and
-                        .status != "completed"
-                      )
-                    ] | length
-                  ' <<< "$active_pages")"
-                if (( lower_active == 0 )); then
-                  break
-                fi
-                echo "Waiting for $lower_active lower-numbered active main CI run(s)."
-                sleep 20
-              done
-
-              successful_pages="$(gh api --paginate --slurp \
-                "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?branch=main&event=push&status=success&per_page=100")"
-              prior_success="$(jq -c \
-                --arg repository "$GITHUB_REPOSITORY" \
-                --argjson current_run "$CURRENT_RUN_NUMBER" '
-                  [.[].workflow_runs[] |
-                    select(
-                      .run_number < $current_run and
-                      .event == "push" and
-                      .head_branch == "main" and
-                      .head_repository.full_name == $repository and
-                      .conclusion == "success"
-                    )
-                  ] | if length == 0 then null else max_by(.run_number) end
-                ' <<< "$successful_pages")"
-              if [[ "$prior_success" != "null" ]]; then
-                base_sha="$(jq -er '.head_sha' <<< "$prior_success")"
-                echo "Planning from latest prior successful main CI run $(jq -er '.run_number' <<< "$prior_success")."
-              else
-                base_sha="$BEFORE_SHA"
-                echo "No prior successful main CI run exists; using the push before SHA."
-              fi
+              baseline="$(node tool/ci/main_ci_baseline.mjs \
+                --repository "$GITHUB_REPOSITORY" \
+                --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+                --source-sha "$HEAD_SHA" --fallback-base "$BEFORE_SHA")"
+              base_sha="$(jq -er '.baseSha' <<< "$baseline")"
+              window_flag=(--commit-window)
               ;;
             schedule)
               event_mode="nightly"
@@ -182,7 +146,7 @@ jobs:
           node tool/harness.mjs plan \
             --base "$base_sha" \
             --head "$HEAD_SHA" \
-            "${full_flag[@]}" \
+            "${full_flag[@]}" "${window_flag[@]}" \
             --mode "$event_mode" \
             --github-output "$GITHUB_OUTPUT" \
             --json > build/ci/impact-plan.unbound.json
@@ -252,7 +216,7 @@ jobs:
       - name: Upload planner evidence
         uses: actions/upload-artifact@v7
         with:
-          name: harness-plan-${{ github.run_number }}-${{ github.run_id }}-${{ steps.plan.outputs.source_sha }}-${{ github.run_attempt }}
+          name: ${{ github.event_name == 'push' && 'harness-validation-plan' || 'harness-plan' }}-${{ github.run_number }}-${{ github.run_id }}-${{ steps.plan.outputs.source_sha }}-${{ github.run_attempt }}
           path: build/ci/impact-plan.json
           if-no-files-found: error
           retention-days: 90
@@ -265,6 +229,7 @@ jobs:
       base_sha: ${{ needs.plan.outputs.base_sha }}
       mode: ${{ needs.plan.outputs.mode }}
       full: ${{ needs.plan.outputs.full == 'true' }}
+      commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       marketing_checks_in_react: ${{ needs.plan.outputs.marketing == 'true' }}
     secrets: inherit
 
@@ -293,6 +258,7 @@ jobs:
     with:
       base_sha: ${{ needs.plan.outputs.base_sha }}
       full: ${{ needs.plan.outputs.full == 'true' }}
+      commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       ui_lint_smoke_in_tools: ${{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' }}
     secrets: inherit
 
@@ -463,6 +429,88 @@ jobs:
         run: |
           printf 'Backend source reviewed: %s (tested merge: %s)\n' "$HEAD_SHA" "$TESTED_SHA" >> "$GITHUB_STEP_SUMMARY"
 
+  finalize-plan:
+    name: Finalize the ordered delivery plan
+    if: >-
+      always() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      needs.plan.result == 'success' &&
+      !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    needs:
+      - plan
+      - tools
+      - contracts
+      - functions
+      - firestore-rules
+      - flutter
+      - visual-integration
+      - admin
+      - marketing
+      - operations
+      - docs-policy
+      - app-builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    outputs:
+      base_sha: ${{ steps.finalize.outputs.base_sha }}
+      deploy_groups: ${{ steps.finalize.outputs.deploy_groups }}
+      deploy_required: ${{ steps.finalize.outputs.deploy_required }}
+    steps:
+      - name: Checkout the validated source and history
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.plan.outputs.source_sha }}
+          fetch-depth: 0
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Download this attempt's validation plan
+        uses: actions/download-artifact@v7
+        with:
+          name: harness-validation-plan-${{ github.run_number }}-${{ github.run_id }}-${{ needs.plan.outputs.source_sha }}-${{ github.run_attempt }}
+          path: build/ci/validation
+      - id: finalize
+        name: Prove validation coverage before ordered publication
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
+          FLUTTER_SELECTED: ${{ needs.plan.outputs.flutter }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$NEEDS_JSON" > build/ci/validation-needs.json
+          proof_args=(
+            --validation-plan build/ci/validation/impact-plan.json
+            --needs-json build/ci/validation-needs.json
+            --source-sha "$SOURCE_SHA"
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
+          )
+          # Fail before waiting when a selected lane or this attempt's proof is missing.
+          node tool/ci/finalize_ci_plan.mjs validate "${proof_args[@]}"
+          baseline="$(node tool/ci/main_ci_baseline.mjs \
+            --repository "$GITHUB_REPOSITORY" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --source-sha "$SOURCE_SHA" --fallback-base "$BEFORE_SHA" --wait)"
+          base_sha="$(jq -er '.baseSha' <<< "$baseline")"
+          node tool/ci/finalize_ci_plan.mjs finalize "${proof_args[@]}" \
+            --base-sha "$base_sha" --output build/ci/impact-plan.json \
+            --github-output "$GITHUB_OUTPUT"
+          # Removal/reintroduction can change these directional gates even
+          # though the union of tested files and dependency closures is covered.
+          node tool/docs/check_doc_metadata.mjs --base "$base_sha"
+          if [[ "$FLUTTER_SELECTED" == "true" ]]; then
+            node tool/design/check_new_widget_inventory.mjs --base "$base_sha" --check --no-write
+          fi
+      - name: Upload finalized planner evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: harness-plan-${{ github.run_number }}-${{ github.run_id }}-${{ needs.plan.outputs.source_sha }}-${{ github.run_attempt }}
+          path: build/ci/impact-plan.json
+          if-no-files-found: error
+          retention-days: 90
+
   package-firebase:
     name: Package approved Firebase backend
     if: >-
@@ -470,9 +518,11 @@ jobs:
       github.event_name == 'push' &&
       github.ref == 'refs/heads/main' &&
       needs.plan.result == 'success' &&
-      needs.plan.outputs.deploy_required == 'true'
+      needs.finalize-plan.result == 'success' &&
+      needs.finalize-plan.outputs.deploy_required == 'true'
     needs:
       - plan
+      - finalize-plan
       - tools
       - contracts
       - functions
@@ -489,7 +539,7 @@ jobs:
     steps:
       - name: Require every selected validation lane
         env:
-          DEPLOY_GROUPS: ${{ needs.plan.outputs.deploy_groups }}
+          DEPLOY_GROUPS: ${{ needs.finalize-plan.outputs.deploy_groups }}
           NEEDS_JSON: ${{ toJSON(needs) }}
         run: |
           set -euo pipefail
@@ -547,7 +597,7 @@ jobs:
           path: build/ci
 
       - name: Download the exact tested Functions build
-        if: contains(fromJSON(needs.plan.outputs.deploy_groups), 'functions')
+        if: contains(fromJSON(needs.finalize-plan.outputs.deploy_groups), 'functions')
         uses: actions/download-artifact@v7
         with:
           name: functions-lib-${{ needs.plan.outputs.source_sha }}-${{ github.run_attempt }}
@@ -556,10 +606,10 @@ jobs:
       - id: package
         name: Package the exact CI plan and bounded Firebase backend
         env:
-          BASE_SHA: ${{ needs.plan.outputs.base_sha }}
+          BASE_SHA: ${{ needs.finalize-plan.outputs.base_sha }}
           CI_RUN_ATTEMPT: ${{ github.run_attempt }}
           CI_RUN_ID: ${{ github.run_id }}
-          DEPLOY_GROUPS: ${{ needs.plan.outputs.deploy_groups }}
+          DEPLOY_GROUPS: ${{ needs.finalize-plan.outputs.deploy_groups }}
           SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
         run: |
           set -euo pipefail
@@ -603,6 +653,7 @@ jobs:
     if: ${{ always() }}
     needs:
       - plan
+      - finalize-plan
       - tools
       - contracts
       - functions
@@ -623,7 +674,7 @@ jobs:
         name: Require every selected lane
         env:
           BACKEND_REVIEW_REQUIRED: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.id == github.repository_id && needs.plan.outputs.functions == 'true' }}
-          DEPLOY_REQUIRED: ${{ needs.plan.outputs.deploy_required }}
+          DEPLOY_REQUIRED: ${{ needs.finalize-plan.outputs.deploy_required || needs.plan.outputs.deploy_required }}
           EVENT_NAME: ${{ github.event_name }}
           GH_TOKEN: ${{ github.token }}
           NEEDS_JSON: ${{ toJSON(needs) }}
@@ -638,6 +689,10 @@ jobs:
             echo "Selected CI lanes did not pass:"
             echo "$failures"
             exit 1
+          fi
+          test "$(jq -er '.plan.result' <<< "$NEEDS_JSON")" = success
+          if [[ "$EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/main" ]]; then
+            test "$(jq -er '.["finalize-plan"].result' <<< "$NEEDS_JSON")" = success
           fi
           if [[ "$BACKEND_REVIEW_REQUIRED" == "true" ]]; then
             test "$(jq -er '.["backend-review"].result' <<< "$NEEDS_JSON")" = success
@@ -696,7 +751,7 @@ jobs:
         name: Write the immutable successful-attempt authority
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
-          DEPLOY_REQUIRED: ${{ needs.plan.outputs.deploy_required }}
+          DEPLOY_REQUIRED: ${{ needs.finalize-plan.outputs.deploy_required || needs.plan.outputs.deploy_required }}
           GH_TOKEN: ${{ github.token }}
           PACKAGE_ARTIFACT_DIGEST: ${{ steps.artifact_guard.outputs.package_artifact_digest }}
           PACKAGE_ARTIFACT_ID: ${{ steps.artifact_guard.outputs.package_artifact_id }}

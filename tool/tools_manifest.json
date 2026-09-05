@@ -170,7 +170,7 @@
         "node --check tool/harness.mjs",
         "node --check tool/harness/lib/component_graph.mjs",
         "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
-        "node --test tool/harness/lib/flutter_document_selection.test.mjs tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
+        "node --test tool/harness/lib/git_changes.test.mjs tool/harness/lib/flutter_document_selection.test.mjs tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
         "node tool/harness.mjs validate"
       ],
       "role": "gate",
@@ -461,6 +461,62 @@
       ]
     },
     {
+      "id": "ci:main-ci-baseline",
+      "category": "ci",
+      "path": "tool/ci/main_ci_baseline.mjs",
+      "command": "node --test tool/ci/main_ci_baseline.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/main_ci_baseline.test.mjs",
+        ".github/workflows/ci.yml"
+      ],
+      "description": "Tests exact main CI baseline identity, immediate validation and bounded ordered publication waits, retaining failed-window recovery and rejecting foreign or rewritten source histories.",
+      "checks": [
+        "node --check tool/ci/main_ci_baseline.mjs",
+        "node --test tool/ci/main_ci_baseline.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/ci/main_ci_baseline.test.mjs"
+      }
+    },
+    {
+      "id": "ci:finalize-ci-plan",
+      "category": "ci",
+      "path": "tool/ci/finalize_ci_plan.mjs",
+      "command": "node --test tool/ci/finalize_ci_plan.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/finalize_ci_plan.test.mjs",
+        ".github/workflows/ci.yml"
+      ],
+      "description": "Verify committed validation coverage and selected job success before ordered main publication.",
+      "checks": [
+        "node --check tool/ci/finalize_ci_plan.mjs",
+        "node --test tool/ci/finalize_ci_plan.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/ci/finalize_ci_plan.test.mjs"
+      }
+    },
+    {
       "id": "ci:backend-source-review",
       "category": "ci",
       "path": "tool/ci/backend_source_review.mjs",
@@ -511,6 +567,8 @@
         ".github/workflows/_firebase-promote.yml",
         "tool/ci/firebase_delivery_workflow.test.mjs",
         "tool/deploy_firebase_targets.sh",
+        "functions/scripts/set-callable-invokers-public.cjs",
+        "functions/test/callable-invokers.test.cjs",
         ".github/workflows/backend-staging.yml",
         ".github/workflows/backend-rebaseline.yml"
       ],

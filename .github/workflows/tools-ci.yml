@@ -9,6 +9,11 @@ on:
       mode:
         required: true
         type: string
+      commit_window:
+        description: Include every committed path touched between the exact base and source.
+        required: false
+        type: boolean
+        default: false
       full:
         required: true
         type: boolean
@@ -81,17 +86,23 @@ jobs:
         name: Resolve affected tool checks
         env:
           BASE_SHA: ${{ inputs.base_sha }}
+          SOURCE_SHA: ${{ github.sha }}
+          COMMIT_WINDOW: ${{ inputs.commit_window || false }}
           FULL: ${{ inputs.full }}
           MODE: ${{ inputs.mode }}
         run: |
           set -euo pipefail
+          window_flag=()
+          if [[ "$COMMIT_WINDOW" == "true" ]]; then
+            window_flag=(--commit-window)
+          fi
           full_flag=()
           if [[ "$FULL" == "true" ]]; then
             full_flag=(--full)
           fi
           mkdir -p build/ci
           node tool/run.mjs affected-tools \
-            --base "$BASE_SHA" \
+            --base "$BASE_SHA" --head "$SOURCE_SHA" "${window_flag[@]}" \
             --mode "$MODE" \
             "${full_flag[@]}" \
             --github-output "$GITHUB_OUTPUT" \
@@ -196,6 +207,8 @@ jobs:
       - name: Check affected tools
         env:
           BASE_SHA: ${{ inputs.base_sha }}
+          SOURCE_SHA: ${{ github.sha }}
+          COMMIT_WINDOW: ${{ inputs.commit_window || false }}
           MODE: ${{ inputs.mode }}
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
         run: |
@@ -204,7 +217,11 @@ jobs:
           if [[ "$MARKETING_CHECKS_IN_REACT" == "true" ]]; then
             shared_flags=(--marketing-checks-in-react)
           fi
-          node tool/run.mjs affected-tools --base "$BASE_SHA" --mode "$MODE" --check "${shared_flags[@]}"
+          window_flag=()
+          if [[ "$COMMIT_WINDOW" == "true" ]]; then
+            window_flag=(--commit-window)
+          fi
+          node tool/run.mjs affected-tools --base "$BASE_SHA" --head "$SOURCE_SHA" --mode "$MODE" --check "${shared_flags[@]}" "${window_flag[@]}"
 
   fast-gates:
     name: Fast deterministic tool gates

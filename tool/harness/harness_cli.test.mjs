@@ -236,3 +236,13 @@ test("plan CLI writes parseable bounded outputs for an owned path", (context) =>
   assert.deepEqual(JSON.parse(outputs.app_roles), []);
   assert.equal(outputs.complete, "true");
 });
+
+
+test("committed-window CLI rejects options that could replace its exact main history", () => {
+  for (const args of [["--mode", "pr"], ["--mode", "main", "--full"],
+    ["--mode", "main", "--paths", "README.md"]]) {
+    const result = spawnSync(process.execPath, ["tool/harness.mjs", "plan", "--commit-window", ...args], {encoding: "utf8"});
+    assert.equal(result.status, 64);
+    assert.match(result.stderr, /requires a main base\/head plan/u);
+  }
+});

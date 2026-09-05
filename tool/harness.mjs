@@ -12,6 +12,8 @@ import {
   validateComponentGraph,
 } from "./harness/lib/component_graph.mjs";
 import {collectLocalReadonlyCheckIds} from "./lib/tool_impact.mjs";
+import {changedPathsSince} from "./harness/lib/git_changes.mjs";
+export {changedPathsSince} from "./harness/lib/git_changes.mjs";
 
 const graphPath = fromRepo("tool/harness/component_graph.json");
 const toolsManifestPath = fromRepo("tool/tools_manifest.json");
@@ -29,6 +31,7 @@ export function parseArgs(args) {
       : pathsValue.split(",").map((value) => value.trim()).filter(Boolean),
     json: args.includes("--json"),
     full: args.includes("--full"),
+    commitWindow: args.includes("--commit-window"),
     githubOutput: valueAfter(args, "--github-output"),
   };
 }
@@ -46,17 +49,28 @@ export function projectPlanOutputs({plan, graph}) {
     ])),
     app_roles: JSON.stringify(appRoles),
     build_targets: JSON.stringify([...plan.operations.buildTargets].sort()),
-    release_targets: JSON.stringify([...plan.operations.releaseTargets].sort()),
-    has_release_targets: plan.operations.releaseTargets.length > 0,
-    release_roles: JSON.stringify([...plan.operations.releaseRoles].sort()),
-    has_release_roles: plan.operations.releaseRoles.length > 0,
-    deploy_groups: JSON.stringify([...plan.operations.deployGroups].sort()),
-    deploy_required: plan.operations.deployGroups.length > 0,
+    release_targets: JSON.stringify(plan.validationOnly ? [] : [...plan.operations.releaseTargets].sort()),
+    has_release_targets: !plan.validationOnly && plan.operations.releaseTargets.length > 0,
+    release_roles: JSON.stringify(plan.validationOnly ? [] : [...plan.operations.releaseRoles].sort()),
+    has_release_roles: !plan.validationOnly && plan.operations.releaseRoles.length > 0,
+    deploy_groups: JSON.stringify(plan.validationOnly ? [] : [...plan.operations.deployGroups].sort()),
+    deploy_required: !plan.validationOnly && plan.operations.deployGroups.length > 0,
     docs_checkout: JSON.stringify(resolveTargetCheckout({graph, target: "docs"})),
     mode: plan.mode,
     full: plan.full,
+    commit_window: plan.commitWindow === true,
     complete: plan.complete,
   };
+}
+
+export function planCommittedWindow({graph, endpointPaths, windowPaths}) {
+  // Current unowned files still fail. Only historical, transient ownership can
+  // broaden validation to nightly/full; publication is independently planned.
+  const endpoint = planAffected({changedPaths: endpointPaths, graph, mode: "main"});
+  const window = planAffected({changedPaths: windowPaths, graph, mode: "main"});
+  const selected = !endpoint.complete ? endpoint : window.complete ? window :
+    planAffected({changedPaths: windowPaths, graph, mode: "nightly", full: true});
+  return {...selected, commitWindow: true, validationOnly: true};
 }
 
 export function formatGithubOutputs(outputs) {
@@ -73,24 +87,6 @@ export function formatGithubOutputs(outputs) {
 
 export function writeGithubOutputs(path, outputs) {
   fs.appendFileSync(path, formatGithubOutputs(outputs), "utf8");
-}
-
-export function changedPathsSince({base, head = "HEAD", cwd = repoRoot}) {
-  const commands = [
-    ["diff", "--name-only", `${base}...${head}`],
-    ["diff", "--name-only"],
-    ["diff", "--cached", "--name-only"],
-    ["ls-files", "--others", "--exclude-standard"],
-  ];
-  const paths = new Set();
-  for (const gitArgs of commands) {
-    const result = spawnSync("git", gitArgs, {cwd, encoding: "utf8"});
-    if (result.status !== 0) {
-      throw new Error(result.stderr || `Unable to resolve changed paths from ${base}.`);
-    }
-    for (const line of result.stdout.split(/\r?\n/).filter(Boolean)) paths.add(line);
-  }
-  return [...paths].sort();
 }
 
 export function main({
@@ -126,8 +122,14 @@ export function main({
       return;
     }
 
+    if (options.commitWindow && (options.mode !== "main" || options.full || options.paths)) {
+      throw new UsageError("--commit-window requires a main base/head plan, without --full or --paths.");
+    }
     const changedPaths = options.paths ?? (options.full ? [] : changedPathsSince(options));
-    const plan = planAffected({
+    const plan = options.commitWindow ? planCommittedWindow({
+      graph, windowPaths: changedPaths,
+      endpointPaths: changedPathsSince({...options, commitWindow: false, committedOnly: true}),
+    }) : planAffected({
       changedPaths,
       graph,
       mode: options.mode,
@@ -237,7 +239,7 @@ Commands:
   validate
   coverage [--json]
   explain [--paths a,b | --base ref [--head ref] | --full] [--mode mode] [--json]
-  plan [--paths a,b | --base ref [--head ref] | --full] [--mode mode] [--github-output path] [--json]
+  plan [--paths a,b | --base ref [--head ref] [--commit-window] | --full] [--mode mode] [--github-output path] [--json]
 
 Harness is read-only: it explains affected checks, builds, codegen freshness
 checks, and delivery lanes but never executes them. Use node tool/run.mjs check

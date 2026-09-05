@@ -4,6 +4,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {repoRoot} from "./lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
+import {changedPathsSince} from "./harness/lib/git_changes.mjs";
 import {
   toolSupportsPlatform,
   validateToolPlatforms,
@@ -169,7 +170,8 @@ async function affectedToolChecks(args) {
     return;
   }
 
-  const changedPaths = options.paths ?? changedPathsSince(options.base);
+  if (options.commitWindow && options.paths) throw new Error("--commit-window cannot override committed paths.");
+  const changedPaths = options.paths ?? changedPathsSince(options);
   const plan = planAffectedToolChecks({
     changedPaths,
     manifest,
@@ -225,25 +227,6 @@ async function affectedToolChecks(args) {
     return;
   }
   await runChecks(tools, {marketingChecksInReact: options.marketingChecksInReact});
-}
-
-function changedPathsSince(base) {
-  const commands = [
-    ["diff", "--name-only", `${base}...HEAD`],
-    ["diff", "--name-only"],
-    ["diff", "--cached", "--name-only"],
-    ["ls-files", "--others", "--exclude-standard"],
-  ];
-  const paths = new Set();
-  for (const gitArgs of commands) {
-    const result = spawnSync("git", gitArgs, {cwd: repoRoot, encoding: "utf8"});
-    if (result.status !== 0) {
-      console.error(result.stderr || `Unable to resolve changed paths from ${base}.`);
-      process.exit(result.status ?? 1);
-    }
-    for (const line of result.stdout.split(/\r?\n/).filter(Boolean)) paths.add(line);
-  }
-  return [...paths].sort();
 }
 
 function runTool(args) {
@@ -450,6 +433,8 @@ function parseAffectedToolArgs(args) {
   const pathsValue = valueAfter(args, "--paths");
   return {
     base: valueAfter(args, "--base") ?? "origin/main",
+    head: valueAfter(args, "--head") ?? "HEAD",
+    commitWindow: args.includes("--commit-window"),
     paths: pathsValue == null ? null : pathsValue
       .split(",")
       .map((value) => value.trim())
@@ -485,7 +470,7 @@ Commands:
   list [--category name] [--json]
   check [--category name] [--manifest-only] [tool-id ...]
     Repeat --category to validate several categories in one deduplicated run.
-  affected-tools [--base ref | --paths a,b] [--mode mode] [--full] [--json] [--check]
+  affected-tools [--base ref [--head ref] [--commit-window] | --paths a,b] [--mode mode] [--full] [--json] [--check]
     [--github-output path]
   CI check execution may add --marketing-checks-in-react only when its required
     aggregate owns the same-run React marketing lane.

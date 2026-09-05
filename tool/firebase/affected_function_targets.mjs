@@ -123,10 +123,11 @@ function dependencies(ts, tree, source) {
 }
 
 function isNonRuntimeFile(name) {
-  // The bounded delivery package contains tested lib and the invoker script;
-  // these two local-emulator files are never copied into that package.
+  // These exact CLI helpers are outside compiled Functions source. The invoker
+  // helper is packaged for post-deploy IAM checks, not loaded by the runtime.
   if (name === "functions/scripts/run-local-emulators.cjs" ||
-      name === "functions/scripts/run-local-emulators.test.cjs") return true;
+      name === "functions/scripts/run-local-emulators.test.cjs" ||
+      name === "functions/scripts/set-callable-invokers-public.cjs") return true;
   return /\.(?:md|test\.ts|spec\.ts)$/.test(name) ||
     /^functions\/(?:test|tests|__tests__)\//.test(name) ||
     /\/(?:__tests__|__mocks__)\//.test(name);

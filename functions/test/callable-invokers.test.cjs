@@ -95,3 +95,83 @@ test("rejects noncanonical Cloud Run service names", () => {
     /Invalid Cloud Run service resource/,
   );
 });
+
+test("exact target scope checks only selected callables and permits webhook-only deployments", async () => {
+  const {syncProject} = require("../scripts/set-callable-invokers-public.cjs");
+  const policyReads = [];
+  const request = async (query) => {
+    if (query.hostname === "cloudfunctions.googleapis.com") {
+      return {functions: ["selected", "unrelated", "webhook"].map((name) => ({
+        name: `projects/demo-project/locations/asia-south1/functions/${name}`,
+        state: "ACTIVE",
+        labels: {"deployment-callable": name !== "webhook"},
+        serviceConfig: {service: `projects/demo-project/locations/asia-south1/services/${name}`},
+      }))};
+    }
+    assert.equal(query.method, "GET");
+    policyReads.push(query.path);
+    return {bindings: [{role: "roles/run.invoker", members: ["allUsers"]}]};
+  };
+  const result = await syncProject({projectId: "demo-project", token: "token",
+    functionTargets: ["functions:selected", "functions:webhook"], request});
+  assert.deepEqual(result, {checkedServices: 1, changedServices: 0});
+  assert.equal(policyReads.length, 1);
+  assert.match(policyReads[0], /services\/selected:/);
+  policyReads.length = 0;
+  assert.deepEqual(await syncProject({projectId: "demo-project", token: "token",
+    functionTargets: ["functions:webhook"], request}), {checkedServices: 0, changedServices: 0});
+  assert.deepEqual(policyReads, []);
+});
+
+test("unknown, missing and inactive selected targets fail before any IAM request", async () => {
+  const {syncProject, parseFunctionTargets} = require("../scripts/set-callable-invokers-public.cjs");
+  for (const invalid of ["", "functions", "functions:*", "functions:alpha,", "functions:alpha,functions:alpha", "functions:../alpha"]) {
+    assert.throws(() => parseFunctionTargets(invalid), /exact/);
+  }
+  const fn = {name: "projects/demo-project/locations/asia-south1/functions/selected", state: "ACTIVE",
+    labels: {"deployment-callable": "true"},
+    serviceConfig: {service: "projects/demo-project/locations/asia-south1/services/selected"}};
+  for (const functions of [[], [{...fn, state: "DEPLOYING"}], [{...fn, serviceConfig: {}}],
+    [{...fn, name: "projects/foreign-project/locations/asia-south1/functions/selected"}]]) {
+    await assert.rejects(syncProject({projectId: "demo-project", token: "token",
+      functionTargets: ["functions:selected"], request: async (query) => {
+        assert.equal(query.hostname, "cloudfunctions.googleapis.com", "Cannot mutate before full target discovery");
+        return {functions};
+      }}));
+  }
+});
+
+test("conditional invoker bindings and policy etags survive an unconditional public grant", async () => {
+  const condition = {title: "restricted", expression: "request.path.startsWith('/allowed')"};
+  const original = {version: 3, etag: "original-etag", bindings: [
+    {role: "roles/run.invoker", members: ["user:reviewer@example.invalid"], condition},
+    {role: "roles/run.viewer", members: ["group:ops@example.invalid"]},
+  ]};
+  const calls = [];
+  await ensurePublicInvoker({service: "projects/demo/locations/asia-south1/services/selected", token: "token",
+    request: async (query) => {
+      calls.push(query);
+      return query.method === "GET" ? structuredClone(original) : {};
+    }});
+  assert.equal(calls.length, 2);
+  const updated = calls[1].body.policy;
+  assert.equal(updated.etag, original.etag);
+  assert.equal(updated.version, original.version);
+  assert.deepEqual(updated.bindings.slice(0, 2), original.bindings);
+  assert.deepEqual(updated.bindings[2], {role: "roles/run.invoker", members: ["allUsers"]});
+});
+
+test("CLI validates target arguments before authentication and keeps help read-only", () => {
+  const {spawnSync} = require("node:child_process");
+  const script = require.resolve("../scripts/set-callable-invokers-public.cjs");
+  const run = (args) => spawnSync(process.execPath, [script, ...args], {encoding: "utf8"});
+  const help = run(["--help"]);
+  assert.equal(help.status, 0, help.stderr);
+  assert.match(help.stdout, /--targets functions:<name>/);
+  for (const args of [[], ["--unknown"], ["demo-project", "--targets", "functions"],
+    ["demo-project", "--targets"], ["../foreign-project"]]) {
+    const result = run(args);
+    assert.notEqual(result.status, 0);
+    assert.doesNotMatch(result.stderr, /ADC unavailable|Firebase CLI auth/);
+  }
+});
