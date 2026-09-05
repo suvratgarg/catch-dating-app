@@ -36,6 +36,7 @@ test("iOS policy inputs and outputs retain native builds and generated freshness
   assert.ok(generator);
   assert.equal(generator.checkCommand, "node tool/platform/sync_ios_pod_policy.mjs --check");
   for (const file of [...generator.inputs, ...generator.outputs]) {
+    const toolingOnly = generator.inputs.includes(file);
     const expectedRole = file.startsWith("apps/host/") ? "host"
       : file.startsWith("apps/consumer/") ? "consumer" : null;
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
@@ -45,8 +46,12 @@ test("iOS policy inputs and outputs retain native builds and generated freshness
       assert.deepEqual(result.operations.checkIds, ["platform:ios-pod-policy"], file);
       assert.deepEqual(result.operations.codegenIds, [generator.id], file);
       assert.deepEqual(result.operations.deployGroups, [], file);
-      assert.deepEqual(result.operations.releaseTargets, mode === "main"
+      assert.deepEqual(result.operations.buildTargets, toolingOnly ? ["consumer-ios", "host-ios"] : [], file);
+      if (toolingOnly) assert.deepEqual(deriveAppRoles(result), ["consumer", "host"], file);
+      assert.deepEqual(result.operations.releaseTargets, mode === "main" && !toolingOnly
         ? (expectedRole ? [`${expectedRole}-ios`] : ["consumer-ios", "host-ios"]) : [], file);
+      assert.deepEqual(result.operations.releaseRoles, mode === "main" && !toolingOnly
+        ? (expectedRole ? [expectedRole] : ["consumer", "host"]) : [], file);
       const tools = planAffectedToolChecks({changedPaths: [file],
         manifest: toolsManifest, componentGraph: graph, mode});
       assert.equal(tools.mode, "affected", file);
@@ -59,6 +64,10 @@ test("iOS policy inputs and outputs retain native builds and generated freshness
   const testOnly = plan("tool/platform/sync_ios_pod_policy.test.mjs", "main");
   assert.deepEqual(testOnly.operations.ciTargets, ["tools"]);
   assert.deepEqual(testOnly.operations.releaseTargets, []);
+  const changedConsumerOutput = planAffected({graph, mode: "main",
+    changedPaths: [...generator.inputs, "apps/consumer/ios/Podfile"]});
+  assert.deepEqual(changedConsumerOutput.operations.releaseTargets, ["consumer-ios"]);
+  assert.deepEqual(changedConsumerOutput.operations.releaseRoles, ["consumer"]);
   // The native profiles also cover ordinary app metadata. Their freshness gate
   // must not turn an unrelated iOS edit into the full Tools setup/matrix.
   for (const file of ["ios/Runner/Info.plist", "apps/host/ios/Runner/Info.plist",

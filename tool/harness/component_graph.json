@@ -448,6 +448,15 @@
       },
       "affected": {}
     },
+    "native-ios-policy-tooling": {
+      "direct": {
+        "pr": {"ciTargets": ["flutter_build_ios", "tools"], "buildTargets": ["consumer-ios", "host-ios"], "checkIds": ["platform:ios-pod-policy"]},
+        "merge_group": {"ciTargets": ["flutter_build_ios", "tools"], "buildTargets": ["consumer-ios", "host-ios"], "checkIds": ["platform:ios-pod-policy"]},
+        "main": {"ciTargets": ["flutter_build_ios", "tools"], "buildTargets": ["consumer-ios", "host-ios"], "checkIds": ["platform:ios-pod-policy"]},
+        "nightly": {"ciTargets": ["flutter_build_ios", "tools"], "buildTargets": ["consumer-ios", "host-ios"], "checkIds": ["platform:ios-pod-policy"]}
+      },
+      "affected": {}
+    },
     "native-shared-ios": {
       "direct": {
         "pr": {"ciTargets": ["flutter_build_ios", "tools"], "checkIds": ["platform:ios-pod-policy"]},
@@ -861,7 +870,8 @@
     {"id": "app.native.android.host", "owner": "app_platform", "risk": "high", "operationProfile": "native-host-android", "pathType": "component", "ownedPaths": {"include": ["android/app/src/host*/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Host-only Android native configuration and branding."},
     {"id": "app.native.android.consumer", "owner": "app_platform", "risk": "high", "operationProfile": "native-consumer-android", "pathType": "component", "ownedPaths": {"include": ["android/app/src/consumer*/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Consumer-only Android native configuration and branding."},
     {"id": "app.native.android.shared", "owner": "app_platform", "risk": "high", "operationProfile": "native-shared-android", "pathType": "component", "ownedPaths": {"include": ["android/**"], "exclude": ["android/app/src/host*/**", "android/app/src/consumer*/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared Android build and runtime configuration."},
-    {"id": "app.native.ios", "owner": "app_platform", "risk": "high", "operationProfile": "native-shared-ios", "pathType": "component", "ownedPaths": {"include": ["ios/**", "tool/platform/sync_ios_pod_policy.mjs"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared iOS project, flavors, signing metadata, and native copy."},
+    {"id": "app.native.ios-policy-tooling", "owner": "app_platform", "risk": "high", "operationProfile": "native-ios-policy-tooling", "pathType": "component", "ownedPaths": {"include": ["ios/Podfile.template", "ios/Flutter/CatchBuildSettings.xcconfig.template", "tool/platform/sync_ios_pod_policy.mjs"]}, "dependsOn": [], "alsoAffects": [], "description": "Authored iOS policy and generator validate both app builds and generated freshness; only changed native outputs authorize a release."},
+    {"id": "app.native.ios", "owner": "app_platform", "risk": "high", "operationProfile": "native-shared-ios", "pathType": "component", "ownedPaths": {"include": ["ios/**"], "exclude": ["ios/Podfile.template", "ios/Flutter/CatchBuildSettings.xcconfig.template"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared iOS project, flavors, signing metadata, and native copy."},
     {"id": "app.platform.other", "owner": "app_platform", "risk": "standard", "operationProfile": "other-flutter-platforms", "pathType": "component", "ownedPaths": {"include": ["macos/**", "web/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Flutter web and desktop platform shells."},
     {"id": "app.dependencies", "owner": "app_platform", "risk": "high", "operationProfile": "app-dependencies", "pathType": "component", "ownedPaths": {"include": ["assets/**", "packages/phosphor_flutter/**", "pubspec.yaml", "pubspec.lock"]}, "dependsOn": [], "alsoAffects": [], "description": "Shared app assets and dependency resolution used by both installable roles."},
     {"id": "repo.flutter-tooling", "owner": "repository_tooling", "risk": "high", "operationProfile": "flutter-tooling", "pathType": "component", "ownedPaths": {"include": ["packages/catch_ui_lints/**"]}, "dependsOn": [], "alsoAffects": [], "description": "Catch analyzer and Flutter tooling packages."},

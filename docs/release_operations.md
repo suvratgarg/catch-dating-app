@@ -466,6 +466,9 @@ their separate Pod lockfiles, plugin graphs and app targets remain independent.
 `platform:ios-pod-policy` checks freshness in every selected iOS-native lane,
 and the existing compile-codegen catalog selects the same check before commit.
 A checkout with current generated files needs no extra generation step.
+Generator or template edits retain both iOS validation builds and freshness
+checks. They authorize a mobile release only when the generated native files
+change; unchanged output must not create another TestFlight release.
 
 Each generated Podfile contains the complete policy. Do not replace it with a
 runtime Ruby import: Flutter's warm-checkout pod-install decision and
@@ -491,15 +494,21 @@ packages, and 38 packages blocked by coordinated constraints or major-version
 boundaries. Do not describe the `flutter pub get` summary as 38 independent
 patches.
 
-iOS remains on CocoaPods. The currently locked `razorpay_flutter` and
-`google_maps_flutter_ios` packages do not ship Swift Package Manager manifests;
-`health` and the locked FlutterFire plugins do. Flutter supports CocoaPods
-fallback for plugins without SwiftPM support, but Catch's complete mixed graph
-still needs native proof. A dedicated migration must remove the explicit
-prebuilt Firestore pod only when Firebase has one verified distribution owner,
-preserve the Maps/Razorpay locked versions and all role/flavor settings, and
-pass Consumer plus Host iOS builds before enabling SwiftPM on main. Retain the current
-explicit-module settings until that migration proves they can be removed.
+iOS remains on CocoaPods. A Consumer simulator experiment with Flutter 3.44.9
+resolved and linked Firebase Apple SDK 12.18.0 through SwiftPM with the locked
+Maps/Razorpay CocoaPods fallback, but failed permission-policy parity:
+`geolocator_apple` 2.3.14 loses the Podfile's
+`BYPASS_PERMISSION_LOCATION_ALWAYS=1` define and compiles Always-location code
+back into the app. Both architectures reproduced the difference against newly
+compiled CocoaPods objects. That Flutter version has no supported per-plugin
+opt-out. Revisit when a supported package or fallback preserves this policy;
+the upstream [permission-policy issue](https://github.com/Baseflow/flutter-geolocator/issues/1763)
+and [proposed fix](https://github.com/Baseflow/flutter-geolocator/pull/1788)
+describe the missing support. Before enabling SwiftPM, prove the compiled
+permission selector is absent, Firebase has one verified binary distribution
+owner, Maps/Razorpay versions and role/flavor settings are preserved, and
+Consumer plus Host release builds pass. Keep existing explicit-module settings
+until their removal has native proof.
 
 `tool/app_targets.json#appleNativeDependencies` binds the checked-in
 `firebase_core` and `cloud_firestore` Flutter versions to the Firebase Apple SDK
